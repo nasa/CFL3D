@@ -1629,8 +1629,9 @@ c              need to send grid back to host for modal surface
 c              plot3d data
 c
                if (iaesrf.ne.0) then
-                  nnn = jdim*kdim*idim*3
-                  mytag = 1
+c
+                  nnn = jdim*kdim*idim
+                  mytag = itag_x
                   nd_srce = mblk2nd(nbl)
                   if (myid.eq.mblk2nd(nbl)) then
                      call MPI_Send (w(lx), nnn, MY_MPI_REAL,
@@ -1639,6 +1640,29 @@ c
                      call MPI_Recv (w(lx), nnn, MY_MPI_REAL,
      .                              nd_srce, mytag, mycomm, istat, ierr)
                   end if
+c
+                  nnn = jdim*kdim*idim
+                  mytag = itag_y
+                  nd_srce = mblk2nd(nbl)
+                  if (myid.eq.mblk2nd(nbl)) then
+                     call MPI_Send (w(ly), nnn, MY_MPI_REAL,
+     .                              myhost, mytag, mycomm, ierr)
+                  else if (myid.eq.myhost) then
+                     call MPI_Recv (w(ly), nnn, MY_MPI_REAL,
+     .                              nd_srce, mytag, mycomm, istat, ierr)
+                  end if
+c
+                  nnn = jdim*kdim*idim
+                  mytag = itag_z
+                  nd_srce = mblk2nd(nbl)
+                  if (myid.eq.mblk2nd(nbl)) then
+                     call MPI_Send (w(lz), nnn, MY_MPI_REAL,
+     .                              myhost, mytag, mycomm, ierr)
+                  else if (myid.eq.myhost) then
+                     call MPI_Recv (w(lz), nnn, MY_MPI_REAL,
+     .                              nd_srce, mytag, mycomm, istat, ierr)
+                  end if
+c
                end if
 #endif
                if (iaesrf.ne.0 .and. myid.eq.myhost) then
