@@ -122,12 +122,12 @@ cdir$ ivdep
 c   For field eqn turbulence models:
       if (ivisc(1).ge.4 .or. ivisc(2).ge.4 .or. ivisc(3).ge.4) then
         if (ivisc(1).eq.4 .or. ivisc(2).eq.4 .or. ivisc(3).eq.4) then
-          if (tur10 .lt. 0.) tur10=0.1
-          if (tur20 .lt. 0.) tur20=0.
+          if (real(tur10) .lt. 0.) tur10=0.1
+          if (real(tur20) .lt. 0.) tur20=0.
         else if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or.
      .           ivisc(3).eq.5) then
-          if (tur10 .lt. 0.) tur10=1.341946
-          if (tur20 .lt. 0.) tur20=0.
+          if (real(tur10) .lt. 0.) tur10=1.341946
+          if (real(tur20) .lt. 0.) tur20=0.
         else if (ivisc(1).eq.11 .or. ivisc(2).eq.11 .or.
      .           ivisc(3).eq.11 .or.
      .           ivisc(1).eq.10 .or. ivisc(2).eq.10 .or.
@@ -135,19 +135,19 @@ c   For field eqn turbulence models:
      .           ivisc(1).eq. 9 .or. ivisc(2).eq. 9 .or.
      .           ivisc(3).eq. 9 .or. ivisc(1).eq.13 .or.
      .           ivisc(2).eq.13 .or. ivisc(3).eq.13) then
-          if (tur10 .lt. 0.) tur10=1.e-17
-          if (tur20 .lt. 0.) tur20=1.e-9
+          if (real(tur10) .lt. 0.) tur10=1.e-17
+          if (real(tur20) .lt. 0.) tur20=1.e-9
         else if (ivisc(1).eq. 8 .or. ivisc(2).eq. 8 .or.
      .           ivisc(3).eq. 8 .or.
      .           ivisc(1).eq.12 .or. ivisc(2).eq.12 .or.
      .           ivisc(3).eq.12 .or.
      .           ivisc(1).eq.14 .or. ivisc(2).eq.14 .or.
      .           ivisc(3).eq.14) then
-          if (tur10 .lt. 0.) tur10=9.e-8
-          if (tur20 .lt. 0.) tur20=9.e-9
+          if (real(tur10) .lt. 0.) tur10=9.e-8
+          if (real(tur20) .lt. 0.) tur20=9.e-9
         else
-          if (tur10 .lt. 0.) tur10=1.e-6
-          if (tur20 .lt. 0.) tur20=9.e-9
+          if (real(tur10) .lt. 0.) tur10=1.e-6
+          if (real(tur20) .lt. 0.) tur20=9.e-9
         end if
         do 4001 m=1,4
           do 4000 i=1,idim-1

@@ -1302,7 +1302,8 @@ c
 #endif
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
         if (level .ge. lglobal .and. ntime .eq. nit) then
-          if (dt .lt. 0. .or. (dt .gt. 0. and. icyc .eq. ncyc)) then
+          if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. and. 
+     +        icyc .eq. ncyc)) then
             xnumavg=xnumavg+1.
           end if
         end if

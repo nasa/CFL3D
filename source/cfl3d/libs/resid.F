@@ -682,7 +682,8 @@ c
 c
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
       if (level.ge.lglobal .and. ntime.eq.nit) then
-        if (dt .lt. 0. .or. (dt .gt. 0. .and. icyc .eq. ncyc)) then
+        if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. .and. 
+     +      icyc .eq. ncyc)) then
 c   get iteration-averaged Q values and increment xnumavg
 c   note: the qavg values are kept as conserved variables, whereas 
 c   q values are primitive (this is done to avoid round-off differences

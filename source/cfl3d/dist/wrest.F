@@ -280,17 +280,17 @@ c   (even when they are not used, they can screw up CGNS output)
       do i=1,idim1
         do m=1,4
         do k=1,kdim1
-          if (qj0(k,i,1,m) .le. 0.) qj0(k,i,1,m)=1.
+          if (real(qj0(k,i,1,m)) .le. 0.) qj0(k,i,1,m)=1.
         enddo
         do j=1,jdim1
-          if (qk0(j,i,1,m) .le. 0.) qk0(j,i,1,m)=1.
+          if (real(qk0(j,i,1,m)) .le. 0.) qk0(j,i,1,m)=1.
         enddo
         enddo
       enddo
       do m=1,4
       do k=1,kdim1
         do j=1,jdim1
-          if (qi0(j,k,1,m) .le. 0.) qi0(j,k,1,m)=1.
+          if (real(qi0(j,k,1,m)) .le. 0.) qi0(j,k,1,m)=1.
         enddo
       enddo
       enddo

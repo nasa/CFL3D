@@ -167,7 +167,7 @@ c
 c
       pe=q(1,k,i,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
@@ -328,7 +328,7 @@ c
 c
       pe=q(jdim1,k,i,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
@@ -488,7 +488,7 @@ c
 c
       pe=q(j,1,i,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
@@ -649,7 +649,7 @@ c
 c
       pe=q(j,kdim1,i,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
@@ -810,7 +810,7 @@ c
 c
       pe=q(j,k,1,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
@@ -970,7 +970,7 @@ c
 c
       pe=q(j,k,idim1,5)
       plimit=0.999*pte
-      if (pe.ge.plimit) pe=plimit
+      if (real(pe).ge.real(plimit)) pe=plimit
       rme2=2./gm1*((pte/pe)**gm1g-1)
       te=tte/(1.+gm1*.5*rme2)
       vtote=sqrt(rme2*te)
