@@ -643,12 +643,9 @@ esac
 #       SUN/SOLARIS ARCHITECTURE
 #########################################
 
-# note: must explicitly ask for i4 with solaris OS on sun's
-# since r8 alters integer length !!!
-
 case $FARCH in sun|solaris)
   if [ $do_dou = yes ]; then
-     PREC="$PREC -i4"
+     PREC="-xtypemap=real:64,integer:32"
   fi
   if [ $do_no_opt = no ]; then
      FFLAG="-O2"
@@ -735,17 +732,19 @@ esac
 
 case $FARCH in LINUX)
 
-  CPPOPT_SP="$CPPOPT_SP -DLINUX"                                                        
+  CPPOPT_SP="$CPPOPT_SP -DLINUX"
+
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.linux"
   fi
 
-# Default to INTEL:
-  CFLAG="-r8"                                                                        
-  FFLAG="-O2 -w -ip"                                                                      
-  FFLAG_SPEC="$FFLAG"                                                                
+# Default to INTEL settings:
+
+  CFLAG="-r8"
+  FFLAG="-O2 -w -ip"
+  FFLAG_SPEC="$FFLAG"
   LFLAG="-static"                                                               
-  LLIB="-lsvml -lPEPCF90"                                                                            
+  LLIB="-lsvml -lPEPCF90"
   LLIB_SEQ=$LLIB
   LLIBDIR=""
   MPI_LLIBDIR=""
@@ -754,7 +753,6 @@ case $FARCH in LINUX)
   CC="gcc"
   CPP="cpp"
   FTN="mpif77"
-
   if [ $do_dou = yes ]; then
      PREC="-r8"
   else
@@ -771,7 +769,7 @@ case $FARCH in LINUX)
 # Intel Fortan Compiler
 #   FTN="ifc"
 
-# Force alternate optimazation flags, etc. if not Intel compiler
+# Force alternate optimazation flags, etc.
 
 # Intel Compiler
 
@@ -842,27 +840,27 @@ case $FARCH in LINUX)
      fi
   fi
 
-# ALPHA Compiler                                                                        
-                                                                                        
-  if [ $linux_compiler_flags = Alpha ]; then                                            
-     CFLAG=""                                                                           
-     FFLAG="-O3 -fast -w -fpe3"                                                                    
-     FFLAG_SPEC="$FFLAG"                                                                
+# ALPHA Compiler
+
+  if [ $linux_compiler_flags = Alpha ]; then
+     CFLAG=""
+     FFLAG="-O3 -fast -w -fpe3"
+     FFLAG_SPEC="$FFLAG"
      LFLAG=""                                                               
-     LLIB=""                                                                            
-     LLIB_SEQ=""                                                                        
-     LLIBDIR=""                                                                         
-     MPI_LLIBDIR=""                                                                     
-     MPI_LLIB=""                                                                        
-     MPI_INCDIR=""                                                                      
-     CC="gcc"                                                                           
-     CPP="cpp"                                                                          
-     FTN="mpif77"                                                                       
-     if [ $do_dou = yes ]; then                                                         
-        PREC="-r8 -fpconstant"                                                                    
-     else                                                                               
-        PREC=""                                                                         
-     fi                                                                                 
+     LLIB=""
+     LLIB_SEQ=""
+     LLIBDIR=""
+     MPI_LLIBDIR=""
+     MPI_LLIB=""
+     MPI_INCDIR=""
+     CC="gcc"
+     CPP="cpp"
+     FTN="mpif77"
+     if [ $do_dou = yes ]; then
+        PREC="-r8 -fpconstant"
+     else
+        PREC=""
+     fi
   fi
 
 # Note: the following environment variable must be set in order
