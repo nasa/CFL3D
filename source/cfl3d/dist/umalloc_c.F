@@ -20,11 +20,11 @@ c     original version provied courtesy Steven J. Massey, AS&M Inc.
 c     modified by r. t. biedron, January, 1999.
 c***********************************************************************
 c
+      implicit complex(a-h,o-z)
+c
 #if defined DIST_MPI
 #     include "mpif.h"
 #endif
-c
-      implicit complex(a-h,o-z)
 c
       parameter(len_i=4,len_r4=4)
 c
