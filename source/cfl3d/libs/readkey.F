@@ -321,11 +321,6 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          gamma = realval(1)
-         gm1   = gamma-1.0e0
-         gp1   = gamma+1.0e0
-         gm1g  = gm1/gamma
-         gp1g  = gp1/gamma
-         ggm1  = gamma*gm1
 c
       else if (inpstr(lc1:lc2).eq.'pr') then
          lc2 = lc2 +1

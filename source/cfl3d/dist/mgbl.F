@@ -287,12 +287,6 @@ c
 c
 c     initialize some constants
 c
-      gamma    = 1.4e0
-      gm1      = gamma-1.0e0
-      gp1      = gamma+1.0e0
-      gm1g     = gm1/gamma
-      gp1g     = gp1/gamma
-      ggm1     = gamma*gm1
       pi       = 4.*atan(1.0)
       radtodeg = 180.e0/pi
 c
@@ -506,15 +500,6 @@ c
       do iii = 1,nvalsi
          iwork(iii) = 0
       end do
-c
-c     recompute gamma-based constants (gamma may have changed via
-c     keyword input)
-c
-      gm1      = gamma-1.0e0
-      gp1      = gamma+1.0e0
-      gm1g     = gm1/gamma
-      gp1g     = gp1/gamma
-      ggm1     = gamma*gm1
 #endif
 c
 c***********************************************************************
@@ -592,6 +577,15 @@ c
      .        ''work space for subroutine setup'')')
          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
+c
+c     constants derived from gamma
+c
+      gm1  = gamma-1.0e0
+      gp1  = gamma+1.0e0
+      gm1g = gm1/gamma
+      gp1g = gp1/gamma
+      ggm1 = gamma*gm1
+c
       call setup(lw,lw2,work,nstart,work(nstart+1),nwork,iwork(iwk5),
      .           mworki1,iwork(iwk1),iwork(iwk2),iwork(iwk3),
      .           maxbl,maxgr,maxseg,nsub1,maxxe,intmax,
