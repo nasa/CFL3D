@@ -1929,8 +1929,10 @@ c   ***CGNSend
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),'('' WARNING:  You are '',
      .            ''restarting a 2nd order in time solution with no'')')
+                  nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),'(''           qc0 data saved '',
      .            ''in restart. You may see a glitch in the'')')
+                  nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),
      .            '(''           restart as a result.'')')
                end if
