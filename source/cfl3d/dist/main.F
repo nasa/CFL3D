@@ -671,7 +671,7 @@ c***********************************************************************
 c   ***CGNSstart
 c   Write input file used to CGNS file
 #if defined CGNS
-      if (icgns .eq. 1) then
+      if (icgns .eq. 1 .and. myid .eq. myhost) then
         basedesired='Base'
         idimdesired=3
         call wopencgns(grid,basedesired,idimdesired,iccg,
