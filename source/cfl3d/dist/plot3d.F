@@ -1428,10 +1428,20 @@ c
      .                + q(j,kd1,id1,5) +q(j-1,kd1,id1,5))
       t1k3 = q5k3/q1k3
 c
+      if (sk(j  ,kdx,id ,4) .eq. 0. .or. 
+     +    sk(j-1,kdx,id ,4) .eq. 0. .or.
+     +    sk(j  ,kdx,id1,4) .eq. 0. .or.
+     +    sk(j-1,kdx,id1,4) .eq. 0.) then
+      dx = x(j,kd+1,i)-x(j,kd,i)
+      dy = y(j,kd+1,i)-y(j,kd,i)
+      dz = z(j,kd+1,i)-z(j,kd,i)
+      dn = sqrt(dx**2+dy**2+dz**2)
+      else
       dn = (vol(j  ,kd,id )/sk(j  ,kdx,id ,4)+
      +      vol(j-1,kd,id )/sk(j-1,kdx,id ,4)+
      +      vol(j  ,kd,id1)/sk(j  ,kdx,id1,4)+
      +      vol(j-1,kd,id1)/sk(j-1,kdx,id1,4))/4.
+      end if
 c
       QA1 = sqrt(q2k1**2+q3k1**2+q4k1**2)
       QA2 = sqrt(q2k2**2+q3k2**2+q4k2**2)
@@ -1646,10 +1656,20 @@ c
      .                + q(jd1,k,id1,5) +q(jd1,k-1,id1,5))
       t1j3 = q5j3/q1j3
 c
+      if (sj(jdx,k  ,id ,4) .eq. 0. .or. 
+     +    sj(jdx,k-1,id ,4) .eq. 0. .or.
+     +    sj(jdx,k  ,id1,4) .eq. 0. .or.
+     +    sj(jdx,k-1,id1,4) .eq. 0.) then
+      dx = x(jd+1,k,i)-x(jd,k,i)
+      dy = y(jd+1,k,i)-y(jd,k,i)
+      dz = z(jd+1,k,i)-z(jd,k,i)
+      dn = sqrt(dx**2+dy**2+dz**2)
+      else
       dn = (vol(jd,k  ,id )/sj(jdx,k  ,id ,4)+
      +      vol(jd,k-1,id )/sj(jdx,k-1,id ,4)+
      +      vol(jd,k  ,id1)/sj(jdx,k  ,id1,4)+
      +      vol(jd,k-1,id1)/sj(jdx,k-1,id1,4))/4.
+      end if
 c
       QA1 = sqrt(q2j1**2+q3j1**2+q4j1**2)
       QA2 = sqrt(q2j2**2+q3j2**2+q4j2**2)
@@ -1869,10 +1889,20 @@ c
      .                + q(j-1,k,id1,5) +q(j-1,k-1,id1,5))
       t1i3 = q5i3/q1i3
 c
+      if (si(j  ,k  ,idx,4) .eq. 0. .or.                 
+     +    si(j  ,k-1,idx,4) .eq. 0. .or.
+     +    si(j-1,k  ,idx,4) .eq. 0. .or.
+     +    si(j-1,k-1,idx,4) .eq. 0.) then
+      dx = x(j,k,id+1)-x(j,k,id)
+      dy = y(j,k,id+1)-y(j,k,id)
+      dz = z(j,k,id+1)-z(j,k,id)
+      dn = sqrt(dx**2+dy**2+dz**2)
+      else
       dn = (vol(j  ,k  ,id)/si(j  ,k  ,idx,4)+
      +      vol(j  ,k-1,id)/si(j  ,k-1,idx,4)+
      +      vol(j-1,k  ,id)/si(j-1,k  ,idx,4)+
      +      vol(j-1,k-1,id)/si(j-1,k-1,idx,4))/4.
+      end if
 c
       QA1 = sqrt(q2i1**2+q3i1**2+q4i1**2)
       QA2 = sqrt(q2i2**2+q3i2**2+q4i2**2)

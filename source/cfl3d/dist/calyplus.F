@@ -222,10 +222,20 @@ c
      .           +      vist3d(jd,kd,id1) + vist3d(jd1,kd,id1))
             t1k2 = q5k2/q1k2
 c
+            if (sk(jd ,kdx,id ,4) .eq. 0. .or.
+     +          sk(jd1,kdx,id ,4) .eq. 0. .or.
+     +          sk(jd ,kdx,id1,4) .eq. 0. .or.
+     +          sk(jd1,kdx,id1,4) .eq. 0.) then
+            dx    = x(j,kd+1,i) - x(j,kd,i)
+            dy    = y(j,kd+1,i) - y(j,kd,i)
+            dz    = z(j,kd+1,i) - z(j,kd,i)
+            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            else
             dn = (vol(jd ,kd,id )/sk(jd ,kdx,id ,4)+
      +            vol(jd1,kd,id )/sk(jd1,kdx,id ,4)+
      +            vol(jd ,kd,id1)/sk(jd ,kdx,id1,4)+
      +            vol(jd1,kd,id1)/sk(jd1,kdx,id1,4))/4.
+            end if
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                idnmax = i
@@ -673,10 +683,20 @@ c
      .           +      vist3d(jd,kd,id1) + vist3d(jd,kd1,id1))
             t1j2 = q5j2/q1j2
 c
+            if (sj(jdx,kd ,id ,4) .eq. 0. .or.
+     +          sj(jdx,kd1,id ,4) .eq. 0. .or.
+     +          sj(jdx,kd ,id1,4) .eq. 0. .or.
+     +          sj(jdx,kd1,id1,4) .eq. 0.) then
+            dx    = x(jd+1,k,i) - x(jd,k,i)
+            dy    = y(jd+1,k,i) - y(jd,k,i)
+            dz    = z(jd+1,k,i) - z(jd,k,i)
+            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            else
             dn = (vol(jd,kd ,id )/sj(jdx,kd ,id ,4)+
      +            vol(jd,kd1,id )/sj(jdx,kd1,id ,4)+
      +            vol(jd,kd ,id1)/sj(jdx,kd ,id1,4)+
      +            vol(jd,kd1,id1)/sj(jdx,kd1,id1,4))/4.
+            end if
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                idnmax = i
@@ -1129,10 +1149,20 @@ c
      .           +      vist3d(jd1,kd,id) + vist3d(jd1,kd1,id))
             t1i2 = q5i2/q1i2
 c
+            if (si(jd ,kd ,idx,4) .eq. 0. .or.
+     +          si(jd ,kd1,idx,4) .eq. 0. .or.
+     +          si(jd1,kd ,idx,4) .eq. 0. .or.
+     +          si(jd1,kd1,idx,4) .eq. 0.) then
+            dx    = x(j,k,id+1) - x(j,k,id)
+            dy    = y(j,k,id+1) - y(j,k,id)
+            dz    = z(j,k,id+1) - z(j,k,id)
+            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            else
             dn = (vol(jd ,kd ,id)/si(jd ,kd ,idx,4)+
      +            vol(jd ,kd1,id)/si(jd ,kd1,idx,4)+
      +            vol(jd1,kd ,id)/si(jd1,kd ,idx,4)+
      +            vol(jd1,kd1,id)/si(jd1,kd1,idx,4))/4.
+            end if
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                jdnmax = j
