@@ -31,6 +31,8 @@ c
 c
       write(6,*)'enter 0 to output convergence of dcy/ddv,dcmy/ddv'
       write(6,*)'enter 1 to output convergence of dcz/ddv,dcmz/ddv'
+      write(6,*)'enter 2 to output convergence of all ',
+     .          'force/moment derivatives'
       read(5,*) ialph
 c
       open(unit=2,file=restfile1,form='unformatted',status='old')
@@ -184,39 +186,46 @@ c
      .        (cftmomw2(n), n=1,ntr2),(cftpw2(n),   n=1,ntr2),
      .        (cftvw2(n),   n=1,ntr2),(cfttotw2(n), n=1,ntr2)
 c
-      write(8,'(''DERIVATIVES VIA CENTRAL DIFFERENCES, '',
-     .          ''WITH STEP SIZE = '',e12.4)') stepsize
       write(8,'('' '')')
-      write(8,'(''dcl/ddv = '',e13.5)') 
-     .            (clw1(ntr1)-clw2(ntr2))/stepsize/2.
+      write(8,'(''***********************************************'',
+     .  ''********************************'')')
+      write(8,'(''                     derivatives via central '',
+     . ''differences '')')
+      write(8,'(''                        with step size = '',
+     . e12.5)') stepsize
+      write(8,'(''***********************************************'',
+     .  ''********************************'')')
       write(8,'('' '')')
-      write(8,'(''dcd/ddv = '',e13.5)') 
-     .            (cdw1(ntr1)-cdw2(ntr2))/stepsize/2.
-      write(8,'('' '')')
-      write(8,'(''dcy/ddv = '',e13.5)') 
-     .            (cyw1(ntr1)-cyw2(ntr2))/stepsize/2.
-      write(8,'('' '')')
-      write(8,'(''dcmy/ddv = '',e13.5)') 
-     .            (cmyw1(ntr1)-cmyw2(ntr2))/stepsize/2.
-      write(8,'('' '')')
-      write(8,'(''dcz/ddv = '',e13.5)')
-     .            (czw1(ntr1)-czw2(ntr2))/stepsize/2.
-      write(8,'('' '')')
-      write(8,'(''dcmz/ddv = '',e13.5)')
-     .            (cmzw1(ntr1)-cmzw2(ntr2))/stepsize/2.
-      write(8,'('' '')')
+      write(8,2) (titlw(i),i=1,20)
+    2 format(20a4)
+      write(8,'('' Mach='',e12.4,'', alpha='',e12.4,
+     . '', ReUe='',e12.4)') xmachw,alphw,reuew
+      write(8,'('' Final d/d() of cl,cd       ='',2e13.5)')
+     .          (clw1(ntr1)-clw2(ntr2))/stepsize/2.,
+     .          (cdw1(ntr1)-cdw2(ntr2))/stepsize/2.
+      write(8,'('' Final d/d() of cx,cy,cz    ='',3e13.5)')
+     .          (cxw1(ntr1)-cxw2(ntr2))/stepsize/2.,
+     .          (cyw1(ntr1)-cyw2(ntr2))/stepsize/2.,
+     .          (czw1(ntr1)-czw2(ntr2))/stepsize/2.
+      write(8,'('' Final d/d() of cmx,cmy,cmz ='',3e13.5)')
+     .          (cmxw1(ntr1)-cmxw2(ntr2))/stepsize/2.,
+     .          (cmyw1(ntr1)-cmyw2(ntr2))/stepsize/2.,
+     .          (cmzw1(ntr1)-cmzw2(ntr2))/stepsize/2. 
 c
 c     output convergence history
 c
       write(8,'('' '')')
-      write(8,'(''derivative convergence history'')')
-      write(8,'('' '')')
       if (ialph.eq.0) then
          write(8,'(''  iter     residual      dcl/ddv      dcd/ddv'',
      .             ''      dcy/ddv     dcmy/ddv'')')
-      else
+      else if (ialph.eq.0) then
          write(8,'(''  iter     residual      dcl/ddv      dcd/ddv'',
      .             ''      dcz/ddv     dcmz/ddv'')')
+      else
+         write(8,'(''    it     residual    d(cl)/d()'',
+     .   ''    d(cd)/d()    d(cx)/d()    d(cy)/d()    d(cz)/d()'',
+     .   ''   d(cmx)/d()   d(cmy)/d()   d(cmz)/d()'')')
+         write(8,'('' '')')
       end if
 c
 c     add dummy residual (=1) so that file has same number of
@@ -230,12 +239,24 @@ c
      .                             (cyw1(n)-cyw2(n))/stepsize/2.,
      .                             (cmyw1(n)-cmyw2(n))/stepsize/2.
         end do
-      else
+      else if (ialph.eq.1) then
          do n=1,ntr1
             write(8,'(i6,5e13.5)') n,1.,
      .                             (clw1(n)-clw2(n))/stepsize/2.,
      .                             (cdw1(n)-cdw2(n))/stepsize/2.,
      .                             (czw1(n)-czw2(n))/stepsize/2.,
+     .                             (cmzw1(n)-cmzw2(n))/stepsize/2.
+        end do
+      else
+         do n=1,ntr1
+            write(8,'(i6,9e13.5)') n,1.,
+     .                             (clw1(n)-clw2(n))/stepsize/2.,
+     .                             (cdw1(n)-cdw2(n))/stepsize/2.,
+     .                             (cxw1(n)-cxw2(n))/stepsize/2.,
+     .                             (cyw1(n)-cyw2(n))/stepsize/2.,
+     .                             (czw1(n)-czw2(n))/stepsize/2.,
+     .                             (cmxw1(n)-cmxw2(n))/stepsize/2.,
+     .                             (cmyw1(n)-cmyw2(n))/stepsize/2.,
      .                             (cmzw1(n)-cmzw2(n))/stepsize/2.
         end do
       end if
