@@ -48,7 +48,7 @@ c
       real*4 tim_nd(3,3)
 #endif
       real*4 tim(3,3),tm(3)
-      real*4 walltime
+      real*4 walltime,totaltime
 c
       character*50 string
 c
@@ -171,11 +171,22 @@ c
 c
 #endif
 c
-c           correct wall time for > 24  hour runs
+c           best attempt at correct wall time for > 24  hour runs:
+c           the problem seems to be that tim(3,2), supposedly the wall
+c           time, gets reset after 24 hours. have to creative in the case
+c           the total time - system+user - is not *quite* 24 hours and
+c           the true wall time is just over 24 hours, so that ndays=0
+c           but tim(3,2) is small. in that case use the total time as
+c           the wall time.
 c
-            walltime = tim(3,1)
-            ndays = int(real(tim(1,1))+real(tim(2,1)))/86400
-            if (ndays .gt. 0) walltime = walltime + ndays*86400
+            walltime  = tim(3,1)
+            totaltime = tim(1,1) + tim(2,1)
+            ndays = int(real(totaltime))/86400
+            if (ndays .gt. 0) then
+               walltime = walltime + ndays*86400
+            else
+               walltime = max(walltime,totaltime)
+            end if
             write(iunit,'(/,a50,/,/,
      .      "   node      user    system     total    wall clock")')
      .      string
@@ -191,11 +202,16 @@ c
                call MPI_Recv (tim_nd,9,MPI_REAL,inode,mytag,mycomm,
      .                        istat,ierr)
 c
-c              correct wall time for > 24  hour runs
+c              best attempt at correct wall time for > 24  hour runs
 c
-               walltime = tim_nd(3,1)
-               ndays = int(real(tim_nd(1,1))+real(tim_nd(2,1)))/86400
-               if (ndays .gt. 0) walltime = walltime + ndays*86400
+               walltime  = tim_nd(3,1)
+               totaltime = tim_nd(1,1) + tim_nd(2,1)
+               ndays = int(real(totaltime))/86400
+               if (ndays .gt. 0) then
+                  walltime = walltime + ndays*86400
+               else
+                  walltime = max(walltime,totaltime)
+               end if
                write(iunit,'(" ",i6,3f10.2,f12.2)')
      .         inode,real(tim_nd(1,1)),real(tim_nd(2,1)),
      .         real(tim_nd(1,1))+real(tim_nd(2,1)),
@@ -234,11 +250,16 @@ c
 c
 #endif
 c
-c           correct wall time for > 24  hour runs
+c           best attempt at correct wall time for > 24  hour runs
 c
-            walltime = tim(3,2)
-            ndays = int(real(tim(1,2))+real(tim(2,2)))/86400
-            if (ndays .gt. 0) walltime = walltime + ndays*86400
+            walltime  = tim(3,2)
+            totaltime = tim(1,1) + tim(2,1)
+            ndays = int(real(totaltime))/86400
+            if (ndays .gt. 0) then
+               walltime = walltime + ndays*86400
+            else
+               walltime = max(walltime,totaltime)
+            end if
             write(iunit,'(/,a50,/,/,
      .      "   node      user    system     total    wall clock")')
      .      string
@@ -255,11 +276,16 @@ c
                call MPI_Recv (tim_nd,9,MPI_REAL,inode,mytag,mycomm,
      .                        istat,ierr)
 c
-c              correct wall time for > 24  hour runs
+c              best attempt at correct wall time for > 24  hour runs
 c
-               walltime = tim_nd(3,2)
-               ndays = int(real(tim_nd(1,2))+real(tim_nd(2,2)))/86400
-               if (ndays .gt. 0) walltime = walltime + ndays*86400
+               walltime  = tim_nd(3,2)
+               totaltime = tim(1,1) + tim(2,1)
+               ndays = int(real(totaltime))/86400
+               if (ndays .gt. 0) then
+                  walltime = walltime + ndays*86400
+               else
+                  walltime = max(walltime,totaltime)
+               end if
                write(iunit,'(" ",i6,3f10.2,f12.2)')
      .         inode,real(tim_nd(1,2)),real(tim_nd(2,2)),
      .         real(tim_nd(1,2))+real(tim_nd(2,2)),real(walltime)
