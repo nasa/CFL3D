@@ -44,31 +44,26 @@ c
          iunit = 26
          open(unit=iunit,file=filname,form='formatted',
      .   status='old')
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''  reading bc data file '',a80)')
-     .   filname
+         write(11,*)
+         write(11,'('' reading bc data file '',a80)') filname
          read(iunit,*)
          read(iunit,*) mdum,ndum,np
          if (mdum.ne.mdim .or. ndum.ne.ndim) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping in readdat...data file',
-     .      ' has dimensions ',mdum,ndum
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' dimensions set from input file',
-     .      ' are',mdim,ndim
+            write(11,'('' stopping in readdat...data file'' 
+     .      '' has dimensions '',2i6)')mdum,ndum
+            write(11,'('' dimensions set from input file'',
+     .      '' are '',2i6)') mdim,ndim
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
          if (np.lt.1 .or. np.gt.2) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping in readdat...data file',
-     .      ' must have 1 or 2 planes of data - there are ',np
+            write(11,'('' stopping in readdat...data file'',
+     .      '' must have 1 or 2 planes of data - there are '',i6)') np
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
          read(iunit,*) nvar
          if (nvar.gt.7 .or. nvar.lt.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*) ' stopping in readdat...no more',
-     .      ' than 7 variables are allowed - there are ',nvar
+            write(11,'('' stopping in readdat...no more'',
+     .      '' than 7 variables are allowed - there are '',i6)') nvar
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if 
 #ifdef CMPLX
