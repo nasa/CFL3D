@@ -53,7 +53,7 @@ c
          do j=j1,j2
             do k=k1,k2
                denom = (arcj(j2,k,i) - arcj(j1,k,i))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  eta = 0.
                else
                  eta = (arcj(j,k,i)  - arcj(j1,k,i))
@@ -75,7 +75,7 @@ c
          do k=k1,k2
             do j=j1,j2
                denom = (arck(j,k2,i) - arck(j,k1,i))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  zeta = 0.
                else
                  zeta = (arck(j,k,i)  - arck(j,k1,i))
@@ -122,7 +122,7 @@ c
          do i=i1,i2
             do k=k1,k2
                denom = (arci(j,k,i2) - arci(j,k,i1))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  xi = 0.
                else
                  xi = (arci(j,k,i)  - arci(j,k,i1))
@@ -144,7 +144,7 @@ c
          do k=k1,k2
             do i=i1,i2
                denom = (arck(j,k2,i) - arck(j,k1,i))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  zeta = 0.
                else
                  zeta = (arck(j,k,i)  - arck(j,k1,i))
@@ -191,7 +191,7 @@ c
          do i=i1,i2
             do j=j1,j2
                denom = (arci(j,k,i2) - arci(j,k,i1))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  xi = 0.
                else
                  xi = (arci(j,k,i)  - arci(j,k,i1))
@@ -213,7 +213,7 @@ c
          do j=j1,j2
             do i=i1,i2
                denom = (arcj(j2,k,i) - arcj(j1,k,i))
-               if(denom.lt.tol) then 
+               if(real(denom).lt.real(tol)) then 
                  eta = 0.
                else
                  eta = (arcj(j,k,i)  - arcj(j1,k,i))

@@ -51,7 +51,7 @@ c
          k = k1
          denom = (arci(j,k,i2)- arci(j,k,i1))
          do i=i1,i2
-            if(denom.lt.tol) then
+            if(real(denom).lt.real(tol)) then
               eta = 0.
             else
               eta = (arci(j,k,i) - arci(j,k,i1))
@@ -73,7 +73,7 @@ c
          k = k1
          denom = (arcj(j2,k,i)- arcj(j1,k,i))
          do j=j1,j2
-            if(denom.lt.tol) then
+            if(real(denom).lt.real(tol)) then
               eta = 0.
             else
               eta = (arcj(j,k,i) - arcj(j1,k,i))
@@ -95,7 +95,7 @@ c
          j = j1
          denom = (arck(j,k2,i)- arck(j,k1,i))
          do k=k1,k2
-            if(denom.lt.tol) then
+            if(real(denom).lt.real(tol)) then
               eta = 0.
             else
               eta = (arck(j,k,i) - arck(j,k1,i))
