@@ -96,7 +96,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
@@ -230,7 +230,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
@@ -359,7 +359,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
@@ -488,7 +488,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
@@ -617,7 +617,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
@@ -746,7 +746,7 @@ c        check that the required auxiliary data has been set
          if (itrflg1.gt.0 .or. itrflg2.gt.0) then
             if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2003...must',
+               write(bou(nou(1),1),*)'  stopping in bc2007...must',
      .         ' set both turbulence'
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
