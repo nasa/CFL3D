@@ -2681,6 +2681,7 @@ c
  6070             continue
 #if defined CGNS
                else
+                  if (icgns .eq. 1) then
                   do igrid=1,ngrid
 c       need to delete certain nodes if they exist
                     call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
@@ -2689,6 +2690,7 @@ c       need to delete certain nodes if they exist
                     call cg_delete_node_f('MovedGrid',ier)
                     call cg_delete_node_f('MovedGridLastDT',ier)
                   enddo
+                  end if
 #endif
                end if
 c
@@ -2722,9 +2724,11 @@ c
                       end if
 #if defined CGNS
                    else
+                  if (icgns .eq. 1) then
 c       need to delete CFL3DAeroModeData node if it exists
                      call cg_goto_f(iccg,ibase,ier,'end')
                      call cg_delete_node_f('CFL3DAeroModeData',ier)
+                  end if
 #endif
                    end if
                if (icgns .ne. 1) then
