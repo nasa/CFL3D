@@ -508,7 +508,8 @@ c
 c           check storage availability
 c
             ixwk = 1
-            ibwk = ixwk + jdw*kdw*idw*5
+            nset = 5
+            ibwk = ixwk + jdw*kdw*idw*nset
             ixgk = ibwk + jdim*kdim*idim*2
             ixvk = ixgk + jdw*kdw*idw*4
             nroom = nwork - (ixvk+jdw*kdw*idw*5-1)
@@ -531,7 +532,7 @@ c
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
-     .                     w(lsj),w(lsk),w(lsi),w(lvol))
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)
             end if
 c
          end if
@@ -775,7 +776,8 @@ c
 c           check storage availability
 c
             ixwk = 1
-            ibwk = ixwk + jdw*kdw*idw*5
+            nset = 8
+            ibwk = ixwk + jdw*kdw*idw*nset
             ixgk = ibwk + jdim*kdim*idim*2
             ixvk = ixgk + jdw*kdw*idw*4
             nroom = nwork - (ixvk+jdw*kdw*idw*5-1)
@@ -784,7 +786,7 @@ c
                   write(11,'('' not enough memory for plot3d'')')
                   write(11,'('' have, need = '',2i12)') nwork,
      .            nwork-nroom
-                  write(11,'('' not writing out plot3d files'')')
+                  write(11,'('' not writing out prout file'')')
                end if
             else
                call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
@@ -798,7 +800,7 @@ c
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
-     .                     w(lsj),w(lsk),w(lsi),w(lvol))
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)
             end if
 c
          end if

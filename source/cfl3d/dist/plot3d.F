@@ -7,7 +7,7 @@
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,xv,
-     .                  sj,sk,si,vol)
+     .                  sj,sk,si,vol,nset)
 c
 c     $Id$
 c
@@ -45,10 +45,10 @@ c
 #   endif
 #endif
 #if defined P3D_SINGLE
-      real*4    xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+      real*4    xw(jdw,kdw,idw,nset),xg(jdw,kdw,idw,4)
       real*4    xmachw,alphww,reuew,timew
 #else
-      real xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+      real xw(jdw,kdw,idw,nset),xg(jdw,kdw,idw,4)
 #endif
 c
       dimension xv(jdw,kdw,idw,5)
@@ -1378,11 +1378,13 @@ c
          kd1 = kd+1
          kdx = 1
          m   = 2
+         sgn = 1.
       else
          kd  = kdim1
          kd1 = kd-1
          kdx = kdim
          m   = 4
+         sgn = -1.
       end if
 c
 c     wall value - average in J and I (after QFACE, m=2 & 4 are interface
@@ -1414,20 +1416,6 @@ c
      .                + q(j,kd,id1,5)  +q(j-1,kd,id1,5))
       t1k2 = q5k2/q1k2
 c
-c     second cell center location - average in J and I
-c
-      q1k3 =       .25*(q(j,kd1,id,1)  +q(j-1,kd1,id,1)
-     .                + q(j,kd1,id1,1) +q(j-1,kd1,id1,1))
-      q2k3 =       .25*(q(j,kd1,id,2)  +q(j-1,kd1,id,2)
-     .                + q(j,kd1,id1,2) +q(j-1,kd1,id1,2))
-      q3k3 =       .25*(q(j,kd1,id,3)  +q(j-1,kd1,id,3)
-     .                + q(j,kd1,id1,3) +q(j-1,kd1,id1,3))
-      q4k3 =       .25*(q(j,kd1,id,4)  +q(j-1,kd1,id,4)
-     .                + q(j,kd1,id1,4) +q(j-1,kd1,id1,4))
-      q5k3 = gamma*.25*(q(j,kd1,id,5)  +q(j-1,kd1,id,5)
-     .                + q(j,kd1,id1,5) +q(j-1,kd1,id1,5))
-      t1k3 = q5k3/q1k3
-c
       if (sk(j  ,kdx,id ,4) .eq. 0. .or. 
      +    sk(j-1,kdx,id ,4) .eq. 0. .or.
      +    sk(j  ,kdx,id1,4) .eq. 0. .or.
@@ -1443,10 +1431,6 @@ c
      +      vol(j-1,kd,id1)/sk(j-1,kdx,id1,4))/4.
       end if
 c
-      QA1 = sqrt(q2k1**2+q3k1**2+q4k1**2)
-      QA2 = sqrt(q2k2**2+q3k2**2+q4k2**2)
-      QA3 = sqrt(q2k3**2+q3k3**2+q4k3**2)
-c     
 c     Get turb viscosity at wall (0 unless wall fn used)
       if (iwf(3) .eq. 1) then
       avgmut =       .25*(vk0(j,id,1,m)  +vk0(j-1,id,1,m)
@@ -1456,12 +1440,27 @@ c     Get turb viscosity at wall (0 unless wall fn used)
       end if
       emuka = (t1k1**1.5)*((1.0+cbar/tinf)/(t1k1+cbar/tinf))
 c
-c     3-point average value formula
-c     Cf = 3.*(QA2-QA1) - 0.5*(QA3-QA2)
-c     2-point formula
-      Cf = 2.*(QA2-QA1)
+c     Use component of velocity parallel to wall (with 2-point formula)
+      urel = q2k2-q2k1
+      vrel = q3k2-q3k1
+      wrel = q4k2-q4k1
+      sk1  = (sk(j  ,kdx,id ,1)+sk(j-1,kdx,id ,1)+
+     +        sk(j  ,kdx,id1,1)+sk(j-1,kdx,id1,1))/4.
+      sk2  = (sk(j  ,kdx,id ,2)+sk(j-1,kdx,id ,2)+
+     +        sk(j  ,kdx,id1,2)+sk(j-1,kdx,id1,2))/4.
+      sk3  = (sk(j  ,kdx,id ,3)+sk(j-1,kdx,id ,3)+
+     +        sk(j  ,kdx,id1,3)+sk(j-1,kdx,id1,3))/4.
+      vnorm = (urel*sk1 + vrel*sk2 + wrel*sk3)*sgn
+      upar = urel-vnorm*sk1*sgn
+      vpar = vrel-vnorm*sk2*sgn
+      wpar = wrel-vnorm*sk3*sgn
+      Cf   = 2.*sqrt(upar**2 + vpar**2 + wpar**2)
       Cf = 2.0*(emuka+avgmut)/(reue*xmach)*Cf/dn
       if (real(q2k2).lt.0.) cf = -cf
+c     Cf vector
+      cfx  = 4.*(emuka+avgmut)/(reue*xmach)*upar/dn
+      cfy  = 4.*(emuka+avgmut)/(reue*xmach)*vpar/dn
+      cfz  = 4.*(emuka+avgmut)/(reue*xmach)*wpar/dn
 c
 c     Note:  Ch definition not standard
 c
@@ -1471,8 +1470,6 @@ c
       if (abs(real(t1m1)).le.real(eps)) then
          Ch = 999.99999
       else
-c        3-point average value formula
-c           Ch = 3.*(t1k2-t1k1)-0.5*(t1k3-t1k2)
 c        2-point formula
             Ch = 2.*(t1k2-t1k1)
             Ch = (emuka+avgmut)/(reue*pr*(t1k1-tty1))*Ch/dn
@@ -1498,6 +1495,9 @@ c
       xw(jw,kw,iw,3) = Cf
       xw(jw,kw,iw,4) = Ch
       xw(jw,kw,iw,5) = yplus
+      xw(jw,kw,iw,6) = cfx
+      xw(jw,kw,iw,7) = cfy
+      xw(jw,kw,iw,8) = cfz
 c
  6000 continue
  6001 continue
@@ -1512,7 +1512,7 @@ c
       kw = (k2-k1)/k3 + 1
       iw = (i2-i1)/i3 + 1
 c
-      nnq = jw*kw*iw*5
+      nnq = jw*kw*iw*8
       nd_srce = mblk2nd(nblk)
       mytag = itag_q + nblk
 c
@@ -1555,20 +1555,24 @@ c
          isay = isay+1
          if (isay.eq.1) write(17,53)
    53    format(/3x,1hI,3x,1hJ,3x,1hK,6x,1hX,12x,1hY,12x,1hZ,12x,
-     .   2hdn,9x,6hP/Pinf,7x,6hT/Tinf,9x,2hCf,11x,2hCh,9x,5hyplus)
+     .   2hdn,9x,6hP/Pinf,7x,6hT/Tinf,9x,2hCf,11x,2hCh,9x,5hyplus,
+     .   9x,3hCfx,9x,3hCfy,9x,3hCfz)
          if (ialph.eq.0) then
             write(17,22)i,j,k,xg(jw,kw,iw,1),xg(jw,kw,iw,2),
      .                  xg(jw,kw,iw,3),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,7),xw(jw,kw,iw,8)
          else
            xg(jw,kw,iw,2) = -xg(jw,kw,iw,2)
+           xw(jw,kw,iw,7) = -xw(jw,kw,iw,7)
             write(17,22)i,j,k,xg(jw,kw,iw,1),xg(jw,kw,iw,3),
      .                  xg(jw,kw,iw,2),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,8),xw(jw,kw,iw,7)
          end if
  6100    continue
  6101    continue
@@ -1606,11 +1610,13 @@ c
          jd1 = jd+1
          jdx = 1
          m   = 2
+         sgn = 1.
       else
          jd  = jdim1
          jd1 = jd-1
          jdx = jdim
          m   = 4
+         sgn = -1.
       end if
 c
 c     wall value - average in K and I (after QFACE, m=2 & 4 are interface
@@ -1642,20 +1648,6 @@ c
      .                + q(jd,k,id1,5)  +q(jd,k-1,id1,5))
       t1j2 = q5j2/q1j2
 c
-c     second cell center location - average in K and I
-c
-      q1j3 =       .25*(q(jd1,k,id,1)  +q(jd1,k-1,id,1)
-     .                + q(jd1,k,id1,1) +q(jd1,k-1,id1,1))
-      q2j3 =       .25*(q(jd1,k,id,2)  +q(jd1,k-1,id,2)
-     .                + q(jd1,k,id1,2) +q(jd1,k-1,id1,2))
-      q3j3 =       .25*(q(jd1,k,id,3)  +q(jd1,k-1,id,3)
-     .                + q(jd1,k,id1,3) +q(jd1,k-1,id1,3))
-      q4j3 =       .25*(q(jd1,k,id,4)  +q(jd1,k-1,id,4)
-     .                + q(jd1,k,id1,4) +q(jd1,k-1,id1,4))
-      q5j3 = gamma*.25*(q(jd1,k,id,5)  +q(jd1,k-1,id,5)
-     .                + q(jd1,k,id1,5) +q(jd1,k-1,id1,5))
-      t1j3 = q5j3/q1j3
-c
       if (sj(jdx,k  ,id ,4) .eq. 0. .or. 
      +    sj(jdx,k-1,id ,4) .eq. 0. .or.
      +    sj(jdx,k  ,id1,4) .eq. 0. .or.
@@ -1671,10 +1663,6 @@ c
      +      vol(jd,k-1,id1)/sj(jdx,k-1,id1,4))/4.
       end if
 c
-      QA1 = sqrt(q2j1**2+q3j1**2+q4j1**2)
-      QA2 = sqrt(q2j2**2+q3j2**2+q4j2**2)
-      QA3 = sqrt(q2j3**2+q3j3**2+q4j3**2)
-c
 c     Get turb viscosity at wall (0 unless wall fn used)
       if (iwf(2) .eq. 1) then
       avgmut =       .25*(vj0(k,id,1,m)  +vj0(k-1,id,1,m)
@@ -1684,12 +1672,27 @@ c     Get turb viscosity at wall (0 unless wall fn used)
       end if
       emuka = (t1j1**1.5)*((1.0+cbar/tinf)/(t1j1+cbar/tinf))
 c
-c     3-point average value formula
-c     Cf = 3.*(QA2-QA1) - 0.5*(QA3-QA2)
-c     2-point formula
-      Cf = 2.*(QA2-QA1)
+c     Use component of velocity parallel to wall
+      urel = q2j2-q2j1
+      vrel = q3j2-q3j1
+      wrel = q4j2-q4j1
+      sj1  = (sj(jdx,k  ,id ,1)+sj(jdx,k-1,id ,1)+
+     +        sj(jdx,k  ,id1,1)+sj(jdx,k-1,id1,1))/4.
+      sj2  = (sj(jdx,k  ,id ,2)+sj(jdx,k-1,id ,2)+
+     +        sj(jdx,k  ,id1,2)+sj(jdx,k-1,id1,2))/4.
+      sj3  = (sj(jdx,k  ,id ,3)+sj(jdx,k-1,id ,3)+
+     +        sj(jdx,k  ,id1,3)+sj(jdx,k-1,id1,3))/4.
+      vnorm = (urel*sj1 + vrel*sj2 + wrel*sj3)*sgn
+      upar = urel-vnorm*sj1*sgn
+      vpar = vrel-vnorm*sj2*sgn
+      wpar = wrel-vnorm*sj3*sgn
+      Cf   = 2.*sqrt(upar**2 + vpar**2 + wpar**2)
       Cf = 2.0*(emuka+avgmut)/(reue*xmach)*Cf/dn
       if (real(q2j2).lt.0.) cf = -cf
+c     Cf vector
+      cfx  = 4.*(emuka+avgmut)/(reue*xmach)*upar/dn
+      cfy  = 4.*(emuka+avgmut)/(reue*xmach)*vpar/dn
+      cfz  = 4.*(emuka+avgmut)/(reue*xmach)*wpar/dn
 c
 c     Note:  Ch definition not standard
 c
@@ -1699,8 +1702,6 @@ c
       if (abs(real(t1m1)).le.real(eps)) then
          Ch = 999.99999
       else
-c        3-point average value formula
-c           Ch = 3.*(t1j2-t1j1)-0.5*(t1j3-t1j2)
 c        2-point formula
             Ch = 2.*(t1j2-t1j1)
             Ch = (emuka+avgmut)/(reue*pr*(t1j1-tty1))*Ch/dn
@@ -1726,6 +1727,9 @@ c
       xw(jw,kw,iw,3) = Cf
       xw(jw,kw,iw,4) = Ch
       xw(jw,kw,iw,5) = yplus
+      xw(jw,kw,iw,6) = cfx
+      xw(jw,kw,iw,7) = cfy
+      xw(jw,kw,iw,8) = cfz
 c
  7000 continue
  7001 continue
@@ -1740,7 +1744,7 @@ c
       kw = (k2-k1)/k3 + 1
       iw = (i2-i1)/i3 + 1
 c
-      nnq = jw*kw*iw*5
+      nnq = jw*kw*iw*8
       nd_srce = mblk2nd(nblk)
       mytag = itag_q + nblk
 c
@@ -1786,14 +1790,17 @@ c
      .                  xg(jw,kw,iw,3),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,7),xw(jw,kw,iw,8)
          else
             xg(jw,kw,iw,2) = -xg(jw,kw,iw,2)
+            xw(jw,kw,iw,7) = -xw(jw,kw,iw,7)
             write(17,22)i,j,k,xg(jw,kw,iw,1),xg(jw,kw,iw,3),
      .                  xg(jw,kw,iw,2),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,8),xw(jw,kw,iw,7)
          end if
  7100    continue
  7101    continue
@@ -1829,11 +1836,13 @@ c
          id1 = id+1
          idx = 1
          m   = 2
+         sgn = 1.
       else
          id  = idim1
          id1 = id-1
          idx = idim
          m   = 4
+         sgn = -1.
       end if
 c
 c     wall value - average in J and k (after QFACE, m=2 & 4 are interface
@@ -1865,20 +1874,6 @@ c
      .                + q(j-1,k,id,5)  +q(j-1,k-1,id,5))
       t1i2 = q5i2/q1i2
 c
-c      second cell center location - average in J and K
-c
-      q1i3 =       .25*(q(j,k,id1,1)   +q(j,k-1,id1,1)
-     .                + q(j-1,k,id1,1) +q(j-1,k-1,id1,1))
-      q2i3 =       .25*(q(j,k,id1,2)   +q(j,k-1,id1,2)
-     .                + q(j-1,k,id1,2) +q(j-1,k-1,id1,2))
-      q3i3 =       .25*(q(j,k,id1,3)   +q(j,k-1,id1,3)
-     .                + q(j-1,k,id1,3) +q(j-1,k-1,id1,3))
-      q4i3 =       .25*(q(j,k,id1,4)   +q(j,k-1,id1,4)
-     .                + q(j-1,k,id1,4) +q(j-1,k-1,id1,4))
-      q5i3 = gamma*.25*(q(j,k,id1,5)   +q(j,k-1,id1,5)
-     .                + q(j-1,k,id1,5) +q(j-1,k-1,id1,5))
-      t1i3 = q5i3/q1i3
-c
       if (si(j  ,k  ,idx,4) .eq. 0. .or.                 
      +    si(j  ,k-1,idx,4) .eq. 0. .or.
      +    si(j-1,k  ,idx,4) .eq. 0. .or.
@@ -1894,10 +1889,6 @@ c
      +      vol(j-1,k-1,id)/si(j-1,k-1,idx,4))/4.
       end if
 c
-      QA1 = sqrt(q2i1**2+q3i1**2+q4i1**2)
-      QA2 = sqrt(q2i2**2+q3i2**2+q4i2**2)
-      QA3 = sqrt(q2i3**2+q3i3**2+q4i3**2)
-c
 c     Get turb viscosity at wall (0 unless wall fn used)
       if (iwf(1) .eq. 1) then
       avgmut =       .25*(vi0(j,k,1,m)   +vi0(j-1,k,1,m)
@@ -1907,12 +1898,27 @@ c     Get turb viscosity at wall (0 unless wall fn used)
       end if
       emuka = (t1i1**1.5)*((1.0+cbar/tinf)/(t1i1+cbar/tinf))
 c
-c     3-point average value formula
-c     Cf = 3.*(QA2-QA1) - 0.5*(QA3-QA2)
-c     2-point formula
-      Cf = 2.*(QA2-QA1)
+c     Use component of velocity parallel to wall
+      urel = q2i2-q2i1
+      vrel = q3i2-q3i1
+      wrel = q4i2-q4i1
+      si1  = (si(j  ,k  ,idx,1)+si(j  ,k-1,idx,1)+
+     +        si(j-1,k  ,idx,1)+si(j-1,k-1,idx,1))/4.
+      si2  = (si(j  ,k  ,idx,2)+si(j  ,k-1,idx,2)+
+     +        si(j-1,k  ,idx,2)+si(j-1,k-1,idx,2))/4.
+      si3  = (si(j  ,k  ,idx,3)+si(j  ,k-1,idx,3)+
+     +        si(j-1,k  ,idx,3)+si(j-1,k-1,idx,3))/4.
+      vnorm = (urel*si1 + vrel*si2 + wrel*si3)*sgn
+      upar = urel-vnorm*si1*sgn
+      vpar = vrel-vnorm*si2*sgn
+      wpar = wrel-vnorm*si3*sgn
+      Cf   = 2.*sqrt(upar**2 + vpar**2 + wpar**2)
       Cf = 2.0*(emuka+avgmut)/(reue*xmach)*Cf/dn
       if (real(q2i2).lt.0.) cf = -cf
+c     Cf vector
+      cfx  = 4.*(emuka+avgmut)/(reue*xmach)*upar/dn
+      cfy  = 4.*(emuka+avgmut)/(reue*xmach)*vpar/dn
+      cfz  = 4.*(emuka+avgmut)/(reue*xmach)*wpar/dn
 c
 c     Note:  Ch definition not standard
 c
@@ -1922,8 +1928,6 @@ c
       if (abs(real(t1m1)).le.real(eps)) then
          Ch = 999.99999
       else
-c        3-point average value formula
-c           Ch = 3.*(t1i2-t1i1)-0.5*(t1i3-t1i2)
 c        2-point formula
             Ch = 2.*(t1i2-t1i1)
             Ch = (emuka+avgmut)/(reue*pr*(t1i1-tty1))*Ch/dn
@@ -1949,6 +1953,9 @@ c
       xw(jw,kw,iw,3) = Cf
       xw(jw,kw,iw,4) = Ch
       xw(jw,kw,iw,5) = yplus
+      xw(jw,kw,iw,6) = cfx
+      xw(jw,kw,iw,7) = cfy
+      xw(jw,kw,iw,8) = cfz
 c
  8000 continue
  8001 continue
@@ -1962,7 +1969,7 @@ c
       kw = (k2-k1)/k3 + 1
       iw = (i2-i1)/i3 + 1
 c
-      nnq = jw*kw*iw*5
+      nnq = jw*kw*iw*8
       nd_srce = mblk2nd(nblk)
       mytag = itag_q + nblk
 c
@@ -2010,14 +2017,17 @@ c
      .                  xg(jw,kw,iw,3),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,7),xw(jw,kw,iw,8)
          else
             xg(jw,kw,iw,2) = -xg(jw,kw,iw,2)
+            xw(jw,kw,iw,7) = -xw(jw,kw,iw,7)
             write(17,22)i,j,k,xg(jw,kw,iw,1),xg(jw,kw,iw,3),
      .                  xg(jw,kw,iw,2),xg(jw,kw,iw,4),
      .                  xw(jw,kw,iw,1),xw(jw,kw,iw,2),
      .                  xw(jw,kw,iw,3),xw(jw,kw,iw,4),
-     .                  xw(jw,kw,iw,5)
+     .                  xw(jw,kw,iw,5),xw(jw,kw,iw,6),
+     .                  xw(jw,kw,iw,8),xw(jw,kw,iw,7)
          end if
  8100    continue
  8101    continue
@@ -2026,7 +2036,7 @@ c
 c
       end if
 c
-   22 format(3i4,9(1x,e12.5))
+   22 format(3i4,12(1x,e12.5))
 c
       end if
 c

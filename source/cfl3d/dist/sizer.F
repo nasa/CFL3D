@@ -1676,7 +1676,7 @@ c           plot3d requirements
             jdw = (j2-j1)/j3 + 1
             kdw = (k2-k1)/k3 + 1
             idw = (i2-i1)/i3 + 1
-            itemp = jdw*kdw*idw*14 + jdim*kdim*idim*2
+            itemp = jdw*kdw*idw*17 + jdim*kdim*idim*2
          else
 c           plot3c requirements
             call lead(nbl,lw,lw2,maxbl0)
