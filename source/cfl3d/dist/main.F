@@ -1,5 +1,7 @@
       program main
 c
+c     $Id$
+c
 c***********************************************************************
 c     CFL3D :  Characteristic-based scheme for steady/unsteady solutions
 c              to the Euler/Navier-Stokes equations.
