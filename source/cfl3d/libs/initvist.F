@@ -125,7 +125,7 @@ c
      +               const2*smin(j,k,i)*refac
                 tursav(j,k,i,2)=ccmax(zk1,zk2)
                 v3d=tursav(j,k,i,2)*100./tmax
-                v3d=ccmaxcr(v3d,v3dset)
+                v3d=ccmax(v3d,v3dset)
                 om1=-12444.*(smin(j,k,i)*refac) + .54
                 om2=cmu*tursav(j,k,i,2)/v3d
                 tursav(j,k,i,1)=ccmax(om1,om2)
