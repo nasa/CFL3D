@@ -136,7 +136,8 @@ c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
 c   ***CGNSend
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
       common /ginfo/ jdim,kdim,idim,jj2,kk2,ii2,nblc,js,ks,is,je,ke,ie,
      .        lq,lqj0,lqk0,lqi0,lsj,lsk,lsi,lvol,ldtj,lx,ly,lz,lvis,
      .        lsnk0,lsni0,lq1,lqr,lblk,lxib,lsig,lsqtq,lg,
@@ -166,6 +167,8 @@ c   ***CGNSend
       common /deformz/ beta1,ismooth,negvol
       common /ghost/ irghost,iwghost
       common /rigidbody/ irigb,irbtrim
+      common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
+     .                     yrotrate,zrotrate,noninflag
 c
       if (myid.eq.myhost) then
 c   ***CGNSstart
@@ -1471,6 +1474,13 @@ c        with freestream data
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
      .             w(lvolk0),w(lvoli0))
+c        call the noninertial initization to speed convergence
+         if (noninflag.gt.0) then
+           call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
+     .                    w(lqi0),w(ltj0),w(ltk0),w(lti0),w(lvol),
+     .                    w(lvolj0),w(lvolk0),w(lvoli0),
+     .                    w(lx),w(ly),w(lz))
+         end if
          call bc(idum,nbl,lw,lw2,w,mgwk,wk,nwork,clw(nttuse),
      .           nou,bou,nbuf,ibufdim,maxbl,maxgr,maxseg,itrans,
      .           irotat,idefrm,igridg,nblg,nbci0,nbcj0,nbck0,
@@ -1483,15 +1493,34 @@ c        with freestream data
             write(bou(nou(1),1),200) nbl,igrid
   200       format(45h setting initial conditions as freestream for,
      .             6h block,i4,7h  (grid,i4,1h))
+            if (noninflag.gt.0) then
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),201)
+  201          format(35h correcting initial conditions for,
+     .                23h NONINERTIAL ref. frame)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),210) nbl
   210       format(43h   setting initial conditions as freestream,
      .             18h for coarser block,i4)
+            if (noninflag.gt.0) then
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),211)
+  211          format(37h    correcting initial conditions for,
+     .                23h NONINERTIAL ref. frame)
+            end if
          end if
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
      .             w(lvolk0),w(lvoli0))
+c        call the noninertial initization to speed convergence
+         if (noninflag.gt.0) then
+           call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
+     .                    w(lqi0),w(ltj0),w(ltk0),w(lti0),w(lvol),
+     .                    w(lvolj0),w(lvolk0),w(lvoli0),
+     .                    w(lx),w(ly),w(lz))
+         endif
       end if
  1110 continue
 c
