@@ -1194,11 +1194,17 @@ c
                      write(23,1020) nout,log10(real(rmsb)),real(cltsub),
      .               real(cdtsub),real(cztsub),real(cmztsub)
                      end if
-                  else
+                  else if (ihstry.eq.1) then
                      if (nout.eq.1) write(23,1010)
                      write(23,1020) nout,log10(real(rmsb)),
      .               real(fmdotsub),real(cftpsub),real(cftvsub),
      .               real(cftmomsub)
+                  else
+                     if (nout.eq.1) write(23,1002)
+                     write(23,1020) nout,log10(real(rmsb)),real(cltsub),
+     .               real(cdtsub),real(cxtsub),real(cytsub),
+     .               real(cztsub),real(cmxtsub),real(cmytsub),
+     .               real(cmztsub)
                  end if
                end if
                if (iwrit3.gt.1) then
@@ -1218,9 +1224,11 @@ c
      .       12x,2hcy,11x,3hcmy)
  1001 format(4x,5hsubit,3x,11hlog(subres),7x,2hcl,12x,2hcd,
      .       12x,2hcz,11x,3hcmz)
+ 1002 format(4x,5hsubit,3x,11hlog(subres),7x,2hcl,12x,2hcd,
+     .       12x,2hcx,12x,2hcy,12x,2hcz,11x,3hcmz,11x,3hcmy,11x,3hcmz)
  1010 format(4x,5hsubit,3x,11hlog(subres),4x,9hmass_flow,8x,4hcftp,
      .       10x,4hcftv,8x,6hcftmom)
- 1020 format(3x,i6,5e14.5)
+ 1020 format(3x,i6,9e14.5)
  1040 format(4x,5hsubit,2x,12hlog(turres1),2x,12hlog(turres2),
      .       2x,5hnneg1,2x,5hnneg2)
  1060 format(3x,i6,2e14.5,1x,i6,1x,i6)
