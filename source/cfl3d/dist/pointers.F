@@ -53,7 +53,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /elastic/ ndefrm,naesrf
       common /unst/ time,cfltau,ntstep,ita,iunst
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
 c
       if (icall .eq. 0) then
          ierrflg = -99

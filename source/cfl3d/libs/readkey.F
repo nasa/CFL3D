@@ -22,8 +22,8 @@ c
 c
       dimension nou(nbuf)
 c
-      common /des/ ides,cdes
-      common /avgdata/ iteravg,xnumavg
+      common /des/ cdes,ides
+      common /avgdata/ xnumavg,iteravg
       common /unit5/ iunit5
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar

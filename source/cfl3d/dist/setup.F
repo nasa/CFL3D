@@ -165,7 +165,7 @@ c
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
 c
       if (myid.eq.myhost) then
       if (icgns .ne. 1) then

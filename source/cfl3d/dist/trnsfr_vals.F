@@ -124,9 +124,9 @@ c
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
-      common /des/ ides,cdes
+      common /des/ cdes,ides
       common /cfl/ dt0,dtold
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar

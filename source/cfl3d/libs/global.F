@@ -119,12 +119,12 @@ c
      .          inewgg(maxgr)
       dimension iadvance(maxbl),iforce(maxbl),icsinfo(maxcs,9)
 c
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
       common /cfl/ dt0,dtold
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
-      common /des/ ides,cdes
+      common /des/ cdes,ides
       common /elastic/ ndefrm,naesrf
       common /elastic_ss/ idef_ss
       common /params/ lmaxgr,lmaxbl,lmxseg,lmaxcs,lnplts,lmxbli,lmaxxe,

@@ -59,7 +59,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension mblk2nd(maxbl),idefrm(maxbl),iadvance(maxbl)
       dimension qavg(jdim-1,kdim-1,idim-1,5)
 c
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /cfl/ dt0,dtold
       common /fvfds/ rkap0(3),ifds(3)

@@ -61,7 +61,7 @@ c
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension irinddata(6)
 c
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1

@@ -83,7 +83,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /twod/ i2d
-      common /avgdata/ iteravg,xnumavg
+      common /avgdata/ xnumavg,iteravg
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
