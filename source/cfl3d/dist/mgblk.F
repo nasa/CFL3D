@@ -665,7 +665,8 @@ c         higher levels to zero
           end do
           write(11,*)
           write(11,'(a,i5)')
-     .    'Stopping: user-invoked stop file detected at cycle ',icyc
+     .    'Stopping: user-invoked stop file detected at time step ',
+     .    ntstep
           write(11,*)
         end if
       end if
