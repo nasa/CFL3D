@@ -841,7 +841,9 @@ c     (later, damp1 is used to store LHS implicit contribution)
               rr=ccmincr(rr,10.)
               gg=rr+cw2*(rr**6-rr)
               gg=ccmax(gg,xminn)
-              fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+c             fix for single prec. via TLNS3D via FUN3D via Tim Barth
+              fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
               ft2=ct3*exp(-ct4*chi**2)
               term1=cb1*(1.-ft2)*ss
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
@@ -856,7 +858,11 @@ c            Store quantity to be added to certain implicit LHS terms:
               drr=rr/turre(j,k,i)-rr*rr*(fv2/turre(j,k,i)+dfv2)
               dgg=(1.-cw2+6.*cw2*(rr**5))*drr
               gg=ccmax(gg,xminn*10.)
-              dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+c             fix for single prec. via TLNS3D via FUN3D vi Tim Barth
+              dfw=((1.+cw3**6)/(gg**6+cw3**6))**(1./6.) -
+     .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
+              dfw=dfw*dgg
+c old         dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
               damp1(j,k,i)=damp1(j,k,i)+
      +             dist2i*(turre(j,k,i)**2)*(cb1/(akarman**2)*
      +             (dfv2-ft2*dfv2-fv2*dft2+dft2)-cw1*dfw)
@@ -899,7 +905,9 @@ c               rr=turre(j,k,i)/(sst*re*(akarman*smin(j,k,i))**2)
 c               rr=ccmincr(rr,10.)
 c               gg=rr+cw2*(rr**6-rr)
 c               gg=ccmax(gg,xminn)
-c               fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+c               fix for single prec. via TLNS3D via FUN3D via Tim Barth
+c               fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+c old           fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
 c               ft2=ct3*exp(-ct4*chi**2)
 c               unorm=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+
 c    +                     q(j,k,i,4)**2)
@@ -941,7 +949,11 @@ c               drr=rr/turre(j,k,i)-rr*rr*(fv2/turre(j,k,i)+dfv2+
 c    +               akarman**2*vor(j,k,i)*dfv3/(turre(j,k,i)*dist2i))
 c               dgg=(1.-cw2+6.*cw2*(rr**5))*drr
 c               gg=ccmax(gg,xminn*10.)
-c               dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+c               fix for single prec. via TLNS3D via FUN3D vi Tim Barth
+c               dfw=((1.+cw3**6)/(gg**6+cw3**6))**(1./6.) -
+c    .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
+c               dfw=dfw*dgg
+c old           dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
 c               damp1(j,k,i)=damp1(j,k,i)+
 c    +               dist2i*(turre(j,k,i)**2)*(cb1/(akarman**2)*
 c    +               (dfv2-ft2*dfv2-fv2*dft2+dft2)-cw1*dfw)
