@@ -412,7 +412,7 @@ c
             w1   = bcdata(1,1,1,4)
             p1   = bcdata(1,1,1,5)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,ksta,kend
+            write(bou(nou(1),1),1003)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1007) real(rho1)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -559,7 +559,7 @@ c
             w1   = bcdata(1,1,1,4)
             p1   = bcdata(1,1,1,5)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,ksta,kend
+            write(bou(nou(1),1),1004)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1007) real(rho1)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -706,7 +706,7 @@ c
             w1   = bcdata(1,1,1,4)
             p1   = bcdata(1,1,1,5)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)ista,iend,ksta,kend
+            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1007) real(rho1)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -853,7 +853,7 @@ c
             w1   = bcdata(1,1,1,4)
             p1   = bcdata(1,1,1,5)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)ista,iend,ksta,kend
+            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1007) real(rho1)
             nou(1) = min(nou(1)+1,ibufdim)
