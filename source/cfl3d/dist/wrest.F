@@ -275,25 +275,6 @@ c
 #endif
 c
       if (myid.eq.myhost) then
-c   do not allow any densities in BC quantities to be 0 or negative
-c   (even when they are not used, they can screw up CGNS output)
-      do i=1,idim1
-        do m=1,4
-        do k=1,kdim1
-          if (real(qj0(k,i,1,m)) .le. 0.) qj0(k,i,1,m)=1.
-        enddo
-        do j=1,jdim1
-          if (real(qk0(j,i,1,m)) .le. 0.) qk0(j,i,1,m)=1.
-        enddo
-        enddo
-      enddo
-      do m=1,4
-      do k=1,kdim1
-        do j=1,jdim1
-          if (real(qi0(j,k,1,m)) .le. 0.) qi0(j,k,1,m)=1.
-        enddo
-      enddo
-      enddo
       if (icgns .ne. 1) then
          write(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,5)
          if (iwghost .ne. 0)
@@ -303,7 +284,12 @@ c   (even when they are not used, they can screw up CGNS output)
       else
 #if defined CGNS
       write(11,'('' cgns write in wrest'')')
-      write(11,'(''  ...writing conserved variables'')')
+      if (iwghost .ne. 0) then
+        write(11,'('' cgns writing specific BC values (primitive)'')')
+        call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
+     +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
+      end if
+      write(11,'(''  ...writing conserved q variables'')')
 c     translate to conserved (for CGNS output only)
       do i=1,idim1
         do k=1,kdim1
@@ -315,7 +301,7 @@ c     translate to conserved (for CGNS output only)
      +               q(j,k,i,3)**2+q(j,k,i,4)**2)
         enddo
         enddo
-        do m=1,4
+        do m=1,3,2
         do k=1,kdim1
           qj0(k,i,2,m)=qj0(k,i,2,m)*qj0(k,i,1,m)
           qj0(k,i,3,m)=qj0(k,i,3,m)*qj0(k,i,1,m)
@@ -332,7 +318,7 @@ c     translate to conserved (for CGNS output only)
         enddo
         enddo
       enddo
-      do m=1,4
+      do m=1,3,2
       do k=1,kdim1
         do j=1,jdim1
           qi0(j,k,2,m)=qi0(j,k,2,m)*qi0(j,k,1,m)
@@ -345,6 +331,45 @@ c     translate to conserved (for CGNS output only)
       enddo
       call writesoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,ialph,nsoluse)
+c     translate back to primitive (so don't mess anything up that may come later)
+      do i=1,idim1
+        do k=1,kdim1
+        do j=1,jdim1
+          q(j,k,i,2)=q(j,k,i,2)/q(j,k,i,1)
+          q(j,k,i,3)=q(j,k,i,3)/q(j,k,i,1)
+          q(j,k,i,4)=q(j,k,i,4)/q(j,k,i,1)
+          q(j,k,i,5)=gm1*(q(j,k,i,5)-0.5*q(j,k,i,1)*(q(j,k,i,2)**2+
+     +               q(j,k,i,3)**2+q(j,k,i,4)**2))
+        enddo
+        enddo
+        do m=1,3,2
+        do k=1,kdim1
+          qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
+          qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
+          qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
+          qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
+     +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
+        enddo
+        do j=1,jdim1
+          qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
+          qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
+          qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
+          qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
+     +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
+        enddo
+        enddo
+      enddo
+      do m=1,3,2
+      do k=1,kdim1
+        do j=1,jdim1
+          qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
+          qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
+          qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
+          qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
+     +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
+        enddo
+      enddo
+      enddo
 c     write overset holes
       if (iover .eq. 1) then
 c     first, find out how many holes
@@ -372,50 +397,6 @@ c     first, find out how many holes
         end if
       end if
       call writeziter(iccg,ibase,igrid)
-      if (iwghost .ne. 0) then
-        write(11,'('' cgns writing specific BC values'')')
-        call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
-     +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
-      end if
-c     translate back to primitive (so don't mess anything up that may come later)
-      do i=1,idim1
-        do k=1,kdim1
-        do j=1,jdim1
-          q(j,k,i,2)=q(j,k,i,2)/q(j,k,i,1)
-          q(j,k,i,3)=q(j,k,i,3)/q(j,k,i,1)
-          q(j,k,i,4)=q(j,k,i,4)/q(j,k,i,1)
-          q(j,k,i,5)=gm1*(q(j,k,i,5)-0.5*q(j,k,i,1)*(q(j,k,i,2)**2+
-     +               q(j,k,i,3)**2+q(j,k,i,4)**2))
-        enddo
-        enddo
-        do m=1,4
-        do k=1,kdim1
-          qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
-          qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
-          qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
-          qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
-     +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
-        enddo
-        do j=1,jdim1
-          qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
-          qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
-          qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
-          qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
-     +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
-        enddo
-        enddo
-      enddo
-      do m=1,4
-      do k=1,kdim1
-        do j=1,jdim1
-          qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
-          qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
-          qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
-          qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
-     +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
-        enddo
-      enddo
-      enddo
       if (iskip .gt. 0) then
         call writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
      +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,

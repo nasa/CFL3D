@@ -192,36 +192,6 @@ c     convert q to primitive (they are in CGNS file as conserved)
         write(11,'('' cgns reading specific BC values'')')
         call readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
      +    qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
-      if (iprim .eq. 0) then
-c     convert qj0, qk0, qi0 to primitive (they are in CGNS file as conserved)
-      do m=1,4
-      do i=1,idim1
-        do k=1,kdim1
-          qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
-          qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
-          qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
-          qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
-     +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
-        enddo
-        do j=1,jdim1
-          qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
-          qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
-          qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
-          qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
-     +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
-        enddo
-      enddo
-      do k=1,kdim1
-        do j=1,jdim1
-          qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
-          qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
-          qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
-          qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
-     +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
-        enddo
-      enddo
-      enddo
-      end if
       end if
       if (iskip .gt. 0) then
         call readhist(iccg,ibase,ncycmax,ntr,rms,clw,cdw,

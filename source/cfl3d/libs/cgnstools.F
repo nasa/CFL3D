@@ -5494,7 +5494,7 @@ c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
-c      qi0,qj0,qk0......arrays of BC data (CONSERVED quantities) (real)
+c      qi0,qj0,qk0......arrays of BC data (PRIMITIVE quantities) (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
@@ -5692,9 +5692,8 @@ c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c   OUTPUTS:
-c      qi0,qj0,qk0......arrays of BC data (CONSERVED or PRIMITIVE
-c                       quantities - same type as Q's read in
-c                       via readsoln) (real)
+c      qi0,qj0,qk0......arrays of BC data (PRIMITIVE quantities
+c                       (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
 c**********************************************************************
