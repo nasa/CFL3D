@@ -33,7 +33,7 @@ c
 #else
          call getarg (1, arg)
 #endif
-         if (arg .eq. "-np" .or. arg .eq. "-n") then
+         if (arg .eq. "-np" .or. arg .eq. "-nt" .or. arg .eq. "-n") then
 #if defined CRAY_TIME
             call pxfgetarg (2, arg, 4, ierror)
 #else
