@@ -493,11 +493,7 @@ c
 #if defined DIST_MPI
                end if
 c
-c              the following mpi call passes all the deltas in one
-c              message; requires contiguous storge of the deltas
-c
                nd_dest = mblk2nd(nbl)
-c              nvals   = (jdim*kdim+jdim*idim+kdim*idim)*3*2
 c
                nvals   = kdim*idim*3*2
                mytag = itag_x + nbl
