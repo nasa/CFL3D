@@ -4,7 +4,7 @@
      .                   dnj,dnk,dni,vistj,vistk,visti,ifunc,iunit,
      .                   vj0,vk0,vi0,maxbl,maxseg,nbci0,nbcj0,
      .                   nbck0,nbcidim,nbcjdim,nbckdim,myid,myhost,
-     .                   mycomm,mblk2nd,ibcinfo,jbcinfo,kbcinfo)
+     .                   mycomm,mblk2nd,ibcinfo,jbcinfo,kbcinfo,vol)
 c
 c     $Id$
 c
@@ -46,7 +46,7 @@ c
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension vist3d(jdim,kdim,idim)
       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
-     .          si(jdim,kdim,idim,5)
+     .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
       dimension yplusj(kdim,idim,2),yplusk(jdim,idim,2),
      .          yplusi(jdim,kdim,2),blankj(kdim,idim,2),
      .          blankk(jdim,idim,2),blanki(jdim,kdim,2),
@@ -143,11 +143,13 @@ c
             mm  = 2
             nbc = nbck0(nbl)
             kd  = 1
+            kdx = 1
             kd1 = kd+1
          else 
             mm  = 4
             nbc = nbckdim(nbl)
             kd  = kdim1
+            kdx = kdim
             kd1 = kd-1
          end if
 c
@@ -217,10 +219,10 @@ c
      .           +      vist3d(jd,kd,id1) + vist3d(jd1,kd,id1))
             t1k2 = q5k2/q1k2
 c
-            dx    = x(j,kd+1,i) - x(j,kd,i)
-            dy    = y(j,kd+1,i) - y(j,kd,i)
-            dz    = z(j,kd+1,i) - z(j,kd,i)
-            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            dn = (vol(jd ,kd,id )/sk(jd ,kdx,id ,4)+
+     +            vol(jd1,kd,id )/sk(jd1,kdx,id ,4)+
+     +            vol(jd ,kd,id1)/sk(jd ,kdx,id1,4)+
+     +            vol(jd1,kd,id1)/sk(jd1,kdx,id1,4))/4.
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                idnmax = i
@@ -589,11 +591,13 @@ c
             mm  = 2
             nbc = nbcj0(nbl)
             jd  = 1
+            jdx = 1
             jd1 = jd+1
          else
             mm  = 4
             nbc = nbcjdim(nbl)
             jd  = jdim1
+            jdx = jdim
             jd1 = jd-1
          end if
 c
@@ -662,10 +666,10 @@ c
      .           +      vist3d(jd,kd,id1) + vist3d(jd,kd1,id1))
             t1j2 = q5j2/q1j2
 c
-            dx    = x(jd+1,k,i) - x(jd,k,i)
-            dy    = y(jd+1,k,i) - y(jd,k,i)
-            dz    = z(jd+1,k,i) - z(jd,k,i)
-            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            dn = (vol(jd,kd ,id )/sj(jdx,kd ,id ,4)+
+     +            vol(jd,kd1,id )/sj(jdx,kd1,id ,4)+
+     +            vol(jd,kd ,id1)/sj(jdx,kd ,id1,4)+
+     +            vol(jd,kd1,id1)/sj(jdx,kd1,id1,4))/4.
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                idnmax = i
@@ -1039,11 +1043,13 @@ c
             mm  = 2
             nbc = nbci0(nbl)
             id  = 1
+            idx = 1
             id1 = id+1
          else
             mm  = 4
             nbc = nbcidim(nbl)
             id  = idim1
+            idx = idim
             id1 = id-1
          end if
 c
@@ -1113,10 +1119,10 @@ c
      .           +      vist3d(jd1,kd,id) + vist3d(jd1,kd1,id))
             t1i2 = q5i2/q1i2
 c
-            dx    = x(j,k,id+1) - x(j,k,id)
-            dy    = y(j,k,id+1) - y(j,k,id)
-            dz    = z(j,k,id+1) - z(j,k,id)
-            dn    = sqrt(dx**2 + dy**2 + dz**2)
+            dn = (vol(jd ,kd ,id)/si(jd ,kd ,idx,4)+
+     +            vol(jd ,kd1,id)/si(jd ,kd1,idx,4)+
+     +            vol(jd1,kd ,id)/si(jd1,kd ,idx,4)+
+     +            vol(jd1,kd1,id)/si(jd1,kd1,idx,4))/4.
             if (real(dn).gt.real(dnmax)) then
                dnmax  = dn
                jdnmax = j
