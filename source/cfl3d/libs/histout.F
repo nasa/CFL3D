@@ -36,6 +36,8 @@ c
       common /elastic/ ndefrm,naesrf
       common /reyue/ reue,tinf,ivisc(3)
 c
+      alphw = radtodeg*alpha
+c
 c     output convergence history for mean-flow equations
 c
       write(12,2) (real(title(i)),i=1,20)
