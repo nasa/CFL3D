@@ -49,8 +49,8 @@ c
          read(iunit,*)
          read(iunit,*) mdum,ndum,np
          if (mdum.ne.mdim .or. ndum.ne.ndim) then
-            write(11,'('' stopping in readdat...data file'' 
-     .      '' has dimensions '',2i6)')mdum,ndum
+            write(11,'('' stopping in readdat...data file'',
+     .      '' has dimensions '',2i6)') mdum,ndum
             write(11,'('' dimensions set from input file'',
      .      '' are '',2i6)') mdim,ndim
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
