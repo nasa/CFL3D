@@ -26,30 +26,41 @@ c
      .             sdgridout,dovrlap,dpatch,dresid,gridin,gridout
       character*120 bou(ibufdim,nbuf)
 c
-      dimension nou(nbuf)
-      dimension isplits(mbloc0),jsplits(mbloc0),ksplits(mbloc0)
-      dimension idimg(mbloc0),jdimg(mbloc0),kdimg(mbloc0)
-      dimension ndirin0(msplt0*mbloc0),isblocin(msplt0*mbloc0),
-     .          ndirin(msplt0*mbloc0)
+      integer stats
 c
-      pointer (ip_isplits,isplits),(ip_jsplits,jsplits),
-     .        (ip_ksplits,ksplits),(ip_idimg,idimg),(ip_jdimg,jdimg),
-     .        (ip_kdimg,kdimg),(ip_ndirin0,ndirin0),
-     .        (ip_isblocin,isblocin),(ip_ndirin,ndirin)
+      dimension nou(nbuf)
+c
+      allocatable :: idimg(:)
+      allocatable :: isblocin(:)
+      allocatable :: isplits(:)
+      allocatable :: jdimg(:)
+      allocatable :: jsplits(:)
+      allocatable :: kdimg(:)
+      allocatable :: ksplits(:)
+      allocatable :: ndirin(:)
+      allocatable :: ndirin0(:)
 c
       common /unit5/ iunit5
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_isplits,mbloc0,1,icall,memuse)
-      call umalloc(ip_jsplits,mbloc0,1,icall,memuse)
-      call umalloc(ip_ksplits,mbloc0,1,icall,memuse)
-      call umalloc(ip_idimg,mbloc0,1,icall,memuse)
-      call umalloc(ip_jdimg,mbloc0,1,icall,memuse)
-      call umalloc(ip_kdimg,mbloc0,1,icall,memuse)
-      call umalloc(ip_ndirin0,msplt0*mbloc0,1,icall,memuse)
-      call umalloc(ip_ndirin,msplt0*mbloc0,1,icall,memuse)
-      call umalloc(ip_isblocin,msplt0*mbloc0,1,icall,memuse)
+      allocate( idimg(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'idimg',memuse,stats)
+      allocate( isblocin(msplt0*mbloc0), stat=stats )
+      call umalloc(msplt0*mbloc0,1,'isblocin',memuse,stats)
+      allocate( isplits(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'isplits',memuse,stats)
+      allocate( jdimg(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'jdimg',memuse,stats)
+      allocate( jsplits(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'jsplits',memuse,stats)
+      allocate( kdimg(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'kdimg',memuse,stats)
+      allocate( ksplits(mbloc0), stat=stats )
+      call umalloc(mbloc0,1,'ksplits',memuse,stats)
+      allocate( ndirin(msplt0*mbloc0), stat=stats )
+      call umalloc(msplt0*mbloc0,1,'ndirin',memuse,stats)
+      allocate( ndirin0(msplt0*mbloc0), stat=stats )
+      call umalloc(msplt0*mbloc0,1,'ndirin0',memuse,stats)
 c
       read(iunit5,*)
       read(iunit5,'(a60)') cflinp
@@ -234,15 +245,15 @@ c
 c
 c     free up memory
 c
-      call ufree(ip_isplits)
-      call ufree(ip_jsplits)
-      call ufree(ip_ksplits)
-      call ufree(ip_idimg)
-      call ufree(ip_jdimg)
-      call ufree(ip_kdimg)
-      call ufree(ip_ndirin0)
-      call ufree(ip_ndirin)
-      call ufree(ip_isblocin)
+      deallocate(isplits)
+      deallocate(jsplits)
+      deallocate(ksplits)
+      deallocate(idimg)
+      deallocate(jdimg)
+      deallocate(kdimg)
+      deallocate(ndirin0)
+      deallocate(ndirin)
+      deallocate(isblocin)
 c
       return
       end
