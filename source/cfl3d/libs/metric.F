@@ -283,6 +283,9 @@ c   Check for non-planar i-planes when 2-D:
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'('' The i-planes need to be planar'',
      .     '' for 2-D (i2d=1)'')')
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   ... or else the problem may'',
+     .     '' be crossing lines (negative volumes) in the grid'')')
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
  1234 continue
