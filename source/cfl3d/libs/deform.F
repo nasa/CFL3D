@@ -32,71 +32,109 @@ c
 c
       character*120 bou(ibufdim,nbuf)
 c
-      dimension nou(nbuf),idefrm(maxbl)
-      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
-      dimension xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
-     .          znm2(jdim,kdim,idim),vel(jdim,kdim,idim,3)
-      dimension xnm1(jdim,kdim,idim),ynm1(jdim,kdim,idim),
-     .          znm1(jdim,kdim,idim)
-      dimension deltj(kdim,idim,3,2),deltk(jdim,idim,3,2),
-     .          delti(jdim,kdim,3,2)
-      dimension icsi(maxbl,maxsegdg),icsf(maxbl,maxsegdg),
-     .          jcsi(maxbl,maxsegdg),jcsf(maxbl,maxsegdg),
-     .          kcsi(maxbl,maxsegdg),kcsf(maxbl,maxsegdg)
-      dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),
-     .          nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
-     .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
-     .          kbcinfo(maxbl,maxseg,7,2)
-      dimension wk(9*nsurf),slavept(nslave,3,nmaster,5)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
-      dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg),
-     .          iaesurf(maxbl,maxsegdg)
+      integer stats
 c
-      dimension dx1(jdim,kdim,idim),dy1(jdim,kdim,idim),
-     .          dz1(jdim,kdim,idim),dx2(jdim,kdim,idim),
-     .          dy2(jdim,kdim,idim),dz2(jdim,kdim,idim),
-     .          dx3(jdim,kdim,idim),dy3(jdim,kdim,idim),
-     .          dz3(jdim,kdim,idim),dx(jdim,kdim,idim),
-     .          dy(jdim,kdim,idim),dz(jdim,kdim,idim),
-     .          arci(jdim,kdim,idim),arcj(jdim,kdim,idim),
-     .          arck(jdim,kdim,idim),ibl(nsurf)
-      dimension jend(2),jsta(2)
-      dimension dvol(jdim*idim*kdim)
-      dimension xok(jdim*idim,6) 
-      dimension xoj(kdim*idim,6),xoi(jdim*kdim,6) 
+      dimension delti(jdim,kdim,3,2)
+      dimension deltj(kdim,idim,3,2)
+      dimension deltk(jdim,idim,3,2)
+      dimension iaesurf(maxbl,maxsegdg)
+      dimension ibcinfo(maxbl,maxseg,7,2)
+      dimension icsf(maxbl,maxsegdg)
+      dimension icsi(maxbl,maxsegdg)
+      dimension idefrm(maxbl)
+      dimension idfrmseg(maxbl,maxsegdg)
+      dimension iskip(maxbl)
+      dimension jbcinfo(maxbl,maxseg,7,2)
+      dimension jcsf(maxbl,maxsegdg)
+      dimension jcsi(maxbl,maxsegdg)
+      dimension jskip(maxbl)
+      dimension kbcinfo(maxbl,maxseg,7,2)
+      dimension kcsf(maxbl,maxsegdg)
+      dimension kcsi(maxbl,maxsegdg)
+      dimension kskip(maxbl)
+      dimension nbci0(maxbl)
+      dimension nbcidim(maxbl)
+      dimension nbcj0(maxbl)
+      dimension nbcjdim(maxbl)
+      dimension nbck0(maxbl)
+      dimension nbckdim(maxbl)
+      dimension nou(nbuf)
+      dimension nsegdfrm(maxbl)
+      dimension slavept(nslave,3,nmaster,5)
+      dimension vel(jdim,kdim,idim,3)
+      dimension wk(9*nsurf)
+      dimension x(jdim,kdim,idim)
+      dimension xnm1(jdim,kdim,idim)
+      dimension xnm2(jdim,kdim,idim)
+      dimension y(jdim,kdim,idim)
+      dimension ynm1(jdim,kdim,idim)
+      dimension ynm2(jdim,kdim,idim)
+      dimension z(jdim,kdim,idim)
+      dimension znm1(jdim,kdim,idim)
+      dimension znm2(jdim,kdim,idim)
 c
-      pointer (ip_dvol,dvol),(ip_xok,xok) 
-      pointer (ip_xoi,xoi),(ip_xoj,xoj) 
-      pointer (ip_jend,jend),(ip_jsta,jsta)
-      pointer (ip_dx1,dx1),(ip_dy1,dy1),(ip_dz1,dz1),
-     .        (ip_dx2,dx2),(ip_dy2,dy2),(ip_dz2,dz2),
-     .        (ip_dx3,dx3),(ip_dy3,dy3),(ip_dz3,dz3),
-     .        (ip_arci,arci),(ip_arcj,arcj),(ip_arck,arck),
-     .        (ip_dx,dx),(ip_dy,dy),(ip_dz,dz),(ip_ibl,ibl)
-c
+      allocatable :: arci(:,:,:)
+      allocatable :: arcj(:,:,:)
+      allocatable :: arck(:,:,:)
+      allocatable :: dvol(:)
+      allocatable :: dx(:,:,:)
+      allocatable :: dx1(:,:,:)
+      allocatable :: dx2(:,:,:)
+      allocatable :: dx3(:,:,:)
+      allocatable :: dy(:,:,:)
+      allocatable :: dy1(:,:,:)
+      allocatable :: dy2(:,:,:)
+      allocatable :: dy3(:,:,:)
+      allocatable :: dz(:,:,:)
+      allocatable :: dz1(:,:,:)
+      allocatable :: dz2(:,:,:)
+      allocatable :: dz3(:,:,:)
+      allocatable :: ibl(:)
+      allocatable :: jend(:)
+      allocatable :: jsta(:)
+      allocatable :: xoi(:,:)
+      allocatable :: xoj(:,:)
+      allocatable :: xok(:,:)
+
       common /twod/ i2d
       common /deformz/ beta1,ismooth,negvol
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_dx1,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dy1,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dz1,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dx2,idim*jdim*kdim,0,icall,memuse) 
-      call umalloc(ip_dy2,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dz2,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dx3,idim*jdim*kdim,0,icall,memuse) 
-      call umalloc(ip_dy3,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dz3,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dx,idim*jdim*kdim,0,icall,memuse) 
-      call umalloc(ip_dy,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_dz,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_arci,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_arcj,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_arck,idim*jdim*kdim,0,icall,memuse)
-      call umalloc(ip_ibl,nsurf,1,icall,memuse)
+c
+      allocate( arci(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'arci',memuse,stats)
+      allocate( arcj(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'arcj',memuse,stats)
+      allocate( arck(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'arck',memuse,stats)
+      allocate( dx(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dx',memuse,stats)
+      allocate( dx1(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dx1',memuse,stats)
+      allocate( dx2(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dx2',memuse,stats)
+      allocate( dx3(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dx3',memuse,stats)
+      allocate( dy(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dy',memuse,stats)
+      allocate( dy1(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dy1',memuse,stats)
+      allocate( dy2(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dy2',memuse,stats)
+      allocate( dy3(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dy3',memuse,stats)
+      allocate( dz(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dz',memuse,stats)
+      allocate( dz1(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dz1',memuse,stats)
+      allocate( dz2(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dz2',memuse,stats)
+      allocate( dz3(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dz3',memuse,stats)
+      allocate( ibl(nsurf), stat=stats )
+      call umalloc(nsurf,1,'ibl',memuse,stats)
 c
 c     determine arc lengths for use in TFI blending functions
 c
@@ -494,12 +532,18 @@ c        from the boundary.
 c
 c        allocate memory for the smoothing step
 c
-         call umalloc(ip_dvol,jdim*idim*kdim,0,icall,memuse)
-         call umalloc(ip_xok,jdim*idim*6,0,icall,memuse)
-         call umalloc(ip_xoi,jdim*kdim*6,0,icall,memuse)
-         call umalloc(ip_xoj,kdim*idim*6,0,icall,memuse)
-         call umalloc(ip_jend,2,1,icall,memuse)
-         call umalloc(ip_jsta,2,1,icall,memuse)
+         allocate( dvol(jdim*idim*kdim), stat=stats )
+         call umalloc(jdim*idim*kdim,0,'dvol',memuse,stats)
+         allocate( xoi(jdim*kdim,6), stat=stats )
+         call umalloc(jdim*kdim*6,0,'xoi',memuse,stats)
+         allocate( xoj(kdim*idim,6), stat=stats )
+         call umalloc(kdim*idim*6,0,'xoj',memuse,stats)
+         allocate( xok(jdim*idim,6), stat=stats )
+         call umalloc(jdim*idim*6,0,'xok',memuse,stats)
+         allocate( jend(2), stat=stats )
+         call umalloc(2,1,'jend',memuse,stats)
+         allocate( jsta(2), stat=stats )
+         call umalloc(2,1,'jsta',memuse,stats)
 c
          call dmsetup0(jdim,kdim,idim,icsi,icsf,jcsi,jcsf,
      .                 kcsi,kcsf,nbl,maxbl,maxsegdg,
@@ -512,12 +556,12 @@ c
 c
 c        release memory
 c
-         call ufree(ip_dvol)
-         call ufree(ip_xok)
-         call ufree(ip_xoi)
-         call ufree(ip_xoj)
-         call ufree(ip_jend)
-         call ufree(ip_jsta)
+         deallocate(dvol)
+         deallocate(xok)
+         deallocate(xoi)
+         deallocate(xoj)
+         deallocate(jend)
+         deallocate(jsta)
 c
       end if
 c
@@ -594,57 +638,151 @@ c
 c
 c     release memory
 c
-      call ufree(ip_dx1)
-      call ufree(ip_dy1)
-      call ufree(ip_dz1)
-      call ufree(ip_dx2)
-      call ufree(ip_dy2)
-      call ufree(ip_dz2)
-      call ufree(ip_dx3)
-      call ufree(ip_dy3)
-      call ufree(ip_dz3)
-      call ufree(ip_dx)
-      call ufree(ip_dy)
-      call ufree(ip_dz)
-      call ufree(ip_arci)
-      call ufree(ip_arcj)
-      call ufree(ip_arck)
-      call ufree(ip_ibl)
+      deallocate(dx1)
+      deallocate(dy1)
+      deallocate(dz1)
+      deallocate(dx2)
+      deallocate(dy2)
+      deallocate(dz2)
+      deallocate(dx3)
+      deallocate(dy3)
+      deallocate(dz3)
+      deallocate(dx)
+      deallocate(dy)
+      deallocate(dz)
+      deallocate(arci)
+      deallocate(arcj)
+      deallocate(arck)
+      deallocate(ibl)
 c
       return
       end
-
-       subroutine dmsetup0(jdm,kdm,idm,itp1,itp2,jtp1,jtp2,
-     .                 ksta,kend,nbl,maxbl,maxsegdg,
-     .                 jsta,jend,x,y,z,dx,dy,dz,xoj,xoi,xok,dvol)
+       subroutine dmsetup(jdm,kdm,idm,nbl,jsta,jend,ipid,imid,rj1jd,
+     .                    rj2jd,epsilon) 
+c***********************************************************************
+c     Purpose:  Sets up information for use in the smoothing step
+c
+c
+c     Bob Bartels NASA Langley Aeroelasticity Branch    (757)864-2813
+c       responsible for the following subroutines:
+c         gdsa      -      spring analogy smoothing and near surface
+c                          orientation preservation.
+c         dmsetup0  -      some initialization of xoi,xoj and dx,dy,dz 
+c         dmsetup1  -      some initialization of xok and dx,dy,dz 
+c         dmsetup   -      some initialization of arrays 
+c         bdata     -      computation of block boundary face spacing
+c                          arrays 
+c         permut_ijkxyz -  permutes indices i and j to better align 
+c                          k = 0 and k = kdim surfaces for vectorizing 
+c         unperm_ijkxyz -  unpermutes indices i and j after smoothing 
+c     
+c***********************************************************************
+c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
-      dimension x(jdm,kdm,idm),y(jdm,kdm,idm),z(jdm,kdm,idm)
-      dimension dx(jdm,kdm,idm),dy(jdm,kdm,idm),dz(jdm,kdm,idm)
-      dimension dxn(jdm,kdm,idm),dyn(jdm,kdm,idm),dzn(jdm,kdm,idm)
-      dimension xoj(kdm*idm,6),xoi(jdm*kdm,6) 
-      dimension xok(jdm*idm,6)
-      dimension dvol(jdm*idm*kdm)
-      dimension itp1(maxbl,maxsegdg),itp2(maxbl,maxsegdg),
-     .           jtp1(maxbl,maxsegdg),jtp2(maxbl,maxsegdg),
-     .           ksta(maxbl,maxsegdg),kend(maxbl,maxsegdg)
-     .          ,jend(2),jsta(2)
-      dimension epsilon3(jdm),epsilon4(idm) 
-      pointer (ip_epsilon3,epsilon3)
-      pointer (ip_epsilon4,epsilon4)
-      pointer (ip_dxn,dxn)
-      pointer (ip_dyn,dyn)
-      pointer (ip_dzn,dzn)
-c
-      icall  = 0
-      memuse = 0
-      call umalloc(ip_epsilon3,jdm,0,icall,memuse)
-      call umalloc(ip_epsilon4,idm,0,icall,memuse)
-      call umalloc(ip_dxn,jdm*kdm*idm,0,icall,memuse)
-      call umalloc(ip_dyn,jdm*kdm*idm,0,icall,memuse)
-      call umalloc(ip_dzn,jdm*kdm*idm,0,icall,memuse)
+       common /grid1/ algepmn,coef(2)   
+       common /grid2/ kimx(2),jte1(2),         
+     .   jflp(2,2),icsi(2),icso(2),iafmv1(2),jsp1(2),  
+     .   jsp2(2),jsp3(2),itecs(2),ispcs(2),itp(2,2)
+     .  ,iaxrt(2)
+       common /grid4/ time0
+       common /sklton/ isklton
+       dimension epsilon(kdm,2)
+       dimension  ipid(jdm*idm),imid(jdm*idm),rj1jd(jdm*idm),
+     .            rj2jd(jdm*idm),jend(2),jsta(2)
 
+
+       do 30 k = 1,kdm
+         epsilon(k,1) = 1. 
+         epsilon(k,2) = 1. 
+30     continue
+
+       coefa  =  -algepmn
+       do 29 n = 1,2
+       do 29 k = kimx(n)+1,kdm 
+          ro1 = coef(n)*real(k-kimx(n)) 
+          arg1= coefa*ro1        
+          epsilon(k,n) = exp(-arg1) 
+29     continue 
+       if(idm.gt.2) then
+        do 438 j = 1,jdm*idm  
+          ipid(j)= j+jdm           
+          imid(j)= j-jdm  
+438     continue  
+        jdmi1 = jdm*(idm-1)
+        do 440 j = 1,jdm 
+          imid(j)= j   
+          ipid(j+jdmi1)=j+jdmi1  
+440     continue 
+       else
+        do 448 j = 1,jdm     
+          imid(j) = j    
+          ipid(j) = j+jdm      
+448     continue  
+        do 449 j = 1+jdm,jdm*idm     
+          imid(j) = j-jdm      
+          ipid(j) = j      
+449     continue  
+       end if 
+
+       do 511 i=1,idm   
+       jdmi1 = jdm*(i-1)  
+       do 511 j = 1,jdm   
+           rj1jd(j+jdmi1) = real(jdm-j) 
+           rj2jd(j+jdmi1) = real(j-1) 
+511    continue 
+
+       return
+       end  
+       subroutine dmsetup0(jdm,kdm,idm,itp1,itp2,jtp1,jtp2,
+     .                 ksta,kend,nbl,maxbl,maxsegdg,
+     .                 jsta,jend,x,y,z,dx,dy,dz,xoj,xoi,xok,dvol)
+
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+      integer stats
+c
+      dimension dvol(jdm*idm*kdm)
+      dimension dx(jdm,kdm,idm)
+      dimension dy(jdm,kdm,idm)
+      dimension dz(jdm,kdm,idm)
+      dimension itp1(maxbl,maxsegdg)
+      dimension itp2(maxbl,maxsegdg)
+      dimension jend(2)
+      dimension jsta(2)
+      dimension jtp1(maxbl,maxsegdg)
+      dimension jtp2(maxbl,maxsegdg)
+      dimension kend(maxbl,maxsegdg)
+      dimension ksta(maxbl,maxsegdg)
+      dimension x(jdm,kdm,idm)
+      dimension xoi(jdm*kdm,6)
+      dimension xoj(kdm*idm,6)
+      dimension xok(jdm*idm,6)
+      dimension y(jdm,kdm,idm)
+      dimension z(jdm,kdm,idm)
+
+      allocatable :: dxn(:,:,:)
+      allocatable :: dyn(:,:,:)
+      allocatable :: dzn(:,:,:)
+      allocatable :: epsilon3(:)
+      allocatable :: epsilon4(:)
+
+      memuse = 0
+c
+      allocate( dxn(jdm,kdm,idm), stat=stats )
+      call umalloc(jdm*kdm*idm,0,'dxn',memuse,stats)
+      allocate( dyn(jdm,kdm,idm), stat=stats )
+      call umalloc(jdm*kdm*idm,0,'dyn',memuse,stats)
+      allocate( dzn(jdm,kdm,idm), stat=stats )
+      call umalloc(jdm*kdm*idm,0,'dzn',memuse,stats)
+      allocate( epsilon3(jdm), stat=stats )
+      call umalloc(jdm,0,'epsilon3',memuse,stats)
+      allocate( epsilon4(idm), stat=stats )
+      call umalloc(idm,0,'epsilon4',memuse,stats)
+c
         if(idm.gt.2) then
           do j = 1,kdm*jdm
              xoi(j,1)       = x(j,1,1)       + dx(j,1,1)
@@ -748,8 +886,8 @@ c
          end do
        end if
 
-       call ufree(ip_epsilon3)
-       call ufree(ip_epsilon4)
+       deallocate(epsilon3)
+       deallocate(epsilon4)
 
        call permut_ijkxyz(jdm,idm,kdm,nbl,dx,dy,dz,dvol)
        call permut_ijkxyz(jdm,idm,kdm,nbl,dxn,dyn,dzn,dvol)
@@ -760,9 +898,9 @@ c
      .                 jsta,jend,x,y,z,dx,dy,dz,dxn,
      .                 dyn,dzn,xok)
 
-       call ufree(ip_dxn)
-       call ufree(ip_dyn)
-       call ufree(ip_dzn)
+       deallocate(dxn)
+       deallocate(dyn)
+       deallocate(dzn)
        
        return
        end
@@ -799,7 +937,9 @@ c
      .  ,iaxrt(2)
        common /grid15/ igtyp(2),idmg(2),jdmg(2),kdmg(2)
        common /sklton/ isklton
-
+c
+      integer stats
+c
        dimension dx(jdm*idm*kdm),dy(jdm*idm*kdm),dz(jdm*idm*kdm)
        dimension dxn(jdm*idm*kdm),dyn(jdm*idm*kdm),dzn(jdm*idm*kdm)
        dimension x(jdm*idm*kdm),y(jdm*idm*kdm),z(jdm*idm*kdm)
@@ -808,12 +948,14 @@ c
      .           jtp1(maxbl,maxsegdg),jtp2(maxbl,maxsegdg),
      .           ksta(maxbl,maxsegdg),kend(maxbl,maxsegdg)
      .          ,jend(2),jsta(2)
-       dimension epsilon3(kdm)
-       pointer (ip_epsilon3,epsilon3)
+
+
+      allocatable :: epsilon3(:)
+
+      memuse = 0
 c
-       icall  = 0
-       memuse = 0
-       call umalloc(ip_epsilon3,kdm,0,icall,memuse)
+      allocate( epsilon3(kdm), stat=stats )
+      call umalloc(kdm,0,'epsilon3',memuse,stats)
 c
          jsta(1)= jtp1(nbl,1)
          jend(1)= jtp2(nbl,1)
@@ -1003,91 +1145,10 @@ c
          dz(j) = dzn(j)
       end do
     
-      call ufree(ip_epsilon3)
+      deallocate(epsilon3)
 
       return
       end 
-c 
-       subroutine dmsetup(jdm,kdm,idm,nbl,jsta,jend,ipid,imid,rj1jd,
-     .                    rj2jd,epsilon) 
-c***********************************************************************
-c     Purpose:  Sets up information for use in the smoothing step
-c
-c
-c     Bob Bartels NASA Langley Aeroelasticity Branch    (757)864-2813
-c       responsible for the following subroutines:
-c         gdsa      -      spring analogy smoothing and near surface
-c                          orientation preservation.
-c         dmsetup0  -      some initialization of xoi,xoj and dx,dy,dz 
-c         dmsetup1  -      some initialization of xok and dx,dy,dz 
-c         dmsetup   -      some initialization of arrays 
-c         bdata     -      computation of block boundary face spacing
-c                          arrays 
-c         permut_ijkxyz -  permutes indices i and j to better align 
-c                          k = 0 and k = kdim surfaces for vectorizing 
-c         unperm_ijkxyz -  unpermutes indices i and j after smoothing 
-c     
-c***********************************************************************
-c
-#   ifdef CMPLX
-      implicit complex(a-h,o-z)
-#   endif
-       common /grid1/ algepmn,coef(2)   
-       common /grid2/ kimx(2),jte1(2),         
-     .   jflp(2,2),icsi(2),icso(2),iafmv1(2),jsp1(2),  
-     .   jsp2(2),jsp3(2),itecs(2),ispcs(2),itp(2,2)
-     .  ,iaxrt(2)
-       common /grid4/ time0
-       common /sklton/ isklton
-       dimension epsilon(kdm,2)
-       dimension  ipid(jdm*idm),imid(jdm*idm),rj1jd(jdm*idm),
-     .            rj2jd(jdm*idm),jend(2),jsta(2)
-
-
-       do 30 k = 1,kdm
-         epsilon(k,1) = 1. 
-         epsilon(k,2) = 1. 
-30     continue
-
-       coefa  =  -algepmn
-       do 29 n = 1,2
-       do 29 k = kimx(n)+1,kdm 
-          ro1 = coef(n)*real(k-kimx(n)) 
-          arg1= coefa*ro1        
-          epsilon(k,n) = exp(-arg1) 
-29     continue 
-       if(idm.gt.2) then
-        do 438 j = 1,jdm*idm  
-          ipid(j)= j+jdm           
-          imid(j)= j-jdm  
-438     continue  
-        jdmi1 = jdm*(idm-1)
-        do 440 j = 1,jdm 
-          imid(j)= j   
-          ipid(j+jdmi1)=j+jdmi1  
-440     continue 
-       else
-        do 448 j = 1,jdm     
-          imid(j) = j    
-          ipid(j) = j+jdm      
-448     continue  
-        do 449 j = 1+jdm,jdm*idm     
-          imid(j) = j-jdm      
-          ipid(j) = j      
-449     continue  
-       end if 
-
-       do 511 i=1,idm   
-       jdmi1 = jdm*(i-1)  
-       do 511 j = 1,jdm   
-           rj1jd(j+jdmi1) = real(jdm-j) 
-           rj2jd(j+jdmi1) = real(j-1) 
-511    continue 
-
-       return
-       end  
-
-  
        subroutine bdata(jdm,kdm,idm,nbl,x,y,z,xj1p,xj1m,xj2p,xj2m
      .                 ,xi1p,xi1m,xi2p,xi2m,xk1p,xk1m,xk2p,xk2m 
      .                 ,xj3p,seta)   
@@ -1286,8 +1347,6 @@ c
 
        return
         end 
-
-
        subroutine permut_ijkxyz(jdm,idm,kdm,nbl,x,y,z,dvol)
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -1357,7 +1416,6 @@ c
 
        return
        end
-
        subroutine unperm_ijkxyz(jdm,idm,kdm,nbl,x,y,z,dvol)
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -1425,8 +1483,6 @@ c***********************************************************************
 1015     continue  
        return
        end
-
-c 
       subroutine gdsa(time,xmach,dt,dx,dy,dz,x,y,z,xnm1,ynm1,
      .                znm1,dvol,xok,xoi,xoj,irotat,ndeftp1,
      .                iupdat,nbl,nt,idmt,jdmt,kdmt,iaesol,jsta,jend,
@@ -1467,57 +1523,118 @@ c
 c
        common /twod/ i2d
 c
-       dimension  ipid(jdmt*idmt),imid(jdmt*idmt),rj1jd(jdmt*idmt),
-     .            rj2jd(jdmt*idmt),jend(2),jsta(2)
-       dimension epsilon(kdmt,2),seta(kdmt) 
-       dimension xj1p(jdmt*idmt),xk1p(kdmt), xj2p(jdmt*idmt)                          
-     .          ,xk2p(kdmt),xj1m(jdmt*idmt),xk1m(kdmt),
-     .           xj2m(jdmt*idmt), xk2m(kdmt),xj3p(jdmt*idmt,2)  
-     .          ,xi1m(jdmt*idmt),xi1p(jdmt*idmt),xi2m(jdmt*idmt),
-     .           xi2p(jdmt*idmt)
-       dimension xip(jdmt*idmt,2),xim(jdmt*idmt,2) 
-       dimension xjp(jdmt*idmt,2),xjm(jdmt*idmt,2) 
-       dimension xkp(jdmt*idmt,2),xkm(jdmt*idmt,2)            
-       dimension xid(jdmt*idmt,2),xjd(jdmt*idmt,2)
+      integer stats
 c
-       dimension xnm1(jdmt*kdmt*idmt),ynm1(jdmt*kdmt*idmt),
-     .           znm1(jdmt*kdmt*idmt)
-       dimension dx(jdmt*kdmt*idmt),dy(jdmt*kdmt*idmt),
-     .           dz(jdmt*kdmt*idmt)
-       dimension x(jdmt*idmt*kdmt),y(jdmt*idmt*kdmt),
-     .           z(jdmt*idmt*kdmt)
-       dimension dvol(jdmt*idmt*kdmt)
-       dimension xok(jdmt*idmt,6)
-       dimension xoj(kdmt*idmt,6),xoi(jdmt*kdmt,6) 
-       dimension dzj(jdmt*idmt,2),dxj(jdmt*idmt,2)   
-     .          ,dyj(jdmt*idmt,2)  
+      dimension dvol(jdmt*idmt*kdmt)
+      dimension dx(jdmt*kdmt*idmt)
+      dimension dy(jdmt*kdmt*idmt)
+      dimension dz(jdmt*kdmt*idmt)
+      dimension jend(2)
+      dimension jsta(2)
+      dimension x(jdmt*idmt*kdmt)
+      dimension xnm1(jdmt*kdmt*idmt)
+      dimension xoi(jdmt*kdmt,6)
+      dimension xoj(kdmt*idmt,6)
+      dimension xok(jdmt*idmt,6)
+      dimension y(jdmt*idmt*kdmt)
+      dimension ynm1(jdmt*kdmt*idmt)
+      dimension z(jdmt*idmt*kdmt)
+      dimension znm1(jdmt*kdmt*idmt)
 
-      pointer (ip_xj1p,xj1p),(ip_xj1m,xj1m) 
-      pointer (ip_xj2p,xj2p),(ip_xj2m,xj2m) 
-      pointer (ip_xi1p,xi1p),(ip_xi1m,xi1m) 
-      pointer (ip_xi2p,xi2p),(ip_xi2m,xi2m) 
-      pointer (ip_xk1p,xk1p),(ip_xk1m,xk1m) 
-      pointer (ip_xk2p,xk2p),(ip_xk2m,xk2m) 
-      pointer (ip_xj3p,xj3p)
-      pointer (ip_seta,seta)
-      pointer (ip_xip,xip)  ,(ip_xim,xim)
-      pointer (ip_xjp,xjp)  ,(ip_xjm,xjm)
-      pointer (ip_xkp,xkp)  ,(ip_xkm,xkm)
-      pointer (ip_xid,xid)  ,(ip_xjd,xjd)
-      pointer (ip_ipid,ipid),(ip_imid,imid)
-      pointer (ip_rj1jd,rj1jd),(ip_rj2jd,rj2jd)
-      pointer (ip_dzj,dzj)  ,(ip_dxj,dxj)
-      pointer (ip_dyj,dyj)  
-      pointer (ip_epsilon,epsilon)
-c
-      icall  = 0
+      allocatable :: dxj(:,:)
+      allocatable :: dyj(:,:)
+      allocatable :: dzj(:,:)
+      allocatable :: epsilon(:,:)
+      allocatable :: imid(:)
+      allocatable :: ipid(:)
+      allocatable :: rj1jd(:)
+      allocatable :: rj2jd(:)
+      allocatable :: seta(:)
+      allocatable :: xi1m(:)
+      allocatable :: xi1p(:)
+      allocatable :: xi2m(:)
+      allocatable :: xi2p(:)
+      allocatable :: xid(:,:)
+      allocatable :: xim(:,:)
+      allocatable :: xip(:,:)
+      allocatable :: xj1m(:)
+      allocatable :: xj1p(:)
+      allocatable :: xj2m(:)
+      allocatable :: xj2p(:)
+      allocatable :: xj3p(:,:)
+      allocatable :: xjd(:,:)
+      allocatable :: xjm(:,:)
+      allocatable :: xjp(:,:)
+      allocatable :: xk1m(:)
+      allocatable :: xk1p(:)
+      allocatable :: xk2m(:)
+      allocatable :: xk2p(:)
+      allocatable :: xkm(:,:)
+      allocatable :: xkp(:,:)
+
       memuse = 0
-      call umalloc(ip_ipid,jdmt*idmt,1,icall,memuse)
-      call umalloc(ip_imid,jdmt*idmt,1,icall,memuse)
-      call umalloc(ip_rj1jd,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_rj2jd,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_epsilon,kdmt*2,0,icall,memuse)
-
+c
+      allocate( dxj(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'dxj',memuse,stats)
+      allocate( dyj(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'dyj',memuse,stats)
+      allocate( dzj(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'dzj',memuse,stats)
+      allocate( epsilon(kdmt,2), stat=stats)
+      call umalloc(kdmt*2,0,'epsilon',memuse,stats)
+      allocate( imid(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,1,'imid',memuse,stats)
+      allocate( ipid(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,1,'ipid',memuse,stats)
+      allocate( rj1jd(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'rj1jd',memuse,stats)
+      allocate( rj2jd(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'rj2jd',memuse,stats)
+      allocate( seta(kdmt), stat=stats)
+      call umalloc(kdmt,0,'seta',memuse,stats)
+      allocate( xi1m(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xi1m',memuse,stats)
+      allocate( xi1p(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xi1p',memuse,stats)
+      allocate( xi2m(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xi2m',memuse,stats)
+      allocate( xi2p(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xi2p',memuse,stats)
+      allocate( xid(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xid',memuse,stats)
+      allocate( xim(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xim',memuse,stats)
+      allocate( xip(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xip',memuse,stats)
+      allocate( xj1m(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xj1m',memuse,stats)
+      allocate( xj1p(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xj1p',memuse,stats)
+      allocate( xj2m(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xj2m',memuse,stats)
+      allocate( xj2p(jdmt*idmt), stat=stats)
+      call umalloc(jdmt*idmt,0,'xj2p',memuse,stats)
+      allocate( xj3p(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xj3p',memuse,stats)
+      allocate( xjd(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xjd',memuse,stats)
+      allocate( xjm(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xjm',memuse,stats)
+      allocate( xjp(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xjp',memuse,stats)
+      allocate( xk1m(kdmt), stat=stats)
+      call umalloc(kdmt,0,'xk1m',memuse,stats)
+      allocate( xk1p(kdmt), stat=stats)
+      call umalloc(kdmt,0,'xk1p',memuse,stats)
+      allocate( xk2m(kdmt), stat=stats)
+      call umalloc(kdmt,0,'xk2m',memuse,stats)
+      allocate( xk2p(kdmt), stat=stats)
+      call umalloc(kdmt,0,'xk2p',memuse,stats)
+      allocate( xkm(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xkm',memuse,stats)
+      allocate( xkp(jdmt*idmt,2), stat=stats)
+      call umalloc(jdmt*idmt*2,0,'xkp',memuse,stats)
+c
       idm = idmg(1)
       jdm = jdmg(1)
       kdm = kdmg(1)
@@ -1525,39 +1642,11 @@ c
       call dmsetup(jdm,kdm,idm,nbl,jsta,jend,ipid,imid,rj1jd,
      .             rj2jd,epsilon)
 
-      call umalloc(ip_xj1p,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xj1m,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xj2p,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xj2m,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xi1p,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xi1m,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xi2p,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xi2m,jdmt*idmt,0,icall,memuse)
-      call umalloc(ip_xk1p,kdmt,0,icall,memuse)
-      call umalloc(ip_xk1m,kdmt,0,icall,memuse)
-      call umalloc(ip_xk2p,kdmt,0,icall,memuse)
-      call umalloc(ip_xk2m,kdmt,0,icall,memuse)
-      call umalloc(ip_xj3p,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_seta,kdmt,0,icall,memuse)
-
       call permut_ijkxyz(jdmt,idmt,kdmt,nbl,xnm1,ynm1,znm1,dvol)
 
       call bdata(jdm,kdm,idm,nbl,xnm1,ynm1,znm1,xj1p,xj1m,xj2p
      .          ,xj2m,xi1p,xi1m,xi2p,xi2m,xk1p,xk1m,xk2p,xk2m,xj3p
      .          ,seta)   
-
-
-      call umalloc(ip_xip,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xjp,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xkp,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xim,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xjm,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xkm,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xid,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_xjd,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_dzj,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_dxj,jdmt*idmt*2,0,icall,memuse)
-      call umalloc(ip_dyj,jdmt*idmt*2,0,icall,memuse)
 
 
         fc3 =  600.   
@@ -2379,36 +2468,36 @@ c    .               real(zdel)/(real(jdm)*real(kdm)*real(idm))
  2000     dz(j+jdm+jdm*idm*(k-1)) = dz(j+jdm*idm*(k-1))  
        end if 
 
-      call ufree(ip_xj1p)
-      call ufree(ip_xj1m)
-      call ufree(ip_xj2p)
-      call ufree(ip_xj2m)
-      call ufree(ip_xi1p)
-      call ufree(ip_xi1m)
-      call ufree(ip_xi2p)
-      call ufree(ip_xi2m)
-      call ufree(ip_xk1p)
-      call ufree(ip_xk1m)
-      call ufree(ip_xk2p)
-      call ufree(ip_xk2m)
-      call ufree(ip_xj3p)
-      call ufree(ip_seta)
-      call ufree(ip_ipid)
-      call ufree(ip_imid)
-      call ufree(ip_rj1jd)
-      call ufree(ip_rj2jd)
-      call ufree(ip_xip)
-      call ufree(ip_xjp)
-      call ufree(ip_xkp)
-      call ufree(ip_xim)
-      call ufree(ip_xjm)
-      call ufree(ip_xkm)
-      call ufree(ip_xid)
-      call ufree(ip_xjd)
-      call ufree(ip_dzj)
-      call ufree(ip_dxj)
-      call ufree(ip_dyj)
-      call ufree(ip_epsilon)
+      deallocate(xj1p)
+      deallocate(xj1m)
+      deallocate(xj2p)
+      deallocate(xj2m)
+      deallocate(xi1p)
+      deallocate(xi1m)
+      deallocate(xi2p)
+      deallocate(xi2m)
+      deallocate(xk1p)
+      deallocate(xk1m)
+      deallocate(xk2p)
+      deallocate(xk2m)
+      deallocate(xj3p)
+      deallocate(seta)
+      deallocate(ipid)
+      deallocate(imid)
+      deallocate(rj1jd)
+      deallocate(rj2jd)
+      deallocate(xip)
+      deallocate(xjp)
+      deallocate(xkp)
+      deallocate(xim)
+      deallocate(xjm)
+      deallocate(xkm)
+      deallocate(xid)
+      deallocate(xjd)
+      deallocate(dzj)
+      deallocate(dxj)
+      deallocate(dyj)
+      deallocate(epsilon)
 
       call unperm_ijkxyz(jdmt,idmt,kdmt,nbl,dx,dy,dz,dvol)
       call unperm_ijkxyz(jdmt,idmt,kdmt,nbl,xnm1,ynm1,znm1,dvol)
@@ -2416,5 +2505,3 @@ c    .               real(zdel)/(real(jdm)*real(kdm)*real(idm))
 
        return
        end 
-
-

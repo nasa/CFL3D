@@ -11,9 +11,9 @@ c
 #ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real bcdatar(mdim,ndim,2,7)
+      integer stats
 c
-      pointer (ip_bcdatar,bcdatar)
+      real, dimension(:,:,:,:), allocatable :: bcdatar
 #endif
 c
       character*80 filname
@@ -22,12 +22,13 @@ c
       dimension nou(nbuf)
       dimension bcdata(mdim,ndim,2,7),bcdat(7),mblk2nd(maxbl)
 c
+
 #ifdef CMPLX
 c     allocate real array in which to read bc data
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_bcdatar,mdim*ndim*2*7,0,icall,memuse)
+      allocate( bcdatar(mdim,ndim,2,7), stat=stats )
+      call umalloc(mdim*ndim*2*7,0,'bcdatar',memuse,stats)
 #endif
 c
 c     initialize data array for check in bc routine
@@ -112,7 +113,7 @@ c
 c
 c     deallocate real array in which bc data was read
 c
-      call ufree(ip_bcdatar)
+      deallocate(bcdatar)
 #endif
 c
       return

@@ -12,9 +12,9 @@ c
 #ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real windexr(maxxe,2),dthetxr,dthetyr,dthetzr
+      integer stats
 c
-      pointer (ip_windexr,windexr)
+      real, dimension(:,:), allocatable :: windexr
 #endif
 c
       character*120 bou(ibufdim,nbuf)
@@ -25,12 +25,13 @@ c
      .          dthetzz(intmax,nsub1),jdimg(maxbl),kdimg(maxbl),
      .          idimg(maxbl)
 c
+
 #ifdef CMPLX
 c     allocate real array in which to read patch data
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_windexr,maxxe*2,0,icall,memuse)
+      allocate( windexr(maxxe,2), stat=stats )
+      call umalloc(maxxe*2,0,'windexr',memuse,stats)
 #endif
 c
 c     read patched-grid connectivity file
@@ -145,7 +146,7 @@ c
 c
 c     deallocate real array in which patch data was read
 c
-      call ufree(ip_windexr)
+      deallocate(windexr)
 #endif
 c
       return

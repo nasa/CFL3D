@@ -15,10 +15,12 @@ c
 #ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real xr(jdim,kdim,idim),yr(jdim,kdim,idim),
-     .     zr(jdim,kdim,idim)
+      integer stats
 c
-      pointer (ip_xr,xr),(ip_yr,yr),(ip_zr,zr)
+      real, dimension(:,:,:), allocatable :: xr
+      real, dimension(:,:,:), allocatable :: yr
+      real, dimension(:,:,:), allocatable :: zr
+c
 #endif
 c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
@@ -27,11 +29,13 @@ c
 c     allocate real arrays in which to read grid data
 c     (for non-geometric derivatives)
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_xr,jdim*kdim*idim,0,icall,memuse)
-      call umalloc(ip_yr,jdim*kdim*idim,0,icall,memuse)
-      call umalloc(ip_zr,jdim*kdim*idim,0,icall,memuse)
+      allocate( xr(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'xr',memuse,stats)
+      allocate( yr(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'yr',memuse,stats)
+      allocate( zr(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'zr',memuse,stats)
 #endif
 c
       if (ialph.eq.0) then
@@ -105,9 +109,9 @@ c
 c
 c     deallocate real arrays in which grid data was read
 c
-      call ufree(ip_xr)
-      call ufree(ip_yr)
-      call ufree(ip_zr)
+      deallocate(xr)
+      deallocate(yr)
+      deallocate(zr)
 #endif
 c
       return

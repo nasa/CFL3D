@@ -12,11 +12,13 @@ c
 #ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real dxintgr(iitot),dyintgr(iitot),dzintgr(iitot),
-     .     blankr(jdim,kdim,idim)
+      integer stats
 c
-      pointer (ip_dxintgr,dxintgr),(ip_dyintgr,dyintgr),
-     .        (ip_dzintgr,dzintgr),(ip_blankr,blankr)
+      real, dimension(:,:,:), allocatable :: blankr
+      real, dimension(:), allocatable :: dxintgr
+      real, dimension(:), allocatable :: dyintgr
+      real, dimension(:), allocatable :: dzintgr
+c
 #endif
 c
       character*120 bou(ibufdim,nbuf)
@@ -28,16 +30,21 @@ c
      .          iipntsg(maxbl)
       dimension dxintg(iitot),dyintg(iitot),dzintg(iitot),
      .          iiig(iitot),jjig(iitot),kkig(iitot)
+
+
 #ifdef CMPLX
 c
 c     allocate real array in which to read MAGGIE data
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_dxintgr,iitot,0,icall,memuse)
-      call umalloc(ip_dyintgr,iitot,0,icall,memuse)
-      call umalloc(ip_dzintgr,iitot,0,icall,memuse)
-      call umalloc(ip_blankr,jdim*kdim*idim,0,icall,memuse)
+      allocate( blankr(jdim,kdim,idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'blankr',memuse,stats)
+      allocate( dxintgr(iitot), stat=stats )
+      call umalloc(iitot,0,'dxintgr',memuse,stats)
+      allocate( dyintgr(iitot), stat=stats )
+      call umalloc(iitot,0,'dyintgr',memuse,stats)
+      allocate( dzintgr(iitot), stat=stats )
+      call umalloc(iitot,0,'dzintgr',memuse,stats)
 #endif
 c
       idim1 = idim-1
@@ -150,10 +157,10 @@ c
 c
 c     deallocate real array in which MAGGIE data was read
 c
-      call ufree(ip_dxintgr)
-      call ufree(ip_dyintgr)
-      call ufree(ip_dzintgr)
-      call ufree(ip_blankr)
+      deallocate(dxintgr)
+      deallocate(dyintgr)
+      deallocate(dzintgr)
+      deallocate(blankr)
 #endif
 c
       return 

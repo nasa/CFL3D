@@ -12,9 +12,12 @@ c
 #ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real xmdjr(kdim,idim,6),xmdkr(jdim,idim,6),xmdir(jdim,kdim,6)
+      integer stats
 c
-      pointer (ip_xmdjr,xmdjr),(ip_xmdkr,xmdkr),(ip_xmdir,xmdir)
+      real, dimension(:,:,:), allocatable :: xmdir
+      real, dimension(:,:,:), allocatable :: xmdjr
+      real, dimension(:,:,:), allocatable :: xmdkr
+c
 #endif
 c
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
@@ -25,14 +28,17 @@ c
      .          xmdi(jdim,kdim,6,nmds,maxaes)
       common /elastic/ ndefrm,naesrf
 c
+
 #ifdef CMPLX
 c     allocate real arrays in which to read modal data
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_xmdjr,kdim*idim*6,0,icall,memuse)
-      call umalloc(ip_xmdkr,jdim*idim*6,0,icall,memuse)
-      call umalloc(ip_xmdir,jdim*kdim*6,0,icall,memuse)
+      allocate( xmdir(jdim,kdim,6), stat=stats )
+      call umalloc(jdim*kdim*6,0,'xmdir',memuse,stats)
+      allocate( xmdjr(kdim,idim,6), stat=stats )
+      call umalloc(kdim*idim*6,0,'xmdjr',memuse,stats)
+      allocate( xmdkr(jdim,idim,6), stat=stats )
+      call umalloc(jdim*idim*6,0,'xmdkr',memuse,stats)
 #endif
 c
 c     read in modal deflections for j=const surfaces
@@ -176,9 +182,9 @@ c
 c
 c     deallocate real arrays in which modal data was read
 c
-      call ufree(ip_xmdjr)
-      call ufree(ip_xmdkr)
-      call ufree(ip_xmdir)
+      deallocate(xmdjr)
+      deallocate(xmdkr)
+      deallocate(xmdir)
 #endif
 c
       return

@@ -21,10 +21,11 @@ c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 c
-      real deltjr(kdim,idim,3,2),deltkr(jdim,idim,3,2),
-     .     deltir(jdim,kdim,3,2)
+      integer stats
 c
-      pointer (ip_deltjr,deltjr),(ip_deltkr,deltkr),(ip_deltir,deltir)
+      real, dimension(:,:,:,:), allocatable :: deltir
+      real, dimension(:,:,:,:), allocatable :: deltjr
+      real, dimension(:,:,:,:), allocatable :: deltkr
 c
 #   endif
 c
@@ -49,11 +50,13 @@ c
 c     allocate real arrays in which to read surface grid data
 c     (for non-geometric derivatives)
 c
-      icall  = 0
       memuse = 0
-      call umalloc(ip_deltjr,kdim*idim*3*2,0,icall,memuse)
-      call umalloc(ip_deltkr,jdim*idim*3*2,0,icall,memuse)
-      call umalloc(ip_deltir,jdim*kdim*3*2,0,icall,memuse)
+      allocate( deltir(jdim,kdim,3,2), stat=stats )
+      call umalloc(jdim*kdim*3*2,0,'deltir',memuse,stats)
+      allocate( deltjr(kdim,idim,3,2), stat=stats )
+      call umalloc(kdim*idim*3*2,0,'deltjr',memuse,stats)
+      allocate( deltkr(jdim,idim,3,2), stat=stats )
+      call umalloc(jdim*idim*3*2,0,'deltkr',memuse,stats)
 c
 c     flag to read complex-valued grid
 c
@@ -201,9 +204,9 @@ c
 c
 c     deallocate real arrays in which surface data was read
 c
-      call ufree(ip_deltjr)
-      call ufree(ip_deltkr)
-      call ufree(ip_deltir)
+      deallocate(deltjr)
+      deallocate(deltkr)
+      deallocate(deltir)
 #   endif
 c
       return
