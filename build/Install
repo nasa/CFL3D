@@ -55,6 +55,10 @@
 #
 #   -f77           use f77 as fortran compiler (default is f90)
 #
+#   -purify        compile using Rational Software's Purify (memory checker)
+#                  - must have a licence for Purify
+#                  - this option only effective on SGI platform
+#
 # script by r.t.biedron 6/97
 #          revision 1.1 8/99
 #
@@ -73,13 +77,15 @@ do_redirect=yes # default flag to allow file redirection for cfl3d executable
 mpichdir=""     # default to native mpi (mpich base directory not specified)
 do_f90=yes      # default to f90
 cgnsdir=""      # default to not cgns compatable
+do_purify=no    # don't use purify
 
 while [ $# -gt 0 ]; do
   case "$1" in
     -single)      do_dou=no ;;
     -no_opt)      do_no_opt=yes ;;
     -noredi*)     do_redirect=no ;;
-    -f77)         do_f90=no;;
+    -f77)         do_f90=no ;;
+    -purify)      do_purify=yes ;;
     -mpichdir=*)  mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     -cgnsdir=*)   cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     *) echo unknown argument for Install
@@ -90,6 +96,7 @@ usage: Install  [options]
        -no_opt
        -f77
        -noredirect
+       -purify
        -mpichdir=DIR  where DIR is the mpich base directory
        -cgnsdir=DIR   where DIR is the cgns base directory
 usage_end
@@ -496,6 +503,12 @@ case $FARCH in *)
 
   INLINE=""
 
+  if [ ! "$FARCH" = IRIX64 ] ; then
+     if [ $do_purify = yes ] ; then
+        echo 'purify option only enabled for IRIX64 architecture'
+        exit 1
+     fi
+  fi
 esac
 
 #########################################
@@ -577,6 +590,20 @@ case $FARCH in IRIX64)
      MPI_LLIBDIR="$MPI_HOME/lib64"
   fi
   CFLAG="$CFLAG -64"
+  if [ $do_purify = yes ];then
+     FFLAG="-g"
+     FFLAG_SPEC="$FFLAG"
+     LFLAG=""
+     CFLAG="$PREC"
+     FTN="purify $FTN"
+    if [ ! x$cgnsdir = x ]; then
+       CGNS_LLIB="cgns.mips4_32"
+    fi
+    if [ x$mpichdir = x ]; then
+       MPI_LLIBDIR="$MPI_HOME/lib32"
+    fi
+
+  fi
 esac
 
 #########################################
@@ -810,6 +837,9 @@ if [ $do_no_opt = no ]; then
    echo 'makefile created with optimization flags......yes'
 else
    echo 'makefile created with optimization flags......no'
+fi
+if [ $do_purify = yes ]; then
+   echo 'makefile created using purify.................yes'
 fi
 if [ x$mpichdir = x ]; then
    echo 'assuming mpi libraries in directory '$MPI_LLIBDIR
