@@ -165,7 +165,7 @@ c
      .                 aeinp,aeout,sdhist
       common /elastic/ ndefrm,naesrf
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
       common /entfix/ epsa_l,epsa_r
       common /elastic_ss/ idef_ss
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
@@ -389,6 +389,8 @@ c
          work(nlast+46) = xrotrate_img
          work(nlast+47) = yrotrate_img
          work(nlast+48) = zrotrate_img
+         work(nlast+49) = itime2read
+         work(nlast+50) = itaturb
          nlast = nlast+nkey
       end if
 c
@@ -613,6 +615,8 @@ c
          xrotrate_img = work(nlast+46)
          yrotrate_img = work(nlast+47)
          zrotrate_img = work(nlast+48)
+         itime2read=int(work(nlast+49))
+         itaturb   =int(work(nlast+50))
       end if
 c
 c**************************

@@ -38,7 +38,7 @@ c
       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
      .                 ialphit,nttlast,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
       common /entfix/ epsa_l,epsa_r
       common /key/ nkey
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
@@ -323,6 +323,22 @@ c     complex perturbation to the rotation rate in z-direction for
 c     non-inertial reference frame
       zrotrate_img = 0.
       nkey      = nkey + 1
+c
+c     flag to read (1) or skip reading (0) 2nd order-time turbulence 
+c     terms and dt in restart file (need to skip if using an older 
+c     time-accurate-with-2nd-order-time restart file which does not 
+c     have them) - 1=default
+c
+      itime2read = 1
+      nkey     = nkey + 1
+c
+c     flag to control time-accuracy of turbulence model - in the old
+c     method (0), turb eqns were 1st order regardless of order of
+c     accuracy of mean flow eqns; new default (1) is they are the same
+c     order as the mean flow eqns, as defined by the parameter "ita"
+c
+      itaturb = 1
+      nkey     = nkey + 1
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -641,6 +657,14 @@ c
 #ifdef CMPLX
          zrotrate = cmplx(real(zrotrate),real(zrotrate_img))
 #endif
+c
+      else if (inpstr(lc1:lc2).eq.'itime2read') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) itime2read
+c
+      else if (inpstr(lc1:lc2).eq.'itaturb') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) itaturb
 c
       else
 c

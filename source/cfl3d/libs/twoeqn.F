@@ -39,7 +39,8 @@ c
       common /twod/ i2d
       common /wallfun/ iwf(3)
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
+      common /unst/ time,cfltau,ntstep,ita,iunst
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -66,7 +67,7 @@ c
      +  ti0(jdim,kdim,2,4),
      + qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
      +,vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),vi0(jdim,kdim,1,4)
-      dimension ux(jdim-1,kdim-1,idim-1,9),zksav2(jdim,kdim,idim,2),
+      dimension ux(jdim-1,kdim-1,idim-1,9),zksav2(jdim,kdim,idim,4),
      + v3dtmp(0:jdim,0:kdim,0:idim)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
@@ -96,6 +97,8 @@ c                epsilon          "             rhoref*aref**4/mulamref
 c                k                "             aref**2
 c      zksav2 - auxiliary k and omega (or epsilon) for saving quantities
 c               from last time step during time-accurate subiterations
+c               (k,j,i,1) and (j,k,i,2) = k and omega (or epsilon)
+c               (k,j,i,3) and (j,k,i,4) = delta k and delta omega (or epsilon)
 c      turre - working values of 2 turb quantities in this subroutine
 c      damp1 - for SST=CD (cross-derivative) term; for others, sometimes used
 c              as storage for linearizations of production terms for addition
@@ -381,6 +384,29 @@ c
         negn2 = 0
         return
       end if
+      phi=0.
+      if (real(dt) .gt. 0.) then
+        if (abs(ita) .eq. 2) then
+          phi=0.5
+        else
+          phi=0.
+        end if
+c   revert to old way (always 1st order for turb model) if itaturb=0
+        if (itaturb .eq. 0) then
+          phi=0.
+          if (isklton .gt. 0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   turb model is 1st'',
+     +       '' order in time'')')
+          end if
+        else
+          if (isklton .gt. 0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   turb model is same'',
+     +       '' order in time as mean flow eqns'')')
+          end if
+        end if
+      end if
 c
 c Get laminar viscosity at cell centers
       do i=1,idim-1
@@ -484,7 +510,33 @@ c   Load appropriate vist3d value into ghost cells
       end if
 c If this is 1st global subiteration for time-accurate computation,
 c save zksav (at time step n):
+c zksav2(j,k,i,1) and (j,k,i,2) are turb quantities
+c zksav2(j,k,i,3) and (j,k,i,4) are Delta turb quantities
       if (real(dt) .gt. 0. .and. icyc .eq. 1) then
+      if (abs(ita) .eq. 2) then
+c     if zksav2 at 1st point is zero, then we know that we do not have
+c     2nd order data from the restart; no choice but to set
+c     zksav2(j,k,i,3&4)=deltaQ=0 for 1st iteration
+        if (real(zksav2(1,1,1,1)) .eq. 0.) then
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              zksav2(j,k,i,3)=0.
+              zksav2(j,k,i,4)=0.
+            enddo
+          enddo
+        enddo
+        else
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              zksav2(j,k,i,3)=zksav(j,k,i,1)-zksav2(j,k,i,1)
+              zksav2(j,k,i,4)=zksav(j,k,i,2)-zksav2(j,k,i,2)
+            enddo
+          enddo
+        enddo
+        end if
+      end if
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -1811,8 +1863,8 @@ c      diagonal dominance)
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0
+              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
@@ -1820,8 +1872,10 @@ c      diagonal dominance)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+zksav2(j,k,i,1)-turre(j,k,i,1)
-                fy2(j,k)=fy2(j,k)+zksav2(j,k,i,2)-turre(j,k,i,2)
+                fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,3)
+                fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,4)
               enddo
             end if
           enddo
@@ -1923,8 +1977,8 @@ c      diagonal dominance)
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0
+              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
@@ -1932,8 +1986,10 @@ c      diagonal dominance)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+zksav2(j,k,i,1)-turre(j,k,i,1)
-                fy2(j,k)=fy2(j,k)+zksav2(j,k,i,2)-turre(j,k,i,2)
+                fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,3)
+                fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,4)
               enddo
             end if
 c
@@ -2034,8 +2090,8 @@ c      diagonal dominance)
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0
+              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
@@ -2043,8 +2099,10 @@ c      diagonal dominance)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+zksav2(j,k,i,1)-turre(j,k,i,1)
-                fy2(j,k)=fy2(j,k)+zksav2(j,k,i,2)-turre(j,k,i,2)
+                fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,3)
+                fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,4)
               enddo
             end if
           if (iover .eq. 1) then
@@ -2145,12 +2203,12 @@ c         Interior points
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0
+              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              fx(k,j)=rhside(j,k,i,1)
-              fx2(k,j)=rhside(j,k,i,2)
+              fx(k,j)=rhside(j,k,i,1)*(1.+phi)
+              fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
           enddo
 c
@@ -2225,12 +2283,12 @@ c         J0 boundary points
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0
+              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              fx(k,j)=rhside(j,k,i,1)
-              fx2(k,j)=rhside(j,k,i,2)
+              fx(k,j)=rhside(j,k,i,1)*(1.+phi)
+              fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
 c
 c         JDIM boundary points
@@ -2304,12 +2362,12 @@ c         JDIM boundary points
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0
+              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              fx(k,j)=rhside(j,k,i,1)
-              fx2(k,j)=rhside(j,k,i,2)
+              fx(k,j)=rhside(j,k,i,1)*(1.+phi)
+              fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
           if (iover .eq. 1) then
             do k=1,kdim-1
@@ -2410,12 +2468,12 @@ c           Interior points
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0
+                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                fz(k,i)=rhside(j,k,i,1)
-                fz2(k,i)=rhside(j,k,i,2)
+                fz(k,i)=rhside(j,k,i,1)*(1.+phi)
+                fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo
             enddo
 c
@@ -2490,12 +2548,12 @@ c           I0 boundary points
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0
+                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                fz(k,i)=rhside(j,k,i,1)
-                fz2(k,i)=rhside(j,k,i,2)
+                fz(k,i)=rhside(j,k,i,1)*(1.+phi)
+                fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo
 c
 c           IDIM boundary points
@@ -2569,12 +2627,12 @@ c           IDIM boundary points
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0
+                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                fz(k,i)=rhside(j,k,i,1)
-                fz2(k,i)=rhside(j,k,i,2)
+                fz(k,i)=rhside(j,k,i,1)*(1.+phi)
+                fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo
             if (iover .eq. 1) then
               do i=1,idim-1

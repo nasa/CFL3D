@@ -225,7 +225,7 @@ c
       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
      .                 ialphit,nttlast,icycupdt
       common /cpurate/ rate(5),ratesub(5),ncell(20)
-      common /cfl/ dt0
+      common /cfl/ dt0,dtold
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,

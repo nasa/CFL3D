@@ -14,7 +14,8 @@
      .                  ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
 c   ***CGNSstart
 c    .                  iaesurf,maxsegdg,wk,nwork)
-     .                  iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima)
+     .                  iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
+     .                  tursav2)
 c   ***CGNSend
 c
 c     $Id$
@@ -64,7 +65,7 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension qc0(jdim,kdim,idim-1,5)
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4)
       dimension deltj(kdim,idim,3,2),deltk(jdim,idim,3,2),
      .          delti(jdim,kdim,3,2)
       dimension utrans(maxbl),vtrans(maxbl),wtrans(maxbl),
@@ -95,6 +96,7 @@ c
      .          perturb(nmds,maxaes,4)
       dimension aesrfdat(5,maxaes)
 c
+      common /cfl/ dt0,dtold
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -112,6 +114,8 @@ c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
 c   ***CGNSend
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy,itime2read,itaturb
 c
 #if defined DIST_MPI
       nd_dest = mblk2nd(nbl)
@@ -120,7 +124,8 @@ c     set baseline tag values
 c
       ioffset    = maxbl
       itag_qc0   = 1
-      itag_dmdat = itag_qc0   + ioffset
+      itag_tursav= itag_qc0   + ioffset
+      itag_dmdat = itag_tursav+ ioffset
       itag_x     = itag_dmdat + ioffset
       itag_y     = itag_x     + ioffset
       itag_z     = itag_y     + ioffset
@@ -162,16 +167,31 @@ c
          end if
          read(2) ((((qc0(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .               l=1,5)
+c     itime2read=1=default=YES, read 2nd order time-accurate turb info
+c     itime2read=0=NO, do not read (for use with older CFL3D 2nd-order
+c                  time-accurate restart files, which was missing this info)
+         if (itime2read .eq. 1) then
+         read(2) dtold
+         read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .               l=1,2)
+         end if
 c   ***CGNSstart
       else
 #if defined CGNS
          write(11,'('' reading 2nd order time data from CGNS'',
      +    '' file for block '',i4)') nbl
          call rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,qc0)
+     +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
+     +     qc0,tursav2,dtold)
 #endif
       end if
 c   ***CGNSend
+      if (dtold .ne. dt) then
+        write(11,'('' time step has changed: old='',f12.6,
+     .   '', new='',f12.6)') dtold,dt
+        write(11,'('' ...1st step will be forced to be 1st order'',
+     .   '' in time (to maintain order property)'')')
+      end if
 c
 c        fill in edge values of qc0 array for safety before passing
 c        the data to the appropriate node
@@ -188,6 +208,25 @@ c
                end do
             end do
          end do
+c        fill in edge values of tursav2 array for safety before passing
+c        the data to the appropriate node
+c
+         do i=1,idim
+            k = kdim
+            do j=1,jdim1
+               tursav2(j,k,i,1) = tur10
+               tursav2(j,k,i,2) = tur20
+               tursav2(j,k,i,3) = 0.
+               tursav2(j,k,i,4) = 0.
+            end do
+            j=jdim
+            do k=1,kdim
+               tursav2(j,k,i,1) = tur10
+               tursav2(j,k,i,2) = tur20
+               tursav2(j,k,i,3) = 0.
+               tursav2(j,k,i,4) = 0.
+            end do
+         end do
 c
       end if
 #if defined DIST_MPI
@@ -201,6 +240,15 @@ c
      .                 nd_dest,mytag,mycomm,ierr)
       else if (myid .eq. mblk2nd(nbl)) then
          call MPI_Recv(qc0,jkim5,MY_MPI_REAL,
+     .                 myhost,mytag,mycomm,istat,ierr)
+      end if
+      jki4 = jdim*kdim*idim*4
+      mytag = itag_tursav + nbl
+      if (myid .eq. myhost) then
+         call MPI_Send(tursav2,jki4,MY_MPI_REAL,
+     .                 nd_dest,mytag,mycomm,ierr)
+      else if (myid .eq. mblk2nd(nbl)) then
+         call MPI_Recv(tursav2,jki4,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
       end if
 c

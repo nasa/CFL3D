@@ -32,7 +32,8 @@ c
       common /twod/ i2d
       common /zero/ iexp
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
+      common /unst/ time,cfltau,ntstep,ita,iunst
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -52,7 +53,7 @@ c
      + ,tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
      +  ti0(jdim,kdim,2,4),blank(jdim,kdim,idim),
      + qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
-      dimension tursav2(jdim,kdim,idim,2)
+      dimension tursav2(jdim,kdim,idim,4)
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
 c
@@ -75,6 +76,29 @@ c
         negn1 = 0
         negn2 = 0
         return
+      end if
+      phi=0.
+      if (real(dt) .gt. 0.) then
+        if (abs(ita) .eq. 2) then
+          phi=0.5
+        else
+          phi=0.
+        end if
+c   revert to old way (always 1st order for turb model) if itaturb=0
+        if (itaturb .eq. 0) then
+          phi=0.
+          if (isklton .gt. 0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   turb model is 1st'',
+     +       '' order in time'')')
+          end if
+        else
+          if (isklton .gt. 0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   turb model is same'',
+     +       '' order in time as mean flow eqns'')')
+          end if
+        end if
       end if
 c
 c   Note: (10.**(-iexp) is machine zero)
@@ -183,7 +207,32 @@ c Get laminar viscosity (divided by rho) at cell centers
       enddo
 c If this is 1st global subiteration for time-accurate computation,
 c save tursav (at time step n):
+c tursav2(j,k,i,1) and (j,k,i,2) are turb quantities 
+c tursav2(j,k,i,3) and (j,k,i,4) are Delta turb quantities
+c (in SA, only (j,k,i,1) and (j,k,i,3) are used)
       if (real(dt) .gt. 0. .and. icyc .eq. 1) then
+      if (abs(ita) .eq. 2) then
+c     if tursav2 at 1st point is zero, then we know that we do not have 
+c     2nd order data from the restart; no choice but to set 
+c     tursav2(j,k,i,3)=deltaQ=0 for 1st iteration
+        if (real(tursav2(1,1,1,1)) .eq. 0.) then
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              tursav2(j,k,i,3)=0.
+            enddo
+          enddo
+        enddo
+        else
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              tursav2(j,k,i,3)=tursav(j,k,i,1)-tursav2(j,k,i,1)
+            enddo
+          enddo
+        enddo
+        end if
+      end if
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -936,13 +985,14 @@ c      Add part of source terms to diagonal LHS in this sweep
             do j=1,jdim-1
               fact=timestp(j,k,i)
               by(j,k)=by(j,k)*fact
-              cy(j,k)=cy(j,k)*fact+1.0
+              cy(j,k)=cy(j,k)*fact+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*fact
               fy(j,k)=vist3d(j,k,i)*fact
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+tursav2(j,k,i,1)-turre(j,k,i)
+                fy(j,k)=fy(j,k)+(1.+phi)*(tursav2(j,k,i,1)-turre(j,k,i))
+     +                 +phi*tursav2(j,k,i,3)
               enddo
             end if
           enddo
@@ -1012,13 +1062,14 @@ c      Add part of source terms to diagonal LHS in this sweep
             do j=1,jdim-1
               fact=timestp(j,k,i)
               by(j,k)=by(j,k)*fact
-              cy(j,k)=cy(j,k)*fact+1.0
+              cy(j,k)=cy(j,k)*fact+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*fact
               fy(j,k)=vist3d(j,k,i)*fact
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+tursav2(j,k,i,1)-turre(j,k,i)
+                fy(j,k)=fy(j,k)+(1.+phi)*(tursav2(j,k,i,1)-turre(j,k,i))
+     +                 +phi*tursav2(j,k,i,3)
               enddo
             end if
 c
@@ -1087,13 +1138,14 @@ c      Add part of source terms to diagonal LHS in this sweep
             do j=1,jdim-1
               fact=timestp(j,k,i)
               by(j,k)=by(j,k)*fact
-              cy(j,k)=cy(j,k)*fact+1.0
+              cy(j,k)=cy(j,k)*fact+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*fact
               fy(j,k)=vist3d(j,k,i)*fact
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
-                fy(j,k)=fy(j,k)+tursav2(j,k,i,1)-turre(j,k,i)
+                fy(j,k)=fy(j,k)+(1.+phi)*(tursav2(j,k,i,1)-turre(j,k,i))
+     +                 +phi*tursav2(j,k,i,3)
               enddo
             end if
           if (iover .eq. 1) then
@@ -1176,9 +1228,9 @@ c         Interior points
             do k=1,kdim-1
               fact=timestp(j,k,i)
               bx(k,j)=bx(k,j)*fact
-              cx(k,j)=cx(k,j)*fact+1.0
+              cx(k,j)=cx(k,j)*fact+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*fact
-              fx(k,j)=vist3d(j,k,i)
+              fx(k,j)=vist3d(j,k,i)*(1.+phi)
             enddo
           enddo
 c
@@ -1242,9 +1294,9 @@ c         J0 boundary points
             do k=1,kdim-1
               fact=timestp(j,k,i)
               bx(k,j)=bx(k,j)*fact
-              cx(k,j)=cx(k,j)*fact+1.0
+              cx(k,j)=cx(k,j)*fact+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*fact
-              fx(k,j)=vist3d(j,k,i)
+              fx(k,j)=vist3d(j,k,i)*(1.+phi)
             enddo
 c
 c         JDIM boundary points
@@ -1307,9 +1359,9 @@ c         JDIM boundary points
             do k=1,kdim-1
               fact=timestp(j,k,i)
               bx(k,j)=bx(k,j)*fact
-              cx(k,j)=cx(k,j)*fact+1.0
+              cx(k,j)=cx(k,j)*fact+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*fact
-              fx(k,j)=vist3d(j,k,i)
+              fx(k,j)=vist3d(j,k,i)*(1.+phi)
             enddo
           if (iover .eq. 1) then
             do k=1,kdim-1
@@ -1392,9 +1444,9 @@ c           Interior points
               do k=1,kdim-1
                 fact=timestp(j,k,i)
                 bz(k,i)=bz(k,i)*fact
-                cz(k,i)=cz(k,i)*fact+1.0
+                cz(k,i)=cz(k,i)*fact+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*fact
-                fz(k,i)=vist3d(j,k,i)
+                fz(k,i)=vist3d(j,k,i)*(1.+phi)
               enddo
             enddo
 c
@@ -1458,9 +1510,9 @@ c           I0 boundary points
               do k=1,kdim-1
                 fact=timestp(j,k,i)
                 bz(k,i)=bz(k,i)*fact
-                cz(k,i)=cz(k,i)*fact+1.0
+                cz(k,i)=cz(k,i)*fact+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*fact
-                fz(k,i)=vist3d(j,k,i)
+                fz(k,i)=vist3d(j,k,i)*(1.+phi)
               enddo
 c
 c           IDIM boundary points
@@ -1523,9 +1575,9 @@ c           IDIM boundary points
               do k=1,kdim-1
                 fact=timestp(j,k,i)
                 bz(k,i)=bz(k,i)*fact
-                cz(k,i)=cz(k,i)*fact+1.0
+                cz(k,i)=cz(k,i)*fact+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*fact
-                fz(k,i)=vist3d(j,k,i)
+                fz(k,i)=vist3d(j,k,i)*(1.+phi)
               enddo
             if (iover .eq. 1) then
               do i=1,idim-1

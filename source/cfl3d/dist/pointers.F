@@ -685,13 +685,13 @@ c
             ns = ibcmax*7*2
          end if
 c
-c........xib2(jdim,kdim,idim,2)
+c........xib2(jdim,kdim,idim,4)
 c        extra storage for subiterations for time-accurate turb. models
 c
          lw(45,nbl) = lw(44,nbl) + ns
          ns = 0
          if((ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
-     .      .and. real(dt) .gt. 0.) ns=jmkmim*2
+     .      .and. real(dt) .gt. 0.) ns=jmkmim*4
 c
 c........ux(jdim-1,kdim-1,idim-1,9)    
 c        velocity gradients for EASM k-omega or k-epsilon turb models

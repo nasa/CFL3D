@@ -224,7 +224,7 @@ c
       dimension factjlo(intmx,msub1),factjhi(intmx,msub1),
      .          factklo(intmx,msub1),factkhi(intmx,msub1)
 c
-      common /cfl/ dt0
+      common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
 c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
@@ -271,7 +271,7 @@ c   ***CGNSend
      .              tp(4,4)
       common /rigidbody/ irigb,irbtrim
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
 c
 c      time step cycle:
 c
@@ -649,6 +649,11 @@ c
 c     loop over time steps
 c
       do 6000 nt=1,ntstep
+      itatemp=ita
+c     always do 1st order time 1st iteration if restarting and changing time step
+      if (nt .eq. 1 .and. dt .ne. dtold) then
+        ita=sign(1,ita)
+      end if
 c
       if (nt.gt.1) isklton = 0
 c
@@ -2239,6 +2244,8 @@ c     end upward leg of multigrid cycle
 c***********************************************
 c
  6999 continue
+c     recover original ita
+      ita=itatemp
 c
 c     write restart file if non time-accurate
 c
@@ -2533,7 +2540,7 @@ c   ***CGNSend
      .                 maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
 c   ***CGNSstart
 c    .                 nwork)
-     .                 nwork,idima,jdima,kdima,igrid)
+     .                 nwork,idima,jdima,kdima,igrid,w(lxib2))
 c   ***CGNSend
                end if
  6060          continue
@@ -2589,7 +2596,7 @@ c   ***CGNSend
      .                    maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
 c   ***CGNSstart
 c    .                    nwork)
-     .                    nwork,idima,jdima,kdima,igrid)
+     .                    nwork,idima,jdima,kdima,igrid,w(lxib2))
 c   ***CGNSend
                   end if
  6070             continue

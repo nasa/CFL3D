@@ -2714,9 +2714,7 @@ c***********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      dimension ideg(3)
-c
-      integer idata(6)
+      dimension ideg(3),idata(6),units(5)
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -2964,6 +2962,17 @@ c   Create DataArray containing Sutherland law constant under ViscosityModel
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
       if (ier .ne. 0) call cg_error_exit_f
+      units(1)=0.
+      units(2)=0.
+      units(3)=0.
+      units(4)=1.
+      units(5)=0.
+      if (idouble .eq. 1) then
+        call cg_exponents_write_f(RealDouble,units,ier)
+      else
+        call cg_exponents_write_f(RealSingle,units,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
 c
       return
       end
@@ -2990,7 +2999,7 @@ c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      integer idata(6)
+      dimension idata(6)
       character name*32,text*32
 c
 c   Determine if single or double precision is being used:
@@ -3354,7 +3363,7 @@ c   Go to BaseIterativeData level and write time value
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,
      +  'DataArray_t',1,'end')
-      call cg_dataclass_write_f(NondimensionalParameter,ier)
+      call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   Go to BaseIterativeData level and write iteration value
       call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
@@ -3380,7 +3389,7 @@ c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      parameter (numnames=2)
+      parameter (numnames=3)
 c
       character name(numnames)*32
 c
@@ -3469,6 +3478,7 @@ c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
+      dimension units(5)
       character chardata*80
 c
 c   Determine if single or double precision is being used:
@@ -3556,6 +3566,17 @@ c   Go to ReferenceState node, write Temperature array and dataclass & units
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
       if (ier .ne. 0) call cg_error_exit_f
+      units(1)=0.
+      units(2)=0.
+      units(3)=0.
+      units(4)=1.
+      units(5)=0.
+      if (idouble .eq. 1) then
+        call cg_exponents_write_f(RealDouble,units,ier)
+      else
+        call cg_exponents_write_f(RealSingle,units,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
 c
 c   Go to ReferenceState node, write AngleofAttack array and dataclass & units
 c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
@@ -3573,6 +3594,17 @@ c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Null,Degree,ier)
       if (ier .ne. 0) call cg_error_exit_f
+      units(1)=0.
+      units(2)=0.
+      units(3)=0.
+      units(4)=0.
+      units(5)=1.
+      if (idouble .eq. 1) then
+        call cg_exponents_write_f(RealDouble,units,ier)
+      else
+        call cg_exponents_write_f(RealSingle,units,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
 c
 c   Go to ReferenceState node, write AngleofYaw array and dataclass & units
 c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
@@ -3589,6 +3621,17 @@ c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
       call cg_dataclass_write_f(Dimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Null,Degree,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      units(1)=0.
+      units(2)=0.
+      units(3)=0.
+      units(4)=0.
+      units(5)=1.
+      if (idouble .eq. 1) then
+        call cg_exponents_write_f(RealDouble,units,ier)
+      else
+        call cg_exponents_write_f(RealSingle,units,ier)
+      end if
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Go to ReferenceState node, write Density array and dataclass
@@ -4058,6 +4101,9 @@ c**********************************************************************
 c     Purpose: Writes a "copy" of the CFL3D input file to CGNS file,
 c     as a descriptor node called "InputFileUsed" under the Base.
 c     (Currently limited to a maximum of 2969 lines)
+c     Note:  if irest=0, you really want to delete any existing
+c     "InputFileUsed" nodes, but this is hard to do so we currently 
+c     keep all of them.
 c     Also writes the case title to a separate descriptor node called
 c     "CaseTitle"
 c   
@@ -4452,9 +4498,10 @@ c
       end
 c
       subroutine wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                   jdim,kdim,wk,qc0,nsoluse,i2d)
+     +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,dt)
 c**********************************************************************
-c     Purpose: Writes qc0 (Q's from previous time step) for 2nd order
+c     Purpose: Writes qc0 & tursav2 (Q's and turb quantities
+c     from previous time step) & dt for 2nd order
 c     time-accurate solns, for zone number "igrid".
 c     The CGNS file must be already opened in "MODE_MODIFY" mode.
 c     Writes results in the following order:
@@ -4465,6 +4512,9 @@ c     even though they are stored in CFL3D in the order: jdim,kdim,idim
 c     Also writes rind cell information: No B.C info exists for these.
 c     Currently we output -999 to indicate they are not applicable.
 c     For 2-D solutions, rind cells are not written in the i-direction.
+c     Currently writes dt to the BaseIterativeData node...
+c     We do this until a 'UserDefinedDataArray' node is allowed in
+c     CGNS.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -4484,19 +4534,23 @@ c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
+c      tursav2..........cell-centered turb values from last time step, 
+c                       in (j,k,i) order; dimensioned by 4, but only
+c                       need to store two of them (real)
 c      nsoluse..........FlowSolution index number where data to be
 c                       stored (integer)
 c      i2d..............0 if 3-D (rind data to be output in all 3
 c                          directions),
 c                       1 if 2-D (rind data to be output only in j-
 c                          and k- directions)
+c      dt...............time step (real)
 c   OUTPUTS:
 c      none
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      dimension qc0(jdim,kdim,idim-1,5),
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4),
      .          wk(i2d:idima-i2d,0:jdima,0:kdima)
 c
 c   Determine if single or double precision is being used:
@@ -4582,13 +4636,70 @@ c   Pressure:
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
+c   First turb quantity:
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  tursav2,wk,wk,wk,wk,wk,wk,4,1,2,wk)
+      if (idouble .eq. 1) then
+      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                      'TurbVal1LastDT', wk, ifindex, ier)
+      else
+      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                      'TurbVal1LastDT', wk, ifindex, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Second turb quantity:
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  tursav2,wk,wk,wk,wk,wk,wk,4,2,2,wk)
+      if (idouble .eq. 1) then
+      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                      'TurbVal2LastDT', wk, ifindex, ier)
+      else
+      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                      'TurbVal2LastDT', wk, ifindex, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Go to BaseIterativeData level and write delta t
+      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      if (idouble .eq. 1) then
+        call cg_array_write_f('LatestDTUsed',RealDouble,1,1,dt,ier)
+      else
+        call cg_array_write_f('LatestDTUsed',RealSingle,1,1,dt,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,
+     +  'DataArray_t',3,'end')
+      call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c   Go to Base node, write TimeStep array as UserDefinedData
+c     call cg_goto_f(iccg,ibase,ier,'end')
+c     if (ier .ne. 0) call cg_error_exit_f
+c     call cg_user_data_write_f('TimeStep', indexu, ier)
+c     if (ier .ne. 0) call cg_error_exit_f
+c     call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',1,'end')
+c     if (ier .ne. 0) call cg_error_exit_f
+c     if (idouble .eq. 1) then
+c       call cg_array_write_f('LatestDTUsed',RealDouble,1,1,dt,ier)
+c     else
+c       call cg_array_write_f('LatestDTUsed',RealSingle,1,1,dt,ier)
+c     end if
+c     if (ier .ne. 0) call cg_error_exit_f
+c     call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',1,
+c    +  'DataArray_t',1,'end')
+c     call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
+c     if (ier .ne. 0) call cg_error_exit_f
+c
       return
       end
 c
       subroutine rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                   jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,qc0)
+     +                   jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
+     +                   qc0,tursav2,dtold)
 c**********************************************************************
-c     Purpose: Reads qc0 (Q's from previous time step) for 2nd order
+c     Purpose: Reads qc0 & tursav2 (Q's and turb quantities
+c     from previous time step) & dt for 2nd order
 c     time-accurate solns, for zone number "igrid". Must know (through 
 c     irind,jrind,krind) what Rind Cell info exists.
 c     Gets results in the following order:
@@ -4597,6 +4708,9 @@ c       (jdim,kdim,idim) <- necessary for CFL3D!,
 c
 c     and assumes they are stored in the CGNS database in the order:
 c     (idim,jdim,kdim)
+c     Currently reads dtold from the BaseIterativeData node...
+c     We do this until a 'UserDefinedDataArray' node is allowed in
+c     CGNS.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -4615,19 +4729,25 @@ c      nsoluse..........CGNS "FlowSolution" index number (integer)
 c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
 c      i2d..............0 if 3-D, 1 if 2-D
+c      dt...............current time step (real)
 c   OUTPUTS:
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
+c      tursav2..........cell-centered turb values from last time step,
+c                       in (j,k,i) order; dimensioned by 4, but only
+c                       need to store two of them (real)
+c      dtold............previous (saved) time step (real)
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      parameter(numfield=50)
+      parameter(numfield=50,numnames=3)
 c
-      dimension qc0(jdim,kdim,idim-1,5), 
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4),
      +   wk(idima-2*irind+1,jdima-2*jrind+1,kdima-2*krind+1)
       dimension irmin(3),irmax(3)
       character*32 fieldname(numfield),fndesired(numfield)
+      character*32 name(numnames)
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -4715,6 +4835,112 @@ c   Read Q's:
      +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,m))
       enddo
 c
+c   Now get 2nd order turb quantities (they may not exist if this
+c   is reading an older file)
+      numwanted=2
+      fndesired(1)='TurbVal1LastDT'
+      fndesired(2)='TurbVal2LastDT'
+      ibad=0
+      do n=1,numwanted
+        ido=0
+        do nn=1,nfields
+          if(fndesired(n) .eq. fieldname(nn)) then
+            ido=1
+          end if
+        enddo
+        if (ido .eq. 0) then
+          write(11,'('' Cannot find solution of name '',a32)')
+     +      fndesired(n)
+          write(11,'('' ...leaving old turbs as 0 and continuing'')')
+          ibad=1
+        end if
+      enddo
+      if (ibad .eq. 1) then
+c       Do not read - values will be left as zero (as initialized)
+        continue
+      else
+c   Read old turb quantities:
+        do m=1,2
+        if (idouble .eq. 1) then
+        call cg_field_read_f(iccg, ibase, igrid, nsoluse,
+     +     fndesired(m), RealDouble, irmin, irmax, wk, ier)
+        else
+        call cg_field_read_f(iccg, ibase, igrid, nsoluse,
+     +     fndesired(m), RealSingle, irmin, irmax, wk, ier)
+        end if
+        if (ier .ne. 0) call cg_error_exit_f
+        call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav2(1,1,1,m))
+        enddo
+      end if
+c   Read BaseIterativeData node
+      call cg_biter_read_f(iccg,ibase,name,nsteps,ier)
+      if (ier .gt. 0) then
+         write(11,'('' WARNING: BaseIterativeData node does not '',
+     +    ''exist.'')')
+         write(11,'(''   Setting dtold=dt and continuing'')')
+         dtold=dt
+         return
+      end if
+c   Go to BaseIterativeData node and get info
+      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_narrays_f(narrays,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (narrays .gt. numnames) then
+         write(11,'('' WARNING.  Too many BaseIterativeData'',
+     +    '' arrays.'')')
+         write(11,'(''   Setting dtold=dt and continuing'')')
+         dtold=dt
+         return
+      end if
+      do n=1,narrays
+        call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+      enddo
+c
+c   Get TimeValues
+      do n=1,narrays
+        if (name(n) .eq. 'LatestDTUsed') goto 101
+      enddo
+      write(11,'('' WARNING. No LatestDTUsed node exists'')')
+      write(11,'(''   Setting dtold=dt and continuing'')')
+      dtold=dt
+      goto 201
+ 101  continue
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,dtold,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,dtold,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+ 201  continue
+c
+c   Go to Base node, read TimeStep array from UserDefinedData
+c     call cg_goto_f(iccg,ibase,ier,'end')
+c     if (ier .ne. 0) call cg_error_exit_f
+c     call cg_nuser_data_f(nuserdata,ier)
+c     if (nuserdata .eq. 0) then
+c       write(11,'('' no old time step available, set to current'')')
+c       dtold=dt
+c     else
+c       do n=1,nuserdata
+c         call cg_user_data_read_f(n,fieldname(n),ier)
+c       enddo
+c       fndesired(1)='TimeStep'
+c       dtold=dt
+c       do n=1,nuserdata
+c         if(fndesired(1) .eq. fieldname(n)) then
+c           call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',n,'end')
+c           if (ier .ne. 0) call cg_error_exit_f
+c           if (idouble .eq. 1) then
+c             call cg_array_read_as_f(1,RealDouble,dtold,ier)
+c           else
+c             call cg_array_read_as_f(1,RealSingle,dtold,ier)
+c           end if
+c           if (ier .ne. 0) call cg_error_exit_f
+c         end if
+c       enddo
+c     end if
       return
       end
 c

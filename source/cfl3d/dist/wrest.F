@@ -77,7 +77,7 @@ c
       common /maxiv/ ivmx
       common /ghost/ irghost,iwghost
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
 c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /degshf/ ideg(3)

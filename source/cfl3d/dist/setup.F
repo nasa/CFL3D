@@ -1947,7 +1947,8 @@ c   ***CGNSend
      .              maxbl,ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
 c   ***CGNSstart
 c    .              iaesurf,maxsegdg,wk,nwork)
-     .              iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima)
+     .              iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
+     .              w(lxib2))
 c   ***CGNSend
             end if
  1811       continue
@@ -2033,7 +2034,8 @@ c   ***CGNSend
      .                 maxbl,ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
 c   ***CGNSstart
 c    .                 iaesurf,maxsegdg,wk,nwork)
-     .                 iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima)
+     .                 iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
+     .                 w(lxib2))
 c   ***CGNSend
                   if (myid.eq.myhost) then
                      if (iuns .ne. iunsn) then

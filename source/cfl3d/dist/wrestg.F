@@ -13,7 +13,7 @@
      .                  maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
 c   ***CGNSstart
 c    .                  wk,nwork)
-     .                  wk,nwork,idima,jdima,kdima,igrid)
+     .                  wk,nwork,idima,jdima,kdima,igrid,tursav2)
 c   ***CGNSend
 c
 c     $Id$
@@ -50,7 +50,7 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension qc0(jdim,kdim,idim-1,5)
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4)
       dimension deltj(kdim,idim,3,2),deltk(jdim,idim,3,2),
      .          delti(jdim,kdim,3,2)
       dimension utrans(maxbl),vtrans(maxbl),wtrans(maxbl),
@@ -108,7 +108,8 @@ c     set baseline tag values
 c
       ioffset    = maxbl
       itag_qc0   = 1
-      itag_dmdat = itag_qc0   + ioffset
+      itag_tursav= itag_qc0   + ioffset
+      itag_dmdat = itag_tursav+ ioffset
       itag_x     = itag_dmdat + ioffset
       itag_y     = itag_x     + ioffset
       itag_z     = itag_y     + ioffset
@@ -139,6 +140,15 @@ c
             call MPI_Recv(qc0,jkim5,MY_MPI_REAL,
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
+         jki4 = jdim*kdim*idim*4
+         mytag = itag_tursav + nbl
+         if (myid .eq. mblk2nd(nbl)) then
+            call MPI_Send(tursav2,jki4,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            call MPI_Recv(tursav2,jki4,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
 c
 #endif
          if (myid.eq.myhost) then
@@ -152,13 +162,18 @@ c
             write(2) jdim,kdim,idim
             write(2) ((((qc0(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .                   l=1,5)
+            write(2) dt
+c   only need to store old values of turb quantities (j,k,i,1) and
+c   (j,k,i,2), NOT the deltaQ's = (j,k,i,3) and (j,k,i,4):
+            write(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),
+     .                   i=1,idim1),l=1,2)
 c   ***CGNSstart
          else
 #if defined CGNS
          write(11,'('' writing 2nd order time data to CGNS file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                jdim,kdim,wk,qc0,nsoluse,i2d)
+     +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,dt)
 #endif
          end if
 c   ***CGNSend

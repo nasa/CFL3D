@@ -50,7 +50,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension wfa(1),iwfa(1)
       dimension jbctyp(2),kbctyp(2),ibctyp(2)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
-      dimension ux(jdim-1,kdim-1,idim-1,9),xib2(jdim,kdim,idim,2)
+      dimension ux(jdim-1,kdim-1,idim-1,9),xib2(jdim,kdim,idim,4)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
      .          nbck0(maxbl),nbckdim(maxbl),ibcinfo(maxbl,maxseg,7,2),
@@ -58,7 +58,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
       dimension mblk2nd(maxbl),idefrm(maxbl),iadvance(maxbl)
 c
-      common /cfl/ dt0
+      common /cfl/ dt0,dtold
       common /fvfds/ rkap0(3),ifds(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,

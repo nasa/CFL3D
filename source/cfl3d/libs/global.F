@@ -119,6 +119,7 @@ c
      .          inewgg(maxgr)
       dimension iadvance(maxbl),iforce(maxbl),icsinfo(maxcs,9)
 c
+      common /cfl/ dt0,dtold
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
@@ -165,7 +166,7 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /deformz/ beta1,ismooth,negvol
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy
+     .                  iwarneddy,itime2read,itaturb
 c
       pi = 4.0*atan(1.0)
 c
@@ -339,6 +340,7 @@ c
       read(iunit5,*) realval(1),irest,iflagts,realval(2),iunst,
      .               realval(3)
       dt     = realval(1)
+      dtold  = dt
       fmax   = realval(2)
       cfltau = realval(3)
       if (real(dt) .lt. 0.0)  iunst = 0
