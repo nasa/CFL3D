@@ -208,14 +208,16 @@ c
            end if
         end if
 c  
+        izzndx = i-(2*m)+3
         do 1030 j=js,je
         do 1030 k=ks,ke
         izz = (k-1)*jdim+j
-        si(izz,i,1) = 0.e0
-        si(izz,i,2) = 0.e0
-        si(izz,i,3) = 0.e0
+c       set directions on collapsed face equal to those at closest interior face
+        si(izz,i,1) = si(izz,izzndx,1)
+        si(izz,i,2) = si(izz,izzndx,2)
+        si(izz,i,3) = si(izz,izzndx,3)
         si(izz,i,4) = 0.e0
-        si(izz,i,5) = 0.e0
+        si(izz,i,5) = si(izz,izzndx,5)
  1030   continue
 c
       else
@@ -502,11 +504,13 @@ c
         do 2030 i=is,ie
         do 2030 k=ks,ke
         izz = (k-1)*jdim+j
-        sj(izz,i,1) = 0.e0
-        sj(izz,i,2) = 0.e0
-        sj(izz,i,3) = 0.e0
+        izzndx = izz-(2*m)+3
+c       set directions on collapsed face equal to those at closest interior face
+        sj(izz,i,1) = sj(izzndx,i,1)
+        sj(izz,i,2) = sj(izzndx,i,2)
+        sj(izz,i,3) = sj(izzndx,i,3)
         sj(izz,i,4) = 0.e0
-        sj(izz,i,5) = 0.e0
+        sj(izz,i,5) = sj(izzndx,i,5)
  2030   continue
 c
       else
@@ -721,11 +725,13 @@ c
         do 3030 i=is,ie
         do 3030 j=js,je
         izz = (k-1)*jdim+j
-        sk(izz,i,1) = 0.e0
-        sk(izz,i,2) = 0.e0
-        sk(izz,i,3) = 0.e0
+        izzndx = izz-(2*jdim*m)+(3*jdim)
+c       set directions on collapsed face equal to those at closest interior face
+        sk(izz,i,1) = sk(izzndx,i,1)
+        sk(izz,i,2) = sk(izzndx,i,2)
+        sk(izz,i,3) = sk(izzndx,i,3)
         sk(izz,i,4) = 0.e0
-        sk(izz,i,5) = 0.e0
+        sk(izz,i,5) = sk(izzndx,i,5)
  3030   continue
 c
       else
