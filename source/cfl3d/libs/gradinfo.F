@@ -16,6 +16,7 @@ c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
+      common /igrdtyp/ ip3dgrd,ialph
 c
       if (real(xmach_img) .gt. 0.) then
          delh = xmach_img
@@ -68,14 +69,24 @@ c
       else if (real(yrotrate_img) .gt. 0.) then
          delh = real(yrotrate_img)
          if (iunit .gt. 0) then
+            if (ialph .eq. 0) then
             write(iunit,'(''                      derivatives with '',
-     .                 ''respect to omega_y (pitch or yaw rate)'')')
+     .                 ''respect to omega_y (pitch rate)'')')
+            else
+            write(iunit,'(''                      derivatives with '',
+     .                 ''respect to omega_y (yaw rate)'')')
+            end if
          end if
       else if (real(zrotrate_img) .gt. 0.) then
          delh = real(zrotrate_img)
          if (iunit .gt. 0) then
+            if (ialph .eq. 0) then
             write(iunit,'(''                      derivatives with '',
-     .                 ''respect to omega_z (yaw or pitch rate)'')')
+     .                 ''respect to omega_z (yaw rate)'')')
+            else
+            write(iunit,'(''                      derivatives with '',
+     .                 ''respect to omega_z (pitch rate)'')')
+            end if
          end if
       end if
 c
