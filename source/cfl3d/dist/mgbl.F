@@ -506,6 +506,15 @@ c
       do iii = 1,nvalsi
          iwork(iii) = 0
       end do
+c
+c     recompute gamma-based constants (gamma may have changed via
+c     keyword input)
+c
+      gm1      = gamma-1.0e0
+      gp1      = gamma+1.0e0
+      gm1g     = gm1/gamma
+      gp1g     = gp1/gamma
+      ggm1     = gamma*gm1
 #endif
 c
 c***********************************************************************
