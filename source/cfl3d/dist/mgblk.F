@@ -449,6 +449,16 @@ c
         mytag_qb(ll) = mytag_qb(ll-1) + maxbl
       end do
 #endif
+c
+c     initialize mismatch check arrays
+c
+      do nn=1,2*mxbli
+         geom_miss(nn) = 0.
+      end do
+      do nn=1,lbcprd
+         period_miss(nn) = 0.
+      end do
+c
 c********************************************************************
 c
 c     begin time advancement
