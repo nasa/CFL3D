@@ -311,6 +311,7 @@ c  PLOT3D-type
         enddo
       else
 c   CFL3D-type
+        nbl = nblock
         do n=1,nblock
           read(2,*) jdim(n),kdim(n),idim(n)
           id=idim(n)
