@@ -357,7 +357,7 @@ c
          ns = jmkmim
 c
 c........y(jdim,kdim,idim)
-c        grid point x coordinate
+c        grid point y coordinate
 c
          lw(11,nbl) = lw(10,nbl) + ns
          ns = jmkmim
