@@ -246,7 +246,7 @@ c
          if (ldir .gt. 0) then
             i0   = ista
             is   = ista + 1
-            ie   = iend - 1
+            ie   = iend
             ii0  = 1
             iinc = 1
             iic  = idimc-1
@@ -338,7 +338,7 @@ c
          if (ldir .gt. 0) then
             k0   = ksta
             ks   = ksta + 1
-            ke   = kend - 1
+            ke   = kend
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
@@ -540,7 +540,7 @@ c
          if (ldir .gt. 0) then
             i0   = ista
             is   = ista + 1
-            ie   = iend - 1
+            ie   = iend
             ii0  = 1
             iinc = 1
             iic  = idimc-1
@@ -632,7 +632,7 @@ c
          if (ldir .gt. 0) then
             k0   = ksta
             ks   = ksta + 1
-            ke   = kend - 1
+            ke   = kend
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
@@ -833,7 +833,7 @@ c
          if (ldir .gt. 0) then
             i0   = ista
             is   = ista + 1
-            ie   = iend - 1
+            ie   = iend
             ii0  = 1
             iinc = 1
             iic  = idimc-1
@@ -925,7 +925,7 @@ c
          if (ldir .gt. 0) then
             j0   = jsta
             js   = jsta + 1
-            je   = jend - 1
+            je   = jend
             jj0  = 1
             jinc = 1
             jjc  = jdimc-1
@@ -1127,7 +1127,7 @@ c
          if (ldir .gt. 0) then
             i0   = ista
             is   = ista + 1
-            ie   = iend - 1
+            ie   = iend
             ii0  = 1
             iinc = 1
             iic  = idimc-1
@@ -1219,7 +1219,7 @@ c
          if (ldir .gt. 0) then
             j0   = jsta
             js   = jsta + 1
-            je   = jend - 1
+            je   = jend
             jj0  = 1
             jinc = 1
             jjc  = jdimc-1
@@ -1422,7 +1422,7 @@ c
          if (ldir .gt. 0) then
             j0   = jsta
             js   = jsta + 1
-            je   = jend - 1
+            je   = jend
             jj0  = 1
             jinc = 1
             jjc  = jdimc-1
@@ -1514,7 +1514,7 @@ c
          if (ldir .gt. 0) then
             k0   = ksta
             ks   = ksta + 1
-            ke   = kend - 1
+            ke   = kend
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
@@ -1716,7 +1716,7 @@ c
          if (ldir .gt. 0) then
             j0   = jsta
             js   = jsta + 1
-            je   = jend - 1
+            je   = jend
             jj0  = 1
             jinc = 1
             jjc  = jdimc-1
@@ -1808,7 +1808,7 @@ c
          if (ldir .gt. 0) then
             k0   = ksta
             ks   = ksta + 1
-            ke   = kend - 1
+            ke   = kend
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
