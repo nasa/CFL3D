@@ -85,11 +85,15 @@ c
         omegzt =   omegz
         thetayt=  thetay
         thetazt=  thetaz
+        yorgt =    yorg 
+        zorgt =    zorg 
       else
         omegyt = - omegz
         omegzt =   omegy
         thetayt= -thetaz
         thetazt=  thetay
+        yorgt =  - zorg 
+        zorgt =    yorg 
       end if
 c
       if (abs(real(omegx)) .gt. 0.0) then
@@ -121,11 +125,11 @@ c
                do k=kci,kcf
                   tempy           = y(j,k,ii)
                   tempz           = z(j,k,ii)
-                  delti(j,k,2,ll) = wki(j,k,ll)*((tempy-yorg)*ca
-     .                            - (tempz-zorg)*sa+yorg - tempy)
+                  delti(j,k,2,ll) = wki(j,k,ll)*((tempy-yorgt)*ca
+     .                            - (tempz-zorgt)*sa+yorgt - tempy)
      .                            + delti(j,k,2,ll)
-                  delti(j,k,3,ll) = wki(j,k,ll)*((tempy-yorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+                  delti(j,k,3,ll) = wki(j,k,ll)*((tempy-yorgt)*sa
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + delti(j,k,3,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -135,11 +139,11 @@ c
                do i=ici,icf
                   tempy           = y(jj,k,i)
                   tempz           = z(jj,k,i)
-                  deltj(k,i,2,ll) = wkj(k,i,ll)*((tempy-yorg)*ca
-     .                            - (tempz-zorg)*sa+yorg - tempy)
+                  deltj(k,i,2,ll) = wkj(k,i,ll)*((tempy-yorgt)*ca
+     .                            - (tempz-zorgt)*sa+yorgt - tempy)
      .                            + deltj(k,i,2,ll)
-                  deltj(k,i,3,ll) = wkj(k,i,ll)*((tempy-yorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+                  deltj(k,i,3,ll) = wkj(k,i,ll)*((tempy-yorgt)*sa
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + deltj(k,i,3,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -149,11 +153,11 @@ c
                do i=ici,icf
                   tempy           = y(j,kk,i)
                   tempz           = z(j,kk,i)
-                  deltk(j,i,2,ll) = wkk(j,i,ll)*((tempy-yorg)*ca
-     .                            - (tempz-zorg)*sa+yorg - tempy)
+                  deltk(j,i,2,ll) = wkk(j,i,ll)*((tempy-yorgt)*ca
+     .                            - (tempz-zorgt)*sa+yorgt - tempy)
      .                            + deltk(j,i,2,ll)
-                  deltk(j,i,3,ll) = wkk(j,i,ll)*((tempy-yorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+                  deltk(j,i,3,ll) = wkk(j,i,ll)*((tempy-yorgt)*sa
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + deltk(j,i,3,ll)
                   wkk(j,i,ll)     = 0.
                end do
@@ -191,10 +195,10 @@ c
                   tempx           = x(j,k,ii)
                   tempz           = z(j,k,ii)
                   delti(j,k,1,ll) = wki(j,k,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorg)*sa+xorg - tempx)
+     .                            + (tempz-zorgt)*sa+xorg - tempx)
      .                            + delti(j,k,1,ll)
                   delti(j,k,3,ll) = wki(j,k,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + delti(j,k,3,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -205,10 +209,10 @@ c
                   tempx           = x(jj,k,i)
                   tempz           = z(jj,k,i)
                   deltj(k,i,1,ll) = wkj(k,i,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorg)*sa+xorg - tempx)
+     .                            + (tempz-zorgt)*sa+xorg - tempx)
      .                            + deltj(k,i,1,ll)
                   deltj(k,i,3,ll) = wkj(k,i,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + deltj(k,i,3,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -219,10 +223,10 @@ c
                   tempx           = x(j,kk,i)
                   tempz           = z(j,kk,i)
                   deltk(j,i,1,ll) = wkk(j,i,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorg)*sa+xorg - tempx)
+     .                            + (tempz-zorgt)*sa+xorg - tempx)
      .                            + deltk(j,i,1,ll)
                   deltk(j,i,3,ll) = wkk(j,i,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorg)*ca+zorg - tempz)
+     .                            + (tempz-zorgt)*ca+zorgt - tempz)
      .                            + deltk(j,i,3,ll)
                   wkk(j,i,ll)     = 0.
                end do
@@ -260,10 +264,10 @@ c
                   tempx           = x(j,k,ii)
                   tempy           = y(j,k,ii)
                   delti(j,k,1,ll) = wki(j,k,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorg)*sa+xorg - tempx)
+     .                            - (tempy-yorgt)*sa+xorg - tempx)
      .                            + delti(j,k,1,ll)
                   delti(j,k,2,ll) = wki(j,k,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorg)*ca+yorg - tempy)
+     .                            + (tempy-yorgt)*ca+yorgt - tempy)
      .                            + delti(j,k,2,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -274,10 +278,10 @@ c
                   tempx           = x(jj,k,i)
                   tempy           = y(jj,k,i)
                   deltj(k,i,1,ll) = wkj(k,i,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorg)*sa+xorg - tempx)
+     .                            - (tempy-yorgt)*sa+xorg - tempx)
      .                            + deltj(k,i,1,ll)
                   deltj(k,i,2,ll) = wkj(k,i,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorg)*ca+yorg - tempy)
+     .                            + (tempy-yorgt)*ca+yorgt - tempy)
      .                            + deltj(k,i,2,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -288,10 +292,10 @@ c
                   tempx           = x(j,kk,i)
                   tempy           = y(j,kk,i)
                   deltk(j,i,1,ll) = wkk(j,i,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorg)*sa+xorg - tempx)
+     .                            - (tempy-yorgt)*sa+xorg - tempx)
      .                            + deltk(j,i,1,ll)
                   deltk(j,i,2,ll) = wkk(j,i,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorg)*ca+yorg - tempy)
+     .                            + (tempy-yorgt)*ca+yorgt - tempy)
      .                            + deltk(j,i,2,ll)
                   wkk(j,i,ll)     = 0.
                end do
