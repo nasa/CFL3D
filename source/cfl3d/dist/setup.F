@@ -166,6 +166,7 @@ c
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /avgdata/ xnumavg,iteravg
+      common /gridtrans/ roll_angle
 c
       if (myid.eq.myhost) then
       if (icgns .ne. 1) then
@@ -367,6 +368,23 @@ c
       end if
 c
       end if 
+c
+c
+      if (myid.eq.myhost) then
+         if (igrid .eq. 1) then
+            write(11,*)
+            write(11,'(''input roll angle = '',f9.4,'' degrees'')') 
+     .            real(roll_angle)
+            roll_angle = roll_angle*atan(1.0)/45.0   ! radians
+         end if
+         if (real(ccabs(roll_angle)) .gt. 0.) then
+            nbl = nblg(igrid)
+            call grdmove(nbl,jdim,kdim,idim,w(lx),w(ly),w(lz),
+     .                   xcentrot,ycentrot,zcentrot,
+     .                   xcentrot,ycentrot,zcentrot,
+     .                   roll_angle,0.0,0.0)
+         end if
+      end if
 c
 #if defined DIST_MPI
       nd_dest = mblk2nd(nbl)

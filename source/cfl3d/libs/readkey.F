@@ -52,6 +52,7 @@ c
      .                     yrotrate,zrotrate,noninflag
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
+      common /gridtrans/ roll_angle
 c
       ititr = 0
       nkey  = 0
@@ -367,6 +368,10 @@ c     applied only if it goes negative
       tur1cut = 1.e-20
       nkey     = nkey + 1
 c
+c     roll angle
+      roll_angle = 0.
+      nkey       = nkey + 1
+c
 c*********************************************
 c     check for keyword-driven inputs
 c*********************************************
@@ -395,6 +400,15 @@ c
       read(iunit5,1593,end=1900) inpstr
       if (inpstr(1:1).eq.'<') then
          if (iunit11.gt.0) write(iunit11,1102)
+
+c        do any order-dependent things here before exiting
+
+#ifdef CMPLX
+         xrotrate = cmplx(real(xrotrate),real(xrotrate_img))
+         yrotrate = cmplx(real(yrotrate),real(yrotrate_img))
+         zrotrate = cmplx(real(zrotrate),real(zrotrate_img))
+#endif
+
          return
       end if
 c
@@ -660,25 +674,16 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          xrotrate_img = realval(1)
-#ifdef CMPLX
-         xrotrate = cmplx(real(xrotrate),real(xrotrate_img))
-#endif
 c
       else if (inpstr(lc1:lc2).eq.'yrotrate_img') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          yrotrate_img = realval(1)
-#ifdef CMPLX
-         yrotrate = cmplx(real(yrotrate),real(yrotrate_img))
-#endif
 c
       else if (inpstr(lc1:lc2).eq.'zrotrate_img') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          zrotrate_img = realval(1)
-#ifdef CMPLX
-         zrotrate = cmplx(real(zrotrate),real(zrotrate_img))
-#endif
 c
       else if (inpstr(lc1:lc2).eq.'itime2read') then
          lc2 = lc2 +1
@@ -715,6 +720,11 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          tur1cut = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'roll_angle') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         roll_angle = realval(1)
 c
       else
 c
