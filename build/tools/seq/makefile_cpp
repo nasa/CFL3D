@@ -14,8 +14,6 @@ lncode:
 	ln -s $(TOOLSSRC)/*.F .
 	ln -s $(CFLSRC_D)/umalloc_r.F .
 	ln -s $(CFLSRC_D)/umalloc_c.F .
-	ln -s $(CFLSRC_S)/ufree_r.F .
-	ln -s $(CFLSRC_S)/ufree_c.F .
 	ln -s $(CFLSRC_S)/readkey.F .
 	ln -s $(CFLSRC_S)/global0.F .
 	ln -s $(CFLSRC_S)/parser.F .
@@ -40,7 +38,7 @@ lnhead:
 
 # **************************** CREATE EXECUTABLES ****************************
 
-SOURCELIBS = umalloc_c.f ufree_c.f umalloc_r.f ufree_r.f \
+SOURCELIBS = umalloc_c.f umalloc_r.f \
 	readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f
 
 #place routines needing special compilation flags (e.g low-level optimization)
