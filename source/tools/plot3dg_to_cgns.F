@@ -574,6 +574,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
@@ -707,6 +713,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
@@ -840,6 +852,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
@@ -973,6 +991,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
@@ -1106,6 +1130,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
@@ -1239,6 +1269,12 @@ c XXX
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .ne. 0 .and.
+     +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
             continue
           else
