@@ -168,7 +168,7 @@ c
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /elastic/ ndefrm,naesrf
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb
+     .                  iwarneddy,itime2read,itaturb,tur1cut
       common /entfix/ epsa_l,epsa_r
       common /elastic_ss/ idef_ss
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
@@ -402,6 +402,7 @@ c
          work(nlast+53) = iteravg
          work(nlast+54) = tur10
          work(nlast+55) = tur20
+         work(nlast+56) = tur1cut
          nlast = nlast+nkey
       end if
 c
@@ -634,6 +635,7 @@ c
          iteravg   = int(work(nlast+53))
          tur10     = work(nlast+54)
          tur20     = work(nlast+55)
+         tur1cut   = work(nlast+56)
       end if
 c
 c**************************

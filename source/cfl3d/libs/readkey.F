@@ -40,7 +40,7 @@ c
       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
      .                 ialphit,nttlast,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb
+     .                  iwarneddy,itime2read,itaturb,tur1cut
       common /entfix/ epsa_l,epsa_r
       common /key/ nkey
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
@@ -368,6 +368,11 @@ c     (defaults=-1)
       tur10 = -1.
       tur20 = -1.
       nkey     = nkey + 2
+c
+c     lower limit on epsilon or omega for 2-eqn models,
+c     applied only if it goes negative
+      tur1cut = 1.e-20
+      nkey     = nkey + 1
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -717,6 +722,11 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          tur20 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur1cut') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur1cut = realval(1)
 c
       else
 c

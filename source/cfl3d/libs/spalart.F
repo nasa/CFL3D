@@ -33,7 +33,7 @@ c
       common /twod/ i2d
       common /zero/ iexp
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb
+     .                  iwarneddy,itime2read,itaturb,tur1cut
       common /unst/ time,cfltau,ntstep,ita,iunst
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
