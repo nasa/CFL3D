@@ -69,6 +69,7 @@ SOURCE11 = initialize_field.F
 SOURCE12 = p3d_to_cfl3drst.F
 SOURCE13 = v6_restart_mod.F
 SOURCE14 = v6inpdoubhalf.F
+SOURCE15 = cgns_to_cfl3dinput.F
 
 OBJECT1  = $(SOURCE1:.F=.o)
 OBJECT2  = $(SOURCE2:.F=.o)
@@ -84,6 +85,7 @@ OBJECT11 = $(SOURCE11:.F=.o)
 OBJECT12 = $(SOURCE12:.F=.o)
 OBJECT13 = $(SOURCE13:.F=.o)
 OBJECT14 = $(SOURCE14:.F=.o)
+OBJECT15 = $(SOURCE15:.F=.o)
 
 $(OBJECT1):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
@@ -113,6 +115,8 @@ $(OBJECT13):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 $(OBJECT14):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+$(OBJECT15):
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 
 EXEC1  = grid_perturb_cmplx
@@ -129,6 +133,7 @@ EXEC11 = initialize_field
 EXEC12 = p3d_to_cfl3drst
 EXEC13 = v6_restart_mod
 EXEC14 = v6inpdoubhalf
+EXEC15 = cgns_to_cfl3dinput
 
 $(EXEC1): $(SOURCE1) $(OBJECT1) $(LIBS)
 	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC1) $(OBJECT1) $(LIBS) $(LLIBS)
@@ -172,8 +177,12 @@ $(EXEC13): $(SOURCE13)  $(OBJECT13) $(LIBS)
 $(EXEC14): $(SOURCE14)  $(OBJECT14) $(LIBS)
 	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC14) $(OBJECT14) $(LIBS) $(LLIBS)
 
+$(EXEC15): $(SOURCE15)  $(OBJECT15) $(LIBS)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC15) $(OBJECT15) $(LIBS) $(LLIBS)
+
 $(EXEC): $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
-	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14)
+	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14) \
+         $(EXEC15)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -195,6 +204,7 @@ $(EXEC): $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
 	@ echo "                      $(DIR)/$(EXEC12)                        "
 	@ echo "                      $(DIR)/$(EXEC13)                        "
 	@ echo "                      $(DIR)/$(EXEC14)                        "
+	@ echo "                      $(DIR)/$(EXEC15)                        "
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -214,7 +224,8 @@ cleano:
 
 cleane:
 	-rm -f $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
-	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14)
+	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14) \
+         $(EXEC15)
 
 cleanf:
 	@touch temp.f
