@@ -5421,107 +5421,111 @@ c
          end if
       end do
 c
-c     Now swap y and z grid motion parameters as needed for ialph = 1
+c     Now swap y and z grid motion parameters as needed for ialph > 0
 c
-c     rigid mesh movement data
+      if (ialph > 0) then
 c
-      temp     = vtransmc
-      vtransmc = -wtransmc
-      wtransmc = temp
+c       rigid mesh movement data
 c
-      temp     = omegaymc
-      omegaymc = -omegazmc
-      omegazmc = temp
+        temp     = vtransmc
+        vtransmc = -wtransmc
+        wtransmc = temp
 c
-      temp     = thetaymc
-      thetaymc = -thetazmc
-      thetazmc = temp
+        temp     = omegaymc
+        omegaymc = -omegazmc
+        omegazmc = temp
 c
-      temp     = yorigmc
-      yorigmc  = -zorigmc
-      zorigmc  = temp
+        temp     = thetaymc
+        thetaymc = -thetazmc
+        thetazmc = temp
 c
-      temp     = yorig0mc
-      yorig0mc = -zorig0mc
-      zorig0mc = temp
+        temp     = yorigmc
+        yorigmc  = -zorigmc
+        zorigmc  = temp
 c
-      temp     = dymxmc
-      dymxmc   = -dzmxmc
-      dzmxmc   = temp
+        temp     = yorig0mc
+        yorig0mc = -zorig0mc
+        zorig0mc = temp
 c
-      temp     = dthymxmc
-      dthymxmc = -dthzmxmc
-      dthzmxmc = temp
+        temp     = dymxmc
+        dymxmc   = -dzmxmc
+        dzmxmc   = temp
 c
-      temp     = ymc0
-      ymc0     = -zmc0
-      zmc0     = temp
+        temp     = dthymxmc
+        dthymxmc = -dthzmxmc
+        dthzmxmc = temp
 c
-      do nbl=1,nblock
+        temp     = ymc0
+        ymc0     = -zmc0
+        zmc0     = temp
 c
-        temp         = vtrans(nbl)
-        vtrans(nbl)  = -wtrans(nbl)
-        wtrans(nbl)  = temp
+        do nbl=1,nblock
 c
-        temp         = dymx(nbl)
-        dymx(nbl)    = -dzmx(nbl)
-        dzmx(nbl)    = temp
+          temp         = vtrans(nbl)
+          vtrans(nbl)  = -wtrans(nbl)
+          wtrans(nbl)  = temp
 c
-        temp         = omegay(nbl)
-        omegay(nbl)  = -omegaz(nbl)
-        omegaz(nbl)  = temp
+          temp         = dymx(nbl)
+          dymx(nbl)    = -dzmx(nbl)
+          dzmx(nbl)    = temp
 c
-        temp         = yorig(nbl)
-        yorig(nbl)   = -zorig(nbl)
-        zorig(nbl)   = temp
+          temp         = omegay(nbl)
+          omegay(nbl)  = -omegaz(nbl)
+          omegaz(nbl)  = temp
 c
-        temp         = yorig0(nbl)
-        yorig0(nbl)  = -zorig0(nbl)
-        zorig0(nbl)  = temp
+          temp         = yorig(nbl)
+          yorig(nbl)   = -zorig(nbl)
+          zorig(nbl)   = temp
 c
-        temp         = thetay(nbl)
-        thetay(nbl)  = -thetaz(nbl)
-        thetaz(nbl)  = temp
+          temp         = yorig0(nbl)
+          yorig0(nbl)  = -zorig0(nbl)
+          zorig0(nbl)  = temp
 c
-        temp         = dthymx(nbl)
-        dthymx(nbl)  = -dthzmx(nbl)
-        dthzmx(nbl)  = temp
+          temp         = thetay(nbl)
+          thetay(nbl)  = -thetaz(nbl)
+          thetaz(nbl)  = temp
 c
-        temp         = thetayl(nbl)
-        thetayl(nbl) = -thetazl(nbl)
-        thetazl(nbl) = temp
+          temp         = dthymx(nbl)
+          dthymx(nbl)  = -dthzmx(nbl)
+          dthzmx(nbl)  = temp
 c
-      end do
-c
-c     deforming mesh movement data
-c
-      do nbl=1,nblock
-c
-        do iseg=1,maxsegdg
-c
-          temp               = vtrnsae(nbl,iseg)
-          vtrnsae(nbl,iseg)  = -wtrnsae(nbl,iseg)
-          wtrnsae(nbl,iseg)  = temp
-c
-          temp               = omgyae(nbl,iseg)
-          omgyae(nbl,iseg)   = -omgzae(nbl,iseg)
-          omgzae(nbl,iseg)   = temp
-c
-          temp               = yorgae(nbl,iseg)
-          yorgae(nbl,iseg)   = zorgae(nbl,iseg)
-          zorgae(nbl,iseg)   = temp
-c
-          temp               = yorgae0(nbl,iseg)
-          yorgae0(nbl,iseg)  = -zorgae0(nbl,iseg)
-          zorgae0(nbl,iseg)  = temp
-c
-          temp               = thtyae(nbl,iseg)
-          thtyae(nbl,iseg)   = -thtyae(nbl,iseg)
-          thtzae(nbl,iseg)   = temp
+          temp         = thetayl(nbl)
+          thetayl(nbl) = -thetazl(nbl)
+          thetazl(nbl) = temp
 c
         end do
 c
-      end do
+c       deforming mesh movement data
+c
+        do nbl=1,nblock
+c
+          do iseg=1,maxsegdg
+c
+            temp               = vtrnsae(nbl,iseg)
+            vtrnsae(nbl,iseg)  = -wtrnsae(nbl,iseg)
+            wtrnsae(nbl,iseg)  = temp
+c
+            temp               = omgyae(nbl,iseg)
+            omgyae(nbl,iseg)   = -omgzae(nbl,iseg)
+            omgzae(nbl,iseg)   = temp
+c
+            temp               = yorgae(nbl,iseg)
+            yorgae(nbl,iseg)   = zorgae(nbl,iseg)
+            zorgae(nbl,iseg)   = temp
+c
+            temp               = yorgae0(nbl,iseg)
+            yorgae0(nbl,iseg)  = -zorgae0(nbl,iseg)
+            zorgae0(nbl,iseg)  = temp
+c
+            temp               = thtyae(nbl,iseg)
+            thtyae(nbl,iseg)   = -thtyae(nbl,iseg)
+            thtzae(nbl,iseg)   = temp
+c
+          end do
+c
+        end do
+c
+      end if
 c
 c     print summary by grids
 c
