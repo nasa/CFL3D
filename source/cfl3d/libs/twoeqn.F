@@ -39,7 +39,7 @@ c
       common /twod/ i2d
       common /wallfun/ iwf(3)
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb
+     .                  iwarneddy,itime2read,itaturb,tur1cut
       common /unst/ time,cfltau,ntstep,ita,iunst
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -341,7 +341,7 @@ c  sigk1 (constant in k diffusion term):
       if(ivmx.eq.12)                                sigk1=1./1.4
       if(ivmx.eq.10 .or. ivmx.eq.11 .or.ivmx.eq.9
      .              .or. ivmx.eq.13)                sigk1=1.00
-      if(ivmx.eq.8 .or. ivmx.eq.14)                 sigk1=1./2.0
+      if(ivmx.eq.8 .or. ivmx.eq.14)                 sigk1=1./1.0
 c  alp1 (constant in omega or epsilon production term):
       if(ivmx.eq.6 .or. ivmx.eq.7)                  alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
@@ -349,7 +349,7 @@ c  alp1 (constant in omega or epsilon production term):
       if(ivmx.eq.11 .or. ivmx.eq.12)                alp1 =
      +    beta1 - vk*vk*sigo1/sqrt(cmuc1)
       if(ivmx.eq.9 .or. ivmx.eq.13)                 alp1 = 1.44
-      if(ivmx.eq.8 .or. ivmx.eq.14)                 alp1 = 0.575
+      if(ivmx.eq.8 .or. ivmx.eq.14)                 alp1 = 0.53
       if(ivmx.eq.9 .or. ivmx.eq.13)                 sigo1=
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
       if(ivmx.eq.8 .or. ivmx.eq.14)                 sigo1=
@@ -2672,7 +2672,7 @@ c    Update TURRE
               sumno=sumno+rhside(j,k,i,1)**2
               if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .lt. 0.) then
                 negno=negno+1
-                turre(j,k,i,1)=1.e-20
+                turre(j,k,i,1)=tur1cut
               else
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
               end if
