@@ -1,5 +1,5 @@
 #     
-blab
+#     $Id$
 #=============================================================================
 #
 #   This is the primary/top-level makefile: builds either the parallel or 
@@ -45,7 +45,7 @@ blab
 # *************** COMPILER FLAG DEFINITIONS (MACHINE SPECIFIC) ***************
 #                 (CURRENT DEFINITIONS FOR IRIX64 ARCHITECTURE)
 
-FFLAG        = -64 
+FFLAG        = -O2 -64 -mips4 -r10000 -align64 -OPT:Olimit=4000 -OPT:swp=ON -LNO:prefetch=2 -TARG:madd=ON -cpp 
 PREC         = -r8
 PREC_MPI     = -DDBLE_PRECSN
 LFLAG        = -64
