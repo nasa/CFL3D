@@ -764,6 +764,8 @@ c
                write(17,348) nbl,igridg(nbl),idim,jdim,kdim
   348          format(//1x,5hBLOCK,i4,2x,5h(GRID,i4,1h),5x,
      .               15hIDIM,JDIM,KDIM=,3I5)
+               write(17,349)
+  349          format(1x,32hNOTE: endpts may not be reliable)
             end if
 c
             jdw = (j2-j1)/j3 + 1
