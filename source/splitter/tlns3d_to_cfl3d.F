@@ -1496,7 +1496,7 @@ c
          if(abs(nprint)  .gt. 0) nprint  = 0
       end if
 c
-      nwrest = 100
+      nwrest = 9999
       ichk   = 0
 c
       write(7,35)
