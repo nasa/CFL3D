@@ -243,6 +243,10 @@ c           2    09  / fort.9, aux. file for dynamic patching
 c           3    14  / baldwin-lomax output (e.g. "cfl3d.blomax")
 c           4    25  / dynamic patch output (e.g. "cfl3d.dynamic_patch")
 c
+c
+c     As of Feb 2002, F90 allocate is used rather than Cray pointers;
+c     however, the other info in 9) below is still valid
+c
 c     9) The code is now "self sizing" - precfl3d is built in, along
 c        with memory allocation routines employing Cray pointers. These
 c        pointers work in f77 and f90 for all but character variables.
