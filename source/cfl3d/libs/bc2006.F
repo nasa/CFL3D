@@ -1199,7 +1199,7 @@ c
       do 600 j=jsta,jend1
       qi0(j,k,l,3) = q(j,k,idim1,l)
       qi0(j,k,l,4) = qi0(j,k,l,3)
-      bci(j,k,1) = 0.0
+      bci(j,k,2) = 0.0
   600 continue
 c
       if (lijk .eq. 2) then
