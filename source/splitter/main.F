@@ -1,4 +1,4 @@
-      program splitter
+      program main
 c
 c     $Id$
 c

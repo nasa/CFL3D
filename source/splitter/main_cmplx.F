@@ -1,4 +1,4 @@
-      program splittercmplx
+      program main
 c
 c     $Id$
 c
