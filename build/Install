@@ -416,6 +416,10 @@ case $FARCH in *)
 
   FTN="f90"
   CC="cc"
+
+! Intel 
+# CC="icc"
+
   if [ $do_f90 = no ]; then
      FTN="f77"
   fi
@@ -708,17 +712,20 @@ esac
 case $FARCH in LINUX)
 
 # Portland Group Compiler
-  FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+  FFLAG="-fast -tp p7 -byteswapio"
 
 # Alpha Compiler
 # FFLAG="-O2 -convert big_endian"
 
-# Lahey Compiler
+# Lahey Fujitsu Compiler
 # FFLAG="--o1 --ap"
 # Note: the following evironment variable must be set in order
 #       to use "bigendian" files (like those generated on an SGI)
-#       with the Lahey compiler
+#       with the Lahey Fujitsu compiler
 #setenv FORT90L -Wl,-T
+
+# Intel Fortan Compiler
+# FFLAG="-O3 -tpp7 -w -ip"
 
   FFLAG_SPEC="$FFLAG"
   if [ $do_dou = yes ]; then
@@ -729,8 +736,11 @@ case $FARCH in LINUX)
 # Alpha Compiler
 #    PREC="-r8"
 
-#    Lahey Compiler
+#    Lahey Fujitsu Compiler
 #    PREC="--dbl"
+
+# Intel Fortan Compiler
+#    PREC="-r8"
 
   else
 
@@ -746,8 +756,11 @@ case $FARCH in LINUX)
 # Alpha Compiler
 # FTN="fort"
 
-# Lahey Compiler
+# Lahey Fujitsu Compiler
 # FTN="lf95"
+
+# Intel Fortan Compiler
+# FTN="ifc"
 
   CPPOPT_SP="$CPPOPT_SP -DLINUX"
 
@@ -788,6 +801,9 @@ if [ ! x$cgnsdir = x ]; then
    LLIB="$LLIB -l$CGNS_LLIB"
    LLIB_SEQ="-l$CGNS_LLIB"
 fi
+
+# Intel Fortran Compiler
+# LLIB="$LLIB -lsvml -lPEPCF90"
 
 # library directories
 
