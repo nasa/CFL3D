@@ -108,7 +108,8 @@ c
       write(6,'('' Are you using mesh sequencing (1=yes)?'')')
       read(5,*) imesh
       if(imesh .eq. 1) then
-        write(6,'('' How many levels down are you starting?'')')
+        write(6,'('' How many levels down are you starting'',
+     .   '' (mseq-1)?'')')
         read(5,*) idown
         do n=1,nblk
           do jj=1,idown
