@@ -682,7 +682,7 @@ case $FARCH in LINUX)
 # Portland Group Compiler
   FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
 # Lahey Compiler
-# FFLAG="--o0"
+# FFLAG="--o1 --ap"
   FFLAG_SPEC="$FFLAG"
   if [ $do_dou = yes ]; then
 #    Portland Group Compiler
