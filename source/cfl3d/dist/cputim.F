@@ -131,10 +131,10 @@ c
 c     timing for workstations
 c
 #if defined IBM
-      call etime_(tm)
+      totaltime = etime_(tm)
       call itime_(ia)
 #else
-      call etime(tm)
+      totaltime = etime(tm)
       call itime(ia)
 #endif
 c
