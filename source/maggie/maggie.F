@@ -146,7 +146,7 @@ c
  9990 format(2(2h *),43h   VERSION 6.0 :  Computational Fluids Lab,,
      .15h Mail Stop 128,,4x,2(2h *),
      ./2(2h *),18x,41hNASA Langley Research Center, Hampton, VA,
-     .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+     .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  8, 2001.,
      .11x,2(2h *))
       write(6,87)
       write(6,83)
