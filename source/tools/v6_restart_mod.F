@@ -46,6 +46,16 @@ c
       write(6,'('' input 1 if reading ghost values in restart'',
      + '' file (1=CFL3D default)'')')
       read(5,*) irghost
+      write(6,'('' input 0 if restart file is 2nd-order-time-accurate'',
+     +  '' and is an older file'')')
+      write(6,'(''   (does NOT contain turb info from last time step'',
+     +  '' or dt) (1=new CFL3D default)'')')
+      read(5,*) itime2read
+      if (itime2read .eq. 0) then
+        write(6,'(/,'' Note: this program will NOT add this info.'')')
+        write(6,'('' You must use keyword itime2read=0 when you run'',
+     +    '' CFL3D.'')')
+      end if
       write(6,'('' enter 0 to make the restart file every'',
      +  '' other (half-size)'')')
       write(6,'('' enter 1 to make it double'')')
@@ -277,7 +287,7 @@ c     read restart file once through to get dimensions
         kmaxc=kmax
       end if
       call readwrite(imax,jmax,kmax,ntrmax,iunfi,iunfo,irghost,
-     . ihalf,nblk,imaxc,jmaxc,kmaxc,ic,jc,kc,titlw)
+     . ihalf,nblk,imaxc,jmaxc,kmaxc,ic,jc,kc,itime2read,titlw)
       write(6,'(/,'' successful program completion'')')
       stop
  9898 write(6,'('' Error, end of file reached... are you sure you'')')
@@ -287,7 +297,7 @@ c     read restart file once through to get dimensions
 c
 c *********************************************************************
       subroutine readwrite(idim,jdim,kdim,ncycmax,iunfi,iunfo,irghost,
-     . ihalf,nblk,idimc,jdimc,kdimc,ic,jc,kc,titlw)
+     . ihalf,nblk,idimc,jdimc,kdimc,ic,jc,kc,itime2read,titlw)
 c
       integer stats
 c
@@ -1042,6 +1052,54 @@ c       Don't coarsen
            write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
      +      i=1,idim1c),l=1,5)
            end if
+      if (itime2read .ne. 0) then
+        if (iunfi .eq. 1) then
+          read(2) dtold
+        else
+          read(2,*) dtold
+        end if
+        if (iunfo .eq. 1) then
+          write(3) dtold
+        else
+          write(3,*) dtold
+        end if
+c   tursav2 data:
+           if (iunfi .eq. 1) then
+           read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .             l=1,2)
+           else
+           read(2,*) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .             l=1,2)
+           end if
+      if (ihalf .eq. 1) then
+c       Make finer:
+        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,2,
+     +    work)
+      else if (ihalf .eq. 0) then
+c       Coarsen
+        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,ic,jc,kc,it,2)
+      else
+c       Don't coarsen
+        do l=1,2
+        do j=1,jdim1
+        do k=1,kdim1
+        do i=1,idim1
+          qc(j,k,i,l)=q(j,k,i,l)
+        enddo
+        enddo
+        enddo
+        enddo
+      end if
+           if (iunfo .eq. 1) then
+           write(3) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
+     +      i=1,idim1c),l=1,2)
+           else
+           write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
+     +      i=1,idim1c),l=1,2)
+           end if
+      end if
  8897   continue
       end if
       if (iflagg .eq. 2 .or. iflagg .eq. 3) then
