@@ -8,7 +8,7 @@ c     User can choose to coarsen only particular index directions,
 c     if desired.  Does not keep iblanking information if it is present.
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 everyother_xyz.f umalloc_r_r.o ufree_r.o -o everyother_xyz
+c     f90 -64 -r8 everyother_xyz.f umalloc_r.o -o everyother_xyz
 c***********************************************************************
 c
       parameter (nbb=10000)
@@ -331,12 +331,9 @@ c
 c
 c     free memory
 c
-      ifree = 1
-      if (ifree.gt.0) then
-         call ufree_r(ip_x)
-         call ufree_r(ip_y)
-         call ufree_r(ip_z)
-      end if
+      call deallocate(x)
+      call deallocate(y)
+      call deallocate(z)
 c
       return
       end
