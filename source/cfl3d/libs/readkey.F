@@ -51,6 +51,8 @@ c
       common /ghost/ irghost,iwghost
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
+      common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
+     .        tur10,tur20
 c
       ititr = 0
       nkey  = 0
@@ -358,6 +360,14 @@ c     2 = continue averaging from previous run
 c
       iteravg = 0
       nkey     = nkey + 1
+c
+c     turbulent quantity freestream levels
+c     < 0  = use the default value (different for each turb model)
+c     >= 0 = use this number as the specified user input value
+c     (defaults=-1)
+      tur10 = -1.
+      tur20 = -1.
+      nkey     = nkey + 2
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -697,6 +707,16 @@ c
       else if (inpstr(lc1:lc2).eq.'iteravg') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iteravg
+c
+      else if (inpstr(lc1:lc2).eq.'tur10') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur20') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur20 = realval(1)
 c
       else
 c

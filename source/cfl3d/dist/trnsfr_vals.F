@@ -178,6 +178,8 @@ c
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /key/ nkey
+      common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
+     .        tur10,tur20
 #if defined DIST_MPI
 c
 c***********************
@@ -398,6 +400,8 @@ c
          work(nlast+51) = ides
          work(nlast+52) = cdes
          work(nlast+53) = iteravg
+         work(nlast+54) = tur10
+         work(nlast+55) = tur20
          nlast = nlast+nkey
       end if
 c
@@ -628,6 +632,8 @@ c
          ides      = int(work(nlast+51))
          cdes      = work(nlast+52)
          iteravg   = int(work(nlast+53))
+         tur10     = work(nlast+54)
+         tur20     = work(nlast+55)
       end if
 c
 c**************************

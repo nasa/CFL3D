@@ -40,7 +40,7 @@ c   For field eqn turbulence models:
             do 2000 k=1,kdim-1
               do 2000 j=1,jdim-1
                 tursav(j,k,i,1)=tur10
-                vist3d(j,k,i)=0.009
+                vist3d(j,k,i)=0.09*tur10
  2000     continue
         else if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or.
      .           ivisc(3).eq.5) then
@@ -48,7 +48,7 @@ c   For field eqn turbulence models:
             do 2001 k=1,kdim-1
               do 2001 j=1,jdim-1
                 tursav(j,k,i,1)=tur10
-                vist3d(j,k,i)=0.009
+                vist3d(j,k,i)=tur10*(tur10**3/(tur10**3+357.911))
  2001     continue
         else if (ivisc(1).eq.11 .or. ivisc(2).eq.11 .or.
      .           ivisc(3).eq.11 .or.
