@@ -40,6 +40,7 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
+      common /igrdtyp/ ip3dgrd,ialph
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -142,18 +143,33 @@ c
 c
       end if
 c
-      do 100 ip=1,2
-      do 100 i=ista,iend1
-      ii = i-ista+1
-      do 100 k=ksta,kend1
-      kk = k-ksta+1
-      qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
-      qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
-      qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
-      qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
-      qj0(k,i,5,ip) = q(1,k,i,5)
-      bcj(k,i,1) = 0.0
-  100 continue
+      if (ialph.eq.0) then
+         do 100 ip=1,2
+         do 100 i=ista,iend1
+         ii = i-ista+1
+         do 100 k=ksta,kend1
+         kk = k-ksta+1
+         qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
+         qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
+         qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
+         qj0(k,i,5,ip) = q(1,k,i,5)
+         bcj(k,i,1) = 0.0
+  100    continue
+      else
+         do 1000 ip=1,2
+         do 1000 i=ista,iend1
+         ii = i-ista+1
+         do 1000 k=ksta,kend1
+         kk = k-ksta+1
+         qj0(k,i,1,ip) =  bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)
+         qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)
+         qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)
+         qj0(k,i,5,ip) =  q(1,k,i,5)
+         bcj(k,i,1) = 0.0
+ 1000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 191 i=ista,iend1
         do 191 k=ksta,kend1
@@ -267,18 +283,33 @@ c
 c
       end if
 c
-      do 200 ip=1,2
-      do 200 i=ista,iend1
-      ii = i-ista+1
-      do 200 k=ksta,kend1
-      kk = k-ksta+1
-      qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
-      qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
-      qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
-      qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
-      qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
-      bcj(k,i,2) = 0.0
-  200 continue
+      if (ialph.eq.0) then
+         do 200 ip=1,2
+         do 200 i=ista,iend1
+         ii = i-ista+1
+         do 200 k=ksta,kend1
+         kk = k-ksta+1
+         qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
+         qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
+         qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
+         qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+         bcj(k,i,2) = 0.0
+  200    continue
+      else
+         do 2000 ip=1,2
+         do 2000 i=ista,iend1
+         ii = i-ista+1
+         do 2000 k=ksta,kend1
+         kk = k-ksta+1
+         qj0(k,i,1,ip+2) =  bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)
+         qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)
+         qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)
+         qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
+         bcj(k,i,2) = 0.0
+ 2000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 291 i=ista,iend1
         do 291 k=ksta,kend1
@@ -392,18 +423,33 @@ c
 c
       end if
 c
-      do 300 ip=1,2
-      do 300 i=ista,iend1
-      ii = i-ista+1
-      do 300 j=jsta,jend1
-      jj = j-jsta+1
-      qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
-      qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
-      qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
-      qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
-      qk0(j,i,5,ip) = q(j,1,i,5)
-      bck(j,i,1) = 0.0
-  300 continue
+      if (ialph.eq.0) then
+         do 300 ip=1,2
+         do 300 i=ista,iend1
+         ii = i-ista+1
+         do 300 j=jsta,jend1
+         jj = j-jsta+1
+         qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
+         qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
+         qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
+         qk0(j,i,5,ip) = q(j,1,i,5)
+         bck(j,i,1) = 0.0
+  300    continue
+      else
+         do 3000 ip=1,2
+         do 3000 i=ista,iend1
+         ii = i-ista+1
+         do 3000 j=jsta,jend1
+         jj = j-jsta+1
+         qk0(j,i,1,ip) =  bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)
+         qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)
+         qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)
+         qk0(j,i,5,ip) =  q(j,1,i,5)
+         bck(j,i,1) = 0.0
+ 3000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 391 i=ista,iend1
         do 391 j=jsta,jend1
@@ -517,18 +563,33 @@ c
 c
       end if
 c
-      do 400 ip=1,2
-      do 400 i=ista,iend1
-      ii = i-ista+1
-      do 400 j=jsta,jend1
-      jj = j-jsta+1
-      qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
-      qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
-      qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
-      qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
-      qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
-      bck(j,i,2) = 0.0
-  400 continue
+      if (ialph.eq.0) then
+         do 400 ip=1,2
+         do 400 i=ista,iend1
+         ii = i-ista+1
+         do 400 j=jsta,jend1
+         jj = j-jsta+1
+         qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
+         qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
+         qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
+         qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+         bck(j,i,2) = 0.0
+  400    continue
+      else
+         do 4000 ip=1,2
+         do 4000 i=ista,iend1
+         ii = i-ista+1
+         do 4000 j=jsta,jend1
+         jj = j-jsta+1
+         qk0(j,i,1,ip+2) =  bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)
+         qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)
+         qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)
+         qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
+         bck(j,i,2) = 0.0
+ 4000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 491 i=ista,iend1
         do 491 j=jsta,jend1
@@ -642,18 +703,33 @@ c
 c
       end if
 c
-      do 500 ip=1,2
-      do 500 k=ksta,kend1
-      kk = k-ksta+1
-      do 500 j=jsta,jend1
-      jj = j-jsta+1
-      qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
-      qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
-      qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
-      qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
-      qi0(j,k,5,ip) = q(j,k,1,5)
-      bci(j,k,1) = 0.0
-  500 continue
+      if (ialph.eq.0) then
+         do 500 ip=1,2
+         do 500 k=ksta,kend1
+         kk = k-ksta+1
+         do 500 j=jsta,jend1
+         jj = j-jsta+1
+         qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
+         qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
+         qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
+         qi0(j,k,5,ip) = q(j,k,1,5)
+         bci(j,k,1) = 0.0
+  500    continue
+      else
+         do 5000 ip=1,2
+         do 5000 k=ksta,kend1
+         kk = k-ksta+1
+         do 5000 j=jsta,jend1
+         jj = j-jsta+1
+         qi0(j,k,1,ip) =  bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)
+         qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)
+         qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)
+         qi0(j,k,5,ip) =  q(j,k,1,5)
+         bci(j,k,1) = 0.0
+ 5000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 591 k=ksta,kend1
         do 591 j=jsta,jend1
@@ -767,18 +843,33 @@ c
 c
       end if
 c
-      do 600 ip=1,2
-      do 600 k=ksta,kend1
-      kk = k-ksta+1
-      do 600 j=jsta,jend1
-      jj = j-jsta+1
-      qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
-      qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
-      qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
-      qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
-      qi0(j,k,5,ip+2) = q(j,k,idim1,5)
-      bci(j,k,2) = 0.0
-  600 continue
+      if (ialph.eq.0) then
+         do 600 ip=1,2
+         do 600 k=ksta,kend1
+         kk = k-ksta+1
+         do 600 j=jsta,jend1
+         jj = j-jsta+1
+         qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
+         qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
+         qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
+         qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+         bci(j,k,2) = 0.0
+  600    continue
+      else
+         do 6000 ip=1,2
+         do 6000 k=ksta,kend1
+         kk = k-ksta+1
+         do 6000 j=jsta,jend1
+         jj = j-jsta+1
+         qi0(j,k,1,ip+2) =  bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)
+         qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)
+         qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)
+         qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
+         bci(j,k,2) = 0.0
+ 6000    continue
+      end if
       if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
         do 691 k=ksta,kend1
         do 691 j=jsta,jend1

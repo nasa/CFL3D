@@ -77,6 +77,7 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /conversion/ radtodeg
+      common /igrdtyp/ ip3dgrd,ialph
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -107,19 +108,34 @@ c        corresponds to q
 c
          if (idimp .eq. 2) then
             dthtx = bcdata(1,1,ip,2)/radtodeg
-            dthty = bcdata(1,1,ip,3)/radtodeg
-            dthtz = bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = bcdata(1,1,ip,3)/radtodeg
+               dthtz = bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -bcdata(1,1,ip,4)/radtodeg
+               dthtz =  bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,1,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
             dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,2,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
          else
             dthtx = bcdata(1,1,ip,2)/radtodeg
-            dthty = bcdata(1,1,ip,3)/radtodeg
-            dthtz = bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = bcdata(1,1,ip,3)/radtodeg
+               dthtz = bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -bcdata(1,1,ip,4)/radtodeg
+               dthtz =  bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
          end if
@@ -178,19 +194,34 @@ c        corresponds to q
 c
          if (idimp .eq. 2) then
             dthtx = bcdata(1,1,ip,2)/radtodeg
-            dthty = bcdata(1,1,ip,3)/radtodeg
-            dthtz = bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = bcdata(1,1,ip,3)/radtodeg
+               dthtz = bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -bcdata(1,1,ip,4)/radtodeg
+               dthtz =  bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,1,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
             dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,2,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
          else
             dthtx = bcdata(1,1,ip,2)/radtodeg
-            dthty = bcdata(1,1,ip,3)/radtodeg
-            dthtz = bcdata(1,1,ip,4)/radtodeg
+            if (ialph.eq.0) then
+               dthty = bcdata(1,1,ip,3)/radtodeg
+               dthtz = bcdata(1,1,ip,4)/radtodeg
+            else
+               dthty = -bcdata(1,1,ip,4)/radtodeg
+               dthtz =  bcdata(1,1,ip,3)/radtodeg
+            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
           end if
