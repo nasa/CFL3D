@@ -82,7 +82,7 @@ FSRC_LIBS = \
 	mvdat.F        getibk.F       pre_embed.F    pre_period.F \
 	pre_patch.F    pre_cblki.F    pre_cblkj.F    pre_cblkk.F \
 	global.F       global2.F      bc.F           getibk0.F \
-	rpatch0.F      cntsurf.F      cctogp.F \
+	rpatch0.F      cntsurf.F      cctogp.F       bc2009.F \
 	modread.F      genforce.F     rotsurf.F \
 	trnsurf.F      tfiedge.F      tfiface.F      tfivol.F  \
         arclen.F       deform.F       bc_delt.F      getsurf.F \

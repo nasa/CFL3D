@@ -34,6 +34,19 @@ c
          end if
       end if
 c
+      if (ibctyp.eq.2009) then
+         datahdr(1)  = '   pt/pinf'
+         datahdr(2)  = '   tt/tinf'
+         datahdr(3)  = '     alpha'
+         datahdr(4)  = '      beta'
+         if (abs(ndata).gt.4) then
+            datahdr(5)  = '     turb1'
+         end if
+         if (abs(ndata).gt.5) then
+            datahdr(6)  = '     turb2'
+         end if
+      end if
+c
       if (abs(ibctyp).eq.2004) then
          datahdr(1)  = '   tw/tinf'
          datahdr(2)  = '        cq'
