@@ -193,9 +193,9 @@ c
                            lvolk0 = lvolk0 + jdimc*(idimc-1)*1*2
                         end if
                         call blockk (w(lvol),w(lvolk0),idimn-1,jdimn,
-     .                              kdimn,idimc,jdimc,limblk(1,1,n),
-     .                              isva(1,1,n),it,ir,ldim,
-     .                              w(lbck),iedge,1)
+     .                               kdimn,idimc,jdimc,limblk(1,1,n),
+     .                               isva(1,1,n),it,ir,ldim,
+     .                               w(lbck),iedge,1)
                      end if
 c
 c                 j = constant interface
@@ -318,7 +318,7 @@ c
                         lvol   = lw(8,in_blk)
                         lvoli0 = lw(51,ic_blk)
                         if (limblk(it,1,n).ne.1) then
-                           lvojk0 = lvolj0 + jdimc*kdimc*1*2
+                           lvoli0 = lvoli0 + jdimc*kdimc*1*2
                         end if
                         call blocki (w(lvol),w(lvoli0),idimn-1,jdimn,
      .                               kdimn,jdimc,kdimc,limblk(1,1,n),
@@ -855,9 +855,9 @@ c
                         end if
                         kqintl = keep_trac(n,9)
                         call blockk_d (wk(kqintl),w(lvolk0),idimn,jdimn,
-     .                                kdimn,idimc,jdimc,limblk(1,1,n),
-     .                                isva(1,1,n),it,ir,maxdims,ldim,
-     .                                w(lbck),iedge)
+     .                                 kdimn,idimc,jdimc,limblk(1,1,n),
+     .                                 isva(1,1,n),it,ir,maxdims,ldim,
+     .                                 w(lbck),iedge)
                      end if
                   end if
 c
@@ -1003,13 +1003,13 @@ c
                         ldim   = 1
                         lvoli0 = lw(51,ic_blk)
                         if (limblk(it,1,n).ne.1) then
-                           lvolj0 = lvolj0 + jdimc*kdimc*1*2
+                           lvoli0 = lvoli0 + jdimc*kdimc*1*2
                         end if
                         kqintl = keep_trac(n,9)
                         call blocki_d (wk(kqintl),w(lvoli0),idimn,jdimn,
-     .                                kdimn,jdimc,kdimc,limblk(1,1,n),
-     .                                isva(1,1,n),it,ir,maxdims,ldim,
-     .                                w(lbci),iedge)
+     .                                 kdimn,jdimc,kdimc,limblk(1,1,n),
+     .                                 isva(1,1,n),it,ir,maxdims,ldim,
+     .                                 w(lbci),iedge)
                      end if
                   end if
 c
