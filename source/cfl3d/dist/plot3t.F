@@ -602,10 +602,12 @@ c   models, for better approximation to normal stresses
                  t22=t22+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
                  t33=t33+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
               else
-c   less-than-two equation models use approximation for k (from AIAA 92-0439)
-                 t11=t11+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
-                 t22=t22+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
-                 t33=t33+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
+c   less-than-two equation models use approximation for 2/3*k 
+c   (from AIAA 92-0439, where structure parameter taken as a1=0.5*(0.31))
+c   approx for k/aref^2 is:  vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/(re*.31)
+               t11=t11+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
+               t22=t22+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
+               t33=t33+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
               end if
               t12 = -2.*vist3d(j,k,i)*s12
               t13 = -2.*vist3d(j,k,i)*s13
