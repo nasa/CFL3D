@@ -1987,7 +1987,7 @@ c
          write(7,76) 1,iplt3dtyp,0,0,0,0,0,0,0,0,0
    76    format(11i6)
       end if
-      if (iver.eq.5) then
+      if (iver.ge.5) then
          write(7,76) 1,iplt3dtyp,0,0,0,0,0,0,0,0,0
       end if
 c
@@ -1996,7 +1996,7 @@ c
       movie = 0
       write(7,164)
   164 format(1x,5hmovie)
-      if ((iver.eq.4 .and. nplot3d.ne.0) .or. iver.eq.5) then
+      if ((iver.eq.4 .and. nplot3d.ne.0) .or. iver.ge.5) then
          write(7,166) movie
       end if
 c

@@ -331,7 +331,7 @@ c
          else
          read(10,*) xmach,alpha,beta,reue,tinf,isnd,c2spe,nnodes
          end if
-      else if(iver.eq.5) then
+      else if(iver.ge.5) then
          read(10,*) xmach,alpha,beta,reue,tinf,ialph,ihstry
       end if
 c
