@@ -1087,4 +1087,12 @@ case $FARCH in alpha)
    echo 'as mpif77 - if this does not work, you will need'
    echo 'to change this: e.g. fort; also, make'
    echo 'sure mpif77 is not pointing to /usr/bin/mpif77'
+   echo ' '
+   echo 'Some MPI implementations have a problem'
+   echo 'with the following 2 lines of coding in main.F'
+   echo '      sysfile = rm -f stop'
+   echo '      call system(sysfile)'
+   echo 'If the code will not run for you, try commenting out'
+   echo 'these lines... you would then need to manually remove'
+   echo 'any stop files that are present'
 esac
