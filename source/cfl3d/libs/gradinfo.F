@@ -72,7 +72,7 @@ c
      .                 ''respect to omega_y (pitch or yaw rate)'')')
          end if
       else if (real(zrotrate_img) .gt. 0.) then
-         delh = real(yrotrate_img)
+         delh = real(zrotrate_img)
          if (iunit .gt. 0) then
             write(iunit,'(''                      derivatives with '',
      .                 ''respect to omega_z (yaw or pitch rate)'')')
