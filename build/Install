@@ -428,7 +428,7 @@ case $FARCH in *)
 
   FFLAG=""
   FFLAG_SPEC="$FFLAG"
-  LFLAG="-static"
+  LFLAG=""
   CFLAG="$PREC"
 
 # default libraries
@@ -846,7 +846,7 @@ case $FARCH in LINUX)
      CFLAG=""
      FFLAG="-O3 -fast -w -fpe3"
      FFLAG_SPEC="$FFLAG"
-     LFLAG=""                                                               
+     LFLAG="-non_shared"                                                               
      LLIB=""
      LLIB_SEQ=""
      LLIBDIR=""
