@@ -1,3 +1,4 @@
+#     $Id$
 #=============================================================================
 #
 #        creates the mpi executable for the parallel version of cfl3d
