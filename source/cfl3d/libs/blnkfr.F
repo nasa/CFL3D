@@ -15,6 +15,7 @@ c
 c
       dimension iibg(iitot),kkbg(iitot),jjbg(iitot),ibpntsg(maxbl,4),
      .          lbg(maxbl),blank(jdim,kdim,idim)
+      real blnkval
 c
       lsta = lbg(nbl)
       lend = lsta-1
