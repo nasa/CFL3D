@@ -90,7 +90,7 @@ FSRC_LIBS = \
 	pre_patch.f    pre_cblki.f    pre_cblkj.f    pre_cblkk.f \
 	global.f       global2.f      bc.f           getibk0.f \
 	rpatch0.f      cntsurf.f      cctogp.f \
-	ufree.f        modread.f      genforce.f     rotsurf.f \
+	modread.f      genforce.f     rotsurf.f \
 	trnsurf.f      tfiedge.f      tfiface.f      tfivol.f  \
         arclen.f       deform.f       bc_delt.f      getsurf.f \
 	setcorner.f    prolim.f       prolim2.f      readkey.f \

@@ -13,7 +13,6 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(SPLITSRC)/*.F .
 	ln -s $(CFLSRC_D)/umalloc.F .
-	ln -s $(CFLSRC_S)/ufree.F .
 	ln -s $(CFLSRC_S)/parser.F .
 	ln -s $(CFLSRC_S)/readkey.F .
 	ln -s $(CFLSRC_S)/outbuf.F .
@@ -40,7 +39,7 @@ SOURCE = cfl3d_to_tlns3d.f  mapblk.f      movseg.f     spltsg.f \
 	 ipadd.f            mapout.f      renmbr.f     tlns3d_to_cfl3d.f \
 	 ipfix.f            mapsplt.f     shortinp.f   splitter.f \
 	 iprvsg.f           mkintr.f      sizer.f      umalloc.f \
-	 ufree.f            mkseg.f       splt2.f      ingrd.f \
+	 mkseg.f            splt2.f       ingrd.f \
 	 readkey.f          parser.f      main.f       outbuf.f
 
 #place routines needing special compilation flags (e.g low-level optimization)

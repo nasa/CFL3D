@@ -16,7 +16,6 @@ lncode:
 	ln -s $(CFLSRC_D)/pointers.F .
 	ln -s $(CFLSRC_D)/compg2n.F .
 	ln -s $(CFLSRC_D)/umalloc.F .
-	ln -s $(CFLSRC_S)/ufree.F .
 	ln -s $(CFLSRC_D)/termn8.F .
 	ln -s $(CFLSRC_S)/outbuf.F .
 	ln -s $(CFLSRC_S)/pre_patch.F .
@@ -49,7 +48,7 @@ lnhead:
 
 SOURCE = sizer.F       get_cmd_args.F   rpatch0.F        outbuf.F \
 	 getibk0.F     global.F         global2.F        pointers.F \
-	 compg2n.F     umalloc.F        ufree.F          cntsurf.F \
+	 compg2n.F     umalloc.F        cntsurf.F \
 	 lead.F        pre_patch.F      pre_blockbc.F    pre_embed.F \
 	 pre_period.F  usrint.F         termn8.F         getdhdr.F \
 	 global0.F     readkey.F        parser.F         ccomplex.F \

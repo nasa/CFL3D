@@ -16,7 +16,6 @@ lncode:
 	ln -s  $(PRERONSRC)/usrint.F .
 	ln -s  $(PRERONSRC)/sizer.F .
 	ln -s  $(CFLSRC_D)/umalloc.F .
-	ln -s  $(CFLSRC_S)/ufree.F .
 	ln -s  $(CFLSRC_S)/global2.F .
 	ln -s  $(CFLSRC_S)/outbuf.F .
 	ln -s  $(CFLSRC_S)/ccomplex.F .
@@ -38,7 +37,7 @@ lnhead:
 
 # *************************** CREATE EXECUTABLE ******************************
 
-SOURCE = global2.f    termn8.f    usrint.f    umalloc.f   ufree.f\
+SOURCE = global2.f    termn8.f    usrint.f    umalloc.f \
 	 sizer.f      outbuf.f    ccomplex.f  main_pre.f 
 
 #place routines needing special compilation flags (e.g low-level optimization)

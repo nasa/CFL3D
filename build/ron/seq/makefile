@@ -15,7 +15,6 @@ lncode:
 	ln -s  $(CFLSRC_D)/cputim.F .
 	ln -s  $(CFLSRC_D)/writ_buf.F .
 	ln -s  $(CFLSRC_D)/umalloc.F .
-	ln -s  $(CFLSRC_S)/ufree.F .
 	ln -s  $(CFLSRC_D)/patcher.F .
 	ln -s  $(CFLSRC_S)/lead.F .
 	ln -s  $(CFLSRC_S)/pre_patch.F .
@@ -64,7 +63,7 @@ SOURCE = arc.F        diagnos.F    extrae.F     newfit.F     rp3d.F \
 	 collx.F      extra.F      loadgr.F     ronnie.F     topol2.F \
 	 trace.F      xe.F         xe2.F        cputim.F     writ_buf.F \
 	 termn8.F     outbuf.F     transp.F     rotatp.F     umalloc.F \
-	 ufree.F      pre_patch.F  sizer.F      ccomplex.F   main.F
+	 pre_patch.F  sizer.F      ccomplex.F   main.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
