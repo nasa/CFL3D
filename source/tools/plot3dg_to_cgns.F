@@ -138,7 +138,8 @@ c
       allocatable :: y(:,:,:,:)
       allocatable :: z(:,:,:,:)
 c
-      real*8 pid,pidr,pidb,pidz,pidg,pidnew
+c     real*8 pidz,pidnew
+c
       character*80 file1,file2,name,title,textf
       character*32 filename,basename,filenum
       character*8 zonename(nblock)
@@ -1510,11 +1511,18 @@ c
       call cg_open_f(filenamr,MODE_MODIFY,iccgr,ier)
       if (ier .ne. 0) call cg_error_exit_f
       do n=1,nbl
-        call cg_zone_id_f(iccgr,ibase,n,pidz,ier)
-        if (ier .ne. 0) call cg_error_exit_f
         newname='Base/' // zonename(n) // '/GridCoordinates'
-        call ADFLINK(pidz,'GridCoordinates',filename,newname,
-     +    pidnew,ier)
+c  old way:
+c       call cg_zone_id_f(iccgr,ibase,n,pidz,ier)
+c       if (ier .ne. 0) call cg_error_exit_f
+c       call ADFLINK(pidz,'GridCoordinates',filename,newname,
+c    +    pidnew,ier)
+c  new way:
+        call cg_goto_f(iccgr,ibase,ier,'Zone_t',n,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_link_write_f('GridCoordinates',filename,newname,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+c   *********
       enddo
       call cg_close_f(iccgr,ier)
       if (ier .ne. 0) call cg_error_exit_f
