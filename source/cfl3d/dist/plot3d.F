@@ -1713,16 +1713,6 @@ c     yplus is valus at first GRIDPOINT away from wall
       if (abs(real(Cf)).gt.0.) then
          yplus = dn*reue*q1j1*sqrt(ccabs(Cf*0.5/q1j1))/emuka
       end if
-      if (ialph.eq.0) then
-         write(17,22)i,j,k,real(x(j,k,i)),real(y(j,k,i)),real(z(j,k,i)),
-     .               real(dn),real(pres1),real(temp1),real(Cf),real(Ch),
-     .               real(yplus)
-      else
-         yminus =  -y(j,k,i)
-         write(17,22)i,j,k,real(x(j,k,i)),real(z(j,k,i)),
-     .               real(yminus),real(dn),real(pres1),real(temp1),
-     .               real(Cf),real(Ch),real(yplus)
-      end if
 c
 c     store data in single precision arrays
 c
