@@ -71,6 +71,8 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /wrbl/ nwrest
       common /account/ iaccnt,ioutsub
+      common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
+     .                     yrotrate,zrotrate,noninflag
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -629,6 +631,13 @@ c
      .      call l2norm(nbl,0,resd,+1,jdim,kdim,idim,res,vol)
 c
       end if
+c
+c     call resnonin to add rotating noninertital source term to res
+c
+      if (noninflag.gt.0) then
+        call resnonin(nbl,jdim,kdim,idim,q,x,y,z,sj,sk,si,vol,res,
+     .                nou,bou,nbuf,ibufdim)
+      endif
 c
       if (iadvance(nbl) .ge. 0) then
 c
