@@ -74,7 +74,7 @@ c
       common /maxiv/ ivmx
       common /ghost/ irghost,iwghost
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb
+     .                  iwarneddy,itime2read,itaturb,tur1cut
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /degshf/ ideg(3)
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -288,6 +288,10 @@ c
         write(11,'('' cgns writing specific BC values (primitive)'')')
         call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
+      else
+c       need to delete CFL3DBoundaryValues node if it exists
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
+        call cg_delete_node_f('CFL3DBoundaryValues',ier)
       end if
       write(11,'(''  ...writing conserved q variables'')')
 c     translate to conserved (for CGNS output only)
