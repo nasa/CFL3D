@@ -3,12 +3,9 @@
      .                 fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr1,
      .                 rmstr2,nneg1,nneg2,iskip,vist3d,tursav,
      .                 smin,xjb,xkb,blnum,cmuv,maxbl,mblk2nd,
-c   ***CGNSstart
-c    .                 myid,myhost,mycomm,nou,bou,nbuf,ibufdim)
      .                 myid,myhost,mycomm,nou,bou,nbuf,ibufdim,
      .                 igrid,wk,idima,jdima,kdima,vj0,vk0,vi0,
-     .                 tj0,tk0,ti0)
-c   ***CGNSend
+     .                 tj0,tk0,ti0,qavg)
 c
 c     $Id$
 c
@@ -60,15 +57,13 @@ c
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
      .          xkb(jdim-1,kdim-1,idim-1),blnum(jdim-1,kdim-1,idim-1),
      .          cmuv(jdim-1,kdim-1,idim-1)
-c   ***CGNSstart
+      dimension qavg(jdim-1,kdim-1,idim-1,5)
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension irinddata(6)
-c   ***CGNSend
 c
-c   ***CGNSstart
+      common /avgdata/ iteravg,xnumavg
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
-c   ***CGNSend
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -140,10 +135,13 @@ c
       itag_tj0     = itag_vi0     + ioffset
       itag_tk0     = itag_tj0     + ioffset
       itag_ti0     = itag_tk0     + ioffset
+      itag_qavg    = itag_ti0     + ioffset
+      itag_xnum    = itag_qavg    + ioffset
 c
       jki   = jdim*kdim*idim
       jkim  = jdim1*kdim1*idim1
       jki5  = 5*jki
+      jkim5 = 5*jkim
       jki2  = 2*jki
       jk20  = jdim*kdim*20
       ki20  = kdim*idim1*20
@@ -158,10 +156,13 @@ c
       if (myid.eq.myhost) then
 c
 #endif
-c   ***CGNSstart
       if (icgns .eq. 1) then
 #if defined CGNS
-      write(11,'('' CGNS read in rrest'')')
+      write(11,'('' cgns read in rrest'')')
+      write(11,'(''  ...reading conserved variables and'',
+     +  '' translating to primitive'')')
+      write(11,'(''  (this may result in machine-order differences'',
+     +  '' compared to a non-cgns run)'')')
       call getsolinfo(iccg,ibase,igrid,nsoluse,irinddata)
       irind=1
       jrind=1
@@ -188,7 +189,7 @@ c     convert q to primitive (they are in CGNS file as conserved)
       enddo
       end if
       if (irghost .ne. 0) then
-        write(11,'('' CGNS reading specific BC values'')')
+        write(11,'('' cgns reading specific BC values'')')
         call readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
      +    qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
       if (iprim .eq. 0) then
@@ -252,7 +253,6 @@ c     convert qj0, qk0, qi0 to primitive (they are in CGNS file as conserved)
         call readtime(iccg,ibase,time)
 #endif
       else
-c   ***CGNSend
       read(2) titlw,xmachw,jt,kt,it,alphw,reuew,ntr,time
 c     write(15,97)jt,kt,it
 c  97 format(1x,15hrestarting on a,i5,3h x ,i5,3h x ,i5,5h grid)
@@ -262,9 +262,7 @@ c  97 format(1x,15hrestarting on a,i5,3h x ,i5,3h x ,i5,5h grid)
          write(11,*) ' restart indices  idim,jdim,kdim =',it,jt,kt
          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
-c   ***CGNSstart
       end if
-c   ***CGNSend
 c
 c     write(15,100) real(titlw),real(xmachw),jt,kt,it,real(alphw),
 c     real(reuew),ntr,real(time)
@@ -280,9 +278,7 @@ c        reset freestream for new alpha on host
          call init_mast
       end if
 c
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
       if (ntr.le.ncycmax) then
 c
 c     Convergence data (residual,force coefficients, mass flow, etc.)
@@ -324,9 +320,7 @@ c
 c
       end if
       end if
-c   ***CGNSstart
       end if
-c   ***CGNSend
 #if defined DIST_MPI
 c
       end if
@@ -508,17 +502,13 @@ c
       if (myid.eq.myhost) then
 c
 #endif
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
          read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,5)
          if (irghost .ne. 0)
      .   read(2) ((((qi0(j,k,l,m),j=1,jdim1),k=1,kdim1),l=1,5),m=1,4),
      .           ((((qj0(k,i,l,m),k=1,kdim1),i=1,idim1),l=1,5),m=1,4),
      .           ((((qk0(j,i,l,m),j=1,jdim1),i=1,idim1),l=1,5),m=1,4)
-c   ***CGNSstart
       end if
-c   ***CGNSend
 c
 #if defined DIST_MPI
 c
@@ -686,7 +676,6 @@ c
 #if defined DIST_MPI
       if (myid .eq. myhost) then
 #endif
-c   ***CGNSstart
       if (icgns .eq. 1) then
 #if defined CGNS
         call readeqn(iccg,ibase,igrid,iv1,iv2,iv3,gammaw,
@@ -713,11 +702,8 @@ c   ***CGNSstart
         end if
 #endif
       else
-c   ***CGNSend
       read(2) iv1,iv2,iv3
-c   ***CGNSstart
       end if
-c   ***CGNSend
 #if defined DIST_MPI
       end if
 c
@@ -771,14 +757,10 @@ c
 #if defined DIST_MPI
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
           read(2) (dum,n=1,ntr),(dum,n=1,ntr),
      .            (idum,n=1,ntr),(idum,n=1,ntr)
-c   ***CGNSstart
       end if
-c   ***CGNSend
 #if defined DIST_MPI
          end if
 #endif
@@ -786,14 +768,10 @@ c   ***CGNSend
 #if defined DIST_MPI
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
           read(2) (rmstr1(n),n=1,ntr),(rmstr2(n),n=1,ntr),
      .            (nneg1(n), n=1,ntr),(nneg2(n), n=1,ntr)
-c   ***CGNSstart
       end if
-c   ***CGNSend
 #if defined DIST_MPI
          end if
 c
@@ -843,7 +821,6 @@ c
       if (ivmxold.ne.ivmx) iread=0
       if ((ivmxold.ge.6.and.ivmxold.le.14) .and.
      .    (ivmx.ge.6.and.ivmx.le.14)) iread = 1
-c   ***CGNSstart
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 #if defined CGNS
         call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
@@ -852,7 +829,6 @@ c   ***CGNSstart
      +    blnum,cmuv)
 #endif
       end if
-c   ***CGNSend
       if (iread .eq. 0) then
 c
 c     If diff turb model, DO NOT restart turb soln from quantities on 
@@ -870,17 +846,13 @@ c
 #if defined DIST_MPI
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
          if (irghost .ne. 0)
      .   read(2) ((((dum,j=1,jdim),k=1,kdim),l=1,1),m=1,4),
      .           ((((dum,k=1,kdim),i=1,idim1),l=1,1),m=1,4),
      .           ((((dum,j=1,jdim),i=1,idim1),l=1,1),m=1,4)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
          end if
 #endif
@@ -890,9 +862,7 @@ c
 #if defined DIST_MPI
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          read(2) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),
      .           m=1,2)
          if (irghost .ne. 0)
@@ -900,9 +870,7 @@ c   ***CGNSend
      .           ((((dum,k=1,kdim),i=1,idim1),l=1,2),m=1,4),
      .           ((((dum,j=1,jdim),i=1,idim1),l=1,2),m=1,4)
          read(2) (((smin(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
         end if
 c
@@ -920,15 +888,11 @@ c
 #if defined DIST_MPI
            if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
            read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
            read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
            read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
            end if
 #endif
@@ -940,13 +904,9 @@ c   ***CGNSend
 #if defined DIST_MPI
            if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
            read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
            end if
 #endif
@@ -973,17 +933,13 @@ c
          end if
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          read(2) (((vist3d(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
          if (irghost .ne. 0)
      .   read(2) ((((vi0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,1),m=1,4),
      .           ((((vj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,1),m=1,4),
      .           ((((vk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,1),m=1,4)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
          end if
 c
@@ -1039,18 +995,14 @@ c
         end if
         if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
         read(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .          m=1,2)
          if (irghost .ne. 0)
      .   read(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,2),m=1,4),
      .           ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,2),m=1,4),
      .           ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,2),m=1,4)
-c   ***CGNSstart
          end if
-c   ***CGNSend
         if ((iv1.eq.6.or.iv2.eq.6.or.iv3.eq.6.or.iv1.eq.7.or.
      .       iv2.eq.7.or.iv3.eq.7) .and. (ivisc(1).eq.8.or.
      .       ivisc(2).eq.8.or.ivisc(3).eq.8.or.ivisc(1).eq.12.or.
@@ -1191,13 +1143,9 @@ c
 c
          if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
         read(2) (((smin(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
         end if
 c
@@ -1215,15 +1163,11 @@ c
 #if defined DIST_MPI
           if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
           read(2) (((xjb(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
           read(2) (((xkb(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
           read(2) (((blnum(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
           end if
 c
@@ -1260,18 +1204,14 @@ c
 #if defined DIST_MPI
           if (myid.eq.myhost) then
 #endif
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
           if(ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .eq. 13 .or.
      .       ivmx .eq. 14) then
           read(2) (((cmuv(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
           else
           read(2) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
           end if
-c   ***CGNSstart
          end if
-c   ***CGNSend
 #if defined DIST_MPI
           end if
 c
@@ -1300,6 +1240,51 @@ c       this was defined earlier for message passing
 c
 c       ntt = ntr
 c
+      end if
+      if (iteravg .eq. 2) then
+        if (myid.eq.myhost) then
+        read(97,end=1010,err=1010) dum,dum,dum,xnumavg
+        read(97,end=1010,err=1010) ((((qavg(j,k,i,m),
+     +    i=1,idim-1),j=1,jdim-1),k=1,kdim-1),m=1,5)
+c   need to switch y and z if ialph .ne. 0
+        if (ialph .ne. 0) then
+          do i=1,idim-1
+            do j=1,jdim-1
+              do k=1,kdim-1
+                temp=qavg(j,k,i,4)
+                qavg(j,k,i,4)=qavg(j,k,i,3)
+                qavg(j,k,i,3)=-temp
+              enddo
+            enddo
+          enddo
+        end if
+        end if
+#if defined DIST_MPI
+c
+          mytag = itag_qavg + nbl
+          if (myid .eq. myhost) then
+             call MPI_Send(qavg,jkim5,MY_MPI_REAL,
+     .                    nd_dest,mytag,mycomm,ierr)
+          else if (myid .eq. mblk2nd(nbl)) then
+             call MPI_Recv(qavg,jkim5,MY_MPI_REAL,
+     .                     myhost,mytag,mycomm,istat,ierr)
+          end if
+          mytag = itag_xnum + nbl
+          if (myid .eq. myhost) then
+             call MPI_Send(xnumavg,1,MY_MPI_REAL,
+     .                    nd_dest,mytag,mycomm,ierr)
+          else if (myid .eq. mblk2nd(nbl)) then
+             call MPI_Recv(xnumavg,1,MY_MPI_REAL,
+     .                     myhost,mytag,mycomm,istat,ierr)
+          end if
+#endif
+        return
+ 1010   continue
+        write(11,'(/,'' stopping... flag iteravg=2, but cannot read'',
+     +   '' running-average Q file, nbl='',i5)') nbl
+        write(11,'('' ... it either does not exist or it is an'',
+     +   '' incorrect file'')')
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c
       return

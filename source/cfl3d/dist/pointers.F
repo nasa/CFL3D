@@ -53,6 +53,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /elastic/ ndefrm,naesrf
       common /unst/ time,cfltau,ntstep,ita,iunst
+      common /avgdata/ iteravg,xnumavg
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -127,24 +128,25 @@ c      42  bcdataj
 c      43  bcdatak
 c      44  bcdatai
 c      45  xib2
-c      46  ux
-c      47  cmuv
-c      48  volj0
-c      49  volk0
-c      50  voli0
-c      51  xmdj
-c      52  xmdk
-c      53  xmdi
-c      54  velg
-c      55  xnm2
-c      56  ynm2
-c      57  znm2
-c      58  deltj
-c      59  deltk
-c      60  delti
-c      61  xnm1
-c      62  ynm1
-c      63  znm1
+c      46  qavg
+c      47  ux
+c      48  cmuv
+c      49  volj0
+c      50  volk0
+c      51  voli0
+c      52  xmdj
+c      53  xmdk
+c      54  xmdi
+c      55  velg
+c      56  xnm2
+c      57  ynm2
+c      58  znm2
+c      59  deltj
+c      60  deltk
+c      61  delti
+c      62  xnm1
+c      63  ynm1
+c      64  znm1
 c
 c
       if (myid.eq.myhost .and. mpihost.eq.1) then
@@ -693,10 +695,16 @@ c
          if((ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      .and. real(dt) .gt. 0.) ns=jmkmim*4
 c
+c........qavg(jdim-1,kdim-1,idim-1,5) iteration-averaged data
+c
+         lw(46,nbl) = lw(45,nbl) + ns
+         ns = 0
+         if (iteravg.eq.1 .or. iteravg.eq.2) ns = jm1km1im1*5
+c
 c........ux(jdim-1,kdim-1,idim-1,9)    
 c        velocity gradients for EASM k-omega or k-epsilon turb models
 c
-         lw(46,nbl) = lw(45,nbl) + ns
+         lw(47,nbl) = lw(46,nbl) + ns
          ns = 0
          if(ivisc(3).eq. 8 .or. ivisc(2).eq. 8 .or. ivisc(1).eq. 8 .or.
      .      ivisc(3).eq. 9 .or. ivisc(2).eq. 9 .or. ivisc(1).eq. 9 .or.
@@ -706,7 +714,7 @@ c
 c        cmuv(jdim-1,kdim-1,idim-1)
 c........EASM, var-g (now considered the "Standard" EASM)
 c
-         lw(47,nbl) = lw(46,nbl) + ns
+         lw(48,nbl) = lw(47,nbl) + ns
          ns = 0
          if(ivisc(3).eq.8 .or. ivisc(2).eq.8 .or. ivisc(1).eq.8 .or.
      .      ivisc(3).eq.9 .or. ivisc(2).eq.9 .or. ivisc(1).eq.9 .or.
@@ -717,7 +725,7 @@ c
 c        volj0(kdim,idim-1,1,4)
 c........cell volumes at j-boundary
 c
-         lw(48,nbl) = lw(47,nbl) + ns
+         lw(49,nbl) = lw(48,nbl) + ns
          ns = 0
          if(ivmx.ge.1) ns =kmim1*1*4
          
@@ -725,7 +733,7 @@ c
 c        volk0(jdim,idim-1,1,4)
 c........cell volumes at k-boundary
 c
-         lw(49,nbl) = lw(48,nbl) + ns
+         lw(50,nbl) = lw(49,nbl) + ns
          ns = 0
          if(ivmx.ge.1) ns =jmim1*1*4
 
@@ -733,25 +741,25 @@ c
 c        voli0(jdim,kdim,1,4)
 c........cell volumes at i-boundary
 c
-         lw(50,nbl) = lw(49,nbl) + ns
+         lw(51,nbl) = lw(50,nbl) + ns
          ns = 0
          if(ivmx.ge.1) ns =jmkm*1*4
 c
 c........aeroelatic j-surface data
 c
-         lw(51,nbl) = lw(50,nbl) + ns
+         lw(52,nbl) = lw(51,nbl) + ns
          ns = 0
          if(naesrf.gt.0) ns =kmim*6*maxaes*nmds
 c
 c........aeroelatic k-surface data
 c
-         lw(52,nbl) = lw(51,nbl) + ns
+         lw(53,nbl) = lw(52,nbl) + ns
          ns = 0
          if(naesrf.gt.0) ns =jmim*6*maxaes*nmds
 c
 c........aeroelatic i-surface data
 c
-         lw(53,nbl) = lw(52,nbl) + ns
+         lw(54,nbl) = lw(53,nbl) + ns
          ns = 0
          if(naesrf.gt.0) ns =jmkm*6*maxaes*nmds
 c
@@ -759,67 +767,67 @@ c........intermediate grid velocity for blocks undergoing BOTH
 c        rigid motion and deforming motion
 c        Note: this data no longer stored
 c
-         lw(54,nbl) = lw(53,nbl) + ns
+         lw(55,nbl) = lw(54,nbl) + ns
          ns = 0
 c
 c........x-coordinate at time step n-2 (only for deforming
-c        grids, when second order time derivatives are needed)
-c
-         lw(55,nbl) = lw(54,nbl) + ns
-         ns = 0
-         if (idefrm(nbl).gt.0 .and. abs(ita).gt.1) ns = jmkmim
-c
-c........y-coordinate at time step n-2 (only for deforming
 c        grids, when second order time derivatives are needed)
 c
          lw(56,nbl) = lw(55,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0 .and. abs(ita).gt.1) ns = jmkmim
 c
-c........z-coordinate at time step n-2 (only for deforming
+c........y-coordinate at time step n-2 (only for deforming
 c        grids, when second order time derivatives are needed)
 c
          lw(57,nbl) = lw(56,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0 .and. abs(ita).gt.1) ns = jmkmim
 c
-c........displacements of j=const surfaces for deforming grids
+c........z-coordinate at time step n-2 (only for deforming
+c        grids, when second order time derivatives are needed)
 c
          lw(58,nbl) = lw(57,nbl) + ns
+         ns = 0
+         if (idefrm(nbl).gt.0 .and. abs(ita).gt.1) ns = jmkmim
+c
+c........displacements of j=const surfaces for deforming grids
+c
+         lw(59,nbl) = lw(58,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = kmim*3*2
 c
 c........displacements of k=const surfaces for deforming grids
 c
-         lw(59,nbl) = lw(58,nbl) + ns
+         lw(60,nbl) = lw(59,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmim*3*2
 c
 c........displacements of i=const surfaces for deforming grids
 c
-         lw(60,nbl) = lw(59,nbl) + ns
+         lw(61,nbl) = lw(60,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmkm*3*2
 c
 c........x-coordinate at time step n-1
 c
-         lw(61,nbl) = lw(60,nbl) + ns
+         lw(62,nbl) = lw(61,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmkmim
 c
 c........y-coordinate at time step n-1
 c
-         lw(62,nbl) = lw(61,nbl) + ns
+         lw(63,nbl) = lw(62,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmkmim
 c
 c........z-coordinate at time step n-1
 c
-         lw(63,nbl) = lw(62,nbl) + ns
+         lw(64,nbl) = lw(63,nbl) + ns
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmkmim
 c
-         nstart = lw(63,nbl) + ns
+         nstart = lw(64,nbl) + ns
 c
          if (myid.eq.myhost .and. mpihost.eq.1) then
             if (nbl.lt.nblock) then
@@ -831,14 +839,14 @@ c        memblock is the memory need to store the w array for this
 c        block; it is used in precfl3d to determine the memory 
 c        requirement for each node
 c
-         memblock(nbl) = lw(63,nbl) + ns - lw(1,nbl) + 1
+         memblock(nbl) = lw(64,nbl) + ns - lw(1,nbl) + 1
 c
       else
 c
 c        if block is not local to this node, set pointers to previous
 c        blocks starting location
 c
-         do ii = 1,63
+         do ii = 1,64
             lw(ii,nbl) = nstart
          end do
          do ii = 1, maxseg
@@ -847,7 +855,7 @@ c
             end do
          end do
 c
-         nstart = lw(63,nbl)
+         nstart = lw(64,nbl)
 c
       end if
 c

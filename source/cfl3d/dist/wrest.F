@@ -3,13 +3,10 @@
      .                 fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr1,
      .                 rmstr2,nneg1,nneg2,iskip,vist3d,tursav,
      .                 smin,xjb,xkb,blnum,cmuv,thetay,maxbl,
-c   ***CGNSstart
-c    .                 myid,myhost,mycomm,mblk2nd)
      .                 myid,myhost,mycomm,mblk2nd,igrid,wk,
      .                 idima,jdima,kdima,bcj,bck,bci,vj0,vk0,vi0,
      .                 tj0,tk0,ti0,blank,iwk,iwork,iover,
-     .                 nou,bou,nbuf,ibufdim)
-c   ***CGNSend
+     .                 nou,bou,nbuf,ibufdim,qavg,x,y,z)
 c
 c     $Id$
 c
@@ -58,7 +55,8 @@ c
      .          xkb(jdim-1,kdim-1,idim-1),blnum(jdim-1,kdim-1,idim-1),
      .          cmuv(jdim-1,kdim-1,idim-1)
       dimension thetay(maxbl),mblk2nd(maxbl)
-c   ***CGNSstart
+      dimension qavg(jdim-1,kdim-1,idim-1,5),x(jdim,kdim,idim),
+     .          y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension bci(jdim,kdim,2),bcj(kdim,idim-1,2),bck(jdim,idim-1,2),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
@@ -66,7 +64,6 @@ c   ***CGNSstart
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
       dimension blank(jdim,kdim,idim),iwk(iwork)
 c
-c   ***CGNSend
 c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
@@ -78,7 +75,6 @@ c
       common /ghost/ irghost,iwghost
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb
-c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /degshf/ ideg(3)
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -87,7 +83,7 @@ c   ***CGNSstart
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /twod/ i2d
-c   ***CGNSend
+      common /avgdata/ iteravg,xnumavg
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
@@ -109,12 +105,14 @@ c
       itag_qi0   = itag_bck   + ioffset
       itag_qj0   = itag_qi0   + ioffset
       itag_qk0   = itag_qj0   + ioffset
-      itag_vi0   = itag_qk0   + ioffset
+      itag_blank = itag_qk0   + ioffset
+      itag_vi0   = itag_blank + ioffset
       itag_vj0   = itag_vi0   + ioffset
       itag_vk0   = itag_vj0   + ioffset
       itag_ti0   = itag_vk0   + ioffset
       itag_tj0   = itag_ti0   + ioffset
       itag_tk0   = itag_tj0   + ioffset
+      itag_qavg  = itag_tk0   + ioffset
 c
       if (myid .eq. mblk2nd(nbl)) then
          mytag = nbl
@@ -136,6 +134,7 @@ c
       jkim  = jdim1*kdim1*idim1
       jki2  = 2*jki
       jki5  = 5*jki
+      jkim5 = jkim*5
       jk2   = jdim*kdim*2 
       ki2   = kdim*idim1*2 
       ji2   = jdim*idim1*2 
@@ -157,7 +156,6 @@ c
       end if
     6 format(/,1x,30hwriting restart file for block,i5)
     7 format(1x,30hwriting restart file for block,i5)
-c   ***CGNSstart
       if (iskip.gt.0) then
         do n=1,ntt
           if(real(rmstr1(n)) .le. 0.) rmstr1(n)=1.
@@ -165,7 +163,6 @@ c   ***CGNSstart
         enddo
       end if
       if (icgns .ne. 1) then
-c   ***CGNSend
       jt = jdim
       kt = kdim
       it = idim
@@ -182,9 +179,7 @@ c
      .            (cftmomw(n), n=1,ntt),(cftpw(n),   n=1,ntt),
      .            (cftvw(n),   n=1,ntt),(cfttotw(n), n=1,ntt)
       end if
-c   ***CGNSstart
       end if
-c   ***CGNSend
       end if
 c                                             
 #if defined DIST_MPI
@@ -201,7 +196,6 @@ c
          call MPI_Recv(q,jki5,MY_MPI_REAL,
      .                 nd_srce,mytag,mycomm,istat,ierr)
       end if
-c   ***CGNSstart
       if (icgns .eq. 1) then
       if (myid .eq. mblk2nd(nbl)) then
          mytag = itag_bci + nbl
@@ -233,7 +227,6 @@ c
      .                 nd_srce,mytag,mycomm,istat,ierr)
       end if
       end if
-c   ***CGNSend
 c
       if (iwghost .ne. 0) then
          if (myid .eq. mblk2nd(nbl)) then
@@ -266,22 +259,51 @@ c
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
       end if
+      if ((icgns .eq. 1 .and. iover .eq. 1) .or. 
+     .    (iteravg .eq. 1 .or. iteravg .eq. 2)) then
+         if (myid .eq. mblk2nd(nbl)) then
+            mytag = itag_blank + nbl
+            call MPI_Send(blank,jki,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            mytag = itag_blank + nbl
+            call MPI_Recv(blank,jki,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
+      end if
 c
 #endif
 c
       if (myid.eq.myhost) then
-c   ***CGNSstart
+c   do not allow any densities in BC quantities to be 0 or negative
+c   (even when they are not used, they can screw up CGNS output)
+      do i=1,idim1
+        do m=1,4
+        do k=1,kdim1
+          if (qj0(k,i,1,m) .le. 0.) qj0(k,i,1,m)=1.
+        enddo
+        do j=1,jdim1
+          if (qk0(j,i,1,m) .le. 0.) qk0(j,i,1,m)=1.
+        enddo
+        enddo
+      enddo
+      do m=1,4
+      do k=1,kdim1
+        do j=1,jdim1
+          if (qi0(j,k,1,m) .le. 0.) qi0(j,k,1,m)=1.
+        enddo
+      enddo
+      enddo
       if (icgns .ne. 1) then
-c   ***CGNSend
          write(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,5)
          if (iwghost .ne. 0)
      .   write(2) ((((qi0(j,k,l,m),j=1,jdim1),k=1,kdim1),l=1,5),m=1,4),
      .            ((((qj0(k,i,l,m),k=1,kdim1),i=1,idim1),l=1,5),m=1,4),
      .            ((((qk0(j,i,l,m),j=1,jdim1),i=1,idim1),l=1,5),m=1,4)
-c   ***CGNSstart
       else
 #if defined CGNS
-      write(11,'('' CGNS write in wrest'')')
+      write(11,'('' cgns write in wrest'')')
+      write(11,'(''  ...writing conserved variables'')')
 c     translate to conserved (for CGNS output only)
       do i=1,idim1
         do k=1,kdim1
@@ -339,7 +361,7 @@ c     first, find out how many holes
         npnts=n
         if (npnts .gt. 0) then
         if (iwork .lt. npnts*3) then
-          write(11,'('' not enough memory for CGNS blank'',
+          write(11,'('' not enough memory for cgns blank'',
      +      '' write.'')')
           write(11,'('' iwork in iwk='',i6,''.  Needed = '',i6)')
      +      iwork,npnts*3
@@ -351,7 +373,7 @@ c     first, find out how many holes
       end if
       call writeziter(iccg,ibase,igrid)
       if (iwghost .ne. 0) then
-        write(11,'('' CGNS writing specific BC values'')')
+        write(11,'('' cgns writing specific BC values'')')
         call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
       end if
@@ -407,28 +429,17 @@ c     translate back to primitive (so don't mess anything up that may come later
       end if
 #endif
       end if
-c   ***CGNSend
 c
 c     turbulence quantities
 c
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
       write(2) ivisc(1),ivisc(2),ivisc(3)
 c
-c   ***CGNSstart
-c     do n=1,ntt
-c       if(real(rmstr1(n)) .le. 0.) rmstr1(n)=1.
-c       if(real(rmstr2(n)) .le. 0.) rmstr2(n)=1.
-c     enddo
-c   ***CGNSend
       if (iskip.gt.0) then
           write(2) (rmstr1(n),n=1,ntt),(rmstr2(n),n=1,ntt),
      .             (nneg1(n), n=1,ntt),(nneg2(n), n=1,ntt)
       end if
-c   ***CGNSstart
       end if
-c   ***CGNSend
       end if
 c
       if (ivisc(1).ge.2 .or. ivisc(2).ge.2 .or. ivisc(3).ge.2) then
@@ -493,9 +504,7 @@ c
                   end do
                end do
             end if
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          write(11,'(''   writing vist3d data to restart file'',
      .   '', block'',i5)') nbl
          write(2) (((vist3d(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
@@ -503,9 +512,7 @@ c   ***CGNSend
      .   write(2) ((((vi0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,1),m=1,4),
      .            ((((vj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,1),m=1,4),
      .            ((((vk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,1),m=1,4)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
       end if
 c
@@ -559,9 +566,7 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          write(11,'(''   writing field eqn turb quantities'',
      .              '' to restart file'',
      .              '', block'',i5)') nbl
@@ -571,9 +576,7 @@ c   ***CGNSend
      .   write(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,2),m=1,4),
      .            ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,2),m=1,4),
      .            ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,2),m=1,4)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
 c
 c........minimum distance function
@@ -593,13 +596,9 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          write(2) (((smin(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
 c
       end if
@@ -624,13 +623,9 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(2) (((xjb(j,k,i),j=1,jdim-1),k=1,kdim-1),i=1,idim-1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
 c
 #if defined DIST_MPI
@@ -648,13 +643,9 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(2) (((xkb(j,k,i),j=1,jdim-1),k=1,kdim-1),i=1,idim-1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
 c
 #if defined DIST_MPI
@@ -672,13 +663,9 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(2) (((blnum(j,k,i),j=1,jdim-1),k=1,kdim-1),i=1,idim-1)
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
          end if
          if (ivisc(1).eq.8 .or. ivisc(2).eq.8 .or. ivisc(3).eq.8  .or.
@@ -701,16 +688,11 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(2) (((cmuv(j,k,i),j=1,jdim-1),k=1,kdim-1),i=1,idim-1)
-c   ***CGNSstart
-         end if
-c   ***CGNSend
          end if
          end if
-c   ***CGNSstart
+         end if
       if (icgns .eq. 1 .and. myid .eq. myhost) then
 #if defined CGNS
         call writeeqn(iccg,ibase,igrid,ivisc(1),ivisc(2),ivisc(3),ideg,
@@ -721,7 +703,109 @@ c   ***CGNSstart
      +   xmach,reue)
 #endif
       end if
-c   ***CGNSend
+      if (iteravg .eq. 1 .or. iteravg .eq. 2) then
+c
+#if defined DIST_MPI
+c
+         if (myid .eq. mblk2nd(nbl)) then
+            mytag = itag_cmuv + nbl
+            call MPI_Send(x,jki,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            mytag = itag_cmuv + nbl
+            call MPI_Recv(x,jki,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
+c
+         if (myid .eq. mblk2nd(nbl)) then
+            mytag = itag_cmuv + nbl
+            call MPI_Send(y,jki,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            mytag = itag_cmuv + nbl
+            call MPI_Recv(y,jki,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
+c
+         if (myid .eq. mblk2nd(nbl)) then
+            mytag = itag_cmuv + nbl
+            call MPI_Send(z,jki,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            mytag = itag_cmuv + nbl
+            call MPI_Recv(z,jki,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
+c
+         if (myid .eq. mblk2nd(nbl)) then
+            mytag = itag_qavg + nbl
+            call MPI_Send(qavg,jkim5,MY_MPI_REAL,
+     .                    myhost,mytag,mycomm,ierr)
+         else if (myid .eq. myhost) then
+            mytag = itag_qavg + nbl
+            call MPI_Recv(qavg,jkim5,MY_MPI_REAL,
+     .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
+c
+#endif
+c
+c   write cell-centered plot3d files of current grid and averaged q's
+        if (myid .eq. myhost) then
+        if (ialph .eq. 0) then
+        write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
+     +                        x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
+     +                        x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
+     +                        x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
+     +                        y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
+     +                        y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
+     +                        y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
+     +                        z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
+     +                        z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
+     +                        z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((int(blank(j,k,i)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+        else
+        write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
+     +                        x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
+     +                        x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
+     +                        x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
+     +                        z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
+     +                        z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
+     +                        z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((-0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
+     +                        y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
+     +                        y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
+     +                        y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +              (((int(blank(j,k,i)),
+     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+        end if
+c   need to switch y and z if ialph .ne. 0
+        if (ialph .ne. 0) then
+          do i=1,idim-1
+            do j=1,jdim-1
+              do k=1,kdim-1
+                temp=qavg(j,k,i,3)
+                qavg(j,k,i,3)=qavg(j,k,i,4)
+                qavg(j,k,i,4)=-temp
+              enddo
+            enddo
+          enddo
+        end if
+c   xnumavg is used to store the number of averaged iterations so far
+        write(97) xmach,alpha,reue,xnumavg
+        write(97) ((((qavg(j,k,i,m),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1),m=1,5) 
+        end if
+      end if
 c
       return
       end

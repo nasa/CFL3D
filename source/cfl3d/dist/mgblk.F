@@ -88,12 +88,10 @@ c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
       character*120 bou(ibufdim,nbuf)
       character*80  bcfiles(mxbcfil)
-c   ***CGNSstart
       character*32 basedesired
-c   ***CGNSend
 c
       integer lout(msub1),xif1(msub1),xif2(msub1),etf1(msub1),
      .        etf2(msub1),ifrom(msub1)
@@ -226,10 +224,8 @@ c
 c
       common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
-c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /unit5/ iunit5
-c   ***CGNSend
       common /chk/ ichk
       common /account/ iaccnt,ioutsub
       common /ginfo/ jdim,kdim,idim,jj2,kk2,ii2,nblc,js,ks,is,je,ke,ie,
@@ -239,7 +235,8 @@ c   ***CGNSend
      .        lqc0,ldqc0,lxtbi,lxtbj,lxtbk,latbi,latbj,latbk,
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
-     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1
+     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
+      common /avgdata/ iteravg,xnumavg
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -253,7 +250,7 @@ c   ***CGNSend
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
      .                 ialphit,nttlast,icycupdt
       common /precond/ cprec,uref,avn
@@ -1233,6 +1230,13 @@ c
       nreq = 1
 c
 #endif
+      if (iteravg .eq. 1 .or. iteravg .eq. 2) then
+        if (level .ge. lglobal .and. ntime .eq. nit) then
+          if (dt .lt. 0. .or. (dt .gt. 0. and. icyc .eq. ncyc)) then
+            xnumavg=xnumavg+1.
+          end if
+        end if
+      end if
       do 8000 nbl=1,nblock
 c
       if (level.ne.levelg(nbl)) go to 8000
@@ -1383,7 +1387,7 @@ c
      .              nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,maxseg,
      .              nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .              jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,idefrm,
-     .              iadvance)
+     .              iadvance,w(lqavg))
 c
 c        add 2nd order time terms and subiteration terms
 c
@@ -2259,13 +2263,10 @@ c                 initialize eddy viscosity limit flag
                   else
                      iwarneddy  = -1
                   end if
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                   open(unit=2,file=restrt,form='unformatted',
      .            status='unknown')
                   rewind 2
-c   ***CGNSstart
                else
 #if defined CGNS
 c   Open database
@@ -2277,7 +2278,24 @@ c   Open database
                call winfot(iccg,ibase,dt)
 #endif
                end if
-c   ***CGNSend
+               end if
+               if (iteravg .eq. 1 .or. iteravg .eq. 2) then
+                 if (myid.eq.myhost) then
+                   write(11,2222)
+                   write(11,2223)
+                   write(11,2225) avgg
+                   write(11,2225) avgq
+                   rewind(96)
+                   rewind(97)
+                   write(96) ngrid
+                   write(97) ngrid
+                   write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .               jdimg(nblg(igrid)+mseq-iseq)-1,
+     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+                   write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .               jdimg(nblg(igrid)+mseq-iseq)-1,
+     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+                 end if
                end if
                do 6040 igrid=1,ngrid
                iskipz = 0
@@ -2285,21 +2303,18 @@ c   ***CGNSend
                nbl = nblg(igrid)
                iem = iemg(igrid)
                if (iseq.ne.mseq .and. iem.gt.0) go to 6040
-c   ***CGNSstart
                if (icgns .eq. 1) then
                call lead(nbl,lw,lw2,maxbl)
                idima=idim
                jdima=jdim
                kdima=kdim
                end if
-c   ***CGNSend
                if (iem.eq.0) nbl = nbl + (mseq-iseq)
                if (mblk2nd(nbl) .eq. myid .or. myid .eq. myhost) then
                   call lead(nbl,lw,lw2,maxbl)
-c   ***CGNSstart
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for CGNS Q write.'')')
+                 write(11,'('' not enough memory for cgns Q write.'')')
                  write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -2309,27 +2324,21 @@ c   ***CGNSstart
                  jdima=jdim
                  kdima=kdim
                end if
-c   ***CGNSend
                   call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
      .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
-c   ***CGNSstart
-c    .            thetay,maxbl,myid,myhost,mycomm,mblk2nd)
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
-     .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim)
-c   ***CGNSend
+     .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
+     .            w(lqavg),w(lx),w(ly),w(lz))
                end if
  6040          continue
                if (myid.eq.myhost) then
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                close(2)
-c   ***CGNSstart
                else
 #if defined CGNS
 c   Close data base
@@ -2341,7 +2350,6 @@ c   Close data base
 
 #endif
                end if
-c   ***CGNSend
                end if
             end if
          end if
@@ -2404,13 +2412,10 @@ c                 initialize eddy viscosity limit flag
                   else
                      iwarneddy  = -1 
                   end if
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                   open(unit=2,file=restrt,form='unformatted',
      .            status='unknown')
                   rewind 2
-c   ***CGNSstart
                else
 #if defined CGNS
 c   Open database
@@ -2420,7 +2425,25 @@ c   Open database
      .              ibase,nzones)
 #endif
                end if
-c   ***CGNSend
+               end if
+               if (iteravg .eq. 1 .or. iteravg .eq. 2) then
+                 if (myid.eq.myhost) then
+                   write(11,2222)
+                   write(11,2223)
+                   write(11,2224)
+                   write(11,2225) avgg
+                   write(11,2225) avgq
+                   rewind(96)
+                   rewind(97)
+                   write(96) ngrid
+                   write(97) ngrid
+                   write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .               jdimg(nblg(igrid)+mseq-iseq)-1,
+     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+                   write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .               jdimg(nblg(igrid)+mseq-iseq)-1,
+     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+                 end if
                end if
                do 6050 igrid=1,ngrid
                iskipz = 0
@@ -2428,21 +2451,18 @@ c   ***CGNSend
                nbl = nblg(igrid)
                iem = iemg(igrid)
                if (iseq.ne.mseq .and. iem.gt.0) go to 6050
-c   ***CGNSstart
                if (icgns .eq. 1) then
                call lead(nbl,lw,lw2,maxbl)
                idima=idim
                jdima=jdim
                kdima=kdim
                end if
-c   ***CGNSend
                if (iem.eq.0) nbl = nbl + (mseq-iseq)
                if (mblk2nd(nbl) .eq. myid .or. myid .eq. myhost) then
                   call lead(nbl,lw,lw2,maxbl)
-c   ***CGNSstart
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for CGNS Q write.'')')
+                 write(11,'('' not enough memory for cgns Q write.'')')
                  write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -2452,19 +2472,16 @@ c   ***CGNSstart
                  jdima=jdim
                  kdima=kdim
                end if
-c   ***CGNSend
                   call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
      .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
-c   ***CGNSstart
-c    .            thetay,maxbl,myid,myhost,mycomm,mblk2nd)
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
-     .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim)
-c   ***CGNSend
+     .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
+     .            w(lqavg),w(lx),w(ly),w(lz))
                end if
  6050          continue
 c
@@ -2476,17 +2493,13 @@ c
                if (abs(ita) .ne. 2 .and. iunst .gt. 0) iflagg=2
                if (abs(ita) .eq. 2 .and. iunst .gt. 0) iflagg=3
                if (myid.eq.myhost) then
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                   write(2) iflagg
-c   ***CGNSstart
                else
 #if defined CGNS
                   call winfot(iccg,ibase,dt)
 #endif
                end if
-c   ***CGNSend
                end if
 c
 c              write 2nd order data
@@ -2496,21 +2509,18 @@ c
                nbl = nblg(igrid)
                iem = iemg(igrid)
                if (iseq.ne.mseq .and. iem.gt.0) go to 6060
-c   ***CGNSstart
                if (icgns .eq. 1) then
                call lead(nbl,lw,lw2,maxbl)
                idima=idim
                jdima=jdim
                kdima=kdim
                end if
-c   ***CGNSend
                if (iem.eq.0) nbl = nbl + (mseq-iseq)
                if (mblk2nd(nbl) .eq. myid .or. myid .eq. myhost) then
                   call lead(nbl,lw,lw2,maxbl)
-c   ***CGNSstart
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for CGNS'',
+                 write(11,'('' not enough memory for cgns'',
      +              '' unsteady Q write.'')')
                  write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
@@ -2521,7 +2531,6 @@ c   ***CGNSstart
                  jdima=jdim
                  kdima=kdim
                end if
-c   ***CGNSend
                   call wrestg(nbl,jdim,kdim,idim,w(lx),w(ly),w(lz),
      .                 w(lxnm2),w(lynm2),w(lznm2),w(ldeltj),w(ldeltk),
      .                 w(ldelti),w(lqc0),0,0,utrans,vtrans,wtrans,
@@ -2536,10 +2545,7 @@ c   ***CGNSend
      .                 kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                 aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                 maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
-c   ***CGNSstart
-c    .                 nwork)
      .                 nwork,idima,jdima,kdima,igrid,w(lxib2))
-c   ***CGNSend
                end if
  6060          continue
                end if
@@ -2551,21 +2557,18 @@ c
                   nbl = nblg(igrid)
                   iem = iemg(igrid)
                   if (iseq.ne.mseq .and. iem.gt.0) go to 6070
-c   ***CGNSstart
                if (icgns .eq. 1) then
                call lead(nbl,lw,lw2,maxbl)
                idima=idim
                jdima=jdim
                kdima=kdim
                end if
-c   ***CGNSend
                   if (iem.eq.0) nbl = nbl + (mseq-iseq)
                   if (mblk2nd(nbl) .eq. myid .or. myid .eq. myhost) then
                      call lead(nbl,lw,lw2,maxbl)
-c   ***CGNSstart
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for CGNS'',
+                 write(11,'('' not enough memory for cgns'',
      +              '' unsteady Q write.'')')
                  write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
@@ -2576,7 +2579,6 @@ c   ***CGNSstart
                  jdima=jdim
                  kdima=kdim
                end if
-c   ***CGNSend
                      iuns = max(itrans(nbl),irotat(nbl),idefrm(nbl))
                      call wrestg(nbl,jdim,kdim,idim,w(lx),w(ly),w(lz),
      .                    w(lxnm2),w(lynm2),w(lznm2),w(ldeltj),
@@ -2592,10 +2594,7 @@ c   ***CGNSend
      .                    kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                    aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                    maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
-c   ***CGNSstart
-c    .                    nwork)
      .                    nwork,idima,jdima,kdima,igrid,w(lxib2))
-c   ***CGNSend
                   end if
  6070             continue
                end if
@@ -2604,9 +2603,7 @@ c              write modal data if aeroelastic
 c
                if (myid .eq. myhost) then
                    if (naesrf.gt.0) then
-c   ***CGNSstart
                       if (icgns .ne. 1) then
-c   ***CGNSend
                       write(2) (timekeep(nn),nn=1,ntt)
                       do iaes=1,naesrf
                          nmodes = aesrfdat(5,iaes)
@@ -2616,7 +2613,6 @@ c   ***CGNSend
                          write(2) (((aehist(nn,ll,n,iaes),nn=1,ntt),
      .                               ll=1,3),n=1,nmodes)
                       end do
-c   ***CGNSstart
                       else
 #if defined CGNS
                          maxnum=2*nmds*naesrf
@@ -2631,13 +2627,9 @@ c   ***CGNSstart
      .                    ntt,naesrf,wk,maxnum,wk(maxnum+1),maxnum2)
 #endif
                       end if
-c   ***CGNSend
                    end if
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                    close(2)
-c   ***CGNSstart
                else
 #if defined CGNS
 c   Close data base
@@ -2648,7 +2640,6 @@ c   Close data base
                  end if
 #endif
                end if
-c   ***CGNSend
                end if
 c
             end if
@@ -2747,6 +2738,11 @@ c
  2070 format(43h not enough work space for subroutine collq)
  2080 format(44h not enough work space for subroutine coll2q)
  2090 format(/38h***** ENDING RESIDUAL/RESTRICTION LOOP,3i3/)
+ 2222 format(/,50h writing unformatted running-average cell-centered,
+     .       30h PLOT3D files (MG,3D,iblanked))
+ 2223 format(38h   in same precision that code was run)
+ 2224 format(54h   grid is LATEST cell-center grid (not time-averaged))
+ 2225 format(8x,a80)
  3000 format(/34h***** ENDING MULTIGRID CYCLE *****)
  3010 format(/47h***** BEGINNING PROLONGATION LOOP, level, kode,,
      .       6h mode=,3i3/)

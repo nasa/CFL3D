@@ -50,7 +50,7 @@ c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
@@ -109,7 +109,7 @@ c
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /is_dpatch/ maxdcnt
       common /tracer/ itrace
 c

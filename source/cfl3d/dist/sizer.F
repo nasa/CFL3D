@@ -53,7 +53,7 @@ c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
       character*80 bcfiles(mxbcfil0)
       character*120 bou(ibufdim0,nbuf0)
 c
@@ -255,7 +255,7 @@ c
 c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
-     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm
+     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -271,7 +271,7 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /conversion/ radtodeg
       common /unit5/ iunit5
       common /moov/ movie,nframes,icall1,lhdr
@@ -883,7 +883,7 @@ c
          i = idimg(nbl)
          write(66,223)
          write(66,4)igrid,nbl,j,k,i
-         do ii=1,63
+         do ii=1,64
             write(66,37)ii,nbl,lw(ii,nbl)
          end do
          do jj=1,6

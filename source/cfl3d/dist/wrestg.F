@@ -11,10 +11,7 @@
      .                  kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                  aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                  maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
-c   ***CGNSstart
-c    .                  wk,nwork)
      .                  wk,nwork,idima,jdima,kdima,igrid,tursav2)
-c   ***CGNSend
 c
 c     $Id$
 c
@@ -93,10 +90,8 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /igrdtyp/ ip3dgrd,ialph
-c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
-c   ***CGNSend
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -153,9 +148,7 @@ c
 c
 #endif
          if (myid.eq.myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(11,101) nbl
   101       format(45h writing 2nd order time data to restart file,,
      .             6h block,i4)
@@ -168,16 +161,14 @@ c   only need to store old values of turb quantities (j,k,i,1) and
 c   (j,k,i,2), NOT the deltaQ's = (j,k,i,3) and (j,k,i,4):
             write(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),
      .                   i=1,idim1),l=1,2)
-c   ***CGNSstart
          else
 #if defined CGNS
-         write(11,'('' writing 2nd order time data to CGNS file,'',
+         write(11,'('' writing 2nd order time data to cgns file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
 #endif
          end if
-c   ***CGNSend
          end if
 c
       else if (nflagg .eq. 1) then
@@ -187,29 +178,21 @@ c        write out dynamic mesh data
 c ************************************
 c
          if (myid.eq.myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             write(2) iuns
-c   ***CGNSstart
          end if
-c   ***CGNSend
          end if
 c
          if (iuns .ne. 0) then
 c
             if (myid.eq.myhost) then
-c   ***CGNSstart
             if (icgns .ne. 1) then
-c   ***CGNSend
                write(11,102) nbl
   102          format(43h writing dynamic mesh data to restart file,,
      .             8h   block,i4)
 c
                write(2) jdim,kdim,idim
-c   ***CGNSstart
             end if
-c   ***CGNSend
             end if
 c
 #if defined DIST_MPI
@@ -249,9 +232,7 @@ c
      .                    maxsegdg,wk,nwork)
 #endif
                if (myid.eq.myhost) then
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                   write(2) itrans(nbl),rfreqt(nbl),xorig(nbl),
      .                  yorig(nbl),zorig(nbl),xorig0(nbl),yorig0(nbl),
      .                  zorig0(nbl),utrans(nbl),vtrans(nbl),wtrans(nbl),
@@ -264,10 +245,9 @@ c   ***CGNSend
      .                  dthzmx(nbl),irotatmc,rfreqrmc,thetaxmc,thetaymc,
      .                  thetazmc,omegaxmc,omegaymc,omegazmc,dthxmxmc,
      .                  dthymxmc,dthzmxmc,time2(nbl),time2mc,dt
-c   ***CGNSstart
                else
 #if defined CGNS
-              write(11,'('' writing dynamic mesh data to CGNS file,'',
+              write(11,'('' writing dynamic mesh data to cgns file,'',
      +         '' block'',i4)') nbl
               call wgrdmov(iccg,ibase,igrid,iuns,
      .                  itrans(nbl),rfreqt(nbl),xorig(nbl),yorig(nbl),
@@ -285,7 +265,6 @@ c   ***CGNSstart
      .                  dthzmxmc,time2(nbl),time2mc,dt,ialph)
 #endif
                end if
-c   ***CGNSend
                end if
 #if defined DIST_MPI
             end if
@@ -351,9 +330,7 @@ c
                end if
 #endif
                if (myid.eq.myhost) then
-c   ***CGNSstart
                if (icgns .ne. 1) then
-c   ***CGNSend
                   write(2) idefrm(nbl),nsegdfrm(nbl)
                   do is=1,nsegdfrm(nbl)
                      write(2) idfrmseg(nbl,is),utrnsae(nbl,is),
@@ -386,10 +363,9 @@ c
                   write(2) (((x(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((y(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
-c   ***CGNSstart
                else
 #if defined CGNS
-                write(11,'('' writing deforming mesh data to CGNS'',
+                write(11,'('' writing deforming mesh data to cgns'',
      .           '' file, block'',i4)') nbl
                 if (abs(ita).gt.1) then
                 call wdeform(iccg,ibase,igrid,idefrm(nbl),
@@ -414,7 +390,6 @@ c   ***CGNSstart
                 end if
 #endif
                end if
-c   ***CGNSend
                end if
             end if
          end if

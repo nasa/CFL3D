@@ -153,6 +153,8 @@ c           34......genforce.dat
 c           35......cfl3d.sd_res
 c           39......newsurf.p3d
 c           66......precfl3d.out
+c           96......cfl3d_avgg.p3d
+c           97......cfl3d_avgq.p3d
 c           99......precfl3d.error / cfl3d.error
 c
 c           Unit 26 is reserved for reading in bc data via the
@@ -286,23 +288,19 @@ c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
       character*80 inpstring
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
-c   ***CGNSstart
       character*32 basedesired
-c   ***CGNSend
 c
       dimension itrnsfr(27),titlw(20),nou(nbuf)
 c
-c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
-c   ***CGNSend
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /proces/ numprocs
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /unit5/ iunit5
@@ -465,19 +463,15 @@ c
       call asnfile(plt3dq, '-F f77 -N ieee', IER)
 #endif
 c
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
       open(unit=1,file=grid,form='unformatted',status='old')
       open(unit=2,file=restrt,form='unformatted',status='unknown')
-c   ***CGNSstart
       else
       write(iunit5,'(/,'' icgns=1.  Therefore, restart filename:'',/,
      . 6x,a60,/,'' is not used.  All restart info is written to cgns'',
      . '' file:'',/,6x,a60,/,'' (where grid is also located)'')') 
      . restrt,grid
       end if
-c   ***CGNSend
       open(unit=11,file=output,form='formatted',status='unknown')
       open(unit=12,file=residual,form='formatted',status='unknown')
       open(unit=13,file=turbres,form='formatted',status='unknown')
@@ -500,6 +494,8 @@ c
       aeinp     = 'aesurf.dat'
       aeout     = 'genforce.dat'
       sdhist    = 'cfl3d.sd_res'
+      avgg      = 'cfl3d_avgg.p3d'
+      avgq      = 'cfl3d_avgq.p3d'
 c
       open(unit=23,file=subres,form='formatted',status='unknown')
       open(unit=24,file=subtur,form='formatted',status='unknown')
@@ -511,6 +507,8 @@ c
       open(unit=35,file=sdhist,form='formatted',status='unknown')
 #   endif
       open(unit=66,file=preout,form='formatted',status='unknown')
+      open(unit=96,file=avgg,form='unformatted',status='unknown')
+      open(unit=97,file=avgq,form='unformatted',status='unknown')
       open(unit=99,file=errfile,form='formatted',status='unknown')
 c
       rewind( 1)
@@ -668,7 +666,6 @@ c
 c***********************************************************************
 c     normal program termnination
 c***********************************************************************
-c   ***CGNSstart
 c   Write input file used to CGNS file
 #if defined CGNS
       if (icgns .eq. 1 .and. myid .eq. myhost) then
@@ -685,7 +682,6 @@ c   Close data base
         end if
       end if
 #endif
-c   ***CGNSend
 c
 c     remove the temporary input file, if used
 c

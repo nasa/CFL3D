@@ -122,6 +122,8 @@ c
       call flush_(24)
       call flush_(25)
       call flush_(66)
+      call flush_(96)
+      call flush_(97)
       call flush_(99)
 #   else
       call flush(3)
@@ -137,6 +139,8 @@ c
       call flush(24)
       call flush(25)
       call flush(66)
+      call flush(96)
+      call flush(97)
       call flush(99)
 #   endif
 c
@@ -154,6 +158,8 @@ c
          close(24)
          close(25)
          close(66)
+         close(96)
+         close(97)
          close(99)
       end if
 #endif

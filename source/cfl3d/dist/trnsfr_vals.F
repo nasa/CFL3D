@@ -67,7 +67,7 @@ c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
 c
       dimension nou(nbuf)
       dimension work(mwork),iwork(mworki)
@@ -126,6 +126,7 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /des/ ides,cdes
       common /cfl/ dt0,dtold
+      common /avgdata/ iteravg,xnumavg
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -164,7 +165,7 @@ c
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /elastic/ ndefrm,naesrf
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb
@@ -396,6 +397,7 @@ c
          work(nlast+50) = itaturb
          work(nlast+51) = ides
          work(nlast+52) = cdes
+         work(nlast+53) = iteravg
          nlast = nlast+nkey
       end if
 c
@@ -625,6 +627,7 @@ c
          itaturb   =int(work(nlast+50))
          ides      = int(work(nlast+51))
          cdes      = work(nlast+52)
+         iteravg   = int(work(nlast+53))
       end if
 c
 c**************************

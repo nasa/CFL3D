@@ -12,11 +12,8 @@
      .                  freq,gmass,damp,x0,gf0,nmds,maxaes,aesrfdat,
      .                  perturb,myhost,myid,mycomm,mblk2nd,maxbl,
      .                  ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
-c   ***CGNSstart
-c    .                  iaesurf,maxsegdg,wk,nwork)
      .                  iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
      .                  tursav2)
-c   ***CGNSend
 c
 c     $Id$
 c
@@ -111,10 +108,8 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /igrdtyp/ ip3dgrd,ialph
-c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
-c   ***CGNSend
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb
 c
@@ -150,9 +145,7 @@ c       read 2nd order time data
 c *******************************
 c
       if (myid.eq.myhost) then
-c   ***CGNSstart
       if (icgns .ne. 1) then
-c   ***CGNSend
       write(11,50) nbl
    50 format(33h reading 2nd order time data from,
      .       23h restart file for block,i4)
@@ -177,7 +170,6 @@ c                  time-accurate restart files, which was missing this info)
          read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .               l=1,2)
          end if
-c   ***CGNSstart
       else
 #if defined CGNS
          write(11,'('' reading 2nd order time data from cgns'',
@@ -187,7 +179,6 @@ c   ***CGNSstart
      +     ialph,qc0,tursav2,dtold)
 #endif
       end if
-c   ***CGNSend
       if (dtold .ne. dt) then
         write(11,'('' time step has changed: old='',f12.6,
      .   '', new='',f12.6)') dtold,dt
@@ -274,17 +265,13 @@ c        read dynamic mesh data
 c *******************************
 c
          if (myid.eq.myhost) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
             read(2) iuns
-c   ***CGNSstart
          else
 #if defined CGNS
          call readiuns(iccg,ibase,igrid,iuns)
 #endif
          end if
-c   ***CGNSend
          end if
 #if defined DIST_MPI
 c
@@ -303,9 +290,7 @@ c
          if (iuns .ne. 0) then
 c
             if (myid.eq.myhost) then
-c   ***CGNSstart
             if (icgns .ne. 1) then
-c   ***CGNSend
                write(11,105) nbl
   105          format(31h reading dynamic mesh data from,
      .                23h restart file for block,i4)
@@ -320,9 +305,7 @@ c
      .                   29h should be        j x k x i :,3i5)
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
-c   ***CGNSstart
             end if
-c   ***CGNSend
             end if
 #if defined DIST_MPI
 c
@@ -366,9 +349,7 @@ c
 #endif
 c
             if (myid.eq.myhost) then
-c   ***CGNSstart
             if (icgns .ne. 1) then
-c   ***CGNSend
                read(2)
      .            itrans1,rfreqt1,xorig1,yorig1,zorig1,xorig01,yorig01,
      .            zorig01,utrans1,vtrans1,wtrans1,dxmx1,dymx1,dzmx1,
@@ -380,7 +361,6 @@ c   ***CGNSend
      .            irotatmc1,rfreqrmc1,thetaxmc1,thetaymc1,thetazmc1,
      .            omegaxmc1,omegaymc1,omegazmc1,dthxmxmc1,dthymxmc1,
      .            dthzmxmc1,time21,time2mc1,dt1
-c   ***CGNSstart
             else
 #if defined CGNS
             write(11,'('' reading dynamic mesh data from cgns file'',
@@ -398,7 +378,6 @@ c   ***CGNSstart
      .            dthzmxmc1,time21,time2mc1,dt1)
 #endif
             end if
-c   ***CGNSend
 c
 c              fix-up for change in moving grid parameters: 
 c              change the block time counter (time2) to insure
@@ -567,9 +546,7 @@ c
 c
             if (idefrm(nbl).gt.0) then
                if (myid.eq.myhost) then
-c   ***CGNSstart
                   if (icgns .ne. 1) then
-c   ***CGNSend
                   read(2) idefrm(nbl),nsegdfrm(nbl)
                   do is=1,nsegdfrm(nbl)
                      read(2) idfrmsdum,utrnsae(nbl,is),
@@ -597,7 +574,6 @@ c   ***CGNSend
                   read(2) (((x(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((y(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
-c   ***CGNSstart
                   else
 #if defined CGNS
                   write(11,'('' reading deforming grid info from'',
@@ -628,7 +604,6 @@ c   ***CGNSstart
                   end if
 #endif
                   end if
-c   ***CGNSend
                end if
 #if defined DIST_MPI
                if (abs(ita) .gt. 1) then

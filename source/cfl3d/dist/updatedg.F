@@ -99,7 +99,7 @@ c
      .        lqc0,ldqc0,lxtbi,lxtbj,lxtbk,latbi,latbj,latbk,
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
-     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1
+     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
