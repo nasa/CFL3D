@@ -1,4 +1,4 @@
-      subroutine rp3d(x,y,z,jdim,kdim,idim,igrid,ialph,igeom_img)
+      subroutine rp3d(x,y,z,jdim,kdim,idim,igrid,ialph,igeom_img,irr)
 c
 c     $Id$
 c
@@ -44,7 +44,8 @@ c
 c        
 c           for non-geometric derivatives, input grid is real
 c
-            read(1) (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+            read(1,end=999,err=999) 
+     .              (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((yr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((zr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
             do i=1,idim
@@ -60,13 +61,15 @@ c
 c        
 c           for geometric derivatives, input grid is complex
 c
-            read(1) (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+            read(1,end=999,err=999) 
+     .              (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
 
          end if
 #else
-         read(1) (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+         read(1,end=999,err=999) 
+     .           (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
 #endif
@@ -76,7 +79,8 @@ c
 c
 c           for non-geometric derivatives, input grid is real
 c
-            read(1) (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+            read(1,end=999,err=999) 
+     .              (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((zr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((yr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
             do i=1,idim
@@ -92,12 +96,14 @@ c
 c
 c           for geometric derivatives, input grid is complex
 c
-            read(1) (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+            read(1,end=999,err=999) 
+     .              (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
          end if
 #else
-         read(1) (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+         read(1,end=999,err=999) 
+     .           (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
 #endif
@@ -118,5 +124,8 @@ c
       deallocate(zr)
 #   endif
 c
+      return
+ 999  continue
+      irr=1
       return
       end	

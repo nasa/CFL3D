@@ -7,7 +7,7 @@
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance)
+     .           idefrm,iadvance,qavg)
 c
 c     $Id$
 c
@@ -33,7 +33,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
      .          vmui(jdim-1,kdim-1,2)
       dimension snj0(jdim-1,kdim-1,idim-1),snk0(jdim-1,kdim-1,idim-1),
      .          sni0(jdim-1,kdim-1,idim-1),blank(jdim,kdim,idim)
-      dimension q(jdim*kdim*idim,5),   qj0(kdim*(idim-1),5,4),
+      dimension q(jdim,kdim,idim,5),   qj0(kdim*(idim-1),5,4),
      .          qk0(jdim*(idim-1),5,4),qi0(jdim*kdim,5,4)
       dimension si(jdim*kdim*idim,5),sj(jdim*kdim*(idim-1),5),
      .          sk(jdim*kdim*(idim-1),5)
@@ -57,7 +57,10 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
      .          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
       dimension mblk2nd(maxbl),idefrm(maxbl),iadvance(maxbl)
+      dimension qavg(jdim-1,kdim-1,idim-1,5)
 c
+      common /avgdata/ iteravg,xnumavg
+      common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /cfl/ dt0,dtold
       common /fvfds/ rkap0(3),ifds(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -677,5 +680,33 @@ c
 c
  1447 format(50h blanking the rhs for the cells in the hole  block,i5)
 c
+      if (iteravg .eq. 1 .or. iteravg .eq. 2) then
+      if (level.ge.lglobal .and. ntime.eq.nit) then
+        if (dt .lt. 0. .or. (dt .gt. 0. .and. icyc .eq. ncyc)) then
+c   get iteration-averaged Q values and increment xnumavg
+c   note: the qavg values are kept as conserved variables, whereas 
+c   q values are primitive (this is done to avoid round-off differences
+c   during restarts, because the PLOT3D output is in conserved form)
+          do i=1,idim-1
+            do j=1,jdim-1
+              do k=1,kdim-1
+                qavg(j,k,i,1)=(qavg(j,k,i,1)*(xnumavg-1.)+
+     +            q(j,k,i,1))/xnumavg
+                qavg(j,k,i,2)=(qavg(j,k,i,2)*(xnumavg-1.)+
+     +            q(j,k,i,1)*q(j,k,i,2))/xnumavg
+                qavg(j,k,i,3)=(qavg(j,k,i,3)*(xnumavg-1.)+
+     +            q(j,k,i,1)*q(j,k,i,3))/xnumavg
+                qavg(j,k,i,4)=(qavg(j,k,i,4)*(xnumavg-1.)+
+     +            q(j,k,i,1)*q(j,k,i,4))/xnumavg
+                qavg(j,k,i,5)=(qavg(j,k,i,5)*(xnumavg-1.)+
+     +            (q(j,k,i,5)/gm1+0.5*(q(j,k,i,2)**2+
+     +            q(j,k,i,3)**2+q(j,k,i,4)**2)/q(j,k,i,1))
+     +            )/xnumavg
+              enddo
+            enddo
+          enddo
+        end if
+      end if
+      end if
       return 
       end

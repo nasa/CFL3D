@@ -23,6 +23,7 @@ c
       dimension nou(nbuf)
 c
       common /des/ ides,cdes
+      common /avgdata/ iteravg,xnumavg
       common /unit5/ iunit5
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -349,6 +350,13 @@ c
 c     constant associated with DES
 c
       cdes = 0.65
+      nkey     = nkey + 1
+c
+c     flag to store iteration-averaged q values in a PLOT3D file:
+c     0 = no averaging or storage, 1 = start averaging now,
+c     2 = continue averaging from previous run
+c
+      iteravg = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -685,6 +693,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          cdes = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'iteravg') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iteravg
 c
       else
 c

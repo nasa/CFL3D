@@ -119,6 +119,7 @@ c
      .          inewgg(maxgr)
       dimension iadvance(maxbl),iforce(maxbl),icsinfo(maxcs,9)
 c
+      common /avgdata/ iteravg,xnumavg
       common /cfl/ dt0,dtold
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
@@ -358,6 +359,11 @@ c
         irest=-irest
       else
         irest2=0
+      end if
+      if (irest .eq. 0 .and. iteravg .eq. 2) then
+        write(iunit11,98)
+   98   format(/,47h when irest=0, iteravg=2 starts running-average,
+     .   31h from scratch (as if iteravg=1),/)
       end if
 c 
       fmax   = ccabs(fmax)
@@ -2787,6 +2793,11 @@ c
          if (ncg.gt.0) nbl = nbl+ncg
    78    continue
       end if
+      if (mseq.gt.1 .and. iemtot.ne.0 .and. iteravg .ne. 0) then
+        write(iunit11,*)' Stopping!',
+     .        '  Cannot use iteravg>0 with mseq>1 and embedded grids'
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
 c
 c
 c     issc      - correction smoothing flag
@@ -2841,6 +2852,11 @@ c
       if (m.gt.1 .and. ncyc1(m).ne.0 .and. nfreeze.ne.0) then
         write(iunit11,'('' not allowed to freeze turb model'',
      .   '' immediately upon mesh-sequencing-up to next level'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (m.gt.1 .and. ncyc1(m).ne.0 .and. iteravg.gt.0) then
+        write(iunit11,'('' not allowed to use a running-average'',
+     .   '' file (iteravg>0) with mesh sequencing'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -3196,7 +3212,6 @@ c
          if (nplot3d.lt.0) then
             nplot3d = nplt3dtmp
          end if
-         nplt3d1 = nplot3d
          n1      = 0
 c
          np3dread = max(nplot3d,np3dhold)
@@ -3365,21 +3380,16 @@ c
          else
 c
             write(iunit11,1788) igrid
-1788        format(4x,42h Note: embedded grids are computed only on,
+1788        format(4x,46h stopping: embedded grids are computed only on,
      .      13h finest level,/,4x,33h the way you are mesh sequencing,,
      .      30h can't output solution on grid,i3)
-            nplt3d1 = nplt3d1 - 1
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
 c
          end if
 c
          end if
 c
   136    continue
-c
-c        adjust nplot3d for number of embedded meshes that are not
-c        output, if applicable
-c
-         nplot3d = nplt3d1
 c
 c        if any zones have function file output instead of q file
 c        output, *all* zones must have function file output
@@ -3450,7 +3460,6 @@ c
             nprnthold = abs(nprint)
             nprint = nplt3dtmp
          end if
-         nprnt1 = nprint
          n1     = 0
 c
          do 236 n=1,nprint
@@ -3612,16 +3621,11 @@ c
          else
 c
             write(iunit11,1788) igrid
-            nprnt1 = nprnt1 - 1
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
 c
          end if
 c
   236    continue
-c
-c        adjust nprint for number of embedded meshes that are not
-c        output, if applicable
-c
-         nprint = nprnt1
 c
       end if
 c

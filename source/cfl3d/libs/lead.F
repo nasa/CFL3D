@@ -22,7 +22,7 @@ c
      .        lqc0,ldqc0,lxtbi,lxtbj,lxtbk,latbi,latbj,latbk,
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
-     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1
+     .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -117,24 +117,25 @@ c
       lbcdk  = lw(43,nbl)
       lbcdi  = lw(44,nbl)
       lxib2  = lw(45,nbl)
-      lux    = lw(46,nbl)
-      lcmuv  = lw(47,nbl)
-      lvolj0 = lw(48,nbl)
-      lvolk0 = lw(49,nbl)
-      lvoli0 = lw(50,nbl)
-      lxmdj  = lw(51,nbl)
-      lxmdk  = lw(52,nbl)
-      lxmdi  = lw(53,nbl)
-      lvelg  = lw(54,nbl)
-      lxnm2  = lw(55,nbl)
-      lynm2  = lw(56,nbl)
-      lznm2  = lw(57,nbl)
-      ldeltj = lw(58,nbl)
-      ldeltk = lw(59,nbl)
-      ldelti = lw(60,nbl)
-      lxnm1  = lw(61,nbl)
-      lynm1  = lw(62,nbl)
-      lznm1  = lw(63,nbl)
+      lqavg  = lw(46,nbl)
+      lux    = lw(47,nbl)
+      lcmuv  = lw(48,nbl)
+      lvolj0 = lw(49,nbl)
+      lvolk0 = lw(50,nbl)
+      lvoli0 = lw(51,nbl)
+      lxmdj  = lw(52,nbl)
+      lxmdk  = lw(53,nbl)
+      lxmdi  = lw(54,nbl)
+      lvelg  = lw(55,nbl)
+      lxnm2  = lw(56,nbl)
+      lynm2  = lw(57,nbl)
+      lznm2  = lw(58,nbl)
+      ldeltj = lw(59,nbl)
+      ldeltk = lw(60,nbl)
+      ldelti = lw(61,nbl)
+      lxnm1  = lw(62,nbl)
+      lynm1  = lw(63,nbl)
+      lznm1  = lw(64,nbl)
 c
       return
       end

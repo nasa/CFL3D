@@ -26,17 +26,15 @@ c
 c
       dimension titlw(20),nou(nbuf0)
 c
-c   ***CGNSstart
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
-     .             aeinp,aeout,sdhist
+     .             aeinp,aeout,sdhist,avgg,avgq
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
-     .                 aeinp,aeout,sdhist
+     .                 aeinp,aeout,sdhist,avgg,avgq
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
-c   ***CGNSend
       common /unit5/ iunit5
       common /elastic_ss/ idef_ss
 c
@@ -598,14 +596,11 @@ c     or time steps have already been done
 c
       ntr = 0
       if (irest.ne.0) then
-c   ***CGNSstart
          if (icgns .ne. 1) then
-c   ***CGNSend
          read(2,end=999) titlw,xmachw,jt,kt,it,alphw,reuew,ntr,time
  999     continue
          rewind(2)
          close(2)
-c   ***CGNSstart
          else
 #if defined CGNS
 c          the following opens cgns file, gets ntr, and closes it
@@ -616,7 +611,6 @@ c          it assumes only one base
            end if
 #endif
          end if
-c   ***CGNSend
       end if
       ncycmax0 = max(ncyctot+ntr,1)
 c
