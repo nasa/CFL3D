@@ -878,10 +878,10 @@ c   read Q's:
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      if (m .eq. 3 .and. ialph .eq. 1) then
+      if (m .eq. 3 .and. ialph .ne. 0) then
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,q(1,1,1,4))
-      else if (m .eq. 4 .and. ialph .eq. 1) then
+      else if (m .eq. 4 .and. ialph .ne. 0) then
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,-wk,irind,jrind,krind,q(1,1,1,3))
       else
@@ -4939,10 +4939,10 @@ c   Read Q's:
      +     fndesired(m), RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      if (m .eq. 3 .and. ialph .eq. 1) then
+      if (m .eq. 3 .and. ialph .ne. 0) then
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,4))
-      else if (m .eq. 4 .and. ialph .eq. 1) then
+      else if (m .eq. 4 .and. ialph .ne. 0) then
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
      +    nfaci,-wk,irind,jrind,krind,qc0(1,1,1,3))
       else
