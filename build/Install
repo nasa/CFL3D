@@ -697,8 +697,8 @@ esac
 
 case $FARCH in alpha)
 
-  FTN="mpif77"
-# Alternate compiler you may need if mpif77 doesn't
+  FTN="mpif90"
+# Alternate compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 # FTN="fort"
 
@@ -770,10 +770,10 @@ case $FARCH in LINUX)
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.linux"
   fi
-  FTN="mpif77"
+  FTN="mpif90"
   CPPOPT_SP="$CPPOPT_SP -DINTEL"
 
-# Alternate compiler choices you may need if mpif77 doesn't
+# Alternate compiler choices you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 
 # Portland Group Compiler
@@ -810,8 +810,8 @@ case $FARCH in LINUX)
      if [ ! x$cgnsdir = x ]; then
         CGNS_LLIB="cgns.linux"
      fi
-     FTN="mpif77"
-# Alternate Intel compiler you may need if mpif77 doesn't
+     FTN="mpif90"
+# Alternate Intel compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="ifc"
   fi
@@ -839,9 +839,9 @@ case $FARCH in LINUX)
      if [ ! x$cgnsdir = x ]; then
         CGNS_LLIB="cgns.linux"
      fi
-     FTN="mpif77"
+     FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DPG"
-# Alternate Portland group compiler you may need if mpif77 doesn't
+# Alternate Portland group compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="pgf90"
   fi
@@ -869,9 +869,9 @@ case $FARCH in LINUX)
      if [ ! x$cgnsdir = x ]; then
         CGNS_LLIB="cgns.linux"
      fi
-     FTN="mpif77"
+     FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DLAHEY"
-# Alternate Lahey compiler you may need if mpif77 doesn't
+# Alternate Lahey compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="lf95"
   fi
@@ -899,9 +899,9 @@ case $FARCH in LINUX)
      if [ ! x$cgnsdir = x ]; then
         CGNS_LLIB="cgns.alpha"
      fi
-     FTN="mpif77"
+     FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DALPHA"
-# Alternate Alpha compiler you may need if mpif77 doesn't
+# Alternate Alpha compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="fort"
   fi
@@ -1077,7 +1077,7 @@ case $FARCH in LINUX)
    echo 'or -linux_compiler_flags=Alpha'
    echo ' '
    echo 'Note the default Fortran compiler is currently set'
-   echo 'as mpif77 - if this does not work, you will need'
+   echo 'as mpif90 - if this does not work, you will need'
    echo 'to change this: e.g. ifc, pgf90, etc.'
    echo ' '
    echo 'For certain implementations of MPI you may need to'
@@ -1095,7 +1095,7 @@ esac
 case $FARCH in alpha)
    echo ' '
    echo 'Note the default Fortran compiler is currently set'
-   echo 'as mpif77 - if this does not work, you will need'
+   echo 'as mpif90 - if this does not work, you will need'
    echo 'to change this: e.g. fort'
    echo ' '
    echo 'Some MPI implementations have a problem'
