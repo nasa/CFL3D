@@ -905,6 +905,55 @@ c     t = target ("to") s = source ("from")
             isva(2,1,nbli)   = 1
             isva(2,2,nbli)   = 2
          end if
+c
+         if (ifs.lt.0) then
+            itemp = isva(2,1,nbli)
+            isva(2,1,nbli) = isva(2,2,nbli)
+            isva(2,2,nbli) = itemp
+         end if
+c
+c        check order of side 1 against the order of side 2,
+c        set via isva array
+c
+         irange1 = abs(limblk(1,4,nbli) - limblk(1,1,nbli))
+         irange2 = abs(limblk(2,4,nbli) - limblk(2,1,nbli))
+         jrange1 = abs(limblk(1,5,nbli) - limblk(1,2,nbli))
+         jrange2 = abs(limblk(2,5,nbli) - limblk(2,2,nbli))
+         krange1 = abs(limblk(1,6,nbli) - limblk(1,3,nbli))
+         krange2 = abs(limblk(2,6,nbli) - limblk(2,3,nbli))
+         if (isva(1,1,nbli) .eq. 1) then
+            llrange11 = irange1
+         else if (isva(1,1,nbli) .eq. 2) then
+            llrange11 = jrange1
+         else if (isva(1,1,nbli) .eq. 3) then
+            llrange11 = krange1
+         end if
+         if (isva(1,2,nbli) .eq. 1) then
+            llrange12 = irange1
+         else if (isva(1,2,nbli) .eq. 2) then
+            llrange12 = jrange1
+         else if (isva(1,2,nbli) .eq. 3) then
+            llrange12 = krange1
+         end if
+         if (isva(2,1,nbli) .eq. 1) then
+            llrange21 = irange2
+         else if (isva(2,1,nbli) .eq. 2) then
+            llrange21 = jrange2
+         else if (isva(2,1,nbli) .eq. 3) then
+            llrange21 = krange2
+         end if
+         if (isva(2,2,nbli) .eq. 1) then
+            llrange22 = irange2
+         else if (isva(2,2,nbli) .eq. 2) then
+            llrange22 = jrange2
+         else if (isva(2,2,nbli) .eq. 3) then
+            llrange22 = krange2
+         end if
+         if (llrange11.ne.llrange21 .or. llrange12.ne.llrange22) then
+            itemp = isva(2,1,nbli)
+            isva(2,1,nbli) = isva(2,2,nbli)
+            isva(2,2,nbli) = itemp
+         end if
       end if
       end if
  1020 continue
