@@ -123,6 +123,7 @@ c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
+      common /des/ ides,cdes
       common /elastic/ ndefrm,naesrf
       common /elastic_ss/ idef_ss
       common /params/ lmaxgr,lmaxbl,lmxseg,lmaxcs,lnplts,lmxbli,lmaxxe,
@@ -432,6 +433,11 @@ c
         iipv=1
         i2d=1
       end if
+c   DES must be run in 3-D
+      if (ides .eq. 1 .and. i2d .eq. 1) then
+        write(iunit11,'('' DES must be run 3-D (i2d=0)'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
    36 format(8i10)
 c
 c     for cfl3d type grids, set ialph = 0 regardless of input value
@@ -611,6 +617,15 @@ c   Set wall iwf, wall function parameter:
         iwf(3)=1
         ivisc(3) = abs(ivisc(3))
       end if
+c   DES currently only works with Spalart model
+      if (ides .eq. 1) then
+        if (ivisc(1) .ne. 5 .or. ivisc(2) .ne. 5 .or.
+     .      ivisc(3) .ne. 5) then
+          write(iunit11,'('' DES currently works with SA model only'',
+     .     '', and must be on in all 3 directions'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+      end if
 c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       ideg(1) = 0
       ideg(2) = 0
@@ -748,7 +763,15 @@ c
       if (i2d.gt.0 .and. idim.ne.2) then
          write(iunit11,337)
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-  337    format(1x,'('' stopping...must have idim=2 for 2d cases!'')')
+  337    format(42h stopping...must have idim=2 for 2d cases!)
+      end if
+      if (i2d .eq. 0 .and. idim .eq. 2) then
+         write(iunit11,338)
+  338    format(49h WARNING: idim=2 for i2d=0 may not be a good idea)
+      end if
+      if (ides .eq. 1 .and. idim .eq. 2) then
+         write(iunit11,339)
+  339    format(47h WARNING: idim=2 for DES may not be a good idea)
       end if
       nblg(igrid) = nbl
       idimg(nbl)  = idim
@@ -2895,8 +2918,8 @@ c
          write(iunit11,198)
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-  198 format('('' you MUST use subiterations (ncyc>1) to get'',
-     .'' second-order accuracy in time!'')')
+  198 format(43h you MUST use subiterations (ncyc>1) to get,
+     .       31h second-order accuracy in time!)
    17 continue
 c
       if (icall.gt.0) then
@@ -2910,8 +2933,8 @@ c
          write(iunit11,199)
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-  199 format('('' you MUST do at least one cycle on the starting'',
-     .         '' level!'')')
+  199 format(47h you MUST do at least one cycle on the starting,
+     .       7h level!)
 c
 c     mitL   - iterations on level L for each level L from coarsest
 c               to finest (mitL=1 recommended)
