@@ -51,6 +51,16 @@ c
          end if
       end if
 c
+      if (abs(ibctyp).eq.2016) then
+         datahdr(1)  = '   tw/tinf'
+         datahdr(2)  = '        cq'
+         datahdr(3)  = '       cqu'
+         datahdr(4)  = '     sjetx'
+         datahdr(5)  = '     sjety'
+         datahdr(6)  = '     sjetz'
+         datahdr(7)  = '     rfreq'
+      end if
+c
       if (ibctyp.eq.2005) then
          datahdr(1)  = '      nblp'
          datahdr(2)  = '     dthtx'
