@@ -54,16 +54,14 @@
 #                  this option, your cfl3d input file MUST be called
 #                  cfl3d.inp.
 #
-#   -f77           use f77 as fortran compiler (default is f90)
-#
 #   -purify        compile using Rational Software's Purify (memory checker)
 #                  - must have a licence for Purify
 #                  - this option only effective on SGI platform
 #   -linux_compiler_flags=(PG,Intel,Lahey,Alpha)
 #                  compile with particular flags for Linux operating system
 #
-# script by r.t.biedron 6/97
-#          revision 1.1 8/99
+#   -help          get a list of the options above.
+#
 #
 ################################################################################
 ################################################################################
@@ -88,23 +86,36 @@ while [ $# -gt 0 ]; do
     -single)            do_dou=no ;;
     -no_opt)            do_no_opt=yes ;;
     -noredi*)           do_redirect=no ;;
-    -f77)               do_f90=no ;;
     -purify)            do_purify=yes ;;
     -mpichdir=*)        mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     -cgnsdir=*)         cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     -linux_compiler_flags=*)  linux_compiler_flags=`echo $1 | sed 's/[-a-z_]*=//'` ;;
-    *) echo unknown argument for Install
+    -help*)
        cat << usage_end
 usage: Install  [options]
-       where options may be one or more of the following:
+       where [options] may be one or more of the following:
        -single
        -no_opt
-       -f77
        -noredirect
        -purify
        -mpichdir=DIR  where DIR is the mpich base directory
        -cgnsdir=DIR   where DIR is the cgns base directory
        -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
+       -help
+usage_end
+       exit 1 ;;
+    *) echo unknown argument for Install
+       cat << usage_end
+usage: Install  [options]
+       where [options] may be one or more of the following:
+       -single
+       -no_opt
+       -noredirect
+       -purify
+       -mpichdir=DIR  where DIR is the mpich base directory
+       -cgnsdir=DIR   where DIR is the cgns base directory
+       -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
+       -help
 usage_end
        exit 1 ;;
   esac
@@ -381,8 +392,7 @@ fi
 #    currently is only applicable to the cfl3d executable
 #
 # ON ANY PLATFORM:
-# 1) F77 forces the use of the f77 compiler instead of the default f90.
-# 2) CGNS enables code to read cgns files - set if cgnsdir is specified
+# 1) CGNS enables code to read cgns files - set if cgnsdir is specified
 #    in the command line
 
 # E) Cfl3dv6 relies on "ifdefs" in order to have one source code that can
@@ -421,10 +431,6 @@ case $FARCH in *)
 
   FTN="f90"
   CC="cc"
-
-  if [ $do_f90 = no ]; then
-     FTN="f77"
-  fi
 
 # compile/link flags
 
