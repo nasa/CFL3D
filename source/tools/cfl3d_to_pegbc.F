@@ -617,7 +617,8 @@ c
             if (ibctype .eq. 1001) isym(n) = 1
             if (ibctype .gt. 0) then
                nbc = nbc + 1
-               if (ibctype.eq.1005 .or. ibctype.eq.2004) then
+               if (ibctype.eq.1005 .or. abs(ibctype).eq.2004 .or.
+     .             ibctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1
@@ -638,7 +639,8 @@ c
             if (ibctype .eq. 1001) isym(n) = 1
             if (ibctype .gt. 0) then
                nbc = nbc + 1
-               if (ibctype.eq.1005 .or. ibctype.eq.2004) then
+               if (ibctype.eq.1005 .or. abs(ibctype).eq.2004 .or.
+     .             ibctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1
@@ -659,7 +661,8 @@ c
             if (jbctype .eq. 1001) isym(n) = 1
             if (jbctype .gt. 0) then
                nbc = nbc + 1
-               if (jbctype.eq.1005 .or. jbctype.eq.2004) then
+               if (jbctype.eq.1005 .or. abs(jbctype).eq.2004 .or.
+     .             jbctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1
@@ -680,7 +683,8 @@ c
             if (jbctype .eq. 1001) isym(n) = 1
             if (jbctype .gt. 0) then
                nbc = nbc + 1
-               if (jbctype.eq.1005 .or. jbctype.eq.2004) then
+               if (jbctype.eq.1005 .or. abs(jbctype).eq.2004 .or.
+     .             jbctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1
@@ -701,7 +705,8 @@ c
             if (kbctype .eq. 1001) isym(n) = 1
             if (kbctype .gt. 0) then
                nbc = nbc + 1
-               if (kbctype.eq.1005 .or. kbctype.eq.2004) then
+               if (kbctype.eq.1005 .or. abs(kbctype).eq.2004 .or.
+     .             kbctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1
@@ -722,7 +727,8 @@ c
             if (kbctype .eq. 1001) isym(n) = 1
             if (kbctype .gt. 0) then
                nbc = nbc + 1
-               if (kbctype.eq.1005 .or. kbctype.eq.2004) then
+               if (kbctype.eq.1005 .or. abs(kbctype).eq.2004 .or.
+     .             kbctype.eq.2014) then
                   itype(nbc) = 2
                else
                   itype(nbc) = 1

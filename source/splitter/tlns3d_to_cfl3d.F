@@ -361,7 +361,8 @@ c
                ifo1 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                ifo1 = 1
             end if
          end if
@@ -412,7 +413,8 @@ c
                ifo2 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                ifo2 = 1
             end if
          end if
@@ -463,7 +465,8 @@ c
                jfo1 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                jfo1 = 1
             end if
          end if
@@ -514,7 +517,8 @@ c
                jfo2 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                jfo2 = 1
             end if
          end if
@@ -565,7 +569,8 @@ c
                kfo1 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                kfo1 = 1
             end if
          end if
@@ -616,7 +621,8 @@ c
                kfo2 = 1
             end if
          else
-            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004) then
+            if (ibctyp.eq.1004 .or. abs(ibctyp).eq.2004 .or.
+     .          abs(ibctyp).eq.2014) then
                kfo2 = 1
             end if
          end if
