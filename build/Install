@@ -670,19 +670,33 @@ esac
 #            LINUX ARCHITECTURE
 #########################################
 
-# NOTE: the following are specific to ICASE Beowulf machine "Coral",
-# which consists of 33 400 Mhz Pentium II processors
+# NOTE: due to the variability of Linux installations,
+# available compilers, etc., it is not possible to
+# set FFLAGS, FTN, etc varables universally once
+# Linux has been identified as the OS. Below are
+# some values which have been used in the past -
+# however these may well need to be tweeked for
+# any particular installation
 
 case $FARCH in LINUX)
-   FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+# Portland Group Compiler
+  FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+# Lahey Compiler
+# FFLAG="--o0"
   FFLAG_SPEC="$FFLAG"
   if [ $do_dou = yes ]; then
-     PREC="-Mr8"
+#    Portland Group Compiler
+     PREC="-r8"
+#    Lahey Compiler
+#    PREC="--dbl"
   else
      PREC=""
   fi
-  CPP="/usr/local/pgi/linux86/bin/pgcpp1"
+  CPP="cpp"
+# Portland Group Compiler
   FTN="/usr/local/pgi/linux86/bin/pgf90"
+# Lahey Compiler
+#  FTN="lf95"
   CPPOPT_SP="$CPPOPT_SP -DLINUX"
 esac
 
@@ -837,4 +851,15 @@ fi
 case $LLARCH in SV1)
    echo ' '
    echo 'On the SV1, use "mpirun -nt ..." rather than "mpirun -np ..."'
+esac
+case $LARCH in Linux)
+   echo ' '
+   echo 'NOTE: due to the variability of Linux installations,'
+   echo 'available compilers, etc., it is not possible to'
+   echo 'set FFLAGS, FTN, etc varables universally once'
+   echo 'Linux has been identified as the OS. See the section'
+   echo '"LINUX ARCHITECTURE" in the Install script for'
+   echo 'some values which have been used in the past -'
+   echo 'however these may well need to be tweeked for'
+   echo 'any particular installation'
 esac
