@@ -89,6 +89,8 @@ c
       common /igrdtyp/ ip3dgrd,ialph
       common /moov/movie,nframes,icall1,lhdr
       common /conversion/ radtodeg
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy,itime2read,itaturb
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -816,12 +818,16 @@ c            Find nonlinear tauij values:
      +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
      +                 (s12*s13 + s22*s23 + s23*s33)/re
             end if
-c            Calculate production term:
+c            Calculate production term (approx form if iturbprod=0):
+            if (iturbprod .eq. 0) then
+            pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
+            else
             pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
      +            +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
      +                             + t13*(ux(j,k,i,3)+ux(j,k,i,7))
      +                             + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
      +            (q(j,k,i,1)*re)
+            end if
             pk=pk*cutoff
 c      u'/u_inf:
       uprime=sqrt(abs(t11)/(q(j,k,i,1)*re))/xmach
