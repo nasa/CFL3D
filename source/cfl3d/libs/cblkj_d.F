@@ -1,6 +1,9 @@
       subroutine cblkj_d(nbli,idimt,jdimt,kdimt,
      .                   limblk,isva,it,ir,iedge,xyzr,nvals,xt,yt,zt,
      .                   ntime,lcnt,geom_miss,mxbli)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Check information transferred from block (ir) to 
 c      qj0 array of block (it).

@@ -1,5 +1,8 @@
       subroutine dird(jdim,kdim,idim,x,y,z,sj,sk,si,snj0,snk0,sni0,
      .                snjm,snkm,snim,w,ivisc,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c**********************************************************************
 c      Purpose:  Evaluate directed distance from k=0 wall and i=0/j=0 
 c      wall for use in evaluating the Baldwin-Lomax turbulence model.

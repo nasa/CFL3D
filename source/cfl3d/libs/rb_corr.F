@@ -1,4 +1,7 @@
       subroutine rb_corr(cn,cm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Update the rigid body displacements and velocities via
 c              a corrector step of the rigid body equations of motion.

@@ -2,6 +2,8 @@ c
 c A collection of routines to substitue for doing complex arithmetic.
 c (revert to the standard routines for the real case)
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To return a value of a or b, depending on whether the
 c     logical expression c is true or false

@@ -1,5 +1,8 @@
       subroutine rotateq0(ld,md,q0,q0rot,lsta,lend,msta,mend,
      .                    dthtx,dthty,dthtz)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Rotate solution at ghost points contained in array 
 c     q0 (qi0/qj0/qk0) through a specified angle;                

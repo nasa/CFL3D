@@ -1,4 +1,7 @@
       subroutine parser(inpstr,npos,lc1,lc2,lcl,iflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  parse 210-character data
 c

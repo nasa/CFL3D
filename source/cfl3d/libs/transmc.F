@@ -1,6 +1,9 @@
       subroutine transmc(itran,rfreqt,utran,vtran,wtran,xorg,yorg,
      .                   zorg,xorg0,yorg0,zorg0,xmc,ymc,zmc,iupdat,
      .                   time2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to moment center due to translation
 c

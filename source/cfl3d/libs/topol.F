@@ -3,6 +3,9 @@
      .                 xie,eta,jimage,kimage,ifit,itmax,igap,iok,lout,
      .                 ic0,itoss0,jto,kto,iself,xif1,xif2,etf1,etf2,
      .                 nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Search appropriate "from" blocks for current "to" cell
 c     center with coordinates xc,yc,zc; determine xie,eta of cell center

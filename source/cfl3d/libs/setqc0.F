@@ -1,4 +1,7 @@
       subroutine setqc0(jdim,kdim,idim,q,qc0)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Store conservative variables for use in 2nd
 c     order temporal differencing and subiteration

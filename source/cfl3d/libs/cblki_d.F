@@ -1,6 +1,9 @@
       subroutine cblki_d(nbli,idimr,jdimr,kdimr,idimt,jdimt,kdimt,
      .                   limblk,isva,it,ir,iedge,xyzr,nvals,xt,yt,zt,
      .                   ntime,lcnt,geom_miss,mxbli)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Check information transferred from block (ir) to
 c      qi0 array of block (it).

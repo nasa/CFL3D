@@ -25,6 +25,9 @@
      .                  aesrfdat,perturb,iskip,jskip,kskip,nsegdfrm,
      .                  idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,
      .                  zorgae0,icouple,iprnsurf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in the case input data.
 c***********************************************************************

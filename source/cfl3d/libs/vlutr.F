@@ -1,4 +1,7 @@
       subroutine vlutr(nvmax,n,nmax,il,iu,a,b,c,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform the LU decomposition for a block 5X5 
 c     tridiagonal system of equations.

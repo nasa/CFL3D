@@ -20,6 +20,9 @@
      .                ncs,icsinfo,myid,myhost,mycomm,mblk2nd,nou,
      .                bou,nbuf,ibufdim,ncycmax,maxcs,thetay,iadvance,
      .                idefrm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute and print residuals and sum the forces.
 c***********************************************************************

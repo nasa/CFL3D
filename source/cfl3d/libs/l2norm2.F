@@ -1,5 +1,8 @@
       subroutine l2norm2(nbl,ntime,rmsl,irdq,jdim,kdim,idim,res,vol,
      .                   qc0,dqc0,q,blank)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute the L2-norm of the residuals, after subtracting 
 c     out the contribution of the unsteady terms that where added in 

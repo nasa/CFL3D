@@ -6,6 +6,9 @@
      .                     ireq_snd,keep_trac,keep_trac2,myid,myhost,
      .                     mycomm,mblk2nd,nou,bou,nbuf,ibufdim,istat2,
      .                     istat_size,bcfiles,mxbcfil)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Update periodic boundary conditions.
 c      note: certain arrays, e.g. ireq_ar(lbcprd*5) are dimensioned

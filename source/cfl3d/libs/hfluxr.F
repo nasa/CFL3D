@@ -1,6 +1,9 @@
       subroutine hfluxr(i,npl,xkap,jdim,kdim,idim,res,q,qk0,sk,t,nvtq,
      .                  nv,nfa,wfa,iwfa,kbctyp,isf,nbl,bck,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,idef)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute residual contributions for the 
 c     right-hand-side in the K-direction from the inviscid terms.

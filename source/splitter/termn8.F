@@ -1,4 +1,7 @@
       subroutine termn8(myid_stop,ierrflg,ibufdim,nbuf,bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: output error flag to signal program status at termination
 c

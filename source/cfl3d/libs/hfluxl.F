@@ -1,5 +1,8 @@
       subroutine hfluxl(i,npl,xkap,idf,jdim,kdim,idim,res,q,qk0,sk,
      .                  dhp,dhm,t,nvtq)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute the left-hand flux contributions due to the 
 c     inviscid terms for the K-direction.

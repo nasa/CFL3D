@@ -1,6 +1,9 @@
       subroutine expand(mdim,ndim,msub1,jmax1,kmax1,l,x1,y1,z1,xte,yte,
      .                  zte,factjlo,factjhi,factklo,factkhi,
      .                  jmax2,kmax2,x2,y2,z2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Expand grid at boundaries.
 c***********************************************************************

@@ -1,4 +1,7 @@
       subroutine dfhat(ax,ay,az,area,at,q,df,nn,nvtq,ipm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute a Jacobian matrix with respect to primitive
 c     variables at the cell interface.  The Jacobian evaluation is

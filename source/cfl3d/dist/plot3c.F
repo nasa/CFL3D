@@ -7,6 +7,9 @@
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,ipsurf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Write the output file for the cell-centered points in
 c     PLOT3D format.

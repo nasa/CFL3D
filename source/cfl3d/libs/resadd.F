@@ -1,4 +1,7 @@
       subroutine resadd(jdim,kdim,idim,q,qc0,dqc0,res,vol,iover,blank)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Add additional terms to RHS for subiteration and 2nd
 c     order temporal accuracy

@@ -1,5 +1,8 @@
       subroutine fa2xk(jf,kf,if,qkf,js,ks,is,je,ke,ie,
      .                 kbctyp,w,iw,nw,niw,neta,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Accumulate fluxes in K-direction for use on twice
 c     coarser mesh to ensure conservation.

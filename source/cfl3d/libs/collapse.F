@@ -1,5 +1,8 @@
       subroutine collapse(jdim,kdim,jmaxo,kmaxo,xo,yo,zo,
      .                    nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check for collapsed points in grid, and epand any
 c     collapsed lines detected. The threshold for adjacent points

@@ -1,6 +1,9 @@
       subroutine sizer(mbloc,maxseg,npmax,mxbli,intmax,nsub1,msegt,
      .                 msegn,msplt,mtot,mbloc0,msplt0,nou,bou,nbuf,
      .                 ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: determine the parameters required for the block-splitting
 c              code

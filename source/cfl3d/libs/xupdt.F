@@ -1,6 +1,9 @@
       subroutine xupdt (q,qj0,qk0,qi0,jdim,kdim,idim,nbl,ldim,bcj0,
      .                  bck0,bci0,maxbl,iitot,iibg,kkbg,jjbg,ibcg,
      .                  lbg,ibpntsg,qb,nou,bou,nbuf,ibufdim,int_updt)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Update fringe points of overlapped grids with boundary
 c     values which have been interpolated from other grids to provide 

@@ -1,5 +1,8 @@
       subroutine amafi(kp,npl,jdim,kdim,idim,q,ai,bi,ci,dtj,t,nvt,
      .                 dfp,dfm,imw)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Formulate the implicit matrices in the I-direction for
 c     the 3-factor algorithm.

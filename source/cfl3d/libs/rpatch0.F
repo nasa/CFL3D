@@ -1,4 +1,7 @@
       subroutine rpatch0(intmx,msub1,iindex,ninter)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Read in generalized-coordinate interpolation data
 c     from a file; only the data needed to evaluate sizing 

@@ -1,4 +1,7 @@
       subroutine ccf(x,y,ca,sa,cl,xm,uf,wf,cf,pi)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Modify uf, wf, and cf (velocities and speed of sound) at
 c     the farfield, based on point vortex correction (used when i2d=-1 and

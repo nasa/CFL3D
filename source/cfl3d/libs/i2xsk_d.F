@@ -1,5 +1,8 @@
       subroutine i2xsk_d(jc,kc,ic,qc,jf,kf,if,qkf,js,ks,is,
      .                   je,ke,ie,nblc,ldim,nbl,bckf,nface)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Interpolate primative variables from coarser
 c     meshes onto twice finer meshes, for k=constant surfaces.

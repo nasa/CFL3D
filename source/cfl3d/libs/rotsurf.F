@@ -2,6 +2,9 @@
      .                   idef,xorg,yorg,zorg,omegx,omegy,omegz,thetax,
      .                   thetay,thetaz,rfreqr,ici,icf,jci,jcf,kci,kcf,
      .                   time,nou,bou,nbuf,ibufdim,myid,wkj,wkk,wki)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to delta displacement due to 
 c     surface rotation. 

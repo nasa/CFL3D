@@ -1,5 +1,8 @@
       subroutine swafj(i,npl,jdim,kdim,idim,aj,bj,cj,f,nvt,res,iperd,
      .                 gj,hj)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Solve the block 5x5 tridiagonal equations for the 
 c     3-factor spatially-split algorithm in the J-direction.

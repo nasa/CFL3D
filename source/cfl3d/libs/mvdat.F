@@ -9,6 +9,9 @@
      .                 kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                 aesrfdat,perturb,nsegdfrm,idfrmseg,iaesurf,
      .                 maxsegdg,wk,nwork)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Move dynamic mesh data to/from common blocks
 c     into an array for sending data as a single message

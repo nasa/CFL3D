@@ -2,6 +2,9 @@
 $autodbl off
 #endif
       subroutine  cputim(icall)
+c
+c     $Id$
+c
 c=======================================================================
 c
 #if defined ADPOFF

@@ -1,6 +1,9 @@
       subroutine compg2n (nblock,ngrid,ncgg,nblg,idimg,jdimg,kdimg,
      .                    nblcg,nodes,iwrk,myid,myhost,mblk2nd,mycomm,
      .                    maxgr,maxbl,ierrflg,ibufdim,nbuf,bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: To assign blocks to nodes based on size considerations
 c     and multigrid structure

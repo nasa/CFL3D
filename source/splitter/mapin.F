@@ -2,6 +2,9 @@
      .                 imap,idbloc,ivisb,itrb,val,xdum,iold,
      .                 nxtseg,intrfc,ipatch,nsubbl,idobl,nseg,idno,
      .                 ijk,idseg,idnext,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c-----------------------------------------------------------------------
 c
 c     object : to read in and set up the topological mapping 

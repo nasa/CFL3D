@@ -1,4 +1,7 @@
       subroutine setdqc0(jdim,kdim,idim,q,qc0,dqc0)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Store conservative variables: Q(n)-Q(n-1)
 c     for use in 2nd order temporal differencing

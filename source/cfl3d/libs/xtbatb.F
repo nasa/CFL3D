@@ -1,5 +1,8 @@
       subroutine xtbatb(jdim,kdim,idim,xtbj,xtbk,xtbi,atbj,atbk,atbi,
      .                  t,tti,ttj,ttk)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Store grid speeds and accelerations on the boundaries
 c     for use in setting no-slip and wall pressure boundary conditions

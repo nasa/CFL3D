@@ -1,4 +1,7 @@
       subroutine vlutrp(nvmax,n,nmax,il,iu,a,b,c,g,h)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform the LU decomposition for a block 5X5 
 c     tridiagonal system of equations which is periodic.

@@ -1,4 +1,7 @@
       subroutine mreal(xyz,mdim1,ndim1,mdim2,ndim2,x,y,z)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Unload grid data from transfer array xyz to x,y,z
 c      work arrays

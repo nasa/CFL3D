@@ -1,4 +1,7 @@
       subroutine newalpha(ncycmax,rms,clw,myid,myhost,mycomm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  determine a new estimate for alpha that will yield
 c     the specified value of Cl

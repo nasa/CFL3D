@@ -16,6 +16,9 @@
      .                   eta2s,temp,x2,y2,z2,x1,y1,z1,
      .                   myid,myhost,mycomm,mblk2nd,nou,bou,nbuf,
      .                   ibufdim,igridg,iemg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Establish zone-to-zone communication for block inter-
 c     faces that move relative to one another, using a patched-grid 

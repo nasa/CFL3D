@@ -1,6 +1,9 @@
       subroutine cntsurf(nsurf,maxbl,maxgr,maxseg,ngrid,nblg,nbci0,
      .                   nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .                   jbcinfo,kbcinfo,ibctyp)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: To count the number of surface points (nsurf) with
 c     boundary condition type ibctyp 

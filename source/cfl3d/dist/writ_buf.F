@@ -1,5 +1,8 @@
       subroutine writ_buf(nbl,iunit,nou,bou,nbuf,ibufdim,myhost,myid,
      .                    mycomm,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Passes the internal buffer that resids on the processor 
 c     that owns block nbl to the host, and writes the contents of the

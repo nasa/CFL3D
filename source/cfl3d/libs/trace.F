@@ -1,4 +1,7 @@
       subroutine trace(icall,idum1,idum2,idum3,idum4,dum1,dum2,dum3)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Writes the search routine history for the current "to"
 c     cell to unit 7.  

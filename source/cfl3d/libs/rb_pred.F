@@ -1,4 +1,7 @@
       subroutine rb_pred(zrg1,zrg0,alf1,alf0,thtd1,thtd0,dzdt) 
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Update the rigid body displacements and velocities via
 c              a predictor step of the rigid body equations of motion.

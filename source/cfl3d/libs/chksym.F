@@ -2,6 +2,9 @@
      .                  ibcinfo,jbcinfo,kbcinfo,nface,idim,jdim,kdim,
      .                  nn,maxxseg,ista,iend,jsta,jend,ksta,kend,isym,
      .                  jsym,ksym,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check for symmetry boundary conditions in j, k or i 
 c     directions in order to apply bctype 1011 (singular axis with

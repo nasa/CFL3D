@@ -3,6 +3,9 @@
 #else
       integer function isrcheq(n,x,incx,target)
 #endif
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To find the first occurance in the array x that is equal
 c     to target; a replacement for the standard Cray function

@@ -3,6 +3,8 @@
      .                  nxtseg,intrfc,ipatch,nsubbl,idobl,
      .                  nseg,idno,ijk,idseg,idnext,xdmold,idmold)
 c
+c     $Id$
+c
       dimension nsubbl(mbloc),idobl(mbloc),nseg(mbloc),idno(mbloc),
      .          ijk(6,mbloc),idseg(mbloc),idnext(mbloc)
       dimension imap(msegt,mtot),idbloc(mtot),

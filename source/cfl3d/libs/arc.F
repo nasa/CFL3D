@@ -7,6 +7,9 @@
      .               intmx,icheck,nblkj,nblkk,jmm,kmm,j21,j22,k21,k22,
      .               npt,xif1,xif2,etf1,etf2,nou,bou,nbuf,
      .               ibufdim,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform arc-length correction to generalized coordinates
 c     near boundary if required when shearing correction has failed.

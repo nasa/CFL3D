@@ -1,6 +1,9 @@
       subroutine rpatch(maxbl,maxxe,intmax,nsub1,windex,ninter,iindex,
      .                  nblkpt,dthetxx,dthetyy,dthetzz,jdimg,kdimg,
      .                  idimg,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in generalized-coordinate interpolation data
 c     from a file

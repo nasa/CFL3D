@@ -2,6 +2,9 @@
      .                   ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
      .                   nbci0,nbcidim,maxbl,maxseg,nmds,xmdj,
      .                   xmdk,xmdi,iaes,maxaes)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: read modal deflections from a file
 c***********************************************************************

@@ -1,6 +1,9 @@
       subroutine ctime1(nbl,jdim,kdim,idim,q,vol,sj,sk,si,dtj,t,delt,
      .                 vist3d,itur,dtmin,iout,ntime,nou,bou,nbuf,
      .                 ibufdim,idef)
+c
+c     $Id$
+c
 c************************************************************************
 c     Purpose:  Calculate the time step for an input fixed Courant number
 c     or calculate the Courant number based on an input value of delta t.

@@ -8,6 +8,9 @@
      .                   itrans,irotat,idefrm,ncgg,iadvance,
      .                   nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
      .                   mblk2nd,irigb,irbtrim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Update grid to new position, and obtain corresponding
 c     grid-boundary velocities for use in the boundary conditions. Also

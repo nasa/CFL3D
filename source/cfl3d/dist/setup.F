@@ -27,6 +27,9 @@
      .                 aehist,timekeep,inpl3d,nplots,nplot3d,levelg,
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
      .                 icouple,lfgm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in the grid and restart data and calculate some
 c     preliminary information, such as the metrics, for subsequent use.

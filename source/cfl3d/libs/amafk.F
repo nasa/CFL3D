@@ -1,5 +1,8 @@
       subroutine amafk(i,npl,jdim,kdim,idim,q,ak,bk,ck,dtj,t,nvt,
      .                 dhp,dhm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Formulate the implicit matrices in the K-direction for
 c     the 3-factor algorithm.

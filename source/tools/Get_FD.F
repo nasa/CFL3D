@@ -1,4 +1,7 @@
       program Get_FD
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: read 2 cfl3d restart files and calculate finite
 c     differences of force and moment coefficients; used to validate

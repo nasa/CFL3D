@@ -3,6 +3,9 @@
      .               q1g,q2g,temp,nblkpt,intmax,icheck,mtype,
      .               iindex,ifo,ldim,npt,j21,j22,k21,k22,
      .               q1wk,dthtx,dthty,dthtz,lim_ptch)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Linearly interpolate q from one grid to ghost cells of  
 c     another grid using generalized coordinates.

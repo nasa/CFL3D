@@ -1,5 +1,7 @@
       program everyother_xyz
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Reads grid and makes <every other> point grid.
 c     User can choose to coarsen only particular index directions,

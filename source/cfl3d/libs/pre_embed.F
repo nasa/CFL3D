@@ -4,6 +4,9 @@
      .                     igridg,jdimg,kdimg,idimg,isav_emb,
      .                     is_emb,ie_emb,nbcemb,nou,bou,nbuf,ibufdim,
      .                     myid,maxgr,ierrflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Set up data arrays for embedded bc message passing
 c***********************************************************************

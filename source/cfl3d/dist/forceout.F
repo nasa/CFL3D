@@ -5,6 +5,9 @@
      .                    cdpt,cdvt,swetw,clw,cdw,cxw,cyw,czw,cmxw,
      .                    cmyw,cmzw,cdpw,cdvw,ncycmax,myhost,myid,
      .                    mycomm,mblk2nd)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Write out forces and moments on individual blocks, as
 c               well as a global force/moment summary

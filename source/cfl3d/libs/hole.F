@@ -1,4 +1,7 @@
       subroutine hole(i,npl,jdim,kdim,idim,res,blank)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Zero out the rhs residuals for the blanked points.
 c***********************************************************************

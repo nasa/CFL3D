@@ -1,5 +1,7 @@
       subroutine shortinp(nb1,ne1,nb2,ne2,idm,jdm,kdm,iface)
 c
+c     $Id$
+c
 c     converts cfl3d "shortcut" input to full range of index values
 c
       if (nb1.eq.0) nb1 = 1

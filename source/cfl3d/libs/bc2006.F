@@ -4,6 +4,9 @@
      .                  ti0,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
      .                  filname,iuns,x,y,z,nblc,jdimc,kdimc,idimc,
      .                  qj0c,qk0c,qi0c,ichk,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set pressure via radial equilibrium condition;
 c     extrapolate other quantities

@@ -1,4 +1,7 @@
       subroutine init_rb
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: initialize rigid body dynamic data, and calculate the 
 c              stm, stmi, and bmat arrays used for the solution to the

@@ -9,6 +9,9 @@
      .                  kbcinfo,iadvance,myid,myhost,mycomm,
      .                  mblk2nd,nou,bou,nbuf,ibufdim,isav_pat_b,levelg,
      .                  nblock,isav_blk)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set up the data arrays needed for asynchronous message
 c     passing of boundary condition data. 

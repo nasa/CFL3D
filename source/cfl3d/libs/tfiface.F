@@ -1,6 +1,9 @@
       subroutine tfiface(idim,jdim,kdim,x,y,z,x1,y1,z1,x2,y2,z2,
      .                   arci,arcj,arck,i1,i2,j1,j2,k1,k2,nou,bou,nbuf,
      .                   ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: compute transfinite interpolation on block faces, using
 c              arc-length blending functions

@@ -1,6 +1,9 @@
       subroutine pre_blockbc(nbl,lw,icount,idimg,jdimg,kdimg,isav_blk,
      .                       nblk,nbli,limblk,isva,nblon,mxbli,nou,bou,
      .                       nbuf,ibufdim,myid,maxbl,ierrflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Set up data arrays for 1-1 bc message passing
 c***********************************************************************

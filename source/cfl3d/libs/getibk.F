@@ -2,6 +2,9 @@
      .                  iipnts,iitot,maxbl,iibg,kkbg,jjbg,ibcg,lig,
      .                  lbg,dxintg,dyintg,dzintg,iiig,jjig,kkig,
      .                  ibpntsg,iipntsg,myid,ibufdim,nbuf,bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read the output from MAGGIE (not the grids).
 c***********************************************************************

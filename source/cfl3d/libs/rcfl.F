@@ -1,4 +1,7 @@
       subroutine rcfl(x,y,z,jdim,kdim,idim,igrid,ialph,igeom_img)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read grids in cfl3d format.
 c     ialph     - flag to interpret angle of attack

@@ -1,5 +1,8 @@
       subroutine tdq(n,r1,r2,r3,r4,r5,kx,ky,kz,lx,ly,lz,mx,my,mz,c,
      .               ub,rho,u,v,w,max,eig2,eig3,xm2a)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Multiply the inverse of the diagonalizing matrix
 c     T times the change in characteristic combination of variables.

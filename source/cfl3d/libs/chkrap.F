@@ -2,6 +2,9 @@
      .                 ibcinfo,jbcinfo,kbcinfo,nface,idim,jdim,kdim,
      .                 nn,maxxseg,ista,iend,jsta,jend,ksta,kend,iwrap,
      .                 jwrap,kwrap,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check for wraparound in j, k or i  directions in order 
 c     to apply bctype 1012 (singular axis - full plane)

@@ -5,6 +5,9 @@
      .                   dthety,dthetz,myid,mptch,mxxe,icall,iunit25,
      .                   nou,bou,ibufdim,nbuf,ifrom,xif1,etf1,xif2,
      .                   etf2,igridg,iemg,nblock,ioflag,imode)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read dynamic patch input parameters
 c

@@ -1,5 +1,8 @@
       subroutine readdat(bcdata,mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                   ibufdim,myid,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in auxiliary data arrays for 2000 series boundary
 c     conditions

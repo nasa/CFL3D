@@ -3,6 +3,9 @@
 #else
       function ismin(n,x,incx)
 #endif
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To return the index corresponding to the minimum value 
 c     in an arrary; a replacement for the standard Cray function

@@ -1,5 +1,8 @@
       subroutine blockk(q,qk0,idimr,jdimr,kdimr,idimt,jdimt,limblk,
      .                  isva,it,ir,ldim,bck,iedge,ivolflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Transfer information from block (ir) to qk0 array of 
 c     block (it).

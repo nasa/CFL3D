@@ -44,7 +44,7 @@
 # *************** COMPILER FLAG DEFINITIONS (MACHINE SPECIFIC) ***************
 #                 (CURRENT DEFINITIONS FOR IRIX64 ARCHITECTURE)
 
-FFLAG        = -O2 -64 -mips4 -r10000 -align64 -OPT:Olimit=4000 -OPT:swp=ON -LNO:prefetch=2 -TARG:madd=ON -cpp 
+FFLAG        = -64 
 PREC         = -r8
 PREC_MPI     = -DDBLE_PRECSN
 LFLAG        = -64

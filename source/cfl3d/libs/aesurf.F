@@ -2,6 +2,9 @@
      .                  xmdk,xmdi,maxbl,maxseg,nmds,maxaes,aesrfdat,
      .                  xs,xxn,icsi,icsf,jcsi,jcsf,kcsi,kcsf,nsegdfrm,
      .                  idfrmseg,iaesurf,maxsegdg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Update surface deflections due to aeroelastic motion
 c***********************************************************************

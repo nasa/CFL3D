@@ -1,4 +1,7 @@
       subroutine triv(jdim,kdim,jl,ju,kl,ku,x,a,b,c,f)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Solve a scalar tridiagonal system of equations
 c***********************************************************************

@@ -1,4 +1,7 @@
       subroutine blkmax(jdim,kdim,idim,res,resmax,jm,km,im)
+c
+c     $Id$
+c
 c*************************************************************************
 c     Purpose:  Determine the location of the maximum residual.
 c*************************************************************************

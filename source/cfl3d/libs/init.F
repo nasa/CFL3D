@@ -1,5 +1,8 @@
       subroutine init(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,tj0,tk0,ti0,
      .                vol,volj0,volk0,voli0)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Initialize the initial conditions on a mesh to be
 c     freestream. Also initialize boundary volume arrays.

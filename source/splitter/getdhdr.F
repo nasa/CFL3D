@@ -1,4 +1,7 @@
       subroutine getdhdr(datahdr,ibctyp,iver,ndata)
+c
+c     $Id$
+c
       character*10 datahdr(10)
 c
       do 1 m=1,10

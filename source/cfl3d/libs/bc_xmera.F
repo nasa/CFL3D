@@ -1,6 +1,9 @@
       subroutine bc_xmera(ntime,nbl,lw,lw2,w,mgwk,wk,nwork,maxbl,iitot,
      .                    iviscg,iovrlp,lbg,ibpntsg,qb,iibg,kkbg,
      .                    jjbg,ibcg,nou,bou,nbuf,ibufdim,int_updt)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Determine boundary data/conditions at edges of overset
 c               grids.

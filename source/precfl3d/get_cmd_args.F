@@ -1,4 +1,7 @@
       subroutine get_cmd_args(ierr)
+c
+c     $Id$
+c
 c**********************************************************************
 c     Purpose: Interrogate the command line for specific options.
 c

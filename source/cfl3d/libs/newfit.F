@@ -1,4 +1,7 @@
       subroutine newfit(ifits,ifit,icount)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine new polynomial fit for cells with stubborn
 c     convergence.

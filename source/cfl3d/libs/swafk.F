@@ -1,5 +1,8 @@
       subroutine swafk(i,npl,jdim,kdim,idim,q,ak,bk,ck,dtj,f,nvt,
      .                 res,imw)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Solve the block 5x5 tridiagonal equations for the 
 c     3-factor spatially-split algorithm in the K-direction.

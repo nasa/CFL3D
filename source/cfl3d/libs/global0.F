@@ -4,6 +4,9 @@
      .                   ibufdim0,nbuf0,mxbcfil0,nmds0,maxaes0,
      .                   maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
      .                   idm0,jdm0,kdm0)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Scan/Read in the case input data in order to set some
 c     sizing parameters for precfl3d (sizer). As each line is read,

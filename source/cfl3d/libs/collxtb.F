@@ -1,4 +1,7 @@
       subroutine collxtb(xtt,xttt,mdim,ndim,mm2,nn2,nbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict xtb and atb arrays containing grid boundary 
 c     velocity and acceleration to coarser meshes.

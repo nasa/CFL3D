@@ -1,4 +1,7 @@
       subroutine dlutr(nvmax,n,nmax,il,iu,a,b,c)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform the scalar tridiagonal (LU) decomposition.
 c***********************************************************************

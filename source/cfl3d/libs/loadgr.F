@@ -1,5 +1,8 @@
       subroutine loadgr(w,mgwk,lx,ly,lz,jindex,x,y,z,mdim,ndim,
      .                  idimg,jdimg,kdimg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Load the proper grid from 1-d storage array to 2-d
 c     work array.

@@ -1,6 +1,9 @@
       subroutine ae_pred(aesrfdat,stm,stmi,gforcn,gforcnm,xs,xxn,
      .                x0,perturb,cmyt,cnwt,xorig,yorig,
      .                zorig,nmds,maxaes,irbtrim,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: either update the modal displacements and velocities via
 c              a predictor step of the aeroelastic equations of motion,

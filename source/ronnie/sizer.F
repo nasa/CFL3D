@@ -1,6 +1,9 @@
       subroutine sizer(maxgr,maxbl,maxxe,nsub1,intmax,mpatch,nwork,
      .                 nbuf0,ibufdim0,maxgr0,maxbl0,maxxe0,nsub10,
      .                 intmax0,mpatch0,imode)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: establishes necessary parameters for the "ronnie" 
 c     preprocessor for cfl3d; ronnie determines the interpolation

@@ -4,6 +4,9 @@
      .                   nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
      .                   x,y,z,xmdj,xmdk,xmdi,jdim1,kdim1,idim1,
      .                   maxaes,nmds,nbl1,iunitw,iflag)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: To write the user-input modal surface out to a plot3d 
 c     file that can subsequently be viewed in order to help sort out

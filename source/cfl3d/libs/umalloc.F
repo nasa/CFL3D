@@ -1,4 +1,7 @@
       subroutine umalloc(ipoint,n_words,intflag,icall,memuse)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  universal malloc...allocates memory via fortran 77
 c     pointer extension.

@@ -1,5 +1,8 @@
       subroutine direct(x5,x6,x7,x8,y5,y6,y7,y8,z5,z6,z7,z8,
      .                   a1,a2,a3,imaxa,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute (normalized) directed area components, 
 c     or equivalently, components of unit normal to cell face

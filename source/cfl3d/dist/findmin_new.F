@@ -4,6 +4,9 @@
      .                       nbcidim,nbcjdim,nbckdim,jbcinfo,
      .                       kbcinfo,ibcinfo,nblg,nou,bou,nbuf,ibufdim,
      .                       maxbl,maxgr,maxseg,mblk2nd)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: To serve as a driver routine for computing distance to
 c              closest solid surface (note that search region involves

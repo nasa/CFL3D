@@ -16,6 +16,9 @@
      .                dthetxx,dthetyy,dthetzz,nblcg,lfgm,istat2_bl,
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
      .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Output data for plotting or printing.
 c***********************************************************************

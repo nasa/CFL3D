@@ -1,6 +1,9 @@
       subroutine pre_cblkj (idimr,jdimr,kdimr,limblk,isva,it,ir,
      .                      xr,yr,zr,xyzn,maxdims,ij,myid,ibufdim,
      .                      nbuf,bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Check information transferred from block (ir) to 
 c      qj0 array of block (it).

@@ -2,6 +2,9 @@
      .                res,vist3d,x,y,z,blank,vmuk,resid,wk,nwork,wk0,
      .                nwk0,iover,vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,
      .                myid,mblk2nd,maxbl,volk0,iadvance)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Advance the solution in time using a 3-factor
 c     spatially-split approximate factorization algorithm.

@@ -1,6 +1,9 @@
       subroutine rotatp(mdim,ndim,jmax1,kmax1,msub1,l,x1,y1,z1,
      .                  dthetx,dthety,dthetz,xorig,yorig,zorig,
      .                  mbl,nn,intmx,int)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Rotate "from" block to provide complete coverage for
 c     interpolation for cases in which the complete physical domain is

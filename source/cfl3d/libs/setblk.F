@@ -1,4 +1,7 @@
       subroutine setblk(blank,jdim,kdim,idim,nbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Initialize the blank array.
 c***********************************************************************

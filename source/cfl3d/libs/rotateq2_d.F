@@ -1,5 +1,8 @@
       subroutine rotateq2_d(jd,kd,q,qrot,jsta,jend,ksta,kend,
      .                   dthtx,dthty,dthtz)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Rotate solution contained in array q through a specified
 c     angle; rotated solution stored in qrot

@@ -1,6 +1,9 @@
       subroutine cblkk(nbli,idimr,jdimr,kdimr,idimt,jdimt,kdimt,limblk,  
      .                 isva,it,ir,iedge,xr,yr,zr,xt,yt,zt,ntime,lcnt,
      .                 geom_miss,mxbli)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Check information transferred from block (ir) to 
 c      qk0 array of block (it).

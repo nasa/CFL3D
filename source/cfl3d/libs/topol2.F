@@ -2,6 +2,9 @@
      .                  sarc,limit0,sc,jp,kp,lp,lsrch,itmax,xiet,etat,
      .                  xif1,xif2,etf1,etf2,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  One dimensional equivalent to subroutine topol. Performs
 c     search in one direction only.

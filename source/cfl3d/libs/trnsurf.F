@@ -3,6 +3,9 @@
      .                   rfreqt,ici,icf,jci,jcf,kci,kcf,time,nou,bou,
      .                   nbuf,ibufdim,myid,wkj,wkk,wki,xorg0,yorg0,
      .                   zorg0)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to delta displacement due to 
 c     surface translation.

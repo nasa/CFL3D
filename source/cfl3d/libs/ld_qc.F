@@ -1,4 +1,7 @@
       subroutine ld_qc(qc,qtemp,jc,kc,ic,is,ie,js,je,ks,ke,ldim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Install the embedded subset of the qc array into qtemp
 c     for massage passing.

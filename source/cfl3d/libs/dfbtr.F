@@ -1,4 +1,7 @@
       subroutine dfbtr(nvmax,n,nmax,il,iu,a,b,c,f)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform the back substitution for a scalar
 c     tridiagonal system of equations.

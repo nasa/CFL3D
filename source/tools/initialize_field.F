@@ -1,5 +1,7 @@
       program initialize_field
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:
 c     Creates a CFL3D V6 restart file with user-specified initial conditions.

@@ -1,4 +1,7 @@
       subroutine init_mast         
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Initialize the initial conditions for use on the master
 c     (host) node

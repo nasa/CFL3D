@@ -2,6 +2,9 @@
      .                  vol,t,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .                  zksav,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
      .                  iadv)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Calculate right-hand residual contributions in the 
 c     K-direction due to the viscous terms when idf = 0. Calculate 

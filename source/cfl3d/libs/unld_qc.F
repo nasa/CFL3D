@@ -1,4 +1,7 @@
       subroutine unld_qc(qc,qtemp,jc,kc,ic,is,ie,js,je,ks,ke,ldim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Install the qtemp array used for message passing into
 c     the appropriate section of the qc array. Only the cell-center

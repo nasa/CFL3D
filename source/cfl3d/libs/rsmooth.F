@@ -1,5 +1,8 @@
       subroutine rsmooth(eps,idim,jdim,kdim,icall,dq,d,nou,bou,nbuf,
      .                   ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Implicit residual smoothing (constant coefficient).
 c***********************************************************************

@@ -1,6 +1,9 @@
       subroutine ffluxr(k,npl,xkap,jdim,kdim,idim,res,q,qi0,si,t,nvtq,
      .                  nv,nfa,wfa,iwfa,ibctyp,isf,nbl,bci,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,idef)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute residual contributions for the 
 c     right-hand-side in the I-direction from the inviscid terms.

@@ -1,5 +1,8 @@
       subroutine collq(q,qq,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
      .                 res,qr,qw,vistf,vistc,nbl,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict q (the primative variables) with a volume-
 c     weighted interpolation and residuals to coarser meshes.  Also

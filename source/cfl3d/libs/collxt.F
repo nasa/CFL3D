@@ -1,5 +1,8 @@
       subroutine collxt(xt,xtt,jdim,kdim,idim,jj2,kk2,ii2,nbl,
      .                  nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict xt (array containing grid speeds)
 c     to coarser meshes.

@@ -1,6 +1,9 @@
       subroutine getibk0(jdim,kdim,idim,nbl,itotb,itoti,maxbl,
      .                   lig,lbg,ibpntsg,iipntsg,nou,bou,ibufdim,nbuf,
      .                   ierrflg,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read the output from MAGGIE (not the grids); only the
 c     data needed to evaluate sizing requirements are stored at this

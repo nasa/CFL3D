@@ -7,6 +7,8 @@
      .                  etf1,etf2,itoss0,iself,
      .                  nou,bou,nbuf,ibufdim,myid)
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Perform diagnostic checks on interpolation coefficients
 c     (generalized coordinates) found via search and inversion routines

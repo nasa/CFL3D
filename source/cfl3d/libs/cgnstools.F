@@ -1,3 +1,6 @@
+c
+c     $Id$
+c
 #if defined CGNS
       subroutine getsolinfo(iccg,ibase,igrid,nsoluse,irinddata)
 c

@@ -1,6 +1,8 @@
       subroutine splitter(mbloc,maxseg,npmax,mxbli,intmax,nsub1,msegt,
      .                    msegn,msplt,mtot,nou,bou,nbuf,ibufdim)
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: split grid and input files
 c***********************************************************************     

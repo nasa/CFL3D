@@ -1,5 +1,8 @@
       subroutine collmod(xmdj,xmdk,xmdi,xmdjc,xmdkc,xmdic,jdim,
      .                   kdim,idim,jj2,kk2,ii2,nm,nmds,iaes,maxaes)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict modal surface definitions to coarser meshes
 c***********************************************************************

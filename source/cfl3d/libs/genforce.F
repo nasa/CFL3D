@@ -3,6 +3,9 @@
      .                    xmdk,xmdi,aesrfdat,nmds,maxaes,maxsegdg,
      .                    nsegdfrm,jcsi,jcsf,kcsi,kcsf,icsi,icsf,
      .                    idfrmseg,iaes,iaesurf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Integrate the generalized forces on the body for 
 c               aeroelastic analysis. Only pressure forces are 

@@ -1,4 +1,7 @@
       subroutine termn8(myid_stop,ierrflg,ibufdim,nbuf,bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Flush output buffers (distributed version) so that last
 c      information written to output files will be printed in case of

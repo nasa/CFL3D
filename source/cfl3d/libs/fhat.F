@@ -1,4 +1,7 @@
       subroutine fhat(ax,ay,az,area,at,f,qr,ql,n,nvtq)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute Roe's generalized flux at the interface
 c     given the left and right states at the interface.

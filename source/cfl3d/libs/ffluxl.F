@@ -1,5 +1,8 @@
       subroutine ffluxl(k,npl,xkap,idf,jdim,kdim,idim,res,q,qi0,si,
      .                  dfp,dfm,t,nvtq)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute the left-hand flux contributions due to the
 c     inviscid terms for the I-direction.

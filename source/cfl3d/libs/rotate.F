@@ -2,6 +2,9 @@
      .                  irot,rfreqr,omegx,omegy,omegz,xorg,yorg,zorg,
      .                  thetax,thetay,thetaz,thxold,thyold,thzold,
      .                  iupdat,time2,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to grid position due to rotation
 c

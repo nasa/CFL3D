@@ -1,5 +1,8 @@
       subroutine fa2xi(jf,kf,if,qif,js,ks,is,je,ke,ie,
      .                 ibctyp,w,iw,nw,niw,neta,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose:  Accumulate fluxes in I-direction for use on twice
 c     coarser mesh to ensure conservation.

@@ -7,6 +7,9 @@
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,xv)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Write the output file at the grid points in PLOT3D
 c     format and print solution data.

@@ -1,4 +1,7 @@
       subroutine  cputim(icall,nodes,string,myhost,myid,mycomm,iunit)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Determine timings for cpu usage...original version of 
 c      this routine coutrtesy v. n. vatsa...mods by r. t. biedron

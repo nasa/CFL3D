@@ -1,5 +1,8 @@
       subroutine amafj(i,npl,jdim,kdim,idim,q,aj,bj,cj,dtj,t,nvt,
      .                 dgp,dgm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Formulate the implicit matrices in the J-direction for 
 c     the 3-factor algorithm.

@@ -1,5 +1,8 @@
       subroutine rotateqb(nbl,dthtx,dthty,dthtz,maxbl,iitot,ibcg,
      .                    lig,lbg,ibpntsg,iipntsg,qb)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Rotate solution in qb array through angle dthtx/y/z for 
 c     chimera scheme with rotating grids

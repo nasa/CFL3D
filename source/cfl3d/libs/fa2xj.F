@@ -1,5 +1,8 @@
       subroutine fa2xj(jf,kf,if,qjf,js,ks,is,je,ke,ie,
      .                 jbctyp,w,iw,nw,niw,neta,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Accumulate fluxes in J-direction for use on
 c     twice coarser mesh to ensure conservation.

@@ -6,6 +6,9 @@
      .                    kbcinfo,iadvance,iovrlp,myid,myhost,
      .                    mycomm,mblk2nd,idf,jdf,kdf,nou,bou,nbuf,
      .                    ibufdim,bcfiles,mxbcfil)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Driver routine for calculation of yplus at first gridpoint 
 c               above solid walls 

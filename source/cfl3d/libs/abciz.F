@@ -1,4 +1,7 @@
       subroutine abciz(k,npl,jdim,kdim,idim,ai,bi,ci,blank)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Zero out the LHS matrix element with the help of the 
 c     blank array.  For a point with blank=0, all elements of matrices

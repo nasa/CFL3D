@@ -3,6 +3,9 @@
      .                  tursav,tj0,tk0,ti0,vist3d,vj0,vk0,vi0,
      .                  mdim,ndim,bcdata,filname,iuns,
      .                  nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set characteristic inlet boundary conditions at engine 
 c               inlet, given (estimated) inlet mach, total pressure, 

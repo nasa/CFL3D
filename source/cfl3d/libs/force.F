@@ -4,6 +4,9 @@
      .                 xtbj,xtbk,xtbi,iuns,qj0,qk0,qi0,nbci0,nbcj0,
      .                 nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,jbcinfo,
      .                 kbcinfo,nn,maxseg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Integrate the forces on the body.
 c***********************************************************************

@@ -1,4 +1,7 @@
       subroutine colldat(bcdata,mdim,ndim,bcdatac,mdimc,ndimc)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict auxilary boundary condition data arrays to 
 c     coarser meshes.

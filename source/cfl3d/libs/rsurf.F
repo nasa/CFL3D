@@ -1,6 +1,9 @@
       subroutine rsurf(maxbl,maxsegdg,idim,jdim,kdim,delti,deltj,deltk,
      .                 nbl,icsi,icsf,jcsi,jcsf,kcsi,kcsf,iseg,nou,bou,
      .                 nbuf,ibufdim,iunit)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in a new surface grid and store in the 
 c     deltj/deltk,delti arrays.

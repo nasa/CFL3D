@@ -10,6 +10,9 @@
      .                  iitot,iovrlp,lig,lbg,iipntsg,ibpntsg,
      .                  qb,iibg,kkbg,jjbg,ibcg,nou,bou,nbuf,ibufdim,
      .                  myid,myhost,mycomm,mblk2nd,iresetb)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check to see if any blocks in the grid have been 
 c     translated/rotated out of bounds set by input deck. If so,

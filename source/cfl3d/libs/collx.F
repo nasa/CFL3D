@@ -1,4 +1,7 @@
       subroutine collx(x,y,z,xx,yy,zz,jdim,kdim,idim,jj2,kk2,ii2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict x, y, and z values to coarser meshes.
 c***********************************************************************

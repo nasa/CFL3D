@@ -1,5 +1,8 @@
       subroutine setup(lw,lw2,w,mgwk,itest,jtest,ktest,maxbl,maxgr,
      .                 ngrid,ncgg,iemg,nblg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in the grid calulate some preliminary information,
 c     such as 1D array indicies

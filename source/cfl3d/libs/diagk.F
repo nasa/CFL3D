@@ -1,5 +1,8 @@
       subroutine diagk(i,npl,jdim,kdim,idim,q,res,dtj,sk,t,vol,vist3d,
      .                 blank,iover)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Solve scalar tridiagonal equations to approximate the
 c     spatially-split factor in the K-direction of the 3-d spatially-

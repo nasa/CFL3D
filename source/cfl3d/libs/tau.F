@@ -1,6 +1,9 @@
       subroutine tau(mgflag,nbl,jdim,kdim,idim,q,res,q1,qr,lw,w,
      .               nou,bou,nbuf,ibufdim,maxbl,maxgr,nblock,igridg,
      .               nblcg,jsg,ksg,isg,jeg,keg,ieg,iemg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute a residual correction and store the values of
 c     q for later use in determining corrections to finer grids in the

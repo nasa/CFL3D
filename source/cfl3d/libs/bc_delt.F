@@ -1,6 +1,9 @@
       subroutine bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,jcsf,
      .                   kcsi,kcsf,icsi,icsf,jdim,kdim,idim,maxbl,
      .                   maxsegdg,nsegdfrm)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Install boundary deltas from forced oscillation or
 c     aeroelastic motion into the 3d displacement array

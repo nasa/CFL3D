@@ -8,6 +8,9 @@
      .                     klamlog,ilamhig,jlamhig,klamhig,idegg,iwfg,
      .                     idiagg,iflimg,ifdsg,rkap0g,jsg,ksg,isg,jeg,
      .                     keg,ieg,memblock,icall,nmds,maxaes,mpihost)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To set up pointers for main storage array w
 c

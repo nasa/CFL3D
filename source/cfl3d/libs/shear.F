@@ -7,6 +7,9 @@
      .                 mceta,lout,j21,j22,k21,k22,npt,ic0,iorph,itoss0,
      .                 xif1,xif2,etf1,etf2,iself,ifiner,nou,bou,nbuf,
      .                 ibufdim,myid,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine generalized coordinates of cell edge midpoints
 c     on xie=0 and eta=0 boundaries, and determine the requisite shearing 

@@ -3,6 +3,9 @@
      .                  ista,iend,jsta,jend,ksta,kend,mdim,ndim,lcnt,
      .                  xorig,yorig,zorig,maxbl,period_miss,lbcprd,
      .                  nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check to make sure that the proper rotation angle for
 c     periodic boundary conditions has been set. The check is done by

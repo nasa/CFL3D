@@ -1,5 +1,8 @@
       subroutine init_ae(nmds,maxaes,x0,xxn,temp,bmat,stm,stmi,gforcn,
      .                   gforcnm,freq,damp,gmass,aesrfdat,xs,gforcs)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: initialize aeroelastic data, and calculate the stm, 
 c              stmi, and bmat arrays used for the solution to the

@@ -1,5 +1,8 @@
       subroutine rotatmc(irot,rfreqr,omegx,omegy,omegz,xorg,yorg,zorg,
      .                thetax,thetay,thetaz,xmc,ymc,zmc,iupdat,time2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to moment center due to rotation
 c

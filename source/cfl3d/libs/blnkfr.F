@@ -1,5 +1,8 @@
       subroutine blnkfr(nbl,iibg,kkbg,jjbg,ibpntsg,lbg,iitot,blank,
      .                  jdim,kdim,idim,maxbl,blnkval)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Undo/redo blanking at fringe points (but not hole points)
 c     blnkval = 1...set blank=1 at fringe points for plotting

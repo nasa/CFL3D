@@ -8,6 +8,9 @@
      .                   nbuf,myid,mblk2nd,ibufdim,maxbl,maxseg,iitot,
      .                   intmax,nsub1,mxbli,lbcprd,epsc0,epsrot,lwdat,
      .                   maxgr,iovrlp,bcfiles,mxbcfil)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: print out boundary data/conditions to main output file.
 c***********************************************************************

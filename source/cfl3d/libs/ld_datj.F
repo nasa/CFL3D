@@ -1,6 +1,9 @@
       subroutine ld_datj(data,jdim,kdim,idim,dataj,ldim,mp,np,
      .                   ista,iend,jsta,jend,ksta,kend,nou,bou,nbuf,
      .                   ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Load data from full 3d array to smaller work array for
 c               efficient message passing

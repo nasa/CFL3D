@@ -25,6 +25,9 @@
      .                       nbuf,ibufdim,iskip,jskip,kskip,nsegdfrm,
      .                       idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,
      .                       zorgae0,icouple,iprnsurf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Load various data into work arrays for transfer from
 c     host to nodes. For ease of modification, a special section is

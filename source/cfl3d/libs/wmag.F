@@ -1,6 +1,9 @@
       subroutine wmag(jdim,kdim,idim,q,sj,sk,si,vol,vor,w,wt,ip,blank,
      .                iover,qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,
      .                volk0,voli0,vormax,ivmax,jvmax,kvmax,maxbl)
+c
+c     $Id$
+c
 c**********************************************************************
 c     Purpose:  Evaluate vorticity magnitude for use in determining
 c     the turbulent eddy viscosity.

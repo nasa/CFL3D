@@ -1,5 +1,8 @@
       subroutine extra(jdim,kdim,nsub,l,x,y,z,jcell,kcell,jcl,jcr,
      .                 x5,y5,z5,icase,ifit)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute extra midcell points (x5,y5,z5) at 
 c     (xie,eta) = (.5,0.)

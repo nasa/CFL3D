@@ -1,4 +1,7 @@
       subroutine gradinfo(delh,iunit)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set derivative step size delh based on which of the 
 c               available imaginary components is non zero; will also

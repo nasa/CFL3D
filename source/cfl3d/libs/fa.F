@@ -2,6 +2,9 @@
      .              maxbl,maxseg,jdimg,kdimg,idimg,jsg,ksg,isg,jeg,
      .              keg,ieg,jbcinfo,kbcinfo,ibcinfo,nblock,nblcg,
      .              nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Accumulate fluxes to insure conservation.
 c***********************************************************************

@@ -8,6 +8,9 @@
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
      .           idefrm,iadvance)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Compute the residual contributions to the right-hand-side.
 c     Note: viscous flux routines called even if block is not advanced

@@ -1,4 +1,7 @@
       subroutine rie1de(jvdim,t,jv)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine far-field boundary data using quasi 1-d 
 c     characteristic relations.

@@ -1,4 +1,7 @@
       subroutine getdhdr(datahdr,ibctyp,ndata)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To set character data for main output file headers 
 c     when the 2000 series bc's are used 

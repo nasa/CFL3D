@@ -12,6 +12,9 @@
      .                   lout,xif1,xif2,etf1,etf2,ireq_ar,
      .                   myid,myhost,mycomm,mblk2nd,nou,bou,nbuf,
      .                   ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Calculate patched-grid interpolation coefficients 
 c***********************************************************************

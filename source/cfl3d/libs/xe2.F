@@ -1,6 +1,9 @@
       subroutine xe2(x1,x2,x3,x4,x5,x6,x7,x8,xc,y1,y2,y3,y4,y5,y6,y7,y8,
      .               yc,xie,eta,imiss,ifit,nou,bou,nbuf,ibufdim,
      .               myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set up coefficients for (locally) fitting a polynomial
 c     variation in the xie and eta directions .

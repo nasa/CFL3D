@@ -3,6 +3,9 @@
 #   else
       real function q8sdot(n,a,idum1,b)
 #   endif
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute the dot product between two vectors.
 c***********************************************************************

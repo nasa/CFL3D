@@ -1,5 +1,8 @@
       subroutine diagj(i,npl,jdim,kdim,idim,q,res,dtj,sj,t,iperd,
      .                 vol,vist3d,blank,iover)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Solve scalar tridiagonal equations to approximate the
 c     spatially-split factor in the J-direction of the 3-d spatially-

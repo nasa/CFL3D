@@ -1,12 +1,14 @@
       program p3d_to_cfl3drst
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:
 c     Creates a CFL3D V6 restart file from a plot3d Q-file.
 c     Must be from a grid that is the same size as the desired restart file,
 c     and the plot3d q-file must be at GRIDPOINTS.
 c     This tool does not allow setting of initial turbulence quantities.
-c     It also sets ivisc=0, so that, upon restart, CFL3D will compute min distance
+c     It also sets ivisc=0, so that upon restart, CFL3D computes min distance
 c     function for turbulent cases.
 c     If it is converting a 2-D plot3d q-file, it assumes that the results
 c     are in the x-z plane!!!

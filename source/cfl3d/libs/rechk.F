@@ -1,6 +1,9 @@
       subroutine rechk(mdim1,ndim1,jimage,kimage,msub1,jmax1,kmax1,l,
      .                 x1,y1,z1,xie1,xie2,eta1,eta2,nou,bou,nbuf,
      .                 ibufdim,myid,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Check for branch cuts 
 c***********************************************************************

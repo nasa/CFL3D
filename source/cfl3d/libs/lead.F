@@ -1,4 +1,7 @@
       subroutine lead(nbl,lw,lw2,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Install in common blocks the attributes of a block 
 c     given a block number.

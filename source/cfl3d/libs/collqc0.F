@@ -1,5 +1,8 @@
       subroutine collqc0(qc0,qc0c,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
      .                  dqc0,dqc0c,qw,nbl,nou,bou,nbuf,ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict conservative variables Q(n) and Q(n)-Q(n-1)
 c     to coarser meshes via summation over fine-grid cells for use

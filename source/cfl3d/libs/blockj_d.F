@@ -1,5 +1,8 @@
       subroutine blockj_d (q,qj0,idimr,jdimr,kdimr,idimt,kdimt,limblk,
      .                     isva,it,ir,nvals,ldim,bcj,iedge)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Transfer information from block (ir) to qj0 array of
 c      block (it).

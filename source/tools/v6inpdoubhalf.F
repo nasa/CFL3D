@@ -1,5 +1,7 @@
       program v6inpdoubhalf
 c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:
 c     This program reads a CFL3D V6 input file and outputs another input file

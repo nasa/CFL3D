@@ -2,6 +2,9 @@
      .              bci,ista,iend,jsta,jend,ksta,kend,t,jvdim,nface,
      .              tursav,tj0,tk0,ti0,vist3d,vj0,vk0,vi0,iuns,x,z,cl,
      .              nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set characteristic inflow/outflow boundary conditions
 c               note: storage locations 21,22,23 in the t array are 

@@ -1,5 +1,8 @@
       subroutine readkey(ititr,myid,ibufdim,nbuf,bou,nou,iunit11,
      .                   ierrflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read in any keyword-driven inputs. ititr is returned
 c     as 1 if the title line has been read; returned as 0 if unread

@@ -1,4 +1,7 @@
       subroutine dabcjz(i,npl,jdim,kdim,idim,a,b,c,blank)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Use the blank values to modify the coefficient matrices,
 c     a,b,c , for the diagonal inversion in the J-direction.

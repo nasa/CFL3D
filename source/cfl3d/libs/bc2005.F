@@ -4,6 +4,9 @@
      .                  mdim,ndim,bcdata,filname,qp,vp,tp,
      .                  jdimp,kdimp,idimp,qrotj,qrotk,qroti,nbl,
      .                  nblp,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set periodic boundary conditions, given angular rotation 
 c               angle to the periodic face and its block number

@@ -1,5 +1,8 @@
       subroutine qface(jdim,kdim,idim,dum,dumj0,dumk0,dumi0,bcj,bck,bci,
      .                 blank,ldim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine variables at cell-face centers on the edges
 c     of the grid and install in the j0/k0/i0 arrays for use in output 

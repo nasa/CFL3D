@@ -2,7 +2,8 @@
      .                  msegt,mtot,imap,idbloc,ivisb,itrb,val,xdum,
      .                  iold,nxtseg,intrfc,ipatch,nsubbl,idobl,
      .                  nseg,idno,ijk,idseg,idnext)
-c-----------------------------------------------------------------------
+c
+c     $Id$
 c
       dimension nsubbl(mbloc),idobl(mbloc),nseg(mbloc),idno(mbloc),
      .          ijk(6,mbloc),idseg(mbloc),idnext(mbloc)

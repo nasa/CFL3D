@@ -9,6 +9,9 @@
      .                  xie2f,eta2f,mblkptf,nptf,xi1f,xi2f,et1f,et2f,
      .                  iavg,nou,bou,nbuf,ibufdim,myid,
      .                  mblk2nd,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine generalized coordinates of cell centers of the
 c     "to" grid  in terms of the generalized coordinate system(s) defined

@@ -1,4 +1,7 @@
       subroutine initvist(nbl,jdim,kdim,idim,vist3d,tursav,smin,cmuv)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Initialize the turbulent initial conditions on a mesh
 c***********************************************************************

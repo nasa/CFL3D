@@ -1,4 +1,7 @@
       subroutine usrint
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: provide termination procedure in the event of a system
 c      signal

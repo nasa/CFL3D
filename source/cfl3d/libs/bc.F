@@ -4,6 +4,9 @@
      .              nbckdim,ibcinfo,jbcinfo,kbcinfo,bcfilei,bcfilej,
      .              bcfilek,lwdat,myid,idimg,jdimg,kdimg,bcfiles,
      .              mxbcfil)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine boundary data/conditions at edges of grids.
 c***********************************************************************

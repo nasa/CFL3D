@@ -2,6 +2,9 @@
      .                  res,qr,qw,js,ks,is,je,ke,ie,nbl,nblc,
      .                  vistf,vistc,tursavf,tursavc,nou,bou,nbuf,
      .                  ibufdim)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Restrict q (the primative variables) with a volume-
 c     weighted interpolation and residuals from finer embedded meshes

@@ -1,5 +1,8 @@
       subroutine avgint(xiec,etac,nblkc,nptc,xief,etaf,nblkf,nptf,
      .               j1c,j2c,k1c,k2c,j1f,j2f,k1f,k2f)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Create interpolation data on coarser levels by
 c               averaging finer-level interpolation data

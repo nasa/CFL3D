@@ -1,4 +1,7 @@
       subroutine bsub(id1,id2,a,b,c,f,i1,i2,il,iu)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Performs the back substitution for a block 5x5 tridi-
 c     agonal matrix equation solution.  The vectorization is over points

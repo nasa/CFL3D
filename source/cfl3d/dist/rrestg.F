@@ -16,6 +16,9 @@ c   ***CGNSstart
 c    .                  iaesurf,maxsegdg,wk,nwork)
      .                  iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima)
 c   ***CGNSend
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Read the restart file to get the required info for a 
 c     dynamic mesh (nflagg=1); read the restart file to get qc0 data 

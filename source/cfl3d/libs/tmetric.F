@@ -1,4 +1,7 @@
       subroutine tmetric(jdim,kdim,idim,sj,sk,si,x,y,z,t,t1,t2,t3,nbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Calculate time-metric terms for a grid in motion
 c

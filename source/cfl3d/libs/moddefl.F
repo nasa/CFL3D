@@ -1,5 +1,8 @@
       subroutine moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
      .                   zorig,maxaes,nmds,irbtrim,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Specify temporal variation of modal deflections for
 c              either flutter initiation or determination of generalized

@@ -1,6 +1,9 @@
       subroutine trans(jdim,kdim,idim,t,tti,ttj,ttk,x,y,z,itran,rfreqt,
      .                 utran,vtran,wtran,xorg,yorg,zorg,xold,yold,
      .                 zold,xorg0,yorg0,zorg0,iupdat,time2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determines increment to grid position due to translation
 c

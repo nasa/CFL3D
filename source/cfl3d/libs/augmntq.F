@@ -1,5 +1,8 @@
       subroutine augmntq(q,jdim,kdim,idim,nbl,ldim,qj0,qk0,qi0,qq,
      .                   bcj,bck,bci,nou,bou,nbuf,ibufdim,ighost)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Create an "augmented" q array (qq) of dimensions 
 c     jdim+1 x kdim+1 x idim+1, in which the min/max indicies

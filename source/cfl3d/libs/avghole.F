@@ -1,4 +1,7 @@
       subroutine avghole(q,blank,jdim,kdim,idim,nbl,ldim,int_updt)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Replace the solution at any point with blank = 0 with
 c               the average of neighboring points. This affects hole,

@@ -1,6 +1,9 @@
       subroutine xe(jdim,kdim,nsub,l,x,y,z,xmid,ymid,zmid,xmide,ymide,
      .              zmide,jcell,kcell,xc,yc,zc,xie,eta,imiss,ifit,ic0,
      .              nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Select proper coordinates to use for inversion (can only
 c     use 2 of the 3 available (x,y,z)).

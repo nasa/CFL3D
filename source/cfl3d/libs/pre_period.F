@@ -5,6 +5,9 @@
      .                     is_prd,ie_prd,nbcprd,nou,bou,nbuf,ibufdim,
      .                     bcvali,bcvalj,bcvalk,myid,nblg,maxgr,
      .                     ierrflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c      Purpose: Set up data arrays for periodic bc message passing
 c***********************************************************************

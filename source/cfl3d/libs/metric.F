@@ -2,6 +2,9 @@
      .                  icnt,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                  nbckdim,ibcinfo,jbcinfo,kbcinfo,maxbl,maxseg,
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Calculate the cell-interface directed areas.
 c***********************************************************************

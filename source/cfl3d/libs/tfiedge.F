@@ -1,5 +1,8 @@
       subroutine tfiedge(idim,jdim,kdim,x,y,z,i1,i2,j1,j2,k1,k2,
      .                   arci,arcj,arck,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: compute transfinite interpolation on block edges, using
 c              arc-length blending functions

@@ -5,6 +5,9 @@
      .                  thetaz,time2,nou,bou,nbuf,ibufdim,myid,myhost,
      .                  mycomm,mblk2nd,nsegdfrm,idfrmseg,xorgae,
      .                  yorgae,zorgae,thtxae,thtyae,thtzae,maxsegdg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Interpolate the solution from a coarser mesh to a finer
 c     mesh. The finer mesh can be either a global mesh or an embedded

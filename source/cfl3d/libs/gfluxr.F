@@ -1,6 +1,9 @@
       subroutine gfluxr(i,npl,xkap,jdim,kdim,idim,res,q,qj0,sj,t,nvtq,
      .                  nv,nfa,wfa,iwfa,jbctyp,isf,nbl,bcj,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,idef)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute residual contributions for the 
 c     right-hand-side in the J-direction from the inviscid terms.

@@ -1,6 +1,9 @@
       subroutine grdmove(nbl,jdim,kdim,idim,x,y,z,xorig,yorig,
      .                  zorig,xorg,yorg,zorg,thetax,thetay,
      .                  thetaz)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Move the grid from one position to another. On input,
 c     (x,y,z) are the grid coordinates in the old position, with origin

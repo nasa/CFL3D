@@ -1,5 +1,8 @@
       subroutine dsmin(jdim,kdim,nsub,jjmax,kkmax,lmax,x,y,z,xc,yc,zc,
      .                 j1,k1,l1,lout,lflag,xif1,xif2,etf1,etf2)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Find closest point in grid to point (xc,yc,zc).
 c     lflag > 0 : search over all "from" blocks not yet searched.

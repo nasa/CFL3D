@@ -1,5 +1,8 @@
 	subroutine get_bvals(jdim1,kdim1,idim1,jmax1,kmax1,
      .                       ldim,q,qbou,mtype,i1)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  To pick out values at the boundary from global values
 c***********************************************************************

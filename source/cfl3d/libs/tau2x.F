@@ -1,4 +1,7 @@
       subroutine tau2x(jdim,kdim,idim,res,qr,js,ks,is,je,ke,ie,kode)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Put the restricted residual from a finer embedded
 c     mesh into a coarser mesh.

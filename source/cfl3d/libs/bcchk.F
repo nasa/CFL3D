@@ -1,5 +1,8 @@
       subroutine bcchk(idim,jdim,kdim,q,qi0,qj0,qk0,blank,ibcflg,nbl,
      .                 nou,bou,nbuf,ibufdim,myid,istop,igridg,maxbl)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Determine if boundary conditions have been set.  Also,
 c     fill endpoints for safety.

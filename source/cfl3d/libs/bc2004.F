@@ -4,6 +4,9 @@
      .                  ti0,smin,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
      .                  filname,iuns,irelv,snj0,snk0,sni0,ntime,
      .                  snjm,snkm,snim,nou,bou,nbuf,ibufdim,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Set solid wall BC (viscous wall)
 c               With 2 pieces of auxiliary data:

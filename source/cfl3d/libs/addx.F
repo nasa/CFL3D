@@ -1,5 +1,8 @@
       subroutine addx(q,qq,jdim,kdim,idim,jj2,kk2,ii2,q1,dq,wq,wqj,nbl,
      .                blank,nou,bou,nbuf,ibufdim,ll,myid)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Interpolate the solution or the correction from a 
 c     coarser mesh to a finer mesh.

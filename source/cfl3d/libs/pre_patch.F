@@ -2,6 +2,9 @@
      .                      isav_pat,isav_pat_b,jjmax1,kkmax1,
      .                      iiint1,iiint2,maxbl,jdimg,kdimg,idimg,
      .                      ierrflg)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: Set up data arrays for patch bc message passing
 c***********************************************************************

@@ -1,4 +1,7 @@
       subroutine l2norm(nbl,ntime,rmsl,irdq,jdim,kdim,idim,res,vol)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Compute the L2-norm of the residuals or the change in
 c     primative variables from one time to the next.

@@ -1,4 +1,7 @@
       subroutine xmukin(n,temp,visc,tinf)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose:  Computes Sutherland's formula.  Note that this routine
 c     is only called by ctime.  (Mu is generally computed in-line

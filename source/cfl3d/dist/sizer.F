@@ -8,6 +8,9 @@
      .                 mxxe0,mptch0,msub10,ibufdim0,nbuf0,mxbcfil0,
      .                 nmds0,maxaes0,maxsegdg0,imode,ntr,bcfiles,
      .                 bou,nou)
+c
+c     $Id$
+c
 c***********************************************************************
 c     Purpose: reads in a cfl3d input file (plus patch/ovelap files, if
 c     appropriate) and determines the array sizes required for the
