@@ -293,6 +293,7 @@ c
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
       character*32 basedesired
+      character*80 sysfile
 c
       dimension itrnsfr(27),titlw(20),nou(nbuf)
 c
@@ -532,6 +533,11 @@ c
       rewind(34)
       rewind(66)
       rewind(99)
+c
+c     remove the stop file if there is one 
+c
+      sysfile = 'rm -f stop'
+      call system(sysfile)
 c
 c***********************************************************************
 c     determine array size requirements

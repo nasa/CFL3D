@@ -85,6 +85,8 @@ c     maxgr  - maximum number of grids
 c     ifamax - maximum for total number of starting and ending indices
 c              for flux accumulation in the I-, J-, and K-directions
 c
+      logical stop_me
+c
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
@@ -221,6 +223,7 @@ c
      .          z1(mptch+2,mptch+2)
       dimension factjlo(intmx,msub1),factjhi(intmx,msub1),
      .          factklo(intmx,msub1),factkhi(intmx,msub1)
+      dimension istop_data(10)
 c
       common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
@@ -366,6 +369,8 @@ c
       levb  = levelb(iseq)
       nitfo = nitfo1(iseq)
       ncyc  = ncyc1 (iseq)
+c
+      stop_me = .false.
 c
 c      check storage for nsm and mit arrays
 c
@@ -646,6 +651,37 @@ c
 c     loop over time steps
 c
       do 6000 nt=1,ntstep
+c
+c     check for user stop file - will then stop on next time step
+c
+      if (myid.eq.myhost) then
+        inquire (file='stop',exist=stop_me)
+        if (stop_me) then
+c         must set ntstep to current time step AND set number of cycles on all
+c         higher levels to zero
+          ntstep = nt
+          do is  = iseq+1,mseq
+            ncyc1(is) = 0
+          end do
+          write(11,*)
+          write(11,'(a,i5)')
+     .    'Stopping: user-invoked stop file detected at cycle ',icyc
+          write(11,*)
+        end if
+      end if
+#if defined DIST_MPI
+      istop_data(1) = ntstep
+      do is =1,mseq
+        istop_data(is+1) = ncyc1(is)
+      end do
+      call MPI_Bcast (istop_data,mseq+1,MPI_INTEGER,myhost,mycomm,ierr)
+      ntstep = istop_data(1)
+      do is =1,mseq
+        ncyc1(is) = istop_data(is+1)
+      end do
+#endif
+
+c
       itatemp=ita
 c     always do 1st order time 1st iteration if restarting and changing time step
       if (nt .eq. 1 .and. dt .ne. dtold) then
@@ -860,6 +896,39 @@ c
       do 7000 icyc=1,ncyc
 c
       if (icyc.gt.1) isklton = 0
+c
+c     check for user stop file - will then stop on next MG cycle
+c     (if unsteady, we don't want to stop until the next time step,
+c     so always to all MG cycles)
+c
+      if (myid .eq. myhost) then
+        if (real(dt) .lt. 0.) then
+          inquire (file='stop',exist=stop_me)
+          if (stop_me) then
+c            must set ncyc to current cycle AND set number of cycles on all
+c            higher levels to zero
+             ncyc = icyc
+             do is  = iseq+1,mseq
+               ncyc1(is) = 0
+             end do
+             write(11,*)
+             write(11,'(a,i5)') 
+     .       'Stopping: user-invoked stop file detected at cycle ',icyc
+             write(11,*)
+          end if
+        end if
+      end if
+#if defined DIST_MPI
+      istop_data(1) = ncyc
+      do is =1,mseq
+        istop_data(is+1) = ncyc1(is)
+      end do
+      call MPI_Bcast (istop_data,mseq+1,MPI_INTEGER,myhost,mycomm,ierr)
+      ncyc = istop_data(1)
+      do is =1,mseq
+        ncyc1(is) = istop_data(is+1)
+      end do
+#endif
 c
       if (isklton.eq.1 .and. myid.eq.myhost) then
          write(11,1060)
@@ -2354,8 +2423,19 @@ c   Close data base
             end if
          end if
       end if
+
+c
+c     the following line is added to allow exit from
+c     loop 7000 if the user has altered ntstep via
+c     the "stop" file
+c
+      if (icyc.ge.ncyc) go to 7011
+c
+
 c
  7000 continue
+c
+7011  continue
 c
 c***********************************************
 c
@@ -2697,7 +2777,16 @@ c
          end if
       end if
 c
+c     the following line is added to allow exit from
+c     loop 6000 if the user has altered ntstep via
+c     the "stop" file
+c
+      if (nt.ge.ntstep) go to 6011
+c
+
  6000 continue
+c
+ 6011 continue
 c
       if (myid.eq.myhost) then
          write(11,3090) iseq
