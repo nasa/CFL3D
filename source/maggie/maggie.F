@@ -3346,6 +3346,7 @@ c
       read(iunit) x,y,z 
       read(iunit) jimage,kimage,limage
       rewind iunit
+      close(iunit)
       return
       end 
       subroutine getgrd2( m,x,y,z,jd,kd,ld ) 
@@ -3378,6 +3379,7 @@ c
 c 
       read(iunit) x,y,z
       rewind iunit
+      close(iunit)
 c 
       return
       end 
@@ -3410,6 +3412,7 @@ c
      .status='unknown')
       read(iunit) iblank
       rewind iunit
+      close(iunit)
       return
       end 
       subroutine getint( m,ji,ki,li,jbpt,kbpt,lbpt, 
@@ -3453,6 +3456,7 @@ c
      .              (dxint(i),dyint(i),dzint(i),i=1,nwr)
       end if
       rewind iunit
+      close(iunit)
       return
       end 
       subroutine hlocat( iblank,x,y,z,jd,kd,ld)
