@@ -806,7 +806,13 @@ c     (later, damp1 is used to store LHS implicit contribution)
               deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
               deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
               delta = ccmax(deltaj,deltak)
-              delta = ccmax(delta,deltai)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+ 
               damp1(j,k,i) = ccmin(ccabs(smin(j,k,i)),cdes*delta)
             enddo
           enddo

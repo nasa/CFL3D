@@ -444,8 +444,8 @@ c
       end if
 c   DES must be run in 3-D
       if (ides .eq. 1 .and. i2d .eq. 1) then
-        write(iunit11,'('' DES must be run 3-D (i2d=0)'')')
-        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        write(iunit11,'('' WARNING: DES SHOULD be run 3-D (i2d=0)'')')
+c        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
    36 format(8i10)
 c
