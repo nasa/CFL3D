@@ -417,7 +417,7 @@ case $FARCH in *)
   FTN="f90"
   CC="cc"
 
-! Intel 
+# Intel 
 # CC="icc"
 
   if [ $do_f90 = no ]; then
