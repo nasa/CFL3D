@@ -92,7 +92,7 @@ c
      .          '  nfs 1smn 1smx 2smn 2smx')
  1005 format(1x,'                ntrb 1beg 1end 2beg 2end fmx1',
      .          ' fmx2 nvis')
- 2000 format(//,' new block  old block  i0  i1  j0  j1  k0  k1')
+ 2000 format(/,/,' new block  old block  i0  i1  j0  j1  k0  k1')
  2001 format(2x,i4,7x,i4,4x,6i4)
       write(6,2000)
       do 200 nn=1,noldbl
