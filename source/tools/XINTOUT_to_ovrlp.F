@@ -210,6 +210,7 @@ c
 c
       dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),
      .          z(jmax,kmax,lmax)
+      character*80 header
 c
 c     for input pegsus data
 c
@@ -329,15 +330,57 @@ c
 c
 c        read in orphan points, if any
 c
-         if (ig .eq. 1) then
-            norpht0 = 0
-            do n=1,iitot
-               read(8,*,end=888) igorph(n),jborph(n),kborph(n),
-     .                           lborph(n)
-               norpht0 = norpht0 + 1
-               norph(igorph(n)) = norph(igorph(n)) + 1
-            end do
- 888        continue
+         if (ipeg.eq.4) then
+            if (ig .eq. 1) then
+               norpht0 = 0
+               do n=1,iitot
+                  read(8,*,end=888) igorph(n),jborph(n),kborph(n),
+     .                              lborph(n)
+                  norpht0 = norpht0 + 1
+                  norph(igorph(n)) = norph(igorph(n)) + 1
+               end do
+ 888           continue
+         end if
+         else
+            if (ig .eq. 1) then
+               istop = 1
+               norpht0 = 0
+               do ng=1,ngrid
+                  norph(ng) = 0
+                  read(8,'(a60)',end=7777) header
+                  istop = 0
+                  read(8,'(a60)') header
+                  read(8,'(a60)') header
+                  read(8,'(a60)') header
+                  read(8,'(a60)',end=777) header
+                  backspace 8
+                  if (header.eq.'                    ') then
+                     go to 77
+                  end if
+                  do n = 1,iitot
+                     read(8,'(a60)',end=777) header
+                     backspace 8
+                     if (header.ne.'                    ') then
+                        norpht0 = norpht0 + 1
+                        read(8,*) idum,jborph(norpht0),kborph(norpht0),
+     .                            lborph(norpht0)
+                        igorph(norpht0) = ng
+                        norph(ng) = norph(ng) + 1
+                     else
+                        go to 77
+                     end if
+                  end do
+  77              continue
+               end do
+ 777           continue
+7777           continue
+               if (istop .ne. 0) then
+                  write(6,'(''ORPHAN file is empty...you must run '',
+     .                      ''peg_orph'',/,''choose option 4, then '',
+     .                      ''option 2, and name the file ORPHAN'')')
+                  stop
+               end if
+            end if
          end if
 c
 c        check initial stencils to make sure pegsus hasn't output
@@ -613,7 +656,7 @@ c
          end do
          call worph(jmax,kmax,lmax,lomax,nbmax,x,y,z,ngrid,norpht,
      .              lborph,jborph,kborph,igorph,norph,lunit,nppblk,
-     .              i2d,ipeg)
+     .              i2d,ipeg,maxbl)
 
       end if
 
@@ -973,12 +1016,12 @@ c
 c
       subroutine worph(jmax,kmax,lmax,lomax,nbmax,xin,yin,zin,
      .                 ngrid,norpht,lborph,jborph,kborph,igorph,norph,
-     .                 lunit,nppblk,i2d,ipeg)
+     .                 lunit,nppblk,i2d,ipeg,maxbl)
 c
       dimension xin(jmax,kmax,lmax),yin(jmax,kmax,lmax),
      .          zin(jmax,kmax,lmax)
       dimension lborph(*),jborph(*),kborph(*),igorph(*),norph(*)
-      dimension idim(nbmax),jdim(nbmax),kdim(nbmax),ldim(nbmax)
+      dimension idim(maxbl),jdim(maxbl),kdim(maxbl),ldim(maxbl)
       real*4    xout(lomax),yout(lomax),zout(lomax)
       pointer (ip_xout,xout),(ip_yout,yout),(ip_zout,zout)
       pointer (ip_idim,idim),(ip_jdim,jdim),(ip_kdim,kdim),
@@ -989,10 +1032,10 @@ c
       call umalloc_r(ip_xout,lomax,-1,icall,memuse)
       call umalloc_r(ip_yout,lomax,-1,icall,memuse)
       call umalloc_r(ip_zout,lomax,-1,icall,memuse)
-      call umalloc_r(ip_idim,nbmax, 1,icall,memuse)
-      call umalloc_r(ip_jdim,nbmax, 1,icall,memuse)
-      call umalloc_r(ip_kdim,nbmax, 1,icall,memuse)
-      call umalloc_r(ip_ldim,nbmax, 1,icall,memuse)
+      call umalloc_r(ip_idim,maxbl, 1,icall,memuse)
+      call umalloc_r(ip_jdim,maxbl, 1,icall,memuse)
+      call umalloc_r(ip_kdim,maxbl, 1,icall,memuse)
+      call umalloc_r(ip_ldim,maxbl, 1,icall,memuse)
 c
 c     write header
 c
@@ -1013,7 +1056,7 @@ c
                ipart = ipart + 1
                if(nout1+ioutd.eq.1) then
                   write(6,'(3x,''zone'',i3,
-     .                      '' contains orphans from grid'',i3,
+     .                      '' contains orphans from grid'',i3
      .                      )') iblko,ig
                else
                   write(6,'(3x,''zone'',i3,
