@@ -124,6 +124,7 @@ c
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
+      common /des/ ides,cdes
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -391,6 +392,8 @@ c
          work(nlast+48) = zrotrate_img
          work(nlast+49) = itime2read
          work(nlast+50) = itaturb
+         work(nlast+51) = ides
+         work(nlast+52) = cdes
          nlast = nlast+nkey
       end if
 c
@@ -617,6 +620,8 @@ c
          zrotrate_img = work(nlast+48)
          itime2read=int(work(nlast+49))
          itaturb   =int(work(nlast+50))
+         ides      = int(work(nlast+51))
+         cdes      = work(nlast+52)
       end if
 c
 c**************************

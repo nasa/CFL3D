@@ -20,6 +20,7 @@ c
 c
       dimension nou(nbuf)
 c
+      common /des/ ides,cdes
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -58,9 +59,16 @@ c
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
 c
       if(isklton .gt. 0) then
+         if (ides .eq. 1) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''   computing turbulent'',
+     +'' viscosity using Spalart DES (cdes='',f7.3,
+     +''), block ='',i4)') cdes,nbl
+         else
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''   computing turbulent'',
      +'' viscosity using Spalart, block ='',i4)') nbl
+         end if
       end if
       if (icyc .le. nfreeze) then
         if (isklton .gt. 0) then
@@ -788,6 +796,30 @@ c    Add source term to RHS
         write(bou(nou(1),1),'(''   no guarantee that it will '',
      .   ''transition at all.  Check vist3d levels if unsure.'')')
       end if
+c     can use damp1 to temporarily store distance variable (different for DES)
+c     (later, damp1 is used to store LHS implicit contribution)
+        if (ides .eq. 1) then
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+              delta = ccmax(delta,deltai)
+              damp1(j,k,i) = ccmin(smin(j,k,i),cdes*delta)
+            enddo
+          enddo
+        enddo
+        else
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              damp1(j,k,i) = smin(j,k,i)
+            enddo
+          enddo
+        enddo
+        end if
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -802,9 +834,9 @@ c    Add source term to RHS
               chi=turre(j,k,i)/fnu(j,k,i)
               fv1=chi**3/(chi**3+cv1**3)
               fv2=1.-(chi/(1.+chi*fv1))
-              sst=ss+turre(j,k,i)*fv2/(re*(akarman*smin(j,k,i))**2)
+              sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
               sst=ccmax(sst,xminn)
-              rr=turre(j,k,i)/(sst*re*(akarman*smin(j,k,i))**2)
+              rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
               rr=ccmincr(rr,10.)
               gg=rr+cw2*(rr**6-rr)
               gg=ccmax(gg,xminn)
@@ -812,7 +844,7 @@ c    Add source term to RHS
               ft2=ct3*exp(-ct4*chi**2)
               term1=cb1*(1.-ft2)*ss
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
-              dist2i=1./(re*smin(j,k,i)**2+1.e-20)
+              dist2i=1./(re*damp1(j,k,i)**2+1.e-20)
               tt=cutoff*term1*turre(j,k,i)+term2*turre(j,k,i)**2*dist2i
 c            Store quantity to be added to certain implicit LHS terms:
               damp1(j,k,i)=2.*term2*turre(j,k,i)*dist2i

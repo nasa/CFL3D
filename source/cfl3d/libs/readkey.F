@@ -22,6 +22,7 @@ c
 c
       dimension nou(nbuf)
 c
+      common /des/ ides,cdes
       common /unit5/ iunit5
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -338,6 +339,16 @@ c     accuracy of mean flow eqns; new default (1) is they are the same
 c     order as the mean flow eqns, as defined by the parameter "ita"
 c
       itaturb = 1
+      nkey     = nkey + 1
+c
+c     flag to perform DES with turbulence model (1) or not (0)
+c
+      ides = 0
+      nkey     = nkey + 1
+c
+c     constant associated with DES
+c
+      cdes = 0.65
       nkey     = nkey + 1
 c
 c*********************************************
@@ -665,6 +676,15 @@ c
       else if (inpstr(lc1:lc2).eq.'itaturb') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) itaturb
+c
+      else if (inpstr(lc1:lc2).eq.'ides') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ides
+c
+      else if (inpstr(lc1:lc2).eq.'cdes') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cdes = realval(1)
 c
       else
 c
