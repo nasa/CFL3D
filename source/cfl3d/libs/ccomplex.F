@@ -16,11 +16,15 @@ c***********************************************************************
 #   endif
       logical c
 c
+#ifdef CRAY_TIME
+      ccvmgt = merge(a,b,c)
+#else
       if (c) then
          ccvmgt=a
       else
          ccvmgt=b
       end if
+#endif
 c
       return
       end
