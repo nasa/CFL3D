@@ -33,11 +33,10 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /sklton/ isklton
  
-      if (ntt.eq.1) print *,'resnonin NONINERTIAL RHS - block', nbl
       if (isklton.gt.0) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),101)nbl
- 101        format(3x,31hadding NONINERTIAL source terms)
+            write(bou(nou(1),1),101)
+ 101        format(34h   adding NONINERTIAL source terms)
       end if
  
 c  The residual contributions to the right-hand-side (due only to 
