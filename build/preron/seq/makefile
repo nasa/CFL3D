@@ -19,6 +19,7 @@ lncode:
 	ln -s  $(CFLSRC_S)/global2.F .
 	ln -s  $(CFLSRC_S)/outbuf.F .
 	ln -s  $(CFLSRC_S)/ccomplex.F .
+	ln -s  $(CFLSRC_S)/my_flush.F .
 	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
@@ -31,7 +32,8 @@ lnhead:
 # *************************** CREATE EXECUTABLE ******************************
 
 SOURCE = global2.F    termn8.F    usrint.F    umalloc.F \
-	 sizer.F      outbuf.F    ccomplex.F  main_pre.F 
+	 sizer.F      outbuf.F    ccomplex.F  my_flush.F \
+	 main_pre.F 
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
