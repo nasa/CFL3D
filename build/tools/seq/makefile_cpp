@@ -77,10 +77,10 @@ OBJECT7   = $(SOURCE7:.f=.o)
 OBJECT8   = $(SOURCE8:.f=.o)
 OBJECT9   = $(SOURCE9:.f=.o)
 OBJECT10  = $(SOURCE10:.f=.o)
-OBJECT11  = $(SOURCE10:.f=.o)
-OBJECT12  = $(SOURCE10:.f=.o)
-OBJECT13  = $(SOURCE10:.f=.o)
-OBJECT14  = $(SOURCE10:.f=.o)
+OBJECT11  = $(SOURCE11:.f=.o)
+OBJECT12  = $(SOURCE12:.f=.o)
+OBJECT13  = $(SOURCE13:.f=.o)
+OBJECT14  = $(SOURCE14:.f=.o)
 
 $(OBJECT1):
 	$(FTN) $(FFLAG) -c $*.f
