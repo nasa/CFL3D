@@ -1458,34 +1458,61 @@ c
 c
       dimension nou(nbuf)
 c
+      common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
+     .                     yrotrate,zrotrate,noninflag
+c
       if (nface.eq.3) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1001) ista,iend,ksta,kend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2001) ista,iend,ksta,kend
+      end if
       end if
 c
       if (nface.eq.4) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1002) ista,iend,ksta,kend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2002) ista,iend,ksta,kend
+      end if
       end if
 c
       if (nface.eq.5) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1003) ista,iend,jsta,jend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2003) ista,iend,jsta,jend
+      end if
       end if
 c
       if (nface.eq.6) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1004) ista,iend,jsta,jend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2004) ista,iend,jsta,jend
+      end if
       end if
 c
       if (nface.eq.1) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1005) jsta,jend,ksta,kend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2005) jsta,jend,ksta,kend
+      end if
       end if
 c
       if (nface.eq.2) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1006) jsta,jend,ksta,kend
+      if (noninflag .gt. 0) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),2006) jsta,jend,ksta,kend
+      end if
       end if
 c
  1001 format(' ','  j=   1  freestream                     type 1000',
@@ -1499,6 +1526,19 @@ c
  1005 format(' ','  i=   1  freestream                     type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
  1006 format(' ','  i=idim  freestream                     type 1000',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+c
+ 2001 format('bcnonin ','  j=   1  NONINERTIAL bc type 1000',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 2002 format('bcnonin ','  j=jdim  NONINERTIAL bc type 1000',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 2003 format('bcnonin ','  k=   1  NONINERTIAL bc type 1000',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 2004 format('bcnonin ','  k=kdim  NONINERTIAL bc type 1000',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 2005 format('bcnonin ','  i=   1  NONINERTIAL bc type 1000',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 2006 format('bcnonin ','  i=idim  NONINERTIAL bc type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return

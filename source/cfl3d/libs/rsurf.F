@@ -40,7 +40,8 @@ c
       common /igrdtyp/ ip3dgrd,ialph
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
 c
       isurf_img = 0
 c

@@ -29,7 +29,8 @@ c
      .          aehist(ncycmax,3,nmds,maxaes), aesrfdat(5,maxaes)
 c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv

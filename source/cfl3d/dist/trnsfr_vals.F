@@ -121,7 +121,8 @@ c
      .          kbcinfo(maxbl,maxseg,7,2)
 c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -171,6 +172,8 @@ c
       common /memory/ memadd,memaddi
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
       common /ghost/ irghost,iwghost
+      common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
+     .                     yrotrate,zrotrate,noninflag
       common /key/ nkey
 #if defined DIST_MPI
 c
@@ -376,6 +379,16 @@ c
          work(nlast+36) = dalim
          work(nlast+37) = icycupdt
          work(nlast+38) = dcldal
+         work(nlast+39) = xcentrot
+         work(nlast+40) = ycentrot
+         work(nlast+41) = zcentrot
+         work(nlast+42) = xrotrate
+         work(nlast+43) = yrotrate
+         work(nlast+44) = zrotrate
+         work(nlast+45) = noninflag
+         work(nlast+46) = xrotrate_img
+         work(nlast+47) = yrotrate_img
+         work(nlast+48) = zrotrate_img
          nlast = nlast+nkey
       end if
 c
@@ -590,7 +603,16 @@ c
          dalim     = work(nlast+36)
          icycupdt  = int(work(nlast+37))
          dcldal    = work(nlast+38)
-
+         xcentrot  = work(nlast+39)
+         ycentrot  = work(nlast+40)
+         zcentrot  = work(nlast+41)
+         xrotrate  = work(nlast+42)
+         yrotrate  = work(nlast+43)
+         zrotrate  = work(nlast+44)
+         noninflag = int(work(nlast+45))
+         xrotrate_img = work(nlast+46)
+         yrotrate_img = work(nlast+47)
+         zrotrate_img = work(nlast+48)
       end if
 c
 c**************************
