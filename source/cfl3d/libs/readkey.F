@@ -622,16 +622,25 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          xrotrate_img = realval(1)
+#ifdef CMPLX
+         xrotrate = cmplx(real(xrotrate),real(xrotrate_img))
+#endif
 c
       else if (inpstr(lc1:lc2).eq.'yrotrate_img') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          yrotrate_img = realval(1)
+#ifdef CMPLX
+         yrotrate = cmplx(real(yrotrate),real(yrotrate_img))
+#endif
 c
       else if (inpstr(lc1:lc2).eq.'zrotrate_img') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          zrotrate_img = realval(1)
+#ifdef CMPLX
+         zrotrate = cmplx(real(zrotrate),real(zrotrate_img))
+#endif
 c
       else
 c
