@@ -27,6 +27,13 @@ c
      .          arck(jdim,kdim,idim)
 c 
       dimension phi(2),psi(2),omg(2)
+      common /zero/ iexp
+c
+c     tolerance for switch to linear blending function
+c     (10.**(-iexp) is machine zero)
+c
+      tol = max(1.e-07,10.**(-iexp+1))
+c
 c
       if (i1.eq.i2) then
 c
@@ -45,8 +52,13 @@ c        eta projector  -  1st step
 c
          do j=j1,j2
             do k=k1,k2
-               eta = (arcj(j,k,i)  - arcj(j1,k,i))
-     .             / (arcj(j2,k,i) - arcj(j1,k,i))
+               denom = (arcj(j2,k,i) - arcj(j1,k,i))
+               if(denom.lt.tol) then 
+                 eta = 0.
+               else
+                 eta = (arcj(j,k,i)  - arcj(j1,k,i))
+     .                  / denom
+               end if
                psi(1) = eta
                psi(2) = 1.-eta
                x1(j,k,i) = psi(2)*x(j1,k,i) 
@@ -62,8 +74,13 @@ c        zeta projector  -  2nd step
 c
          do k=k1,k2
             do j=j1,j2
-               zeta = (arck(j,k,i)  - arck(j,k1,i))
-     .              / (arck(j,k2,i) - arck(j,k1,i))
+               denom = (arck(j,k2,i) - arck(j,k1,i))
+               if(denom.lt.tol) then 
+                 zeta = 0.
+               else
+                 zeta = (arck(j,k,i)  - arck(j,k1,i))
+     .                  / denom
+               end if
                omg(1) = zeta
                omg(2) = 1.-zeta
                x2(j,k,i) = omg(2)*(x(j,k1,i) - x1(j,k1,i))
@@ -104,8 +121,13 @@ c        xi projector  -  1st step
 c
          do i=i1,i2
             do k=k1,k2
-               xi = (arci(j,k,i)  - arci(j,k,i1))
-     .            / (arci(j,k,i2) - arci(j,k,i1))
+               denom = (arci(j,k,i2) - arci(j,k,i1))
+               if(denom.lt.tol) then 
+                 xi = 0.
+               else
+                 xi = (arci(j,k,i)  - arci(j,k,i1))
+     .                / denom
+               end if
                phi(1) = xi
                phi(2) = 1.-xi
                x1(j,k,i) = phi(2)*x(j,k,i1)
@@ -121,8 +143,13 @@ c        zeta projector  -  2nd step
 c
          do k=k1,k2
             do i=i1,i2
-               zeta = (arck(j,k,i)  - arck(j,k1,i))
-     .              / (arck(j,k2,i) - arck(j,k1,i))
+               denom = (arck(j,k2,i) - arck(j,k1,i))
+               if(denom.lt.tol) then 
+                 zeta = 0.
+               else
+                 zeta = (arck(j,k,i)  - arck(j,k1,i))
+     .                  / denom
+               end if
                omg(1) = zeta
                omg(2) = 1.-zeta
                x2(j,k,i) = omg(2)*(x(j,k1,i) - x1(j,k1,i))
@@ -163,8 +190,13 @@ c        xi projector  -  1st step
 c
          do i=i1,i2
             do j=j1,j2
-               xi = (arci(j,k,i)  - arci(j,k,i1))
-     .            / (arci(j,k,i2) - arci(j,k,i1))
+               denom = (arci(j,k,i2) - arci(j,k,i1))
+               if(denom.lt.tol) then 
+                 xi = 0.
+               else
+                 xi = (arci(j,k,i)  - arci(j,k,i1))
+     .                / denom
+               end if
                phi(1) = xi
                phi(2) = 1.-xi
                x1(j,k,i) = phi(2)*x(j,k,i1)
@@ -180,8 +212,13 @@ c       eta projector  -  2nd step
 c
          do j=j1,j2
             do i=i1,i2
-               eta = (arcj(j,k,i)  - arcj(j1,k,i))
-     .             / (arcj(j2,k,i) - arcj(j1,k,i))
+               denom = (arcj(j2,k,i) - arcj(j1,k,i))
+               if(denom.lt.tol) then 
+                 eta = 0.
+               else
+                 eta = (arcj(j,k,i)  - arcj(j1,k,i))
+     .               / denom
+               end if
                psi(1) = eta
                psi(2) = 1.-eta
                x2(j,k,i) = psi(2)*(x(j1,k,i) - x1(j1,k,i))

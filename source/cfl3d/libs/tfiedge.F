@@ -24,6 +24,13 @@ c
      .          arck(jdim,kdim,idim)
 c
       dimension psi(2)
+      common /zero/ iexp
+c
+c     tolerance for switch to linear blending function
+c     (10.**(-iexp) is machine zero)
+c
+      tol = max(1.e-07,10.**(-iexp+1))
+c
 c
 c     check that one and only only one of the pairs i1,i2 j1,j2 k1,k2
 c     varies
@@ -42,9 +49,14 @@ c
       if (i1.ne.i2) then
          j = j1
          k = k1
+         denom = (arci(j,k,i2)- arci(j,k,i1))
          do i=i1,i2
-            eta = (arci(j,k,i) - arci(j,k,i1))
-     .          / (arci(j,k,i2)- arci(j,k,i1))
+            if(denom.lt.tol) then
+              eta = 0.
+            else
+              eta = (arci(j,k,i) - arci(j,k,i1))
+     .               / denom
+            end if
             psi(1) = eta
             psi(2) = 1.-eta
             x(j,k,i) = psi(2)*x(j,k,i1)
@@ -59,9 +71,14 @@ c
       if (j1.ne.j2) then
          i = i1
          k = k1
+         denom = (arcj(j2,k,i)- arcj(j1,k,i))
          do j=j1,j2
-            eta = (arcj(j,k,i) - arcj(j1,k,i))
-     .          / (arcj(j2,k,i)- arcj(j1,k,i))
+            if(denom.lt.tol) then
+              eta = 0.
+            else
+              eta = (arcj(j,k,i) - arcj(j1,k,i))
+     .               / denom
+            end if
             psi(1) = eta
             psi(2) = 1.-eta
             x(j,k,i) = psi(2)*x(j1,k,i)
@@ -76,9 +93,14 @@ c
       if (k1.ne.k2) then
          i = i1
          j = j1
+         denom = (arck(j,k2,i)- arck(j,k1,i))
          do k=k1,k2
-            eta = (arck(j,k,i) - arck(j,k1,i))
-     .          / (arck(j,k2,i)- arck(j,k1,i))
+            if(denom.lt.tol) then
+              eta = 0.
+            else
+              eta = (arck(j,k,i) - arck(j,k1,i))
+     .               / denom
+            end if
             psi(1) = eta
             psi(2) = 1.-eta
             x(j,k,i) = psi(2)*x(j,k1,i)
