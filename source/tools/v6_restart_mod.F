@@ -24,7 +24,7 @@ c     Note: title (stored in the original restart file) is LOST
 c     during conversion
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 v6_restart_mod.f umalloc_r_r.o ufree_r.o -o v6_restart_mod
+c     f90 -64 -r8 v6_restart_mod.f umalloc_r_r.o -o v6_restart_mod
 c     On CRAY:
 c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c umalloc_r_r.F
 c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 v6_restart_mod.f umalloc_r_r.o -o v6_restart_mod

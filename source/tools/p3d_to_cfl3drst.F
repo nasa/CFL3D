@@ -14,7 +14,7 @@ c     If it is converting a 2-D plot3d q-file, it assumes that the results
 c     are in the x-z plane!!!
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 p3d_to_cfl3drst.f umalloc_r.o ufree_r.o -o p3d_to_cfl3drst
+c     f90 -64 -r8 p3d_to_cfl3drst.f umalloc_r.o -o p3d_to_cfl3drst
 c***********************************************************************
 c
       parameter (nblock=10000)

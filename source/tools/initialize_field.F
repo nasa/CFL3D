@@ -14,7 +14,7 @@ c     It also sets ivisc=0, so that, upon restart, CFL3D will compute min distan
 c     function for turbulent cases.
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 initialize_field.f umalloc_r_r.o ufree_r.o -o initialize_field
+c     f90 -64 -r8 initialize_field.f umalloc_r.o -o initialize_field
 c*****************************************************************************
 c
       parameter (nblock=10000)
