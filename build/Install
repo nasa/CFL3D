@@ -657,7 +657,7 @@ case $FARCH in sun|solaris)
      CGNS_LLIB="cgns.sol"
   fi
   CPP="/usr/ccs/lib/cpp"
-  CPPOPT_SP="SUN"
+  CPPOPT_SP="-DSUN"
 esac
 
 #########################################
@@ -707,7 +707,7 @@ case $FARCH in alpha)
 
   FFLAG_SPEC="$FFLAG"
   LFLAG="-non_shared"
-  CPPOPT_SP="ALPHA"
+  CPPOPT_SP="-DALPHA"
   CFLAG=""
   LLIB=""
   LLIB_SEQ=""
