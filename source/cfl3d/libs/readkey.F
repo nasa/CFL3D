@@ -31,7 +31,8 @@ c
       common /zero/ iexp
       common /singular/ atol
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /precond/ cprec,uref,avn
       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
@@ -46,6 +47,8 @@ c
       common /memory/ memadd,memaddi
       common /deformz/ beta1,ismooth,negvol
       common /ghost/ irghost,iwghost
+      common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
+     .                     yrotrate,zrotrate,noninflag
 c
       ititr = 0
       nkey  = 0
@@ -269,6 +272,56 @@ c
 c     user input value for dcl/dalpha
 c
       dcldal    = 6.2831853
+      nkey      = nkey + 1
+c
+c     non-inertial reference frame flag (0=inertial; 1=noninertial)
+c
+      noninflag = 0
+      nkey      = nkey + 1
+c
+c     rotation center x-coordinate for non-inertial reference frame
+c
+      xcentrot = 0.
+      nkey     = nkey + 1
+c
+c     rotation center y-coordinate for non-inertial reference frame
+c
+      ycentrot = 0.
+      nkey     = nkey + 1
+c
+c     rotation center z-coordinate for non-inertial reference frame
+c
+      zcentrot = 0.
+      nkey     = nkey + 1
+c
+c     rotation rate in x-direction for non-inertial reference frame
+c
+      xrotrate = 0.
+      nkey     = nkey + 1
+c
+c     rotation rate in y-direction for non-inertial reference frame
+c
+      yrotrate = 0.
+      nkey     = nkey + 1
+c
+c     rotation rate in z-direction for non-inertial reference frame
+c
+      zrotrate = 0.
+      nkey     = nkey + 1
+c
+c     complex perturbation to the rotation rate in x-direction for
+c     non-inertial reference frame
+      xrotrate_img = 0.
+      nkey      = nkey + 1
+c
+c     complex perturbation to the rotation rate in y-direction for
+c     non-inertial reference frame
+      yrotrate_img = 0.
+      nkey      = nkey + 1
+c
+c     complex perturbation to the rotation rate in z-direction for
+c     non-inertial reference frame
+      zrotrate_img = 0.
       nkey      = nkey + 1
 c
 c*********************************************
@@ -530,6 +583,55 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          dcldal = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'noninflag') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) noninflag
+c
+      else if (inpstr(lc1:lc2).eq.'xcentrot') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xcentrot = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'ycentrot') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         ycentrot = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'zcentrot') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         zcentrot = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'xrotrate') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xrotrate = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'yrotrate') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         yrotrate = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'zrotrate') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         zrotrate = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'xrotrate_img') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xrotrate_img = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'yrotrate_img') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         yrotrate_img = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'zrotrate_img') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         zrotrate_img = realval(1)
 c
       else
 c
