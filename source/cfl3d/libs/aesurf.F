@@ -56,7 +56,28 @@ c
                ifn = icsf(nbl,is)
                kst = kcsi(nbl,is)
                kfn = kcsf(nbl,is)
-c
+c              Are multiple segments defined. If yes increment start/end
+c              indices to eliminate doubling of displacement
+               if(is.gt.1) then
+                do is1 = 1,is-1
+                 if(jcsi(nbl,is1).eq.jcsi(nbl,is)) then
+                  if(icsi(nbl,is1).eq.ist.and.icsf(nbl,is1).eq.ifn) then
+                    if(kcsf(nbl,is1).eq.kst) then
+                      kst = kst+1
+                    else if(kcsi(nbl,is1).eq.kfn) then
+                      kfn = kfn-1
+                    end if
+                  else if(kcsi(nbl,is1).eq.kst.and.kcsf(nbl,is1).eq.kfn)
+     .              then
+                    if(icsf(nbl,is1).eq.ist) then
+                      ist = ist+1
+                    else if(icsi(nbl,is1).eq.ifn) then
+                      ifn = ifn-1
+                    end if
+                  end if
+                 end if
+                enddo
+               end if
                do 3020 i = ist,ifn
                do 3020 k = kst,kfn
 c              save any existing displacements
@@ -100,7 +121,28 @@ c
                ifn = icsf(nbl,is)
                jst = jcsi(nbl,is)
                jfn = jcsf(nbl,is)
-c
+c              Are multiple segments defined. If yes increment start/end
+c              indices to eliminate doubling of displacement
+               if(is.gt.1) then
+                do is1 = 1,is-1
+                 if(kcsi(nbl,is1).eq.kcsi(nbl,is)) then
+                  if(jcsi(nbl,is1).eq.jst.and.jcsf(nbl,is1).eq.jfn) then
+                    if(icsf(nbl,is1).eq.ist) then
+                      ist = ist+1
+                    else if(icsi(nbl,is1).eq.ifn) then
+                      ifn = ifn-1
+                    end if
+                  else if(icsi(nbl,is1).eq.ist.and.icsf(nbl,is1).eq.ifn)
+     .              then
+                    if(jcsf(nbl,is1).eq.jst) then
+                      jst = jst+1
+                    else if(jcsi(nbl,is1).eq.jfn) then
+                      jfn = jfn-1
+                    end if
+                  end if
+                 end if
+                enddo
+               end if
                do 3050 i = ist,ifn
                do 3050 j = jst,jfn
 c              save any existing displacements
@@ -144,7 +186,28 @@ c
                kfn = kcsf(nbl,is)
                jst = jcsi(nbl,is)
                jfn = jcsf(nbl,is)
-c
+c              Are multiple segments defined. If yes increment start/end
+c              indices to eliminate doubling of displacement
+               if(is.gt.1) then
+                do is1 = 1,is-1
+                 if(icsi(nbl,is1).eq.icsi(nbl,is)) then
+                  if(jcsi(nbl,is1).eq.jst.and.jcsf(nbl,is1).eq.jfn) then
+                    if(kcsf(nbl,is1).eq.kst) then
+                      kst = kst+1
+                    else if(kcsi(nbl,is1).eq.kfn) then
+                      kfn = kfn-1
+                    end if
+                  else if(kcsi(nbl,is1).eq.kst.and.kcsf(nbl,is1).eq.kfn)
+     .              then
+                    if(jcsf(nbl,is1).eq.jst) then
+                      jst = jst+1
+                    else if(jcsi(nbl,is1).eq.jfn) then
+                      jfn = jfn-1
+                    end if
+                  end if
+                 end if
+                enddo
+               end if
                do 3080 k = kst,kfn
                do 3080 j = jst,jfn
 c              save any existing displacements
