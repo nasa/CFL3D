@@ -116,6 +116,7 @@ c
      .        ivisc(3).eq.12 .or.
      .        ivisc(1).eq.14 .or. ivisc(2).eq.14 .or.
      .        ivisc(3).eq.14) cmu=.09
+          v3dset=cmu*rho0*tur20/tur10
           do 2009 i=1,idim-1
             do 2009 k=1,kdim-1
               do 2009 j=1,jdim-1
@@ -124,7 +125,7 @@ c
      +               const2*smin(j,k,i)*refac
                 tursav(j,k,i,2)=ccmax(zk1,zk2)
                 v3d=tursav(j,k,i,2)*100./tmax
-                v3d=ccmaxcr(v3d,.009)
+                v3d=ccmaxcr(v3d,v3dset)
                 om1=-12444.*(smin(j,k,i)*refac) + .54
                 om2=cmu*tursav(j,k,i,2)/v3d
                 tursav(j,k,i,1)=ccmax(om1,om2)
