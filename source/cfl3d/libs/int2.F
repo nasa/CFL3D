@@ -91,7 +91,7 @@ c
       do 1751 j=2,jmax1-2
       phi      = temp(j)*temp(j-1)
      .         / (temp(j)**2 + temp(j-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q1g(j,k) = (temp(j) + temp(j-1))*phi
  1751 continue
       q1g(1,k)       = temp(1)
@@ -109,7 +109,7 @@ c
       do 1851 k=2,kmax1-2
       phi      = temp(k)*temp(k-1)
      .         / (temp(k)**2 + temp(k-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q2g(j,k) = (temp(k) + temp(k-1))*phi
  1851 continue
       q2g(j,1)       = temp(1)
@@ -188,7 +188,7 @@ c
       do 1761 j=2,jmax1-2
       phi      = temp(j)*temp(j-1)
      .         / (temp(j)**2 + temp(j-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q1g(j,k) = (temp(j) + temp(j-1))*phi
  1761 continue
       q1g(1,k)       = temp(1)
@@ -206,7 +206,7 @@ c
       do 1861 k=2,kmax1-2
       phi      = temp(k)*temp(k-1)
      .         / (temp(k)**2 + temp(k-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q2g(j,k) = (temp(k) + temp(k-1))*phi
  1861 continue
       q2g(j,1)       = temp(1)
@@ -285,7 +285,7 @@ c
       do 1771 j=2,jmax1-2
       phi      = temp(j)*temp(j-1)
      .         / (temp(j)**2 + temp(j-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q1g(j,k) = (temp(j) + temp(j-1))*phi
  1771 continue
       q1g(1,k)       = temp(1)
@@ -303,7 +303,7 @@ c
       do 1871 k=2,kmax1-2
       phi      = temp(k)*temp(k-1)
      .         / (temp(k)**2 + temp(k-1)**2 + eps)
-      phi      = 0.5 +  lim_ptch*(phi - 0.5)
+      phi      = 0.5 +  float(lim_ptch)*(phi - 0.5)
       q2g(j,k) = (temp(k) + temp(k-1))*phi
  1871 continue
       q2g(j,1)       = temp(1)
