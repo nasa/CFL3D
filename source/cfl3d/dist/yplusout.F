@@ -341,7 +341,7 @@ c
      .                 w(lvj0),w(lvk0),w(lvi0),maxbl,maxseg,nbci0,
      .                 nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,myid,
      .                 myhost,mycomm,mblk2nd,ibcinfo,jbcinfo,
-     .                 kbcinfo)
+     .                 kbcinfo,w(lvol))
 c
 c        save yplus statistcs on on global level for final summary
 c
