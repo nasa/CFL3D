@@ -970,11 +970,7 @@ echo '*** done...completed installation and creation of makefile ***'
 echo ' '
 echo 'makefile created for architecture.............'$FARCH
 echo 'makefile created for double precision.........'$do_dou
-if [ $do_f90 = yes ]; then
-   echo 'makefile created to use fortran compiler......f90'
-else
-   echo 'makefile created to use fortran compiler......f77'
-fi
+echo 'makefile created to use fortran compiler......'$FTN
 if [ $do_no_opt = no ]; then
    echo 'makefile created with optimization flags......yes'
 else
