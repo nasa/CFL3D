@@ -188,7 +188,7 @@ c
                      if (ivmx.ge.1 .and. ivolint.gt.0) then
                         ldim   = 1
                         lvol   = lw(8,in_blk)
-                        lvolk0 = lw(49,ic_blk)
+                        lvolk0 = lw(50,ic_blk)
                         if (limblk(it,3,n).ne.1) then
                            lvolk0 = lvolk0 + jdimc*(idimc-1)*1*2
                         end if
@@ -252,7 +252,7 @@ c
                      if (ivmx.ge.1 .and. ivolint.gt.0) then
                         ldim   = 1
                         lvol   = lw(8,in_blk)
-                        lvolj0 = lw(48,ic_blk)
+                        lvolj0 = lw(49,ic_blk)
                         if (limblk(it,2,n).ne.1) then
                            lvolj0 = lvolj0 + kdimc*(idimc-1)*1*2
                         end if
@@ -316,7 +316,7 @@ c
                      if (ivmx.ge.1 .and. ivolint.gt.0) then
                         ldim   = 1
                         lvol   = lw(8,in_blk)
-                        lvoli0 = lw(50,ic_blk)
+                        lvoli0 = lw(51,ic_blk)
                         if (limblk(it,1,n).ne.1) then
                            lvojk0 = lvolj0 + jdimc*kdimc*1*2
                         end if
@@ -849,7 +849,7 @@ c
                   if (ivmx.ge.1 .and. ivolint.gt.0) then
                      if (index_ar(nnn) .eq. keep_trac(n,10)) then
                         ldim   = 1
-                        lvolk0 = lw(49,ic_blk)
+                        lvolk0 = lw(50,ic_blk)
                         if (limblk(it,3,n).ne.1) then
                            lvolk0 = lvolk0 + jdimc*(idimc-1)*1*2
                         end if
@@ -925,7 +925,7 @@ c
                   if (ivmx.ge.1 .and. ivolint.gt.0) then
                      if (index_ar(nnn) .eq. keep_trac(n,10)) then
                         ldim   = 1
-                        lvolj0 = lw(48,ic_blk)
+                        lvolj0 = lw(49,ic_blk)
                         if (limblk(it,2,n).ne.1) then
                            lvolj0 = lvolj0 + kdimc*(idimc-1)*1*2
                         end if
@@ -1001,7 +1001,7 @@ c
                   if (ivmx.ge.1 .and. ivolint.gt.0) then
                      if (index_ar(nnn) .eq. keep_trac(n,10)) then
                         ldim   = 1
-                        lvoli0 = lw(50,ic_blk)
+                        lvoli0 = lw(51,ic_blk)
                         if (limblk(it,1,n).ne.1) then
                            lvolj0 = lvolj0 + jdimc*kdimc*1*2
                         end if

@@ -158,12 +158,12 @@ c
                lxc     = lw(10,nblz)
                lyc     = lw(11,nblz)
                lzc     = lw(12,nblz)
-               lxnm2c  = lw(55,nblz)
-               lynm2c  = lw(56,nblz)
-               lznm2c  = lw(57,nblz)
-               ldeltjc = lw(58,nblz) 
-               ldeltkc = lw(59,nblz)
-               ldeltic = lw(60,nblz)
+               lxnm2c  = lw(56,nblz)
+               lynm2c  = lw(57,nblz)
+               lznm2c  = lw(58,nblz)
+               ldeltjc = lw(59,nblz) 
+               ldeltkc = lw(60,nblz)
+               ldeltic = lw(61,nblz)
                call xyzintr(jdim,kdim,idim,jj2,kk2,ii2,w(lx),
      .                      w(ly),w(lz),w(lxc),w(lyc),w(lzc))
                call xyzintr(jdim,kdim,idim,jj2,kk2,ii2,w(lxnm2),

@@ -1717,9 +1717,9 @@ c
                   do m=1,ncg
                      nbl = nbl+1
                      if (iaesrf.ne.0 .and. myid.eq.mblk2nd(nbl)) then
-                        lxmdjc = lw(51,nbl)
-                        lxmdkc = lw(52,nbl)
-                        lxmdic = lw(53,nbl)
+                        lxmdjc = lw(52,nbl)
+                        lxmdkc = lw(53,nbl)
+                        lxmdic = lw(54,nbl)
                         nou(1) = min(nou(1)+1,ibufdim)
                         write(bou(nou(1),1),610) nbl
   610                   format(25h   creating modal surface,
