@@ -594,9 +594,9 @@ c          Determine Sij and Wij values:
             gg=1./(c1/2.+c5-1.)
 c
             if (ivmx .le. 7 .or. ivmx .eq. 10) then
-              t11 = -2.*vist3d(j,k,i)*s11
-              t22 = -2.*vist3d(j,k,i)*s22
-              t33 = -2.*vist3d(j,k,i)*s33
+              t11 = -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
+              t22 = -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
+              t33 = -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
 c   Add 2/3*k to the diagonal stress terms for eddy viscosity
 c   models, for better approximation to normal stresses
               if (ivmx .ge. 6) then
