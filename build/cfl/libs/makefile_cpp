@@ -1,3 +1,4 @@
+#     $Id$
 #=============================================================================
 #
 #              creates common libraries for subroutines common to 
@@ -97,7 +98,8 @@ FSRC_LIBS = \
         delintr.f      rcfl.f         ccomplex.f     setseg.f \
 	cgnstools.f    fmaps.f        getdelt.f      rsurf.f \
 	avghole.f      augmntq.f      blnkfr.f       gradinfo.f \
-	rb_pred.f      rb_corr.f      init_rb.f      init_trim.f
+	rb_pred.f      rb_corr.f      init_rb.f      init_trim.f \
+	pltmode.f
 
 CSRC_LIBS = bessel.c
 
