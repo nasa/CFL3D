@@ -41,8 +41,6 @@ c
      .          delti(jdim,kdim,3,2)
 c
       common /sklton/ isklton
-      common /igrdtyp/ ip3dgrd,ialph
-
 c
 c     determine which block face is to be rotated
 c
@@ -77,25 +75,6 @@ c
          return
       end if
 c
-c     If a tlns3d grid is used with x-z plane replaced with x-y plane
-c     then transpose y and z rotations.
-c
-      if(ialph.eq.0) then
-        omegyt =   omegy
-        omegzt =   omegz
-        thetayt=  thetay
-        thetazt=  thetaz
-        yorgt =    yorg 
-        zorgt =    zorg 
-      else
-        omegyt = - omegz
-        omegzt =   omegy
-        thetayt= -thetaz
-        thetazt=  thetay
-        yorgt =  - zorg 
-        zorgt =    yorg 
-      end if
-c
       if (abs(real(omegx)) .gt. 0.0) then
 c
 c***********************************************************************
@@ -125,11 +104,11 @@ c
                do k=kci,kcf
                   tempy           = y(j,k,ii)
                   tempz           = z(j,k,ii)
-                  delti(j,k,2,ll) = wki(j,k,ll)*((tempy-yorgt)*ca
-     .                            - (tempz-zorgt)*sa+yorgt - tempy)
+                  delti(j,k,2,ll) = wki(j,k,ll)*((tempy-yorg)*ca
+     .                            - (tempz-zorg)*sa+yorg - tempy)
      .                            + delti(j,k,2,ll)
-                  delti(j,k,3,ll) = wki(j,k,ll)*((tempy-yorgt)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+                  delti(j,k,3,ll) = wki(j,k,ll)*((tempy-yorg)*sa
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + delti(j,k,3,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -139,11 +118,11 @@ c
                do i=ici,icf
                   tempy           = y(jj,k,i)
                   tempz           = z(jj,k,i)
-                  deltj(k,i,2,ll) = wkj(k,i,ll)*((tempy-yorgt)*ca
-     .                            - (tempz-zorgt)*sa+yorgt - tempy)
+                  deltj(k,i,2,ll) = wkj(k,i,ll)*((tempy-yorg)*ca
+     .                            - (tempz-zorg)*sa+yorg - tempy)
      .                            + deltj(k,i,2,ll)
-                  deltj(k,i,3,ll) = wkj(k,i,ll)*((tempy-yorgt)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+                  deltj(k,i,3,ll) = wkj(k,i,ll)*((tempy-yorg)*sa
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + deltj(k,i,3,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -153,11 +132,11 @@ c
                do i=ici,icf
                   tempy           = y(j,kk,i)
                   tempz           = z(j,kk,i)
-                  deltk(j,i,2,ll) = wkk(j,i,ll)*((tempy-yorgt)*ca
-     .                            - (tempz-zorgt)*sa+yorgt - tempy)
+                  deltk(j,i,2,ll) = wkk(j,i,ll)*((tempy-yorg)*ca
+     .                            - (tempz-zorg)*sa+yorg - tempy)
      .                            + deltk(j,i,2,ll)
-                  deltk(j,i,3,ll) = wkk(j,i,ll)*((tempy-yorgt)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+                  deltk(j,i,3,ll) = wkk(j,i,ll)*((tempy-yorg)*sa
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + deltk(j,i,3,ll)
                   wkk(j,i,ll)     = 0.
                end do
@@ -166,14 +145,14 @@ c
 c
          thetax = theta
 c
-      else if (abs(real(omegyt)) .gt. 0.0) then
+      else if (abs(real(omegy)) .gt. 0.0) then
 c
 c***********************************************************************
 c        rotate about an axis parallel to the y-axis
 c***********************************************************************
 c
          if (time .ne. 0.) then
-            theold = thetayt 
+            theold = thetay
          else
             theold = 0.e0
          end if
@@ -183,9 +162,9 @@ c        calculate rotated x and z surface points
 c        delt(1)=dx delt(2)=0 (unaltered) delt(3)=dz               
 c***************************************************
 c
-         theta    = omegyt*ft
-         dthedt   = omegyt*dfdt
-         d2thedt2 = omegyt*d2fdt2
+         theta    = omegy*ft
+         dthedt   = omegy*dfdt
+         d2thedt2 = omegy*d2fdt2
          dtheta   = theta - theold
          ca = cos(dtheta)
          sa = sin(dtheta)
@@ -195,10 +174,10 @@ c
                   tempx           = x(j,k,ii)
                   tempz           = z(j,k,ii)
                   delti(j,k,1,ll) = wki(j,k,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorgt)*sa+xorg - tempx)
+     .                            + (tempz-zorg)*sa+xorg - tempx)
      .                            + delti(j,k,1,ll)
                   delti(j,k,3,ll) = wki(j,k,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + delti(j,k,3,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -209,10 +188,10 @@ c
                   tempx           = x(jj,k,i)
                   tempz           = z(jj,k,i)
                   deltj(k,i,1,ll) = wkj(k,i,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorgt)*sa+xorg - tempx)
+     .                            + (tempz-zorg)*sa+xorg - tempx)
      .                            + deltj(k,i,1,ll)
                   deltj(k,i,3,ll) = wkj(k,i,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + deltj(k,i,3,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -223,26 +202,26 @@ c
                   tempx           = x(j,kk,i)
                   tempz           = z(j,kk,i)
                   deltk(j,i,1,ll) = wkk(j,i,ll)*((tempx-xorg)*ca
-     .                            + (tempz-zorgt)*sa+xorg - tempx)
+     .                            + (tempz-zorg)*sa+xorg - tempx)
      .                            + deltk(j,i,1,ll)
                   deltk(j,i,3,ll) = wkk(j,i,ll)*(-(tempx-xorg)*sa
-     .                            + (tempz-zorgt)*ca+zorgt - tempz)
+     .                            + (tempz-zorg)*ca+zorg - tempz)
      .                            + deltk(j,i,3,ll)
                   wkk(j,i,ll)     = 0.
                end do
             end do
          end if
 c
-         thetayt= theta
+         thetay = theta
 c
-      else if (abs(real(omegzt)) .gt. 0.0) then
+      else if (abs(real(omegz)) .gt. 0.0) then
 c
 c***********************************************************************
 c        rotate about an axis parallel to the z-axis
 c***********************************************************************
 c
          if (time .ne. 0.) then
-            theold = thetazt 
+            theold = thetaz
          else
             theold = 0.e0
          end if
@@ -252,9 +231,9 @@ c        calculate rotated x and y surface points
 c        delt(1)=dx delt(2)=dy delt(3)=0 (unaltered)
 c***************************************************
 c
-         theta    = omegzt*ft
-         dthedt   = omegzt*dfdt
-         d2thedt2 = omegzt*d2fdt2
+         theta    = omegz*ft
+         dthedt   = omegz*dfdt
+         d2thedt2 = omegz*d2fdt2
          dtheta   = theta - theold
          ca = cos(dtheta)
          sa = sin(dtheta)
@@ -264,10 +243,10 @@ c
                   tempx           = x(j,k,ii)
                   tempy           = y(j,k,ii)
                   delti(j,k,1,ll) = wki(j,k,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorgt)*sa+xorg - tempx)
+     .                            - (tempy-yorg)*sa+xorg - tempx)
      .                            + delti(j,k,1,ll)
                   delti(j,k,2,ll) = wki(j,k,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorgt)*ca+yorgt - tempy)
+     .                            + (tempy-yorg)*ca+yorg - tempy)
      .                            + delti(j,k,2,ll)
                   wki(j,k,ll)     = 0.
                end do
@@ -278,10 +257,10 @@ c
                   tempx           = x(jj,k,i)
                   tempy           = y(jj,k,i)
                   deltj(k,i,1,ll) = wkj(k,i,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorgt)*sa+xorg - tempx)
+     .                            - (tempy-yorg)*sa+xorg - tempx)
      .                            + deltj(k,i,1,ll)
                   deltj(k,i,2,ll) = wkj(k,i,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorgt)*ca+yorgt - tempy)
+     .                            + (tempy-yorg)*ca+yorg - tempy)
      .                            + deltj(k,i,2,ll)
                   wkj(k,i,ll)     = 0.
                end do
@@ -292,17 +271,17 @@ c
                   tempx           = x(j,kk,i)
                   tempy           = y(j,kk,i)
                   deltk(j,i,1,ll) = wkk(j,i,ll)*((tempx-xorg)*ca
-     .                            - (tempy-yorgt)*sa+xorg - tempx)
+     .                            - (tempy-yorg)*sa+xorg - tempx)
      .                            + deltk(j,i,1,ll)
                   deltk(j,i,2,ll) = wkk(j,i,ll)*((tempx-xorg)*sa
-     .                            + (tempy-yorgt)*ca+yorgt - tempy)
+     .                            + (tempy-yorg)*ca+yorg - tempy)
      .                            + deltk(j,i,2,ll)
                   wkk(j,i,ll)     = 0.
                end do
             end do
          end if
 c
-         thetazt= theta
+         thetaz = theta
 c
       else 
 c
@@ -313,23 +292,6 @@ c
  101     format(40h WARNING: this block has zero rotational,
      .          21h surface displacement)
       end if
-c
-c
-c     If a tlns3d grid is used with x-z plane replaced with x-y plane, 
-c     transpose y and z rotations back to original grid orientations.
-c
-      if(ialph.eq.0) then
-        omegy  =   omegyt 
-        omegz  =   omegzt 
-        thetay =  thetayt 
-        thetaz =  thetazt 
-      else
-        omegy  =   omegzt 
-        omegz  = - omegyt 
-        thetay =  thetazt 
-        thetaz = -thetayt 
-      end if
-c
 c
       return
       end
