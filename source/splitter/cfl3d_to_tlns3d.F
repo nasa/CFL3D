@@ -14,7 +14,7 @@
      .                           nek1,nbi2,nei2,nbj2,nej2,nbk2,nek2,
      .                           nd11,nd21,nd12,nd22,ifsor,nb1s,ne1s,
      .                           nb2s,ne2s,nrotat,ntrans,tlref,rlref,
-     .                           ioflag,nou,bou,nbuf,ibufdim)
+     .                           ioflag,nou,bou,nbuf,ibufdim,cflout)
 c
 c     $Id$
 c
@@ -87,7 +87,7 @@ c
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             gridout,sdgridin,sdgridout,dovrlap,dpatch,dresid,
      .             rout
-      character*80 gridindum,sdgridindum
+      character*80 gridindum,sdgridindum,cflout
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
@@ -437,7 +437,7 @@ c
       ivisb(13,ibloc) = klamhi 
       isum = isum + ilamlo+ilamhi+jlamlo+jlamhi+klamlo+klamhi 
   120 continue
-      if (isum .gt.0) then
+      if (isum .gt.0 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: laminar regions specified...these '',
      .             ''are NOT preserved during splitting'')')
          write(6,*)
@@ -462,7 +462,7 @@ c
       ivisb(21,ibloc) = ke
       sum = isum + inewg+igridc+is+js+ks+ie+je+ke
   121 continue
-      if (isum .gt.0) then
+      if (isum .gt.0 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: embeded grid data specified...these '',
      .             ''are NOT preserved during splitting'')')
          write(6,*)
@@ -542,10 +542,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006 
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if
@@ -577,10 +578,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if
@@ -612,10 +614,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if
@@ -647,10 +650,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if
@@ -682,10 +686,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if
@@ -717,10 +722,11 @@ c
       call shortinp(nb1(ibloc,iface,iseg),ne1(ibloc,iface,iseg),
      &           nb2(ibloc,iface,iseg),ne2(ibloc,iface,iseg),
      &           il(ibloc),jl(ibloc),kl(ibloc),iface)
-      if (ibct(ibloc,iface,iseg).eq.2005) then
+      if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006) then
+      else if (ibct(ibloc,iface,iseg).eq.2006
+     .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
       end if

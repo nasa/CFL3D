@@ -535,7 +535,7 @@ c
      .                     nek1,nbi2,nei2,nbj2,nej2,nbk2,nek2,
      .                     nd11,nd21,nd12,nd22,ifsor,nb1s,ne1s,
      .                     nb2s,ne2s,nrotat,ntrans,tlref,rlref,ioflag,
-     .                     nou,bou,nbuf,ibufdim)
+     .                     nou,bou,nbuf,ibufdim,cflout)
       rewind 20
 c
       nbl = nbloc
