@@ -54,10 +54,6 @@ c      j=1 boundary            tunnel inflow                        bctype 1008
 c******************************************************************************
 c
       if (nface.eq.3) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001)ista,iend,ksta,kend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -108,10 +104,6 @@ c      j=jdim boundary         tunnel inflow                        bctype 1008
 c******************************************************************************
 c
       if (nface.eq.4) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002)ista,iend,ksta,kend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -162,10 +154,6 @@ c      k=1 boundary            tunnel inflow                        bctype 1008
 c******************************************************************************
 c
       if (nface.eq.5) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003)ista,iend,jsta,jend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -216,10 +204,6 @@ c      k=kdim boundary         tunnel inflow                        bctype 1008
 c******************************************************************************
 c
       if (nface.eq.6) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004)ista,iend,jsta,jend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -270,10 +254,6 @@ c      i=1 boundary            tunnel inflow                        bctype 1008
 c******************************************************************************
 c
       if (nface.eq.1) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -324,10 +304,6 @@ c      i=idim boundary          tunnel inflow                       bctype 1008
 c******************************************************************************
 c
       if (nface.eq.2) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-      end if
 c
       ent0 = p0/rho0**gamma
       gami = 1.0/gamma
@@ -371,19 +347,6 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
       end if
-c
- 1001 format(' ','  j=   1  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  tunnel inflow                  type 1008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  tunnel inflow                  type 1008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return
       end

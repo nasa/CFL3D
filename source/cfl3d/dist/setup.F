@@ -2340,22 +2340,28 @@ c  If no walls at all, don't do min distance calculation
          do 5858 n=1,ngrid
             nbl=nblg(n)
             do iset=1,nbci0(nbl)
-              if (abs(ibcinfo(nbl,iset,1,1)) .eq. 2004) goto 5860
+              if (abs(ibcinfo(nbl,iset,1,1)) .eq. 2004 .or.
+     .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
             enddo
             do iset=1,nbcidim(nbl)
-              if (abs(ibcinfo(nbl,iset,1,2)) .eq. 2004) goto 5860
+              if (abs(ibcinfo(nbl,iset,1,2)) .eq. 2004 .or.
+     .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
             enddo
             do iset=1,nbcj0(nbl)
-              if (abs(jbcinfo(nbl,iset,1,1)) .eq. 2004) goto 5860
+              if (abs(jbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
+     .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
             enddo
             do iset=1,nbcjdim(nbl)
-              if (abs(jbcinfo(nbl,iset,1,2)) .eq. 2004) goto 5860
+              if (abs(jbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
+     .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
             enddo
             do iset=1,nbck0(nbl)
-              if (abs(kbcinfo(nbl,iset,1,1)) .eq. 2004) goto 5860
+              if (abs(kbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
+     .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
             enddo
             do iset=1,nbckdim(nbl)
-              if (abs(kbcinfo(nbl,iset,1,2)) .eq. 2004) goto 5860
+              if (abs(kbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
+     .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
             enddo
  5858    continue
          itry=0
@@ -2371,9 +2377,13 @@ c              check storage availability
                nworkf = 0
                nworki = 0
                if (myid.eq.myhost) then
-                  call cntsurf(nsurf,maxbl,maxgr,maxseg,ngrid,nblg,
+                  call cntsurf(ns2004,maxbl,maxgr,maxseg,ngrid,nblg,
      .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2004)
+                  call cntsurf(ns2014,maxbl,maxgr,maxseg,ngrid,nblg,
+     .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
+                  nsurf=ns2004+ns2014
                end if
 #if defined DIST_MPI
                call MPI_Bcast (nsurf, 1, MPI_INTEGER, myhost,
@@ -2524,6 +2534,110 @@ c
   265       format(44h setting turbulent initial conditions, block,i4)
          end if
 c
+      end if
+c   make smin negative in regions where want laminar flow
+c   (field equation models only)
+      if (ivmx .ge. 4) then
+      do n=1,ngrid
+        do nbl=nblg(n),nblg(n)+ncgg(n)
+          if (mblk2nd(nbl).eq.myid) then
+            call lead(nbl,lw,lw2,maxbl)
+c     J-dir:
+            do nseg=1,nbcj0(nbl)
+              if(abs(jbcinfo(nbl,nseg,1,1)).eq.2014) then
+                ibeg=jbcinfo(nbl,nseg,2,1)
+                iend=jbcinfo(nbl,nseg,3,1)
+                jbeg=1
+                jend=1
+                kbeg=jbcinfo(nbl,nseg,4,1)
+                kend=jbcinfo(nbl,nseg,5,1)
+                mdim=kend-kbeg
+                ndim=iend-ibeg
+                ldata=lwdat(nbl,nseg,3)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,3)
+              end if
+            enddo
+            do nseg=1,nbcjdim(nbl)
+              if(abs(jbcinfo(nbl,nseg,1,2)).eq.2014) then
+                ibeg=jbcinfo(nbl,nseg,2,2)
+                iend=jbcinfo(nbl,nseg,3,2)
+                jbeg=jdim
+                jend=jdim
+                kbeg=jbcinfo(nbl,nseg,4,2)
+                kend=jbcinfo(nbl,nseg,5,2)
+                mdim=kend-kbeg
+                ndim=iend-ibeg
+                ldata=lwdat(nbl,nseg,4)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,4)
+              end if
+            enddo
+c     K-dir:
+            do nseg=1,nbck0(nbl)
+              if(abs(kbcinfo(nbl,nseg,1,1)).eq.2014) then
+                ibeg=kbcinfo(nbl,nseg,2,1)
+                iend=kbcinfo(nbl,nseg,3,1)
+                jbeg=kbcinfo(nbl,nseg,4,1)
+                jend=kbcinfo(nbl,nseg,5,1)
+                kbeg=1
+                kend=1
+                mdim=jend-jbeg
+                ndim=iend-ibeg
+                ldata=lwdat(nbl,nseg,5)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,5)
+              end if
+            enddo
+            do nseg=1,nbckdim(nbl)
+              if(abs(kbcinfo(nbl,nseg,1,2)).eq.2014) then
+                ibeg=kbcinfo(nbl,nseg,2,2)
+                iend=kbcinfo(nbl,nseg,3,2)
+                jbeg=kbcinfo(nbl,nseg,4,2)
+                jend=kbcinfo(nbl,nseg,5,2)
+                kbeg=kdim
+                kend=kdim
+                mdim=jend-jbeg
+                ndim=iend-ibeg
+                ldata=lwdat(nbl,nseg,6)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,6)
+              end if
+            enddo
+c     I-dir:
+            do nseg=1,nbci0(nbl)
+              if(abs(ibcinfo(nbl,nseg,1,1)).eq.2014) then
+                ibeg=1
+                iend=1
+                jbeg=ibcinfo(nbl,nseg,2,1)
+                jend=ibcinfo(nbl,nseg,3,1)
+                kbeg=ibcinfo(nbl,nseg,4,1)
+                kend=ibcinfo(nbl,nseg,5,1)
+                mdim=jend-jbeg
+                ndim=kend-kbeg
+                ldata=lwdat(nbl,nseg,1)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,1)
+              end if
+            enddo
+            do nseg=1,nbcidim(nbl)
+              if(abs(ibcinfo(nbl,nseg,1,2)).eq.2014) then
+                ibeg=idim
+                iend=idim
+                jbeg=ibcinfo(nbl,nseg,2,2)
+                jend=ibcinfo(nbl,nseg,3,2)
+                kbeg=ibcinfo(nbl,nseg,4,2)
+                kend=ibcinfo(nbl,nseg,5,2)
+                mdim=jend-jbeg
+                ndim=kend-kbeg
+                ldata=lwdat(nbl,nseg,2)
+                call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,2)
+              end if
+            enddo
+          endif
+        enddo
+      enddo
       end if
 c
 c********************************************************

@@ -133,8 +133,7 @@ c
       common /singular/ atol
       common /deformz/ beta1,ismooth,negvol
       common /mydist2/ nnodes,myhost,myid,mycomm
-      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
-     .                 ialphit,nttlast,icycupdt
+      common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /chk/ ichk
       common /degshf/ ideg(3)
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
@@ -363,7 +362,7 @@ c
          work(nlast+14) = uref
          work(nlast+15) = avn
          work(nlast+16) = cltarg
-         work(nlast+17) = resupdt
+         work(nlast+17) = rlxalph
          work(nlast+18) = nsubturb
          work(nlast+19) = cflturb
          work(nlast+20) = epsa_r
@@ -384,25 +383,24 @@ c
          work(nlast+35) = iwghost
          work(nlast+36) = dalim
          work(nlast+37) = icycupdt
-         work(nlast+38) = dcldal
-         work(nlast+39) = xcentrot
-         work(nlast+40) = ycentrot
-         work(nlast+41) = zcentrot
-         work(nlast+42) = xrotrate
-         work(nlast+43) = yrotrate
-         work(nlast+44) = zrotrate
-         work(nlast+45) = noninflag
-         work(nlast+46) = xrotrate_img
-         work(nlast+47) = yrotrate_img
-         work(nlast+48) = zrotrate_img
-         work(nlast+49) = itime2read
-         work(nlast+50) = itaturb
-         work(nlast+51) = ides
-         work(nlast+52) = cdes
-         work(nlast+53) = iteravg
-         work(nlast+54) = tur10
-         work(nlast+55) = tur20
-         work(nlast+56) = tur1cut
+         work(nlast+38) = xcentrot
+         work(nlast+39) = ycentrot
+         work(nlast+40) = zcentrot
+         work(nlast+41) = xrotrate
+         work(nlast+42) = yrotrate
+         work(nlast+43) = zrotrate
+         work(nlast+44) = noninflag
+         work(nlast+45) = xrotrate_img
+         work(nlast+46) = yrotrate_img
+         work(nlast+47) = zrotrate_img
+         work(nlast+48) = itime2read
+         work(nlast+49) = itaturb
+         work(nlast+50) = ides
+         work(nlast+51) = cdes
+         work(nlast+52) = iteravg
+         work(nlast+53) = tur10
+         work(nlast+54) = tur20
+         work(nlast+55) = tur1cut
          nlast = nlast+nkey
       end if
 c
@@ -596,7 +594,7 @@ c
          uref      = work(nlast+14)
          avn       = work(nlast+15)
          cltarg    = work(nlast+16)
-         resupdt   = work(nlast+17)
+         rlxalph   = work(nlast+17)
          nsubturb  = int(work(nlast+18))
          cflturb   = work(nlast+19)
          epsa_r    = work(nlast+20)
@@ -617,25 +615,24 @@ c
          iwghost   = int(work(nlast+35))
          dalim     = work(nlast+36)
          icycupdt  = int(work(nlast+37))
-         dcldal    = work(nlast+38)
-         xcentrot  = work(nlast+39)
-         ycentrot  = work(nlast+40)
-         zcentrot  = work(nlast+41)
-         xrotrate  = work(nlast+42)
-         yrotrate  = work(nlast+43)
-         zrotrate  = work(nlast+44)
-         noninflag = int(work(nlast+45))
-         xrotrate_img = work(nlast+46)
-         yrotrate_img = work(nlast+47)
-         zrotrate_img = work(nlast+48)
-         itime2read=int(work(nlast+49))
-         itaturb   =int(work(nlast+50))
-         ides      = int(work(nlast+51))
-         cdes      = work(nlast+52)
-         iteravg   = int(work(nlast+53))
-         tur10     = work(nlast+54)
-         tur20     = work(nlast+55)
-         tur1cut   = work(nlast+56)
+         xcentrot  = work(nlast+38)
+         ycentrot  = work(nlast+39)
+         zcentrot  = work(nlast+40)
+         xrotrate  = work(nlast+41)
+         yrotrate  = work(nlast+42)
+         zrotrate  = work(nlast+43)
+         noninflag = int(work(nlast+44))
+         xrotrate_img = work(nlast+45)
+         yrotrate_img = work(nlast+46)
+         zrotrate_img = work(nlast+47)
+         itime2read=int(work(nlast+48))
+         itaturb   =int(work(nlast+49))
+         ides      = int(work(nlast+50))
+         cdes      = work(nlast+51)
+         iteravg   = int(work(nlast+52))
+         tur10     = work(nlast+53)
+         tur20     = work(nlast+54)
+         tur1cut   = work(nlast+55)
       end if
 c
 c**************************

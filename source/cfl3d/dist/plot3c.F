@@ -895,12 +895,12 @@ c
             jw = jw + 1
 #           ifdef CMPLX
             if (ip3dgrad .eq. 0) then
-               xw(jw,kw,iw,1) = real(smin(j,k,i))
+               xw(jw,kw,iw,1) = real(ccabs(smin(j,k,i)))
             else
-               xw(jw,kw,iw,1) = imag(smin(j,k,i))/real(delh)
+               xw(jw,kw,iw,1) = imag(ccabs(smin(j,k,i)))/real(delh)
             end if
 #           else
-            xw(jw,kw,iw,1) = real(smin(j,k,i))
+            xw(jw,kw,iw,1) = real(ccabs(smin(j,k,i)))
 #           endif
  4010       continue
          else

@@ -103,65 +103,6 @@ c      j=1 boundary        viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.3) then
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 1 l=1,2
-         do 1 ipp=1,2
-         do 1 i=ista,iend1
-         ii = i-ista+1
-         do 1 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   1     continue
-         if (iflg.eq.1) then 
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(2) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-      end if
-c 
       do 400 i=ista,iend1
       ii = i-ista+1
 c
@@ -259,7 +200,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=snj0(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qj0(k,i,5,1)/qj0(k,i,1,1)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -333,7 +274,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 902 k=ksta,kend1
           tt=gamma*qj0(k,i,5,1)/qj0(k,i,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           tj0(k,i,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,1) = -tursav(j,k,i,2)
@@ -345,7 +286,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 102 k=ksta,kend1
           tt=gamma*qj0(k,i,5,1)/qj0(k,i,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           tj0(k,i,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,1) = -tursav(j,k,i,2)
@@ -363,65 +304,6 @@ c      j=jdim boundary     viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.4) then
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 2 l=1,2
-         do 2 ipp=1,2
-         do 2 i=ista,iend1
-         ii = i-ista+1
-         do 2 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   2     continue
-         if (iflg.eq.1) then 
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(2) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-      end if
-c 
       do 800 i=ista,iend1
       ii = i-ista+1
 c
@@ -519,7 +401,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=snjm(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qj0(k,i,5,3)/qj0(k,i,1,3)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -593,7 +475,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 812 k=ksta,kend1
           tt=gamma*qj0(k,i,5,3)/qj0(k,i,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           tj0(k,i,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,3) = -tursav(j,k,i,2)
@@ -605,7 +487,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 202 k=ksta,kend1
           tt=gamma*qj0(k,i,5,3)/qj0(k,i,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           tj0(k,i,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,3) = -tursav(j,k,i,2)
@@ -622,65 +504,6 @@ c******************************************************************************
 c      k=1 boundary        viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.5) then
-c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 3 l=1,2
-         do 3 ipp=1,2
-         do 3 i=ista,iend1
-         ii = i-ista+1
-         do 3 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   3     continue
-         if (iflg.eq.1) then 
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(3) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-      end if
 c
       do 1200 i=ista,iend1
       ii = i-ista+1
@@ -779,7 +602,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=snk0(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qk0(j,i,5,1)/qk0(j,i,1,1)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -853,7 +676,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 732 j=jsta,jend1
           tt=gamma*qk0(j,i,5,1)/qk0(j,i,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           tk0(j,i,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,1) = -tursav(j,k,i,2)
@@ -865,7 +688,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 302 j=jsta,jend1
           tt=gamma*qk0(j,i,5,1)/qk0(j,i,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           tk0(j,i,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,1) = -tursav(j,k,i,2)
@@ -882,65 +705,6 @@ c******************************************************************************
 c      k=kdim boundary     viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.6) then
-c 
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 4 l=1,2
-         do 4 ipp=1,2
-         do 4 i=ista,iend1
-         ii = i-ista+1
-         do 4 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   4     continue
-         if (iflg.eq.1) then 
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(3) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-      end if
 c 
       do 1600 i=ista,iend1
       ii = i-ista+1
@@ -1039,7 +803,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=snkm(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qk0(j,i,5,3)/qk0(j,i,1,3)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -1113,7 +877,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 492 j=jsta,jend1
           tt=gamma*qk0(j,i,5,3)/qk0(j,i,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           tk0(j,i,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,3) = -tursav(j,k,i,2)
@@ -1125,7 +889,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 402 j=jsta,jend1
           tt=gamma*qk0(j,i,5,3)/qk0(j,i,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           tk0(j,i,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,3) = -tursav(j,k,i,2)
@@ -1142,65 +906,6 @@ c******************************************************************************
 c      i=1 boundary        viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.1) then
-c 
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 5 l=1,2
-         do 5 ipp=1,2
-         do 5 k=ksta,kend1
-         kk = k-ksta+1
-         do 5 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   5     continue
-         if (iflg.eq.1) then 
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(1) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-      end if
 c 
       do 2000 k=ksta,kend1
       kk = k-ksta+1
@@ -1299,7 +1004,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=sni0(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -1373,7 +1078,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 652 j=jsta,jend1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           ti0(j,k,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,1) = -tursav(j,k,i,2)
@@ -1385,7 +1090,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 502 j=jsta,jend1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           ti0(j,k,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,1) = -tursav(j,k,i,2)
@@ -1403,65 +1108,6 @@ c      i=idim boundary     viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.2) then
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 6 l=1,2
-         do 6 ipp=1,2
-         do 6 k=ksta,kend1
-         kk = k-ksta+1
-         do 6 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   6     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            ctemp = bcdata(1,1,1,1)
-            cq    = bcdata(1,1,1,2)
-            if (real(ctemp) .gt. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1007) real(ctemp)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else if (real(ctemp) .eq. 0.) then
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1009)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            else
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1010)
-              nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1008) real(cq)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) filname
-         end if
-         if (iwf(1) .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-      end if
-c 
       do 2400 k=ksta,kend1
       kk = k-ksta+1
 c
@@ -1559,7 +1205,7 @@ c   ***Wall Function begin
           if(ivmx.eq.2) then
             dist=snim(j,k,i)
           else
-            dist=smin(j,k,i)
+            dist=ccabs(smin(j,k,i))
           end if
           tt=gamma*qi0(j,k,5,3)/qi0(j,k,1,3)
           fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
@@ -1633,7 +1279,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 632 j=jsta,jend1
           tt=gamma*qi0(j,k,5,3)/qi0(j,k,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dkdy=sqrt(tursav(j,k,i,2))/smin(j,k,i)
+          dkdy=sqrt(tursav(j,k,i,2))/ccabs(smin(j,k,i))
           ti0(j,k,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,3) = -tursav(j,k,i,2)
@@ -1645,7 +1291,7 @@ c       up making very little, if any, difference in the k-omega solution.)
         do 602 j=jsta,jend1
           tt=gamma*qi0(j,k,5,3)/qi0(j,k,1,3)
           fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
-          dist=smin(j,k,i)
+          dist=ccabs(smin(j,k,i))
           ti0(j,k,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,3) = -tursav(j,k,i,2)
@@ -1656,29 +1302,6 @@ c       up making very little, if any, difference in the k-omega solution.)
       end if
       end if
       end if
-c
- 1001 format(' ','  j=   1  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  viscous wall                   type 2004',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  viscous wall                   type 2004',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1007 format(11x,'Tw/Tinf    = ',f8.4)
- 1008 format(11x,'C_q        = ',f8.4)
- 1009 format(11x,'Tw/Tinf    = adiabatic wall')
- 1010 format(11x,'Tw/Tinf    = stagnation')
- 1011 format(11x,'Twtype, C_q set from file:')
- 1012 format('           ',a60)
-c
- 3001 format(' ',10x,'Wall function employed in j-direction')
- 3002 format(' ',10x,'Wall function employed in k-direction')
- 3003 format(' ',10x,'Wall function employed in i-direction')
 c
       return
       end

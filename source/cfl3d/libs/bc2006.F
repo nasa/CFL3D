@@ -157,77 +157,6 @@ c
 c
       j = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 1 l=1,4
-         do 1 ippp=1,2
-         do 1 i=ista,iend1
-         ii = i-ista+1
-         do 1 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(kk,ii,ipp,3)))) .gt. 3) iflg = 1
-   1     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c 
-         if (lijk .eq. 1 .or. lijk .eq. 3) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 1 or 3 on a j=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1001)ista,iend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4001)ista,iend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3005)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3006)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3004)
-         end if
-c
-      end if
-c
 c     extrapolate all primatives except pressure
 c
       do 100 l=1,4
@@ -263,14 +192,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ista.ne.1 .or. iend.ne.idim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 110 k=ksta,kend1
                kk = k-ksta+1
@@ -355,14 +276,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ista.ne.1 .or. iend.ne.idim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 140 i=ista,iend1
                ii = i-ista+1
@@ -451,77 +364,6 @@ c
 c
       j = jdim - 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 2 l=1,2
-         do 2 ippp=1,2
-         do 2 i=ista,iend1
-         ii = i-ista+1
-         do 2 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(kk,ii,ipp,3)))) .gt. 3) iflg = 1
-   2     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (lijk .eq. 1 .or. lijk .eq. 3) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 1 or 3 on a j=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1002)ista,iend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4002)ista,iend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3005)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3006)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3004)
-         end if
-c
-      end if
-c
 c     extrapolate all primatives except pressure
 c
       do 200 l=1,4
@@ -557,14 +399,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ista.ne.1 .or. iend.ne.idim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 210 k=ksta,kend1
                kk = k-ksta+1
@@ -649,14 +483,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ksta.ne.1 .or. kend.ne.kdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 240 i=ista,iend1
                ii = i-ista+1
@@ -744,77 +570,6 @@ c
 c
       k = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 3 l=1,4
-         do 3 ippp=1,2
-         do 3 i=ista,iend1
-         ii = i-ista+1
-         do 3 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(jj,ii,ipp,3)))) .gt. 3) iflg = 1
-   3     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (lijk .eq. 1 .or. lijk .eq. 2) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 1 or 2 on a k=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1003)ista,iend,jsta,jend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4003)ista,iend,jsta,jend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3005)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3006)
-         end if
-c
-      end if
-c
 c     extrapolate all primatives except pressure
 c
       do 300 l=1,4
@@ -850,14 +605,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ista.ne.1 .or. iend.ne.idim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 310 j=jsta,jend1
                jj = j-jsta+1
@@ -942,14 +689,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (jsta.ne.1 .or. jend.ne.jdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 340 i=ista,iend1
                ii = i-ista+1
@@ -1038,77 +777,6 @@ c
 c
       k = kdim - 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 4 l=1,4
-         do 4 ippp=1,2
-         do 4 i=ista,iend1
-         ii = i-ista+1
-         do 4 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(jj,ii,ipp,3)))) .gt. 3) iflg = 1
-   4     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (lijk .eq. 1 .or. lijk .eq. 2) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 1 or 2 on a k=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1004)ista,iend,jsta,jend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4004)ista,iend,jsta,jend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3005)
-         end if
-         if (lijk .eq. 1 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3006)
-         end if
-c
-      end if
-c
 c     extrapolate all primatives except pressure
 c
       do 400 l=1,4
@@ -1144,14 +812,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ista.ne.1 .or. iend.ne.idim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 410 j=jsta,jend1
                jj = j-jsta+1
@@ -1236,14 +896,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (jsta.ne.1 .or. jend.ne.jdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 440 i=ista,iend1
                ii = i-ista+1
@@ -1333,77 +985,6 @@ c
 c
       i = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 5 l=1,4
-         do 5 ippp=1,2
-         do 5 k=ksta,kend1
-         kk = k-ksta+1
-         do 5 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(jj,kk,ipp,3)))) .gt. 3) iflg = 1
-   5     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (lijk .eq. 2 .or. lijk .eq. 3) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 2 or 3 on an i=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4005)jsta,jend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3004)
-         end if
-c
-      end if
-c
 c     extrapolate all primatives except pressure
 c
       do 500 l=1,4
@@ -1439,14 +1020,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (jsta.ne.1 .or. jend.ne.jdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 510 k=ksta,kend1
                kk = k-ksta+1
@@ -1531,14 +1104,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ksta.ne.1 .or. kend.ne.kdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 540 j=jsta,jend1
                jj = j-jsta+1
@@ -1627,77 +1192,6 @@ c
 c
       i = idim - 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 6 l=1,4
-         do 6 ippp=1,2
-         do 6 k=ksta,kend1
-         kk = k-ksta+1
-         do 6 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ippp,l)) .lt. -1.e10) iflg = 1
-         if (int(abs(real(bcdata(jj,kk,ipp,3)))) .gt. 3) iflg = 1
-   6     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2006:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  radial equilib. press. data',
-     . ' incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (lijk .eq. 2 .or. lijk .eq. 3) then
-c           lijk ok
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)' stopping...abs(bcdata(3)) must be',
-     .                 ' 2 or 3 on an i=constant face'
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-c
-         if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then 
-               pratio = bcdata(1,1,1,2)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1007) real(pratio)
-            else
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4006)jsta,jend,ksta,kend
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),4007) nblc
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008) filname
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3001)
-         end if
-         if (lijk .eq. 2 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3002)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. +1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3003)
-         end if
-         if (lijk .eq. 3 .and. ldir .eq. -1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),3004)
-         end if
-c
-      end if
-c 
 c     extrapolate all primatives except pressure
 c
       do 600 l=1,4
@@ -1733,14 +1227,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (jsta.ne.1 .or. jend.ne.jdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 610 k=ksta,kend1
                kk = k-ksta+1
@@ -1825,14 +1311,6 @@ c
 c
 c           set data for continuation
 c
-            if (isklton.eq.1) then
-               if (ksta.ne.1 .or. kend.ne.kdim) then
-                  nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),*)'  stopping...bc segment must',
-     .            ' span the entire block face in the radial direction'
-                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-            end if
             if (ichk .gt. 0) then
                do 640 j=jsta,jend1
                jj = j-jsta+1
@@ -1912,56 +1390,6 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
       end if
-c
- 1001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1007 format(11x,'P/Pinf     = ',f8.4)
-c
- 2001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2007 format(11x,'P/Pinf set from file:')
- 2008 format('           ',a60)
-c
- 3001 format(11x,'integrated in +j direction')
- 3002 format(11x,'integrated in -j direction')
- 3003 format(11x,'integrated in +k direction')
- 3004 format(11x,'integrated in -k direction')
- 3005 format(11x,'integrated in +i direction')
- 3006 format(11x,'integrated in -i direction')
-c
- 4001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 4002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 4003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 4004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 4005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 4006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 4007 format(11x,'continued from block',i3)
 c
       return 
       end

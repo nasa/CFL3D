@@ -807,7 +807,7 @@ c     (later, damp1 is used to store LHS implicit contribution)
               deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
               delta = ccmax(deltaj,deltak)
               delta = ccmax(delta,deltai)
-              damp1(j,k,i) = ccmin(smin(j,k,i),cdes*delta)
+              damp1(j,k,i) = ccmin(ccabs(smin(j,k,i)),cdes*delta)
             enddo
           enddo
         enddo
@@ -815,7 +815,7 @@ c     (later, damp1 is used to store LHS implicit contribution)
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              damp1(j,k,i) = smin(j,k,i)
+              damp1(j,k,i) = ccabs(smin(j,k,i))
             enddo
           enddo
         enddo
@@ -823,9 +823,10 @@ c     (later, damp1 is used to store LHS implicit contribution)
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.

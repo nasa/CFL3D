@@ -138,22 +138,28 @@ c
 c
          ivv2 = 0
          do ns=1,nbci0(nbl)
-            if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .         abs(ibcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcidim(nbl)
-            if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .         abs(ibcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcj0(nbl)
-            if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .         abs(jbcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcjdim(nbl)
-            if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .         abs(jbcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbck0(nbl)
-            if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .         abs(kbcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbckdim(nbl)
-            if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+            if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .         abs(kbcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
          enddo
 c
          ivv = 0
@@ -173,7 +179,8 @@ c
                end if
                ktest = 0
                do 510 nseg = 1,nbc
-               if (abs(kbcinfo(nbl,nseg,1,m)) .eq. 2004) ktest = 1
+               if (abs(kbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
+     .             abs(kbcinfo(nbl,nseg,1,m)) .eq. 2014) ktest = 1
  510           continue
                if (ktest.gt.0) then
                   ncount = ncount+1
@@ -193,7 +200,8 @@ c
                end if
                jtest = 0
                do 530 nseg = 1,nbc
-               if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004) jtest = 1
+               if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
+     .             abs(jbcinfo(nbl,nseg,1,m)) .eq. 2014) jtest = 1
  530           continue
                if (jtest.gt.0) then
                   ncount = ncount+1
@@ -213,7 +221,8 @@ c
                end if
                itest = 0
                do 550 nseg = 1,nbc
-               if (abs(ibcinfo(nbl,nseg,1,m)) .eq. 2004) itest = 1
+               if (abs(ibcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
+     .             abs(ibcinfo(nbl,nseg,1,m)) .eq. 2014) itest = 1
  550           continue
                if (itest.gt.0) then
                   ncount = ncount+1
@@ -269,22 +278,28 @@ c
 c
       ivv2 = 0
       do ns=1,nbci0(nbl)
-         if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .      abs(ibcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcidim(nbl)
-         if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .      abs(ibcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcj0(nbl)
-         if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .      abs(jbcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcjdim(nbl)
-         if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .      abs(jbcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbck0(nbl)
-         if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
+     .      abs(kbcinfo(nbl,ns,1,1)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbckdim(nbl)
-         if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004) ivv2 = ivv2 + 1
+         if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
+     .      abs(kbcinfo(nbl,ns,1,2)) .eq. 2014) ivv2 = ivv2 + 1
       enddo
 c
       ivv = 0

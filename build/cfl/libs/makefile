@@ -34,7 +34,7 @@ FSRC_LIBS = \
 	rotateq2_d.F   abciz.F        diagk.F        wkstn.F \
 	abcjz.F        colldat.F      dlutr.F        abckz.F \
 	collv.F        dlutrp.F       init.F         q8vrev.F \
-	collx.F        dsmin.F        initvist.F \
+	collx.F        dsmin.F        initvist.F     lamfix.F \
 	collxtb.F      expand.F       int2.F \
 	extra.F        extrae.F       lead.F \
 	amafi.F        ffluxl.F       l2norm.F       bc_xmera.F \

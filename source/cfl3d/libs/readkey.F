@@ -37,8 +37,7 @@ c
      .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /precond/ cprec,uref,avn
-      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
-     .                 ialphit,nttlast,icycupdt
+      common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut
       common /entfix/ epsa_l,epsa_r
@@ -135,10 +134,9 @@ c
       ialphit  = 0
       nkey     = nkey + 1
 c
-c     no. of orders of resid. reduction before alpha is
-c     next updated
+c     angle-of-attack relaxation factor for specified Cl
 c
-      resupdt  = -40.
+      rlxalph  = 1.
       nkey     = nkey + 1
 c
 c     no. of subiterations in turbulence model per outer iteration
@@ -264,18 +262,13 @@ c
 c
 c     limit of alpha change (deg.) per update
 c
-      dalim     = 5.0
+      dalim     = 0.2
       nkey      = nkey + 1
 c
 c     no. of cycles between alpha updates (if set > 0, this
 c     method takes precedence over resupdt)
 c
-      icycupdt  = 0
-      nkey      = nkey + 1
-c
-c     user input value for dcl/dalpha
-c
-      dcldal    = 6.2831853
+      icycupdt  = 1
       nkey      = nkey + 1
 c
 c     non-inertial reference frame flag (0=inertial; 1=noninertial)
@@ -529,10 +522,10 @@ c
             ialphit = 1
          end if
 c
-      else if (inpstr(lc1:lc2).eq.'resupdt') then
+      else if (inpstr(lc1:lc2).eq.'rlxalph') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         resupdt = -abs(realval(1))
+         rlxalph = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'nsubturb') then
          lc2 = lc2 +1
@@ -628,11 +621,6 @@ c
       else if (inpstr(lc1:lc2).eq.'icycupdt') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) icycupdt
-c
-      else if (inpstr(lc1:lc2).eq.'dcldal') then
-         lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) realval(1)
-         dcldal = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'noninflag') then
          lc2 = lc2 +1

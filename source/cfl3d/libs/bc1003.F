@@ -56,14 +56,6 @@ c      j=1 boundary                inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.3) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001)ista,iend,ksta,kend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write (bou(nou(1),1),3001)
-         end if
-      end if
       do 300 i=ista,iend1
       js = (i-ista)*(kend-ksta)+1
       do 400 l=1,5
@@ -139,14 +131,6 @@ c      j=jdim boundary             inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.4) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002)ista,iend,ksta,kend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write (bou(nou(1),1),3001)
-         end if
-      end if
       do 310 i=ista,iend1
       js = (i-ista)*(kend-ksta)+1
       do 410 l=1,5
@@ -224,14 +208,6 @@ c      k=1 boundary                inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.5) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003)ista,iend,jsta,jend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write (bou(nou(1),1),3001)
-         end if
-      end if
       do 320 i=ista,iend1
       js = (i-ista)*(jend-jsta)+1
       do 420 l=1,5
@@ -307,14 +283,6 @@ c      k=kdim boundary             inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.6) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004)ista,iend,jsta,jend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write (bou(nou(1),1),3001)
-         end if
-      end if
       do 330 i=ista,iend1
       js = (i-ista)*(jend-jsta)+1
       do 430 l=1,5
@@ -392,16 +360,6 @@ c      i=1 boundary                inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.1) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),'('' i=1 bc1003 not appropriate for'',
-     +       '' i2d=-1 (farfield point vortex correction)'')')
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-      end if
       do 340 k=ksta,kend1
       js = (k-ksta)*(jend-jsta)+1
       do 440 l=1,5
@@ -467,16 +425,6 @@ c      i=idim boundary             inflow/outflow                   bctype 1003
 c******************************************************************************
 c
       if (nface.eq.2) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-         if (iipv .eq. 1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),'('' i=idim bc1003 not appropriate'',
-     +       '' for i2d=-1 (farfield point vortex correction)'')')
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-      end if
       do 350 k=ksta,kend1
       js = (k-ksta)*(jend-jsta)+1
       do 450 l=1,5
@@ -536,19 +484,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
- 1001 format(' ','  j=   1  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  characteristic inflow/outflow  type 1003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  characteristic inflow/outflow  type 1003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
-c
- 3001 format(' ',10x,'With farfield point vortex correction')
       return
       end

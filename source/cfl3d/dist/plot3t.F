@@ -555,6 +555,17 @@ c
       xii=0.
       xiii=0.
       ff=0.
+      zk=0.
+c   currently unused printout to fort.50 (specifically for k-line)
+c     write(50,'(''variables="y","uuplus","wwplus","vvplus","uwplus",'',
+c    + ''"uvplus","vwplus","u_scaled","kplus","yplus","uplus",'',
+c    + ''"mu_turbulent/mu_lam_ref","eplus","cmu"'')')
+c     jloc=49
+c     iloc=1
+c     write(50,'(''#'',i5,''  CFL3D scaled turb results along k-line'',
+c    + '' at j,i='',2i4, '' x='',f16.6)') k2-k1+1,jloc,iloc,
+c    +  0.5*(x(jloc,1,iloc)+x(jloc+1,1,iloc))
+c     write(50,'(''# NOTE: eplus applies to k-eps models only'')')
 c
       iw = 0
       do 4000 i=i1,i2,i3
@@ -592,6 +603,15 @@ c          Determine Sij and Wij values:
             c4=0.40
             c5=1.88
             gg=1./(c1/2.+c5-1.)
+            if (ivmx .lt. 6) then
+c   The following gets an estimate for turb kinetic energy for
+c   models that do not compute it directly, in case it is needed
+c   (from AIAA 92-0439, where structure parameter taken as a1=0.5*(0.31))
+              zk=vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/(re*.31)
+            else
+c   Otherwise, use exact computed turb kinetic energy
+              zk=turre(j,k,i,2)
+            end if
 c
             if (ivmx .le. 7 .or. ivmx .eq. 10) then
               t11 = -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
@@ -599,18 +619,10 @@ c
               t33 = -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
 c   Add 2/3*k to the diagonal stress terms for eddy viscosity
 c   models, for better approximation to normal stresses
-              if (ivmx .ge. 6) then
-                 t11=t11+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
-                 t22=t22+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
-                 t33=t33+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
-              else
-c   less-than-two equation models use approximation for 2/3*k 
-c   (from AIAA 92-0439, where structure parameter taken as a1=0.5*(0.31))
-c   approx for k/aref^2 is:  vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/(re*.31)
-               t11=t11+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
-               t22=t22+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
-               t33=t33+2./3.*vist3d(j,k,i)/q(j,k,i,1)*sqrt(2.*xis)/.31
-              end if
+              t11=t11+2.*q(j,k,i,1)*zk*re/3.
+              t22=t22+2.*q(j,k,i,1)*zk*re/3.
+              t33=t33+2.*q(j,k,i,1)*zk*re/3.
+c
               t12 = -2.*vist3d(j,k,i)*s12
               t13 = -2.*vist3d(j,k,i)*s13
               t23 = -2.*vist3d(j,k,i)*s23
@@ -829,6 +841,46 @@ c            Calculate production term (approx form if iturbprod=0):
      +            (q(j,k,i,1)*re)
             end if
             pk=pk*cutoff
+c
+c   currently unused printout to fort.50 (specifically for k-line)
+c     if (j .eq. jloc .and. i .eq. iloc) then
+c       yget=ccabs(smin(j,k,i))
+c       qset=sqrt(q(j,1,i,2)**2+q(j,1,i,3)**2+q(j,1,i,4)**2)
+c       tt=gamma*q(j,1,i,5)/q(j,1,i,1)
+c       c2b=198.6/tinf
+c       c2bp=c2b+1.0
+c       fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
+c       utau=sqrt(fnuw*qset/(ccabs(smin(j,1,i))*
+c    +     q(j,1,i,1)*re))
+c       ypl=re*q(j,1,i,1)*utau*ccabs(smin(j,k,i))/fnuw
+c       upl=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
+c    +        /utau
+c       zkplus=zk/(utau**2)
+c       uuplus=abs(t11)/(re*utau*utau)
+c       vvplus=abs(t22)/(re*utau*utau)
+c       wwplus=abs(t33)/(re*utau*utau)
+c       uwplus=-t13/(re*utau*utau)
+c       vwplus=-t23/(re*utau*utau)
+c       uvplus=-t12/(re*utau*utau)
+c       uloc=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)/xmach
+c       ttx=gamma*q(j,k,i,5)/q(j,k,i,1)
+c       fnu=c2bp*ttx*sqrt(ttx)/(c2b+ttx)
+c       if (ivmx .eq. 9 .or. ivmx .eq. 10 .or. ivmx .eq. 11 .or.
+c    +      ivmx .eq. 13) then
+c       eplus=turre(j,k,i,1)*fnu/(q(j,k,i,1)*utau*utau*utau*utau)
+c       else
+c       eplus=0.
+c       end if
+c       if(ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .ge. 13) then
+c         cmuxx=-cmuv(j,k,i)
+c       else
+c         cmuxx=.09
+c       end if
+c       write(50,'(14e15.5)') yget,uuplus,wwplus,vvplus,uwplus,
+c    +   uvplus,vwplus,uloc,zkplus,ypl,upl,vist3d(j,k,i),eplus,
+c    +   cmuxx
+c     end if
+c
 c      u'/u_inf:
       uprime=sqrt(abs(t11)/(q(j,k,i,1)*re))/xmach
 c      v'/u_inf:

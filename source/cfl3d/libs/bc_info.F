@@ -154,7 +154,12 @@ c
       if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(ibcinfo(nbl,nseg,1,1)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (ibcinfo(nbl,nseg,1,1).eq.2005) then
 c       ngnew is the block number of the block periodic with block nbl
@@ -207,7 +212,17 @@ c
       if (ibcinfo(nbl,nseg,1,1).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (ibcinfo(nbl,nseg,1,1).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (ibcinfo(nbl,nseg,1,1).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (ibcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
@@ -290,7 +305,12 @@ c
       if (abs(ibcinfo(nbl,nseg,1,2)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(ibcinfo(nbl,nseg,1,2)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
@@ -342,7 +362,17 @@ c
       if (ibcinfo(nbl,nseg,1,2).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
@@ -425,7 +455,12 @@ c
       if (abs(jbcinfo(nbl,nseg,1,1)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(jbcinfo(nbl,nseg,1,1)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (jbcinfo(nbl,nseg,1,1).eq.2005) then
         ngh = igridg(nbl)
@@ -477,7 +512,17 @@ c
       if (jbcinfo(nbl,nseg,1,1).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (jbcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
@@ -560,7 +605,12 @@ c
       if (abs(jbcinfo(nbl,nseg,1,2)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(jbcinfo(nbl,nseg,1,2)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
@@ -612,7 +662,17 @@ c
       if (jbcinfo(nbl,nseg,1,2).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
@@ -695,7 +755,12 @@ c
       if (abs(kbcinfo(nbl,nseg,1,1)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(kbcinfo(nbl,nseg,1,1)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (kbcinfo(nbl,nseg,1,1).eq.2005) then
         ngh = igridg(nbl)
@@ -747,7 +812,17 @@ c
       if (kbcinfo(nbl,nseg,1,1).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (kbcinfo(nbl,nseg,1,1).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (kbcinfo(nbl,nseg,1,1).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (kbcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
@@ -830,7 +905,12 @@ c
       if (abs(kbcinfo(nbl,nseg,1,2)).eq.2004)
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (abs(kbcinfo(nbl,nseg,1,2)).eq.2014)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
@@ -882,7 +962,17 @@ c
       if (kbcinfo(nbl,nseg,1,2).eq.2008)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2018)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2028)
+     .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,2)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
@@ -2850,7 +2940,7 @@ c
       end
       subroutine out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
-     .                  filname,myid,mblk2nd,maxbl)
+     .                  filname,myid,mblk2nd,maxbl,iout)
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -2871,7 +2961,7 @@ c
       if (nface.eq.3) then
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 1 l=1,2
+         do 1 l=1,2+iout
          do 1 ipp=1,2
          do 1 i=ista,iend1
          ii = i-ista+1
@@ -2881,7 +2971,11 @@ c        check that the required auxiliary data has been set
    1     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -2889,31 +2983,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1101)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1101)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1101)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),1101)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -2929,7 +3046,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 2 l=1,2
+         do 2 l=1,2+iout
          do 2 ipp=1,2
          do 2 i=ista,iend1
          ii = i-ista+1
@@ -2939,7 +3056,11 @@ c        check that the required auxiliary data has been set
    2     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -2947,31 +3068,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1102)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1102)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1102)ista,iend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),1102)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -2987,7 +3131,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 3 l=1,2
+         do 3 l=1,2+iout
          do 3 ipp=1,2
          do 3 i=ista,iend1
          ii = i-ista+1
@@ -2997,7 +3141,11 @@ c        check that the required auxiliary data has been set
    3     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -3005,31 +3153,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1103)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1103)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1103)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            else
+              write(bou(nou(1),1),1103)ista,iend,jsta,jend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -3045,7 +3216,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 4 l=1,2
+         do 4 l=1,2+iout
          do 4 ipp=1,2
          do 4 i=ista,iend1
          ii = i-ista+1
@@ -3055,7 +3226,11 @@ c        check that the required auxiliary data has been set
    4     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -3063,31 +3238,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1104)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1104)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1004)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1104)ista,iend,jsta,jend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            else
+              write(bou(nou(1),1),1104)ista,iend,jsta,jend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -3103,7 +3301,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 5 l=1,2
+         do 5 l=1,2+iout
          do 5 ipp=1,2
          do 5 k=ksta,kend1
          kk = k-ksta+1
@@ -3113,7 +3311,11 @@ c        check that the required auxiliary data has been set
    5     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -3121,31 +3323,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1105)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1105)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1105)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            else
+              write(bou(nou(1),1),1105)jsta,jend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -3161,7 +3386,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 6 l=1,2
+         do 6 l=1,2+iout
          do 6 ipp=1,2
          do 6 k=ksta,kend1
          kk = k-ksta+1
@@ -3171,7 +3396,11 @@ c        check that the required auxiliary data has been set
    6     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),*)'  Stopping in bc2004:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2014:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -3179,31 +3408,54 @@ c        check that the required auxiliary data has been set
          if (filname.eq.'null') then
             ctemp = bcdata(1,1,1,1)
             cq    = bcdata(1,1,1,2)
+            if (iout .eq. 1) then
+              stopindex = bcdata(1,1,1,3)
+            end if
             if (real(ctemp) .gt. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1106)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else if (ctemp .eq. 0.) then
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1106)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             else
               nou(1) = min(nou(1)+1,ibufdim)
-              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              if (iout .eq. 0) then
+                write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1106)jsta,jend,ksta,kend
+              end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1008) real(cq)
             end if
+            if (iout .eq. 1) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) int(stopindex)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            if (iout .eq. 0) then
+              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            else
+              write(bou(nou(1),1),1106)jsta,jend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -3227,8 +3479,21 @@ c
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
  1006 format(' ','  i=idim  viscous wall                   type 2004',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 1101 format(' ','  j=   1  viscous laminar wall           type 2014',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1102 format(' ','  j=jdim  viscous laminar wall           type 2014',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1103 format(' ','  k=   1  viscous laminar wall           type 2014',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1104 format(' ','  k=kdim  viscous laminar wall           type 2014',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1105 format(' ','  i=   1  viscous laminar wall           type 2014',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 1106 format(' ','  i=idim  viscous laminar wall           type 2014',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
  1007 format(11x,'Tw/Tinf    = ',f8.4)
  1008 format(11x,'C_q        = ',f8.4)
+ 1013 format(11x,'stopindex  = ',i8)
  1009 format(11x,'Tw/Tinf    = adiabatic wall')
  1010 format(11x,'Tw/Tinf    = stagnation')
  1011 format(11x,'Twtype, C_q set from file:')
@@ -5077,7 +5342,7 @@ c
       end
       subroutine out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
-     .                  filname,myid,mblk2nd,maxbl)
+     .                  filname,myid,mblk2nd,maxbl,iout)
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -5121,27 +5386,57 @@ c        check that the required auxiliary data has been set
    1     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c 
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1001)ista,iend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2001)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3001)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5154,7 +5449,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2001)ista,iend,ksta,kend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3001)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5187,27 +5488,57 @@ c        check that the required auxiliary data has been set
    2     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1002)ista,iend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2002)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3002)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5220,7 +5551,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2002)ista,iend,ksta,kend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3002)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5253,27 +5590,57 @@ c        check that the required auxiliary data has been set
    3     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1003)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2003)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3003)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5286,7 +5653,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2003)ista,iend,jsta,jend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3003)ista,iend,jsta,jend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5319,27 +5692,57 @@ c        check that the required auxiliary data has been set
    4     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1004)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2004)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3004)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5352,7 +5755,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2004)ista,iend,jsta,jend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3004)ista,iend,jsta,jend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5385,27 +5794,57 @@ c        check that the required auxiliary data has been set
    5     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1005)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2005)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3005)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5418,7 +5857,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2005)jsta,jend,ksta,kend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3005)jsta,jend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5451,27 +5896,57 @@ c        check that the required auxiliary data has been set
    6     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),*)'  Stopping in bc2008:'
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),*)'  Stopping in bc2018:'
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),*)'  Stopping in bc2028:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
          if (filname.eq.'null') then
-            rho1  = bcdata(1,1,1,1)
+            val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
             v1    = bcdata(1,1,1,3)
             w1    = bcdata(1,1,1,4)
+            if (iout .eq. 0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1006)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(rho1)
+            write(bou(nou(1),1),1008) real(val1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(u1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) real(v1)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011) real(w1)
+            else if (iout .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2006)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),2011) real(w1)
+            else if (iout .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3006)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3008) real(val1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3009) real(u1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3010) real(v1)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3011) real(w1)
+            end if
             if (itrflg1.gt.0) then
                t1 = bcdata(1,1,1,5)
                nou(1) = min(nou(1)+1,ibufdim)
@@ -5484,7 +5959,13 @@ c
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
+            if (iout .eq. 0) then
             write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            else if (iout .eq. 1) then
+            write(bou(nou(1),1),2006)jsta,jend,ksta,kend
+            else if (iout .eq. 2) then
+            write(bou(nou(1),1),3006)jsta,jend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1012)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -5513,6 +5994,38 @@ c
  1013 format('           ',a60)
  1014 format(11x,'turb1 (nondim) = ',e12.4)
  1015 format(11x,'turb2 (nondim) = ',e12.4)
+ 2001 format(' ','  j=   1  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 2002 format(' ','  j=jdim  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 2003 format(' ','  k=   1  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 2004 format(' ','  k=kdim  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 2005 format(' ','  i=   1  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 2006 format(' ','  i=idim  set T,rhou,rhov,rhow, extrap p type 2018',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 2008 format(11x,'T/Tinf         = ',f8.4)
+ 2009 format(11x,'rhou/rhoinfainf= ',f8.4)
+ 2010 format(11x,'rhov/rhoinfainf= ',f8.4)
+ 2011 format(11x,'rhow/rhoinfainf= ',f8.4)
+ 3001 format(' ','  j=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 3002 format(' ','  j=jdim set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 3003 format(' ','  k=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 3004 format(' ','  k=kdim set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 3005 format(' ','  i=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 3006 format(' ','  i=idim set f,rhou,rhov,rhow, ext rho,p type 2028',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 3008 format(11x,'freq*lref/aref    = ',f8.4)
+ 3009 format(11x,'rhoumax/rhoinfainf= ',f8.4)
+ 3010 format(11x,'rhovmax/rhoinfainf= ',f8.4)
+ 3011 format(11x,'rhowmax/rhoinfainf= ',f8.4)
 c
       return 
       end

@@ -677,7 +677,7 @@ c   get blend = F1 factor
           do i=1,idim-1
             do j=1,jdim-1
               arg1=sqrt(turre(j,k,i,2))/(.09*re*turre(j,k,i,1)*
-     +          smin(j,k,i))
+     +          ccabs(smin(j,k,i)))
               arg2=500.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re*re*
      +          smin(j,k,i)*turre(j,k,i,1))
               arga=ccmax(arg1,arg2)
@@ -1306,9 +1306,10 @@ c  Source terms for k-omega (Wilcox & SST):
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
@@ -1335,9 +1336,10 @@ c      "Constants":
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
@@ -1429,14 +1431,15 @@ c  Source terms for k-epsilon (Abid):
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
               end if
-              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*smin(j,k,i)/
+              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*ccabs(smin(j,k,i))/
      +            fnu(j,k,i)
               f2=(1.-exp(-rek/12.))
 c            Store quantities to be added to certain implicit LHS terms:
@@ -1462,14 +1465,15 @@ c      "Constants":
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
               end if
-              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*smin(j,k,i)/
+              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*ccabs(smin(j,k,i))/
      +            fnu(j,k,i)
               f2=(1.-exp(-rek/12.))
 c            Store quantities to be added to certain implicit LHS terms:
@@ -1571,14 +1575,15 @@ c  Source terms for nonlinear EASM k-epsilon:
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
               end if
-              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*smin(j,k,i)/
+              rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*ccabs(smin(j,k,i))/
      +            fnu(j,k,i)
               f2=(1.-exp(-rek/10.8))
 c            Store quantities to be added to certain implicit LHS terms:
@@ -1672,9 +1677,10 @@ c  Source terms for nonlinear EASM var g k-omega:
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
@@ -2719,7 +2725,7 @@ c Update VIST3D and save omega and k values
         do k=1,kdim-1
           do j=1,jdim-1
             denom1=2./re*sqrt(turre(j,k,i,2))/(.09*turre(j,k,i,1)*
-     +       smin(j,k,i))
+     +       ccabs(smin(j,k,i)))
             denom2=500.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re*re*
      +       smin(j,k,i)*turre(j,k,i,1))
             arg2=ccmax(denom1,denom2)
@@ -2780,7 +2786,7 @@ c          Limit cmu:
           do j=1,jdim-1
             ret=q(j,k,i,1)*turre(j,k,i,2)**2/(fnu(j,k,i)*
      +          turre(j,k,i,1))
-            rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*smin(j,k,i)/
+            rek=q(j,k,i,1)*sqrt(turre(j,k,i,2))*re*ccabs(smin(j,k,i))/
      +          fnu(j,k,i)
             fmu=(1.+4.*(ret**(-.75)))*cctanh(.008*rek)
             fmu=ccmincr(fmu,1.0)
@@ -3015,18 +3021,19 @@ c     wall function in k-direction
           jend=kbcinfo(nbl,kset,5,kk)-1
           do i=ibeg,iend
             do j=jbeg,jend
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 continue
               else
                 uu  = sqrt((q(j,k,i,2)-qk0(j,i,2,kk+kk-1))**2 +
      +                     (q(j,k,i,3)-qk0(j,i,3,kk+kk-1))**2 +
      +                     (q(j,k,i,4)-qk0(j,i,4,kk+kk-1))**2 )
-                dudy=uu/smin(j,k,i)
+                dudy=uu/ccabs(smin(j,k,i))
                 tauw=(fnu(j,k,i)+vk0(j,i,1,kk+kk-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
-                omegatemp=utau/(sqrt(cmuc1)*vk*smin(j,k,i)*re)
+                omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
                 omegatemp=ccmax(omegatemp,tur10)
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
@@ -3066,18 +3073,19 @@ c     wall function in j-direction
           kend=jbcinfo(nbl,jset,5,jj)-1
           do i=ibeg,iend
             do k=kbeg,kend
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 continue
               else
                 uu  = sqrt((q(j,k,i,2)-qj0(k,i,2,jj+jj-1))**2 +
      +                     (q(j,k,i,3)-qj0(k,i,3,jj+jj-1))**2 +
      +                     (q(j,k,i,4)-qj0(k,i,4,jj+jj-1))**2 )
-                dudy=uu/smin(j,k,i)
+                dudy=uu/ccabs(smin(j,k,i))
                 tauw=(fnu(j,k,i)+vj0(k,i,1,jj+jj-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
-                omegatemp=utau/(sqrt(cmuc1)*vk*smin(j,k,i)*re)
+                omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
                 omegatemp=ccmax(omegatemp,tur10)
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
@@ -3117,18 +3125,19 @@ c     wall function in i-direction
           kend=ibcinfo(nbl,iset,5,ii)-1
           do j=jbeg,jend
             do k=kbeg,kend
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 continue
               else
                 uu  = sqrt((q(j,k,i,2)-qi0(k,i,2,ii+ii-1))**2 +
      +                     (q(j,k,i,3)-qi0(k,i,3,ii+ii-1))**2 +
      +                     (q(j,k,i,4)-qi0(k,i,4,ii+ii-1))**2 )
-                dudy=uu/smin(j,k,i)
+                dudy=uu/ccabs(smin(j,k,i))
                 tauw=(fnu(j,k,i)+vi0(k,i,1,ii+ii-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
-                omegatemp=utau/(sqrt(cmuc1)*vk*smin(j,k,i)*re)
+                omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
                 omegatemp=ccmax(omegatemp,tur10)
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
@@ -3178,15 +3187,16 @@ c
       qset=sqrt((q(jset,1,1,2)-qk0(jset,1,2,1))**2+
      +          (q(jset,1,1,3)-qk0(jset,1,3,1))**2+
      +          (q(jset,1,1,4)-qk0(jset,1,4,1))**2)
-      utau=sqrt((fnu(jset,1,1)+vk0(jset,1,1,1))*qset/(smin(jset,1,1)*
-     +     q(jset,1,1,1)*re))
+      utau=sqrt((fnu(jset,1,1)+vk0(jset,1,1,1))*qset/
+     +     (ccabs(smin(jset,1,1))*q(jset,1,1,1)*re))
       do k=1,kdim-1
-        ypl=re*q(jset,1,1,1)*utau*smin(jset,k,1)/fnu(jset,1,1)
+        ypl=re*q(jset,1,1,1)*utau*ccabs(smin(jset,k,1))/fnu(jset,1,1)
         ypl=cclog10(ypl)
         uplus=sqrt(q(jset,k,1,2)**2+q(jset,k,1,3)**2+q(jset,k,1,4)**2)
      +        /utau
         zkplus=turre(jset,k,1,2)/(utau**2)
-        eplus=turre(jset,k,1,1)*re/(utau*utau*qset/smin(jset,1,1))
+        eplus=turre(jset,k,1,1)*re/(utau*utau*qset/
+     +        ccabs(smin(jset,1,1)))
         uvplus=vist3d(jset,k,1)*vor(jset,k,1)/
      +         (re*utau*utau*q(jset,k,1,1))
         write(92,'(5e15.5)') real(uplus),real(zkplus),real(eplus),
@@ -3203,7 +3213,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=93
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3211,7 +3221,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=107
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3219,7 +3229,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=113
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3227,7 +3237,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=123
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3235,7 +3245,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=129
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3243,7 +3253,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       jset=134
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
@@ -3251,7 +3261,7 @@ c
       do k=1,kdim-1
         write(91,'(2e15.5)') 
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
-     +  real(smin(jset,k,1))
+     +  real(ccabs(smin(jset,k,1)))
       enddo
       end if
       end if

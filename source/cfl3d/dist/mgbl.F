@@ -222,8 +222,7 @@ c
       dimension mblk2nd(maxbl)
 c
       common /elastic/ ndefrm,naesrf
-      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
-     .                 ialphit,nttlast,icycupdt
+      common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /cpurate/ rate(5),ratesub(5),ncell(20)
       common /cfl/ dt0,dtold
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -627,8 +626,7 @@ c     write header to cfl3d.alpha file if specified Cl option is used
 c
       if (ialphit.ne.0 .and. myid.eq.myhost) then
             write(27,'(''       it    log(res)           cl'',
-     .      ''            alpha        d(cl)/d(a)used'',
-     .      ''  d(cl)/d(a)computed'')')
+     .      ''            alpha           dalpha'')')
       end if
 c
 c     open plot3d/printout files

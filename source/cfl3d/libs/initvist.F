@@ -61,37 +61,37 @@ c   For field eqn turbulence models:
             do 2002 k=1,kdim-1
               do 2002 j=1,jdim-1
                 zk1=tur20
-                exponent=-471.*(smin(j,k,i)*refac)+.47
+                exponent=-471.*(ccabs(smin(j,k,i))*refac)+.47
                 if(real(exponent) .lt. -40.) then
                   zk2=0.
                 else
                   zk2=10.**(exponent)
                 end if
-                exponent=-37.5*(smin(j,k,i)*refac)-3.7
+                exponent=-37.5*(ccabs(smin(j,k,i))*refac)-3.7
                 if(real(exponent) .lt. -40.) then
                   zk3=0.
                 else
                   zk3=10.**(exponent)
                 end if
-                zk4=6.7*(smin(j,k,i)*refac)
+                zk4=6.7*(ccabs(smin(j,k,i))*refac)
                 tursav(j,k,i,2)=ccmin(zk2,zk3)
                 tursav(j,k,i,2)=ccmax(tursav(j,k,i,2),zk1)
                 tursav(j,k,i,2)=ccmin(tursav(j,k,i,2),zk4)
 c
                 ep1=tur10
-                exponent=-555.*(smin(j,k,i)*refac)-6.
+                exponent=-555.*(ccabs(smin(j,k,i))*refac)-6.
                 if(real(exponent) .lt. -20.) then
                   ep2=0.
                 else
                   ep2=10.**(exponent)
                 end if
-                exponent=-280.*(smin(j,k,i)*refac)-9.2
+                exponent=-280.*(ccabs(smin(j,k,i))*refac)-9.2
                 if(real(exponent) .lt. -20.) then
                   ep3=0.
                 else
                   ep3=10.**(exponent)
                 end if
-                exponent=13333.*(smin(j,k,i)*refac)-9.8
+                exponent=13333.*(ccabs(smin(j,k,i))*refac)-9.8
                 if(real(exponent) .gt. 20.) then
                   ep4=1.e20
                 else
@@ -121,12 +121,12 @@ c
             do 2009 k=1,kdim-1
               do 2009 j=1,jdim-1
                 zk1=tur20
-                zk2=-const1*(smin(j,k,i)*refac)**2 +
-     +               const2*smin(j,k,i)*refac
+                zk2=-const1*(ccabs(smin(j,k,i))*refac)**2 +
+     +               const2*ccabs(smin(j,k,i))*refac
                 tursav(j,k,i,2)=ccmax(zk1,zk2)
                 v3d=tursav(j,k,i,2)*100./tmax
                 v3d=ccmax(v3d,v3dset)
-                om1=-12444.*(smin(j,k,i)*refac) + .54
+                om1=-12444.*(ccabs(smin(j,k,i))*refac) + .54
                 om2=cmu*tursav(j,k,i,2)/v3d
                 tursav(j,k,i,1)=ccmax(om1,om2)
                 vist3d(j,k,i)=cmu*rho0*tursav(j,k,i,2)/

@@ -82,73 +82,6 @@ c
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 1 l=1,4
-         do 1 ipp=1,2
-         do 1 i=ista,iend1
-         ii = i-ista+1
-         do 1 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   1     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2 )
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
-c
       do 300 i=ista,iend1
       ii = i-ista+1
       js = (i-ista)*(kend-ksta)+1
@@ -242,73 +175,6 @@ c
       itrflg2 = 0
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
-c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 2 l=1,4
-         do 2 ipp=1,2
-         do 2 i=ista,iend1
-         ii = i-ista+1
-         do 2 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   2     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
 c
       do 310 i=ista,iend1
       ii = i-ista+1
@@ -404,73 +270,6 @@ c
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 3 l=1,4
-         do 3 ipp=1,2
-         do 3 i=ista,iend1
-         ii = i-ista+1
-         do 3 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   3     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
-c
       do 320 i=ista,iend1
       ii = i-ista+1
       js = (i-ista)*(jend-jsta)+1
@@ -563,73 +362,6 @@ c
       itrflg2 = 0
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
-c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 4 l=1,4
-         do 4 ipp=1,2
-         do 4 i=ista,iend1
-         ii = i-ista+1
-         do 4 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   4     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
 c
       do 330 i=ista,iend1
       ii = i-ista+1
@@ -725,73 +457,6 @@ c
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 5 l=1,4
-         do 5 ipp=1,2
-         do 5 j=jsta,jend1
-         jj = j-jsta+1
-         do 5 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   5     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
-c
       do 340 k=ksta,kend1
       kk = k-ksta+1
       js = (k-ksta)*(jend-jsta)+1
@@ -886,73 +551,6 @@ c
       if (real(bcdata(1,1,ip,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ip,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 6 l=1,4
-         do 6 ipp=1,2
-         do 6 j=jsta,jend1
-         jj = j-jsta+1
-         do 6 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   6     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2009:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  nozzle total BC data incorrectly',
-     .      ' set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2009...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            pte   = bcdata(1,1,1,1)
-            tte   = bcdata(1,1,1,2)
-            alpe  = bcdata(1,1,1,3)
-            betae = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(pte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(tte)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(alpe)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) real(betae)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1014) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1015) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1013) filname
-         end if
-      end if
-c
       do 350 k=ksta,kend1
       kk = k-ksta+1
       js = (k-ksta)*(jend-jsta)+1
@@ -1030,27 +628,6 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c
- 1001 format(' ','  j=   1  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  nozzle total BC                type 2009',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  nozzle total BC                type 2009',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1008 format(11x,'Pt/Pinf        = ',f8.4)
- 1009 format(11x,'Tt/Tinf        = ',f8.4)
- 1010 format(11x,'alphe          = ',f8.4)
- 1011 format(11x,'betae          = ',f8.4)
- 1012 format(11x,'inflow data set from file:')
- 1013 format('           ',a60)
- 1014 format(11x,'turb1 (nondim) = ',e12.4)
- 1015 format(11x,'turb2 (nondim) = ',e12.4)
 c
       return
       end

@@ -47,7 +47,7 @@ c
          end if
       end if
 c
-      if (abs(ibctyp).eq.2004) then
+      if (abs(ibctyp).eq.2004 .or. abs(ibctyp).eq.2014) then
          datahdr(1)  = '   tw/tinf'
          datahdr(2)  = '        cq'
       end if
@@ -92,6 +92,32 @@ c
          datahdr(2)  = '         u'
          datahdr(3)  = '         v'
          datahdr(4)  = '         w'
+         if (abs(ndata).gt.4) then
+            datahdr(5)  = '     turb1'
+         end if
+         if (abs(ndata).gt.5) then
+            datahdr(6)  = '     turb2'
+         end if
+      end if
+c
+      if (ibctyp.eq.2018) then
+         datahdr(1)  = '         T'
+         datahdr(2)  = '      rhou'
+         datahdr(3)  = '      rhov'
+         datahdr(4)  = '      rhow'
+         if (abs(ndata).gt.4) then
+            datahdr(5)  = '     turb1'
+         end if
+         if (abs(ndata).gt.5) then
+            datahdr(6)  = '     turb2'
+         end if
+      end if
+c
+      if (ibctyp.eq.2028) then
+         datahdr(1)  = '      freq'
+         datahdr(2)  = '   rhoumax'
+         datahdr(3)  = '   rhovmax'
+         datahdr(4)  = '   rhowmax'
          if (abs(ndata).gt.4) then
             datahdr(5)  = '     turb1'
          end if

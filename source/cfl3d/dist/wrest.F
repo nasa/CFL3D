@@ -581,6 +581,13 @@ c
 #endif
 c
          if (myid .eq. myhost) then
+         do i=1,idim1
+         do j=1,jdim1
+         do k=1,kdim1
+           smin(j,k,i)=ccabs(smin(j,k,i))
+         enddo
+         enddo
+         enddo
          if (icgns .ne. 1) then
          write(2) (((smin(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
          end if

@@ -176,7 +176,7 @@ c     DEVELOPER NOTES:
 c
 c     1) Subroutine findmin (module lbcx, used to find the minimum
 c        distance from a surface for use with 1 and 2 eq. turb.
-c        models), key off boundary condition type 2004 (viscous
+c        models), key off boundary condition type 2004/14 (viscous
 c        surface). At the current time, this is the only BC type in
 c        the standard suite of BC types that makes sense to include
 c        in findmin_new. However, in future, if other viscous surface 

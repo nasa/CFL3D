@@ -53,10 +53,6 @@ c      j=1 boundary            singular axis - full plane           bctype 1012
 c******************************************************************************
 c
       if (nface.eq.3) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001)ista,iend,ksta,kend
-      end if
 c
 c     wraparound in i-direction
 c
@@ -158,10 +154,6 @@ c      j=jdim boundary         singular axis - full plane           bctype 1012
 c******************************************************************************
 c
       if (nface.eq.4) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002)ista,iend,ksta,kend
-      end if
 c
 c     wraparound in i-direction
 c
@@ -263,10 +255,6 @@ c      k=1 boundary            singular axis - full plane           bctype 1012
 c******************************************************************************
 c
       if (nface.eq.5) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003)ista,iend,jsta,jend
-      end if
 c
 c     wraparound in i-direction
 c
@@ -368,10 +356,6 @@ c      k=kdim boundary            singular axis - full plane        bctype 1012
 c******************************************************************************
 c
       if (nface.eq.6) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004)ista,iend,jsta,jend
-      end if
 c
 c     wraparound in i-direction
 c
@@ -473,10 +457,6 @@ c      i=1 boundary            singular axis - full plane           bctype 1012
 c******************************************************************************
 c
       if (nface.eq.1) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-      end if
 c
 c     wraparound in j-direction
 c
@@ -578,10 +558,6 @@ c      i=idim boundary         singular axis - full plane           bctype 1012
 c******************************************************************************
 c
       if (nface.eq.2) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-      end if
 c
 c     wraparound in j-direction
 c
@@ -679,19 +655,6 @@ c       only need to do advanced model turbulence B.C.s on finest grid
 c
       end if
       end if
-c
- 1001 format(' ','  j=   1  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  singular axis - full plane     type 1012',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  singular axis - full plane     type 1012',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return
       end

@@ -171,6 +171,7 @@ c
          ii     = 1
          ibctyp = ibcinfo(nbl,nseg,1,ii)
          if (abs(ibctyp).ne.2004 .and.
+     .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.1005 .and.
      .       abs(ibctyp).ne.1006 .or.
      .       real(beta1).lt.0.) then
@@ -229,6 +230,7 @@ c
          ii     = 2
          ibctyp = ibcinfo(nbl,nseg,1,ii)
          if (abs(ibctyp).ne.2004 .and.
+     .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.1005 .and.
      .       abs(ibctyp).ne.1006 .or.
      .       real(beta1).lt.0.) then
@@ -289,6 +291,7 @@ c
             jj     = 1
             jbctyp = jbcinfo(nbl,nseg,1,jj)
             if (abs(jbctyp).ne.2004 .and.
+     .          abs(jbctyp).ne.2014 .and.
      .          abs(jbctyp).ne.1005 .and.
      .          abs(jbctyp).ne.1006 .or.
      .          real(beta1).lt.0.) then
@@ -347,6 +350,7 @@ c
             jj     = 2
             jbctyp = jbcinfo(nbl,nseg,1,jj)
             if (abs(jbctyp).ne.2004 .and.
+     .          abs(jbctyp).ne.2014 .and.
      .          abs(jbctyp).ne.1005 .and.
      .          abs(jbctyp).ne.1006 .or.
      .          real(beta1).lt.0.) then
@@ -405,6 +409,7 @@ c
             kk     = 1
             kbctyp = kbcinfo(nbl,nseg,1,kk)
             if (abs(kbctyp).ne.2004 .and.
+     .          abs(kbctyp).ne.2014 .and.
      .          abs(kbctyp).ne.1005 .and.
      .          abs(kbctyp).ne.1006 .or.
      .          real(beta1).lt.0.) then
@@ -463,6 +468,7 @@ c
             kk     = 2
             kbctyp = kbcinfo(nbl,nseg,1,kk)
             if (abs(kbctyp).ne.2004 .and.
+     .          abs(kbctyp).ne.2014 .and.
      .          abs(kbctyp).ne.1005 .and.
      .          abs(kbctyp).ne.1006 .or.
      .          real(beta1).lt.0.) then

@@ -51,10 +51,6 @@ c      j=1 boundary            symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.3) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001)ista,iend,ksta,kend
-      end if
 c
       do 38 i=ista,iend1
       do 38 k=ksta,kend1
@@ -109,10 +105,6 @@ c      j=jdim boundary         symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.4) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002)ista,iend,ksta,kend
-      end if
 c
       do 39 i=ista,iend1
       do 39 k=ksta,kend1
@@ -167,10 +159,6 @@ c      k=1 boundary            symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.5) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003)ista,iend,jsta,jend
-      end if
 c
       do 48 i=ista,iend1
       do 48 j=jsta,jend1
@@ -225,10 +213,6 @@ c      k=kdim boundary         symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.6) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004)ista,iend,jsta,jend
-      end if
 c
       do 49 i=ista,iend1
       do 49 j=jsta,jend1
@@ -283,10 +267,6 @@ c      i=1 boundary            symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.1) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-      end if
 c
       i2 = min(2,idim1)
 
@@ -343,10 +323,6 @@ c      i=idim boundary         symmetry plane                       bctype 1001
 c******************************************************************************
 c
       if (nface.eq.2) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-      end if
 c
       i2 = max(1,idim-2)
 c
@@ -397,19 +373,6 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
       end if
-c
- 1001 format(' ','  j=   1  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  symmetry plane                 type 1001',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  symmetry plane                 type 1001',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return
       end

@@ -254,8 +254,7 @@ c
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
-      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
-     .                 ialphit,nttlast,icycupdt
+      common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /precond/ cprec,uref,avn
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /maxiv/ ivmx
@@ -882,9 +881,6 @@ c
      .               nou,bou,nbuf,ibufdim,isav_pat_b,levelg,nblock,
      .               isav_blk)
       end if
-c
-      nttlast = ntt+1
-      alphalast=alpha
 c
 c***********************************************
 c
@@ -1904,11 +1900,26 @@ c
 c
 #endif
  6500 continue
+c     if using fixed Cl option, update angle of attack, then perform
+c     instantaneous velocity rotation for all points in flowfield;
+c     rotation angle is change in alpha, velocity magnitude remains unchanged
 c
-c     if using fixed Cl option, update angle of attack
-c
+      if (icycupdt .gt. 0) then
+      if (mod(ntt,icycupdt) .eq. 0) then
       if (ialphit .ne. 0 .and. level.eq.levt) then
          call newalpha(ncycmax,rms,clw,myid,myhost,mycomm)
+         do nbl = 1, nblock
+            if (mblk2nd(nbl) .eq. myid) then
+               call lead(nbl,lw,lw2,maxbl)
+               angx = 0
+               angy = -dalpha
+               angz = 0
+               call rotateq(jdim,kdim,idim,w(lq),w(lq),1,idim,
+     .                      1,jdim,1,kdim,angx,angy,angz)
+            end if
+         end do
+      end if
+      end if
       end if
 c
       if (ilc.eq.0) then

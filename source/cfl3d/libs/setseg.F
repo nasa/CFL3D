@@ -34,6 +34,7 @@ c
          kdim = kdimg(nbl)
          do nseg=1,nbci0(nbl)
             if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004 .or.
+     .          abs(ibcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1006) then
                ndefrm0           = ndefrm0 + 1
@@ -50,6 +51,7 @@ c
          end do
          do nseg=1,nbcidim(nbl)
             if (abs(ibcinfo(nbl,nseg,1,2)).eq.2004 .or.
+     .          abs(ibcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.1006) then
                ndefrm0           = ndefrm0 + 1
@@ -66,6 +68,7 @@ c
          end do
          do nseg=1,nbcj0(nbl)
             if (abs(jbcinfo(nbl,nseg,1,1)).eq.2004 .or.
+     .          abs(jbcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.1006) then
                ndefrm0           = ndefrm0 + 1
@@ -82,6 +85,7 @@ c
          end do
          do nseg=1,nbcjdim(nbl)
             if (abs(jbcinfo(nbl,nseg,1,2)).eq.2004 .or.
+     .          abs(jbcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.1006) then
                ndefrm0           = ndefrm0 + 1
@@ -98,6 +102,7 @@ c
          end do
          do nseg=1,nbck0(nbl)
             if (abs(kbcinfo(nbl,nseg,1,1)).eq.2004 .or.
+     .          abs(kbcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.1006) then
                ndefrm0           = ndefrm0 + 1
@@ -114,6 +119,7 @@ c
          end do
          do nseg=1,nbckdim(nbl)
             if (abs(kbcinfo(nbl,nseg,1,2)).eq.2004 .or.
+     .          abs(kbcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.1006) then
                ndefrm0           = ndefrm0 + 1

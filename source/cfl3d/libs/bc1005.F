@@ -56,16 +56,6 @@ c      j=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.3) then
 c 
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001)ista,iend,ksta,kend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2001)ista,iend,ksta,kend
-         end if
-      end if
-c
       do 300 i=ista,iend1
 c
       do 300 k=ksta,kend1
@@ -195,16 +185,6 @@ c      j=jdim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.4) then
 c 
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002)ista,iend,ksta,kend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2002)ista,iend,ksta,kend
-         end if
-      end if
-c
       do 600 i=ista,iend1
 c
       do 600 k=ksta,kend1
@@ -344,16 +324,6 @@ c      k=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.5) then
 c
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003)ista,iend,jsta,jend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2003)ista,iend,jsta,jend
-         end if
-      end if
-c
       do 900 i=ista,iend1
 c
       do 900 j=jsta,jend1
@@ -483,16 +453,6 @@ c      k=kdim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.6) then
 c 
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004)ista,iend,jsta,jend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2004)ista,iend,jsta,jend
-         end if
-      end if
-c
       do 1200 i=ista,iend1
 c
       do 1200 j=jsta,jend1
@@ -632,16 +592,6 @@ c      i=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.1) then
 c 
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2005)jsta,jend,ksta,kend
-         end if
-      end if
-c
       do 1500 k=ksta,kend1
 c
       do 1500 j=jsta,jend1
@@ -770,16 +720,6 @@ c      i=idim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.2) then
 c 
-      if (isklton.eq.1) then
-         if (inormmom .eq. 0) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-         else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),2006)jsta,jend,ksta,kend
-         end if
-      end if
-c
       do 1800 k=ksta,kend1
 c
       do 1800 j=jsta,jend1
@@ -912,29 +852,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
- 1001 format(' ','  j=   1  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  inviscid surface               type 1005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  inviscid surface               type 1005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2001 format(' ','  j=   1  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2002 format(' ','  j=jdim  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2003 format(' ','  k=   1  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2004 format(' ','  k=kdim  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2005 format(' ','  i=   1  inviscid surface w norm mom eq type 1006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2006 format(' ','  i=idim  inviscid surface w norm mom eq type 1006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
       return
       end

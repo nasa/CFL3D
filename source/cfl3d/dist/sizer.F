@@ -1275,9 +1275,13 @@ c        used only for advanced turb models
 c        nroomf is work space needed for floating pt values,
 c        nroomi is for integer values
 c
-         call cntsurf(nsurf,maxbl0,maxgr0,maxseg0,ngrid,nblg,
+         call cntsurf(ns2004,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2004)
+         call cntsurf(ns2014,maxbl0,maxgr0,maxseg0,ngrid,nblg,
+     .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
+         nsurf=ns2004+ns2014
          minbox=sqrt(float(nsurf))
          minbox=max(minbox,50)
          nbb = 3*nsurf/minbox
@@ -2255,13 +2259,16 @@ c     in setslave, to call setcorner
          call cntsurf(ns2004,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2004)
+         call cntsurf(ns2014,maxbl0,maxgr0,maxseg0,ngrid,nblg,
+     .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
          call cntsurf(ns1005,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,1005)
          call cntsurf(ns1006,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,1006)
-         nsurf = ns2004 + ns1005 + ns1006
+         nsurf = ns2004 + ns2014 + ns1005 + ns1006
          itempi = nsurf + needi_set
          needi  = max(needi,itempi)
       end if
@@ -2364,6 +2371,7 @@ c              i=1 subfaces
                   ii     = 1
                   ibctyp = ibcinfo(nbl,nseg,1,ii)
                   if (abs(ibctyp).ne.2004 .or.
+     .                abs(ibctyp).ne.2014 .or.
      .                abs(ibctyp).ne.1005 .or.
      .                abs(ibctyp).ne.1006) then
                       js = ibcinfo(nbl,nseg,2,ii)
@@ -2382,6 +2390,7 @@ c              i=idim subfaces
                   ii     = 2
                   ibctyp = ibcinfo(nbl,nseg,1,ii)
                   if (abs(ibctyp).ne.2004 .or.
+     .                abs(ibctyp).ne.2014 .or.
      .                abs(ibctyp).ne.1005 .or.
      .                abs(ibctyp).ne.1006) then
                       js = ibcinfo(nbl,nseg,2,ii)
@@ -2401,6 +2410,7 @@ c                 j=1 subfaces
                      jj     = 1
                      jbctyp = jbcinfo(nbl,nseg,1,jj)
                      if (abs(jbctyp).ne.2004 .or.
+     .                   abs(jbctyp).ne.2014 .or.
      .                   abs(jbctyp).ne.1005 .or.
      .                   abs(jbctyp).ne.1006) then
                          is = jbcinfo(nbl,nseg,2,jj)
@@ -2419,6 +2429,7 @@ c                 j=jdim subfaces
                      jj     = 2
                      jbctyp = jbcinfo(nbl,nseg,1,jj)
                      if (abs(jbctyp).ne.2004 .or.
+     .                   abs(jbctyp).ne.2014 .or.
      .                   abs(jbctyp).ne.1005 .or.
      .                   abs(jbctyp).ne.1006) then
                          is = jbcinfo(nbl,nseg,2,jj)
@@ -2437,6 +2448,7 @@ c                 k=1 subfaces
                      kk     = 1
                      kbctyp = kbcinfo(nbl,nseg,1,kk)
                      if (abs(kbctyp).ne.2004 .or.
+     .                   abs(kbctyp).ne.2014 .or.
      .                   abs(kbctyp).ne.1005 .or.
      .                   abs(kbctyp).ne.1006) then
                          is = kbcinfo(nbl,nseg,2,kk)
@@ -2455,6 +2467,7 @@ c                 k=kdim subfaces
                      kk     = 2
                      kbctyp = kbcinfo(nbl,nseg,1,kk)
                      if (abs(kbctyp).ne.2004 .or.
+     .                   abs(kbctyp).ne.2014 .or.
      .                   abs(kbctyp).ne.1005 .or.
      .                   abs(kbctyp).ne.1006) then
                          is = kbcinfo(nbl,nseg,2,kk)
@@ -3068,28 +3081,34 @@ c
       ibcjmin=0
       ibcjmax=0
       do mseg=1,nbcj0(nbl)
-        if (abs(jbcinfo(nbl,mseg,1,1)) .eq. 2004) ibcjmin=1 
+        if (abs(jbcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
+     .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2014) ibcjmin=1 
       end do
       do mseg=1,nbcjdim(nbl)
-        if (abs(jbcinfo(nbl,mseg,1,2)) .eq. 2004) ibcjmax=1 
+        if (abs(jbcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
+     .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2014) ibcjmax=1 
       end do
 c
       ibckmin=0
       ibckmax=0
       do mseg=1,nbck0(nbl)
-        if (abs(kbcinfo(nbl,mseg,1,1)) .eq. 2004) ibckmin=1
+        if (abs(kbcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
+     .      abs(kbcinfo(nbl,mseg,1,1)) .eq. 2014) ibckmin=1
       end do
       do mseg=1,nbckdim(nbl)
-        if (abs(kbcinfo(nbl,mseg,1,2)) .eq. 2004) ibckmax=1
+        if (abs(kbcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
+     .      abs(kbcinfo(nbl,mseg,1,2)) .eq. 2014) ibckmax=1
       end do
 c
       ibcimin=0
       ibcimax=0
       do mseg=1,nbci0(nbl)
-        if (abs(ibcinfo(nbl,mseg,1,1)) .eq. 2004) ibcimin=1
+        if (abs(ibcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
+     .      abs(ibcinfo(nbl,mseg,1,1)) .eq. 2014) ibcimin=1
       end do
       do mseg=1,nbcidim(nbl)
-        if (abs(ibcinfo(nbl,mseg,1,2)) .eq. 2004) ibcimax=1
+        if (abs(ibcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
+     .      abs(ibcinfo(nbl,mseg,1,2)) .eq. 2014) ibcimax=1
       end do
 c
       if (ivisc(3) .gt. 1) then

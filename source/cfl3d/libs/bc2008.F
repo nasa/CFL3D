@@ -2,7 +2,7 @@
      .                  bci,xtbj,xtbk,xtbi,atbj,atbk,atbi,ista,iend,
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
-     .                  filname,iuns,nou,bou,nbuf,ibufdim,myid)
+     .                  filname,iuns,nou,bou,nbuf,ibufdim,myid,iflag)
 c
 c     $Id$
 c
@@ -41,6 +41,10 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /igrdtyp/ ip3dgrd,ialph
+      common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
+      common /unst/ time,cfltau,ntstep,ita,iunst
+c
+      twopi = 8.0*atan(1.0)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -75,85 +79,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 1 l=1,4
-         do 1 ipp=1,2
-         do 1 i=ista,iend1
-         ii = i-ista+1
-         do 1 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   1     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c 
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 100 ip=1,2
          do 100 i=ista,iend1
          ii = i-ista+1
          do 100 k=ksta,kend1
          kk = k-ksta+1
+         if (iflag .eq. 2008) then
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
          qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
          qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
          qj0(k,i,5,ip) = q(1,k,i,5)
+         else if (iflag .eq. 2018) then
+         qj0(k,i,5,ip) = q(1,k,i,5)
+         qj0(k,i,1,ip) = gamma*qj0(k,i,5,ip)/bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)
+         qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)
+         qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)
+         else if (iflag .eq. 2028) then
+         qj0(k,i,1,ip) = q(1,k,i,1)
+         qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,5,ip) = q(1,k,i,5)
+         end if
          bcj(k,i,1) = 0.0
   100    continue
       else
@@ -162,11 +115,28 @@ c
          ii = i-ista+1
          do 1000 k=ksta,kend1
          kk = k-ksta+1
+         if (iflag .eq. 2008) then
          qj0(k,i,1,ip) =  bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)
          qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)
          qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)
          qj0(k,i,5,ip) =  q(1,k,i,5)
+         else if (iflag .eq. 2018) then
+         qj0(k,i,5,ip) =  q(1,k,i,5)
+         qj0(k,i,1,ip) =  gamma*qj0(k,i,5,ip)/bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)
+         qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)
+         qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)
+         else if (iflag .eq. 2028) then
+         qj0(k,i,1,ip) =  q(1,k,i,1)
+         qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,5,ip) =  q(1,k,i,5)
+         end if
          bcj(k,i,1) = 0.0
  1000    continue
       end if
@@ -215,85 +185,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 2 l=1,4
-         do 2 ipp=1,2
-         do 2 i=ista,iend1
-         ii = i-ista+1
-         do 2 k=ksta,kend1
-         kk = k-ksta+1
-         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   2     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 200 ip=1,2
          do 200 i=ista,iend1
          ii = i-ista+1
          do 200 k=ksta,kend1
          kk = k-ksta+1
+         if (iflag .eq. 2008) then
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
          qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
          qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
          qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+         else if (iflag .eq. 2018) then
+         qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+         qj0(k,i,1,ip+2) = gamma*qj0(k,i,5,ip+2)/bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip+2)
+         qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip+2)
+         qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qj0(k,i,1,ip+2) = q(jdim1,k,i,1)
+         qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+         end if
          bcj(k,i,2) = 0.0
   200    continue
       else
@@ -302,11 +221,28 @@ c
          ii = i-ista+1
          do 2000 k=ksta,kend1
          kk = k-ksta+1
+         if (iflag .eq. 2008) then
          qj0(k,i,1,ip+2) =  bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)
          qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)
          qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)
          qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
+         else if (iflag .eq. 2018) then
+         qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
+         qj0(k,i,1,ip+2) =  gamma*qj0(k,i,5,ip+2)/bcdata(kk,ii,ip,1)
+         qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)/qj0(k,i,1,ip+2)
+         qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)/qj0(k,i,1,ip+2)
+         qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qj0(k,i,1,ip+2) =  q(jdim1,k,i,1)
+         qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip+2)*
+     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
+         qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
+         end if
          bcj(k,i,2) = 0.0
  2000    continue
       end if
@@ -355,85 +291,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 3 l=1,4
-         do 3 ipp=1,2
-         do 3 i=ista,iend1
-         ii = i-ista+1
-         do 3 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   3     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 300 ip=1,2
          do 300 i=ista,iend1
          ii = i-ista+1
          do 300 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
          qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
          qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
          qk0(j,i,5,ip) = q(j,1,i,5)
+         else if (iflag .eq. 2018) then
+         qk0(j,i,5,ip) = q(j,1,i,5)
+         qk0(j,i,1,ip) = gamma*qk0(j,i,5,ip)/bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)/qk0(j,i,1,ip)
+         qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)/qk0(j,i,1,ip)
+         qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)/qk0(j,i,1,ip)
+         else if (iflag .eq. 2028) then
+         qk0(j,i,1,ip) = q(j,1,i,1)
+         qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,5,ip) = q(j,1,i,5)
+         end if
          bck(j,i,1) = 0.0
   300    continue
       else
@@ -442,11 +327,28 @@ c
          ii = i-ista+1
          do 3000 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qk0(j,i,1,ip) =  bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)
          qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)
          qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)
          qk0(j,i,5,ip) =  q(j,1,i,5)
+         else if (iflag .eq. 2018) then
+         qk0(j,i,5,ip) =  q(j,1,i,5)
+         qk0(j,i,1,ip) =  gamma*qk0(j,i,5,ip)/bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)/qk0(j,i,1,ip)
+         qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)/qk0(j,i,1,ip)
+         qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)/qk0(j,i,1,ip)
+         else if (iflag .eq. 2028) then
+         qk0(j,i,1,ip) =  q(j,1,i,1)
+         qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)/qk0(j,i,1,ip)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,5,ip) =  q(j,1,i,5)
+         end if
          bck(j,i,1) = 0.0
  3000    continue
       end if
@@ -495,85 +397,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 4 l=1,4
-         do 4 ipp=1,2
-         do 4 i=ista,iend1
-         ii = i-ista+1
-         do 4 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
-   4     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 400 ip=1,2
          do 400 i=ista,iend1
          ii = i-ista+1
          do 400 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
          qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
          qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
          qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+         else if (iflag .eq. 2018) then
+         qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+         qk0(j,i,1,ip+2) = gamma*qk0(j,i,5,ip+2)/bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)/qk0(j,i,1,ip+2)
+         qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)/qk0(j,i,1,ip+2)
+         qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)/qk0(j,i,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qk0(j,i,1,ip+2) = q(j,kdim1,i,1)
+         qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+         end if
          bck(j,i,2) = 0.0
   400    continue
       else
@@ -582,11 +433,28 @@ c
          ii = i-ista+1
          do 4000 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qk0(j,i,1,ip+2) =  bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)
          qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)
          qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)
          qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
+         else if (iflag .eq. 2018) then
+         qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
+         qk0(j,i,1,ip+2) =  gamma*qk0(j,i,5,ip+2)/bcdata(jj,ii,ip,1)
+         qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)/qk0(j,i,1,ip+2)
+         qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)/qk0(j,i,1,ip+2)
+         qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)/qk0(j,i,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qk0(j,i,1,ip+2) =  q(j,kdim1,i,1)
+         qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)/qk0(j,i,1,ip+2)*
+     +     cos(twopi*bcdata(jj,ii,ip,1)*time)
+         qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
+         end if
          bck(j,i,2) = 0.0
  4000    continue
       end if
@@ -635,85 +503,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 5 l=1,4
-         do 5 ipp=1,2
-         do 5 k=ksta,kend1
-         kk = k-ksta+1
-         do 5 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   5     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 500 ip=1,2
          do 500 k=ksta,kend1
          kk = k-ksta+1
          do 500 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
          qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
          qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
          qi0(j,k,5,ip) = q(j,k,1,5)
+         else if (iflag .eq. 2018) then
+         qi0(j,k,5,ip) = q(j,k,1,5)
+         qi0(j,k,1,ip) = gamma*qi0(j,k,5,ip)/bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)/qi0(j,k,1,ip)
+         qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)/qi0(j,k,1,ip)
+         qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)/qi0(j,k,1,ip)
+         else if (iflag .eq. 2028) then
+         qi0(j,k,1,ip) = q(j,k,1,1)
+         qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,5,ip) = q(j,k,1,5)
+         end if
          bci(j,k,1) = 0.0
   500    continue
       else
@@ -722,11 +539,28 @@ c
          kk = k-ksta+1
          do 5000 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qi0(j,k,1,ip) =  bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)
          qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)
          qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)
          qi0(j,k,5,ip) =  q(j,k,1,5)
+         else if (iflag .eq. 2018) then
+         qi0(j,k,5,ip) =  q(j,k,1,5)
+         qi0(j,k,1,ip) =  gamma*qi0(j,k,5,ip)/bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)/qi0(j,k,1,ip)
+         qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)/qi0(j,k,1,ip)
+         qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)/qi0(j,k,1,ip)
+         else if (iflag .eq. 2028) then
+         qi0(j,k,1,ip) =  q(j,k,1,1)
+         qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)/qi0(j,k,1,ip)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,5,ip) =  q(j,k,1,5)
+         end if
          bci(j,k,1) = 0.0
  5000    continue
       end if
@@ -775,85 +609,34 @@ c
       if (real(bcdata(1,1,ipp,5)) .ge. 0.) itrflg1 = 1
       if (real(bcdata(1,1,ipp,6)) .ge. 0.) itrflg2 = 1
 c
-      if (isklton.eq.1) then
-c
-c        check that the required auxiliary data has been set
-         iflg = 0
-         do 6 l=1,4
-         do 6 ipp=1,2
-         do 6 k=ksta,kend1
-         kk = k-ksta+1
-         do 6 j=jsta,jend1
-         jj = j-jsta+1
-         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
-   6     continue
-         if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2008:'
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  variable data incorrectly set '
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if
-         if (itrflg1.gt.0 .or. itrflg2.gt.0) then
-            if (ivmx.gt.5 .and. itrflg1*itrflg2.eq.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  stopping in bc2008...must',
-     .         ' set both turbulence'
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),*)'  quantities for 2-eq turb.',
-     .         ' models...only one is set'
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if
-         end if
-c
-         if (filname.eq.'null') then
-            rho1 = bcdata(1,1,1,1)
-            u1   = bcdata(1,1,1,2)
-            v1   = bcdata(1,1,1,3)
-            w1   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) real(rho1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) real(u1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) real(v1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) real(w1)
-            nou(1) = min(nou(1)+1,ibufdim)
-            if (itrflg1.gt.0) then
-               t1 = bcdata(1,1,1,5)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1011) real(t1)
-            end if
-            if (itrflg2.gt.0) then
-               t2 = bcdata(1,1,1,6)
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),1012) real(t2)
-            end if
-         else
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2007)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2008)filname
-         end if
-c
-      end if
-c
       if (ialph.eq.0) then
          do 600 ip=1,2
          do 600 k=ksta,kend1
          kk = k-ksta+1
          do 600 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
          qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
          qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
          qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+         else if (iflag .eq. 2018) then
+         qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+         qi0(j,k,1,ip+2) = gamma*qi0(j,k,5,ip+2)/bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)/qi0(j,k,1,ip+2)
+         qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)/qi0(j,k,1,ip+2)
+         qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)/qi0(j,k,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qi0(j,k,1,ip+2) = q(j,k,idim1,1)
+         qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+         end if
          bci(j,k,2) = 0.0
   600    continue
       else
@@ -862,11 +645,28 @@ c
          kk = k-ksta+1
          do 6000 j=jsta,jend1
          jj = j-jsta+1
+         if (iflag .eq. 2008) then
          qi0(j,k,1,ip+2) =  bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)
          qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)
          qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)
          qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
+         else if (iflag .eq. 2018) then
+         qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
+         qi0(j,k,1,ip+2) =  gamma*qi0(j,k,5,ip+2)/bcdata(jj,kk,ip,1)
+         qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)/qi0(j,k,1,ip+2)
+         qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)/qi0(j,k,1,ip+2)
+         qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)/qi0(j,k,1,ip+2)
+         else if (iflag .eq. 2028) then
+         qi0(j,k,1,ip+2) =  q(j,k,idim1,1)
+         qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)/qi0(j,k,1,ip+2)*
+     +     cos(twopi*bcdata(jj,kk,ip,1)*time)
+         qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
+         end if
          bci(j,k,2) = 0.0
  6000    continue
       end if
@@ -899,38 +699,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
- 1001 format(' ','  j=   1  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  set rho,u,v,w; extrap. press.  type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1007 format(11x,'rho/rhoinf       = ',f8.4)
- 1008 format(11x,'u/ainf           = ',f8.4)
- 1009 format(11x,'v/ainf           = ',f8.4)
- 1010 format(11x,'w/ainf           = ',f8.4)
- 1011 format(11x,'turb1 (nondim)   = ',e12.4)
- 1012 format(11x,'turb2 (nondim)   = ',e12.4)
-c
- 2001 format(' ','  j=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2002 format(' ','  j=jdim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2003 format(' ','  k=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2004 format(' ','  k=kdim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2005 format(' ','  i=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2006 format(' ','  i=idim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2007 format(11x,'variables set from file:')
- 2008 format('           ',a60)
       return 
       end

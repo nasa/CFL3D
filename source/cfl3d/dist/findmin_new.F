@@ -171,7 +171,7 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then
@@ -284,7 +284,7 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then
@@ -397,7 +397,7 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then
@@ -683,7 +683,7 @@ c
 c
       ipts    = n1end - n1beg + 1
 c
-c slarge...large number to add at points that: 1) have a bctype=2004
+c slarge...large number to add at points that: 1) have a bctype=2004/14
 c          but have an interface flag (bci/bcj/bck) of 0 rather than
 c          the standard viscous wall value of 1. This occurs in certain
 c          patching applications where part of a solid wall bc is
@@ -816,7 +816,7 @@ c
       ipts    = n1end - n1beg + 1
       jpts    = n2end - n2beg + 1
 c
-c slarge...large number to add at points that: 1) have a bctype=2004
+c slarge...large number to add at points that: 1) have a bctype=2004/14
 c          but have an interface flag (bci/bcj/bck) of 0 rather than
 c          the standard viscous wall value of 1. This occurs in certain
 c          patching applications where part of a solid wall bc is

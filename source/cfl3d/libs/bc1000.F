@@ -53,10 +53,6 @@ c      j=1 boundary            freestream                           bctype 1000
 c******************************************************************************
 c
       if (nface.eq.3) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1001) ista,iend,ksta,kend
-      end if
       do 100 l=1,5
       do 100 i=ista,iend1
       do 100 k=ksta,kend1
@@ -90,10 +86,6 @@ c      j=jdim boundary             freestream                       bctype 1000
 c******************************************************************************
 c
       if (nface.eq.4) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1002) ista,iend,ksta,kend
-      end if
       do 200 l=1,5
       do 200 i=ista,iend1
       do 200 k=ksta,kend1
@@ -127,10 +119,6 @@ c      k=1 boundary            freestream                           bctype 1000
 c******************************************************************************
 c
       if (nface.eq.5) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1003) ista,iend,jsta,jend
-      end if
       do 300 l=1,5
       do 300 i=ista,iend1
       do 300 j=jsta,jend1
@@ -164,10 +152,6 @@ c      k=kdim boundary             freestream                       bctype 1000
 c******************************************************************************
 c
       if (nface.eq.6) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1004) ista,iend,jsta,jend
-      end if
       do 400 l=1,5
       do 400 i=ista,iend1
       do 400 j=jsta,jend1
@@ -201,10 +185,6 @@ c      i=1 boundary            freestream                           bctype 1000
 c******************************************************************************
 c
       if (nface.eq.1) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1005) jsta,jend,ksta,kend
-      end if
       do 500 l=1,5
       do 500 k=ksta,kend1
       do 500 j=jsta,jend1
@@ -238,10 +218,6 @@ c      i=idim boundary             freestream                       bctype 1000
 c******************************************************************************
 c
       if (nface.eq.2) then
-      if (isklton.eq.1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),1006) jsta,jend,ksta,kend
-      end if
       do 600 l=1,5
       do 600 k=ksta,kend1
       do 600 j=jsta,jend1
@@ -269,19 +245,6 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
       end if
-c
- 1001 format(' ','  j=   1  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format(' ','  j=jdim  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format(' ','  k=   1  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format(' ','  k=kdim  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format(' ','  i=   1  freestream                     type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format(' ','  i=idim  freestream                     type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return
       end

@@ -195,7 +195,7 @@ c            blocks for ypls
               ssw=vor(jbb,kbb,ibb)
               wnu=fnu(jbb,kbb,ibb)
               ra=sqrt(re*(ssw/wnu + 1.e-10*xmach**2))
-              ypls=ra*smin(j,k,i)
+              ypls=ra*ccabs(smin(j,k,i))
               ypls=ccmaxcr(ypls,.0001)
             end if
             exp1=exp(-(ypls/aplus1))
@@ -819,9 +819,10 @@ c    include check for transition - to CRUDELY simulate trip strips
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if (i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .            j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .            k.ge.klamlo .and. k.lt.klamhi) then
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
               else
                 cutoff=1.
