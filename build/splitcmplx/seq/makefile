@@ -1,3 +1,4 @@
+#     $Id$
 #=============================================================================
 #
 #             builds the executable for the complex block splitter
