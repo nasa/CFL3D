@@ -1,4 +1,4 @@
-      program cfl3d
+      program main
 c
 c     $Id$
 c
