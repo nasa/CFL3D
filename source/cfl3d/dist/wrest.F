@@ -282,6 +282,45 @@ c   ***CGNSstart
       else
 #if defined CGNS
       write(11,'('' CGNS write in wrest'')')
+c     translate to conserved (for CGNS output only)
+      do i=1,idim1
+        do k=1,kdim1
+        do j=1,jdim1
+          q(j,k,i,2)=q(j,k,i,2)*q(j,k,i,1)
+          q(j,k,i,3)=q(j,k,i,3)*q(j,k,i,1)
+          q(j,k,i,4)=q(j,k,i,4)*q(j,k,i,1)
+          q(j,k,i,5)=q(j,k,i,5)/gm1+0.5/q(j,k,i,1)*(q(j,k,i,2)**2+
+     +               q(j,k,i,3)**2+q(j,k,i,4)**2)
+        enddo
+        enddo
+        do m=1,4
+        do k=1,kdim1
+          qj0(k,i,2,m)=qj0(k,i,2,m)*qj0(k,i,1,m)
+          qj0(k,i,3,m)=qj0(k,i,3,m)*qj0(k,i,1,m)
+          qj0(k,i,4,m)=qj0(k,i,4,m)*qj0(k,i,1,m)
+          qj0(k,i,5,m)=qj0(k,i,5,m)/gm1+0.5/qj0(k,i,1,m)*
+     +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2)
+        enddo
+        do j=1,jdim1
+          qk0(j,i,2,m)=qk0(j,i,2,m)*qk0(j,i,1,m)
+          qk0(j,i,3,m)=qk0(j,i,3,m)*qk0(j,i,1,m)
+          qk0(j,i,4,m)=qk0(j,i,4,m)*qk0(j,i,1,m)
+          qk0(j,i,5,m)=qk0(j,i,5,m)/gm1+0.5/qk0(j,i,1,m)*
+     +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2)
+        enddo
+        enddo
+      enddo
+      do m=1,4
+      do k=1,kdim1
+        do j=1,jdim1
+          qi0(j,k,2,m)=qi0(j,k,2,m)*qi0(j,k,1,m)
+          qi0(j,k,3,m)=qi0(j,k,3,m)*qi0(j,k,1,m)
+          qi0(j,k,4,m)=qi0(j,k,4,m)*qi0(j,k,1,m)
+          qi0(j,k,5,m)=qi0(j,k,5,m)/gm1+0.5/qi0(j,k,1,m)*
+     +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2)
+        enddo
+      enddo
+      enddo
       call writesoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,nsoluse)
 c     write overset holes
@@ -316,6 +355,45 @@ c     first, find out how many holes
         call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
       end if
+c     translate back to primitive (so don't mess anything up that may come later)
+      do i=1,idim1
+        do k=1,kdim1
+        do j=1,jdim1
+          q(j,k,i,2)=q(j,k,i,2)/q(j,k,i,1)
+          q(j,k,i,3)=q(j,k,i,3)/q(j,k,i,1)
+          q(j,k,i,4)=q(j,k,i,4)/q(j,k,i,1)
+          q(j,k,i,5)=gm1*(q(j,k,i,5)-0.5*q(j,k,i,1)*(q(j,k,i,2)**2+
+     +               q(j,k,i,3)**2+q(j,k,i,4)**2))
+        enddo
+        enddo
+        do m=1,4
+        do k=1,kdim1
+          qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
+          qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
+          qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
+          qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
+     +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
+        enddo
+        do j=1,jdim1
+          qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
+          qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
+          qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
+          qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
+     +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
+        enddo
+        enddo
+      enddo
+      do m=1,4
+      do k=1,kdim1
+        do j=1,jdim1
+          qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
+          qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
+          qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
+          qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
+     +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
+        enddo
+      enddo
+      enddo
       if (iskip .gt. 0) then
         call writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
      +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,

@@ -502,8 +502,10 @@ c                       prolonged to the fine grid and written at that
 c                       level (integers)
 c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
-c      q................cell-centered q-values, in (j,k,i) order (real)
-c      qi0,qj0,qk0......B.C. q-values from CFL3D (real)
+c      q................cell-centered q-values, in (j,k,i) order,
+c                       CONSERVED quantities (real)
+c      qi0,qj0,qk0......B.C. q-values from CFL3D, 
+c                       CONSERVED quantities (real)
 c      bci,bcj,bck......flag from CFL3D; 0=ghost-cell B.C., 1=B.C. at
 c                       interface (real)
 c      i2d..............0 if 3-D (rind data to be output in all 3 
@@ -592,51 +594,51 @@ c   Density:
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   U-velocity:
+c   X-momentum:
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,2,0,wk)
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'VelocityX', wk, ifindex, ier)
+     +                      'MomentumX', wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'VelocityX', wk, ifindex, ier)
+     +                      'MomentumX', wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   V-velocity:
+c   Y-momentum:
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,3,0,wk)
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'VelocityY', wk, ifindex, ier)
+     +                      'MomentumY', wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'VelocityY', wk, ifindex, ier)
+     +                      'MomentumY', wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   W-velocity:
+c   Z-momentum:
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,4,0,wk)
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'VelocityZ', wk, ifindex, ier)
+     +                      'MomentumZ', wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'VelocityZ', wk, ifindex, ier)
+     +                      'MomentumZ', wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Pressure:
+c   Stagnation energy per unit volume:
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,5,0,wk)
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'Pressure', wk, ifindex, ier)
+     +                      'EnergyStagnationDensity', wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'Pressure', wk, ifindex, ier)
+     +                      'EnergyStagnationDensity', wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -644,7 +646,7 @@ c
       end
 c
       subroutine readsoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q)
+     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q,iprim)
 c***********************************************************************
 c     Purpose: Reads solution from CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened. If the desired 
@@ -676,7 +678,9 @@ c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
 c      i2d..............0 if 3-D, 1 if 2-D
 c   OUTPUTS:
-c      q................cell-centered q-values, in (j,k,i) order (real)
+c      q................cell-centered q-values, in (j,k,i) order,
+c                       CONSERVED or PRIMITIVE quantities (real)
+c      iprim............0 if conserved read, 1 if primitive (integer)
 c***********************************************************************
 c
 #     include "cgnslib_f.h"
@@ -711,14 +715,14 @@ c   Find out how many fields there are and their names:
       if (ier .ne. 0) call cg_error_exit_f
       enddo
 c
-c   Check to make sure the field names needed exist:
+c   Check to make sure the conserved field names needed exist:
       numwanted=5
       fndesired(1)='Density'
-      fndesired(2)='VelocityX'
-      fndesired(3)='VelocityY'
-      fndesired(4)='VelocityZ'
-      fndesired(5)='Pressure'
-      ibad=0
+      fndesired(2)='MomentumX'
+      fndesired(3)='MomentumY'
+      fndesired(4)='MomentumZ'
+      fndesired(5)='EnergyStagnationDensity'
+      iprim=0
       do n=1,numwanted
         ido=0
         do nn=1,nfields
@@ -729,10 +733,34 @@ c   Check to make sure the field names needed exist:
         if (ido .eq. 0) then
           write(11,'('' Cannot find solution of name '',a32)') 
      +      fndesired(n)
-          ibad=1
+          write(11,'(''   for conservative... try primitive instead'')')
+          iprim=1
         end if
       enddo
-      if (ibad .eq. 1) then
+      if (iprim .eq. 1) then
+c       if conserved do not exist, try reading primitive variables
+      fndesired(1)='Density'
+      fndesired(2)='VelocityX'
+      fndesired(3)='VelocityY'
+      fndesired(4)='VelocityZ'
+      fndesired(5)='Pressure'
+      do n=1,numwanted
+        ido=0
+        do nn=1,nfields
+          if(fndesired(n) .eq. fieldname(nn)) then
+            ido=1
+          end if
+        enddo
+        if (ido .eq. 0) then
+          write(11,'('' Cannot find solution of name '',a32)')
+     +      fndesired(n)
+          write(11,'(''   for primitive either...'')')
+          iprim=2
+        end if
+      enddo
+      end if
+      if (iprim .eq. 2) then
+c       if cannot find conserved or primitive names, stop execution
         stop
       end if
 c
@@ -4454,7 +4482,8 @@ c                       prolonged to the fine grid and written at that
 c                       level (integers)
 c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
-c      qc0..............cell-centered q-values, in (j,k,i) order (real)
+c      qc0..............cell-centered q-values, in (j,k,i) order,
+c                       PRIMITIVE quantities (real)
 c      nsoluse..........FlowSolution index number where data to be
 c                       stored (integer)
 c      i2d..............0 if 3-D (rind data to be output in all 3
@@ -4587,7 +4616,8 @@ c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
 c      i2d..............0 if 3-D, 1 if 2-D
 c   OUTPUTS:
-c      qc0..............cell-centered q-values, in (j,k,i) order (real)
+c      qc0..............cell-centered q-values, in (j,k,i) order,
+c                       PRIMITIVE quantities (real)
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
@@ -5107,7 +5137,7 @@ c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
-c      qi0,qj0,qk0......arrays of BC data (real)
+c      qi0,qj0,qk0......arrays of BC data (CONSERVED quantities) (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
 c      i2d..............0 if 3-D, 1 if 2-D
@@ -5286,7 +5316,9 @@ c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
 c      i2d..............0 if 3-D, 1 if 2-D
 c   OUTPUTS:
-c      qi0,qj0,qk0......arrays of BC data (real)
+c      qi0,qj0,qk0......arrays of BC data (CONSERVED or PRIMITIVE
+c                       quantities - same type as Q's read in
+c                       via readsoln) (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
 c**********************************************************************
