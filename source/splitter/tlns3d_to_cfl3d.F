@@ -105,8 +105,8 @@ c
      .               mglev(5),nem(5),mitl(5,5),mtt,ndv,isdform,
      .               ip3dgrd,iplt3dtyp
       common /mgv/ epsssc(3),epsssr(3),issc,issr
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /precon1/ cprec,uref,avn,iprecon
 c
 c     set idimg,jdimg,kdim to the new (split) values
@@ -1474,18 +1474,11 @@ c
          write(7,32)dt,irest,iflagts,fmax,iunst,rfreq,alphau,cloc
    32    format(f10.5,2i10,f10.5,i10,3f10.5)
       else
-         if (ialphit .eq.0) then
-            write(7,33)
-   33       format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
-     .      3x,7hcfl_tau)
-            write(7,34)dt,irest,iflagts,fmax,iunst,cfltau
-   34       format(f10.5,2i10,f10.5,i10,3f10.5)
-         else
-            write(7,331)
-  331       format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
-     .      3x,7hcfl_tau,4x,6hcltarg,3x,7hresupdt)
-            write(7,34)dt,irest,iflagts,fmax,iunst,cfltau,cltarg,resupdt
-         end if
+         write(7,33)
+   33    format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
+     .   3x,7hcfl_tau)
+         write(7,34)dt,irest,iflagts,fmax,iunst,cfltau
+   34    format(f10.5,2i10,f10.5,i10,3f10.5)
       end if
 c
       ngridout = ngrid

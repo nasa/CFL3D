@@ -137,8 +137,8 @@ c
      .               ip3dgrd,iplt3dtyp
       common /mgv/ epsssc(3),epsssr(3),issc,issr
       common /ron/ titleron(20)
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /precon1/ cprec,uref,avn,iprecon
       common /cflfiles/gridin,plt3dg,plt3dq,output,resid,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
@@ -367,17 +367,8 @@ c
       else
          read(10,*)
          read (10,*) sref,cref,bref,xmc,ymc,zmc
-         if (sref .lt. 0) then
-            ialphit = 1
-            sref = abs(sref)
-         end if
          read(10,*)
-         if (ialphit .eq. 0) then
-            read(10,*) dt,irest,iflagts,fmax,iunst,cfltau
-         else
-            read(10,*) dt,irest,iflagts,fmax,iunst,cfltau,cltarg,resupdt
-            resupdt = -abs(resupdt)
-         end if
+         read(10,*) dt,irest,iflagts,fmax,iunst,cfltau
       end if
 c
 c     read in number of blocs
