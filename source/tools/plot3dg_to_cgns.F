@@ -1,0 +1,1663 @@
+      program plot3d_to_cgns
+c***********************************************************************
+c   Purpose: reads in plot3d-type (or cfl3d-type) unformatted grid file 
+c   and writes out a CGNS ADF file.  Also reads in as input the 1-to-1
+c   section of CFL3D input file, for creating the 1-to-1 CGNS
+c   connectivity information.
+c
+c   This does a 3-D grid only, in MG format
+c***********************************************************************
+c
+#ifdef CGNS
+      character*80 file2
+      parameter (ibufdim0=2000,nbuf0=4,mxbcfil0=100)
+c
+      character*120 bou(ibufdim0,nbuf0)
+c
+      dimension nou(nbuf0)
+c
+      common /unit5/ iunit5
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+      common /zero/ iexp
+      common /mydist2/ nnodes,myhost,myid,mycomm
+c
+c  read the CFL3D input file to determine parameter requirements
+c
+      write(6,'('' What is the CFL3D input file name?'')')
+      read(5,'(a80)') file2
+      open(3,file=file2,form='formatted',status='old')
+c
+c     determine machine zero for use in setting tolerances
+c     (10.**(-iexp) is machine zero)
+c
+      icount = 0
+      compare = 1.0
+      do i = 1,20
+         icount = icount + 1
+         add = 1.
+         do n=1,i
+            add = add*.1
+         enddo
+         x11 = compare + add
+         if (x11.eq.compare)then
+            iexp = i-1
+            goto 4010
+         end if
+      end do
+ 4010 continue
+c
+c     set dummy value of xmach since subroutine readkey uses it
+c     (but is not actually needed for this code)
+c
+      xmach = 0.5
+c
+      iunit5  = 3
+      iunit11 = 99
+      myid    = 0
+      nnodes  = 1
+      call global0(nplots0,maxnode0,n11,lbcprd0,lbcemb0,
+     .             lbcrad0,maxbl0,nblock,maxseg0,maxcs0,ncycmax0,
+     .             intmax0,nsub10,intmx0,mxxe0,mptch0,msub10,
+     .             ibufdim0,nbuf0,mxbcfil0,nmds0,maxaes0,
+     .             maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
+     .             idm,jdm,kdm)
+c
+      write(6,*)
+      write(6,'(''required array dimensions:'')')
+      write(6,'(''  nblock = '',i3)') nblock
+      write(6,'(''  idm    = '',i3)') idm
+      write(6,'(''  jdm    = '',i3)') jdm
+      write(6,'(''  kdm    = '',i3)') kdm
+      write(6,'(''  n11    = '',i3)') n11  
+c
+c     rewind and close cfl3d nput file
+c
+      rewind(3)
+      close(3)
+c
+      call wrt_adf(file2,nblock,idm,jdm,kdm,n11)
+c
+      stop
+      end
+c
+      subroutine wrt_adf(file2,nblock,idm,jdm,kdm,n11)
+c***********************************************************************
+c   Purpose: Write out a CGNS ADF file
+c***********************************************************************
+c
+c
+      dimension x(idm,jdm,kdm,nblock),y(idm,jdm,kdm,nblock),
+     +          z(idm,jdm,kdm,nblock)
+      dimension idim(nblock),jdim(nblock),kdim(nblock)
+      dimension iz(nblock),iv1(nblock),iv2(nblock),iv3(nblock)
+      dimension iblk1(n11),ilo1(n11),jlo1(n11),klo1(n11),ihi1(n11),
+     +          jhi1(n11),khi1(n11),isva1(n11),isvb1(n11)
+      dimension iblk2(n11),ilo2(n11),jlo2(n11),klo2(n11),ihi2(n11),
+     +          jhi2(n11),khi2(n11),isva2(n11),isvb2(n11)
+      dimension i0(nblock),im(nblock),j0(nblock),jm(nblock),
+     +          k0(nblock),km(nblock)
+      dimension irange(3,2),iranged(3,2),itransform(3)
+      dimension data(7),ipnts(3,2),isize(9)
+c
+      pointer (ip_x,x),(ip_y,y),(ip_z,z),(ip_idim,idim),(ip_jdim,jdim),
+     +        (ip_kdim,kdim),(ip_iz,iz),(ip_iv1,iv1),
+     +        (ip_iv2,iv2),(ip_iv3,iv3)
+      pointer (ip_iblk1,iblk1),(ip_jlo1,jlo1),
+     +        (ip_klo1,klo1),(ip_ilo1,ilo1),(ip_jhi1,jhi1),
+     +        (ip_khi1,khi1),(ip_ihi1,ihi1),(ip_isva1,isva1),
+     +        (ip_isvb1,isvb1)
+      pointer (ip_iblk2,iblk2),(ip_jlo2,jlo2),
+     +        (ip_klo2,klo2),(ip_ilo2,ilo2),(ip_jhi2,jhi2),
+     +        (ip_khi2,khi2),(ip_ihi2,ihi2),(ip_isva2,isva2),
+     +        (ip_isvb2,isvb2)
+      pointer (ip_i0,i0),(ip_im,im),(ip_j0,j0),(ip_jm,jm),
+     +        (ip_k0,k0),(ip_km,km)
+c
+      real*8 pid,pidr,pidb,pidz,pidg,pidnew
+      character*80 file1,file2,name,title,textf
+      character*32 filename,basename,filenum
+      character*8 zonename(nblock)
+      character*32 filenamr,connectname,filecon,donorname
+      character*32 boconame,boconame2,boconame3
+      character*6   texta
+      character*21  text
+      character*120 newname
+      character*1 dum1
+c
+#     include "cgnslib_f.h"
+c
+c   Determine if single or double precision is being used:
+      idouble=0
+#if defined DBLE_PRECSN
+      idouble=1
+#endif
+c
+c     allocate memory
+c
+      memuse = 0
+      icall  = 0
+      call umalloc_r(ip_x,idm*jdm*kdm*nblock,0,icall,memuse)
+      call umalloc_r(ip_y,idm*jdm*kdm*nblock,0,icall,memuse)
+      call umalloc_r(ip_z,idm*jdm*kdm*nblock,0,icall,memuse)
+      call umalloc_r(ip_idim,nblock,1,icall,memuse)
+      call umalloc_r(ip_jdim,nblock,1,icall,memuse)
+      call umalloc_r(ip_kdim,nblock,1,icall,memuse)
+      call umalloc_r(ip_iz,nblock,1,icall,memuse)
+      call umalloc_r(ip_iv1,nblock,1,icall,memuse)
+      call umalloc_r(ip_iv2,nblock,1,icall,memuse)
+      call umalloc_r(ip_iv3,nblock,1,icall,memuse)
+      call umalloc_r(ip_iblk1,n11,1,icall,memuse)
+      call umalloc_r(ip_ilo1,n11,1,icall,memuse)
+      call umalloc_r(ip_jlo1,n11,1,icall,memuse)
+      call umalloc_r(ip_klo1,n11,1,icall,memuse)
+      call umalloc_r(ip_ihi1,n11,1,icall,memuse)
+      call umalloc_r(ip_jhi1,n11,1,icall,memuse)
+      call umalloc_r(ip_khi1,n11,1,icall,memuse)
+      call umalloc_r(ip_isva1,n11,1,icall,memuse)
+      call umalloc_r(ip_isvb1,n11,1,icall,memuse)
+      call umalloc_r(ip_iblk2,n11,1,icall,memuse)
+      call umalloc_r(ip_ilo2,n11,1,icall,memuse)
+      call umalloc_r(ip_jlo2,n11,1,icall,memuse)
+      call umalloc_r(ip_klo2,n11,1,icall,memuse)
+      call umalloc_r(ip_ihi2,n11,1,icall,memuse)
+      call umalloc_r(ip_jhi2,n11,1,icall,memuse)
+      call umalloc_r(ip_khi2,n11,1,icall,memuse)
+      call umalloc_r(ip_isva2,n11,1,icall,memuse)
+      call umalloc_r(ip_isvb2,n11,1,icall,memuse)
+      call umalloc_r(ip_i0,nblock,1,icall,memuse)
+      call umalloc_r(ip_im,nblock,1,icall,memuse)
+      call umalloc_r(ip_j0,nblock,1,icall,memuse)
+      call umalloc_r(ip_jm,nblock,1,icall,memuse)
+      call umalloc_r(ip_k0,nblock,1,icall,memuse)
+      call umalloc_r(ip_km,nblock,1,icall,memuse)
+c
+      iflag=0
+      write(6,'('' read a 0=formatted or 1=unformatted grid?'')')
+      read(5,*) iform
+      if (iform .eq. 1) then
+      write(6,'('' input unformatted grid filename to read:'')')
+      read(5,'(a80)') file1
+      open(2,file=file1,form='unformatted',status='old')
+      write(6,'('' type 0 = PLOT3D-type, 1 = CFL3D-type grid to'',
+     +  '' read:'')')
+      read(5,*) itype
+      if (itype .eq. 0) then
+c  PLOT3D-type
+        read(2) nbl
+        if (nbl .gt. nblock) then
+          write(6,'('' need to increase nblock to '',i6)') nbl
+          stop
+        end if
+        read(2) (idim(n),jdim(n),kdim(n),n=1,nbl)
+        do n=1,nbl
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+            write(6,'('' need to increase idm,jdm,kdm to:'',
+     +        3i5)') id,jd,kd
+            stop
+          end if
+          read(2) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+     +            (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+     +            (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
+        enddo
+      else
+c   CFL3D-type
+        nbl = nblock
+        do n=1,nblock
+          read(2) jdim(n),kdim(n),idim(n)
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+            write(6,'('' need to increase idm,jdm,kdm to:'',
+     +        3i5)') id,jd,kd
+            stop
+          end if
+          read(2) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+     +            (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+     +            (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+        enddo
+      end if
+      else
+      write(6,'('' input formatted grid filename to read:'')')
+      read(5,'(a80)') file1
+      open(2,file=file1,form='formatted',status='old')
+      write(6,'('' type 0 = PLOT3D-type, 1 = CFL3D-type grid to'',
+     +  '' read:'')')
+      read(5,*) itype
+      if (itype .eq. 0) then
+c  PLOT3D-type
+        read(2,*) nbl
+        if (nbl .gt. nblock) then
+          write(6,'('' need to increase nblock to '',i6)') nbl
+          stop
+        end if
+        read(2,*) (idim(n),jdim(n),kdim(n),n=1,nbl)
+        do n=1,nbl
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+            write(6,'('' need to increase idm,jdm,kdm to:'',
+     +        3i5)') id,jd,kd
+            stop
+          end if
+          read(2,*) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+     +              (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+     +              (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
+        enddo
+      else
+c   CFL3D-type
+        do n=1,nblock
+          read(2,*) jdim(n),kdim(n),idim(n)
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+            write(6,'('' need to increase idm,jdm,kdm to:'',
+     +        3i5)') id,jd,kd
+            stop
+          end if
+          read(2,*) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+     +              (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+     +              (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+        enddo
+      end if
+      end if
+c
+c   open ADF file
+      write(6,'(/,'' This program creates a grid file SEPARATE'',
+     + '' from the CGNS file soln.cgns'')')
+      write(6,'(''   (they are LINKED, eliminating redundancy'')')
+      write(6,'(''    in having to keep multiple copies of the'')')
+      write(6,'(''    grid for multiple restarts)'')')
+      write(6,'(/,'' Input desired name for CGNS gridfile (e.g.,'',
+     + '' gridname.cgns):'')')
+      read(5,'(a32)') filename
+      filenamr='solutiononly.cgns'
+      write(6,'('' creating adf grid file name:  '',a32)') filename
+      call cg_open_f(filename,MODE_WRITE,iccg,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_open_f(filenamr,MODE_WRITE,iccgr,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c   create base
+      basename='Base'
+      index_dim=3
+      call cg_base_write_f(iccg,basename,index_dim,index_dim,ibase,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_base_write_f(iccgr,basename,index_dim,index_dim,ibase,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c   create zones (name them Zone1, Zone2, ..., ZoneN)
+      do n=1,nbl
+        if(n .lt. 10000) then
+          write(filenum,102) n
+        else
+          write(6,'('' too many zones - limited to 9999'')')
+          write(6,'('' Aborting.  The ADF file is no good.'')')
+          stop
+        end if
+ 102    format(i4)
+        zonename(n) = 'Zone' // filenum
+        isize(1)=idim(n)
+        isize(2)=jdim(n)
+        isize(3)=kdim(n)
+        isize(4)=idim(n)-1
+        isize(5)=jdim(n)-1
+        isize(6)=kdim(n)-1
+        isize(7)=0
+        isize(8)=0
+        isize(9)=0
+        call cg_zone_write_f(iccg,ibase,zonename(n),isize,Structured,
+     .    iz(n),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_zone_write_f(iccgr,ibase,zonename(n),isize,Structured,
+     .    iz(n),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      enddo
+c  create and write the grid coordinates only to grid file
+c  will put a link in the soln.cgns file (below)
+      do n=1,nbl
+        call writexyz(iccg,ibase,idouble,iz(n),idim(n),jdim(n),kdim(n),
+     +    idm,jdm,kdm,x(1,1,1,n),y(1,1,1,n),z(1,1,1,n))
+      enddo
+c  reopen the CFL3D input file
+      open(3,file=file2,form='formatted',status='old')
+c------------------------------------------------------------------------
+c   This section reads in original CFL3D input file
+c   and also writes the BC part to the CGNS file,
+c   on the fly.  The 1-to-1 info read here is saved and used later to
+c   write to the CGNS file.
+c------------------------------------------------------------------------
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      do n=1,11
+        read(3,'(a80)') name
+      enddo
+      read(3,'(a80)') name
+c
+      read(3,'(a1)') dum1
+      if (dum1 .eq. '>') then
+        do n=1,500
+          read(3,'(a1)') dum1
+          if (dum1 .eq. '<') goto 1002
+        enddo
+        write(6,'('' Error, too many lines (>500) of keyword input'')')
+        stop
+ 1002   continue
+      else
+        backspace(3)
+      end if
+c
+      read(3,'(a80)') title
+      write(6,'('' Reading CFL3D input file with following title:'')')
+      write(6,'(a80)') title
+      read(3,'(a80)') name
+      read(3,*) xm,al,be,re,t,ia,ih
+      read(3,'(a80)') name
+      read(3,*) sr,cr,br,xm,ym,zm
+      read(3,'(a80)') name
+      read(3,*) dt,ir,if,fm,iu,cf
+c     if(dt .gt. 0. and. iu .ne. 0) then
+c       write(6,'('' Error!  CFL3D input file is set up to do'',
+c    +   '' moving grid'')')
+c       write(6,'('' CGNS not capable of handling this!'')')
+c       write(6,'('' Stopping'')')
+c       stop
+c     end if
+      read(3,'(a80)') name
+      read(3,*) ngrid,nplot3d,nprint,nw,ic,i2d,nt,it
+      read(3,'(a80)') name
+      ngr=abs(ngrid)
+      do n=1,ngr
+        read(3,*) nc,ie,ia,if,iv1(n),iv2(n),iv3(n)
+      enddo
+      i2d=abs(i2d)
+      read(3,'(a80)') name
+      do n=1,ngr
+        read(3,*) id,jd,kd
+        if(id .ne. idim(n) .or. jd .ne. jdim(n) .or.
+     +     kd .ne. kdim(n)) then
+          write(6,'('' Error!  Input file indices do not agree with'',
+     +     '' grid indices'')')
+          write(6,'('' Zone '',i5,'' id,jd,kd='',3i5)') n,id,jd,kd
+          write(6,'('' Grid indices are: '',3i5)') idim(n),jdim(n),
+     +     kdim(n)
+          write(6,'('' Aborting.  The ADF file is no good.'')')
+          stop
+        end if
+      enddo
+      read(3,'(a80)') name
+      do n=1,ngr
+        read(3,*) i1,i2,i3,i4,i5,i6
+      enddo
+      read(3,'(a80)') name
+      do n=1,ngr
+        read(3,*) in,ig,i1,i2,i3,i4,i5,i6
+      enddo
+c  Idiag section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        read(3,*) i1,i2,i3,i4,i5,i6
+      enddo
+c  Ifds section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        read(3,*) if1,if2,if3,rk1,rk2,rk3
+      enddo
+c  Grid section (DO NOT write this out - it's going into CGNS file!):
+      read(3,'(a80)') name
+      iovmx=0
+      do n=1,ngr
+        read(3,*) ig,i0(n),im(n),j0(n),jm(n),k0(n),km(n),iov
+        iovmx=max(iov,iovmx)
+      enddo
+c     write a descriptor if there is overlap data
+      if (iovmx .ne. 0) then
+        textf='Overset connectivity information is'//
+     +   ' NOT included in this file'
+        call cg_goto_f(iccg,ibase,ier,'end')
+        call cg_descriptor_write_f('OversetInformation',textf,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_goto_f(iccgr,ibase,ier,'end')
+        call cg_descriptor_write_f('OversetInformation',textf,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
+c  Grid i0 section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,i0(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=jdim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=kdim(n)
+          ipnts(1,1)=1
+          ipnts(2,1)=i1
+          ipnts(3,1)=i3
+          ipnts(1,2)=1
+          ipnts(2,2)=i2
+          ipnts(3,2)=i4
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Ilo_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Ilo_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv1(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv1(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Grid idim section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,im(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=jdim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=kdim(n)
+          ipnts(1,1)=idim(n)
+          ipnts(2,1)=i1
+          ipnts(3,1)=i3
+          ipnts(1,2)=idim(n)
+          ipnts(2,2)=i2
+          ipnts(3,2)=i4
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Ihi_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Ihi_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv1(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv1(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Grid j0 section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,j0(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=idim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=kdim(n)
+          ipnts(1,1)=i1
+          ipnts(2,1)=1
+          ipnts(3,1)=i3
+          ipnts(1,2)=i2
+          ipnts(2,2)=1
+          ipnts(3,2)=i4
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Jlo_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Jlo_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv2(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv2(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Grid jdim section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,jm(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=idim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=kdim(n)
+          ipnts(1,1)=i1
+          ipnts(2,1)=jdim(n)
+          ipnts(3,1)=i3
+          ipnts(1,2)=i2
+          ipnts(2,2)=jdim(n)
+          ipnts(3,2)=i4
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Jhi_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Jhi_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv2(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv2(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Grid k0 section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,k0(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=idim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=jdim(n)
+          ipnts(1,1)=i1
+          ipnts(2,1)=i3
+          ipnts(3,1)=1
+          ipnts(1,2)=i2
+          ipnts(2,2)=i4
+          ipnts(3,2)=1
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Klo_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Klo_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv3(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv3(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Grid kdim section:
+      read(3,'(a80)') name
+      do n=1,ngr
+        do m=1,km(n)
+          read(3,*) ig,is,ib,i1,i2,i3,i4,nd
+          if (nd .gt. 0) then
+            read(3,'(a80)') name
+            read(3,*) (data(mh),mh=1,nd)
+          else if(nd .lt. 0) then
+            read(3,'(a80)') name
+            read(3,'(a80)') name
+          end if
+c XXX
+          if (i1 .eq. 0) i1=1
+          if (i2 .eq. 0) i2=idim(n)
+          if (i3 .eq. 0) i3=1
+          if (i4 .eq. 0) i4=jdim(n)
+          ipnts(1,1)=i1
+          ipnts(2,1)=i3
+          ipnts(3,1)=kdim(n)
+          ipnts(1,2)=i2
+          ipnts(2,2)=i4
+          ipnts(3,2)=kdim(n)
+          if(m .lt. 10000) then
+            write(filenum,102) m
+          else
+            write(6,'('' too many segments - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+          if (is .gt. 0) then
+            boconame='Khi_Seg' // filenum
+          else
+            write(6,'('' Ignore-force-calc on specific BC segs'',
+     +       '' (segment<0) not implemented'')')
+            write(6,'(''   for CGNS.  Continuing, with CGNS'',
+     +       '' file indicating via'')')
+            write(6,'(''   a <<NoForce>> at beginning of the BC'',
+     +       '' name'')')
+            boconame='NoForce_Khi_Seg' // filenum
+          end if
+          if(     ib .eq. 1000) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCInflowSupersonic,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1001) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPlane,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCExtrapolate,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1003) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCFarfield,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1005 .or. ib .eq. 1006) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1008) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1011) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCSymmetryPolar,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 1013) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
+     +            data(2) .eq. 0 .and. iv3(n) .gt. 0) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 0) then
+            continue
+          else
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        UserDefined,PointRange,2,ipnts,ibc,ier)
+            iflag=1
+c           write(6,'('' BCtype '',i6,'' not implemented for'',
+c    +       '' CGNS yet'')') ib
+          end if
+          if (ier .ne. 0) call cg_error_exit_f
+          if (ib .ne. 0) then
+            boconame2='CFL3DType'
+            boconame3='CFL3DAuxData'
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            write(texta,'(i6)') ib
+            text=texta
+            if(abs(ib) .eq. 2004 .and. iv3(n) .lt. 0) then
+              text=texta // ' + WallFunction'
+            end if
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
+              backspace 3
+              read(3,'(a80)') name
+            end if
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',iz(n),
+     +        'ZoneBC_t',1,'BC_t',ibc,'end')
+            call cg_descriptor_write_f(boconame2,text,ier)
+            if (abs(ib) .ge. 2000) then
+              call cg_descriptor_write_f(boconame3,name,ier)
+            end if
+            if (ier .ne. 0) call cg_error_exit_f
+          end if
+c   XXX
+        enddo
+      enddo
+c  Mseq section
+      read(3,'(a80)') name
+      read(3,*) mseq,mg,ic,mtt,ng
+c  Issc section
+      read(3,'(a80)') name
+      read(3,*) i1,f2,f3,f4,i5,f6,f7,f8
+c  Ncyc section
+      read(3,'(a80)') name
+      do n=1,mseq
+        read(3,*) nc,mg,ne,ni
+      enddo
+c  Mit section
+      read(3,'(a80)') name
+      do n=1,mseq
+        read(3,'(a80)') name
+      enddo
+c  1-to-1 data (DO NOT write this out - it's going into CGNS file!):
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      read(3,*) num1_1
+c  Limits1:
+      read(3,'(a80)') name
+      do n=1,num1_1
+        read(3,*) nn,iblk1(n),ilo1(n),jlo1(n),klo1(n),ihi1(n),
+     +              jhi1(n),khi1(n),isva1(n),isvb1(n)
+      enddo
+c  Limits2:
+      read(3,'(a80)') name
+      do n=1,num1_1
+        read(3,*) nn,iblk2(n),ilo2(n),jlo2(n),klo2(n),ihi2(n),
+     +              jhi2(n),khi2(n),isva2(n),isvb2(n)
+      enddo
+c  Patch:
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      read(3,*) ninter
+c     write a descriptor if there is patch data
+      if (ninter .lt. 0) then
+        textf='Patching connectivity information is'//
+     +   ' NOT included in this file'
+        call cg_goto_f(iccg,ibase,ier,'end')
+        call cg_descriptor_write_f('PatchInformation',textf,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_goto_f(iccgr,ibase,ier,'end')
+        call cg_descriptor_write_f('PatchInformation',textf,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
+c  Plot3d:
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      if (abs(nplot3d) .gt. 0) then
+      do n=1,abs(nplot3d)
+        read(3,*) ig,ip,i1,i2,i3,i4,i5,i6,i7,i8,i9
+      enddo
+      end if
+c  Movie:
+      read(3,'(a80)') name
+      read(3,*) mo
+c  Print-out:
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      if (abs(nprint) .gt. 0) then
+      do n=1,abs(nprint)
+        read(3,*) ig,ip,i1,i2,i3,i4,i5,i6,i7,i8,i9
+      enddo
+      end if
+c  Control surface:
+      read(3,'(a80)') name
+      read(3,'(a80)') name
+      read(3,*) ncs
+      read(3,'(a80)') name
+      if (ncs .gt. 0) then
+      do n=1,ncs
+        read(3,*) ig,i1,i2,i3,i4,i5,i6,iw,inorm
+      enddo
+      end if
+c  Mov grid stuff - trans:
+      read(3,'(a80)',end=999) name
+      write(6,'('' This cfl3d input file has moving grid'',
+     + '' stuff at the bottom'')')
+      write(6,'('' CGNS not capable of handling this!'')')
+      write(6,'('' Not aborting, but none of the moving grid'',
+     + ''stuff is being kept.'')')
+ 999  continue
+c------------------------------------------------------------------------
+        write(6,'('' there are '',i5,'' 1-to-1 interfaces being'',
+     +   '' read'')') num1_1
+        if (num1_1 .gt. n11) then
+          write(6,'('' need to increase n11 to '',i6)') num1_1
+          write(6,'('' Aborting.  The ADF file is no good.'')')
+          stop
+        end if
+c  now work with the 1-to-1 info (recall there will be 2 nodes written
+c  for each interface)
+        do n=1,num1_1
+c  get interface name
+          if(n .lt. 10000) then
+            write(filecon,102) n
+          else
+            write(6,'('' too many zones - limited to 9999'')')
+            write(6,'('' Aborting.  The ADF file is no good.'')')
+            stop
+          end if
+c  this section repeats for each side:
+c  get connect name
+          connectname = '1to1InterfaceA' // filecon
+c  get this zone number
+          izone=iz(iblk1(n))
+c  get donor zone name
+          donorname=zonename(iblk2(n))
+c  get point ranges (this zone)
+          irange(1,1)=ilo1(n)
+          irange(2,1)=jlo1(n)
+          irange(3,1)=klo1(n)
+          irange(1,2)=ihi1(n)
+          irange(2,2)=jhi1(n)
+          irange(3,2)=khi1(n)
+c         write(6,'('' irange='',6i4)') irange(1,1),irange(2,1),
+c    +      irange(3,1),irange(1,2),irange(2,2),irange(3,2)
+c  get point ranges (donor zone)
+          iranged(1,1)=ilo2(n)
+          iranged(2,1)=jlo2(n)
+          iranged(3,1)=klo2(n)
+          iranged(1,2)=ihi2(n)
+          iranged(2,2)=jhi2(n)
+          iranged(3,2)=khi2(n)
+c         write(6,'('' iranged='',6i4)') iranged(1,1),iranged(2,1),
+c    +      iranged(3,1),iranged(1,2),iranged(2,2),iranged(3,2)
+c   call routine to get transform matrix
+          call transget(ilo1(n),jlo1(n),klo1(n),ihi1(n),jhi1(n),
+     +      khi1(n),isva1(n),isvb1(n),ilo2(n),jlo2(n),klo2(n),ihi2(n),
+     +      jhi2(n),khi2(n),isva2(n),isvb2(n),itransform)
+c         write(6,'('' itransform='',3i5)') itransform(1),
+c    +      itransform(2),itransform(3)
+c   write info
+          call cg_1to1_write_f(iccg,ibase,izone,connectname,donorname,
+     +       irange,iranged,itransform,iindex,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+          call cg_1to1_write_f(iccgr,ibase,izone,connectname,donorname,
+     +       irange,iranged,itransform,iindex,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+c  this section repeats for each side:
+c  get connect name
+          connectname = '1to1InterfaceB' // filecon
+c  get this zone number
+          izone=iz(iblk2(n))
+c  get donor zone name
+          donorname=zonename(iblk1(n))
+c  get point ranges (this zone)
+          irange(1,1)=ilo2(n)
+          irange(2,1)=jlo2(n)
+          irange(3,1)=klo2(n)
+          irange(1,2)=ihi2(n)
+          irange(2,2)=jhi2(n)
+          irange(3,2)=khi2(n)
+c         write(6,'('' irange='',6i4)') irange(1,1),irange(2,1),
+c    +      irange(3,1),irange(1,2),irange(2,2),irange(3,2)
+c  get point ranges (donor zone)
+          iranged(1,1)=ilo1(n)
+          iranged(2,1)=jlo1(n)
+          iranged(3,1)=klo1(n)
+          iranged(1,2)=ihi1(n)
+          iranged(2,2)=jhi1(n)
+          iranged(3,2)=khi1(n)
+c         write(6,'('' iranged='',6i4)') iranged(1,1),iranged(2,1),
+c    +      iranged(3,1),iranged(1,2),iranged(2,2),iranged(3,2)
+c  call routine to get transform matrix
+          call transget(ilo2(n),jlo2(n),klo2(n),ihi2(n),jhi2(n),
+     +      khi2(n),isva2(n),isvb2(n),ilo1(n),jlo1(n),klo1(n),ihi1(n),
+     +      jhi1(n),khi1(n),isva1(n),isvb1(n),itransform)
+c         write(6,'('' itransform='',3i5)') itransform(1),
+c    +      itransform(2),itransform(3)
+c  write info
+          call cg_1to1_write_f(iccg,ibase,izone,connectname,donorname,
+     +       irange,iranged,itransform,iindex,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+          call cg_1to1_write_f(iccgr,ibase,izone,connectname,donorname,
+     +       irange,iranged,itransform,iindex,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+c  close adf file
+      call cg_close_f(iccg,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_close_f(iccgr,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      call cg_open_f(filenamr,MODE_MODIFY,iccgr,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      do n=1,nbl
+        call cg_zone_id_f(iccgr,ibase,n,pidz,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        newname='Base/' // zonename(n) // '/GridCoordinates'
+        call ADFLINK(pidz,'GridCoordinates',filename,newname,
+     +    pidnew,ier)
+      enddo
+      call cg_close_f(iccgr,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (iflag .eq. 1) then
+        write(6,'('' One or more BCs not officially supported'',
+     +   '' or not fully implemented yet'')')
+        write(6,'(''   ...these have been set to <UserDefined>'',
+     +   '' at present'')')
+      end if
+c
+      write(6,'(/,'' Successful completion'',/)')
+      write(6,'('' CGNS grid file written to:  '',a32)') filename
+      write(6,'('' Separate CGNS file with LINK to grid file '',
+     +  ''written to:  '',a32)') filenamr
+c
+      write(6,'(/,'' When you run CFL3D, you have the following'',
+     + '' choice:'')')
+      write(6,'(''    1. Use LINK (keeping grid file separate from'',
+     + '' solution file)'')')
+      write(6,'(''       Do this if your grid file is BIG, and you'',
+     + '' do not want'')')
+      write(6,'(''       it re-written into every restart file.'',
+     + ''  For this option,'')')
+      write(6,'(''       KEEP the following file available (in'',
+     + '' the same directory):'',/,15x,a32)') filename
+      write(6,'(''       (this file name MUST NOT BE CHANGED)'')')
+      write(6,'(''       and put the following filename on the 2nd'',
+     + '' line of your input file:'',/,15x,a32)') filenamr
+      write(6,'(''       (this filename can be changed, if desired)'')')
+      write(6,'(''    2. Keep grid and solution in the same CGNS'',
+     + '' file.  For this option,'')')
+      write(6,'(''       DISCARD the following file:'',/,
+     +   15x,a32)') filenamr
+      write(6,'(''       and put the following filename '',
+     + ''on the 2nd line of your input file:'',/,15x,a32)') filename
+      write(6,'(''       (this filename can be changed, if desired)'')')
+c
+      write(6,'(/,'' Remember: the <restart.bin> file is no longer'',
+     + '' used (all info is now written'')')
+      write(6,'('' to the CGNS file named on the 2nd line of your'',
+     + '' input file!)'')')
+      write(6,'('' However, your input file should still have a '',
+     + ''(dummy) restart name in its place'')')
+c
+      write(6,'(/,'' Note: although the BCs and 1-to-1 connectivity'',
+     + '' have been written to'')')
+      write(6,'('' the CGNS file, CFL3D currently still reads this'',
+     + '' info from the input file!'')')
+      write(6,'('' Also, currently no patched or overset info is put'',
+     + '' into the CGNS file'')')
+c
+c     deallocate memory
+c
+      call ufree_r(ip_x)
+      call ufree_r(ip_y)
+      call ufree_r(ip_z)
+      call ufree_r(ip_idim)
+      call ufree_r(ip_jdim)
+      call ufree_r(ip_kdim)
+      call ufree_r(ip_iz)
+      call ufree_r(ip_iv1)
+      call ufree_r(ip_iv2)
+      call ufree_r(ip_iv3)
+      call ufree_r(ip_iblk1)
+      call ufree_r(ip_ilo1)
+      call ufree_r(ip_jlo1)
+      call ufree_r(ip_klo1)
+      call ufree_r(ip_ihi1)
+      call ufree_r(ip_jhi1)
+      call ufree_r(ip_khi1)
+      call ufree_r(ip_isva1)
+      call ufree_r(ip_isvb1)
+      call ufree_r(ip_iblk2)
+      call ufree_r(ip_ilo2)
+      call ufree_r(ip_jlo2)
+      call ufree_r(ip_klo2)
+      call ufree_r(ip_ihi2)
+      call ufree_r(ip_jhi2)
+      call ufree_r(ip_khi2)
+      call ufree_r(ip_isva2)
+      call ufree_r(ip_isvb2)
+      call ufree_r(ip_i0)
+      call ufree_r(ip_im)
+      call ufree_r(ip_j0)
+      call ufree_r(ip_jm)
+      call ufree_r(ip_k0)
+      call ufree_r(ip_km)
+c
+      return
+      end
+c
+c **********************************************************************
+c
+      subroutine writexyz(iccg,ib,idouble,iz,idim,jdim,kdim,
+     +    idm,jdm,kdm,x,y,z)
+c
+c   Must use a routine like this, because cg_coord_write_f writes the
+c   ENTIRE array.  In the main routine, x,y, and z are dimensioned LARGER
+c   than necessary.  Here, a dummy array (wk) is used, which is dimensioned
+c   EXACTLY correctly (idim,jdim,kdim).
+c
+#     include "cgnslib_f.h"
+c
+      dimension x(idm,jdm,kdm),y(idm,jdm,kdm),z(idm,jdm,kdm)
+      dimension wk(idim,jdim,kdim)
+c
+      do i=1,idim
+      do j=1,jdim
+      do k=1,kdim
+        wk(i,j,k)=x(i,j,k)
+      enddo
+      enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_coord_write_f(iccg,ib,iz,RealDouble,
+     +    'CoordinateX',wk,ic,ier)
+      else
+        call cg_coord_write_f(iccg,ib,iz,RealSingle,
+     +    'CoordinateX',wk,ic,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      do i=1,idim
+      do j=1,jdim
+      do k=1,kdim
+        wk(i,j,k)=y(i,j,k)
+      enddo
+      enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_coord_write_f(iccg,ib,iz,RealDouble,
+     +    'CoordinateY',wk,ic,ier)
+      else
+        call cg_coord_write_f(iccg,ib,iz,RealSingle,
+     +    'CoordinateY',wk,ic,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      do i=1,idim
+      do j=1,jdim
+      do k=1,kdim
+        wk(i,j,k)=z(i,j,k)
+      enddo
+      enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_coord_write_f(iccg,ib,iz,RealDouble,
+     +    'CoordinateZ',wk,ic,ier)
+      else
+        call cg_coord_write_f(iccg,ib,iz,RealSingle,
+     +    'CoordinateZ',wk,ic,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      return
+      end
+c
+c **********************************************************************
+c
+      subroutine transget(ilo1,jlo1,klo1,ihi1,jhi1,
+     +      khi1,isva1,isvb1,ilo2,jlo2,klo2,ihi2,
+     +      jhi2,khi2,isva2,isvb2,itransform)
+c
+      dimension itransform(3)
+c
+          itransform(1)=0
+          itransform(2)=0
+          itransform(3)=0
+c   do 1st varying index
+          if      (isva1 .eq. 1 .and. isva2 .eq. 1) then
+            itransform(1)=1
+            if((ihi1-ilo1)*(ihi2-ilo2) .lt. 0) 
+     +        itransform(1)=-itransform(1)
+          else if (isva1 .eq. 1 .and. isva2 .eq. 2) then
+            itransform(1)=2
+            if((ihi1-ilo1)*(jhi2-jlo2) .lt. 0) 
+     +        itransform(1)=-itransform(1)
+          else if (isva1 .eq. 1 .and. isva2 .eq. 3) then
+            itransform(1)=3
+            if((ihi1-ilo1)*(khi2-klo2) .lt. 0)
+     +        itransform(1)=-itransform(1)
+c
+          else if (isva1 .eq. 2 .and. isva2 .eq. 1) then
+            itransform(2)=1
+            if((jhi1-jlo1)*(ihi2-ilo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+          else if (isva1 .eq. 2 .and. isva2 .eq. 2) then
+            itransform(2)=2
+            if((jhi1-jlo1)*(jhi2-jlo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+          else if (isva1 .eq. 2 .and. isva2 .eq. 3) then
+            itransform(2)=3
+            if((jhi1-jlo1)*(khi2-klo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+c
+          else if (isva1 .eq. 3 .and. isva2 .eq. 1) then
+            itransform(3)=1
+            if((khi1-klo1)*(ihi2-ilo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          else if (isva1 .eq. 3 .and. isva2 .eq. 2) then
+            itransform(3)=2
+            if((khi1-klo1)*(jhi2-jlo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          else if (isva1 .eq. 3 .and. isva2 .eq. 3) then
+            itransform(3)=3
+            if((khi1-klo1)*(khi2-klo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          end if
+c   do 2nd varying index
+          if      (isvb1 .eq. 1 .and. isvb2 .eq. 1) then
+            itransform(1)=1
+            if((ihi1-ilo1)*(ihi2-ilo2) .lt. 0)
+     +        itransform(1)=-itransform(1)
+          else if (isvb1 .eq. 1 .and. isvb2 .eq. 2) then
+            itransform(1)=2
+            if((ihi1-ilo1)*(jhi2-jlo2) .lt. 0)
+     +        itransform(1)=-itransform(1)
+          else if (isvb1 .eq. 1 .and. isvb2 .eq. 3) then
+            itransform(1)=3
+            if((ihi1-ilo1)*(khi2-klo2) .lt. 0)
+     +        itransform(1)=-itransform(1)
+c
+          else if (isvb1 .eq. 2 .and. isvb2 .eq. 1) then
+            itransform(2)=1
+            if((jhi1-jlo1)*(ihi2-ilo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+          else if (isvb1 .eq. 2 .and. isvb2 .eq. 2) then
+            itransform(2)=2
+            if((jhi1-jlo1)*(jhi2-jlo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+          else if (isvb1 .eq. 2 .and. isvb2 .eq. 3) then
+            itransform(2)=3
+            if((jhi1-jlo1)*(khi2-klo2) .lt. 0)
+     +        itransform(2)=-itransform(2)
+c
+          else if (isvb1 .eq. 3 .and. isvb2 .eq. 1) then
+            itransform(3)=1
+            if((khi1-klo1)*(ihi2-ilo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          else if (isvb1 .eq. 3 .and. isvb2 .eq. 2) then
+            itransform(3)=2
+            if((khi1-klo1)*(jhi2-jlo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          else if (isvb1 .eq. 3 .and. isvb2 .eq. 3) then
+            itransform(3)=3
+            if((khi1-klo1)*(khi2-klo2) .lt. 0)
+     +        itransform(3)=-itransform(3)
+          end if
+c
+c   Need to fill the "unused" index with the direction not currently employed
+          if (     itransform(1) .eq. 0) then
+            itransform(1)=6-abs(itransform(2))-abs(itransform(3))
+          else if (itransform(2) .eq. 0) then
+            itransform(2)=6-abs(itransform(1))-abs(itransform(3))
+          else if (itransform(3) .eq. 0) then
+            itransform(3)=6-abs(itransform(1))-abs(itransform(2))
+          end if
+          return
+          end
+#else
+c     this is now just a dummy routine since CGNS libs have not been
+c     used
+c
+      write(6,*)'This code is non-functional since the installation'
+      write(6,*)'of cfl3d was done without cgns libraries'
+c
+      stop
+      end
+#endif

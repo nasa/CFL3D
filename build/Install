@@ -1,0 +1,803 @@
+#! /bin/sh
+#
+################################################################################
+#
+# ****** TO USE THIS SCRIPT, MAKE SURE THIS FILE HAS EXECUTE PERMISSION ******
+#
+################################################################################
+#
+# this shell script sets up the makefile for cfl3d (version 6.0) on a number 
+# of platforms. current support is for:
+#
+#                  SGI   (incl. Origin 2000)
+#                  IBM   (incl. SP2)
+#                  Cray  (incl. T3E)
+#                  DEC Alpha
+#                  Sun
+#                  Linux
+#                  HP   !warning...currently only single precision works for HP!
+#
+# to create the makefile for cfl3d and the associated prepocessors (precfl3d,
+# splitter, ronnie and maggie) on the current machine, type: 
+#
+#        Install [options]   or   ./Install [options] if current directory is
+#                                                     not in your default path
+#
+# where [options] may be:
+#
+#   -single        to generate single-precision executables
+#                  from the resulting makefile (double 
+#                  precision is the default)
+#
+#   -mpichdir=DIR  where DIR is the MPICH base directory (only set when
+#                  using mpich, not native mpi; note: this script assumes
+#                  an mpich directory structure as obtained with 
+#                  mpich-1.1.2)
+#
+#   -cgnsdir=DIR  where DIR is the CGNS base directory, used if CGNS
+#                 compatability is desired
+#
+#   -no_opt        to generate an executable that has no optimization.
+#                  results in fastest code compilation at the expense
+#                  of computational speed (an optimized executable
+#                  is the default)
+#
+#   -noredirect    to generate an executable that does not use
+#                  file redirection for the main input file - due
+#                  to an odd interaction of PBS and the SP2, file
+#                  redirection can't be used with input files bigger
+#                  than 32 Kbyte (!?); this option opens unit 32 with
+#                  cfl3d.inp as the input file name - note that with
+#                  this option, your cfl3d input file MUST be called
+#                  cfl3d.inp.
+#
+#   -f77           use f77 as fortran compiler (default is f90)
+#
+# script by r.t.biedron 6/97
+#          revision 1.1 8/99
+#
+################################################################################
+################################################################################
+
+####################################################
+#
+#               INSTALLATION OPTIONS
+#
+####################################################
+
+do_dou=yes      # default flag to build double precision
+do_no_opt=no    # default flag to build optimized execuatble
+do_redirect=yes # default flag to allow file redirection for cfl3d executable
+mpichdir=""     # default to native mpi (mpich base directory not specified)
+do_f90=yes      # default to f90
+cgnsdir=""      # default to not cgns compatable
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -single)      do_dou=no ;;
+    -no_opt)      do_no_opt=yes ;;
+    -noredi*)     do_redirect=no ;;
+    -f77)         do_f90=no;;
+    -mpichdir=*)  mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
+    -cgnsdir=*)   cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
+    *) echo unknown argument for Install
+       cat << usage_end
+usage: Install  [options]
+       where options may be one or more of the following:
+       -single
+       -no_opt
+       -f77
+       -noredirect
+       -mpichdir=DIR  where DIR is the mpich base directory
+       -cgnsdir=DIR   where DIR is the cgns base directory
+usage_end
+       exit 1 ;;
+  esac
+  shift
+done
+
+if [ ! x$mpichdir = x ]; then
+   if [ ! -d $mpichdir ]; then
+   echo 'specified mpich directory does not appear to exist'
+   echo 'if using ~ in path, try using the full path name'
+   exit 1
+   fi
+fi
+
+if [ ! x$cgnsdir = x ]; then
+   if [ ! -d $cgnsdir ]; then
+   echo 'specified cgns directory does not appear to exist'
+   echo 'if using ~ in path, try using the full path name'
+   exit 1
+   fi
+fi
+
+# if specifying an mpich base directory, get full path 
+# name from relative path name (if used) for mpichdir, 
+# so that path will work when passed to subdirectories
+if [ ! x$mpichdir = x ]; then
+   CURPATH=`pwd`
+   cd $mpichdir
+   TEMPDIR=`pwd`
+   cd $CURPATH
+   mpichdir=$TEMPDIR
+fi
+
+# if specifying a cgns base directory, get full path
+# name from relative path name (if used) for cgnsdir,
+# so that path will work when passed to subdirectories
+if [ ! x$cgnsdir = x ]; then
+   CURPATH=`pwd`
+   cd $cgnsdir
+   TEMPDIR=`pwd`
+   cd $CURPATH
+   cgnsdir=$TEMPDIR
+fi
+
+####################################################
+#
+#           OBTAIN THE ARCH OF THE MACHINE
+#
+####################################################
+
+# First, try some special cases:
+
+if [ -d "/dev/elan" ] ; then
+  FARCH="meiko"
+elif [ -f /usr/bin/uxpm ] && /usr/bin/uxpm ; then
+  FARCH="UXPM"
+elif [ -f /usr/bin/uxpv ] && /usr/bin/uxpv ; then
+  FARCH="uxpv"
+fi
+if [ -n "$FARCH" ] ; then
+    echo $FARCH
+    exit 0
+fi
+
+# Try to find uname
+
+for dir in /bin /usr/bin /usr/local/bin ; do
+    if [ -x $dir/uname ] ; then
+	UNAME="$dir/uname"
+        break
+    fi
+done
+
+# Get uname -s, uname -m, and arch values
+
+if [ -n "$UNAME" ] ; then
+    ARCHLIST="`uname -s`"
+    ARCHLIST="$ARCHLIST `uname -m`"
+fi
+
+# Get ARCH variable name
+
+if [ -n "$ARCH" ] ; then
+    ARCHLIST="$ARCHLIST $ARCH"
+fi
+
+# Get arch command
+
+if [ -x /bin/arch ] ; then
+    ARCHLIST="$ARCHLIST `/bin/arch`"
+elif [ -x /usr/local/bin/arch ] ; then
+    ARCHLIST="$ARCHLIST `/usr/local/bin/arch`"
+fi
+
+# GARCH is a guess if we don't find something better
+
+GARCH=
+
+# Now, weed through all of these values until we find something useful.
+
+for LARCH in $ARCHLIST ; do
+
+   # Remove blanks
+   LARCH=`echo $LARCH | sed 's/ //g'`
+   # Get the first 4 characters (you'd be surprised)
+   #   LARCH4=`expr "$LARCH" : "\(....\)"`
+   #   LARCH6=`expr "$LARCH" : "\(......\)"`
+   case $LARCH in
+	AIX|RIOS) FARCH=rs6000; break ;;
+	HP-UX) FARCH=hpux ; break ;;
+	IRIX64|IRIX) FARCH=$LARCH ; break ;;
+	Linux)  FARCH=LINUX ; break ;;
+	i586|i486|i86pc)
+	    GARCH=$LARCH ;;
+	sun4*)
+	Version=`$UNAME -r`
+        # In "improving" SunOS, the useful feature of "substr" was withdrawn 
+        # from expr. This means that we can't just use
+        #   set MajorVersion = `expr substr $Version 1 1`
+        # because it won't work on Solaris systems.  The following should work
+        # on both:
+        MajorVersion=`expr "$Version" : "\(.\)"`
+        if [ "$MajorVersion" -ge 5 ] ; then
+            FARCH=solaris
+	else
+	    FARCH=sun4
+	fi
+	break ;;
+	hp9000*|hp7000*) FARCH=hpux ; break ;;
+	mips|dec-5000)   FARCH=dec5000 ; break ;;
+        IP12|iris-4d)    GARCH=IRIX ;;
+#       don't (yet) override the specific cray arch name with generic "CRAY" 
+#       cray|CRAY*)      GARCH=CRAY ;;
+        next)            FARCH=NeXT ; break ;;	
+	KSR1|KSR2)       FARCH=ksr ; break ;;	
+        FreeBSD)         FARCH=freebsd ; break ;;
+	i386)            GARCH=ipsc2 ;;
+	ULTRIX|RISC)     GARCH=dec5000 ;;
+   esac
+   LLARCH=$LARCH
+done
+
+#   now set cray arch to the generic "CRAY", except for the T3E
+
+case $LLARCH in     
+	C90) GARCH=CRAY ;;
+	J90) GARCH=CRAY ;;
+	T90) GARCH=CRAY ;;
+	YMP) GARCH=CRAY ;;
+esac
+
+if [ -z "$FARCH" ] ; then
+    FARCH=$GARCH
+    if [ -z "$FARCH" ] ; then
+	FARCH=$LLARCH
+    fi
+    if [ -z "$FARCH" ] ; then
+	FARCH=unknown
+    fi
+fi
+
+
+####################################################
+#
+# MAKEFILE MACROS BASED ON ARCH AND CONFIG OPTIONS
+#
+####################################################
+
+#NOTES/CONVENTIONS/ASSUMPTIONS:
+
+# A) if an mpich directory is set on input, use that directory as the
+#    "home" mpi directory
+#
+# ---> THIS ASSUMES THE DIRECTORY STRUCTURE CREATED BY UNTARRING <---
+# --->       THE MPICH PACKAGE IS MAINTAINED UNALTERED.          <---
+#
+# Specifically, the mpich directory structure is assumed to contain:
+#
+# NOTE: this is the mpich-1.1.2 structure; earlier versions used
+#       a different structure!!! USE mpich-1.1.2
+#
+#                          mpichdir
+#                             |
+#                       ------------
+#                       |          |
+#                     build
+#                       |
+#                     FARCH        where FARCH is the machine arch, e.g.
+#                       |          IRIX64, alpha, solarix, LINUX, cray,
+#                  ----------      hpux, rs6000,... 
+#                  |        |
+#                ch_p4
+#                  |
+#              --------
+#              |      |
+#             lib  include
+
+
+# B) if an mpich directory is NOT set on input, assume a "home"
+#    mpi directory based on the NASA systems
+#
+# ---> THIS MAY REQUIRE "TWEAKING" ON NEW SYSTEMS <----
+
+ 
+# C) if a cgns directory is set on input, use that directory as the
+#    "home" cgns directory
+#
+# ---> THIS ASSUMES THE DIRECTORY STRUCTURE CREATED BY UNTARRING <---
+# --->        THE CGNS PACKAGE IS MAINTAINED UNALTERED.          <---
+#
+# Specifically, the cgns directory structure is assumed to contain:
+#
+#                          cgnsdir
+#                             |
+#                            lib 
+#
+# Note that if the user downloads the pre-compiled libraries from 
+# the CGNS website, rather than downloading the entire source code
+# tar file, then the user must create this directory structure. The
+# cgnslib_f.h file must be placed in the cgnsdir directory, and any
+# appropriate libraries must be placed in the lib directory.
+
+
+# D) CPPOPT_SP "if def"s  allow various special code requirements
+#    or options to be utilized via cpp processor.
+#
+# ON CRAY:
+# 1) ASN_P3D governs whether plot3d files are to be written out
+#    in ieee std. form. ASN_P3D handles both plot3d files and is
+#    very useful.
+# 2) ASN_GRD handles the grid file and should be  used with
+#    caution. The problem is that if the grid is *not* in ieee
+#    format but asnfile is called, the grid file will be corrupted
+#    during the read! thus, ASN_GRD must be used only when absolutely
+#    sure the grid in ieee form. note that this is not an issue with
+#    the plot3d files since they are not read from, only written to.
+# 3) CRAY_TIME governs the timing function: there appears to be
+#    no equivalent of etime or itime on the crays; therefore, cannot
+#    use subroutine cputim. CRAY_TIME switches the calls to etime and
+#    itime in subroutine cputim with the cray "built-in" function
+#    second. note that the value from second is output as user time,
+#    system time is arbitrarily set to zero, and wall clock time is
+#    set to user time. NOTE: CRAY_TIME is now also used to select the
+#    appropriate memory allocation call for the Crays
+# 4) WKSTN_OFF switches off the routines that are used on workstations
+#    to mimic native cray functions (e.g. isrcheq_wkstn, ismin_wkstn
+#    and ismax_wkstn), thereby allowing use of the native (presumably
+#    faster) functions on crays.
+#
+# ON HP:
+# 1) ADP_OFF allows double precision to be turned off in subroutines
+#    that require certain variables as single precision. on most
+#    platforms we can just locally declare variables to be real*4
+#    even if everywhere else they are real*8. on the hp, once
+#    autodblpad is turned on (to get double precision everywhere
+#    else in the code), real*4 has no effect - autodblpad must be
+#    turned off to have real*4 take effect.
+#
+# ON RS6000:
+# 1) IBM  substitutes etime_ and itime_ for etime and itime,
+#    respectively, in subroutine cputim
+# 2) IBM substitutes flush_ for flush in subroutines termn8 and usrint
+# 3) IBM substitutes a 2-argument call to signal for the
+#    default 3-argument call in the driver routine (main.F)
+#
+# ON ANY PLATFORM BUT *REQUIRED* FOR SP2's RUNNING PBS:
+# 1) NOREDIRECT turns off the use of file redirection for input
+#    of the main input file for cfl3d (often called cfl3d.inp).
+#    Due to an odd interaction of the SP2 and PBS, file redirection
+#    for files > 32 Kbyte will cause the execution to HANG (decidedly
+#    uncool). NOREDIRECT causes an explict open to unit 32 to be made,
+#    made, with the input file hard-wired to cfl3d.inp, allowing any
+#    size input file to be used without problem. NOTE: NOREDIRECT
+#    currently is only applicable to the cfl3d executable
+#
+# ON ANY PLATFORM:
+# 1) F77 forces the use of the f77 compiler instead of the default f90.
+# 2) CGNS enables code to read cgns files - set if cgnsdir is specified
+#    in the command line
+
+# E) Cfl3dv6 relies on "ifdefs" in order to have one source code that can
+#    be compiled to run on different workstations, sequentially or in 
+#    parallel, etc. The ifdefs are processed at compile time, and may be
+#    done either (on most platforms) with a c-preprocessor (cpp) built
+#    into the fortran compiler (generally the preferred method) or an 
+#    external call to cpp. In the top-level makefile that is created by
+#    is install script, the MAKEFILE variable determines whether the 
+#    internal fortran cpp is used (MAKEFILE=makefile) or an external
+#    cpp is used (MAKEFILE=makefile_cpp). Note that if the external
+#    cpp is used, the variable CPP in the top-level makefile must point
+#    to the location of the preprocessor. Make sure this is correct for
+#    your system (the location need not be correct if the fortran internal
+#    preprocessor is used, i.e. MAKEFILE = makefile)
+#    
+#
+
+#########################################
+#            DEFAULT VALUES
+#########################################
+
+case $FARCH in *)
+
+# precision 
+
+  if [ $do_dou = yes ]; then
+     PREC="-r8"
+     PREC_MPI="-DDBLE_PRECSN"
+  else
+     PREC=""
+     PREC_MPI=""
+  fi
+
+# compilers
+
+  FTN="f90"
+  CC="cc"
+  if [ $do_f90 = no ]; then
+     FTN="f77"
+  fi
+
+# compile/link flags
+
+  FFLAG=""
+  LFLAG=""
+  CFLAG="$PREC"
+
+# cpp (c-preprocessor) and cpp flags
+
+  CPP="/usr/lib/cpp"
+  CPPFLAG="-P"
+  CPPOPT_SP="-DP3D_SINGLE"
+  MAKEFILE="makefile"
+
+# rules for creating cfl3d libraries
+
+# Note: for those platforms *without* ranlib, set RANLIB=true
+# (go figure!) to avoid trying to access ranlib - in that
+# case the s option on ar is used to perform the ranlib
+# function (i.e. to build symbol tables)
+
+  AROPT="rusc"
+  RANLIB="true"
+
+# MPI library specification
+
+#NOTES/CONVENTIONS
+# 1) MPI_HOME is the baseline mpi directory; if mpichdir is specified
+#    on the command line, then that directory becomes the home (unless
+#    specifically overwritten in one of the architecture-specific
+#    sections below
+# 2) MPI_INCDIR is the directory containing the MPI header file mpif.h
+# 3) MPI_LLIBDIR is the directory containing the MPI library archive 
+# 4) MPI_LLIB the MPI library archive - typically called libmpi.a 
+#    or libmpi.so (libmpich.a libmpich.so for mpich) NOTE: though the
+#    archive name is prepended with "lib" and is appended with either
+#    ".a" or ".so", these must be stripped off when setting MPI_LLIB. 
+#    The MPI library archive must be located n the directory specified
+#    by MPI_LLIBDIR
+
+  MPI_HOME="/usr"
+  MPI_INCDIR="$MPI_HOME/include"
+  MPI_LLIBDIR="$MPI_HOME/lib"
+  MPI_LLIB="mpi"
+  if [ ! x$mpichdir = x ];then
+     if [ -d $mpichdir ]; then
+        MPI_HOME=$mpichdir
+#       NOTE: mpich-1.1.2 structure!
+        MPI_INCDIR="$MPI_HOME/build/$FARCH/ch_p4/include"
+        MPI_LLIBDIR="$MPI_HOME/build/$FARCH/ch_p4/lib"
+        MPI_LLIB="mpich"
+     fi
+  fi
+
+# CGNS library specification
+
+#NOTES/CONVENTIONS
+# 1) conventions analogous to those given above for mpi library
+#    specification; default is NO cgns library unless input
+#    via cgnsdir= on the command line
+# 2) The CGNS_LLIB library archive names do not correspond to the
+#    $FARCH convention used in this script; thus, the library 
+#    archive names are set under each architecture-specific section
+#    below.
+
+  CGNS_HOME=""
+  CGNS_INCDIR=""
+  CGNS_LLIBDIR=""
+  CGNS_LLIB=""
+  if [ ! x$cgnsdir = x ]; then
+     if [ -d $cgnsdir ]; then
+        CGNS_HOME="$cgnsdir"
+        CGNS_INCDIR="$CGNS_HOME"
+        CGNS_LLIBDIR="$CGNS_HOME/lib"
+        CGNS_LLIB=""
+     fi
+  fi
+
+# code to inline for vector performance (really needed only on cray
+# vector machines, so default is none)
+
+  INLINE=""
+
+esac
+
+#########################################
+#     CRAY ARCHITECTURE (except T3E)
+#########################################
+
+# to use flowtracing, add -ef to the FFLAG line, and add -lperf to
+# the LLIBS and LLIBS_SEQ lines
+
+case $FARCH in CRAY)
+  PREC_MPI=""
+  PREC=""
+  CFLAG="$PREC"
+  CPP="/opt/ctl/bin/cpp"
+  CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+  AROPT="ruc"
+  RANLIB="ranlib"
+  FFLAG="-Oscalar3,vector3"
+  INLINE="-Oinlinefrom=ccomplex.F"
+esac
+
+#########################################
+#        CRAY T3E ARCHITECTURE
+#########################################
+
+case $FARCH in T3E)
+  PREC_MPI=""
+  PREC=""
+  CPP="cpp"
+  CPPOPT_SP="-DCRAY_TIME -DT3E"
+  AROPT="ruc"
+  RANLIB="ranlib"
+esac
+
+#########################################
+#          IRIX64 ARCHITECTURE
+#########################################
+
+case $FARCH in IRIX64)
+  if [ $do_no_opt = no ]; then
+     FFLAG="-O2 -64 -mips4 -r10000 -align64 -OPT:Olimit=4000"
+     FFLAG="$FFLAG -OPT:swp=ON -LNO:prefetch=2"
+     FFLAG="$FFLAG -TARG:madd=ON"
+     if [ do_f90=yes ]; then
+        FFLAG="$FFLAG -cpp"
+     fi
+     LFLAG="-64"
+  else
+     FFLAG="-64"
+     LFLAG="-64"
+  fi
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.mips4_64"
+  fi
+  if [ x$mpichdir = x ]; then
+     MPI_LLIBDIR="$MPI_HOME/lib64"
+  fi
+  CFLAG="$CFLAG -64"
+esac
+
+#########################################
+#          RS6000 ARCHITECTURE
+#########################################
+
+case $FARCH in rs6000)
+  FTN="xlf"
+  if [ $do_dou = yes ]; then
+     PREC="-qrealsize=8 -qintsize=4"
+  fi
+  if [ $do_no_opt = no ]; then
+     FFLAG="-O3 -qhot -qstrict -bmaxdata:190000000"
+     FFLAG="$FFLAG -qarch=pwr2"
+  fi
+  CPPOPT_SP="-DIBM -DP3D_SINGLE"
+  MAKEFILE="makefile_cpp"
+  if [ x$mpichdir = x ]; then
+     MPI_HOME="/usr/lpp/ppe.poe"
+     MPI_INCDIR="$MPI_HOME/include"
+  fi
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.IBM"
+  fi
+esac
+
+#########################################
+#       SUN/SOLARIS ARCHITECTURE
+#########################################
+
+# note: must explicitly ask for i4 with solaris OS on sun's
+# since r8 alters integer length !!!
+
+case $FARCH in sun|solaris)
+  if [ $do_dou = yes ]; then
+     PREC="$PREC -i4"
+  fi
+  if [ $do_no_opt = no ]; then
+     FFLAG="-O2"
+  fi
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.SOL"
+  fi
+  CPP="/usr/ccs/lib/cpp"
+esac
+
+#########################################
+#            HPUX ARCHITECTURE
+#########################################
+
+case $FARCH in hpux)
+  if [ $do_dou = yes ]; then
+     if [ do_f90=yes ]; then
+        PREC="+autodbl"
+     else
+        PREC="+autodblpad"
+     fi
+  fi
+  if [ $do_no_opt = no ]; then
+     FFLAG="+U77 +FPOVZ +O2 "
+  else
+     FFLAG="+U77 +FPOVZ "
+  fi
+  LFLAG="+FPOVZ +U77"
+  CPPOPT_SP="-DADP_OFF -DP3D_SINGLE"
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.HP"
+  fi
+esac
+
+#########################################
+#            ALPHA ARCHITECTURE
+#########################################
+
+case $FARCH in alpha)
+  if [ $do_no_opt = no ]; then
+     FFLAG="-O4 -convert big_endian"
+  else
+     FFLAG="-convert big_endian"
+  fi
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.ALPHA"
+  fi
+esac
+
+#########################################
+#            LINUX ARCHITECTURE
+#########################################
+
+# NOTE: the following are specific to ICASE Beowulf machine "Coral",
+# which consists of 33 400 Mhz Pentium II processors
+
+case $FARCH in LINUX)
+   FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+  if [ $do_dou = yes ]; then
+     PREC="-Mr8"
+  else
+     PREC=""
+  fi
+  CPP="/usr/local/pgi/linux86/bin/pgcpp1"
+  FTN="/usr/local/pgi/linux86/bin/pgf90"
+  CPPOPT_SP="$CPPOPT_SP -DLINUX"
+esac
+
+####################################################
+#
+#   MISCELLANEOUS "IFDEF" VARIABLES
+#
+####################################################
+
+if [ $do_redirect = no ]; then
+   CPPOPT_SP="$CPPOPT_SP -DNOREDIRECT"
+fi
+
+if [ ! x$cgnsdir = x ]; then
+   if [ -d $cgnsdir ]; then
+      CPPOPT_SP="$CPPOPT_SP -DCGNS"
+   fi
+fi
+
+
+####################################################
+#
+#   CREATE ACTUAL MAKEFILE BY EDITING MAKEFILE.IN
+#
+####################################################
+
+# first, prepend the appropriate characters to:
+# 1) libraries: -l (lower-case L)
+# 2) library directories: -L
+# 3) include directories: -I (upper-case i)
+
+# libraries
+
+LLIB="-l$MPI_LLIB"
+if [ ! x$cgnsdir = x ]; then
+   LLIB="$LLIB -l$CGNS_LLIB"
+   LLIB_SEQ="-l$CGNS_LLIB"
+fi
+
+# library directories
+
+LLIBDIR="-L$MPI_LLIBDIR"
+if [ ! x$cgnsdir = x ]; then
+   LLIBDIR="$LLIBDIR -L$CGNS_LLIBDIR"
+   LLIBDIR_SEQ="-L$CGNS_LLIBDIR"
+fi
+
+# include directories
+
+# save off the non-prepended names for output to screen
+MPIINCDIR="$MPI_INCDIR"
+CGNSINCDIR="$CGNS_INCDIR"
+MPI_INCDIR="-I$MPI_INCDIR"
+if [ ! x$cgnsdir = x ]; then
+   CGNS_INCDIR="-I$CGNS_INCDIR"
+fi
+
+echo ' '
+echo 'creating top-level makefile'
+
+sed -e "
+s;@ A MAKEFILE IS CREATED FROM THIS FILE VIA THE INSTALL SCRIPT @;;
+s;@FARCH@;$FARCH;g
+s;@FFLAG@;$FFLAG;g
+s;@PREC@;$PREC;g
+s;@PREC_MPI@;$PREC_MPI;g
+s;@LFLAG@;$LFLAG;g
+s;@CPP@;$CPP;g
+s;@CPPFLAG@;$CPPFLAG;g
+s;@CPPOPT_SP@;$CPPOPT_SP;g
+s;@LLIB@;$LLIB;g
+s;@LLIBDIR@;$LLIBDIR;g
+s;@LLIB_SEQ@;$LLIB_SEQ;g
+s;@LLIBDIR_SEQ@;$LLIBDIR_SEQ;g
+s;@MPI_INCDIR@;$MPI_INCDIR;g
+s;@CGNS_INCDIR@;$CGNS_INCDIR;g
+s;@FTN@;$FTN;g
+s;@CC@;$CC;g
+s;@CFLAG@;$CFLAG;g
+s;@AROPT@;$AROPT;g
+s;@RANLIB@;$RANLIB;g
+s;@INLINE@;$INLINE;g
+s;@MAKEFILE@;$MAKEFILE;g
+" Makefile.in > makefile
+
+# touch files in header directory to create them if 
+# they don't exist so that soft links can be created
+
+touch ../header/mag1.h
+
+echo ' '
+echo 'cleaning up from any previous installation'
+echo ' '
+make -s scruball
+echo ' '
+echo 'establishing soft links'
+make -s linkall
+
+echo ' '
+echo '*** done...completed installation and creation of makefile ***' 
+echo ' '
+echo 'makefile created for architecture.............'$FARCH
+echo 'makefile created for double precision.........'$do_dou
+if [ $do_f90 = yes ]; then
+   echo 'makefile created to use fortran compiler......f90'
+else
+   echo 'makefile created to use fortran compiler......f77'
+fi
+if [ $do_no_opt = no ]; then
+   echo 'makefile created with optimization flags......yes'
+else
+   echo 'makefile created with optimization flags......no'
+fi
+if [ x$mpichdir = x ]; then
+   echo 'assuming mpi libraries in directory '$MPI_LLIBDIR
+else
+   echo 'assuming mpich libraries in directory '$MPI_LLIBDIR
+fi
+echo 'assuming mpi header file in directory '$MPIINCDIR
+if [ ! x$cgnsdir = x ]; then
+   echo 'assuming cgns libraries in directory '$CGNS_LLIBDIR
+   echo 'assuming cgns header file in directory '$CGNSINCDIR
+fi
+echo ' '
+echo 'type "make" for a description of the various make options to'
+echo 'create executable code'
+
+echo ' '
+echo 'before compiling maggie (overset preprocessor), make sure'
+echo 'that appropriate header file (mag1.h) for your case has been'
+echo 'copied or soft-linked to the header directory'
+
+
+if [ $do_redirect = yes ]; then
+   if [ $FARCH = rs6000 ]; then
+     echo ' '
+     echo 'NOTE: it appears that you are running on an rs6000...'
+     echo 'if this is an SP2 using PBS (Portable Batch Script)'
+     echo 'MPI will hang if the input file to cfl3d is larger'
+     echo 'than 32 Kbyte. Use the -noredirect option to this'
+     echo 'install script and re-install to turn off input'
+     echo 'file redirection'
+   fi
+else
+   echo ' '
+   echo 'NOTE: the noredirect option has been chosen; your input file'
+   echo 'for cfl3d MUST be named cfl3d.inp, and you cannot use input'
+   echo 'file redirection (e.g. cannot use cfl3d_mpi <cfl3d.inp'
+   echo 'rather, the code must be run simply as cfl3d_mpi)'
+fi

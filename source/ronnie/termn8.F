@@ -1,0 +1,162 @@
+      subroutine termn8(myid_stop,ierrflg,ibufdim,nbuf,bou,nou)
+c***********************************************************************
+c      Purpose: Flush output buffers (distributed version) so that last
+c      information written to output files will be printed in case of
+c      a program termination; also print error flag to signal
+c      status at program termination, and close all files (except those
+c      which are closed elsewhere).
+c
+c      error codes (ierrflg):
+c
+c       = 0  normal termination
+c       < 0  abnormal termination
+c
+c***********************************************************************
+c
+#if defined DIST_MPI
+      include 'mpif.h'
+#endif
+c
+      character*120 bou(ibufdim,nbuf)
+c
+      dimension nou(nbuf)
+c
+      common /mydist2/ nnodes,myhost,myid,mycomm
+c
+      write(99,99) ierrflg
+   99 format(' error code:',/,i4)
+c
+      if (ierrflg.eq.0) then
+            write(99,1)
+    1       format(/,' execution terminated normally')
+      else 
+         if (ierrflg.ne.-999) then
+            if (ierrflg.eq.-99) then
+               if (nou(1).gt.0) then
+                  write(99,22)
+   22             format(/,' abnormal termination during array',
+     .            ' sizing (preronnie)',/,
+     .            ' (error message follows)',/)
+               else
+                  write(99,33)
+   33             format(/,' abnormal termination during array',
+     .            ' sizing (preronnie)',/,
+     .            ' (see preronnie.out for error message)',/)
+               end if
+            else
+               iflag = 0
+               do nn=1,nbuf
+                  if (nou(nn).gt.0) iflag = 1
+               end do
+               if (iflag.gt.0) then
+                  write(99,2)
+    2             format(/,' abnormal termination due to cfl3d',
+     .            ' error check',/,
+     .            ' (error message follows)',/)
+               else
+                  write(99,3)
+    3             format(/,' abnormal termination due to cfl3d',
+     .            ' error check',/,
+     .            ' (see main output file for error message)',/,
+     .            ' (also check dynamic patch output file if',
+     .            ' applicable)',/)
+               end if
+            end if
+         else
+            write(99,4)
+    4       format(/,' abnormal termination due to receipt of',
+     .      ' system signal',/,
+     .      ' (kill, floating pt. exception,',
+     .      ' segmentation fault, etc.)',/)
+         end if
+c
+c        dump all internal buffers to make sure any relevant
+c        info as to the cause of the abnormal termination 
+c        is available to the user
+c
+         do nn=1,nbuf
+            if (nou(nn).gt.0) then
+               write(99,*)
+               if (nn.eq.1) then
+                  write(99,*)'dump of unit 11 (main output) buffer:'
+               else if (nn.eq.2) then
+                  write(99,*)'dump of unit 09 (fort.9, dyn. patch) ',
+     .                       'buffer:'
+               else if (nn.eq.3) then
+                  write(99,*)'dump of unit 14 (baldwin-lomax) buffer:'
+               else if (nn.eq.4) then
+                  write(99,*)'dump of unit 25 (cfl3d.dynamic_patch) ',
+     .                       'buffer:'
+               else
+                  write(99,*)'need a message for buffer',nn
+               end if
+               write(99,*)
+               do kou = 1,nou(nn)
+                  call outbuf(bou(kou,nn),99)
+               end do
+            end if
+         end do
+c
+      end if
+c
+#   ifdef IBM then
+      call flush_(25)
+      call flush_(99)
+#   else
+      call flush(25)
+      call flush(99)
+#   endif
+c
+      close(25)
+      close(99)
+c
+#if defined DIST_MPI
+c
+      if (ierrflg.eq.0) then
+         call MPI_Finalize (ierr)
+      else if (ierrflg.eq.-99) then
+         write (6,9) myid_stop
+    9    format('node',i4,' is terminating the program ',
+     .   'due to a preronnie error check')
+         write (6,*) 'see file preronnie.error'
+         call MPI_ABORT(MPI_COMM_WORLD, myid_stop, mpierror)
+         call MPI_Finalize (ierr)
+      else if (ierrflg.gt.-99) then
+         write (6,10) myid_stop
+   10    format('node',i4,' is terminating the program ',
+     .   'due to a ronnie error check')
+         write (6,*) 'see file ronnie.error'
+         call MPI_ABORT(MPI_COMM_WORLD, myid_stop, mpierror)
+         call MPI_Finalize (ierr)
+      else if (ierrflg.eq.-999) then
+         write (6,11) myid_stop
+   11    format('node',i4,' is terminating the program ',
+     .   'due to receipt of a system signal')
+         write (6,*) 'see files preronnie.error and ronnie.error'
+         call MPI_ABORT(MPI_COMM_WORLD, myid_stop, mpierror)
+         call MPI_Finalize (ierr)
+      end if
+c
+#else
+      if (ierrflg.eq.0) then
+         stop
+      else if (ierrflg.eq.-99) then
+         write (6,*) 'program termination ',
+     .   'due to a preronnie error check'
+         write (6,*) 'see file preronnie.error'
+          stop
+      else if (ierrflg.gt.-99) then
+         write (6,*) 'program termination ',
+     .   'due to a ronnie error check'
+         write (6,*) 'see file ronnie.error'
+         stop
+      else if (ierrflg.eq.-999) then
+         write (6,*) 'program termination ',
+     .   'due to receipt of a system signal'
+         write (6,*) 'see files preronnie.error and ronnie.error'
+         stop
+      end if
+#endif
+c
+      stop
+      end

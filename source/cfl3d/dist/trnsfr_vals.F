@@ -1,0 +1,1122 @@
+      subroutine trnsfr_vals(work,mwork,iwork,mworki,maxgr,maxbl,
+     .                       maxseg,nbli,nblock,levelg,igridg,
+     .                       iovrlp,nbci0,nbcj0,nbck0,
+     .                       nbcidim,nbcjdim,nbckdim,iflimg,ifdsg,
+     .                       iviscg,jdimg,kdimg,idimg,nblcg,idegg,
+     .                       isg,jsg,ksg,ieg,jeg,keg,jlamlog,klamlog,
+     .                       ilamlog,ilamhig,jlamhig,klamhig,mit,
+     .                       iwfg,iadvance,iforce,lfgm,ihstry,ninter,
+     .                       ngrid,ncgg,nblg,iemg,inewgg,idiagg,
+     .                       nplot3d,nprint,ncs,ip3dsurf,mblk2nd,
+     .                       utrans,vtrans,wtrans,omegax,omegay,
+     .                       omegaz,xorig,yorig,zorig,dxmx,dymx,
+     .                       dzmx,dthxmx,dthymx,dthzmx,thetax,thetay,
+     .                       thetaz,rfreqt,rfreqr,xorig0,yorig0,zorig0,
+     .                       time2,thetaxl,thetayl,thetazl,itrans,
+     .                       irotat,idefrm,utrnsae,vtrnsae,wtrnsae,
+     .                       omgxae,omgyae,omgzae,xorgae,yorgae,zorgae,
+     .                       thtxae,thtyae,thtzae,rfrqtae,rfrqrae,
+     .                       icsi,icsf,jcsi,jcsf,kcsi,kcsf,freq,gmass,
+     .                       x0,gf0,damp,perturb,aesrfdat,bcvali,bcvalj,
+     .                       bcvalk,ibcinfo,jbcinfo,kbcinfo,rkap0g,
+     .                       bcfilei,bcfilej,bcfilek,mxbli,nblk,limblk,
+     .                       nblon,isva,bcfiles,icsinfo,mxbcfil,maxcs,
+     .                       nmds,maxaes,inpl3d,inpr,nplots,nou,bou,
+     .                       nbuf,ibufdim,iskip,jskip,kskip,nsegdfrm,
+     .                       idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,
+     .                       zorgae0,icouple,iprnsurf)
+c***********************************************************************
+c     Purpose:  Load various data into work arrays for transfer from
+c     host to nodes. For ease of modification, a special section is
+c     reserved for keyword data (look for the word "keyword"); if 
+c     additional keyword data is defined, make sure both the host
+c     node sections are altered; the section provided is in the real
+c     transfer section, so any integers keywords should first be 
+c     converted to reals via "float" and then converted back to integer
+c***********************************************************************
+c
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+#if defined DIST_MPI
+c
+#     include "mpif.h"
+#   ifdef DBLE_PRECSN
+#      ifdef CMPLX
+#        define MY_MPI_REAL MPI_DOUBLE_COMPLEX
+#      else
+#        define MY_MPI_REAL MPI_DOUBLE_PRECISION
+#      endif
+#   else
+#      ifdef CMPLX
+#        define MY_MPI_REAL MPI_COMPLEX
+#      else
+#        define MY_MPI_REAL MPI_REAL
+#      endif
+#   endif
+#endif
+c
+      integer bcfilei,bcfilej,bcfilek
+c
+      character*120 bou(ibufdim,nbuf)
+      character*80 bcfiles(mxbcfil)
+      character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
+     .             output2,printout,pplunge,ovrlap,patch,restrt,
+     .             subres,subtur,grdmov,alphahist,errfile,preout,
+     .             aeinp,aeout,sdhist
+c
+      dimension nou(nbuf)
+      dimension work(mwork),iwork(mworki)
+      dimension inpl3d(nplots,11),inpr(nplots,11)
+      dimension levelg(maxbl),igridg(maxbl),mit(5,maxbl),
+     .          iflimg(maxbl,3),ifdsg(maxbl,3),iviscg(maxbl,3),
+     .          jdimg(maxbl),kdimg(maxbl),idimg(maxbl),idiagg(maxbl,3),
+     .          nblcg(maxbl),idegg(maxbl,3),jsg(maxbl),
+     .          ksg(maxbl),isg(maxbl),jeg(maxbl),keg(maxbl),ieg(maxbl),
+     .          jlamlog(maxbl),klamlog(maxbl),ilamlog(maxbl),
+     .          jlamhig(maxbl),klamhig(maxbl),ilamhig(maxbl),
+     .          iwfg(maxbl,3),mblk2nd(maxbl),rkap0g(maxbl,3)
+      dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
+     .          nbck0(maxbl),nbckdim(maxbl)
+      dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr),inewgg(maxgr)
+      dimension iadvance(maxbl),iforce(maxbl),iovrlp(maxbl)
+      dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
+     .          bcfilek(maxbl,maxseg,2),icsinfo(maxcs,9)
+      dimension nblk(2,mxbli),limblk(2,6,mxbli),
+     .          isva(2,2,mxbli),nblon(mxbli)
+      dimension utrans(maxbl),vtrans(maxbl),wtrans(maxbl),
+     .          omegax(maxbl),omegay(maxbl),omegaz(maxbl),xorig(maxbl),
+     .          yorig(maxbl),zorig(maxbl),dxmx(maxbl),dymx(maxbl),
+     .          dzmx(maxbl),dthxmx(maxbl),dthymx(maxbl),dthzmx(maxbl),
+     .          thetax(maxbl),thetay(maxbl),thetaz(maxbl),rfreqt(maxbl),
+     .          rfreqr(maxbl),xorig0(maxbl),yorig0(maxbl),zorig0(maxbl),
+     .          time2(maxbl),thetaxl(maxbl),thetayl(maxbl),
+     .          thetazl(maxbl),itrans(maxbl),irotat(maxbl),idefrm(maxbl)
+      dimension utrnsae(maxbl,maxsegdg),vtrnsae(maxbl,maxsegdg),
+     .          wtrnsae(maxbl,maxsegdg),omgxae(maxbl,maxsegdg),
+     .          omgyae(maxbl,maxsegdg),omgzae(maxbl,maxsegdg),
+     .          xorgae(maxbl,maxsegdg),yorgae(maxbl,maxsegdg),
+     .          zorgae(maxbl,maxsegdg),thtxae(maxbl,maxsegdg),
+     .          thtyae(maxbl,maxsegdg),thtzae(maxbl,maxsegdg),
+     .          rfrqtae(maxbl,maxsegdg),rfrqrae(maxbl,maxsegdg)
+      dimension xorgae0(maxbl,maxsegdg),yorgae0(maxbl,maxsegdg),
+     .          zorgae0(maxbl,maxsegdg),icouple(maxbl,maxsegdg)
+      dimension icsi(maxbl,maxsegdg),icsf(maxbl,maxsegdg),
+     .          jcsi(maxbl,maxsegdg),jcsf(maxbl,maxsegdg),
+     .          kcsi(maxbl,maxsegdg),kcsf(maxbl,maxsegdg)
+      dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg),
+     .          iaesurf(maxbl,maxsegdg)
+      dimension freq(nmds,maxaes),gmass(nmds,maxaes),x0(2*nmds,maxaes),
+     .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
+     .          perturb(nmds,maxaes,4)
+      dimension aesrfdat(5,maxaes)
+      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension bcvali(maxbl,maxseg,7,2),
+     .          bcvalj(maxbl,maxseg,7,2),bcvalk(maxbl,maxseg,7,2),
+     .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
+     .          kbcinfo(maxbl,maxseg,7,2)
+c
+      common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
+     .                geom_img,surf_img
+      common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
+      common /precond/ cprec,uref,avn
+      common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
+      common /fluid2/ pr,prt,cbar
+      common /singular/ atol
+      common /deformz/ beta1,ismooth,negvol
+      common /mydist2/ nnodes,myhost,myid,mycomm
+      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+     .        icycupdt,dcldal,alphalast
+      common /chk/ ichk
+      common /degshf/ ideg(3)
+      common /fsum/ sref,cref,bref,xmc,ymc,zmc
+      common /fvfds/ rkap0(3),ifds(3)
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /maxiv/ ivmx
+      common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
+      common /mgv/ epsssc(3),epsssr(3),issc,issr
+      common /ncyct/ ncyctot
+      common /reyue/ reue,tinf,ivisc(3)
+      common /sminn/ isminc
+      common /twod/ i2d
+      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /moov/movie,nframes,icall1,lhdr
+      common /wrbl/ nwrest
+      common /wrestq/ irest,irest2
+      common /igrdtyp/ ip3dgrd,ialph
+      common /cpurate/ rate(5),ratesub(5),ncell(20)
+      common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
+     .                  omegaxmc,omegaymc,omegazmc,xorigmc,yorigmc,
+     .                  zorigmc,xorig0mc,yorig0mc,zorig0mc,thetaxmc,
+     .                  thetaymc,thetazmc,dxmxmc,dymxmc,dzmxmc,
+     .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
+     .                  rfreqrmc,itransmc,irotatmc,time2mc
+      common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
+     .                 output2,printout,pplunge,ovrlap,patch,restrt,
+     .                 subres,subtur,grdmov,alphahist,errfile,preout,
+     .                 aeinp,aeout,sdhist
+      common /elastic/ ndefrm,naesrf
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy
+      common /entfix/ epsa_l,epsa_r
+      common /elastic_ss/ idef_ss
+      common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
+      common /memory/ memadd,memaddi
+      common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
+      common /ghost/ irghost,iwghost
+      common /key/ nkey
+#if defined DIST_MPI
+c
+c***********************
+c     transfer real data
+c***********************
+c
+      if (myid.eq.myhost) then
+         do iii=1,maxbl
+            work(iii)          = utrans(iii)
+            work(iii+   maxbl) = vtrans(iii)
+            work(iii+ 2*maxbl) = wtrans(iii)
+            work(iii+ 3*maxbl) = omegax(iii)
+            work(iii+ 4*maxbl) = omegay(iii)
+            work(iii+ 5*maxbl) = omegaz(iii)
+            work(iii+ 6*maxbl) = xorig(iii)
+            work(iii+ 7*maxbl) = yorig(iii)
+            work(iii+ 8*maxbl) = zorig(iii)
+            work(iii+ 9*maxbl) = dxmx(iii)
+            work(iii+10*maxbl) = dymx(iii)
+            work(iii+11*maxbl) = dzmx(iii)
+            work(iii+12*maxbl) = dthxmx(iii)
+            work(iii+13*maxbl) = dthymx(iii)
+            work(iii+14*maxbl) = dthzmx(iii)
+            work(iii+15*maxbl) = thetax(iii)
+            work(iii+16*maxbl) = thetay(iii)
+            work(iii+17*maxbl) = thetaz(iii)
+            work(iii+18*maxbl) = rfreqt(iii)
+            work(iii+19*maxbl) = rfreqr(iii)
+            work(iii+20*maxbl) = xorig0(iii)
+            work(iii+21*maxbl) = yorig0(iii)
+            work(iii+22*maxbl) = zorig0(iii)
+            work(iii+23*maxbl) = time2(iii)
+            work(iii+24*maxbl) = thetaxl(iii)
+            work(iii+25*maxbl) = thetayl(iii)
+            work(iii+26*maxbl) = thetazl(iii)
+            work(iii+27*maxbl) = rkap0g(iii,1)
+            work(iii+28*maxbl) = rkap0g(iii,2)
+            work(iii+29*maxbl) = rkap0g(iii,3)
+         end do
+         nlast = 30*maxbl
+         iii   = nlast 
+         do jj=1,maxbl
+            do kk=1,maxsegdg
+               iii                         = iii + 1
+               work(iii)                   = utrnsae(jj,kk)
+               work(iii+   maxbl*maxsegdg) = vtrnsae(jj,kk)
+               work(iii+ 2*maxbl*maxsegdg) = wtrnsae(jj,kk)
+               work(iii+ 3*maxbl*maxsegdg) = omgxae(jj,kk)
+               work(iii+ 4*maxbl*maxsegdg) = omgyae(jj,kk)
+               work(iii+ 5*maxbl*maxsegdg) = omgzae(jj,kk)
+               work(iii+ 6*maxbl*maxsegdg) = xorgae(jj,kk)
+               work(iii+ 7*maxbl*maxsegdg) = yorgae(jj,kk)
+               work(iii+ 8*maxbl*maxsegdg) = zorgae(jj,kk)
+               work(iii+ 9*maxbl*maxsegdg) = thtxae(jj,kk)
+               work(iii+10*maxbl*maxsegdg) = thtyae(jj,kk)
+               work(iii+11*maxbl*maxsegdg) = thtzae(jj,kk)
+               work(iii+12*maxbl*maxsegdg) = rfrqtae(jj,kk)
+               work(iii+13*maxbl*maxsegdg) = rfrqrae(jj,kk)
+               work(iii+14*maxbl*maxsegdg) = xorgae0(jj,kk)
+               work(iii+15*maxbl*maxsegdg) = yorgae0(jj,kk)
+               work(iii+16*maxbl*maxsegdg) = zorgae0(jj,kk)
+            end do
+         end do
+         nlast = nlast + 17*maxbl*maxsegdg
+         work(nlast+ 1) = xmc0
+         work(nlast+ 2) = ymc0
+         work(nlast+ 3) = zmc0
+         work(nlast+ 4) = utransmc
+         work(nlast+ 5) = vtransmc
+         work(nlast+ 6) = wtransmc
+         work(nlast+ 7) = omegaxmc
+         work(nlast+ 8) = omegaymc
+         work(nlast+ 9) = omegazmc
+         work(nlast+10) = xorigmc
+         work(nlast+11) = yorigmc
+         work(nlast+12) = zorigmc
+         work(nlast+13) = xorig0mc
+         work(nlast+14) = yorig0mc
+         work(nlast+15) = zorig0mc
+         work(nlast+16) = thetaxmc
+         work(nlast+17) = thetaymc
+         work(nlast+18) = thetazmc
+         work(nlast+19) = dxmxmc
+         work(nlast+20) = dymxmc
+         work(nlast+21) = dzmxmc
+         work(nlast+22) = dthxmxmc
+         work(nlast+23) = dthymxmc
+         work(nlast+24) = dthzmxmc
+         work(nlast+25) = rfreqtmc
+         work(nlast+26) = rfreqrmc
+         work(nlast+27) = time2mc
+         work(nlast+28) = xmach
+         work(nlast+29) = alpha
+         work(nlast+30) = beta
+         work(nlast+31) = reue
+         work(nlast+32) = tinf
+         work(nlast+33) = sref
+         work(nlast+34) = cref
+         work(nlast+35) = bref
+         work(nlast+36) = xmc
+         work(nlast+37) = ymc
+         work(nlast+38) = zmc
+         work(nlast+39) = dt
+         work(nlast+40) = fmax
+         work(nlast+41) = cfltau
+         do j = 1,3
+            work(nlast+41+j) = epsssc(j)
+            work(nlast+44+j) = epsssr(j)
+            work(nlast+47+j) = rkap0(j)
+         end do
+         work(nlast+51) = beta1
+         nlast = nlast + 51
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,nmds
+               iii = iii + 1
+               work(iii)               = freq(jj,kk)
+               work(iii+  nmds*maxaes) = gmass(jj,kk)
+               work(iii+2*nmds*maxaes) = damp(jj,kk)
+            end do
+         end do
+         nlast = nlast + 3*nmds*maxaes
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,nmds
+               do ll=1,4
+                  iii = iii + 1
+                  work(iii) = perturb(jj,kk,ll)
+               end do
+            end do
+         end do
+         nlast = nlast + 4*nmds*maxaes
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,2*nmds
+               iii = iii + 1
+               work(iii)               = x0(jj,kk)
+               work(iii+2*nmds*maxaes) = gf0(jj,kk)
+            end do
+         end do
+         nlast = nlast + 4*nmds*maxaes
+         iii   = nlast 
+         do kk=1,maxaes
+            do jj=1,5
+               iii = iii + 1
+               work(iii) = aesrfdat(jj,kk)
+            end do
+         end do
+         nlast = nlast + 5*maxaes
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do mm=1,7
+                  do ll=1,2
+                     iii = iii + 1
+                     work(iii) = bcvali(nbl,nseg,mm,ll)
+                     work(iii+maxbl*maxseg*14) = bcvalj(nbl,nseg,mm,ll)
+                     work(iii+maxbl*maxseg*28) = bcvalk(nbl,nseg,mm,ll)
+                  end do
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*42
+c
+c        keyword data
+c
+         work(nlast+1)  = gamma
+         work(nlast+2)  = pr
+         work(nlast+3)  = prt
+         work(nlast+4)  = cbar
+         work(nlast+5)  = atol
+         work(nlast+6)  = xmach_img
+         work(nlast+7)  = alpha_img
+         work(nlast+8)  = beta_img
+         work(nlast+9)  = reue_img
+         work(nlast+10) = tinf_img
+         work(nlast+11) = geom_img
+         work(nlast+12) = icgns
+         work(nlast+13) = cprec
+         work(nlast+14) = uref
+         work(nlast+15) = avn
+         work(nlast+16) = cltarg
+         work(nlast+17) = resupdt
+         work(nlast+18) = nsubturb
+         work(nlast+19) = cflturb
+         work(nlast+20) = epsa_r
+         work(nlast+21) = nfreeze
+         work(nlast+22) = ivolint
+         work(nlast+23) = idef_ss
+         work(nlast+24) = ibin
+         work(nlast+25) = iblnk
+         work(nlast+26) = surf_img
+         work(nlast+27) = memadd
+         work(nlast+28) = memaddi
+         work(nlast+29) = negvol
+         work(nlast+30) = iblnkfr
+         work(nlast+31) = edvislim
+         work(nlast+32) = iturbprod
+         work(nlast+33) = ip3dgrad
+         work(nlast+34) = irghost
+         work(nlast+35) = iwghost
+         work(nlast+36) = dalim
+         work(nlast+37) = icycupdt
+         work(nlast+38) = dcldal
+         nlast = nlast+nkey
+      end if
+c
+      nvals = 30*maxbl + 42*maxbl*maxseg   + 51   + 11*nmds*maxaes
+     .      + 5*maxaes + 17*maxbl*maxsegdg + nkey
+      if (myid.eq.myhost) then
+         if (nvals.ne.nlast) then
+            write(11,'('' error in subroutine trnsfr_vals, real'',
+     .      '' transfer: nvals.ne.nlast'')')
+            write(11,'('' nvals,nlast '',i8,'' '',i8)') nvals,nlast
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)         
+         end if
+      end if
+      call MPI_Bcast (work, nvals, MY_MPI_REAL,
+     .                myhost,mycomm, ierr)
+c
+      if (myid.ne.myhost) then
+         do iii=1,maxbl
+            utrans(iii)   = work(iii)         
+            vtrans(iii)   = work(iii+   maxbl)
+            wtrans(iii)   = work(iii+ 2*maxbl)
+            omegax(iii)   = work(iii+ 3*maxbl)
+            omegay(iii)   = work(iii+ 4*maxbl)
+            omegaz(iii)   = work(iii+ 5*maxbl)
+            xorig(iii)    = work(iii+ 6*maxbl)
+            yorig(iii)    = work(iii+ 7*maxbl)
+            zorig(iii)    = work(iii+ 8*maxbl)
+            dxmx(iii)     = work(iii+ 9*maxbl)
+            dymx(iii)     = work(iii+10*maxbl)
+            dzmx(iii)     = work(iii+11*maxbl)
+            dthxmx(iii)   = work(iii+12*maxbl)
+            dthymx(iii)   = work(iii+13*maxbl)
+            dthzmx(iii)   = work(iii+14*maxbl)
+            thetax(iii)   = work(iii+15*maxbl)
+            thetay(iii)   = work(iii+16*maxbl)
+            thetaz(iii)   = work(iii+17*maxbl)
+            rfreqt(iii)   = work(iii+18*maxbl)
+            rfreqr(iii)   = work(iii+19*maxbl)
+            xorig0(iii)   = work(iii+20*maxbl)
+            yorig0(iii)   = work(iii+21*maxbl)
+            zorig0(iii)   = work(iii+22*maxbl)
+            time2(iii)    = work(iii+23*maxbl)
+            thetaxl(iii)  = work(iii+24*maxbl)
+            thetayl(iii)  = work(iii+25*maxbl)
+            thetazl(iii)  = work(iii+26*maxbl)
+            rkap0g(iii,1) = work(iii+27*maxbl)
+            rkap0g(iii,2) = work(iii+28*maxbl)
+            rkap0g(iii,3) = work(iii+29*maxbl) 
+         end do
+         nlast = 30*maxbl
+         iii   = nlast
+         do jj=1,maxbl
+            do kk=1,maxsegdg
+               iii            = iii + 1
+               utrnsae(jj,kk) = work(iii)
+               vtrnsae(jj,kk) = work(iii+   maxbl*maxsegdg)
+               wtrnsae(jj,kk) = work(iii+ 2*maxbl*maxsegdg)
+               omgxae(jj,kk)  = work(iii+ 3*maxbl*maxsegdg)
+               omgyae(jj,kk)  = work(iii+ 4*maxbl*maxsegdg)
+               omgzae(jj,kk)  = work(iii+ 5*maxbl*maxsegdg)
+               xorgae(jj,kk)  = work(iii+ 6*maxbl*maxsegdg)
+               yorgae(jj,kk)  = work(iii+ 7*maxbl*maxsegdg)
+               zorgae(jj,kk)  = work(iii+ 8*maxbl*maxsegdg)
+               thtxae(jj,kk)  = work(iii+ 9*maxbl*maxsegdg)
+               thtyae(jj,kk)  = work(iii+10*maxbl*maxsegdg)
+               thtzae(jj,kk)  = work(iii+11*maxbl*maxsegdg)
+               rfrqtae(jj,kk) = work(iii+12*maxbl*maxsegdg)
+               rfrqrae(jj,kk) = work(iii+13*maxbl*maxsegdg)
+               xorgae0(jj,kk) = work(iii+14*maxbl*maxsegdg)
+               yorgae0(jj,kk) = work(iii+15*maxbl*maxsegdg)
+               zorgae0(jj,kk) = work(iii+16*maxbl*maxsegdg)
+            end do
+         end do
+         nlast = nlast + 17*maxbl*maxsegdg
+         xmc0     = work(nlast+ 1)
+         ymc0     = work(nlast+ 2)
+         zmc0     = work(nlast+ 3)
+         utransmc = work(nlast+ 4)
+         vtransmc = work(nlast+ 5)
+         wtransmc = work(nlast+ 6)
+         omegaxmc = work(nlast+ 7)
+         omegaymc = work(nlast+ 8)
+         omegazmc = work(nlast+ 9)
+         xorigmc  = work(nlast+10)
+         yorigmc  = work(nlast+11)
+         zorigmc  = work(nlast+12)
+         xorig0mc = work(nlast+13)
+         yorig0mc = work(nlast+14)
+         zorig0mc = work(nlast+15)
+         thetaxmc = work(nlast+16)
+         thetaymc = work(nlast+17)
+         thetazmc = work(nlast+18)
+         dxmxmc   = work(nlast+19)
+         dymxmc   = work(nlast+20)
+         dzmxmc   = work(nlast+21)
+         dthxmxmc = work(nlast+22)
+         dthymxmc = work(nlast+23)
+         dthzmxmc = work(nlast+24)
+         rfreqtmc = work(nlast+25)
+         rfreqrmc = work(nlast+26)
+         time2mc  = work(nlast+27)
+         xmach    = work(nlast+28)
+         alpha    = work(nlast+29)
+         beta     = work(nlast+30)
+         reue     = work(nlast+31)
+         tinf     = work(nlast+32)
+         sref     = work(nlast+33)
+         cref     = work(nlast+34)
+         bref     = work(nlast+35)
+         xmc      = work(nlast+36)
+         ymc      = work(nlast+37)
+         zmc      = work(nlast+38)
+         dt       = work(nlast+39)
+         fmax     = work(nlast+40)
+         cfltau   = work(nlast+41)
+         do j = 1,3
+            epsssc(j) = work(nlast+41+j)
+            epsssr(j) = work(nlast+44+j)
+            rkap0(j)  = work(nlast+47+j)
+         end do
+         beta1    = work(nlast+51)
+         nlast = nlast + 51
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,nmds
+               iii = iii + 1
+               freq(jj,kk)  = work(iii)
+               gmass(jj,kk) = work(iii+  nmds*maxaes)
+               damp(jj,kk)  = work(iii+2*nmds*maxaes)
+            end do
+         end do
+         nlast = nlast + 3*nmds*maxaes
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,nmds
+               do ll=1,4
+                  iii = iii + 1
+                  perturb(jj,kk,ll) = work(iii)
+               end do
+            end do
+         end do
+         nlast = nlast + 4*nmds*maxaes
+         iii   = nlast 
+         do kk=1,maxaes
+            do jj=1,2*nmds
+               iii = iii + 1
+               x0(jj,kk)  = work(iii)
+               gf0(jj,kk) = work(iii+2*nmds*maxaes)
+            end do
+         end do
+         nlast = nlast + 4*nmds*maxaes
+         iii   = nlast
+         do kk=1,maxaes
+            do jj=1,5
+               iii = iii + 1
+               aesrfdat(jj,kk) = work(iii)
+            end do
+         end do
+         nlast = nlast + 5*maxaes
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do mm=1,7
+                  do ll=1,2
+                     iii = iii + 1
+                     bcvali(nbl,nseg,mm,ll) = work(iii)
+                     bcvalj(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*14)
+                     bcvalk(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*28)
+                  end do
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*42
+c
+c        keyword data
+c
+         gamma = work(nlast+1)
+         pr    = work(nlast+2)
+         prt   = work(nlast+3)
+         cbar  = work(nlast+4)
+         atol  = work(nlast+5)
+         xmach_img = work(nlast+6)
+         alpha_img = work(nlast+7)
+         beta_img  = work(nlast+8)
+         reue_img  = work(nlast+9)
+         tinf_img  = work(nlast+10)
+         geom_img  = work(nlast+11)
+         icgns     = int(work(nlast+12))
+         cprec     = work(nlast+13)
+         uref      = work(nlast+14)
+         avn       = work(nlast+15)
+         cltarg    = work(nlast+16)
+         resupdt   = work(nlast+17)
+         nsubturb  = int(work(nlast+18))
+         cflturb   = work(nlast+19)
+         epsa_r    = work(nlast+20)
+         nfreeze   = int(work(nlast+21))
+         ivolint   = int(work(nlast+22))
+         idef_ss   = int(work(nlast+23))
+         ibin      = int(work(nlast+24))
+         iblnk     = int(work(nlast+25))
+         surf_img  = work(nlast+26)
+         memadd    = int(work(nlast+27))
+         memaddi   = int(work(nlast+28))
+         negvol    = int(work(nlast+29))
+         iblnkfr   = int(work(nlast+30))
+         edvislim  = work(nlast+31)
+         iturbprod = int(work(nlast+32))
+         ip3dgrad  = int(work(nlast+33))
+         irghost   = int(work(nlast+34))
+         iwghost   = int(work(nlast+35))
+         dalim     = work(nlast+36)
+         icycupdt  = int(work(nlast+37))
+         dcldal    = work(nlast+38)
+
+      end if
+c
+c**************************
+c     transfer integer data
+c**************************
+c
+      if (myid.eq.myhost) then
+         do iii=1,maxbl
+            iwork(iii)         = itrans(iii)
+            iwork(iii+maxbl)   = irotat(iii)
+            iwork(iii+2*maxbl) = idefrm(iii)
+         end do
+         nlast = 3*maxbl
+         iwork(nlast+1)  = itransmc
+         iwork(nlast+2)  = irotatmc
+         iwork(nlast+3)  = ndefrm
+         iwork(nlast+4)  = naesrf
+         iwork(nlast+5)  = ihstry
+         iwork(nlast+6)  = irest
+         iwork(nlast+7)  = iflagts
+         iwork(nlast+8)  = iunst
+         iwork(nlast+9)  = nwrest
+         iwork(nlast+10) = ichk
+         iwork(nlast+11) = i2d
+         iwork(nlast+12) = ntstep
+         iwork(nlast+13) = ita
+         iwork(nlast+14) = mseq
+         iwork(nlast+15) = issc
+         iwork(nlast+16) = issr
+         iwork(nlast+17) = ncyctot
+         iwork(nlast+18) = lfgm
+         iwork(nlast+19) = nplot3d
+         iwork(nlast+20) = movie
+         iwork(nlast+21) = nprint
+         iwork(nlast+22) = nbli
+         iwork(nlast+23) = nblock
+         iwork(nlast+24) = ngrid
+         iwork(nlast+25) = ninter
+         iwork(nlast+26) = mgflag
+         iwork(nlast+27) = iconsf
+         iwork(nlast+28) = mtt
+         iwork(nlast+29) = ngam
+         iwork(nlast+30) = ideg(1)
+         iwork(nlast+31) = ideg(2)
+         iwork(nlast+32) = ideg(3)
+         iwork(nlast+33) = ifds(1)
+         iwork(nlast+34) = ifds(2)
+         iwork(nlast+35) = ifds(3)
+         iwork(nlast+36) = ilamlo
+         iwork(nlast+37) = ilamhi
+         iwork(nlast+38) = jlamlo
+         iwork(nlast+39) = jlamhi
+         iwork(nlast+40) = klamlo
+         iwork(nlast+41) = klamhi
+         iwork(nlast+42) = ivmx
+         iwork(nlast+43) = isminc
+         iwork(nlast+44) = ip3dgrd
+         iwork(nlast+45) = ialph
+         iwork(nlast+46) = iipv
+         iwork(nlast+47) = irest2
+         iwork(nlast+48) = nnodes
+         iwork(nlast+49) = ncs
+         iwork(nlast+50) = ialphit
+         iwork(nlast+51) = ip3dsurf
+         iwork(nlast+52) = ismooth
+         iwork(nlast+53) = iprnsurf
+         nlast = nlast + 53
+         do iii=1,maxgr
+            iwork(nlast+iii)         = ncgg(iii)
+            iwork(nlast+iii+maxgr)   = iemg(iii)
+            iwork(nlast+iii+2*maxgr) = nblg(iii)
+            iwork(nlast+iii+3*maxgr) = inewgg(iii)
+         end do
+         nlast = nlast + 4*maxgr
+         do iii=1,20
+            iwork(iii+nlast) = ncell(iii)
+         end do
+         nlast = nlast + 20
+         do iii=1,maxbl
+            iwork(nlast+iii)       = iadvance(iii)
+            iwork(nlast+iii+maxbl) = iforce(iii)
+         end do
+         nlast = nlast + 2*maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do i = 1,3
+               iii = iii + 1
+               iwork(iii)         = iviscg(nbl,i)
+               iwork(iii+3*maxbl) = idegg(nbl,i)
+               iwork(iii+6*maxbl) = iwfg(nbl,i)
+            end do
+         end do
+         nlast = nlast + 9*maxbl
+         do iii=1,maxbl
+            iwork(nlast+iii)          = idimg(iii)
+            iwork(nlast+iii+maxbl)    = jdimg(iii)
+            iwork(nlast+iii+2*maxbl)  = kdimg(iii)
+            iwork(nlast+iii+3*maxbl)  = ilamlog(iii)
+            iwork(nlast+iii+4*maxbl)  = ilamhig(iii)
+            iwork(nlast+iii+5*maxbl)  = jlamlog(iii)
+            iwork(nlast+iii+6*maxbl)  = jlamhig(iii)
+            iwork(nlast+iii+7*maxbl)  = klamlog(iii)
+            iwork(nlast+iii+8*maxbl)  = klamhig(iii)
+            iwork(nlast+iii+9*maxbl)  = jsg(iii)
+            iwork(nlast+iii+10*maxbl) = ksg(iii)
+            iwork(nlast+iii+11*maxbl) = isg(iii)
+            iwork(nlast+iii+12*maxbl) = jeg(iii)
+            iwork(nlast+iii+13*maxbl) = keg(iii)
+            iwork(nlast+iii+14*maxbl) = ieg(iii)
+            iwork(nlast+iii+15*maxbl) = nblcg(iii)
+         end do
+         nlast = nlast + 16*maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do i = 1,3
+               iii = iii + 1
+               iwork(iii)         = idiagg(nbl,i)
+               iwork(iii+3*maxbl) = iflimg(nbl,i)
+               iwork(iii+6*maxbl) = ifdsg(nbl,i)
+            end do
+         end do
+         nlast = nlast + 9*maxbl
+         do iii=1,maxbl
+            iwork(nlast+iii)         = nbci0(iii)
+            iwork(nlast+iii+maxbl)   = nbcidim(iii)
+            iwork(nlast+iii+2*maxbl) = nbcj0(iii)
+            iwork(nlast+iii+3*maxbl) = nbcjdim(iii)
+            iwork(nlast+iii+4*maxbl) = nbck0(iii)
+            iwork(nlast+iii+5*maxbl) = nbckdim(iii)
+            iwork(nlast+iii+6*maxbl) = iovrlp(iii)
+            iwork(nlast+iii+7*maxbl) = igridg(iii)
+            iwork(nlast+iii+8*maxbl) = levelg(iii)
+            iwork(nlast+iii+9*maxbl) = mblk2nd(iii)
+         end do
+         nlast = nlast + 10*maxbl
+         do iii=1,5
+            iwork(nlast+iii)    = ncyc1(iii)
+            iwork(nlast+iii+5)  = nitfo1(iii)
+            iwork(nlast+iii+10) = levelt(iii)
+            iwork(nlast+iii+15) = levelb(iii)
+         end do
+         nlast = nlast + 20
+         iii   = nlast
+         do m = 1,5
+            do i = 1, 5
+               iii = iii + 1
+               iwork(iii) = mit(i,m)
+            end do
+         end do
+         nlast = nlast + 25
+         iii   = nlast
+         do kk=1,maxsegdg
+            do jj=1,maxbl
+               iii = iii + 1
+               iwork(iii)                  = icsi(jj,kk)
+               iwork(iii+  maxbl*maxsegdg) = icsf(jj,kk)
+               iwork(iii+2*maxbl*maxsegdg) = jcsi(jj,kk)
+               iwork(iii+3*maxbl*maxsegdg) = jcsf(jj,kk)
+               iwork(iii+4*maxbl*maxsegdg) = kcsi(jj,kk)
+               iwork(iii+5*maxbl*maxsegdg) = kcsf(jj,kk)
+               iwork(iii+6*maxbl*maxsegdg) = idfrmseg(jj,kk)
+               iwork(iii+7*maxbl*maxsegdg) = iaesurf(jj,kk)
+               iwork(iii+8*maxbl*maxsegdg) = icouple(jj,kk)
+            end do
+         end do
+         nlast = nlast + 9*maxbl*maxsegdg
+         do iii = 1,maxbl
+            iwork(nlast+iii) = nsegdfrm(iii)
+         end do
+         nlast = nlast + maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do ll=1,2
+                  iii = iii + 1
+                  iwork(iii)                = bcfilei(nbl,nseg,ll)
+                  iwork(iii+maxbl*maxseg*2) = bcfilej(nbl,nseg,ll) 
+                  iwork(iii+maxbl*maxseg*4) = bcfilek(nbl,nseg,ll)
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*6
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do mm=1,7
+                  do ll=1,2
+                     iii = iii + 1
+                     iwork(iii) =
+     .                          ibcinfo(nbl,nseg,mm,ll)
+                     iwork(iii+maxbl*maxseg*14) =
+     .                          jbcinfo(nbl,nseg,mm,ll)
+                     iwork(iii+maxbl*maxseg*28) =
+     .                          kbcinfo(nbl,nseg,mm,ll)
+                  end do
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*42
+         iii   = nlast
+         do ics=1,maxcs
+            do ll=1,9
+               iii = iii + 1
+               iwork(iii) = icsinfo(ics,ll)
+            end do
+         end do
+         nlast = nlast + 9*maxcs
+         iii   = nlast
+         do ll=1,2
+            do mm=1,mxbli
+               iii = iii + 1
+               iwork(iii) = nblk(ll,mm)
+            end do
+         end do
+         nlast = nlast + 2*mxbli
+         iii   = nlast
+         do ll=1,2
+            do nn = 1,2
+               do mm=1,mxbli
+                  iii = iii + 1
+                  iwork(iii) = isva(ll,nn,mm)
+               end do
+            end do
+         end do
+         nlast = nlast + 4*mxbli
+         iii   = nlast
+         do ll=1,2
+            do nn = 1,6
+               do mm=1,mxbli
+                  iii = iii + 1
+                  iwork(iii) = limblk(ll,nn,mm)
+               end do
+            end do
+         end do
+         nlast = nlast + 12*mxbli
+         do iii=1,mxbli
+            iwork(nlast+iii) = nblon(iii)
+         end do
+         nlast = nlast + mxbli
+         iii   = nlast
+         do npl=1,nplots
+            do ll=1,11
+               iii = iii + 1
+               iwork(iii)           = inpl3d(npl,ll)
+               iwork(iii+11*nplots) = inpr(npl,ll)
+            end do
+         end do
+         nlast = nlast + 22*nplots
+         do nbl=1,maxbl
+            iwork(nlast+nbl)         = iskip(nbl)
+            iwork(nlast+nbl+maxbl)   = jskip(nbl)
+            iwork(nlast+nbl+2*maxbl) = kskip(nbl)
+         end do
+         nlast = nlast + 3*maxbl
+c
+      end if
+c
+      nvals = 53*maxbl + 118       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+     .      + 19*mxbli + 22*nplots + 4*maxgr          + 9*maxcs
+      if (myid.eq.myhost) then
+         if (nvals.ne.nlast) then
+            write(11,'('' error in subroutine trnsfr_vals, integer'',
+     .      '' transfer: nvals.ne.nlast'')')
+            write(11,'('' nvals,nlast '',i8,'' '',i8)') nvals,nlast
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)      
+         end if
+      end if
+      call MPI_Bcast (iwork, nvals, MPI_INTEGER, myhost,
+     .                mycomm, ierr)
+c
+      if (myid.ne.myhost) then
+         do iii=1,maxbl
+            itrans(iii) = iwork(iii)
+            irotat(iii) = iwork(iii+maxbl)
+            idefrm(iii) = iwork(iii+2*maxbl)
+         end do
+         nlast = 3*maxbl
+         itransmc = iwork(nlast+1)
+         irotatmc = iwork(nlast+2)
+         ndefrm   = iwork(nlast+3)
+         naesrf   = iwork(nlast+4)
+         ihstry   = iwork(nlast+5)
+         irest    = iwork(nlast+6)
+         iflagts  = iwork(nlast+7)
+         iunst    = iwork(nlast+8)
+         nwrest   = iwork(nlast+9)
+         ichk     = iwork(nlast+10)
+         i2d      = iwork(nlast+11)
+         ntstep   = iwork(nlast+12)
+         ita      = iwork(nlast+13)
+         mseq     = iwork(nlast+14)
+         issc     = iwork(nlast+15)
+         issr     = iwork(nlast+16)
+         ncyctot  = iwork(nlast+17)
+         lfgm     = iwork(nlast+18)
+         nplot3d  = iwork(nlast+19)
+         movie    = iwork(nlast+20)
+         nprint   = iwork(nlast+21)
+         nbli     = iwork(nlast+22)
+         nblock   = iwork(nlast+23)
+         ngrid    = iwork(nlast+24)
+         ninter   = iwork(nlast+25)
+         mgflag   = iwork(nlast+26)
+         iconsf   = iwork(nlast+27)
+         mtt      = iwork(nlast+28)
+         ngam     = iwork(nlast+29)
+         ideg(1)  = iwork(nlast+30)
+         ideg(2)  = iwork(nlast+31)
+         ideg(3)  = iwork(nlast+32)
+         ifds(1)  = iwork(nlast+33)
+         ifds(2)  = iwork(nlast+34)
+         ifds(3)  = iwork(nlast+35)
+         ilamlo   = iwork(nlast+36)
+         ilamhi   = iwork(nlast+37)
+         jlamlo   = iwork(nlast+38)
+         jlamhi   = iwork(nlast+39)
+         klamlo   = iwork(nlast+40)
+         klamhi   = iwork(nlast+41)
+         ivmx     = iwork(nlast+42)
+         isminc   = iwork(nlast+43)
+         ip3dgrd  = iwork(nlast+44)
+         ialph    = iwork(nlast+45)
+         iipv     = iwork(nlast+46)
+         irest2   = iwork(nlast+47)
+         nnodes   = iwork(nlast+48)
+         ncs      = iwork(nlast+49)
+         ialphit  = iwork(nlast+50)
+         ip3dsurf = iwork(nlast+51)
+         ismooth  = iwork(nlast+52)
+         iprnsurf = iwork(nlast+53)
+         nlast = nlast + 53
+         do iii=1,maxgr
+            ncgg(iii)   = iwork(nlast+iii)
+            iemg(iii)   = iwork(nlast+iii+maxgr)
+            nblg(iii)   = iwork(nlast+iii+2*maxgr)
+            inewgg(iii) = iwork(nlast+iii+3*maxgr)
+         end do
+          nlast = nlast + 4*maxgr
+         do iii=1,20
+            ncell(iii) = iwork(iii+nlast)
+         end do
+         nlast = nlast + 20
+         do iii=1,maxbl
+            iadvance(iii) = iwork(nlast+iii)
+            iforce(iii)   = iwork(nlast+iii+maxbl)
+         end do
+         nlast = nlast + 2*maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do i = 1,3
+               iii = iii + 1
+               iviscg(nbl,i) = iwork(iii)
+               idegg(nbl,i)  = iwork(iii+3*maxbl)
+               iwfg(nbl,i)   = iwork(iii+6*maxbl)
+            end do
+         end do
+         nlast = nlast + 9*maxbl
+         do iii=1,maxbl
+            idimg(iii)   = iwork(nlast+iii)
+            jdimg(iii)   = iwork(nlast+iii+maxbl)
+            kdimg(iii)   = iwork(nlast+iii+2*maxbl)
+            ilamlog(iii) = iwork(nlast+iii+3*maxbl)
+            ilamhig(iii) = iwork(nlast+iii+4*maxbl)
+            jlamlog(iii) = iwork(nlast+iii+5*maxbl)
+            jlamhig(iii) = iwork(nlast+iii+6*maxbl)
+            klamlog(iii) = iwork(nlast+iii+7*maxbl)
+            klamhig(iii) = iwork(nlast+iii+8*maxbl)
+            jsg(iii)     = iwork(nlast+iii+9*maxbl)
+            ksg(iii)     = iwork(nlast+iii+10*maxbl)
+            isg(iii)     = iwork(nlast+iii+11*maxbl)
+            jeg(iii)     = iwork(nlast+iii+12*maxbl)
+            keg(iii)     = iwork(nlast+iii+13*maxbl)
+            ieg(iii)     = iwork(nlast+iii+14*maxbl)
+            nblcg(iii)   = iwork(nlast+iii+15*maxbl)
+         end do
+         nlast = nlast + 16*maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do i = 1,3
+               iii = iii + 1
+               idiagg(nbl,i) = iwork(iii)
+               iflimg(nbl,i) = iwork(iii+3*maxbl)
+               ifdsg(nbl,i)  = iwork(iii+6*maxbl)
+            end do
+         end do
+         nlast = nlast + 9*maxbl
+         do iii=1,maxbl
+            nbci0(iii)   = iwork(nlast+iii)
+            nbcidim(iii) = iwork(nlast+iii+maxbl)
+            nbcj0(iii)   = iwork(nlast+iii+2*maxbl)
+            nbcjdim(iii) = iwork(nlast+iii+3*maxbl)
+            nbck0(iii)   = iwork(nlast+iii+4*maxbl)
+            nbckdim(iii) = iwork(nlast+iii+5*maxbl)
+            iovrlp(iii)  = iwork(nlast+iii+6*maxbl)
+            igridg(iii)  = iwork(nlast+iii+7*maxbl)
+            levelg(iii)  = iwork(nlast+iii+8*maxbl)
+            mblk2nd(iii) = iwork(nlast+iii+9*maxbl)
+         end do
+         nlast = nlast + 10*maxbl
+         do iii=1,5
+            ncyc1(iii)  = iwork(nlast+iii)
+            nitfo1(iii) = iwork(nlast+iii+5)
+            levelt(iii) = iwork(nlast+iii+10)
+            levelb(iii) = iwork(nlast+iii+15)
+         end do
+         nlast = nlast + 20
+         iii   = nlast
+         do m = 1,5
+            do i = 1, 5
+               iii = iii + 1
+               mit(i,m) = iwork(iii)
+            end do
+         end do
+         nlast = nlast + 25
+         iii   = nlast
+         do kk=1,maxsegdg
+            do jj=1,maxbl
+               iii             = iii + 1
+               icsi(jj,kk)     = iwork(iii)
+               icsf(jj,kk)     = iwork(iii+  maxbl*maxsegdg)
+               jcsi(jj,kk)     = iwork(iii+2*maxbl*maxsegdg)
+               jcsf(jj,kk)     = iwork(iii+3*maxbl*maxsegdg)
+               kcsi(jj,kk)     = iwork(iii+4*maxbl*maxsegdg)
+               kcsf(jj,kk)     = iwork(iii+5*maxbl*maxsegdg)
+               idfrmseg(jj,kk) = iwork(iii+6*maxbl*maxsegdg)
+               iaesurf(jj,kk)  = iwork(iii+7*maxbl*maxsegdg)
+               icouple(jj,kk)  = iwork(iii+8*maxbl*maxsegdg)
+            end do
+         end do
+         nlast = nlast + 9*maxbl*maxsegdg
+         do iii = 1,maxbl
+            nsegdfrm(iii) = iwork(nlast+iii)
+         end do
+         nlast = nlast + maxbl
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do ll=1,2
+                  iii = iii + 1
+                  bcfilei(nbl,nseg,ll) = iwork(iii)
+                  bcfilej(nbl,nseg,ll) = iwork(iii+maxbl*maxseg*2)
+                  bcfilek(nbl,nseg,ll) = iwork(iii+maxbl*maxseg*4)
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*6
+         iii   = nlast
+         do nbl=1,maxbl
+            do nseg=1,maxseg
+               do mm=1,7
+                  do ll=1,2
+                     iii = iii + 1
+                     ibcinfo(nbl,nseg,mm,ll) =
+     .                          iwork(iii)
+                     jbcinfo(nbl,nseg,mm,ll) = 
+     .                          iwork(iii+maxbl*maxseg*14)
+                     kbcinfo(nbl,nseg,mm,ll) =
+     .                          iwork(iii+maxbl*maxseg*28)
+                  end do
+               end do
+            end do
+         end do
+         nlast = nlast + maxbl*maxseg*42
+         iii   = nlast
+         do ics=1,maxcs
+            do ll=1,9
+               iii = iii + 1
+               icsinfo(ics,ll) = iwork(iii)
+            end do
+         end do
+         nlast = nlast + 9*maxcs
+         iii   = nlast
+         do ll=1,2
+            do mm=1,mxbli
+               iii = iii + 1
+               nblk(ll,mm) = iwork(iii)
+            end do
+         end do
+         nlast = nlast + 2*mxbli
+         iii   = nlast
+         do ll=1,2
+            do nn = 1,2
+               do mm=1,mxbli
+                  iii = iii + 1
+                  isva(ll,nn,mm) = iwork(iii)
+               end do
+            end do
+         end do
+         nlast = nlast + 4*mxbli
+         iii   = nlast
+         do ll=1,2
+            do nn = 1,6
+               do mm=1,mxbli
+                  iii = iii + 1
+                  limblk(ll,nn,mm) = iwork(iii)
+               end do
+            end do
+         end do
+         nlast = nlast + 12*mxbli
+         do iii=1,mxbli
+            nblon(iii) = iwork(nlast+iii)
+         end do
+         nlast = nlast + mxbli
+         iii   = nlast
+         do npl=1,nplots
+            do ll=1,11
+               iii = iii + 1
+               inpl3d(npl,ll) = iwork(iii)
+               inpr(npl,ll)   = iwork(iii+11*nplots)
+            end do
+         end do
+         nlast = nlast + 22*nplots
+         do nbl=1,maxbl
+            iskip(nbl) = iwork(nlast+nbl)
+            jskip(nbl) = iwork(nlast+nbl+maxbl)
+            kskip(nbl) = iwork(nlast+nbl+2*maxbl)
+         end do
+         nlast = nlast + 3*maxbl
+      end if
+c
+c****************************
+c     transfer character data
+c****************************
+c
+      call MPI_Bcast (bcfiles, mxbcfil*80, MPI_CHARACTER, myhost,
+     .                mycomm, ierr)
+      call MPI_Bcast (grdmov, 80, MPI_CHARACTER, myhost,
+     .                mycomm, ierr)
+#endif
+c
+      return
+      end

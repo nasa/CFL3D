@@ -1,0 +1,1057 @@
+      subroutine plot3t(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,x,y,
+     .                  z,xw,blank2,blank,xg,vist3d,iover,nblk,
+     .                  nmap,sj,sk,si,smin,ux,turre,vol,qj0,qk0,qi0,
+     .                  bcj,bck,bci,wt,cmuv,jdw,kdw,idw,
+     .                  nplots,jdimg,kdimg,idimg,nblcg,jsg,ksg,isg,
+     .                  jeg,keg,ieg,ninter,iindex,intmax,nsub1,
+     .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
+     .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
+     .                  mblk2nd,inpl3d,nblock,nblkpt,volj0,volk0,voli0,
+     .                  vormax,ivmax,jvmax,kvmax)
+
+c***********************************************************************
+c     Purpose:  Write turbulent information for the cell-centered points
+c     in PLOT3D format.
+c
+c     outputs grid/turb info in single precision for use with FAST/PLOT3D
+c***********************************************************************
+c
+#if defined ADP_OFF
+#   ifdef CMPLX
+#     ifdef DBLE_PRECSN
+      implicit complex*8(a-h,o-z)
+#     else
+      implicit complex(a-h,o-z)
+#     endif
+#   else
+#     ifdef DBLE_PRECSN
+      implicit real*8 (a-h,o-z)
+#     endif
+#   endif
+#else
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+#endif
+c
+#if defined DIST_MPI
+#     include "mpif.h"
+#   ifdef P3D_SINGLE
+#     define MY_MPI_REAL MPI_REAL
+#   else
+#     define MY_MPI_REAL MPI_DOUBLE_PRECISION
+#   endif
+#endif
+c
+#if defined P3D_SINGLE
+      real*4    xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+      real*4    xmachw,alphww,reuew,timew
+#else
+      real xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+#endif
+c
+      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
+      dimension q(jdim,kdim,idim,5),vist3d(jdim,kdim,idim)
+      dimension blank(jdim,kdim,idim),blank2(jdim,kdim,idim)
+      dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
+     .          si(jdim,kdim,idim,5)
+      dimension smin(jdim-1,kdim-1,idim-1),ux(jdim-1,kdim-1,idim-1,9)
+      dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
+      dimension qj0(kdim,idim-1,5,4),
+     .          qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
+      dimension wt(jdim,kdim,9),turre(jdim,kdim,idim,2)
+      dimension cmuv(jdim-1,kdim-1,idim-1)
+      dimension nmap(maxbl),jdimg(maxbl),kdimg(maxbl),idimg(maxbl),
+     .          nblcg(maxbl),jsg(maxbl),ksg(maxbl),isg(maxbl),
+     .          jeg(maxbl),keg(maxbl),ieg(maxbl),
+     .          iindex(intmax,6*nsub1+9),nblkpt(maxxe),nblkk(2,mxbli),
+     .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli),
+     .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
+      dimension vol(jdim,kdim,idim-1),volj0(kdim,idim-1,4),
+     .          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
+      dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
+c
+      common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
+      common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
+      common /fluid2/ pr,prt,cbar
+      common /twod/ i2d
+      common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
+     .        tur10,tur20
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+      common /maxiv/ ivmx
+      common /reyue/ reue,tinf,ivisc(3)
+      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /igrdtyp/ ip3dgrd,ialph
+      common /moov/movie,nframes,icall1,lhdr
+      common /conversion/ radtodeg
+c
+#if defined DIST_MPI
+c     set baseline tag values
+c
+      ioffset = maxbl
+      itag_grid = 1
+      itag_q    = itag_grid + ioffset
+#endif
+      jdim1 = jdim-1
+      kdim1 = kdim-1
+      idim1 = idim-1
+c
+      re=reue/xmach
+c
+c
+c     initialize xw and xg arrays
+c
+      jw = (j2-j1)/j3 + 1
+      kw = (k2-k1)/k3 + 1
+      iw = (i2-i1)/i3 + 1
+      do j=1,jw
+         do k=1,kw
+            do i=1,iw
+               do l= 1,5
+               xw(j,k,i,l) = 0.
+               end do
+               do l= 1,4
+               xg(j,k,i,l) = 0.
+               end do
+            end do
+         end do
+      end do
+c
+c     assign single precision scalars
+c
+      alphaw = radtodeg*(alpha+thetay(nblk))
+      xmachw = xmach
+      alphww = alphaw
+      reuew  = reue
+      timew  = time
+c
+c***********************************************************************
+c     get ux values
+c***********************************************************************
+c
+#if defined DIST_MPI
+      if (mblk2nd(nblk).eq.myid) then
+c
+#endif
+      call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wt,
+     .          blank,iover,qj0,qk0,qi0,bcj,bck,bci,nblk,
+     .          volj0,volk0,voli0,maxbl,vormax,ivmax,jvmax,kvmax)
+c
+#if defined DIST_MPI
+      end if
+c
+#endif
+c***********************************************************************
+c     average grid points to get cell centers and load iinto 1st 3 
+c     locations of the single precision xg array
+c***********************************************************************
+c
+#if defined DIST_MPI
+      if (mblk2nd(nblk).eq.myid) then
+c
+#endif
+      iw = 0
+      do 2000 i=i1,i2,i3
+      iw = iw + 1
+      kw = 0
+      do 2000 k=k1,k2,k3
+      kw = kw + 1
+      jw = 0
+      do 2000 j=j1,j2,j3
+      jw = jw + 1
+      xg(jw,kw,iw,1) = .125*(   x(j,k,i)    +x(j,k,i+1)
+     .                        + x(j+1,k,i)  +x(j+1,k,i+1)
+     .                        + x(j,k+1,i)  +x(j,k+1,i+1)
+     .                        + x(j+1,k+1,i)+x(j+1,k+1,i+1))
+c
+      xg(jw,kw,iw,2) = .125*(   y(j,k,i)    +y(j,k,i+1)
+     .                        + y(j+1,k,i)  +y(j+1,k,i+1)
+     .                        + y(j,k+1,i)  +y(j,k+1,i+1)
+     .                        + y(j+1,k+1,i)+y(j+1,k+1,i+1))
+c
+      xg(jw,kw,iw,3) = .125*(   z(j,k,i)    +z(j,k,i+1)
+     .                        + z(j+1,k,i)  +z(j+1,k,i+1)
+     .                        + z(j,k+1,i)  +z(j,k+1,i+1)
+     .                        + z(j+1,k+1,i)+z(j+1,k+1,i+1))
+ 2000 continue
+c
+#if defined DIST_MPI
+      end if
+c
+#endif
+c***********************************************************************
+c     set iblank (blank2) array
+c***********************************************************************
+c
+c     don't compute blanking info if iblnk = 0
+c
+      if (iblnk .gt. 0) then
+c
+#if defined DIST_MPI
+      if (mblk2nd(nblk).eq.myid) then
+c
+#endif
+c     assign default iblank (blank2) array
+c
+      do 2049 i=1,idim
+      do 2049 j=1,jdim
+      do 2049 k=1,kdim
+      blank2(j,k,i) = 1.
+ 2049 continue
+c
+c     iblank (blank2) array for generalized patch interface boundaries 
+c
+      if (abs(ninter).gt.0) then
+         do 1600 inter = 1,abs(ninter)
+         lmax1  = iindex(inter,1)
+         nbl    = iindex(inter,lmax1+2)
+         if (nbl.ne.nblk) go to 1600
+         lst    = iindex(inter,2*lmax1+5)
+         lcoord = iindex(inter,2*lmax1+3)/10
+         lend   = iindex(inter,2*lmax1+3)-lcoord*10
+         j21    = iindex(inter,2*lmax1+6)
+         j22    = iindex(inter,2*lmax1+7)
+         k21    = iindex(inter,2*lmax1+8)
+         k22    = iindex(inter,2*lmax1+9)
+         if (lcoord.eq.1) then
+           if (lend.eq.1) i = 1
+           if (lend.eq.2) i = idim1
+           do 1610 j = j21,j22-1
+           do 1610 k = k21,k22-1
+           ll = lst + (j22-j21)*(k-k21) + (j-j21)
+           mblk         = iindex(inter,nblkpt(ll)+1)
+           blank2(j,k,i) = -float(nmap(mblk))
+ 1610      continue
+         end if
+         if (lcoord.eq.2) then
+           if (lend.eq.1) j = 1
+           if (lend.eq.2) j = jdim1
+           do 1620 i = k21,k22-1
+           do 1620 k = j21,j22-1
+           ll = lst + (j22-j21)*(i-k21) + (k-j21)
+           mblk         = iindex(inter,nblkpt(ll)+1)
+           blank2(j,k,i) = -float(nmap(mblk))
+ 1620      continue
+         end if
+         if (lcoord.eq.3) then
+            if (lend.eq.1) k = 1
+            if (lend.eq.2) k = kdim1
+            do 1630 i = k21,k22-1
+            do 1630 j = j21,j22-1
+            ll = lst + (j22-j21)*(i-k21) + (j-j21)
+            mblk         = iindex(inter,nblkpt(ll)+1)
+            blank2(j,k,i) = -float(nmap(mblk))
+ 1630       continue
+         end if
+ 1600    continue
+      end if
+c
+c     iblank (blank2) array for 1:1 interface boundaries
+c
+      if(nbli.gt.0) then
+        do 100 n=1,abs(nbli)
+        if(nblon(n).ge.0) then
+          if(nblk.eq.nblkk(1,n) .or. nblk.eq.nblkk(2,n)) then
+            it = 1
+            ir = 2
+            if(nblk.eq.nblkk(2,n)) then
+              it = 2
+              ir = 1
+            end if
+c
+c           allow for 1-1 blocking in same grid
+c
+            itime = 1
+            if (nblkk(1,n).eq.nblkk(2,n)) itime = 2
+            do 101 iti = 1,itime
+            if (iti.gt.1) then
+               it = 1
+               ir = 2
+            end if
+c
+            is = limblk(it,1,n)
+            ie = limblk(it,4,n)
+            js = limblk(it,2,n)
+            je = limblk(it,5,n)
+            ks = limblk(it,3,n)
+            ke = limblk(it,6,n)
+c
+            is1 = min(is,ie)
+            ie1 = max(is,ie)
+            js1 = min(js,je)
+            je1 = max(js,je)
+            ks1 = min(ks,ke)
+            ke1 = max(ks,ke)
+c
+            ie1 = min(ie1,idim1)
+            je1 = min(je1,jdim1)
+            ke1 = min(ke1,kdim1)
+            is1 = min(is1,idim1)
+            js1 = min(js1,jdim1)
+            ks1 = min(ks1,kdim1)
+c
+            do 110 i = is1,ie1
+            do 110 j = js1,je1
+            do 110 k = ks1,ke1
+            blank2(j,k,i) = -float(nmap(nblkk(ir,n)))
+  110       continue
+  101       continue
+          end if
+        end if
+  100   continue
+      end if
+c
+c     iblank (blank2) array for embedded grids - the underlying
+c     coarse grid areas are blanked out if the parameter ibembed > 0
+c
+      ibembed = 1
+c
+      if (ibembed.gt.0) then
+         do 7500 nblc=1,nblock
+         if (nblk.eq.nblc) go to 7500
+         nblcc    = nblcg(nblc)
+         if (nblcc.eq.nblk) then
+            js       = jsg(nblc)
+            ks       = ksg(nblc)
+            is       = isg(nblc)
+            je       = jeg(nblc)
+            ke       = keg(nblc)
+            ie       = ieg(nblc)
+            if (je.gt.js) je = je - 1
+            if (ke.gt.ks) ke = ke - 1
+            if (ie.gt.is) ie = ie - 1
+            do 7501 i=is,ie
+            do 7501 j=js,je
+            do 7501 k=ks,ke
+            blank2(j,k,i) = 0.
+ 7501       continue
+         end if
+ 7500    continue
+      end if
+c
+c     iblank (blank2) array for overlapped grids
+c
+      if (iover.eq.1) then
+         do 413 i=1,idim1
+         do 413 j=1,jdim1
+         do 413 k=1,kdim1
+         if (real(blank(j,k,i)).eq.0.0) blank2(j,k,i) = 0.
+  413    continue
+      end if
+c
+#if defined DIST_MPI
+      end if
+c
+#endif
+      end if
+c
+c***********************************************************************
+c      plot3d data
+c***********************************************************************
+c
+      if (lhdr.gt.0  .and. myid.eq.myhost) then
+         if (i2d .eq. 1) then
+            if (iblnk .eq. 0) then
+               write(11,'(''writing turb plot3d file for JDIM X'',
+     .         '' KDIM ='',i5,'' x '',i5,'' grid'')') jdim,kdim
+               write(11,'(''   plot3d files to be read with 2d/mgrid'',
+     .         '' qualifiers'')')
+            else
+               write(11,'(''writing turb plot3d file for JDIM X'',
+     .         '' KDIM ='',i5,'' x '',i5,'' grid'')') jdim,kdim
+               write(11,'(''   plot3d files to be read with 2d/mgrid'',
+     .         ''/blank qualifiers'')')
+            end if
+         else
+            write(11,93)idim,jdim,kdim
+   93       format(48h writing turb plot3d file for IDIM X JDIM X KDIM,
+     .      2h =,i5,3h x ,i5,3h x ,i5,5h grid)
+            if (iblnk .eq. 0) then
+               write(11,2042)
+ 2042          format(3x,35hplot3d files to be read with /mgrid,
+     .         11h qualifiers)
+            else
+               write(11,2142)
+ 2142          format(3x,41hplot3d files to be read with /mgrid/blank,
+     .         11h qualifiers)
+            end if
+         end if
+         write(11,'(''   plot3d file is Q file of turbulence'',
+     .    '' quantities'')')
+         if (i2d .eq. 1) then
+            write(11,
+     .       '(''  Defaults are production-term, uw, uu, ww for 2D'')') 
+         else
+            write(11,
+     .       '(''   Defaults are production-term, uw, uu, ww,'',
+     .       '' Sk/eps for 3D'')')
+         end if
+#        ifdef CMPLX
+         if (ip3dgrad .ne. 0) then
+            write(11,'(''   NOTE: contains d(turb data)/d(), rather '',
+     .                 ''than turb data'')')
+            call gradinfo(delh,11)
+         end if
+#        endif
+      end if
+c
+#if defined DIST_MPI
+      if (mblk2nd(nblk).eq.myid) then
+c
+#endif
+c     load blank2 into 4th location of the single precision xg array
+c
+      iw = 0
+      do 9000 i=i1,i2,i3
+      iw = iw + 1
+      jw = 0
+      do 9000 j=j1,j2,j3
+      jw = jw + 1
+      kw = 0
+      do 9000 k=k1,k2,k3
+      kw = kw + 1
+      xg(jw,kw,iw,4) = blank2(j,k,i)
+ 9000 continue
+#if defined DIST_MPI
+c
+      end if
+#endif
+#if defined DIST_MPI
+c
+c     send/receive plot3d grid data
+c
+      jw = (j2-j1)/j3 + 1
+      kw = (k2-k1)/k3 + 1
+      iw = (i2-i1)/i3 + 1
+c
+      nng = jw*kw*iw*4
+      nd_srce = mblk2nd(nblk)
+      mytag = itag_grid + nblk
+c
+      if (mblk2nd(nblk).eq.myid) then
+         call MPI_Send (xg, nng, MPI_REAL, myhost, mytag,
+     &                  mycomm, ierr)
+      else if (myid.eq.myhost) then
+         call MPI_Recv (xg, nng, MPI_REAL, nd_srce,
+     &                  mytag, mycomm, istat, ierr)
+      end if
+c
+#endif
+c
+      if (myid.eq.myhost .and. iblnk.gt.0) then
+c
+c     ialph > 0 for a grid that was read in plot3d format with alpha measured
+c               in the xy plane (TLNS3D convention)
+c
+      if (ialph.ne.0 .and. i2d.ne.1) then
+         do i=1,iw
+            do j=1,jw
+               do k=1,kw
+                  temp        = xg(j,k,i,2)
+                  xg(j,k,i,2) = xg(j,k,i,3)
+                  xg(j,k,i,3) = -temp
+               end do
+            end do
+         end do
+      end if
+c
+c     output grid
+c
+      if (ibin.eq.0) then
+         if (i2d.eq.0) then
+            if (iblnk .eq. 0) then
+               write(3,'(5e14.6)')
+     .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+            else
+               write(3,'(5e14.6)')
+     .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .               (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
+            end if
+         else
+            if (iblnk .eq. 0) then
+               write(3,'(5e14.6)')
+     .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+            else
+               write(3,'(5e14.6)')
+     .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .               (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
+            end if
+         end if
+      else
+         if (i2d.eq.0) then
+            if (iblnk .eq. 0) then
+               write(3)
+     .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+            else
+               write(3)
+     .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .             (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
+            end if
+         else
+            if (iblnk .eq. 0) then
+               write(3)
+     .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+            else
+               write(3)
+     .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
+     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .            (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
+            end if
+         end if
+      end if
+c
+      end if
+c
+#if defined DIST_MPI
+      if (mblk2nd(nblk).eq.myid) then
+c
+#endif
+c     turbulent quantities
+c
+c     There are a variety of turbulent quantities that can be computed and printed
+c     out.  However, only 5 (or 4, for 2-D) can be printed out at a time.  
+c     Modify the section that assigns quantities to the "xw" arrays in order to 
+c     get what you want.  (See "Modify Here" section below.)
+c 
+      uprime=0.
+      vprime=0.
+      wprime=0.
+      uuprime=0.
+      vvprime=0.
+      wwprime=0.
+      uvprime=0.
+      uwprime=0.
+      vwprime=0.
+      ske=0.
+      prod=0.
+      povere=0.
+      turbre=0.
+      def=0.
+      tint=0.
+      b11=0.
+      b22=0.
+      b33=0.
+      b12=0.
+      b13=0.
+      b23=0.
+      xii=0.
+      xiii=0.
+      ff=0.
+c
+      iw = 0
+      do 4000 i=i1,i2,i3
+      iw = iw + 1
+      kw = 0
+      do 4000 k=k1,k2,k3
+      kw = kw + 1
+      jw = 0
+      do 4000 j=j1,j2,j3
+      jw = jw + 1
+c
+           if (i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .         j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .         k.ge.klamlo .and. k.lt.klamhi) then
+             cutoff=0.
+           else
+             cutoff=1.
+           end if
+c          Determine Sij and Wij values:
+            s11 = ux(j,k,i,1)
+            s22 = ux(j,k,i,5)
+            s33 = ux(j,k,i,9)
+            s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+            s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+            s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+            w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
+            w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+            w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+            xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+            wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+            c1=6.8
+            c2=0.36
+            c3=1.25
+            c4=0.40
+            c5=1.88
+            gg=1./(c1/2.+c5-1.)
+c
+            if (ivmx .le. 7 .or. ivmx .eq. 10) then
+              t11 = -2.*vist3d(j,k,i)*s11
+              t22 = -2.*vist3d(j,k,i)*s22
+              t33 = -2.*vist3d(j,k,i)*s33
+c   Add 2/3*k to the diagonal stress terms for eddy viscosity
+c   models, for better approximation to normal stresses
+              if (ivmx .ge. 6) then
+                 t11=t11+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+                 t22=t22+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+                 t33=t33+2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+              else
+c   less-than-two equation models use approximation for k (from AIAA 92-0439)
+                 t11=t11+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
+                 t22=t22+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
+                 t33=t33+vist3d(j,k,i)*sqrt(2.*xis)/(3.*.31)
+              end if
+              t12 = -2.*vist3d(j,k,i)*s12
+              t13 = -2.*vist3d(j,k,i)*s13
+              t23 = -2.*vist3d(j,k,i)*s23
+            else if(ivmx .eq. 12) then
+c            Find nonlinear tauij values:
+                alpa1=(2.-c4)/2.*gg
+                alpa2=(2.-c3)*gg
+              omegatemp=ccmax(turre(j,k,i,1),tur10)
+c     Get "factre" term:  changes numerator of cmu for nonlinear terms only
+              eta=(2.-c3)**2*(gg*gg/4.)*xis/(omegatemp*re)**2
+              squig=(2.-c4)**2*(gg*gg/4.)*wis/(omegatemp*re)**2
+              eta=ccmincr(eta,10.)
+              squig=ccmincr(squig,10.)
+              factre=(3.*(1.+eta)+.2e-8*(eta*eta*eta +
+     +          squig*squig*squig))/
+     +               (3.*(1.+eta)+   .2*(eta*eta*eta +
+     +          squig*squig*squig))
+              t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (-s12*w12 - s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s11*s11 + s12*s12 + s13*s13 - 0.33333*xis)/re
+              t22 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s12*w12 - s23*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s22*s22 + s12*s12 + s23*s23 - 0.33333*xis)/re
+              t33 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s23*w23 + s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s33*s33 + s23*s23 + s13*s13 - 0.33333*xis)/re
+              t12 =-2.*vist3d(j,k,i)*s12
+     +           -2.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s11*w12 - s22*w12 - s13*w23 - s23*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s11*s12 + s12*s22 + s13*s23)/re
+              t13 =-2.*vist3d(j,k,i)*s13
+     +           -2.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s11*w13 + s12*w23 - s23*w12 - s33*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s11*s13 + s12*s23 + s13*s33)/re
+              t23 =-2.*vist3d(j,k,i)*s23
+     +           -2.*alpa1*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s12*w13 + s22*w23 + s13*w12 - s33*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre/omegatemp*
+     +                 (s12*s13 + s22*s23 + s23*s33)/re
+            else if(ivmx .eq. 11) then
+               alpa1=(2.-c4)/2.*gg
+               alpa2=(2.-c3)*gg
+              eta=(2.-c3)**2*(gg*gg/4.)*xis*
+     +            turre(j,k,i,2)**2/(turre(j,k,i,1)*re)**2
+              squig=(2.-c4)**2*(gg*gg/4.)*wis*
+     +            turre(j,k,i,2)**2/(turre(j,k,i,1)*re)**2
+              eta=ccmincr(eta,10.)
+              squig=ccmincr(squig,10.)
+              factre=(3.*(1.+eta)+.2e-8*(eta*eta*eta +
+     +          squig*squig*squig))/
+     +               (3.*(1.+eta)+   .2*(eta*eta*eta +
+     +          squig*squig*squig))
+c            Find nonlinear tauij values:
+              t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*(-s12*w12 - s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s11 + s12*s12 + s13*s13 - 0.33333*xis)/re
+              t22 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*( s12*w12 - s23*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s22*s22 + s12*s12 + s23*s23 - 0.33333*xis)/re
+              t33 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*factre*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*( s23*w23 + s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s33*s33 + s23*s23 + s13*s13 - 0.33333*xis)/re
+              t12 =-2.*vist3d(j,k,i)*s12
+     +           -2.*alpa1*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s12 + s12*s22 + s13*s23)/re
+              t13 =-2.*vist3d(j,k,i)*s13
+     +           -2.*alpa1*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s13 + s12*s23 + s13*s33)/re
+              t23 =-2.*vist3d(j,k,i)*s23
+     +           -2.*alpa1*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*factre*
+     +                 turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s12*s13 + s22*s23 + s23*s33)/re
+            else if(ivmx .eq. 9 .or. ivmx .eq. 13) then
+               al10 = 0.25*c1 -1.
+               al1 = 3.8
+c          2-line improvement for wake
+               al10=al10+1.8864
+               al1=al1-2.
+               al2 = 0.5*c2 -2./3.
+               al3 = 0.5*c3 -1.
+               al4 = 0.5*c4 -1.
+              eta1=xis*turre(j,k,i,2)**2/(turre(j,k,i,1)*re)**2
+              alpa1 = -al4/(al10-eta1*al1*cmuv(j,k,i))
+              alpa2 = -2.*al3/(al10-eta1*cmuv(j,k,i)*al1)
+               if (ivmx .eq. 9) then
+                 alpa1=0.
+                 alpa2=0.
+               end if
+c            Find nonlinear tauij values:
+              t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*(-s12*w12 - s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s11 + s12*s12 + s13*s13 - 0.33333*xis)/re
+              t22 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*( s12*w12 - s23*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s22*s22 + s12*s12 + s23*s23 - 0.33333*xis)/re
+              t33 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/
+     +                 turre(j,k,i,1)*( s23*w23 + s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s33*s33 + s23*s23 + s13*s13 - 0.33333*xis)/re
+              t12 =-2.*vist3d(j,k,i)*s12
+     +           -2.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s12 + s12*s22 + s13*s23)/re
+              t13 =-2.*vist3d(j,k,i)*s13
+     +           -2.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s11*s13 + s12*s23 + s13*s33)/re
+              t23 =-2.*vist3d(j,k,i)*s23
+     +           -2.*alpa1*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)*turre(j,k,i,2)/turre(j,k,i,1)*
+     +                 (s12*s13 + s22*s23 + s23*s33)/re
+            else if(ivmx .eq. 8 .or. ivmx .eq. 14) then
+               al10 = 0.25*c1 -1.
+               al1 = 3.8
+c          2-line improvement for wake
+               al10=al10+1.8864
+               al1=al1-2.
+               al2 = 0.5*c2 -2./3.
+               al3 = 0.5*c3 -1.
+               al4 = 0.5*c4 -1.
+              eta1=xis/(turre(j,k,i,1)*re)**2
+              alpa1 = -al4/(al10-eta1*al1*cmuv(j,k,i))
+              alpa2 = -2.*al3/(al10-eta1*cmuv(j,k,i)*al1)
+               if (ivmx .eq. 8) then
+                 alpa1=0.
+                 alpa2=0.
+               end if
+c            Find nonlinear tauij values:
+              t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)/
+     +                 turre(j,k,i,1)*(-s12*w12 - s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s11*s11 + s12*s12 + s13*s13 - 0.33333*xis)/re
+              t22 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)/
+     +                 turre(j,k,i,1)*( s12*w12 - s23*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s22*s22 + s12*s12 + s23*s23 - 0.33333*xis)/re
+              t33 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
+     +             -4.*alpa1*vist3d(j,k,i)/
+     +                 turre(j,k,i,1)*( s23*w23 + s13*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s33*s33 + s23*s23 + s13*s13 - 0.33333*xis)/re
+              t12 =-2.*vist3d(j,k,i)*s12
+     +           -2.*alpa1*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s11*s12 + s12*s22 + s13*s23)/re
+              t13 =-2.*vist3d(j,k,i)*s13
+     +           -2.*alpa1*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s11*s13 + s12*s23 + s13*s33)/re
+              t23 =-2.*vist3d(j,k,i)*s23
+     +           -2.*alpa1*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)/re
+     +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
+     +                 (s12*s13 + s22*s23 + s23*s33)/re
+            end if
+c            Calculate production term:
+            pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
+     +            +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
+     +                             + t13*(ux(j,k,i,3)+ux(j,k,i,7))
+     +                             + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
+     +            (q(j,k,i,1)*re)
+            pk=pk*cutoff
+c      u'/u_inf:
+      uprime=sqrt(abs(t11)/(q(j,k,i,1)*re))/xmach
+c      v'/u_inf:
+      if (ialph .eq. 0) then
+        vprime=sqrt(abs(t22)/(q(j,k,i,1)*re))/xmach
+      else
+        vprime=sqrt(abs(t33)/(q(j,k,i,1)*re))/xmach
+      end if
+c      w'/u_inf:
+      if (ialph .eq. 0) then
+        wprime=sqrt(abs(t33)/(q(j,k,i,1)*re))/xmach
+      else
+        wprime=sqrt(abs(t22)/(q(j,k,i,1)*re))/xmach
+      end if
+c      u'u'/(u_inf)**2:
+      uuprime=t11/(q(j,k,i,1)*re)/xmach**2
+c      v'v'/(u_inf)**2:
+      if (ialph .eq. 0) then
+        vvprime=t22/(q(j,k,i,1)*re)/xmach**2
+      else
+        vvprime=t33/(q(j,k,i,1)*re)/xmach**2
+      end if
+c      w'w'/(u_inf)**2:
+      if (ialph .eq. 0) then
+        wwprime=t33/(q(j,k,i,1)*re)/xmach**2
+      else
+        wwprime=t22/(q(j,k,i,1)*re)/xmach**2
+      end if
+c      u'v'/(u_inf)**2:
+      if (ialph .eq. 0) then
+        uvprime=t12/(q(j,k,i,1)*re)/xmach**2
+      else
+        uvprime=t13/(q(j,k,i,1)*re)/xmach**2
+      end if
+c      u'w'/(u_inf)**2:
+      if (ialph .eq. 0) then
+        uwprime=t13/(q(j,k,i,1)*re)/xmach**2
+      else
+        uwprime=-t12/(q(j,k,i,1)*re)/xmach**2
+      end if
+c      v'w'/(u_inf)**2:
+      if (ialph .eq. 0) then
+        vwprime=t23/(q(j,k,i,1)*re)/xmach**2
+      else
+        vwprime=-t23/(q(j,k,i,1)*re)/xmach**2
+      end if
+c      S*k/epsilon:
+      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
+     +    ivmx .eq. 14) then
+        ske=sqrt(xis)/(turre(j,k,i,1)*re)
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or. 
+     .         ivmx.eq.13) then
+        ske=sqrt(xis)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
+      end if
+c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
+c      unit 1 of grid)
+      prod=pk/(xmach*xmach*xmach)
+c      P(k)/epsilon:
+      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
+     +    ivmx .eq. 14) then
+        povere=pk/(turre(j,k,i,1)*turre(j,k,i,2)*re)
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
+     .         ivmx.eq.13) then
+        povere=pk/(turre(j,k,i,1)*re)
+      end if
+c      Turb Reynolds number:
+      c2b=cbar/tinf
+      c2bp=c2b+1.0
+      tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+      fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
+     +    ivmx .eq. 14) then
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)**2/(9.*fnu*turre(j,k,i,1))
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
+     .         ivmx.eq.13) then
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)/(9.*fnu*turre(j,k,i,1))
+      end if
+c      Mean deformation:
+      def=(xis-wis)/(xis+wis)
+c      Turbulence intensity:
+      if (ivmx .ge. 6) then
+        tint=sqrt(2.*turre(j,k,i,2)/3.)/xmach
+      end if
+c      anisotropy tensor component b11:
+      if (ivmx .ge. 6) then
+      b11=t11/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+c      anisotropy tensor component b22:
+      if (ialph .eq. 0) then
+        b22=t22/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+      else
+        b22=t33/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+      end if
+c      anisotropy tensor component b33:
+      if (ialph .eq. 0) then
+        b33=t33/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+      else
+        b33=t22/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+      end if
+c      anisotropy tensor component b12:
+      if (ialph .eq. 0) then
+        b12=t12/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      else
+        b12=t13/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      end if
+c      anisotropy tensor component b13:
+      if (ialph .eq. 0) then
+        b13=t13/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      else
+        b13=-t12/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      end if
+c      anisotropy tensor component b23:
+      if (ialph .eq. 0) then
+        b23=t23/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      else
+        b23=-t23/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+      end if
+c      scalar invariant II:
+      if (i2d .eq. 1) then
+        if (ialph .eq. 0) then
+        xii=-0.5*(b11**2+b22**2+b33**2+2.*b13**2)
+        else
+        xii=-0.5*(b11**2+b22**2+b33**2+2.*b12**2)
+        end if
+      else
+        xii=-0.5*(b11**2+b22**2+b33**2+2.*b12**2+2.*b13**2+2.*b23**2)
+      end if
+c      scalar invariant III:
+      if (i2d .eq. 1) then
+        if (ialph .eq. 0) then
+        xiii=0.333333*(b11**3+b22**3+b33**3+3.*b11*b13**2+
+     +                                      3.*b33*b13**2) 
+        else
+        xiii=0.333333*(b11**3+b22**3+b33**3+3.*b11*b12**2+
+     +                                      3.*b22*b12**2) 
+        end if
+      else
+        xiii=0.333333*(b11**3+b22**3+b33**3+
+     +       3.*b11*b12**2+3.*b11*b13**2+
+     +       3.*b22*b12**2+3.*b22*b23**2+
+     +       3.*b33*b13**2+3.*b33*b23**2+6.*b12*b13*b23) 
+      end if
+c      scalar invariant F:
+      ff=1.+9.*xii+27.*xiii
+      end if
+c
+c     load appropriate data into single precision array
+c
+#     ifdef CMPLX
+c
+c     get derivative setp size on the local processor
+c
+      call gradinfo(delh,-1)
+#     endif
+c
+c     Modify Here:
+c
+c     - if 3-D, prints out all 5 quantities
+c     - if 2-D, only prints out the first 4
+c     Note that the u, v, and w prime quantities are aligned with the x, y, and
+c     z axes OF THE GRID, respectively.  You must transform these quantities 
+c     appropriately if they are desired in a different coordinate system.
+c
+#    ifdef CMPLX
+      if (ip3dgrad .eq. 0) then
+         xw(jw,kw,iw,1) = real(prod)
+         xw(jw,kw,iw,2) = real(uwprime)
+         xw(jw,kw,iw,3) = real(uuprime)
+         xw(jw,kw,iw,4) = real(wwprime)
+         xw(jw,kw,iw,5) = real(ske)
+      else
+         xw(jw,kw,iw,1) = imag(prod)/real(delh)
+         xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
+         xw(jw,kw,iw,3) = imag(uuprime)/real(delh)
+         xw(jw,kw,iw,4) = imag(wwprime)/real(delh)
+         xw(jw,kw,iw,5) = imag(ske)/real(delh)
+      end if
+#     else
+      xw(jw,kw,iw,1) = real(prod)
+      xw(jw,kw,iw,2) = real(uwprime)
+      xw(jw,kw,iw,3) = real(uuprime)
+      xw(jw,kw,iw,4) = real(wwprime)
+      xw(jw,kw,iw,5) = real(ske)
+#     endif
+ 4000 continue
+c
+#if defined DIST_MPI
+      end if
+c
+c     send/receive plot3d q data
+c
+      jw = (j2-j1)/j3 + 1
+      kw = (k2-k1)/k3 + 1
+      iw = (i2-i1)/i3 + 1
+c
+      nnq = jw*kw*iw*5
+      nd_srce = mblk2nd(nblk)
+      mytag = itag_q + nblk
+c
+      if (mblk2nd(nblk).eq.myid) then
+         call MPI_Send (xw, nnq, MPI_REAL, myhost, mytag,
+     &                  mycomm, ierr)
+      else if (myid .eq. myhost) then
+         call MPI_Recv (xw, nnq, MPI_REAL, nd_srce,
+     &                  mytag, mycomm, istat, ierr)
+      end if
+#endif
+c
+      if (myid .eq. myhost) then
+c
+c        output turb data in plot3d q file
+c
+         if (ibin.eq.0) then
+            if (i2d .eq. 0) then
+               write(4,'(5e14.6)') xmachw,alphww,reuew,timew
+               write(4,'(5e14.6)')
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,5)
+            else
+               write(4,'(5e14.6)') xmachw,alphww,reuew,timew
+               write(4,'(5e14.6)') 
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,4)
+            end if
+         else
+            if (i2d .eq. 0) then
+               write(4) xmachw,alphww,reuew,timew
+               write(4)
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,5)
+            else
+               write(4) xmachw,alphww,reuew,timew
+               write(4)
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,4)
+            end if
+         end if
+      end if
+c
+      return
+      end

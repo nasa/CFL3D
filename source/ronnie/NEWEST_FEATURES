@@ -1,0 +1,105 @@
+1) Ronnie now supports 2 input file styles. The new style was added to 
+allow user-specified search range on from side - this should
+overcome some difficult search problems at the expense of additional
+user input.
+
+2) Ronnie has been modified to increase robustness when attempting
+to determine interpolation data on coarser levels. In the past, the
+search routines would sometimes fail on coarser levels, despite having
+successfully determined all the corresponding stencils on a finer
+level. Now, if the routines initially fail on a coarser level, ronnie
+will set coarser level stencils by collocating fine grid data.
+
+3) A preprocessor (preronnie) has been developed for ronnie. Operation 
+of preronnie is similar to precfl3d: after compiling, type
+
+preronnie <ronnie.inp
+
+where preronnie is the name of the executable, and ronnie.inp is the
+ronnie input file. Preronnie will then create or modify the parameter
+file ron1.h as needed for the particular case, and will suggest whether
+recompilation of ronnie is needed or not.
+
+4) The file names created when diagnostic plot3d output is generated
+(either automatically or by setting ifit<0) have been changed. The old
+file names where fort.xx, where xx is the interpolation number. The
+new file names are denoted by patch_p3d.xx. The new names avoid the 
+limit on some systems of creating a file past fort.99.
+
+
+
+The differences between the old and new styles are described below:
+
+OLD Style:
+
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+Title
+.
+.
+.
+
+NEW Style:
+
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+IOFLAG  ITRACE
+1       -1
+Title
+.
+.
+.
+
+where: ioflag = 1 allows new input format as indicated below
+              = 0 for the old input format (where all the "from"
+                  blocks are on one line)
+  
+       itrace = -1....no tracing
+              =  0....save trace from last cell only
+              = +1....save trace from all cells searched so far 
+                      (may give big file!)
+
+       itrace .ne. -1 primarily intended for the code developer
+
+
+
+
+OLD Style:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB  FROM  FROM  FROM  FROM...
+   1  0112      0     0      0      0     1  0411
+   2  0212      0     0      0      0     1  0411 
+   3  0312      1   113      0      0     1  0411
+   4  0312    113   245      0      0     1  0411
+   5  0312    245   337      0      0     1  0411
+   6  0411      0     0      0      0     3  0112  0212  0312
+   7  0412      0     0      0      0     1  0511
+   8  0511      0     0      0      0     1  0412
+
+
+NEW Style:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB (one per int)
+      FROM   XIE1  XIE2   ETA1   ETA2       (repeat nfb times for each int)
+   1  0112      0     0      0      0     1  
+      0411      0     0      0      0
+   2  0212      0     0      0      0     1
+      0411      0     0      0      0
+   3  0312      1   113      0      0     1
+      0411      0     0      0      0
+   4  0312    113   245      0      0     1
+      0411      0     0      0      0
+   5  0312    245   337      0      0     1
+      0411      0     0      0      0
+   6  0411      0     0      0      0     3  
+      0112      0     0      0      0
+      0212      1    21      1     97
+      0312      0     0      0      0
+   7  0412      0     0      0      0     1
+      0511      0     0      0      0
+   8  0511      0     0      0      0     1
+      0412      0     0      0      0
