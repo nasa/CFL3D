@@ -150,5 +150,6 @@ c  increment residual (in conserved vars.)
           enddo
         enddo
       enddo
- 
+
+      return 
       end
