@@ -1496,8 +1496,8 @@ c        call the noninertial initization to speed convergence
             if (noninflag.gt.0) then
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),201)
-  201          format(35h correcting initial conditions for,
-     .                23h NONINERTIAL ref. frame)
+  201          format(35h  correcting initial conditions for,
+     .                28h NONINERTIAL reference frame)
             end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
@@ -1508,7 +1508,7 @@ c        call the noninertial initization to speed convergence
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),211)
   211          format(37h    correcting initial conditions for,
-     .                23h NONINERTIAL ref. frame)
+     .                28h NONINERTIAL reference frame)
             end if
          end if
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
