@@ -16,6 +16,7 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_S)/*.F .
 	ln -s $(CFLSRC_S)/*.c .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -41,7 +42,7 @@ FSRC_LIBS = \
 	abcjz.f        colldat.f      dlutr.f        abckz.f \
 	collv.f        dlutrp.f       init.f         q8vrev.f \
 	collx.f        dsmin.f        initvist.f \
-	collxtb.f      expand.f       int2.f         addx.f \
+	collxtb.f      expand.f       int2.f \
 	extra.f        extrae.f       lead.f \
 	amafi.f        ffluxl.f       l2norm.f       bc_xmera.f \
 	amafj.f        dabciz.f       fhat.f         l2norm2.f \
@@ -53,7 +54,7 @@ FSRC_LIBS = \
 	bsub.f         dfluxpm.f      hfluxl.f       q8smax.f \
 	bsubp.f        diagi.f        q8smin.f       spalart.f \
 	ccf.f          diagj.f        hole.f         global0.f \
-	tau2x.f        tdq.f          tinvr.f        tmetric.f\
+	tau2x.f        tdq.f          tinvr.f        tmetric.f \
 	trace.f        trans.f        transmc.f      transp.f \
 	vlutrp.f       xe.f           xlim.f         unld_qc.f \
 	xtbatb.f       rie1d.f        rie1de.f       rotateq.f \
@@ -88,7 +89,7 @@ FSRC_LIBS = \
 	mvdat.f        getibk.f       pre_embed.f    pre_period.f \
 	pre_patch.f    pre_cblki.f    pre_cblkj.f    pre_cblkk.f \
 	global.f       global2.f      bc.f           getibk0.f \
-	rpatch0.f      cntsurf.f      cctogp.f       umalloc.f \
+	rpatch0.f      cntsurf.f      cctogp.f \
 	ufree.f        modread.f      genforce.f     rotsurf.f \
 	trnsurf.f      tfiedge.f      tfiface.f      tfivol.f  \
         arclen.f       deform.f       bc_delt.f      getsurf.f \
@@ -101,20 +102,31 @@ FSRC_LIBS = \
 	gradinfo.f     rb_pred.f      rb_corr.f      init_rb.f \
 	init_trim.f    pltmode.f
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.f addx.f
+
 CSRC_LIBS = bessel.c
 
 FOBJ_LIBS = $(FSRC_LIBS:.f=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
 
 COBJ_LIBS = $(CSRC_LIBS:.c=.o)
 
 COMMONLIB = libcommon.a
 
-$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(CSRC_LIBS) $(COBJ_LIBS)
-	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(COBJ_LIBS) 
+$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
+	$(CSRC_LIBS) $(COBJ_LIBS)
+	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(FOBJ_SPEC) $(COBJ_LIBS) 
 	@$(RANLIB) $(COMMONLIB)
 
 $(FOBJ_LIBS): 
 	$(FTN) $(FFLAG) -c $*.f
+
+$(FOBJ_SPEC):
+	$(FTN) $(FFLAG_SPEC) -c $*.f
 
 $(COBJ_LIBS):
 	$(CC) $(CFLAG) -c $*.c
