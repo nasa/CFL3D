@@ -41,12 +41,14 @@ c
       write(6,'('' input 1 to read single-precision q-file'')')
       write(6,'('' input 0 to read double-precision q-file:'')')
       read(5,*) isingle
+#if defined ASN_P3D
       write(6,'('' input 1 if need to call asn (on cray)'',
      + '', 0 otherwise:'')')
       read(5,*) iasn
       if (iasn .eq. 1) then
         call asnfile(file1, '-F f77 -N ieee',IER)
       end if
+#endif
       write(6,'('' input 0=3-D q-file, 1=2-D q-file'')')
       read(5,*) i2d
       open(13,file=file1,form='unformatted',status='old')
