@@ -30,7 +30,10 @@ c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c umalloc_r_r.F
 c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 v6_restart_mod.f umalloc_r_r.o -o v6_restart_mod
 c*****************************************************************************
 c
+      parameter (nblmax=1000)
       dimension titlw(20)
+      dimension jdd(nblmax),kdd(nblmax),idd(nblmax)
+      dimension jddc(nblmax),kddc(nblmax),iddc(nblmax)
       character*80 file1,file2
 c
       write(6,'('' input V6 restart file to read from:'')')
@@ -103,6 +106,11 @@ c
 c
       write(6,'('' How many zones are in the restart file?'')')
       read(5,*) nblk
+      if (nblk .gt. nblmax) then
+        write(6,'('' need to increase nblmax in parameter stmt'',
+     +   '' and recompile'')')
+        stop
+      end if
 c
 c     read restart file once through to get dimensions
       imax=0
@@ -118,6 +126,9 @@ c     read restart file once through to get dimensions
         jdim1=jt-1
         kdim1=kt-1
         idim1=it-1
+        jdd(nrty)=jdim1
+        kdd(nrty)=kdim1
+        idd(nrty)=idim1
         if (jdim1 .gt. jmax) jmax=jdim1
         if (kdim1 .gt. kmax) kmax=kdim1
         if (idim1 .gt. imax) imax=idim1
@@ -242,6 +253,48 @@ c     read restart file once through to get dimensions
             end if
           end if
         end if
+      if (ihalf .eq. 1) then
+        if (ic .eq. 1) then
+          if (idd(nrty) .eq. 1) then
+            iddc(nrty)=idd(nrty)
+          else
+            iddc(nrty)=idd(nrty)*2
+          end if
+        else
+          iddc(nrty)=idd(nrty)
+        end if
+        if (jc .eq. 1) then
+          jddc(nrty)=jdd(nrty)*2
+        else
+          jddc(nrty)=jdd(nrty)
+        end if
+        if (kc .eq. 1) then
+          kddc(nrty)=kdd(nrty)*2
+        else
+          kddc(nrty)=kdd(nrty)
+        end if
+      else if (ihalf .eq. 0) then
+        if (ic .eq. 1) then
+          imaxctemp=idd(nrty)/2
+          iddc(nrty)=max(1,imaxctemp)
+        else
+          iddc(nrty)=idd(nrty)
+        end if
+        if (jc .eq. 1) then
+          jddc(nrty)=jdd(nrty)/2
+        else
+          jddc(nrty)=jdd(nrty)
+        end if
+        if (kc .eq. 1) then
+          kddc(nrty)=kdd(nrty)/2
+        else
+          kddc(nrty)=kdd(nrty)
+        end if
+      else
+        iddc(nrty)=idd(nrty)
+        jddc(nrty)=jdd(nrty)
+        kddc(nrty)=kdd(nrty)
+      end if
  9897 continue
       rewind(2)
       if (ihalf .eq. 1) then
@@ -287,7 +340,8 @@ c     read restart file once through to get dimensions
         kmaxc=kmax
       end if
       call readwrite(imax,jmax,kmax,ntrmax,iunfi,iunfo,irghost,
-     . ihalf,nblk,imaxc,jmaxc,kmaxc,ic,jc,kc,itime2read,titlw)
+     . ihalf,nblk,imaxc,jmaxc,kmaxc,ic,jc,kc,itime2read,titlw,
+     . idd,jdd,kdd,iddc,jddc,kddc)
       write(6,'(/,'' successful program completion'')')
       stop
  9898 write(6,'('' Error, end of file reached... are you sure you'')')
@@ -297,11 +351,14 @@ c     read restart file once through to get dimensions
 c
 c *********************************************************************
       subroutine readwrite(idim,jdim,kdim,ncycmax,iunfi,iunfo,irghost,
-     . ihalf,nblk,idimc,jdimc,kdimc,ic,jc,kc,itime2read,titlw)
+     . ihalf,nblk,idimc,jdimc,kdimc,ic,jc,kc,itime2read,titlw,
+     . idd,jdd,kdd,iddc,jddc,kddc)
 c
       integer stats
 c
       dimension titlw(20)
+      dimension jdd(nblk),kdd(nblk),idd(nblk)
+      dimension jddc(nblk),kddc(nblk),iddc(nblk)
 c 
       allocatable :: cdpw(:)
       allocatable :: cdvw(:)
@@ -320,8 +377,6 @@ c
       allocatable :: fmdotw(:)
       allocatable :: nneg1(:)
       allocatable :: nneg2(:)
-      allocatable :: q(:,:,:,:)
-      allocatable :: qc(:,:,:,:)
       allocatable :: qi0(:,:,:,:)
       allocatable :: qi0c(:,:,:,:)
       allocatable :: qj0(:,:,:,:)
@@ -331,7 +386,6 @@ c
       allocatable :: rms(:)
       allocatable :: rmstr1(:)
       allocatable :: rmstr2(:)
-      allocatable :: work(:,:,:,:)
 c
 c     allocate memory
 c
@@ -370,10 +424,6 @@ c
       call umalloc_r(ncycmax,1,'nneg1',memuse,stats)
       allocate( nneg2(ncycmax), stat=stats )
       call umalloc_r(ncycmax,1,'nneg2',memuse,stats)
-      allocate( q(jdim,kdim,idim,5), stat=stats )
-      call umalloc_r(jdim*kdim*idim*5,0,'q',memuse,stats)
-      allocate( qc(jdimc,kdimc,idimc,5), stat=stats )
-      call umalloc_r(jdimc*kdimc*idimc*5,0,'qc',memuse,stats)
       allocate( qi0(jdim+1,kdim+1,5,4), stat=stats )
       call umalloc_r((jdim+1)*(kdim+1)*5*4,0,'qi0',memuse,stats)
       allocate( qi0c(jdimc+1,kdimc+1,5,4), stat=stats )
@@ -392,8 +442,6 @@ c
       call umalloc_r(ncycmax,0,'rmstr1',memuse,stats)
       allocate( rmstr2(ncycmax), stat=stats )
       call umalloc_r(ncycmax,0,'rmstr2',memuse,stats)
-      allocate( work(jdimc,kdimc,idimc,5), stat=stats )
-      call umalloc_r(jdimc*kdimc*idimc*5,0,'work',memuse,stats)
 c
       iskip = 1
       do 9897 nrty=1,nblk
@@ -527,39 +575,8 @@ c
 c
 c     Primative variables (rho,u,v,w,p)
 c
-      if (iunfi .eq. 1) then
-      read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,5)
-      else
-      read(2,*) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,5)
-      end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,5,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,5)
-      else
-c       Don't coarsen
-        do l=1,5
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,l)=q(j,k,i,l)
-        enddo
-        enddo
-        enddo
-        enddo
-      end if
-      if (iunfo .eq. 1) then
-      write(3) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),i=1,idim1c),
-     +  l=1,5)
-      else
-      write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),i=1,idim1c),
-     +  l=1,5)
-      end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,5)
 c  ghost values
       if (irghost .eq. 1) then
       if (iunfi .eq. 1) then
@@ -649,36 +666,8 @@ c
 c
 c   vist3d data:
       if (iv1.ge.2 .or. iv2.ge.2 .or. iv3.ge.2) then
-         if (iunfi .eq. 1) then
-         read(2) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         else
-         read(2,*) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,1,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,1)
-      else
-c       Don't coarsen
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,1)=q(j,k,i,1)
-        enddo
-        enddo
-        enddo
-      end if
-         if (iunfo .eq. 1) then
-         write(3) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-         else
-         write(3,*) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),
-     .     i=1,idim1c)
-         end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
 c  ghost values vi0,vj0,vk0
       if (irghost .eq. 1) then
       if (iunfi .eq. 1) then
@@ -743,41 +732,8 @@ c       Don't coarsen
 c
 c   tursav data:
       if (iv1.ge.4 .or. iv2.ge.4 .or. iv3.ge.4) then
-         if (iunfi .eq. 1) then
-         read(2) ((((q(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .           m=1,2)
-         else
-         read(2,*) ((((q(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .           m=1,2)
-         end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,2,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,2)
-      else
-c       Don't coarsen
-        do l=1,2
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,l)=q(j,k,i,l)
-        enddo
-        enddo
-        enddo
-        enddo
-      end if
-         if (iunfo .eq. 1) then
-         write(3) ((((qc(j,k,i,m),j=1,jdim1c),k=1,kdim1c),
-     +           i=1,idim1c),m=1,2)
-         else
-         write(3,*) ((((qc(j,k,i,m),j=1,jdim1c),k=1,kdim1c),
-     +           i=1,idim1c),m=1,2)
-         end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,2)
 c  ghost values ti0,tj0,tk0
       if (irghost .eq. 1) then
       if (iunfi .eq. 1) then
@@ -840,112 +796,24 @@ c       Don't coarsen
       end if
 c
 c   smin data:
-         if (iunfi .eq. 1) then
-         read(2) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         else
-         read(2,*) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,1,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,1)
-      else
-c       Don't coarsen
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,1)=q(j,k,i,1)
-        enddo
-        enddo
-        enddo
-      end if
-         if (iunfo .eq. 1) then
-         write(3) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-         else
-         write(3,*) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-         end if
-         if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
 c   xjb,xkb,blnum data
-         if (iunfi .eq. 1) then
-           read(2) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-           read(2) (((q(j,k,i,2),j=1,jdim1),k=1,kdim1),i=1,idim1)
-           read(2) (((q(j,k,i,3),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         else
-           read(2,*) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-           read(2,*) (((q(j,k,i,2),j=1,jdim1),k=1,kdim1),i=1,idim1)
-           read(2,*) (((q(j,k,i,3),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,3,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,3)
-      else
-c       Don't coarsen
-        do l=1,3
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,l)=q(j,k,i,l)
-        enddo
-        enddo
-        enddo
-        enddo
-      end if
-           if (iunfo .eq. 1) then
-           write(3) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           write(3) (((qc(j,k,i,2),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           write(3) (((qc(j,k,i,3),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           else
-           write(3,*) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           write(3,*) (((qc(j,k,i,2),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           write(3,*) (((qc(j,k,i,3),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           end if
+         if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
          end if
 c   cmuv data
          if (iv1.eq.8 .or. iv2.eq.8 .or. iv3.eq.8  .or.
      .       iv1.eq.9 .or. iv2.eq.9 .or. iv3.eq.9  .or.
      .       iv1.eq.13.or. iv2.eq.13.or. iv3.eq.13 .or.
      .       iv1.eq.14.or. iv2.eq.14.or. iv3.eq.14) then
-         if (iunfi .eq. 1) then
-           read(2) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         else
-           read(2,*) (((q(j,k,i,1),j=1,jdim1),k=1,kdim1),i=1,idim1)
-         end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,1,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,1)
-      else
-c       Don't coarsen
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,1)=q(j,k,i,1)
-        enddo
-        enddo
-        enddo
-      end if
-           if (iunfo .eq. 1) then
-           write(3) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),i=1,idim1c)
-           else
-           write(3,*) (((qc(j,k,i,1),j=1,jdim1c),k=1,kdim1c),
-     .       i=1,idim1c)
-           end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
          end if
       end if
 c
@@ -1017,41 +885,8 @@ c     Make finer:
            kdim1c=ktc-1
            idim1c=itc-1
 c   qc0 data:
-           if (iunfi .eq. 1) then
-           read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .             l=1,5)
-           else
-           read(2,*) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .             l=1,5)
-           end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,5,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,5)
-      else
-c       Don't coarsen
-        do l=1,5
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,l)=q(j,k,i,l)
-        enddo
-        enddo
-        enddo
-        enddo
-      end if
-           if (iunfo .eq. 1) then
-           write(3) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
-     +      i=1,idim1c),l=1,5)
-           else
-           write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
-     +      i=1,idim1c),l=1,5)
-           end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,5)
       if (itime2read .ne. 0) then
         if (iunfi .eq. 1) then
           read(2) dtold
@@ -1064,41 +899,8 @@ c       Don't coarsen
           write(3,*) dtold
         end if
 c   tursav2 data:
-           if (iunfi .eq. 1) then
-           read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .             l=1,2)
-           else
-           read(2,*) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
-     .             l=1,2)
-           end if
-      if (ihalf .eq. 1) then
-c       Make finer:
-        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,2,
-     +    work)
-      else if (ihalf .eq. 0) then
-c       Coarsen
-        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
-     +    idim1,jdim1,kdim1,ic,jc,kc,it,2)
-      else
-c       Don't coarsen
-        do l=1,2
-        do j=1,jdim1
-        do k=1,kdim1
-        do i=1,idim1
-          qc(j,k,i,l)=q(j,k,i,l)
-        enddo
-        enddo
-        enddo
-        enddo
-      end if
-           if (iunfo .eq. 1) then
-           write(3) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
-     +      i=1,idim1c),l=1,2)
-           else
-           write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),
-     +      i=1,idim1c),l=1,2)
-           end if
+      call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,2)
       end if
  8897   continue
       end if
@@ -1231,8 +1033,6 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         deallocate(q)
-         deallocate(qc)
          deallocate(qi0)
          deallocate(qj0)
          deallocate(qk0)
@@ -1257,7 +1057,6 @@ c
          deallocate(cfttotw)
          deallocate(rmstr1)
          deallocate(rmstr2)
-         deallocate(work)
          deallocate(nneg1)
          deallocate(nneg2)
       end if
@@ -1567,3 +1366,70 @@ c
       return
       end
 c   ***************************************************************
+      subroutine getq(idim1,jdim1,kdim1,idim1c,jdim1c,
+     +  kdim1c,iunfi,iunfo,ihalf,ic,jc,kc,it,inumb)
+c
+      integer stats
+c
+      allocatable :: q(:,:,:,:)
+      allocatable :: qc(:,:,:,:)
+      allocatable :: work(:,:,:,:)
+c
+      idim=idim1+1
+      jdim=jdim1+1
+      kdim=kdim1+1
+      idimc=idim1c+1
+      jdimc=jdim1c+1
+      kdimc=kdim1c+1
+      allocate( q(jdim,kdim,idim,inumb), stat=stats )
+      call umalloc_r(jdimkdimidim*inumb,0,'q',memuse,stats)
+      allocate( qc(jdimc,kdimc,idimc,inumb), stat=stats )
+      call umalloc_r(jdimc*kdimc*idimc*inumb,0,'qc',memuse,stats)
+      allocate( work(jdimc,kdimc,idimc,inumb), stat=stats )
+      call umalloc_r(jdimc*kdimc*idimc*inumb,0,'work',memuse,stats)
+c
+      if (iunfi .eq. 1) then
+      read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,inumb)
+      else
+      read(2,*) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     +  l=1,inumb)
+      end if
+      if (ihalf .eq. 1) then
+c       Make finer:
+        call makefin(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,ic,jc,kc,inumb,
+     +    work)
+      else if (ihalf .eq. 0) then
+c       Coarsen
+        call makecoar(q,qc,idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,ic,jc,kc,it,inumb)
+      else
+c       Don't coarsen
+        do l=1,inumb
+        do j=1,jdim1
+        do k=1,kdim1
+        do i=1,idim1
+          qc(j,k,i,l)=q(j,k,i,l)
+        enddo
+        enddo
+        enddo
+        enddo
+      end if
+      if (iunfo .eq. 1) then
+      write(3) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),i=1,idim1c),
+     +  l=1,inumb)
+      else
+      write(3,*) ((((qc(j,k,i,l),j=1,jdim1c),k=1,kdim1c),i=1,idim1c),
+     +  l=1,inumb)
+      end if
+c
+c     free memory
+c
+      ifree = 1
+      if (ifree.gt.0) then
+         deallocate(q)
+         deallocate(qc)
+         deallocate(work)
+      end if
+      return
+      end
