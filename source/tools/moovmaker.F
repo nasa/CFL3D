@@ -192,7 +192,7 @@ c
       end if
       do 10 nn=1,nbl
       write(6,*)'block ',nn,' i x j x k ',idim(nn),jdim(nn),kdim(nn)
-      call flush(6)
+      call my_flush(6)
 10    continue
 11    continue
       read(2) idum

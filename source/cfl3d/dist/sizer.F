@@ -721,8 +721,8 @@ c
    83 format(35(2h *))
    87 format(2(2h *),62x,2(2h *))
 c
-#ifdef CRAY_TIME
-c     cray_time implies cray (always double precision)
+#ifdef CRAY
+c     cray always double precision
       write(66,12) real(float(memuse))/1.e6
 #else
 #   ifdef DBLE_PRECSN

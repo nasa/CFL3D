@@ -341,14 +341,14 @@ fi
 #    during the read! thus, ASN_GRD must be used only when absolutely
 #    sure the grid in ieee form. note that this is not an issue with
 #    the plot3d files since they are not read from, only written to.
-# 3) CRAY_TIME governs the timing function: there appears to be
+# 3) CRAY governs the timing function: there appears to be
 #    no equivalent of etime or itime on the crays; therefore, cannot
-#    use subroutine cputim. CRAY_TIME switches the calls to etime and
+#    use subroutine cputim. CRAY switches the calls to etime and
 #    itime in subroutine cputim with the cray "built-in" function
 #    second. note that the value from second is output as user time,
 #    system time is arbitrarily set to zero, and wall clock time is
-#    set to user time. NOTE: CRAY_TIME is now also used to select the
-#    appropriate memory allocation call for the Crays
+#    set to user time. NOTE: CRAY is now also used to select the
+#    appropriate memory allocationion message for the Crays
 # 4) WKSTN_OFF switches off the routines that are used on workstations
 #    to mimic native cray functions (e.g. isrcheq_wkstn, ismin_wkstn
 #    and ismax_wkstn), thereby allowing use of the native (presumably
@@ -534,7 +534,7 @@ case $FARCH in CRAY)
   PREC=""
   CFLAG="$PREC"
   CPP="/opt/ctl/bin/cpp"
-  CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+  CPPOPT_SP="-DASN_P3D -DCRAY -DWKSTN_OFF"
   AROPT="ruc"
   RANLIB="ranlib"
   FFLAG="-Oscalar3,vector3"
@@ -555,7 +555,7 @@ case $LLARCH in SV1)
   PREC=""
   CFLAG="$PREC"
   CPP="/opt/ctl/bin/cpp"
-  CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+  CPPOPT_SP="-DASN_P3D -DCRAY -DWKSTN_OFF"
   AROPT="ruc"
   RANLIB="true"
   FFLAG="-Oscalar3,vector3,nopattern -a taskcommon"
@@ -571,7 +571,7 @@ case $FARCH in T3E)
   PREC_MPI=""
   PREC=""
   CPP="cpp"
-  CPPOPT_SP="-DCRAY_TIME -DT3E"
+  CPPOPT_SP="-DCRAY -DT3E"
   AROPT="ruc"
   RANLIB="ranlib"
 esac
@@ -613,8 +613,8 @@ case $FARCH in IRIX64)
     if [ x$mpichdir = x ]; then
        MPI_LLIBDIR="-L$MPI_HOME/lib32"
     fi
-
   fi
+  CPPOPT_SP="$CPPOPT_SP -DSGI"
 esac
 
 #########################################
@@ -657,6 +657,7 @@ case $FARCH in sun|solaris)
      CGNS_LLIB="cgns.sol"
   fi
   CPP="/usr/ccs/lib/cpp"
+  CPPOPT_SP="SUN"
 esac
 
 #########################################
@@ -678,7 +679,7 @@ case $FARCH in hpux)
      FFLAG="+U77 +FPOVZ "
   fi
   LFLAG="+FPOVZ +U77"
-  CPPOPT_SP="-DADP_OFF -DP3D_SINGLE"
+  CPPOPT_SP="-DADP_OFF -DP3D_SINGLE -DHP"
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.hp"
   fi
@@ -706,6 +707,7 @@ case $FARCH in alpha)
 
   FFLAG_SPEC="$FFLAG"
   LFLAG="-non_shared"
+  CPPOPT_SP="ALPHA"
   CFLAG=""
   LLIB=""
   LLIB_SEQ=""
@@ -763,6 +765,7 @@ case $FARCH in LINUX)
      CGNS_LLIB="cgns.linux"
   fi
   FTN="mpif77"
+  CPPOPT_SP="$CPPOPT_SP -DINTEL"
 
 # Alternate compiler choices you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
@@ -831,6 +834,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
+     CPPOPT_SP="$CPPOPT_SP -DPG"
 # Alternate Portland group compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="pgf90"
@@ -860,6 +864,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
+     CPPOPT_SP="$CPPOPT_SP -DLAHEY"
 # Alternate Lahey compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="lf95"
@@ -889,6 +894,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.alpha"
      fi
      FTN="mpif77"
+     CPPOPT_SP="$CPPOPT_SP -DALPHA"
 # Alternate Alpha compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="fort"

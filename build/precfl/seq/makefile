@@ -35,6 +35,7 @@ lncode:
 	ln -s $(CFLSRC_S)/ccomplex.F .
 	ln -s $(CFLSRC_S)/cgnstools.F .
 	ln -s $(CFLSRC_S)/setseg.F .
+	ln -s $(CFLSRC_S)/my_flush.F .
 	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
@@ -52,7 +53,7 @@ SOURCE = sizer.F       get_cmd_args.F   rpatch0.F        outbuf.F \
 	 lead.F        pre_patch.F      pre_blockbc.F    pre_embed.F \
 	 pre_period.F  usrint.F         termn8.F         getdhdr.F \
 	 global0.F     readkey.F        parser.F         ccomplex.F \
-	 cgnstools.F   setseg.F         main.F
+	 cgnstools.F   setseg.F         my_flush.F       main.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others

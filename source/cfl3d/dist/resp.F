@@ -1241,22 +1241,11 @@ c
  3020 format(1x,23hmax vorticity on block ,i3,7h (grid ,i3,
      .       5h) is ,e12.5,12h at j,k,i = ,i3,1h,,i3,1h,,i3,1h.)
 c
-#ifdef CRAY_TIME
-#else
-#   ifdef IBM
-               if (myid.eq.myhost) call flush_(11)
-               if (real(dt).ge.0.) then
-                  if (myid.eq.myhost) call flush_(23)
-                  if (myid.eq.myhost) call flush_(24)
-               end if
-#   else
-               if (myid.eq.myhost) call flush(11)
-               if (real(dt).ge.0.) then
-                  if (myid.eq.myhost) call flush(23)
-                  if (myid.eq.myhost) call flush(24)
-               end if
-#   endif
-#endif
+      if (myid.eq.myhost) call my_flush(11)
+      if (real(dt).ge.0.) then
+         if (myid.eq.myhost) call my_flush(23)
+         if (myid.eq.myhost) call my_flush(24)
+      end if
 c
       return
       end

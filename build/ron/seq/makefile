@@ -45,6 +45,7 @@ lncode:
 	ln -s  $(CFLSRC_S)/transp.F .
 	ln -s  $(CFLSRC_S)/rotatp.F .
 	ln -s  $(CFLSRC_S)/ccomplex.F .
+	ln -s  $(CFLSRC_S)/my_flush.F .
 	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
@@ -63,7 +64,7 @@ SOURCE = arc.F        diagnos.F    extrae.F     newfit.F     rp3d.F \
 	 collx.F      extra.F      loadgr.F     ronnie.F     topol2.F \
 	 trace.F      xe.F         xe2.F        cputim.F     writ_buf.F \
 	 termn8.F     outbuf.F     transp.F     rotatp.F     umalloc.F \
-	 pre_patch.F  sizer.F      ccomplex.F   main.F
+	 pre_patch.F  sizer.F      ccomplex.F   my_flush.F   main.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others

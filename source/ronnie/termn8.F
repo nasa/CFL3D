@@ -102,13 +102,8 @@ c
 c
       end if
 c
-#   ifdef IBM
-      call flush_(25)
-      call flush_(99)
-#   else
-      call flush(25)
-      call flush(99)
-#   endif
+      call my_flush(25)
+      call my_flush(99)
 c
       close(25)
       close(99)

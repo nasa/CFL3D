@@ -32,8 +32,7 @@ c
 c
       common /mydist2/ nnodes,myhost,myid,mycomm
 c
-#ifdef CRAY_TIME
-c     cray_time implies cray
+#ifdef CRAY
       len_r = 8
 #else
 #  ifdef DBLE_PRECSN
@@ -67,14 +66,7 @@ c     check status of allocate call
            write(6,13) n_words, n_bytes
          end if
          write(6,14) memuse
-#ifdef CRAY_TIME
-#else
-#   ifdef IBM
-         call flush_(6)
-#   else
-         call flush(6)
-#   endif
-#endif
+         call my_flush(6)
 #ifdef DIST_MPI
         call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
 #else
@@ -82,7 +74,7 @@ c     check status of allocate call
 #endif
       else
 c        write(6,'(''allocating:'',a20,i15,'' bytes'')') text,n_bytes
-c        call flush(6)
+c        call my_flush(6)
       end if
 c
   12  format('requested ', i10, ' words, (',i11, ' bytes)')

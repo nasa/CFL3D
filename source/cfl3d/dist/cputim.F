@@ -41,7 +41,7 @@ c
 #     include "mpif.h"
 #endif
 c
-#if defined CRAY_TIME
+#if defined CRAY
       real*4 t0,t1
 #endif
 #if defined DIST_MPI
@@ -98,7 +98,7 @@ c
       end if
 
 c
-#if defined CRAY_TIME
+#if defined CRAY
 c
 c     timings for cray - note: user time is cpu time from the
 c     intrinsic "second" function, system time set to zero(!), 

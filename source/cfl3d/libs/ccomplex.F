@@ -11,20 +11,20 @@ c***********************************************************************
 #   ifdef CMPLX
       complex function ccvmgt(a,b,c)
       implicit complex(a-h,o-z)
-#else
+#   else
       function ccvmgt(a,b,c)
 #   endif
       logical c
 c
-#ifdef CRAY_TIME
+#   ifdef CRAY
       ccvmgt = merge(a,b,c)
-#else
+#   else
       if (c) then
          ccvmgt=a
       else
          ccvmgt=b
       end if
-#endif
+#   endif
 c
       return
       end

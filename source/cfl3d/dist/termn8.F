@@ -106,43 +106,22 @@ c
 c
       end if
 c
-#ifdef CRAY_TIME
-#else
-#   ifdef IBM
-      call flush_(3)
-      call flush_(4)
-      call flush_(11)
-      call flush_(12)
-      call flush_(13)
-      call flush_(14)
-      call flush_(15)
-      call flush_(17)
-      call flush_(20)
-      call flush_(23)
-      call flush_(24)
-      call flush_(25)
-      call flush_(66)
-      call flush_(96)
-      call flush_(97)
-      call flush_(99)
-#   else
-      call flush(3)
-      call flush(4)
-      call flush(11)
-      call flush(12)
-      call flush(13)
-      call flush(14)
-      call flush(15)
-      call flush(17)
-      call flush(20)
-      call flush(23)
-      call flush(24)
-      call flush(25)
-      call flush(66)
-      call flush(96)
-      call flush(97)
-      call flush(99)
-#   endif
+      call my_flush(3)
+      call my_flush(4)
+      call my_flush(11)
+      call my_flush(12)
+      call my_flush(13)
+      call my_flush(14)
+      call my_flush(15)
+      call my_flush(17)
+      call my_flush(20)
+      call my_flush(23)
+      call my_flush(24)
+      call my_flush(25)
+      call my_flush(66)
+      call my_flush(96)
+      call my_flush(97)
+      call my_flush(99)
 c
       if (myid .eq. myid_stop) then
          close(1)
@@ -162,7 +141,6 @@ c
          close(97)
          close(99)
       end if
-#endif
 c
 #if defined DIST_MPI
 c

@@ -101,7 +101,7 @@ FSRC_LIBS = \
 	rsurf.f        avghole.f      augmntq.f      blnkfr.f  \
 	gradinfo.f     rb_pred.f      rb_corr.f      init_rb.f \
 	init_trim.f    pltmode.f      bcnonin.f      initnonin.f \
-	resnonin.f
+	resnonin.f     my_flush.f
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
