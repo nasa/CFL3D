@@ -178,12 +178,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        jdm2=max(jdimp-2,1)
         do 101 i=ista,iend1
         do 101 k=ksta,kend1
              tj0(k,i,1,1) = tp(jdimp-1,k,i,1)
              tj0(k,i,2,1) = tp(jdimp-1,k,i,2)
-             tj0(k,i,1,2) = 0.
-             tj0(k,i,2,2) = 0.
+             tj0(k,i,1,2) = tp(jdm2,k,i,1)
+             tj0(k,i,2,2) = tp(jdm2,k,i,2)
   101   continue
       end if
       end if
@@ -258,12 +259,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        jdp2=min(2,jdimp-1)
         do 201 i=ista,iend1
         do 201 k=ksta,kend1
              tj0(k,i,1,3) = tp(1,k,i,1)
              tj0(k,i,2,3) = tp(1,k,i,2)
-             tj0(k,i,1,4) = 0.
-             tj0(k,i,2,4) = 0.
+             tj0(k,i,1,4) = tp(jdp2,k,i,1)
+             tj0(k,i,2,4) = tp(jdp2,k,i,2)
   201   continue
       end if
       end if
@@ -338,12 +340,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        kdm2=max(kdimp-2,1)
         do 301 i=ista,iend1
         do 301 j=jsta,jend1
              tk0(j,i,1,1) = tp(j,kdimp-1,i,1)
              tk0(j,i,2,1) = tp(j,kdimp-1,i,2)
-             tk0(j,i,1,2) = 0.
-             tk0(j,i,2,2) = 0.
+             tk0(j,i,1,2) = tp(j,kdm2,i,1)
+             tk0(j,i,2,2) = tp(j,kdm2,i,2)
   301   continue
       end if
       end if
@@ -418,12 +421,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        kdp2=min(2,kdimp-1)
         do 401 i=ista,iend1
         do 401 j=jsta,jend1
              tk0(j,i,1,3) = tp(j,1,i,1)
              tk0(j,i,2,3) = tp(j,1,i,2)
-             tk0(j,i,1,4) = 0.
-             tk0(j,i,2,4) = 0.
+             tk0(j,i,1,4) = tp(j,kdp2,i,1)
+             tk0(j,i,2,4) = tp(j,kdp2,i,2)
   401   continue
       end if
       end if
@@ -498,12 +502,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        idm2=max(idimp-2,1)
         do 501 k=ksta,kend1
         do 501 j=jsta,jend1
              ti0(j,k,1,1) = tp(j,k,idimp-1,1)
              ti0(j,k,2,1) = tp(j,k,idimp-1,2)
-             ti0(j,k,1,2) = 0.
-             ti0(j,k,2,2) = 0.
+             ti0(j,k,1,2) = tp(j,k,idm2,1)
+             ti0(j,k,2,2) = tp(j,k,idm2,2)
   501   continue
       end if
       end if
@@ -578,12 +583,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        idp2=min(2,idimp-1)
         do 601 k=ksta,kend1
         do 601 j=jsta,jend1
              ti0(j,k,1,3) = tp(j,k,1,1)
              ti0(j,k,2,3) = tp(j,k,1,2)
-             ti0(j,k,1,4) = 0.
-             ti0(j,k,2,4) = 0.
+             ti0(j,k,1,4) = tp(j,k,idp2,1)
+             ti0(j,k,2,4) = tp(j,k,idp2,2)
   601   continue
       end if
       end if

@@ -5,7 +5,8 @@
      + qj0,qk0,qi0,vj0,vk0,vi0,blank,iover,sumn1,sumn2,negn1,negn2,
      + ux,rhside,zksav2,v3dtmp,cmuv,bcj,bck,bci,nbci0,nbcidim,
      + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
-     + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim)
+     + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
+     + iex3)
 c
 c     $Id$
 c
@@ -48,7 +49,8 @@ c
      +,dtj(jdim,kdim,idim-1),x(jdim,kdim,idim),y(jdim,kdim,idim),
      + z(jdim,kdim,idim),vist3d(jdim,kdim,idim),
      + vor(jdim-1,kdim-1,idim-1),smin(jdim-1,kdim-1,idim-1)
-      dimension damp1(jdim-1,kdim-1,idim-1),fnu(0:jdim,0:kdim,0:idim)
+      dimension damp1(jdim-1,kdim-1,idim-1),
+     + fnu(0:jdim,0:kdim,0-iex3:idim+iex3)
      + , blend(jdim-1,kdim-1,idim-1),timestp(jdim-1,kdim-1,idim-1)
       dimension bx(kdim-1,jdim-1),bx2(kdim-1,jdim-1),
      + cx(kdim-1,jdim-1),cx2(kdim-1,jdim-1),dx(kdim-1,jdim-1),
@@ -62,14 +64,15 @@ c
      + cz(kdim-1,idim-1),cz2(kdim-1,idim-1),dz(kdim-1,idim-1),
      + dz2(kdim-1,idim-1),fz(kdim-1,idim-1),fz2(kdim-1,idim-1),
      + workz(kdim-1,idim-1)
-      dimension turre(0:jdim,0:kdim,0:idim,2),blank(jdim,kdim,idim),
+      dimension turre(0-iex:jdim+iex,0-iex:kdim+iex,0-iex2:idim+iex2,2),
+     + blank(jdim,kdim,idim),
      + zksav(jdim,kdim,idim,2),rhside(jdim-1,kdim-1,idim-1,2)
      + ,tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
      +  ti0(jdim,kdim,2,4),
      + qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
      +,vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),vi0(jdim,kdim,1,4)
       dimension ux(jdim-1,kdim-1,idim-1,9),zksav2(jdim,kdim,idim,4),
-     + v3dtmp(0:jdim,0:kdim,0:idim)
+     + v3dtmp(0:jdim,0:kdim,0-iex3:idim+iex3)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
@@ -472,6 +475,7 @@ c Get laminar viscosity at cell centers
           fnu(j,kdim,i)=c2bp*tt*sqrt(tt)/(c2b+tt)
         enddo
       enddo
+      if (i2d .ne. 1) then
       do j=1,jdim-1
         do k=1,kdim-1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
@@ -480,6 +484,7 @@ c Get laminar viscosity at cell centers
           fnu(j,k,idim)=c2bp*tt*sqrt(tt)/(c2b+tt)
         enddo
       enddo
+      end if
 c
 c Load appropriate turb viscosity at cell centers (NOTE:  the code still
 c uses vi0,vj0,vk0 values for turb viscosity at ghost cells - this means
@@ -627,6 +632,7 @@ c      (4) j=jdim boundary:
             turre(jdim,k,i,2)=tj0(k,i,2,3)
           enddo
         enddo
+        if (i2d .ne. 1) then
 c      (5) i=0 boundary:
         do k=1,kdim-1
           do j=1,jdim-1
@@ -641,6 +647,53 @@ c      (6) i=idim boundary:
             turre(j,k,idim,2)=ti0(j,k,2,3)
           enddo
         enddo
+        end if
+        if (iturbord .ne. 1) then
+c      (1) k=0 boundary:
+        do i=1,idim-1
+          do j=1,jdim-1
+            turre(j,-1,i,1)=tk0(j,i,1,2)
+            turre(j,-1,i,2)=tk0(j,i,2,2)
+          enddo
+        enddo
+c      (2) k=kdim boundary:
+        do i=1,idim-1
+          do j=1,jdim-1
+            turre(j,kdim+1,i,1)=tk0(j,i,1,4)
+            turre(j,kdim+1,i,2)=tk0(j,i,2,4)
+          enddo
+        enddo
+c      (3) j=0 boundary:
+        do i=1,idim-1
+          do k=1,kdim-1
+            turre(-1,k,i,1)=tj0(k,i,1,2)
+            turre(-1,k,i,2)=tj0(k,i,2,2)
+          enddo
+        enddo
+c      (4) j=jdim boundary:
+        do i=1,idim-1
+          do k=1,kdim-1
+            turre(jdim+1,k,i,1)=tj0(k,i,1,4)
+            turre(jdim+1,k,i,2)=tj0(k,i,2,4)
+          enddo
+        enddo
+        if (i2d .ne. 1) then
+c      (5) i=0 boundary:
+        do k=1,kdim-1
+          do j=1,jdim-1
+            turre(j,k,-1,1)=ti0(j,k,1,2)
+            turre(j,k,-1,2)=ti0(j,k,2,2)
+          enddo
+        enddo
+c      (6) i=idim boundary:
+        do k=1,kdim-1
+          do j=1,jdim-1
+            turre(j,k,idim+1,1)=ti0(j,k,1,4)
+            turre(j,k,idim+1,2)=ti0(j,k,2,4)
+          enddo
+        enddo
+        end if
+        end if
 c    **************
 c
 c Get damp1 = CD = cross derivative term for SST or EASM k-o models only:
@@ -931,6 +984,7 @@ c    Advective terms in eta
           enddo
         enddo
         else
+c       2nd order upwind; LHS remains 1st order everywhere
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -943,21 +997,6 @@ c    Advective terms in eta
               tc=0.5*(sk(j,k+1,i,5)*sk(j,k+1,i,4)+
      +                sk(j,k,i  ,5)*sk(j,k,i  ,4))/vol(j,k,i)
               uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
-              if (k .eq. 1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
-     +                                    -2.*uu*turre(j,k+1,i,1)
-     +                                   +0.5*uu*turre(j,k+2,i,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
-     +                                    -2.*uu*turre(j,k+1,i,2)
-     +                                   +0.5*uu*turre(j,k+2,i,2)
-              else if (k .eq. kdim-1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j,k-2,i,1)
-     +                                    +2.*uu*turre(j,k-1,i,1)
-     +                                   -1.5*uu*turre(j,k,i,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j,k-2,i,2)
-     +                                    +2.*uu*turre(j,k-1,i,2)
-     +                                   -1.5*uu*turre(j,k,i,2)
-              else
               sgnu=ccsignrc(1.,uu)
               app=0.5*(1.+sgnu)
               apm=0.5*(1.-sgnu)
@@ -973,7 +1012,6 @@ c    Advective terms in eta
      +                                   +1.5*uu*apm*turre(j,k,i,2)
      +                                    -2.*uu*apm*turre(j,k+1,i,2)
      +                                   +0.5*uu*apm*turre(j,k+2,i,2)
-              end if
             enddo
           enddo
         enddo
@@ -1172,6 +1210,7 @@ c    Advective terms in xi
           enddo
         enddo
         else
+c       2nd order upwind; LHS remains 1st order everywhere
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -1184,21 +1223,6 @@ c    Advective terms in xi
               tc=0.5*(sj(j+1,k,i,5)*sj(j+1,k,i,4)+
      +                sj(j,k,i  ,5)*sj(j,k,i  ,4))/vol(j,k,i)
               uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
-              if (j .eq. 1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
-     +                                    -2.*uu*turre(j+1,k,i,1)
-     +                                   +0.5*uu*turre(j+2,k,i,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
-     +                                    -2.*uu*turre(j+1,k,i,2)
-     +                                   +0.5*uu*turre(j+2,k,i,2)
-              else if (j .eq. jdim-1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j-2,k,i,1)
-     +                                    +2.*uu*turre(j-1,k,i,1)
-     +                                   -1.5*uu*turre(j,k,i,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j-2,k,i,2)
-     +                                    +2.*uu*turre(j-1,k,i,2)
-     +                                   -1.5*uu*turre(j,k,i,2)
-              else
               sgnu=ccsignrc(1.,uu)
               app=0.5*(1.+sgnu)
               apm=0.5*(1.-sgnu)
@@ -1214,7 +1238,6 @@ c    Advective terms in xi
      +                                   +1.5*uu*apm*turre(j,k,i,2)
      +                                    -2.*uu*apm*turre(j+1,k,i,2)
      +                                   +0.5*uu*apm*turre(j+2,k,i,2)
-              end if
             enddo
           enddo
         enddo
@@ -1388,7 +1411,7 @@ c         IDIM boundary points
               enddo
             enddo
 c    Advective terms in zeta
-        if (iturbord .eq. 1) then
+          if (iturbord .eq. 1) then
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1414,6 +1437,7 @@ c    Advective terms in zeta
             enddo
           enddo
           else
+c       2nd order upwind; LHS remains 1st order everywhere
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1426,21 +1450,6 @@ c    Advective terms in zeta
                 tc=0.5*(si(j,k,i+1,5)*si(j,k,i+1,4)+
      +                  si(j,k,i  ,5)*si(j,k,i  ,4))/vol(j,k,i)
                 uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
-              if (i .eq. 1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
-     +                                    -2.*uu*turre(j,k,i+1,1)
-     +                                   +0.5*uu*turre(j,k,i+2,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
-     +                                    -2.*uu*turre(j,k,i+1,2)
-     +                                   +0.5*uu*turre(j,k,i+2,2)
-              else if (i .eq. idim-1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j,k,i-2,1)
-     +                                    +2.*uu*turre(j,k,i-1,1)
-     +                                   -1.5*uu*turre(j,k,i,1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j,k,i-2,2)
-     +                                    +2.*uu*turre(j,k,i-1,2)
-     +                                   -1.5*uu*turre(j,k,i,2)
-              else
               sgnu=ccsignrc(1.,uu)
               app=0.5*(1.+sgnu)
               apm=0.5*(1.-sgnu)
@@ -1456,7 +1465,6 @@ c    Advective terms in zeta
      +                                   +1.5*uu*apm*turre(j,k,i,2)
      +                                    -2.*uu*apm*turre(j,k,i+1,2)
      +                                   +0.5*uu*apm*turre(j,k,i+2,2)
-              end if
               enddo
             enddo
           enddo

@@ -248,8 +248,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 101 k=ksta,kend1
           tj0(k,i,1,1) = -tursav(1,k,i,1)
           tj0(k,i,2,1) = -tursav(1,k,i,2)
-          tj0(k,i,1,2) = 0.
-          tj0(k,i,2,2) = 0.
+          tj0(k,i,1,2) = 2.*tj0(k,i,1,1)-tursav(1,k,i,1)
+          tj0(k,i,2,2) = 2.*tj0(k,i,2,1)-tursav(1,k,i,2)
   101   continue
       end if
       if (ivmx.ge.6) then
@@ -278,8 +278,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,1) = -tursav(j,k,i,2)
-          tj0(k,i,1,2) = 0.
-          tj0(k,i,2,2) = 0.
+          tj0(k,i,1,2) = 2.*tj0(k,i,1,1)-tursav(1,k,i,1)
+          tj0(k,i,2,2) = 2.*tj0(k,i,2,1)-tursav(1,k,i,2)
  902    continue
         else
         do 102 i=ista,iend1
@@ -290,8 +290,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,1) = -tursav(j,k,i,2)
-          tj0(k,i,1,2) = 0.
-          tj0(k,i,2,2) = 0.
+          tj0(k,i,1,2) = 2.*tj0(k,i,1,1)-tursav(1,k,i,1)
+          tj0(k,i,2,2) = 2.*tj0(k,i,2,1)-tursav(1,k,i,2)
  102    continue
         end if
       end if
@@ -449,8 +449,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 201 k=ksta,kend1
           tj0(k,i,1,3) = -tursav(jdim-1,k,i,1)
           tj0(k,i,2,3) = -tursav(jdim-1,k,i,2)
-          tj0(k,i,1,4) = 0.
-          tj0(k,i,2,4) = 0.
+          tj0(k,i,1,4) = 2.*tj0(k,i,1,3)-tursav(jdim-1,k,i,1)
+          tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
   201   continue
       end if
       if (ivmx.ge.6) then
@@ -479,8 +479,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,3) = -tursav(j,k,i,2)
-          tj0(k,i,1,4) = 0.
-          tj0(k,i,2,4) = 0.
+          tj0(k,i,1,4) = 2.*tj0(k,i,1,3)-tursav(jdim-1,k,i,1)
+          tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  812    continue
         else
         do 202 i=ista,iend1
@@ -491,8 +491,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tj0(k,i,2,3) = -tursav(j,k,i,2)
-          tj0(k,i,1,4) = 0.
-          tj0(k,i,2,4) = 0.
+          tj0(k,i,1,4) = 2.*tj0(k,i,1,3)-tursav(jdim-1,k,i,1)
+          tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  202    continue
         end if
       end if
@@ -650,8 +650,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 301 j=jsta,jend1
           tk0(j,i,1,1) = -tursav(j,1,i,1)
           tk0(j,i,2,1) = -tursav(j,1,i,2)
-          tk0(j,i,1,2) = 0.
-          tk0(j,i,2,2) = 0.
+          tk0(j,i,1,2) = 2.*tk0(j,i,1,1)-tursav(j,1,i,1)
+          tk0(j,i,2,2) = 2.*tk0(j,i,2,1)-tursav(j,1,i,2)
   301   continue
       end if
       if (ivmx.ge.6) then
@@ -680,8 +680,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,1) = -tursav(j,k,i,2)
-          tk0(j,i,1,2) = 0.
-          tk0(j,i,2,2) = 0.
+          tk0(j,i,1,2) = 2.*tk0(j,i,1,1)-tursav(j,1,i,1)
+          tk0(j,i,2,2) = 2.*tk0(j,i,2,1)-tursav(j,1,i,2)
  732    continue
         else
         do 302 i=ista,iend1
@@ -692,8 +692,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,1) = -tursav(j,k,i,2)
-          tk0(j,i,1,2) = 0.
-          tk0(j,i,2,2) = 0.
+          tk0(j,i,1,2) = 2.*tk0(j,i,1,1)-tursav(j,1,i,1)
+          tk0(j,i,2,2) = 2.*tk0(j,i,2,1)-tursav(j,1,i,2)
  302    continue
         end if
       end if
@@ -851,8 +851,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 401 j=jsta,jend1
           tk0(j,i,1,3) = -tursav(j,kdim-1,i,1)
           tk0(j,i,2,3) = -tursav(j,kdim-1,i,2)
-          tk0(j,i,1,4) = 0.
-          tk0(j,i,2,4) = 0.
+          tk0(j,i,1,4) = 2.*tk0(j,i,1,3)-tursav(j,kdim-1,i,1)
+          tk0(j,i,2,4) = 2.*tk0(j,i,2,3)-tursav(j,kdim-1,i,2)
   401   continue
       end if
       if (ivmx.ge.6) then
@@ -881,8 +881,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,3) = -tursav(j,k,i,2)
-          tk0(j,i,1,4) = 0.
-          tk0(j,i,2,4) = 0.
+          tk0(j,i,1,4) = 2.*tk0(j,i,1,3)-tursav(j,kdim-1,i,1)
+          tk0(j,i,2,4) = 2.*tk0(j,i,2,3)-tursav(j,kdim-1,i,2)
  492    continue
         else
         do 402 i=ista,iend1
@@ -893,8 +893,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           tk0(j,i,2,3) = -tursav(j,k,i,2)
-          tk0(j,i,1,4) = 0.
-          tk0(j,i,2,4) = 0.
+          tk0(j,i,1,4) = 2.*tk0(j,i,1,3)-tursav(j,kdim-1,i,1)
+          tk0(j,i,2,4) = 2.*tk0(j,i,2,3)-tursav(j,kdim-1,i,2)
  402    continue
         end if
       end if
@@ -1052,8 +1052,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 501 j=jsta,jend1
           ti0(j,k,1,1) = -tursav(j,k,1,1)
           ti0(j,k,2,1) = -tursav(j,k,1,2)
-          ti0(j,k,1,2) = 0.
-          ti0(j,k,2,2) = 0.
+          ti0(j,k,1,2) = 2.*ti0(j,k,1,1)-tursav(j,k,1,1)
+          ti0(j,k,2,2) = 2.*ti0(j,k,2,1)-tursav(j,k,1,2)
   501   continue
       end if
       if (ivmx.ge.6) then
@@ -1082,8 +1082,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,1,1) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,1) = -tursav(j,k,i,2)
-          ti0(j,k,1,2) = 0.
-          ti0(j,k,2,2) = 0.
+          ti0(j,k,1,2) = 2.*ti0(j,k,1,1)-tursav(j,k,1,1)
+          ti0(j,k,2,2) = 2.*ti0(j,k,2,1)-tursav(j,k,1,2)
  652    continue
         else
         do 502 k=ksta,kend1
@@ -1094,8 +1094,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,1,1) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,1) = -tursav(j,k,i,2)
-          ti0(j,k,1,2) = 0.
-          ti0(j,k,2,2) = 0.
+          ti0(j,k,1,2) = 2.*ti0(j,k,1,1)-tursav(j,k,1,1)
+          ti0(j,k,2,2) = 2.*ti0(j,k,2,1)-tursav(j,k,1,2)
  502    continue
         end if
       end if
@@ -1253,8 +1253,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 601 j=jsta,jend1
           ti0(j,k,1,3) = -tursav(j,k,idim-1,1)
           ti0(j,k,2,3) = -tursav(j,k,idim-1,2)
-          ti0(j,k,1,4) = 0.
-          ti0(j,k,2,4) = 0.
+          ti0(j,k,1,4) = 2.*ti0(j,k,1,3)-tursav(j,k,idim-1,1)
+          ti0(j,k,2,4) = 2.*ti0(j,k,2,3)-tursav(j,k,idim-1,2)
   601   continue
       end if
       if (ivmx.ge.6) then
@@ -1283,8 +1283,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,1,3) = 2.*(2.*fnu/(q(j,k,i,1)*re**2)*dkdy**2)-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,3) = -tursav(j,k,i,2)
-          ti0(j,k,1,4) = 0.
-          ti0(j,k,2,4) = 0.
+          ti0(j,k,1,4) = 2.*ti0(j,k,1,3)-tursav(j,k,idim-1,1)
+          ti0(j,k,2,4) = 2.*ti0(j,k,2,3)-tursav(j,k,idim-1,2)
  632    continue
         else
         do 602 k=ksta,kend1
@@ -1295,8 +1295,8 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,1,3) = 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,1)
           ti0(j,k,2,3) = -tursav(j,k,i,2)
-          ti0(j,k,1,4) = 0.
-          ti0(j,k,2,4) = 0.
+          ti0(j,k,1,4) = 2.*ti0(j,k,1,3)-tursav(j,k,idim-1,1)
+          ti0(j,k,2,4) = 2.*ti0(j,k,2,3)-tursav(j,k,idim-1,2)
  602    continue
         end if
       end if
