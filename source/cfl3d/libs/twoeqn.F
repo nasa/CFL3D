@@ -39,7 +39,7 @@ c
       common /twod/ i2d
       common /wallfun/ iwf(3)
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /konew/ ikoprod,isstdenom,pklimterm
 c
@@ -147,6 +147,13 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
      +'' viscosity using 2-eqns, block='',i5)') nbl
+        if(iturbord .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     1st order advection on RHS'')')
+        else
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     2nd order advection on RHS'')')
+        end if
       end if
       if(isklton .gt. 0) then
         if(ivmx .eq. 6) then
@@ -898,6 +905,7 @@ c       KDIM points
             enddo
           enddo
 c    Advective terms in eta
+        if (iturbord .eq. 1) then
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -922,6 +930,54 @@ c    Advective terms in eta
             enddo
           enddo
         enddo
+        else
+        do k=1,kdim-1
+          do i=1,idim-1
+            do j=1,jdim-1
+              xc=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
+     +                sk(j,k,i  ,1)*sk(j,k,i  ,4))/vol(j,k,i)
+              yc=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4)+
+     +                sk(j,k,i  ,2)*sk(j,k,i  ,4))/vol(j,k,i)
+              zc=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4)+
+     +                sk(j,k,i  ,3)*sk(j,k,i  ,4))/vol(j,k,i)
+              tc=0.5*(sk(j,k+1,i,5)*sk(j,k+1,i,4)+
+     +                sk(j,k,i  ,5)*sk(j,k,i  ,4))/vol(j,k,i)
+              uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
+              if (k .eq. 1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
+     +                                    -2.*uu*turre(j,k+1,i,1)
+     +                                   +0.5*uu*turre(j,k+2,i,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
+     +                                    -2.*uu*turre(j,k+1,i,2)
+     +                                   +0.5*uu*turre(j,k+2,i,2)
+              else if (k .eq. kdim-1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j,k-2,i,1)
+     +                                    +2.*uu*turre(j,k-1,i,1)
+     +                                   -1.5*uu*turre(j,k,i,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j,k-2,i,2)
+     +                                    +2.*uu*turre(j,k-1,i,2)
+     +                                   -1.5*uu*turre(j,k,i,2)
+              else
+              sgnu=ccsignrc(1.,uu)
+              app=0.5*(1.+sgnu)
+              apm=0.5*(1.-sgnu)
+             rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*app*turre(j,k-2,i,1)
+     +                                    +2.*uu*app*turre(j,k-1,i,1)
+     +                                   -1.5*uu*app*turre(j,k,i,1)
+     +                                   +1.5*uu*apm*turre(j,k,i,1)
+     +                                    -2.*uu*apm*turre(j,k+1,i,1)
+     +                                   +0.5*uu*apm*turre(j,k+2,i,1)
+             rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*app*turre(j,k-2,i,2)
+     +                                    +2.*uu*app*turre(j,k-1,i,2)
+     +                                   -1.5*uu*app*turre(j,k,i,2)
+     +                                   +1.5*uu*apm*turre(j,k,i,2)
+     +                                    -2.*uu*apm*turre(j,k+1,i,2)
+     +                                   +0.5*uu*apm*turre(j,k+2,i,2)
+              end if
+            enddo
+          enddo
+        enddo
+        end if
 c
 c    F_xi_xi viscous terms
 c       Interior points
@@ -1090,6 +1146,7 @@ c       JDIM boundary points
             enddo
           enddo
 c    Advective terms in xi
+        if (iturbord .eq. 1) then
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -1114,6 +1171,54 @@ c    Advective terms in xi
             enddo
           enddo
         enddo
+        else
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              xc=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
+     +                sj(j,k,i  ,1)*sj(j,k,i  ,4))/vol(j,k,i)
+              yc=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4)+
+     +                sj(j,k,i  ,2)*sj(j,k,i  ,4))/vol(j,k,i)
+              zc=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4)+
+     +                sj(j,k,i  ,3)*sj(j,k,i  ,4))/vol(j,k,i)
+              tc=0.5*(sj(j+1,k,i,5)*sj(j+1,k,i,4)+
+     +                sj(j,k,i  ,5)*sj(j,k,i  ,4))/vol(j,k,i)
+              uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
+              if (j .eq. 1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
+     +                                    -2.*uu*turre(j+1,k,i,1)
+     +                                   +0.5*uu*turre(j+2,k,i,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
+     +                                    -2.*uu*turre(j+1,k,i,2)
+     +                                   +0.5*uu*turre(j+2,k,i,2)
+              else if (j .eq. jdim-1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j-2,k,i,1)
+     +                                    +2.*uu*turre(j-1,k,i,1)
+     +                                   -1.5*uu*turre(j,k,i,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j-2,k,i,2)
+     +                                    +2.*uu*turre(j-1,k,i,2)
+     +                                   -1.5*uu*turre(j,k,i,2)
+              else
+              sgnu=ccsignrc(1.,uu)
+              app=0.5*(1.+sgnu)
+              apm=0.5*(1.-sgnu)
+             rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*app*turre(j-2,k,i,1)
+     +                                    +2.*uu*app*turre(j-1,k,i,1)
+     +                                   -1.5*uu*app*turre(j,k,i,1)
+     +                                   +1.5*uu*apm*turre(j,k,i,1)
+     +                                    -2.*uu*apm*turre(j+1,k,i,1)
+     +                                   +0.5*uu*apm*turre(j+2,k,i,1)
+             rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*app*turre(j-2,k,i,2)
+     +                                    +2.*uu*app*turre(j-1,k,i,2)
+     +                                   -1.5*uu*app*turre(j,k,i,2)
+     +                                   +1.5*uu*apm*turre(j,k,i,2)
+     +                                    -2.*uu*apm*turre(j+1,k,i,2)
+     +                                   +0.5*uu*apm*turre(j+2,k,i,2)
+              end if
+            enddo
+          enddo
+        enddo
+        end if
 c
 c    F_zeta_zeta viscous terms
         if(i2d .ne. 1) then
@@ -1283,6 +1388,7 @@ c         IDIM boundary points
               enddo
             enddo
 c    Advective terms in zeta
+        if (iturbord .eq. 1) then
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1307,6 +1413,54 @@ c    Advective terms in zeta
               enddo
             enddo
           enddo
+          else
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                xc=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4)+
+     +                  si(j,k,i  ,1)*si(j,k,i  ,4))/vol(j,k,i)
+                yc=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4)+
+     +                  si(j,k,i  ,2)*si(j,k,i  ,4))/vol(j,k,i)
+                zc=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4)+
+     +                  si(j,k,i  ,3)*si(j,k,i  ,4))/vol(j,k,i)
+                tc=0.5*(si(j,k,i+1,5)*si(j,k,i+1,4)+
+     +                  si(j,k,i  ,5)*si(j,k,i  ,4))/vol(j,k,i)
+                uu=xc*q(j,k,i,2)+yc*q(j,k,i,3)+zc*q(j,k,i,4)+tc
+              if (i .eq. 1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)+1.5*uu*turre(j,k,i,1)
+     +                                    -2.*uu*turre(j,k,i+1,1)
+     +                                   +0.5*uu*turre(j,k,i+2,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+1.5*uu*turre(j,k,i,2)
+     +                                    -2.*uu*turre(j,k,i+1,2)
+     +                                   +0.5*uu*turre(j,k,i+2,2)
+              else if (i .eq. idim-1) then
+              rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*turre(j,k,i-2,1)
+     +                                    +2.*uu*turre(j,k,i-1,1)
+     +                                   -1.5*uu*turre(j,k,i,1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*turre(j,k,i-2,2)
+     +                                    +2.*uu*turre(j,k,i-1,2)
+     +                                   -1.5*uu*turre(j,k,i,2)
+              else
+              sgnu=ccsignrc(1.,uu)
+              app=0.5*(1.+sgnu)
+              apm=0.5*(1.-sgnu)
+             rhside(j,k,i,1)=rhside(j,k,i,1)-0.5*uu*app*turre(j,k,i-2,1)
+     +                                    +2.*uu*app*turre(j,k,i-1,1)
+     +                                   -1.5*uu*app*turre(j,k,i,1)
+     +                                   +1.5*uu*apm*turre(j,k,i,1)
+     +                                    -2.*uu*apm*turre(j,k,i+1,1)
+     +                                   +0.5*uu*apm*turre(j,k,i+2,1)
+             rhside(j,k,i,2)=rhside(j,k,i,2)-0.5*uu*app*turre(j,k,i-2,2)
+     +                                    +2.*uu*app*turre(j,k,i-1,2)
+     +                                   -1.5*uu*app*turre(j,k,i,2)
+     +                                   +1.5*uu*apm*turre(j,k,i,2)
+     +                                    -2.*uu*apm*turre(j,k,i+1,2)
+     +                                   +0.5*uu*apm*turre(j,k,i+2,2)
+              end if
+              enddo
+            enddo
+          enddo
+          end if
         end if
 c
 c    * * * * * * * * * * * *

@@ -39,7 +39,7 @@ c
       common /precond/ cprec,uref,avn
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
       common /entfix/ epsa_l,epsa_r
       common /key/ nkey
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
@@ -389,6 +389,12 @@ c     parameter for use with particular axi cases (for which
 c     i2d=0 & idim=2); modifies time step based on CFL number
 c     so it does not depend on the i-direction metrics
       iaxi2plane = 0
+      nkey       = nkey + 1
+c
+c     parameter controls whether turbulence model advection terms
+c     are 1st or 2nd order upwind on RHS (1=1st, 2=2nd)
+c     (note: LHS uses 1st order in both cases)
+      iturbord = 1
       nkey       = nkey + 1
 c
 c*********************************************
@@ -761,6 +767,10 @@ c
       else if (inpstr(lc1:lc2).eq.'iaxi2plane') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iaxi2plane
+c
+      else if (inpstr(lc1:lc2).eq.'iturbord') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iturbord
 c
       else
 c

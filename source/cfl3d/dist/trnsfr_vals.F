@@ -169,7 +169,7 @@ c
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /elastic/ ndefrm,naesrf
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
       common /entfix/ epsa_l,epsa_r
       common /elastic_ss/ idef_ss
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
@@ -409,6 +409,7 @@ c
          work(nlast+58) = isstdenom
          work(nlast+59) = pklimterm
          work(nlast+60) = iaxi2plane
+         work(nlast+61) = iturbord
          nlast = nlast+nkey
       end if
 c
@@ -646,6 +647,7 @@ c
          isstdenom = int(work(nlast+58))
          pklimterm = work(nlast+59)
          iaxi2plane= int(work(nlast+60))
+         iturbord  = int(work(nlast+61))
       end if
 c
 c**************************
