@@ -284,6 +284,14 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''         adverse-pressure-gradient'',
      .     '' wall-bounded flows.'')')
+           if (iturbord .eq. 2) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     WARNING: 2nd order'',
+     .       '' advection (iturbord=2)'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''          can converge poorly'',
+     .       '' for k-epsilon models'')')
+           end if
         end if
         if(ivmx .ge. 11) then
            nou(1) = min(nou(1)+1,ibufdim)

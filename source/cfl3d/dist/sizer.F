@@ -1173,11 +1173,10 @@ c              Baldwin-Lomax
      .               ivisc(1).eq.4) then
 c              Baldwin-Barth
                iwk1=1
-               iset=i2d*i2d
                if (iturbord .eq. 1) then
-                 iwk5=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+                 iwk5=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
                else
-                 iwk5=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))
+                 iwk5=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))
                end if
                inmx=(kdim-1)*(jdim-1)
                iwk6=iwk5+inmx
@@ -1201,13 +1200,12 @@ c              Baldwin-Barth
      .               ivisc(1).eq.5) then
 c              Spalart
                iwk1=1
-               iset=i2d*i2d
                if (iturbord .eq. 1) then
-                 iwk3=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+                 iwk3=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
                else
-                 iwk3=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))
+                 iwk3=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))
                end if
-               iwk4=iwk3+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+               iwk4=iwk3+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
                inmx=(kdim-1)*(jdim-1)
                iwk5=iwk4+inmx
                iwk6=iwk5+inmx
@@ -1230,13 +1228,12 @@ c              Spalart
      .               ivisc(1).ge.6) then
 c              Two-equation turb models
                iwk1=1
-               iset=i2d*i2d
                if (iturbord .eq. 1) then
-                 iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))*2
+                 iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))*2
                else
-                 iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))*2
+                 iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))*2
                end if
-               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
                inmx=(kdim-1)*(jdim-1)
                iwk6=iwk5+inmx
                iwk7=iwk6+inmx
@@ -1269,7 +1266,7 @@ c              Two-equation turb models
                iwk32=iwk31+inmx
                inmx=(jdim-1)*(kdim-1)*(idim-1)*2
                iwk33=iwk32+inmx
-               inmx=(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+               inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
                itemp=iwk33+inmx
             end if
          end if
