@@ -12,6 +12,7 @@ link: lncode lnhead
 lncode:
 	@ echo "         linking source code"
 	ln -s $(MAGSRC)/*.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 	@ echo "         linking header files"
@@ -33,15 +34,25 @@ lnhead:
 
 SOURCE = maggie.f cputim.f wkstn.f
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.f
+
 OBJECT = $(SOURCE:.f=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
 
 MAG_HEAD  = mag1.h
 
 $(OBJECT): $(MAG_HEAD)
 	$(FTN) $(FFLAG) -c $*.f
 
-$(EXEC): $(SOURCE) $(OBJECT)
-	$(FTN) $(LFLAG) -o $(EXEC) $(OBJECT) $(LLIBS)
+$(FOBJ_SPEC): $(MAG_HEAD)
+	$(FTN) $(FFLAG_SPEC) -c $*.f
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
