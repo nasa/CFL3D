@@ -4947,6 +4947,7 @@ c
                         do n=1,ncg
                            nbl = nbl + 1
                            idefrm(nbl)        = idefrm(nbl-1)
+                           nsegdfrm(nbl)      = nsegdfrm(nbl-1)
                            idfrmseg(nbl,iseg) = idfrmseg(nbl-1,iseg)
                            iaesurf(nbl,iseg)  = iaesurf(nbl-1,iseg)
                            icsi(nbl,iseg)     = icsi(nbl-1,iseg)/2 + 1
