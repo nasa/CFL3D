@@ -456,7 +456,8 @@ c              recieve the data on non-local nodes
 c
                nd_srce = mblk2nd(nbl)
                mytag   = itag_org + itag
-               call MPI_Irecv (wk(ist),3,MY_MPI_REAL,
+               nval    = 3*nsegdfrm(nbl)
+               call MPI_Irecv (wk(ist),nval,MY_MPI_REAL,
      .                         nd_srce,mytag,mycomm,ireq(nreq),ierr)
                nreq = nreq + 1
             else
