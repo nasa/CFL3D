@@ -17,6 +17,7 @@ lncode:
 	ln -s $(CFLSRC_S)/parser.F .
 	ln -s $(CFLSRC_S)/readkey.F .
 	ln -s $(CFLSRC_S)/outbuf.F .
+	ln -s $(CFLSRC_S)/my_flush.F .
 	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
@@ -34,8 +35,8 @@ SOURCE = cfl3d_to_tlns3d.F  mapblk.F      movseg.F        spltsg.F \
 	 ipfix.F            mapsplt.F     shortinp.F      splitter_cmplx.F \
 	 iprvsg.F           mkintr.F      sizer.F         umalloc.F \
 	 mkseg.F            splt2.F       ingrd_cmplx.F \
-	 umalloc_c.F        readkey.F     parser.F \
-	 main_cmplx.F       outbuf.F
+	 umalloc_c.F        readkey.F     parser.F        outbuf.F \
+	 my_flush.F         main_cmplx.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
