@@ -100,7 +100,8 @@ FSRC_LIBS = \
 	setseg.f       cgnstools.f    fmaps.f        getdelt.f \
 	rsurf.f        avghole.f      augmntq.f      blnkfr.f  \
 	gradinfo.f     rb_pred.f      rb_corr.f      init_rb.f \
-	init_trim.f    pltmode.f
+	init_trim.f    pltmode.f      bcnonin.F      initnonin.F \
+	resnonin.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
