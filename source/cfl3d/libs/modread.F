@@ -18,6 +18,13 @@ c
       real, dimension(:,:,:), allocatable :: xmdjr
       real, dimension(:,:,:), allocatable :: xmdkr
 c
+#else
+c
+      integer stats
+c
+      real, dimension(:,:,:), allocatable :: xmdir1 
+      real, dimension(:,:,:), allocatable :: xmdjr1 
+      real, dimension(:,:,:), allocatable :: xmdkr1 
 #endif
 c
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
@@ -27,6 +34,8 @@ c
      .          xmdk(jdim,idim,6,nmds,maxaes),
      .          xmdi(jdim,kdim,6,nmds,maxaes)
       common /elastic/ ndefrm,naesrf
+      common /igrdtyp/ ip3dgrd,ialph
+
 c
 
 #ifdef CMPLX
@@ -39,11 +48,21 @@ c
       call umalloc(kdim*idim*6,0,'xmdjr',memuse,stats)
       allocate( xmdkr(jdim,idim,6), stat=stats )
       call umalloc(jdim*idim*6,0,'xmdkr',memuse,stats)
+#else
+c     allocate real arrays in which to read modal data
+c
+      memuse = 0
+      allocate( xmdir1(jdim,kdim,6), stat=stats )
+      call umalloc(jdim*kdim*6,0,'xmdir1',memuse,stats)
+      allocate( xmdjr1(kdim,idim,6), stat=stats )
+      call umalloc(kdim*idim*6,0,'xmdjr1',memuse,stats)
+      allocate( xmdkr1(jdim,idim,6), stat=stats )
+      call umalloc(jdim*idim*6,0,'xmdkr1',memuse,stats)
 #endif
 c
 c     read in modal deflections for j=const surfaces
 c
-      do 100 m = 1,2
+      do 110 m = 1,2
 c
       if (m.eq.1) then
          j    = 1
@@ -57,7 +76,10 @@ c
 c
       do 100 ns = 1,nseg
 c
-      lbc = abs(jbcinfo(nbl,ns,1,m))
+      lbc = iabs(jbcinfo(nbl,ns,1,m))
+      if (naesrf.gt.0) then
+         lbc = abs(jbcinfo(nbl,ns,1,m))*jbcinfo(nbl,ns,6,m)
+      end if
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -69,25 +91,50 @@ c
       kst = jbcinfo(nbl,ns,4,m)
       kfn = jbcinfo(nbl,ns,5,m)
 c
+      if(ialph.eq.0) then
 #ifdef CMPLX
-      read(iunit,*)((xmdjr(k,i,l+1),xmdjr(k,i,l+2),
-     .               xmdjr(k,i,l+3),k=kst,kfn),i=ist,ifn)
-      do i=ist,ifn
-         do k=kst,kfn
-            xmdj(k,i,l+1,n,iaes) = xmdjr(k,i,l+1)
-            xmdj(k,i,l+2,n,iaes) = xmdjr(k,i,l+2)
-            xmdj(k,i,l+3,n,iaes) = xmdjr(k,i,l+3)
-         end do
-      end do
+        read(iunit,*)((xmdjr(k,i,l+1),xmdjr(k,i,l+2),
+     .                 xmdjr(k,i,l+3),k=kst,kfn),i=ist,ifn)
+        do i=ist,ifn
+           do k=kst,kfn
+              xmdj(k,i,l+1,n,iaes) = xmdjr(k,i,l+1)
+              xmdj(k,i,l+2,n,iaes) = xmdjr(k,i,l+2)
+              xmdj(k,i,l+3,n,iaes) = xmdjr(k,i,l+3)
+           end do
+        end do
 #else
-      read(iunit,*)((xmdj(k,i,l+1,n,iaes),xmdj(k,i,l+2,n,iaes),
-     .               xmdj(k,i,l+3,n,iaes),k=kst,kfn),i=ist,ifn)
+        read(iunit,*)((xmdj(k,i,l+1,n,iaes),xmdj(k,i,l+2,n,iaes),
+     .                 xmdj(k,i,l+3,n,iaes),k=kst,kfn),i=ist,ifn)
 #endif
+      else
+#ifdef CMPLX
+        read(iunit,*)((xmdjr(k,i,l+1),xmdjr(k,i,l+3),
+     .                 xmdjr(k,i,l+2),k=kst,kfn),i=ist,ifn)
+        do i=ist,ifn
+           do k=kst,kfn
+              xmdj(k,i,l+1,n,iaes) = xmdjr(k,i,l+1)
+              xmdj(k,i,l+2,n,iaes) =-xmdjr(k,i,l+2)
+              xmdj(k,i,l+3,n,iaes) = xmdjr(k,i,l+3)
+           end do
+        end do
+#else
+        read(iunit,*)((xmdjr1(k,i,l+1),xmdjr1(k,i,l+3),
+     .                 xmdjr1(k,i,l+2),k=kst,kfn),i=ist,ifn)
+        do i=ist,ifn
+           do k=kst,kfn
+              xmdj(k,i,l+1,n,iaes) = xmdjr1(k,i,l+1)
+              xmdj(k,i,l+2,n,iaes) =-xmdjr1(k,i,l+2)
+              xmdj(k,i,l+3,n,iaes) = xmdjr1(k,i,l+3)
+           end do
+        end do
+#endif
+      end if
 100   continue
+110   continue
 c
 c     read in modal deflections for k=const surfaces
 c
-      do 200 m = 1,2
+      do 210 m = 1,2
 c
       if (m.eq.1) then
          k    = 1
@@ -102,6 +149,9 @@ c
       do 200 ns = 1,nseg
 c
       lbc = abs(kbcinfo(nbl,ns,1,m))
+      if (naesrf.gt.0) then
+         lbc = abs(kbcinfo(nbl,ns,1,m))*kbcinfo(nbl,ns,6,m)
+      end if
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -113,25 +163,50 @@ c
       jst = kbcinfo(nbl,ns,4,m)
       jfn = kbcinfo(nbl,ns,5,m)
 c
+      if(ialph.eq.0) then
 #ifdef CMPLX
-      read(iunit,*)((xmdkr(j,i,l+1),xmdkr(j,i,l+2),
-     .               xmdkr(j,i,l+3),j=jst,jfn),i=ist,ifn)
-      do i=ist,ifn
-         do j=jst,jfn
-            xmdk(j,i,l+1,n,iaes) = xmdkr(j,i,l+1)
-            xmdk(j,i,l+2,n,iaes) = xmdkr(j,i,l+2)
-            xmdk(j,i,l+3,n,iaes) = xmdkr(j,i,l+3)
-         end do
-      end do
+        read(iunit,*)((xmdkr(j,i,l+1),xmdkr(j,i,l+2),
+     .                 xmdkr(j,i,l+3),j=jst,jfn),i=ist,ifn)
+        do i=ist,ifn
+           do j=jst,jfn
+              xmdk(j,i,l+1,n,iaes) = xmdkr(j,i,l+1)
+              xmdk(j,i,l+2,n,iaes) = xmdkr(j,i,l+2)
+              xmdk(j,i,l+3,n,iaes) = xmdkr(j,i,l+3)
+           end do
+        end do
 #else
-      read(iunit,*)((xmdk(j,i,l+1,n,iaes),xmdk(j,i,l+2,n,iaes),
-     .               xmdk(j,i,l+3,n,iaes),j=jst,jfn),i=ist,ifn)
+        read(iunit,*)((xmdk(j,i,l+1,n,iaes),xmdk(j,i,l+2,n,iaes),
+     .                 xmdk(j,i,l+3,n,iaes),j=jst,jfn),i=ist,ifn)
 #endif
+      else
+#ifdef CMPLX
+        read(iunit,*)((xmdkr(j,i,l+1),xmdkr(j,i,l+3),
+     .                 xmdkr(j,i,l+2),j=jst,jfn),i=ist,ifn)
+        do i=ist,ifn
+           do j=jst,jfn
+              xmdk(j,i,l+1,n,iaes) = xmdkr(j,i,l+1)
+              xmdk(j,i,l+2,n,iaes) =-xmdkr(j,i,l+2)
+              xmdk(j,i,l+3,n,iaes) = xmdkr(j,i,l+3)
+           end do
+        end do
+#else
+        read(iunit,*)((xmdkr1(j,i,l+1),xmdkr1(j,i,l+3),
+     .                 xmdkr1(j,i,l+2),j=jst,jfn),i=ist,ifn)
+        do i=ist,ifn
+           do j=jst,jfn
+              xmdk(j,i,l+1,n,iaes) = xmdkr1(j,i,l+1)
+              xmdk(j,i,l+2,n,iaes) =-xmdkr1(j,i,l+2)
+              xmdk(j,i,l+3,n,iaes) = xmdkr1(j,i,l+3)
+           end do
+        end do
+#endif
+      end if
 200   continue
+210   continue
 c
 c     read in modal deflections for i=const surfaces
 c
-      do 300 m = 1,2
+      do 310 m = 1,2
 c
       if (m.eq.1) then
          i    = 1
@@ -146,6 +221,9 @@ c
       do 300 ns = 1,nseg
 c
       lbc = abs(ibcinfo(nbl,ns,1,m))
+      if (naesrf.gt.0) then
+         lbc = abs(ibcinfo(nbl,ns,1,m))*ibcinfo(nbl,ns,6,m)
+      end if
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -157,21 +235,46 @@ c
       kst = ibcinfo(nbl,ns,4,m)
       kfn = ibcinfo(nbl,ns,5,m)
 c
+      if(ialph.eq.0) then
 #ifdef CMPLX
-      read(iunit,*)((xmdir(j,k,l+1),xmdir(j,k,l+2),
-     .               xmdir(j,k,l+3),j=jst,jfn),k=kst,kfn)
-      do k=kst,kfn
-         do j=jst,jfn
-            xmdi(j,k,l+1,n,iaes) = xmdir(j,k,l+1)
-            xmdi(j,k,l+2,n,iaes) = xmdir(j,k,l+2)
-            xmdi(j,k,l+3,n,iaes) = xmdir(j,k,l+3)
-         end do
-      end do
+        read(iunit,*)((xmdir(j,k,l+1),xmdir(j,k,l+2),
+     .                 xmdir(j,k,l+3),j=jst,jfn),k=kst,kfn)
+        do k=kst,kfn
+           do j=jst,jfn
+              xmdi(j,k,l+1,n,iaes) = xmdir(j,k,l+1)
+              xmdi(j,k,l+2,n,iaes) = xmdir(j,k,l+2)
+              xmdi(j,k,l+3,n,iaes) = xmdir(j,k,l+3)
+           end do
+        end do
 #else
-      read(iunit,*)((xmdi(j,k,l+1,n,iaes),xmdi(j,k,l+2,n,iaes),
-     .               xmdi(j,k,l+3,n,iaes),j=jst,jfn),k=kst,kfn)
+        read(iunit,*)((xmdi(j,k,l+1,n,iaes),xmdi(j,k,l+2,n,iaes),
+     .                 xmdi(j,k,l+3,n,iaes),j=jst,jfn),k=kst,kfn)
 #endif
+      else
+#ifdef CMPLX
+        read(iunit,*)((xmdir(j,k,l+1),xmdir(j,k,l+3),
+     .                 xmdir(j,k,l+2),j=jst,jfn),k=kst,kfn)
+        do k=kst,kfn
+           do j=jst,jfn
+              xmdi(j,k,l+1,n,iaes) = xmdir(j,k,l+1)
+              xmdi(j,k,l+2,n,iaes) =-xmdir(j,k,l+2)
+              xmdi(j,k,l+3,n,iaes) = xmdir(j,k,l+3)
+           end do
+        end do
+#else
+        read(iunit,*)((xmdir1(j,k,l+1),xmdir1(j,k,l+3),
+     .                 xmdir1(j,k,l+2),j=jst,jfn),k=kst,kfn)
+        do k=kst,kfn
+           do j=jst,jfn
+              xmdi(j,k,l+1,n,iaes) = xmdir1(j,k,l+1)
+              xmdi(j,k,l+2,n,iaes) =-xmdir1(j,k,l+2)
+              xmdi(j,k,l+3,n,iaes) = xmdir1(j,k,l+3)
+           end do
+        end do
+#endif
+      end if
 300   continue
+310   continue
 #ifdef CMPLX
 c
 c     deallocate real arrays in which modal data was read
@@ -179,6 +282,13 @@ c
       deallocate(xmdjr)
       deallocate(xmdkr)
       deallocate(xmdir)
+#else
+c
+c     deallocate real arrays in which modal data was read
+c
+      deallocate(xmdjr1)
+      deallocate(xmdkr1)
+      deallocate(xmdir1)
 #endif
 c
       return

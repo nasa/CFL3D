@@ -34,6 +34,7 @@ c
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
       common /elastic/ ndefrm,naesrf
+      common /igrdtyp/ ip3dgrd,ialph
 c 
       if (iaes.gt.9) then
          if (nm.gt.99) then
@@ -90,6 +91,8 @@ c
                   end if
                   do ns = 1,nseg
                      lbc = iabs(jbcinfo(nbl,ns,1,m))
+                     if (naesrf.gt.0) lbc =
+     .                  abs(jbcinfo(nbl,ns,1,m))*jbcinfo(nbl,ns,6,m)
                      iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                                *(lbc-2016)
                      if (iflg.eq.0) then
@@ -115,7 +118,9 @@ c
                      nseg = nbckdim(nbl)
                   end if
                   do ns = 1,nseg
-                    lbc = abs(kbcinfo(nbl,ns,1,m))
+                     lbc = abs(kbcinfo(nbl,ns,1,m))
+                     if (naesrf.gt.0) lbc =
+     .                  abs(kbcinfo(nbl,ns,1,m))*kbcinfo(nbl,ns,6,m)
                     iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                               *(lbc-2016)
                     if (iflg.eq.0) then
@@ -142,6 +147,8 @@ c
                   end if
                   do ns = 1,nseg
                      lbc = abs(ibcinfo(nbl,ns,1,m))
+                     if (naesrf.gt.0) lbc =
+     .                  abs(ibcinfo(nbl,ns,1,m))*ibcinfo(nbl,ns,6,m)
                      iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                                *(lbc-2016)
                      if (iflg.eq.0) then
@@ -179,6 +186,8 @@ c
             end if
             do ns = 1,nseg
                lbc = iabs(jbcinfo(nbl1,ns,1,m))
+               if (naesrf.gt.0) lbc =
+     .            abs(jbcinfo(nbl1,ns,1,m))*jbcinfo(nbl1,ns,6,m)
                iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                          *(lbc-2016)
                if (iflg.eq.0) then
@@ -187,11 +196,17 @@ c
                   ifn = jbcinfo(nbl1,ns,3,m)
                   kst = jbcinfo(nbl1,ns,4,m)
                   kfn = jbcinfo(nbl1,ns,5,m)
-                  write(iunitw,*)
-     .                 ((x(j,k,i),i=ist,ifn),k=kst,kfn),
-     .                 ((y(j,k,i),i=ist,ifn),k=kst,kfn),
-     .                 ((real(xmdj(k,i,l+3,nm,iaes)),i=ist,ifn),
-     .                                               k=kst,kfn)
+                  if(ialph.eq.0) then
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdj(k,i,l+1,nm,iaes)),i=ist,ifn),k=kst,kfn),
+     .    ((y(j,k,i)+real(xmdj(k,i,l+2,nm,iaes)),i=ist,ifn),k=kst,kfn),
+     .    ((z(j,k,i)+real(xmdj(k,i,l+3,nm,iaes)),i=ist,ifn),k=kst,kfn)
+                  else
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdj(k,i,l+1,nm,iaes)),i=ist,ifn),k=kst,kfn),
+     .    ((z(j,k,i)+real(xmdj(k,i,l+3,nm,iaes)),i=ist,ifn),k=kst,kfn),
+     .    ((-y(j,k,i)-real(xmdj(k,i,l+2,nm,iaes)),i=ist,ifn),k=kst,kfn)
+                  end if
                end if
             end do
          end do
@@ -207,6 +222,8 @@ c
             end if
             do ns = 1,nseg
                lbc = abs(kbcinfo(nbl1,ns,1,m))
+               if (naesrf.gt.0) lbc =
+     .            abs(kbcinfo(nbl1,ns,1,m))*kbcinfo(nbl1,ns,6,m)
                iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                          *(lbc-2016)
                if (iflg.eq.0) then
@@ -215,11 +232,17 @@ c
                   ifn = kbcinfo(nbl1,ns,3,m)
                   jst = kbcinfo(nbl1,ns,4,m)
                   jfn = kbcinfo(nbl1,ns,5,m)
-                  write(iunitw,*)
-     .            ((x(j,k,i),i=ist,ifn),j=jst,jfn),
-     .            ((y(j,k,i),i=ist,ifn),j=jst,jfn),
-     .            ((real(xmdk(j,i,l+3,nm,iaes)),i=ist,ifn),
-     .                                          j=jst,jfn)
+                  if(ialph.eq.0) then
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdk(j,i,l+1,nm,iaes)),i=ist,ifn),j=jst,jfn),
+     .    ((y(j,k,i)+real(xmdk(j,i,l+2,nm,iaes)),i=ist,ifn),j=jst,jfn),
+     .    ((z(j,k,i)+real(xmdk(j,i,l+3,nm,iaes)),i=ist,ifn),j=jst,jfn)
+                  else
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdk(j,i,l+1,nm,iaes)),i=ist,ifn),j=jst,jfn),
+     .    ((z(j,k,i)+real(xmdk(j,i,l+3,nm,iaes)),i=ist,ifn),j=jst,jfn),
+     .    ((-y(j,k,i)-real(xmdk(j,i,l+2,nm,iaes)),i=ist,ifn),j=jst,jfn)
+                  end if
               end if
            end do
          end do
@@ -235,6 +258,8 @@ c
             end if
             do ns = 1,nseg
                lbc = abs(ibcinfo(nbl1,ns,1,m))
+               if (naesrf.gt.0) lbc =
+     .            abs(ibcinfo(nbl1,ns,1,m))*ibcinfo(nbl1,ns,6,m)
                iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                          *(lbc-2016)
                if (iflg.eq.0) then
@@ -243,11 +268,17 @@ c
                   jfn = ibcinfo(nbl1,ns,3,m)
                   kst = ibcinfo(nbl1,ns,4,m)
                   kfn = ibcinfo(nbl1,ns,5,m)
-                  write(iunitw,*)
-     .                 ((x(j,k,i),j=jst,jfn),k=kst,kfn),
-     .                 ((y(j,k,i),j=jst,jfn),k=kst,kfn),
-     .                 ((real(xmdi(j,k,l+3,nm,iaes)),j=jst,jfn),
-     .                                               k=kst,kfn)
+                  if(ialph.eq.0) then
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdi(j,k,l+1,nm,iaes)),j=jst,jfn),k=kst,kfn),
+     .    ((y(j,k,i)+real(xmdi(j,k,l+2,nm,iaes)),j=jst,jfn),k=kst,kfn),
+     .    ((z(j,k,i)+real(xmdi(j,k,l+3,nm,iaes)),j=jst,jfn),k=kst,kfn)
+                  else
+                    write(iunitw,*)
+     .    ((x(j,k,i)+real(xmdi(j,k,l+1,nm,iaes)),j=jst,jfn),k=kst,kfn),
+     .    ((z(j,k,i)+real(xmdi(j,k,l+3,nm,iaes)),j=jst,jfn),k=kst,kfn),
+     .    ((-y(j,k,i)-real(xmdi(j,k,l+2,nm,iaes)),j=jst,jfn),k=kst,kfn)
+                  end if
               end if
            end do
          end do
