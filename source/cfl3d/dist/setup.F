@@ -2136,6 +2136,7 @@ c
                end do
 c   ***CGNSstart
             else
+#if defined CGNS
                maxnum=2*nmds*naesrf
                maxnum2=ntt*3*nmds*naesrf
                if ((maxnum+maxnum2) .gt. nwork) then
@@ -2151,6 +2152,7 @@ c   ***CGNSstart
                call raeromode(iccg,ibase,ncycmax,nmds,maxaes,
      .         ntt,naesrf,wk,maxnum,wk2,maxnum2,
      .         timekeep,xxn,gforcn,gforcnm,aehist)
+#endif
             end if
 c   ***CGNSend
             end if
