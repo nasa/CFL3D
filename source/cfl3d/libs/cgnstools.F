@@ -269,7 +269,7 @@ c   Goto base index
       ibase=1
       call cg_goto_f(iccg,ibase,ier,'end')
       if (ier .ne. 0) then
-        write(66,'('' Error attempting to find CGNSBase_t node'')')
+        write(66,'('' Error attempting to find Base node'')')
         write(66,'('' Make sure the cgns file is written correctly'',
      +   '' (according to SIDS standards)'')')
         call cg_error_print_f
@@ -2803,8 +2803,82 @@ c   Create other nodes under 'FlowEquationSet'
       call cg_model_write_f('ThermalConductivityModel_t',
      + ConstantPrandtl,ier)
       if (ier .ne. 0) call cg_error_exit_f
+c
+c   Create DataArray containing Specific Heat Ratio under GasModel
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'GasModel_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      if (idouble .eq. 1) then
+        call cg_array_write_f('SpecificHeatRatio',RealDouble,
+     +   1,1,gamma,ier)
+      else
+        call cg_array_write_f('SpecificHeatRatio',RealSingle,
+     +   1,1,gamma,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'GasModel_t',1,'DataArray_t',
+     +  1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_dataclass_write_f(NondimensionalParameter,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Create DataArray containing Prandtl number under ThermalConductivityModel
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Prandtl',RealDouble,
+     +   1,1,prandtl,ier)
+      else
+        call cg_array_write_f('Prandtl',RealSingle,
+     +   1,1,prandtl,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,
+     +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_dataclass_write_f(NondimensionalParameter,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Create DataArray containing Sutherland law constant under ViscosityModel
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'ViscosityModel_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      if (idouble .eq. 1) then
+        call cg_array_write_f('SutherlandLawConstant',RealDouble,
+     +   1,1,suth,ier)
+      else
+        call cg_array_write_f('SutherlandLawConstant',RealSingle,
+     +   1,1,suth,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'ViscosityModel_t',1,
+     +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_dataclass_write_f(Dimensional,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      units(1)=0.
+      units(2)=0.
+      units(3)=0.
+      units(4)=1.
+      units(5)=0.
+      if (idouble .eq. 1) then
+        call cg_exponents_write_f(RealDouble,units,ier)
+      else
+        call cg_exponents_write_f(RealSingle,units,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
 c  Only write turbulence-type nodes if turbulent
       if (ivmx .le. 1) return
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'FlowEquationSet_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       if (ivmx .eq. 11 .or. ivmx .eq. 12 .or.
      +    ivmx .eq. 13 .or. ivmx .eq. 14) then
         call cg_model_write_f('TurbulenceClosure_t',
@@ -2919,44 +2993,6 @@ c   (non-standard)
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Create DataArray containing Specific Heat Ratio under GasModel
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'GasModel_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      if (idouble .eq. 1) then
-        call cg_array_write_f('SpecificHeatRatio',RealDouble,
-     +   1,1,gamma,ier)
-      else
-        call cg_array_write_f('SpecificHeatRatio',RealSingle,
-     +   1,1,gamma,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'GasModel_t',1,'DataArray_t',
-     +  1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_dataclass_write_f(NondimensionalParameter,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c
-c   Create DataArray containing Prandtl number under ThermalConductivityModel
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      if (idouble .eq. 1) then
-        call cg_array_write_f('Prandtl',RealDouble,
-     +   1,1,prandtl,ier)
-      else
-        call cg_array_write_f('Prandtl',RealSingle,
-     +   1,1,prandtl,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,
-     +  'DataArray_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_dataclass_write_f(NondimensionalParameter,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c
 c   Create DataArray containing turb Prandtl number under TurbulenceClosure
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'TurbulenceClosure_t',1,'end')
@@ -2974,38 +3010,6 @@ c   Create DataArray containing turb Prandtl number under TurbulenceClosure
      +  'DataArray_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c
-c   Create DataArray containing Sutherland law constant under ViscosityModel
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'ViscosityModel_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      if (idouble .eq. 1) then
-        call cg_array_write_f('SutherlandLawConstant',RealDouble,
-     +   1,1,suth,ier)
-      else
-        call cg_array_write_f('SutherlandLawConstant',RealSingle,
-     +   1,1,suth,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'FlowEquationSet_t',1,'ViscosityModel_t',1,
-     +  'DataArray_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_dataclass_write_f(Dimensional,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-      units(1)=0.
-      units(2)=0.
-      units(3)=0.
-      units(4)=1.
-      units(5)=0.
-      if (idouble .eq. 1) then
-        call cg_exponents_write_f(RealDouble,units,ier)
-      else
-        call cg_exponents_write_f(RealSingle,units,ier)
-      end if
       if (ier .ne. 0) call cg_error_exit_f
 c
       return
