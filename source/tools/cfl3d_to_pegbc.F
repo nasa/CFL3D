@@ -565,6 +565,7 @@ c
       if (nint0.eq.0) then
          intmax0 = 1
          nsub10  = 1
+         ninter  = 0
       else 
          read(22) ninter
          do n=1,abs(ninter)
