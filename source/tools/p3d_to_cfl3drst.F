@@ -126,34 +126,57 @@ c *****************************************************************
      + cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
      + cfttotw,rmstr1,rmstr2,nneg1,nneg2,iwghost)
 c
-      real*4 xmachw,alphw,reuew,time
-      real*4 q(imax,jmax,kmax,5,nblk)
-      dimension q2(imax,jmax,kmax,5,nblk)
-      dimension qi0(jmax,kmax,5,4),qj0(kmax,imax,5,4),
-     .          qk0(jmax,imax,5,4)
-      dimension id(nblock),jd(nblock),kd(nblock)
-      dimension idsav(nblock),jdsav(nblock),kdsav(nblock)
-      dimension titlw2(20)
-      dimension rms(1),clw(1),cdw(1),cdpw(1),
-     .          cdvw(1),cxw(1),cyw(1),czw(1),
-     .          cmxw(1),cmyw(1),cmzw(1),
-     .          fmdotw(1),cftmomw(1),cftpw(1),
-     .          cftvw(1),cfttotw(1),
-     .          rmstr1(1),rmstr2(1)
-      dimension nneg1(1),nneg2(1)
+      integer stats
 c
-      pointer (ip_q,q),(ip_q2,q2),(ip_qi0,qi0),
-     .        (ip_qj0,qj0),(ip_qk0,qk0)
+      real*4 xmachw,alphw,reuew,time
+c
+      dimension cdpw(1)
+      dimension cdvw(1)
+      dimension cdw(1)
+      dimension cftmomw(1)
+      dimension cftpw(1)
+      dimension cfttotw(1)
+      dimension cftvw(1)
+      dimension clw(1)
+      dimension cmxw(1)
+      dimension cmyw(1)
+      dimension cmzw(1)
+      dimension cxw(1)
+      dimension cyw(1)
+      dimension czw(1)
+      dimension fmdotw(1)
+      dimension id(nblock)
+      dimension idsav(nblock)
+      dimension jd(nblock)
+      dimension jdsav(nblock)
+      dimension kd(nblock)
+      dimension kdsav(nblock)
+      dimension nneg1(1)
+      dimension nneg2(1)
+      dimension rms(1)
+      dimension rmstr1(1)
+      dimension rmstr2(1)
+      dimension titlw2(20)
+c
+      real(4), allocatable :: q(:,:,:,:,:)
+      allocatable :: q2(:,:,:,:,:)
+      allocatable :: qi0(:,:,:,:)
+      allocatable :: qj0(:,:,:,:)
+      allocatable :: qk0(:,:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_q,imax*jmax*kmax*5*nblk,0,icall,memuse)
-      call umalloc_r(ip_q2,imax*jmax*kmax*5*nblk,0,icall,memuse)
-      call umalloc_r(ip_qi0,jmax*kmax*20,0,icall,memuse)
-      call umalloc_r(ip_qj0,kmax*imax*20,0,icall,memuse)
-      call umalloc_r(ip_qk0,jmax*imax*20,0,icall,memuse)
+      allocate( q(imax,jmax,kmax,5,nblk), stat=stats )
+      call umalloc_r(imax*jmax*kmax*5*nblk,0,'q',memuse,stats)
+      allocate( q2(imax,jmax,kmax,5,nblk), stat=stats )
+      call umalloc_r(imax*jmax*kmax*5*nblk,0,'q2',memuse,stats)
+      allocate( qi0(jmax,kmax,5,4), stat=stats )
+      call umalloc_r(jmax*kmax*5*4,0,'qi0',memuse,stats)
+      allocate( qj0(kmax,imax,5,4), stat=stats )
+      call umalloc_r(kmax*imax*5*4,0,'qj0',memuse,stats)
+      allocate( qk0(jmax,imax,5,4), stat=stats )
+      call umalloc_r(jmax*imax*5*4,0,'qk0',memuse,stats)
 c
       do 60 n=1,nblk
         if (isingle .eq. 1) then
@@ -412,11 +435,11 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_q)
-         call ufree_r(ip_q2)
-         call ufree_r(ip_qi0)
-         call ufree_r(ip_qj0)
-         call ufree_r(ip_qk0)
+         deallocate(q)
+         deallocate(q2)
+         deallocate(qi0)
+         deallocate(qj0)
+         deallocate(qk0)
       end if
 c
       stop

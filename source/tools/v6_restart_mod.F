@@ -24,14 +24,10 @@ c     Note: title (stored in the original restart file) is LOST
 c     during conversion
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 v6_restart_mod.f umalloc_r.o ufree_r.o -o v6_restart_mod
+c     f90 -64 -r8 v6_restart_mod.f umalloc_r_r.o ufree_r.o -o v6_restart_mod
 c     On CRAY:
-c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c umalloc_c.F
-c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c ufree_c.F
-c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c ufree_r.F
-c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c umalloc_r.F
-c ar ruc libs.a umalloc_c.o ufree_c.o umalloc_r.o ufree_r.o
-c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 v6_restart_mod.f -o v6_restart_mod libs.a
+c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 -c umalloc_r_r.F
+c f90 -DASN_P3D -DCRAY_TIME -DWKSTN_OFF -Oscalar3,vector3 v6_restart_mod.f umalloc_r_r.o -o v6_restart_mod
 c*****************************************************************************
 c
       dimension titlw(20)
@@ -293,66 +289,101 @@ c *********************************************************************
       subroutine readwrite(idim,jdim,kdim,ncycmax,iunfi,iunfo,irghost,
      . ihalf,nblk,idimc,jdimc,kdimc,ic,jc,kc,titlw)
 c
-      dimension q(jdim,kdim,idim,5)
-      dimension qc(jdimc,kdimc,idimc,5)
-      dimension work(jdimc,kdimc,idimc,5)
-      dimension qi0(jdim+1,kdim+1,5,4),qj0(kdim+1,idim,5,4),
-     .          qk0(jdim+1,idim,5,4)
-      dimension qi0c(jdimc+1,kdimc+1,5,4),qj0c(kdimc+1,idimc,5,4),
-     .          qk0c(jdimc+1,idimc,5,4)
-      dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
-     .          cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
-     .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
-     .          fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
-     .          cftvw(ncycmax),cfttotw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax)
-      dimension nneg1(ncycmax),nneg2(ncycmax)
-      dimension titlw(20)
+      integer stats
 c
-      pointer (ip_q,q),(ip_qc,qc),(ip_qi0,qi0),(ip_qj0,qj0),(ip_qk0,qk0)
-      pointer (ip_qi0c,qi0c),(ip_qj0c,qj0c),(ip_qk0c,qk0c)
-      pointer (ip_rms,rms),(ip_clw,clw),(ip_cdw,cdw),(ip_cdpw,cdpw),
-     .        (ip_cdvw,cdvw),(ip_cxw,cxw),(ip_cyw,cyw),(ip_czw,czw),
-     .        (ip_cmxw,cmxw),(ip_cmyw,cmyw),(ip_cmzw,cmzw),
-     .        (ip_fmdotw,fmdotw),(ip_cftmomw,cftmomw),(ip_cftpw,cftpw),
-     .        (ip_cftvw,cftvw),(ip_cfttotw,cfttotw),
-     .        (ip_rmstr1,rmstr1),(ip_rmstr2,rmstr2)
-      pointer (ip_work,work)
-      pointer (ip_nneg1,nneg1),(ip_nneg2,nneg2)
+      dimension titlw(20)
+c 
+      allocatable :: cdpw(:)
+      allocatable :: cdvw(:)
+      allocatable :: cdw(:)
+      allocatable :: cftmomw(:)
+      allocatable :: cftpw(:)
+      allocatable :: cfttotw(:)
+      allocatable :: cftvw(:)
+      allocatable :: clw(:)
+      allocatable :: cmxw(:)
+      allocatable :: cmyw(:)
+      allocatable :: cmzw(:)
+      allocatable :: cxw(:)
+      allocatable :: cyw(:)
+      allocatable :: czw(:)
+      allocatable :: fmdotw(:)
+      allocatable :: nneg1(:)
+      allocatable :: nneg2(:)
+      allocatable :: q(:,:,:,:)
+      allocatable :: qc(:,:,:,:)
+      allocatable :: qi0(:,:,:,:)
+      allocatable :: qi0c(:,:,:,:)
+      allocatable :: qj0(:,:,:,:)
+      allocatable :: qj0c(:,:,:,:)
+      allocatable :: qk0(:,:,:,:)
+      allocatable :: qk0c(:,:,:,:)
+      allocatable :: rms(:)
+      allocatable :: rmstr1(:)
+      allocatable :: rmstr2(:)
+      allocatable :: work(:,:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_q,jdim*kdim*idim*5,0,icall,memuse)
-      call umalloc_r(ip_qc,jdimc*kdimc*idimc*5,0,icall,memuse)
-      call umalloc_r(ip_qi0,(jdim+1)*(kdim+1)*20,0,icall,memuse)
-      call umalloc_r(ip_qj0,(kdim+1)*idim*20,0,icall,memuse)
-      call umalloc_r(ip_qk0,(jdim+1)*idim*20,0,icall,memuse)
-      call umalloc_r(ip_qi0c,(jdimc+1)*(kdimc+1)*20,0,icall,memuse)
-      call umalloc_r(ip_qj0c,(kdimc+1)*idimc*20,0,icall,memuse)
-      call umalloc_r(ip_qk0c,(jdimc+1)*idimc*20,0,icall,memuse)
-      call umalloc_r(ip_rms,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_clw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cdw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cdpw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cdvw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cxw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cyw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_czw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cmxw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cmyw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cmzw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_fmdotw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cftmomw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cftpw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cftvw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_cfttotw,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_rmstr1,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_rmstr2,ncycmax,0,icall,memuse)
-      call umalloc_r(ip_work,jdimc*kdimc*idimc*5,0,icall,memuse)
-      call umalloc_r(ip_nneg1,ncycmax,1,icall,memuse)
-      call umalloc_r(ip_nneg2,ncycmax,1,icall,memuse)
+      allocate( cdpw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cdpw',memuse,stats)
+      allocate( cdvw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cdvw',memuse,stats)
+      allocate( cdw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cdw',memuse,stats)
+      allocate( cftmomw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cftmomw',memuse,stats)
+      allocate( cftpw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cftpw',memuse,stats)
+      allocate( cfttotw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cfttotw',memuse,stats)
+      allocate( cftvw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cftvw',memuse,stats)
+      allocate( clw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'clw',memuse,stats)
+      allocate( cmxw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cmxw',memuse,stats)
+      allocate( cmyw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cmyw',memuse,stats)
+      allocate( cmzw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cmzw',memuse,stats)
+      allocate( cxw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cxw',memuse,stats)
+      allocate( cyw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'cyw',memuse,stats)
+      allocate( czw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'czw',memuse,stats)
+      allocate( fmdotw(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'fmdotw',memuse,stats)
+      allocate( nneg1(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,1,'nneg1',memuse,stats)
+      allocate( nneg2(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,1,'nneg2',memuse,stats)
+      allocate( q(jdim,kdim,idim,5), stat=stats )
+      call umalloc_r(jdim*kdim*idim*5,0,'q',memuse,stats)
+      allocate( qc(jdimc,kdimc,idimc,5), stat=stats )
+      call umalloc_r(jdimc*kdimc*idimc*5,0,'qc',memuse,stats)
+      allocate( qi0(jdim+1,kdim+1,5,4), stat=stats )
+      call umalloc_r((jdim+1)*(kdim+1)*5*4,0,'qi0',memuse,stats)
+      allocate( qi0c(jdimc+1,kdimc+1,5,4), stat=stats )
+      call umalloc_r((jdimc+1)*(kdimc+1)*5*4,0,'qi0c',memuse,stats)
+      allocate( qj0(kdim+1,idim,5,4), stat=stats )
+      call umalloc_r((kdim+1)*idim*5*4,0,'qj0',memuse,stats)
+      allocate( qj0c(kdimc+1,idimc,5,4), stat=stats )
+      call umalloc_r((kdimc+1)*idimc*5*4,0,'qj0c',memuse,stats)
+      allocate( qk0(jdim+1,idim,5,4), stat=stats )
+      call umalloc_r((jdim+1)*idim*5*4,0,'qk0',memuse,stats)
+      allocate( qk0c(jdimc+1,idimc,5,4), stat=stats )
+      call umalloc_r((jdimc+1)*idimc*5*4,0,'qk0c',memuse,stats)
+      allocate( rms(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'rms',memuse,stats)
+      allocate( rmstr1(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'rmstr1',memuse,stats)
+      allocate( rmstr2(ncycmax), stat=stats )
+      call umalloc_r(ncycmax,0,'rmstr2',memuse,stats)
+      allocate( work(jdimc,kdimc,idimc,5), stat=stats )
+      call umalloc_r(jdimc*kdimc*idimc*5,0,'work',memuse,stats)
 c
       iskip = 1
       do 9897 nrty=1,nblk
@@ -1142,35 +1173,35 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_q)
-         call ufree_r(ip_qc)
-         call ufree_r(ip_qi0)
-         call ufree_r(ip_qj0)
-         call ufree_r(ip_qk0)
-         call ufree_r(ip_qi0c)
-         call ufree_r(ip_qj0c)
-         call ufree_r(ip_qk0c)
-         call ufree_r(ip_rms)
-         call ufree_r(ip_clw)
-         call ufree_r(ip_cdw)
-         call ufree_r(ip_cdpw)
-         call ufree_r(ip_cdvw)
-         call ufree_r(ip_cxw)
-         call ufree_r(ip_cyw)
-         call ufree_r(ip_czw)
-         call ufree_r(ip_cmxw)
-         call ufree_r(ip_cmyw)
-         call ufree_r(ip_cmzw)
-         call ufree_r(ip_fmdotw)
-         call ufree_r(ip_cftmomw)
-         call ufree_r(ip_cftpw)
-         call ufree_r(ip_cftvw)
-         call ufree_r(ip_cfttotw)
-         call ufree_r(ip_rmstr1)
-         call ufree_r(ip_rmstr2)
-         call ufree_r(ip_work)
-         call ufree_r(ip_nneg1)
-         call ufree_r(ip_nneg2)
+         deallocate(q)
+         deallocate(qc)
+         deallocate(qi0)
+         deallocate(qj0)
+         deallocate(qk0)
+         deallocate(qi0c)
+         deallocate(qj0c)
+         deallocate(qk0c)
+         deallocate(rms)
+         deallocate(clw)
+         deallocate(cdw)
+         deallocate(cdpw)
+         deallocate(cdvw)
+         deallocate(cxw)
+         deallocate(cyw)
+         deallocate(czw)
+         deallocate(cmxw)
+         deallocate(cmyw)
+         deallocate(cmzw)
+         deallocate(fmdotw)
+         deallocate(cftmomw)
+         deallocate(cftpw)
+         deallocate(cftvw)
+         deallocate(cfttotw)
+         deallocate(rmstr1)
+         deallocate(rmstr2)
+         deallocate(work)
+         deallocate(nneg1)
+         deallocate(nneg2)
       end if
 c
       return

@@ -69,40 +69,46 @@ c     Purpose: read 2 cfl3d restart files and calculate finite
 c     differences of force and moment coefficients
 c***********************************************************************
 c
-      dimension rms1(ncycarg),clw1(ncycarg),
-     .          cdw1(ncycarg),cdpw1(ncycarg),
-     .          cdvw1(ncycarg),cxw1(ncycarg),
-     .          cyw1(ncycarg),czw1(ncycarg),
-     .          cmxw1(ncycarg),cmyw1(ncycarg),
-     .          cmzw1(ncycarg),fmdotw1(ncycarg),
-     .          cftmomw1(ncycarg),cftpw1(ncycarg),
-     .          cftvw1(ncycarg),cfttotw1(ncycarg)
-      dimension rms2(ncycarg),clw2(ncycarg),
-     .          cdw2(ncycarg),cdpw2(ncycarg),
-     .          cdvw2(ncycarg),cxw2(ncycarg),
-     .          cyw2(ncycarg),czw2(ncycarg),
-     .          cmxw2(ncycarg),cmyw2(ncycarg),
-     .          cmzw2(ncycarg),fmdotw2(ncycarg),
-     .          cftmomw2(ncycarg),cftpw2(ncycarg),
-     .          cftvw2(ncycarg),cfttotw2(ncycarg)
+      integer stats
+c
       dimension titlw(20)
+c
+      allocatable :: cdpw1(:)
+      allocatable :: cdpw2(:)
+      allocatable :: cdvw1(:)
+      allocatable :: cdvw2(:)
+      allocatable :: cdw1(:)
+      allocatable :: cdw2(:)
+      allocatable :: cftmomw1(:)
+      allocatable :: cftmomw2(:)
+      allocatable :: cftpw1(:)
+      allocatable :: cftpw2(:)
+      allocatable :: cfttotw1(:)
+      allocatable :: cfttotw2(:)
+      allocatable :: cftvw1(:)
+      allocatable :: cftvw2(:)
+      allocatable :: clw1(:)
+      allocatable :: clw2(:)
+      allocatable :: cmxw1(:)
+      allocatable :: cmxw2(:)
+      allocatable :: cmyw1(:)
+      allocatable :: cmyw2(:)
+      allocatable :: cmzw1(:)
+      allocatable :: cmzw2(:)
+      allocatable :: cxw1(:)
+      allocatable :: cxw2(:)
+      allocatable :: cyw1(:)
+      allocatable :: cyw2(:)
+      allocatable :: czw1(:)
+      allocatable :: czw2(:)
+      allocatable :: fmdotw1(:)
+      allocatable :: fmdotw2(:)
+      allocatable :: rms1(:)
+      allocatable :: rms2(:)
 c
       character*80 restfile1,restfile2,fdfile
 c
       common /files/ restfile1,restfile2,fdfile
-c
-      pointer (ip_rms1,rms1),(ip_clw1,clw1),(ip_cdw1,cdw1),
-     .        (ip_cdpw1,cdpw1),(ip_cdvw1,cdvw1),(ip_cxw1,cxw1),
-     .        (ip_cyw1,cyw1),(ip_czw1,czw1),(ip_cmxw1,cmxw1),
-     .        (ip_cmyw1,cmyw1),(ip_cmzw1,cmzw1),(ip_fmdotw1,fmdotw1),
-     .        (ip_cftmomw1,cftmomw1),(ip_cftpw1,cftpw1),
-     .        (ip_cftvw1,cftvw1),(ip_cfttotw1,cfttotw1)
-      pointer (ip_rms2,rms2),(ip_clw2,clw2),(ip_cdw2,cdw2),
-     .        (ip_cdpw2,cdpw2),(ip_cdvw2,cdvw2),(ip_cxw2,cxw2),
-     .        (ip_cyw2,cyw2),(ip_czw2,czw2),(ip_cmxw2,cmxw2),
-     .        (ip_cmyw2,cmyw2),(ip_cmzw2,cmzw2),(ip_fmdotw2,fmdotw2),
-     .        (ip_cftmomw2,cftmomw2),(ip_cftpw2,cftpw2),
-     .        (ip_cftvw2,cftvw2),(ip_cfttotw2,cfttotw2)
 c
 c     open files
 c
@@ -124,40 +130,71 @@ c
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_rms1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_clw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdpw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdvw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cxw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cyw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_czw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmxw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmyw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmzw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_fmdotw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftmomw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftpw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftvw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cfttotw1,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_rms2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_clw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdpw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cdvw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cxw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cyw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_czw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmxw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmyw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cmzw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_fmdotw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftmomw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftpw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cftvw2,ncycarg,0,icall,memuse)
-      call umalloc_r(ip_cfttotw2,ncycarg,0,icall,memuse)
+      allocate( cdpw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdpw1',memuse,stats)
+      allocate( cdpw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdpw2',memuse,stats)
+      allocate( cdvw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdvw1',memuse,stats)
+      allocate( cdvw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdvw2',memuse,stats)
+      allocate( cdw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdw1',memuse,stats)
+      allocate( cdw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cdw2',memuse,stats)
+      allocate( cftmomw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftmomw1',memuse,stats)
+      allocate( cftmomw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftmomw2',memuse,stats)
+      allocate( cftpw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftpw1',memuse,stats)
+      allocate( cftpw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftpw2',memuse,stats)
+      allocate( cfttotw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cfttotw1',memuse,stats)
+      allocate( cfttotw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cfttotw2',memuse,stats)
+      allocate( cftvw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftvw1',memuse,stats)
+      allocate( cftvw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cftvw2',memuse,stats)
+      allocate( clw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'clw1',memuse,stats)
+      allocate( clw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'clw2',memuse,stats)
+      allocate( cmxw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmxw1',memuse,stats)
+      allocate( cmxw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmxw2',memuse,stats)
+      allocate( cmyw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmyw1',memuse,stats)
+      allocate( cmyw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmyw2',memuse,stats)
+      allocate( cmzw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmzw1',memuse,stats)
+      allocate( cmzw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cmzw2',memuse,stats)
+      allocate( cxw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cxw1',memuse,stats)
+      allocate( cxw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cxw2',memuse,stats)
+      allocate( cyw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cyw1',memuse,stats)
+      allocate( cyw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'cyw2',memuse,stats)
+      allocate( czw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'czw1',memuse,stats)
+      allocate( czw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'czw2',memuse,stats)
+      allocate( fmdotw1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'fmdotw1',memuse,stats)
+      allocate( fmdotw2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'fmdotw2',memuse,stats)
+      allocate( rms1(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'rms1',memuse,stats)
+      allocate( rms2(ncycarg), stat=stats )
+      call umalloc_r(ncycarg,0,'rms2',memuse,stats)
 c
       read(2) (rms1(n),     n=1,ntr1),(clw1(n),     n=1,ntr1),
      .        (cdw1(n),     n=1,ntr1),(cdpw1(n),    n=1,ntr1),
@@ -263,38 +300,38 @@ c
 c
 c     free memory
 c
-      call ufree_r(ip_rms1)
-      call ufree_r(ip_clw1)
-      call ufree_r(ip_cdw1)
-      call ufree_r(ip_cdpw1)
-      call ufree_r(ip_cdvw1)
-      call ufree_r(ip_cxw1)
-      call ufree_r(ip_cyw1)
-      call ufree_r(ip_czw1)
-      call ufree_r(ip_cmxw1)
-      call ufree_r(ip_cmyw1)
-      call ufree_r(ip_cmzw1)
-      call ufree_r(ip_fmdotw1)
-      call ufree_r(ip_cftmomw1)
-      call ufree_r(ip_cftpw1)
-      call ufree_r(ip_cftvw1)
-      call ufree_r(ip_cfttotw1)
-      call ufree_r(ip_rms2)
-      call ufree_r(ip_clw2)
-      call ufree_r(ip_cdw2)
-      call ufree_r(ip_cdpw2)
-      call ufree_r(ip_cdvw2)
-      call ufree_r(ip_cxw2)
-      call ufree_r(ip_cyw2)
-      call ufree_r(ip_czw2)
-      call ufree_r(ip_cmxw2)
-      call ufree_r(ip_cmyw2)
-      call ufree_r(ip_cmzw2)
-      call ufree_r(ip_fmdotw2)
-      call ufree_r(ip_cftmomw2)
-      call ufree_r(ip_cftpw2)
-      call ufree_r(ip_cftvw2)
-      call ufree_r(ip_cfttotw2)
+      deallocate(rms1)
+      deallocate(clw1)
+      deallocate(cdw1)
+      deallocate(cdpw1)
+      deallocate(cdvw1)
+      deallocate(cxw1)
+      deallocate(cyw1)
+      deallocate(czw1)
+      deallocate(cmxw1)
+      deallocate(cmyw1)
+      deallocate(cmzw1)
+      deallocate(fmdotw1)
+      deallocate(cftmomw1)
+      deallocate(cftpw1)
+      deallocate(cftvw1)
+      deallocate(cfttotw1)
+      deallocate(rms2)
+      deallocate(clw2)
+      deallocate(cdw2)
+      deallocate(cdpw2)
+      deallocate(cdvw2)
+      deallocate(cxw2)
+      deallocate(cyw2)
+      deallocate(czw2)
+      deallocate(cmxw2)
+      deallocate(cmyw2)
+      deallocate(cmzw2)
+      deallocate(fmdotw2)
+      deallocate(cftmomw2)
+      deallocate(cftpw2)
+      deallocate(cftvw2)
+      deallocate(cfttotw2)
 c
       return
       end

@@ -205,67 +205,100 @@ c
      .                   iisptr,iieptr,iswap,iogrd,iverbose,iosten,
      .                   ioorph,nppblk,ipeg)
 c
-      dimension ldim(maxbl),jdim(maxbl),kdim(maxbl),iisptr(maxbl),
-     .          iieptr(maxbl)
+      integer stats
 c
-      dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),
-     .          z(jmax,kmax,lmax)
+      dimension iieptr(maxbl)
+      dimension iisptr(maxbl)
+      dimension jdim(maxbl)
+      dimension kdim(maxbl)
+      dimension ldim(maxbl)
+c
+      allocatable :: dj(:)
+      allocatable :: dk(:)
+      allocatable :: dl(:)
+      allocatable :: ibblk(:)
+      allocatable :: ibc(:)
+      allocatable :: ibeptr(:)
+      allocatable :: iblank(:,:,:)
+      allocatable :: ibpnts(:)
+      allocatable :: ibsptr(:)
+      allocatable :: igorph(:)
+      allocatable :: iiblk(:)
+      allocatable :: iipnts(:)
+      allocatable :: intpts(:,:)
+      allocatable :: jb(:)
+      allocatable :: jborph(:)
+      allocatable :: ji(:)
+      allocatable :: kb(:)
+      allocatable :: kborph(:)
+      allocatable :: ki(:)
+      allocatable :: lb(:)
+      allocatable :: lborph(:)
+      allocatable :: li(:)
+      allocatable :: norph(:)
+      allocatable :: x(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: z(:,:,:)
+c
       character*80 header
-c
-c     for input pegsus data
-c
-      dimension ibpnts(maxbl),iipnts(maxbl),ji(iitot),ki(iitot),
-     .          li(iitot),jb(iitot),kb(iitot),lb(iitot),ibc(iitot),
-     .          iblank(jmax,kmax,lmax)
-      dimension dj(iitot),dk(iitot),dl(iitot)
-      dimension ibeptr(maxbl),ibsptr(maxbl),iiblk(iitot),
-     .          ibblk(iitot)
-      dimension lborph(iitot),jborph(iitot),kborph(iitot)
-      dimension igorph(iitot),norph(maxbl)
-      dimension intpts(maxbl,4)
-c
-      pointer (ip_x,x),(ip_y,y),(ip_z,z)
-      pointer (ip_ibpnts,ibpnts),(ip_iipnts,iipnts),
-     .        (ip_ji,ji),(ip_ki,ki),(ip_li,li),(ip_jb,jb),
-     .        (ip_kb,kb),(ip_lb,lb),(ip_ibc,ibc),
-     .        (ip_iblank,iblank),(ip_dj,dj),(ip_dk,dk),
-     .        (ip_dl,dl),(ip_ibeptr,ibeptr),(ip_ibsptr,ibsptr),
-     .        (ip_iiblk,iiblk),(ip_ibblk,ibblk)
-      pointer (ip_lborph,lborph),(ip_jborph,jborph),(ip_kborph,kborph),
-     .        (ip_igorph,igorph),(ip_norph,norph),(ip_intpts,intpts)
 c
       ngrid   = maxbl
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_x,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_y,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_z,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_ibpnts,maxbl,1,icall,memuse)
-      call umalloc_r(ip_iipnts,maxbl,1,icall,memuse)
-      call umalloc_r(ip_ji,iitot,1,icall,memuse)
-      call umalloc_r(ip_ki,iitot,1,icall,memuse)
-      call umalloc_r(ip_li,iitot,1,icall,memuse)
-      call umalloc_r(ip_jb,iitot,1,icall,memuse)
-      call umalloc_r(ip_kb,iitot,1,icall,memuse)
-      call umalloc_r(ip_lb,iitot,1,icall,memuse)
-      call umalloc_r(ip_ibc,iitot,1,icall,memuse)
-      call umalloc_r(ip_iblank,lmax*jmax*kmax,1,icall,memuse)
-      call umalloc_r(ip_dj,iitot,0,icall,memuse)
-      call umalloc_r(ip_dk,iitot,0,icall,memuse)
-      call umalloc_r(ip_dl,iitot,0,icall,memuse)
-      call umalloc_r(ip_ibeptr,maxbl,1,icall,memuse)
-      call umalloc_r(ip_ibsptr,maxbl,1,icall,memuse)
-      call umalloc_r(ip_iiblk,iitot,1,icall,memuse)
-      call umalloc_r(ip_ibblk,iitot,1,icall,memuse)
-      call umalloc_r(ip_lborph,iitot,1,icall,memuse)
-      call umalloc_r(ip_jborph,iitot,1,icall,memuse)
-      call umalloc_r(ip_kborph,iitot,1,icall,memuse)
-      call umalloc_r(ip_igorph,iitot,1,icall,memuse)
-      call umalloc_r(ip_norph,maxbl,1,icall,memuse)
-      call umalloc_r(ip_intpts,maxbl*4,1,icall,memuse)
+      allocate( dj(iitot), stat=stats )
+      call umalloc_r(iitot,0,'dj',memuse,stats)
+      allocate( dk(iitot), stat=stats )
+      call umalloc_r(iitot,0,'dk',memuse,stats)
+      allocate( dl(iitot), stat=stats )
+      call umalloc_r(iitot,0,'dl',memuse,stats)
+      allocate( ibblk(iitot), stat=stats )
+      call umalloc_r(iitot,1,'ibblk',memuse,stats)
+      allocate( ibc(iitot), stat=stats )
+      call umalloc_r(iitot,1,'ibc',memuse,stats)
+      allocate( ibeptr(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ibeptr',memuse,stats)
+      allocate( iblank(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,1,'iblank',memuse,stats)
+      allocate( ibpnts(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ibpnts',memuse,stats)
+      allocate( ibsptr(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ibsptr',memuse,stats)
+      allocate( igorph(iitot), stat=stats )
+      call umalloc_r(iitot,1,'igorph',memuse,stats)
+      allocate( iiblk(iitot), stat=stats )
+      call umalloc_r(iitot,1,'iiblk',memuse,stats)
+      allocate( iipnts(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'iipnts',memuse,stats)
+      allocate( intpts(maxbl,4), stat=stats )
+      call umalloc_r(maxbl*4,1,'intpts',memuse,stats)
+      allocate( jb(iitot), stat=stats )
+      call umalloc_r(iitot,1,'jb',memuse,stats)
+      allocate( jborph(iitot), stat=stats )
+      call umalloc_r(iitot,1,'jborph',memuse,stats)
+      allocate( ji(iitot), stat=stats )
+      call umalloc_r(iitot,1,'ji',memuse,stats)
+      allocate( kb(iitot), stat=stats )
+      call umalloc_r(iitot,1,'kb',memuse,stats)
+      allocate( kborph(iitot), stat=stats )
+      call umalloc_r(iitot,1,'kborph',memuse,stats)
+      allocate( ki(iitot), stat=stats )
+      call umalloc_r(iitot,1,'ki',memuse,stats)
+      allocate( lb(iitot), stat=stats )
+      call umalloc_r(iitot,1,'lb',memuse,stats)
+      allocate( lborph(iitot), stat=stats )
+      call umalloc_r(iitot,1,'lborph',memuse,stats)
+      allocate( li(iitot), stat=stats )
+      call umalloc_r(iitot,1,'li',memuse,stats)
+      allocate( norph(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'norph',memuse,stats)
+      allocate( x(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'x',memuse,stats)
+      allocate( y(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'y',memuse,stats)
+      allocate( z(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'z',memuse,stats)
 c
 c     notation: arrays jdim(n),kdim(n),ldim(n) are taken as cfl3d
 c     GRID dimensions for zone n. the corresponding cfl3d CELL CENTER
@@ -664,32 +697,32 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_x)
-         call ufree_r(ip_y)
-         call ufree_r(ip_z)
-         call ufree_r(ip_ibpnts)
-         call ufree_r(ip_iipnts)
-         call ufree_r(ip_ji)
-         call ufree_r(ip_ki)
-         call ufree_r(ip_li)
-         call ufree_r(ip_jb)
-         call ufree_r(ip_kb)
-         call ufree_r(ip_lb)
-         call ufree_r(ip_ibc)
-         call ufree_r(ip_iblank)
-         call ufree_r(ip_dj)
-         call ufree_r(ip_dk)
-         call ufree_r(ip_dl)
-         call ufree_r(ip_ibeptr)
-         call ufree_r(ip_ibsptr)
-         call ufree_r(ip_iiblk)
-         call ufree_r(ip_ibblk)
-         call ufree_r(ip_lborph)
-         call ufree_r(ip_jborph)
-         call ufree_r(ip_kborph)
-         call ufree_r(ip_igorph)
-         call ufree_r(ip_norph)
-         call ufree_r(ip_intpts)
+         deallocate(x)
+         deallocate(y)
+         deallocate(z)
+         deallocate(ibpnts)
+         deallocate(iipnts)
+         deallocate(ji)
+         deallocate(ki)
+         deallocate(li)
+         deallocate(jb)
+         deallocate(kb)
+         deallocate(lb)
+         deallocate(ibc)
+         deallocate(iblank)
+         deallocate(dj)
+         deallocate(dk)
+         deallocate(dl)
+         deallocate(ibeptr)
+         deallocate(ibsptr)
+         deallocate(iiblk)
+         deallocate(ibblk)
+         deallocate(lborph)
+         deallocate(jborph)
+         deallocate(kborph)
+         deallocate(igorph)
+         deallocate(norph)
+         deallocate(intpts)
       end if
 c
       return
@@ -966,18 +999,24 @@ c
 c     outputs iblanked grid at cfl3d cell centers. the input grid
 c     is the augmented cell center grid used by pegsus.
 c
-      dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),
-     .          z(jmax,kmax,lmax)
-      real*4    xout(jmax,kmax,lmax),yout(jmax,kmax,lmax),
-     .          zout(jmax,kmax,lmax)
-      dimension iblank(jmax,kmax,lmax)
-      pointer (ip_xout,xout),(ip_yout,yout),(ip_zout,zout)
+      integer stats
 c
-      icall  = 0
+      dimension iblank(jmax,kmax,lmax)
+      dimension x(jmax,kmax,lmax)
+      dimension y(jmax,kmax,lmax)
+      dimension z(jmax,kmax,lmax)
+c
+      real(4), allocatable :: xout(:,:,:)
+      real(4), allocatable :: yout(:,:,:)
+      real(4), allocatable :: zout(:,:,:)
+c
       memuse = 0
-      call umalloc_r(ip_xout,lmax*jmax*kmax,-1,icall,memuse)
-      call umalloc_r(ip_yout,lmax*jmax*kmax,-1,icall,memuse)
-      call umalloc_r(ip_zout,lmax*jmax*kmax,-1,icall,memuse)
+      allocate( xout(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,-1,'xout',memuse,stats)
+      allocate( yout(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,-1,'yout',memuse,stats)
+      allocate( zout(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,-1,'zout',memuse,stats)
 c
       jd1 = jd + 1
       kd1 = kd + 1
@@ -1007,9 +1046,9 @@ c
      .              (((iblank(j,k,l),l=2,ld1),j=2,jd1),k=2,kd1)
       end if
 c
-      call ufree_r(ip_xout)
-      call ufree_r(ip_yout)
-      call ufree_r(ip_zout)
+      deallocate(xout)
+      deallocate(yout)
+      deallocate(zout)
 c
       return
       end
@@ -1018,24 +1057,40 @@ c
      .                 ngrid,norpht,lborph,jborph,kborph,igorph,norph,
      .                 lunit,nppblk,i2d,ipeg,maxbl)
 c
-      dimension xin(jmax,kmax,lmax),yin(jmax,kmax,lmax),
-     .          zin(jmax,kmax,lmax)
-      dimension lborph(*),jborph(*),kborph(*),igorph(*),norph(*)
-      dimension idim(maxbl),jdim(maxbl),kdim(maxbl),ldim(maxbl)
-      real*4    xout(lomax),yout(lomax),zout(lomax)
-      pointer (ip_xout,xout),(ip_yout,yout),(ip_zout,zout)
-      pointer (ip_idim,idim),(ip_jdim,jdim),(ip_kdim,kdim),
-     .        (ip_ldim,ldim)
+      integer stats
 c
-      icall  = 0
+      dimension igorph(*)
+      dimension jborph(*)
+      dimension kborph(*)
+      dimension lborph(*)
+      dimension norph(*)
+      dimension xin(jmax,kmax,lmax)
+      dimension yin(jmax,kmax,lmax)
+      dimension zin(jmax,kmax,lmax)
+c
+      allocatable :: idim(:)
+      allocatable :: jdim(:)
+      allocatable :: kdim(:)
+      allocatable :: ldim(:)
+      real(4), allocatable :: xout(:)
+      real(4), allocatable :: yout(:)
+      real(4), allocatable :: zout(:)
+c
       memuse = 0
-      call umalloc_r(ip_xout,lomax,-1,icall,memuse)
-      call umalloc_r(ip_yout,lomax,-1,icall,memuse)
-      call umalloc_r(ip_zout,lomax,-1,icall,memuse)
-      call umalloc_r(ip_idim,maxbl, 1,icall,memuse)
-      call umalloc_r(ip_jdim,maxbl, 1,icall,memuse)
-      call umalloc_r(ip_kdim,maxbl, 1,icall,memuse)
-      call umalloc_r(ip_ldim,maxbl, 1,icall,memuse)
+      allocate( idim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'idim',memuse,stats)
+      allocate( jdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'jdim',memuse,stats)
+      allocate( kdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'kdim',memuse,stats)
+      allocate( ldim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ldim',memuse,stats)
+      allocate( xout(lomax), stat=stats )
+      call umalloc_r(lomax,-1,'xout',memuse,stats)
+      allocate( yout(lomax), stat=stats )
+      call umalloc_r(lomax,-1,'yout',memuse,stats)
+      allocate( zout(lomax), stat=stats )
+      call umalloc_r(lomax,-1,'zout',memuse,stats)
 c
 c     write header
 c
@@ -1140,13 +1195,13 @@ c
          end if
       end do
 c
-      call ufree_r(ip_xout)
-      call ufree_r(ip_yout)
-      call ufree_r(ip_zout)
-      call ufree_r(ip_idim)
-      call ufree_r(ip_jdim)
-      call ufree_r(ip_kdim)
-      call ufree_r(ip_ldim)
+      deallocate(xout)
+      deallocate(yout)
+      deallocate(zout)
+      deallocate(idim)
+      deallocate(jdim)
+      deallocate(kdim)
+      deallocate(ldim)
 c
       return
       end

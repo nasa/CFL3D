@@ -111,23 +111,33 @@ c
       subroutine convert(maxbl,lmax,jmax,kmax,ngrid,ibin_ing,ibin_p3d,
      .                   ip3d,i2d)
 c
-      dimension jdim(maxbl),kdim(maxbl),ldim(maxbl),iphntm(maxbl)
-      dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),z(jmax,kmax,lmax)
+      integer stats
 c
-      pointer (ip_x,x),(ip_y,y),(ip_z,z),(ip_ldim,ldim),(ip_jdim,jdim),
-     .        (ip_kdim,kdim),(ip_iphntm,iphntm)
+      allocatable :: iphntm(:)
+      allocatable :: jdim(:)
+      allocatable :: kdim(:)
+      allocatable :: ldim(:)
+      allocatable :: x(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: z(:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_x,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_y,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_z,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_ldim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_jdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_kdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_iphntm,maxbl,1,icall,memuse)
+      allocate( iphntm(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'iphntm',memuse,stats)
+      allocate( jdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'jdim',memuse,stats)
+      allocate( kdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'kdim',memuse,stats)
+      allocate( ldim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ldim',memuse,stats)
+      allocate( x(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'x',memuse,stats)
+      allocate( y(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'y',memuse,stats)
+      allocate( z(jmax,kmax,lmax), stat=stats )
+      call umalloc_r(jmax*kmax*lmax,0,'z',memuse,stats)
 c
 c     default to no phantom grids
 c
@@ -246,12 +256,12 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_x)
-         call ufree_r(ip_y)
-         call ufree_r(ip_z)
-         call ufree_r(ip_ldim)
-         call ufree_r(ip_jdim)
-         call ufree_r(ip_kdim)
+         deallocate(x)
+         deallocate(y)
+         deallocate(z)
+         deallocate(ldim)
+         deallocate(jdim)
+         deallocate(kdim)
       end if
 c
       return

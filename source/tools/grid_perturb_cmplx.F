@@ -130,17 +130,21 @@ c***********************************************************************
 c
       implicit complex(a-h,o-z)
 c
-      dimension itemp(maxbl),jtemp(maxbl),ktemp(maxbl)
-c
-      pointer (ip_itemp,itemp),(ip_jtemp,jtemp),(ip_ktemp,ktemp)
+      integer stats
+
+      allocatable :: itemp(:)
+      allocatable :: jtemp(:)
+      allocatable :: ktemp(:)
 c
 c     allocate memory
 c
       memuse = 0
-      icall  = 0
-      call umalloc_c(ip_itemp,maxbl,1,icall,memuse)
-      call umalloc_c(ip_jtemp,maxbl,1,icall,memuse)
-      call umalloc_c(ip_ktemp,maxbl,1,icall,memuse)
+      allocate( itemp(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'itemp',memuse,stats)
+      allocate( jtemp(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'jtemp',memuse,stats)
+      allocate( ktemp(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'ktemp',memuse,stats)
 c
       if (iginform.eq.0) then
          read(10) (itemp(n),jtemp(n),ktemp(n),n=1,maxbl)
@@ -159,9 +163,9 @@ c
 c
 c     dealocate memory
 c
-      call ufree_c(ip_itemp)
-      call ufree_c(ip_jtemp)
-      call ufree_c(ip_ktemp)
+      deallocate(itemp)
+      deallocate(jtemp)
+      deallocate(ktemp)
 c
       return
       end
@@ -175,47 +179,62 @@ c***********************************************************************
 c
       implicit complex(a-h,o-z)
 c
-      real x1(jmax,kmax,imax),y1(jmax,kmax,imax),
-     .          z1(jmax,kmax,imax)
-      real g_x(ndvmx,jmax,kmax,imax),g_y(ndvmx,jmax,kmax,imax),
-     .          g_z(ndvmx,jmax,kmax,imax)
-c
-      dimension x2(jmax,kmax,imax),y2(jmax,kmax,imax),
-     .          z2(jmax,kmax,imax)
-      dimension idim(maxbl),jdim(maxbl),kdim(maxbl)
-      dimension idimsd(maxbl),jdimsd(maxbl),kdimsd(maxbl)
-c
+      integer stats
+
+      real, allocatable :: g_x(:,:,:,:)
+      real, allocatable :: g_y(:,:,:,:)
+      real, allocatable :: g_z(:,:,:,:)
+      allocatable :: idim(:)
+      allocatable :: idimsd(:)
+      allocatable :: jdim(:)
+      allocatable :: jdimsd(:)
+      allocatable :: kdim(:)
+      allocatable :: kdimsd(:)
+      real, allocatable :: x1(:,:,:)
+      allocatable :: x2(:,:,:)
+      real, allocatable :: y1(:,:,:)
+      allocatable :: y2(:,:,:)
+      real, allocatable :: z1(:,:,:)
+      allocatable :: z2(:,:,:)
+
       character*80 gfilein,gfileout,sdfilein
       common /files/gfilein,gfileout,sdfilein
 c
-      pointer (ip_x1,x1),(ip_y1,y1),(ip_z1,z1),
-     .        (ip_x2,x2),(ip_y2,y2),(ip_z2,z2),
-     .        (ip_g_x,g_x),(ip_g_y,g_y),(ip_g_z,g_z),
-     .        (ip_idim,idim),(ip_jdim,jdim),(ip_kdim,kdim),
-     .        (ip_idimsd,idimsd),(ip_jdimsd,jdimsd),
-     .        (ip_kdimsd,kdimsd)
-c
       sqrtm1 = cmplx(0.,1.)
-      icall  = 0
       memuse = 0
 c
 c     allocate memory
 c
-      call umalloc_c(ip_idim,maxbl,1,icall,memuse)
-      call umalloc_c(ip_jdim,maxbl,1,icall,memuse)
-      call umalloc_c(ip_kdim,maxbl,1,icall,memuse)
-      call umalloc_c(ip_idimsd,maxbl,1,icall,memuse)
-      call umalloc_c(ip_jdimsd,maxbl,1,icall,memuse)
-      call umalloc_c(ip_kdimsd,maxbl,1,icall,memuse)
-      call umalloc_c(ip_x1,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_y1,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_z1,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_x2,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_y2,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_z2,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_g_x,ndvmx*imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_g_y,ndvmx*imax*jmax*kmax,0,icall,memuse)
-      call umalloc_c(ip_g_z,ndvmx*imax*jmax*kmax,0,icall,memuse)
+      allocate( g_x(ndvmx,jmax,kmax,imax), stat=stats )
+      call umalloc_r(ndvmx*jmax*kmax*imax,0,'g_x',memuse,stats)
+      allocate( g_y(ndvmx,jmax,kmax,imax), stat=stats )
+      call umalloc_r(ndvmx*jmax*kmax*imax,0,'g_y',memuse,stats)
+      allocate( g_z(ndvmx,jmax,kmax,imax), stat=stats )
+      call umalloc_r(ndvmx*jmax*kmax*imax,0,'g_z',memuse,stats)
+      allocate( idim(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'idim',memuse,stats)
+      allocate( idimsd(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'idimsd',memuse,stats)
+      allocate( jdim(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'jdim',memuse,stats)
+      allocate( jdimsd(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'jdimsd',memuse,stats)
+      allocate( kdim(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'kdim',memuse,stats)
+      allocate( kdimsd(maxbl), stat=stats )
+      call umalloc_c(maxbl,1,'kdimsd',memuse,stats)
+      allocate( x1(jmax,kmax,imax), stat=stats )
+      call umalloc_r(jmax*kmax*imax,0,'x1',memuse,stats)
+      allocate( x2(jmax,kmax,imax), stat=stats )
+      call umalloc_c(jmax*kmax*imax,0,'x2',memuse,stats)
+      allocate( y1(jmax,kmax,imax), stat=stats )
+      call umalloc_r(jmax*kmax*imax,0,'y1',memuse,stats)
+      allocate( y2(jmax,kmax,imax), stat=stats )
+      call umalloc_c(jmax*kmax*imax,0,'y2',memuse,stats)
+      allocate( z1(jmax,kmax,imax), stat=stats )
+      call umalloc_r(jmax*kmax*imax,0,'z1',memuse,stats)
+      allocate( z2(jmax,kmax,imax), stat=stats )
+      call umalloc_c(jmax*kmax*imax,0,'z2',memuse,stats)
 c
 c     open files
 c
@@ -358,21 +377,21 @@ c
 c
 c     free memory
 c
-      call ufree_c(ip_idim)
-      call ufree_c(ip_jdim)
-      call ufree_c(ip_kdim)
-      call ufree_c(ip_idimsd)
-      call ufree_c(ip_jdimsd)
-      call ufree_c(ip_kdimsd)
-      call ufree_c(ip_x1)
-      call ufree_c(ip_y1)
-      call ufree_c(ip_z1)
-      call ufree_c(ip_x2)
-      call ufree_c(ip_y2)
-      call ufree_c(ip_z2)
-      call ufree_c(ip_g_x)
-      call ufree_c(ip_g_y)
-      call ufree_c(ip_g_z)
+      deallocate(idim)
+      deallocate(jdim)
+      deallocate(kdim)
+      deallocate(idimsd)
+      deallocate(jdimsd)
+      deallocate(kdimsd)
+      deallocate(x1)
+      deallocate(y1)
+      deallocate(z1)
+      deallocate(x2)
+      deallocate(y2)
+      deallocate(z2)
+      deallocate(g_x)
+      deallocate(g_y)
+      deallocate(g_z)
 c
       return
       end

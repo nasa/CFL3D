@@ -69,17 +69,21 @@ c
 c     deliberately single precision
       implicit real*4(a-h,o-z)
 c
-      dimension itemp(maxbl),jtemp(maxbl),ktemp(maxbl)
+      integer stats
 c
-      pointer (ip_itemp,itemp),(ip_jtemp,jtemp),(ip_ktemp,ktemp)
+      allocatable :: itemp(:)
+      allocatable :: jtemp(:)
+      allocatable :: ktemp(:)
 c
 c     allocate memory
 c
       memuse = 0
-      icall  = 0
-      call umalloc_r(ip_itemp,maxbl,1,icall,memuse)
-      call umalloc_r(ip_jtemp,maxbl,1,icall,memuse)
-      call umalloc_r(ip_ktemp,maxbl,1,icall,memuse)
+      allocate( itemp(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'itemp',memuse,stats)
+      allocate( jtemp(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'jtemp',memuse,stats)
+      allocate( ktemp(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'ktemp',memuse,stats)
 c
        if (i2d.eq.0) then
           read(1) (itemp(l),jtemp(l),ktemp(l),l=1,maxbl)
@@ -109,9 +113,9 @@ c
 c
 c     dealocate memory
 c
-      call ufree_r(ip_itemp)
-      call ufree_r(ip_jtemp)
-      call ufree_r(ip_ktemp)
+      deallocate(itemp)
+      deallocate(jtemp)
+      deallocate(ktemp)
 c
       return
       end
@@ -127,30 +131,44 @@ c
 c     deliberately single precision
       implicit real*4(a-h,o-z)
 c
-      dimension x(jmax,kmax,ntime,maxbl),y(jmax,kmax,ntime,maxbl),
-     .          z(jmax,kmax,ntime,maxbl),
-     .          q(jmax,kmax,ntime,maxbl,5),jdim(maxbl),kdim(maxbl),
-     .          idim(maxbl),time(ntime),iblank(jmax,kmax,maxbl),
-     .          jjdim(maxbl),kkdim(maxbl)
+      integer stats
+
+      allocatable :: iblank(:,:,:)
+      allocatable :: idim(:)
+      allocatable :: jdim(:)
+      allocatable :: jjdim(:)
+      allocatable :: kdim(:)
+      allocatable :: kkdim(:)
+      allocatable :: q(:,:,:,:,:)
+      allocatable :: time(:)
+      allocatable :: x(:,:,:,:)
+      allocatable :: y(:,:,:,:)
+      allocatable :: z(:,:,:,:)
 c
-      pointer (ip_x,x),(ip_y,y),(ip_z,z),(ip_q,q),(ip_time,time),
-     .        (ip_iblank,iblank),(ip_jdim,jdim),(ip_kdim,kdim),
-     .        (ip_idim,idim),(ip_jjdim,jjdim),(ip_kkdim,kkdim)
-c
-      icall  = 0
       memuse = 0
 c
-      call umalloc_r(ip_x,jmax*kmax*ntime*maxbl,0,icall,memuse)
-      call umalloc_r(ip_y,jmax*kmax*ntime*maxbl,0,icall,memuse)
-      call umalloc_r(ip_z,jmax*kmax*ntime*maxbl,0,icall,memuse)
-      call umalloc_r(ip_q,jmax*kmax*ntime*maxbl*5,0,icall,memuse)
-      call umalloc_r(ip_iblank,jmax*kmax*maxbl,1,icall,memuse)
-      call umalloc_r(ip_idim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_jdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_kdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_jjdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_kkdim,maxbl,1,icall,memuse)
-      call umalloc_r(ip_time,ntime,0,icall,memuse)
+      allocate( iblank(jmax,kmax,maxbl), stat=stats )
+      call umalloc_r(jmax*kmax*maxbl,1,'iblank',memuse,stats)
+      allocate( idim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'idim',memuse,stats)
+      allocate( jdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'jdim',memuse,stats)
+      allocate( jjdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'jjdim',memuse,stats)
+      allocate( kdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'kdim',memuse,stats)
+      allocate( kkdim(maxbl), stat=stats )
+      call umalloc_r(maxbl,1,'kkdim',memuse,stats)
+      allocate( q(jmax,kmax,ntime,maxbl,5), stat=stats )
+      call umalloc_r(jmax*kmax*ntime*maxbl*5,0,'q',memuse,stats)
+      allocate( time(ntime), stat=stats )
+      call umalloc_r(ntime,0,'time',memuse,stats)
+      allocate( x(jmax,kmax,ntime,maxbl), stat=stats )
+      call umalloc_r(jmax*kmax*ntime*maxbl,0,'x',memuse,stats)
+      allocate( y(jmax,kmax,ntime,maxbl), stat=stats )
+      call umalloc_r(jmax*kmax*ntime*maxbl,0,'y',memuse,stats)
+      allocate( z(jmax,kmax,ntime,maxbl), stat=stats )
+      call umalloc_r(jmax*kmax*ntime*maxbl,0,'z',memuse,stats)
 c
       do 100 nt = 1,ntime
 c
@@ -307,17 +325,17 @@ c
 c
 c     free memory
 c
-      call ufree_r(ip_x)
-      call ufree_r(ip_y)
-      call ufree_r(ip_z)
-      call ufree_r(ip_q)
-      call ufree_r(ip_iblank)
-      call ufree_r(ip_idim)
-      call ufree_r(ip_jdim)
-      call ufree_r(ip_kdim)
-      call ufree_r(ip_jjdim)
-      call ufree_r(ip_kkdim)
-      call ufree_r(ip_time)
+      deallocate(x)
+      deallocate(y)
+      deallocate(z)
+      deallocate(q)
+      deallocate(iblank)
+      deallocate(idim)
+      deallocate(jdim)
+      deallocate(kdim)
+      deallocate(jjdim)
+      deallocate(kkdim)
+      deallocate(time)
 c
       return
       end

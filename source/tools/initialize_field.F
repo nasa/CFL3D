@@ -14,7 +14,7 @@ c     It also sets ivisc=0, so that, upon restart, CFL3D will compute min distan
 c     function for turbulent cases.
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 initialize_field.f umalloc_r.o ufree_r.o -o initialize_field
+c     f90 -64 -r8 initialize_field.f umalloc_r_r.o ufree_r.o -o initialize_field
 c*****************************************************************************
 c
       parameter (nblock=10000)
@@ -201,20 +201,24 @@ c   *************************************************************
       subroutine writeq(jdim1,kdim1,idim1,xmachw,alphw,betaw,
      +  gamma,nrty,iwghost,izon,rho0,u0,v0,w0,p0)
 c
-      dimension q(jdim1,kdim1,idim1,5)
-      dimension qi0(jdim1,kdim1,5,4),qj0(kdim1,idim1,5,4),
-     .          qk0(jdim1,idim1,5,4)
+      integer stats
 c
-      pointer (ip_q,q),(ip_qi0,qi0),(ip_qj0,qj0),(ip_qk0,qk0)
+      allocatable :: q(:,:,:,:)
+      allocatable :: qi0(:,:,:,:)
+      allocatable :: qj0(:,:,:,:)
+      allocatable :: qk0(:,:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_q,jdim1*kdim1*idim1*5,0,icall,memuse)
-      call umalloc_r(ip_qi0,jdim1*kdim1*20,0,icall,memuse)
-      call umalloc_r(ip_qj0,kdim1*idim1*20,0,icall,memuse)
-      call umalloc_r(ip_qk0,jdim1*idim1*20,0,icall,memuse)
+      allocate( q(jdim1,kdim1,idim1,5), stat=stats )
+      call umalloc_r(jdim1*kdim1*idim1*5,0,'q',memuse,stats)
+      allocate( qi0(jdim1,kdim1,5,4), stat=stats )
+      call umalloc_r(jdim1*kdim1*5*4,0,'qi0',memuse,stats)
+      allocate( qj0(kdim1,idim1,5,4), stat=stats )
+      call umalloc_r(kdim1*idim1*5*4,0,'qj0',memuse,stats)
+      allocate( qk0(jdim1,idim1,5,4), stat=stats )
+      call umalloc_r(jdim1*idim1*5*4,0,'qk0',memuse,stats)
 c
       if (izon .eq. 0) then
 c   do once only for 1st zone, all other zones the same
@@ -368,10 +372,10 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_q)
-         call ufree_r(ip_qi0)
-         call ufree_r(ip_qj0)
-         call ufree_r(ip_qk0)
+         deallocate(q)
+         deallocate(qi0)
+         deallocate(qj0)
+         deallocate(qk0)
       end if
 c
       return

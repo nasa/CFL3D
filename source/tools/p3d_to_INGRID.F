@@ -260,25 +260,36 @@ c
      .                   ip3d,img,i2d,iouttyp,icc,iswap,jdim,kdim,ldim,
      .                   iname,nname)
 c
-      dimension x(lmax,jmax,kmax),y(lmax,jmax,kmax),z(lmax,jmax,kmax)
-      dimension xcc(lmax,jmax,kmax),ycc(lmax,jmax,kmax),
-     .          zcc(lmax,jmax,kmax)
-      dimension ldim(10000),jdim(10000),kdim(10000)
       character*40 string
 c
-      pointer (ip_x,x),(ip_y,y),(ip_z,z)
-      pointer (ip_xcc,xcc),(ip_ycc,ycc),(ip_zcc,zcc)
+      integer stats
+c
+      dimension jdim(10000)
+      dimension kdim(10000)
+      dimension ldim(10000)
+c
+      allocatable :: x(:,:,:)
+      allocatable :: xcc(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: ycc(:,:,:)
+      allocatable :: z(:,:,:)
+      allocatable :: zcc(:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_x,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_y,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_z,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_xcc,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_ycc,lmax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_zcc,lmax*jmax*kmax,0,icall,memuse)
+      allocate( x(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'x',memuse,stats)
+      allocate( xcc(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'xcc',memuse,stats)
+      allocate( y(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'y',memuse,stats)
+      allocate( ycc(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'ycc',memuse,stats)
+      allocate( z(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'z',memuse,stats)
+      allocate( zcc(lmax,jmax,kmax), stat=stats )
+      call umalloc_r(lmax*jmax*kmax,0,'zcc',memuse,stats)
 c
       write(6,*)
 c
@@ -525,12 +536,12 @@ c     free memory
 c
       ifree = 1
       if (ifree.gt.0) then
-         call ufree_r(ip_x)
-         call ufree_r(ip_y)
-         call ufree_r(ip_z)
-         call ufree_r(ip_xcc)
-         call ufree_r(ip_ycc)
-         call ufree_r(ip_zcc)
+         deallocate(x)
+         deallocate(y)
+         deallocate(z)
+         deallocate(xcc)
+         deallocate(ycc)
+         deallocate(zcc)
       end if
       icc = icchold
 c

@@ -8,7 +8,7 @@ c     User can choose to coarsen only particular index directions,
 c     if desired.  Does not keep iblanking information if it is present.
 c
 c     If using this alone (not in conjunction with cfl3d makefile):
-c     f90 -64 -r8 everyother_xyz.f umalloc_r.o ufree_r.o -o everyother_xyz
+c     f90 -64 -r8 everyother_xyz.f umalloc_r_r.o ufree_r.o -o everyother_xyz
 c***********************************************************************
 c
       parameter (nbb=10000)
@@ -155,19 +155,29 @@ c  **************************************************************
       subroutine convert(maxbl,imax,jmax,kmax,nbl,idim,jdim,kdim,
      .                   iunfi,iunfo,ip3d,nbb,iblank,ic,jc,kc)
 c
-      dimension idim(nbb),jdim(nbb),kdim(nbb)
-      dimension idim2(nbb),jdim2(nbb),kdim2(nbb)
-      dimension x(imax,jmax,kmax),y(imax,jmax,kmax),z(imax,jmax,kmax)
+      integer stats
 c
-      pointer (ip_x,x),(ip_y,y),(ip_z,z)
+      dimension idim(nbb)
+      dimension idim2(nbb)
+      dimension jdim(nbb)
+      dimension jdim2(nbb)
+      dimension kdim(nbb)
+      dimension kdim2(nbb)
+c
+      allocatable :: x(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: z(:,:,:)
 c
 c     allocate memory
 c
-      icall  = 0
       memuse = 0
-      call umalloc_r(ip_x,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_y,imax*jmax*kmax,0,icall,memuse)
-      call umalloc_r(ip_z,imax*jmax*kmax,0,icall,memuse)
+      allocate( x(imax,jmax,kmax), stat=stats )
+      call umalloc_r(imax*jmax*kmax,0,'x',memuse,stats)
+      allocate( y(imax,jmax,kmax), stat=stats )
+      call umalloc_r(imax*jmax*kmax,0,'y',memuse,stats)
+      allocate( z(imax,jmax,kmax), stat=stats )
+      call umalloc_r(imax*jmax*kmax,0,'z',memuse,stats)
+
 c
       do n=1,nbl
       if(jc .eq. 1) then
