@@ -41,6 +41,8 @@ c
      .          delti(jdim,kdim,3,2)
 c
       common /sklton/ isklton
+      common /igrdtyp/ ip3dgrd,ialph
+
 c
 c     determine which block face is to be rotated
 c
@@ -73,6 +75,21 @@ c
          d2fdt2 = -(rfreqr)**2*sin(rfreqr*time)
       else if (idef .eq. 999)  then
          return
+      end if
+c
+c     If a tlns3d grid is used with x-z plane replaced with x-y plane
+c     then transpose y and z rotations.
+c
+      if(ialph.eq.0) then
+        omegyt =   omegy
+        omegzt =   omegz
+        thetayt=  thetay
+        thetazt=  thetaz
+      else
+        omegyt = - omegz
+        omegzt =   omegy
+        thetayt= -thetaz
+        thetazt=  thetay
       end if
 c
       if (abs(real(omegx)) .gt. 0.0) then
@@ -145,14 +162,14 @@ c
 c
          thetax = theta
 c
-      else if (abs(real(omegy)) .gt. 0.0) then
+      else if (abs(real(omegyt)) .gt. 0.0) then
 c
 c***********************************************************************
 c        rotate about an axis parallel to the y-axis
 c***********************************************************************
 c
          if (time .ne. 0.) then
-            theold = thetay
+            theold = thetayt 
          else
             theold = 0.e0
          end if
@@ -162,9 +179,9 @@ c        calculate rotated x and z surface points
 c        delt(1)=dx delt(2)=0 (unaltered) delt(3)=dz               
 c***************************************************
 c
-         theta    = omegy*ft
-         dthedt   = omegy*dfdt
-         d2thedt2 = omegy*d2fdt2
+         theta    = omegyt*ft
+         dthedt   = omegyt*dfdt
+         d2thedt2 = omegyt*d2fdt2
          dtheta   = theta - theold
          ca = cos(dtheta)
          sa = sin(dtheta)
@@ -212,16 +229,16 @@ c
             end do
          end if
 c
-         thetay = theta
+         thetayt= theta
 c
-      else if (abs(real(omegz)) .gt. 0.0) then
+      else if (abs(real(omegzt)) .gt. 0.0) then
 c
 c***********************************************************************
 c        rotate about an axis parallel to the z-axis
 c***********************************************************************
 c
          if (time .ne. 0.) then
-            theold = thetaz
+            theold = thetazt 
          else
             theold = 0.e0
          end if
@@ -231,9 +248,9 @@ c        calculate rotated x and y surface points
 c        delt(1)=dx delt(2)=dy delt(3)=0 (unaltered)
 c***************************************************
 c
-         theta    = omegz*ft
-         dthedt   = omegz*dfdt
-         d2thedt2 = omegz*d2fdt2
+         theta    = omegzt*ft
+         dthedt   = omegzt*dfdt
+         d2thedt2 = omegzt*d2fdt2
          dtheta   = theta - theold
          ca = cos(dtheta)
          sa = sin(dtheta)
@@ -281,7 +298,7 @@ c
             end do
          end if
 c
-         thetaz = theta
+         thetazt= theta
 c
       else 
 c
@@ -292,6 +309,23 @@ c
  101     format(40h WARNING: this block has zero rotational,
      .          21h surface displacement)
       end if
+c
+c
+c     If a tlns3d grid is used with x-z plane replaced with x-y plane, 
+c     transpose y and z rotations back to original grid orientations.
+c
+      if(ialph.eq.0) then
+        omegy  =   omegyt 
+        omegz  =   omegzt 
+        thetay =  thetayt 
+        thetaz =  thetazt 
+      else
+        omegy  =   omegzt 
+        omegz  = - omegyt 
+        thetay =  thetazt 
+        thetaz = -thetayt 
+      end if
+c
 c
       return
       end
