@@ -14,21 +14,29 @@ Installation and use of CFL3DV6
 
 3) type ./Install  [options]
 
-   where [options] = -no_opt       (to create unoptimized executables with
-                                    fast compilation but slow execution)
-                     -noredirect   (to dissallow redirected input file;
-                                    needed for SP2)
-                     -mpichdir=dir (to use mpich on a workstation
-                                    cluster; dir is the directory
-                                    where mpich is located - not used
-                                    on mpp machines like the SGI/Cray 
-                                    Origin 2000, Cray T3E, IBM SP2, etc.)
-                     -v5           (to create an executable that 
-                                    reproduces the results of version 5
-                                    basically turns off preconditioning
-                                    and volume terms at 1:1 block boundaries
-                                    *generally only used by code developers*)
-
+   where [options] = -no_opt        (to create unoptimized executables with
+                                     fast compilation but slow execution)
+                     -noredirect    (to dissallow redirected input file;
+                                     needed for SP2)
+                     -mpichdir=DIRm (to use mpich on a workstation
+                                     cluster; DIRm is the directory
+                                     where mpich is located - not used
+                                     on mpp machines like the SGI/Cray 
+                                     Origin 2000, Cray T3E, IBM SP2, etc.)
+                     -cgnsdir=DIRc  (to use CGNS standard files in place of
+                                     the native CFL3D grid and restart files;
+                                     DIRc is the cgns base directory)
+                     -single        (to create a makefile for single precision
+                                     executables. Note: the default double
+                                     precision makefile can be changed to 
+                                     create single precision executables
+                                     simply by editing a few lines)
+                     -f77           (to use the FORTRAN77 compiler rather than
+                                     the FORTRAN90 compiler. Note that CFL3D
+                                     is a FORTRAN77 code. This option should
+                                     only be needed for those machines without
+                                     a FORTRAN90 compiler)
+                                      
   if -no_opt is NOT specified, various compiler optimization levels are
   used to speed execution but results in slower compilation. It is 
   generally recommended that -no_opt NOT be specified.
