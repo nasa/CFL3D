@@ -1,4 +1,6 @@
 #     @ A MAKEFILE IS CREATED FROM THIS FILE VIA THE INSTALL SCRIPT @
+#     $Id$
+#
 #=============================================================================
 #
 #   This is the primary/top-level makefile: builds either the parallel or 
