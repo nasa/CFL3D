@@ -82,6 +82,9 @@ c            = 1....control surface: Im(residual),d(mass flow)/d(),
 c                   d(pressure force)/d(),d(viscous force)/d(),
 c                   d(viscous force)/d(),d(thrust (momentum) force)/d()
 c                   (forces are sums in x+y+z directions)
+c            = 2....enhanced standard: ALL force/moment derivative
+c                   coefficients are output (thus there is no need
+c                   to distinguish between ialpha=0 and ialpha=1)
 c
 c           where d() denotes the derivative with respect to whatever 
 c           variable has been given an imaginary component on input 
@@ -91,10 +94,10 @@ c
             write(35,'('' Final d/d() of cl,cd,cy,cmy='',4e12.4)')
      .      imag(clw(ntt))/real(delh),imag(cdw(ntt))/real(delh),
      .      imag(cyw(ntt))/real(delh),imag(cmyw(ntt))/real(delh)
-            write(35,'(i6,'' it  Im(log(res))    d(cl)/d()'',
+            write(35,'(i6,'' it  log|Im(res)|    d(cl)/d()'',
      .      ''     d(cd)/d()     d(cy)/d()     d(cmy)/d()'')') ntt
             do 3000 n=1,ntt
-            if(imag(rms(n)) .le. 0.) rms(n)=cmplx(real(rms(n)),1.)
+            if(imag(rms(n)) .eq. 0.) rms(n)=cmplx(real(rms(n)),1.)
             write(35,'(3x,i6,5e14.5)') n,log10(abs(imag(rms(n)))),
      .      imag(clw(n))/real(delh),imag(cdw(n))/real(delh),
      .      imag(cyw(n))/real(delh),imag(cmyw(n))/real(delh)
@@ -103,29 +106,50 @@ c
             write(35,'('' Final d/d() of cl,cd,cz,cmz='',4e12.4)')
      .      imag(clw(ntt))/real(delh),imag(cdw(ntt))/real(delh),
      .      imag(czw(ntt))/real(delh),imag(cmzw(ntt))/real(delh)
-            write(35,'(i6,'' it  Im(log(res))    d(cl)/d()'',
+            write(35,'(i6,'' it  log|Im(res)|    d(cl)/d()'',
      .      ''     d(cd)/d()     d(cz)/d()     d(cmz)/d()'')') ntt
             do 3001 n=1,ntt
-            if(imag(rms(n)) .le. 0.) rms(n)=cmplx(real(rms(n)),1.)
+            if(imag(rms(n)) .eq. 0.) rms(n)=cmplx(real(rms(n)),1.)
             write(35,'(3x,i6,5e14.5)') n,log10(abs(imag(rms(n)))),
      .      imag(clw(n))/real(delh),imag(cdw(n))/real(delh),
      .      imag(czw(n))/real(delh),imag(cmzw(n))/real(delh)
  3001       continue
          end if
-      else
+      else if (ihstry.eq.1) then
          write(35,'('' Final d/d() of mdot,cftp,cftv,'',
      .   ''cftmom='',4e12.4)')
      .   imag(fmdotw(ntt))/real(delh),imag(cftpw(ntt))/real(delh),
      .   imag(cftvw(ntt))/real(delh),imag(cftmomw(ntt))/real(delh)
-         write(35,'(i6,'' it  Im(log(res))   d(mdot)/d()'',
+         write(35,'(i6,'' it  log|Im(res)|   d(mdot)/d()'',
      .   ''    d(cftp/d()   d(cftv)/d() d(cftmom)/d()'')') ntt
          do 3100 n=1,ntt
-         if(imag(rms(n)) .le. 0.) rms(n)=cmplx(real(rms(n)),1.)
+         if(imag(rms(n)) .eq. 0.) rms(n)=cmplx(real(rms(n)),1.)
          write(35,'(3x,i6,5e14.5)') n,log10(abs(imag(rms(n)))),
      .   imag(fmdotw(n))/real(delh),imag(cftpw(n))/real(delh),
      .   imag(cftvw(n))/real(delh),imag(cftmomw(n))/real(delh)
  3100    continue
-
+      else
+         write(35,'('' Final d/d() of cl,cd       ='',2e13.5)')
+     .   imag(clw(ntt))/real(delh),imag(cdw(ntt))/real(delh)
+         write(35,'('' Final d/d() of cx,cy,cz    ='',3e13.5)')
+     .   imag(cxw(ntt))/real(delh),imag(cyw(ntt))/real(delh),
+     .   imag(czw(ntt))/real(delh)
+         write(35,'('' Final d/d() of cmx,cmy,cmz ='',3e13.5)')
+     .   imag(cmxw(ntt))/real(delh),imag(cmyw(ntt))/real(delh),
+     .   imag(cmzw(ntt))/real(delh)
+         write(35,*)
+         write(35,'(''    it log|Im(res)|    d(cl)/d()'',
+     .   ''    d(cd)/d()    d(cx)/d()    d(cy)/d()    d(cz)/d()'',
+     .   ''   d(cmx)/d()   d(cmy)/d()   d(cmz)/d()'')')
+         write(35,*)
+         do n=1,ntt
+            if(imag(rms(n)) .eq. 0.) rms(n)=cmplx(real(rms(n)),1.)
+            write(35,'(i6,9e13.5)') n,log10(abs(imag(rms(n)))),
+     .      imag(clw(n))/real(delh),imag(cdw(n))/real(delh),
+     .      imag(cxw(n))/real(delh),imag(cyw(n))/real(delh),
+     .      imag(czw(n))/real(delh),imag(cmxw(n))/real(delh),
+     .      imag(cmyw(n))/real(delh),imag(cmzw(n))/real(delh)
+         end do
       end if
 c
       return
