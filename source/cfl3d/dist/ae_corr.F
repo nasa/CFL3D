@@ -41,7 +41,7 @@ c
       dimension istat(MPI_STATUS_SIZE)
 #endif
 c
-      integer w(mgwk),lw(65,maxbl),lw2(43,maxbl),levelg(maxbl)
+      dimension w(mgwk),lw(65,maxbl),lw2(43,maxbl),levelg(maxbl)
       dimension gforcn(2*nmds,maxaes),gforcnm(2*nmds,maxaes),
      .          gforcs(2*nmds,maxaes),stm(2*nmds,2*nmds,maxaes),
      .          stmi(2*nmds,2*nmds,maxaes),xs(2*nmds,maxaes),
