@@ -2027,7 +2027,7 @@ c     in mgbl, to call global
       needi  = max(needi,needi_glo)
 c
 c     in mgbl, to call trnsfr_vals
-      needi_trn = 53*lmaxbl        + 117      + 9*lmaxbl*lmxsegdg
+      needi_trn = 53*lmaxbl        + 118      + 9*lmaxbl*lmxsegdg
      .          + 48*lmaxbl*lmxseg + 19*lmxbli + 22*lnplts
      .          + 4*lmaxgr         + 9*lmaxcs
       needi  = max(needi,needi_trn)
