@@ -1,4 +1,4 @@
-      parameter(mdim=14,jdim=121,kdim=45,ldim=2,mhldim=2,
+      parameter(mdim=14,jdim=121,kdim=45,ldim=2,mhldim=3,
      .          ibdim=2000,idim=8000,ndim=200,ipmax=28,
      .          iwrdim=idim+ibdim,mlen=jdim*kdim*ldim)
 c
