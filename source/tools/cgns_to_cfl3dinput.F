@@ -15,7 +15,7 @@ c
 c
       dimension isize(9)
 c
-      character*80 file2
+      character*80 file1,file2
       character*32 zonename
 c
 c  Read CGNS file
@@ -35,18 +35,8 @@ c   Get number of zones
       call cg_nzones_f(iccg,ibase,nblock,ier)
       if (ier .ne. 0) call cg_error_exit_f
       write(6,'('' number of zones='',i6)') nblock
-c   Do loop over the zones
-      idm=0
-      jdm=0
-      kdm=0
-      do n=1,nblock
-c   Read general zone information
-        call cg_zone_read_f(iccg, ibase, n, zonename, isize, ier)
-        if (ier .ne. 0) call cg_error_exit_f
-        idm=max(idm,isize(1))
-        jdm=max(jdm,isize(2))
-        kdm=max(kdm,isize(3))
-      enddo
+c   Get and write out the grid
+      call gridtop(iccg,ibase,nblock,file1)
 c   Now get 1-to-1 connectivity info
       call cg_n1to1_global_f(iccg,ibase,num1to1,ier)
       if (ier .ne. 0) call cg_error_exit_f
@@ -54,7 +44,7 @@ c   Now get 1-to-1 connectivity info
      +  num1to1
       write(6,'(''   (this reflects total number divided by 2)'')')
 c
-      call reader(iccg,ibase,nblock,idm,jdm,kdm,num1to1)
+      call reader(iccg,ibase,nblock,num1to1,file1)
 c
 c   Close data base
       call cg_close_f(iccg,ier)
@@ -65,16 +55,123 @@ c
 c
 c*******************************************************************
 c
-      subroutine reader(iccg,ibase,nblock,idm,jdm,kdm,num1to1)
+      subroutine gridtop(iccg,ibase,nblock,file1)
+c
+      integer stats
+      dimension isize(9)
+      character*80 file1
+      character*32 zonename
+c
+      allocatable :: idim(:)
+      allocatable :: jdim(:)
+      allocatable :: kdim(:)
+c   allocate memory
+      memuse=0
+      allocate( idim(nblock), stat=stats )
+      call umalloc_r(nblock,0,'idim',memuse,stats)
+      allocate( jdim(nblock), stat=stats )
+      call umalloc_r(nblock,0,'jdim',memuse,stats)
+      allocate( kdim(nblock), stat=stats )
+      call umalloc_r(nblock,0,'kdim',memuse,stats)
+c
+      do n=1,nblock
+c   Read general zone information
+        call cg_zone_read_f(iccg, ibase, n, zonename, isize, ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        idim(n)=isize(1)
+        jdim(n)=isize(2)
+        kdim(n)=isize(3)
+      enddo
+c
+c  Write out plot3d grid and q files:
+      write(6,'('' do you want 0=formatted or 1=unformatted'',
+     +  '' grid file output?'')')
+      read(5,*) iform
+      if (iform .eq. 1) then
+c  unformatted-type
+      write(6,'('' input name of unformatted grid filename to write'')')
+      read(5,'(a80)') file1
+      open(2,file=file1,form='unformatted',status='unknown')
+        write(2) nblock
+        write(2) (idim(n),jdim(n),kdim(n),n=1,nblock)
+      write(6,'('' unformatted files written in whatever'',
+     + '' precision (single or double)'',/,'' that you compiled'',
+     + '' this translator program in'')')
+      else
+c  formatted-type
+      write(6,'('' input name of formatted grid filename to write'')')
+      read(5,'(a80)') file1
+      open(2,file=file1,form='formatted',status='unknown')
+        write(2,*) nblock
+        write(2,*) (idim(n),jdim(n),kdim(n),n=1,nblock)
+      end if
+c
+      do n=1,nblock
+        call gridbot(n,iccg,ibase,idim(n),jdim(n),kdim(n),iform)
+      enddo
+c
+c   deallocate memory
+      deallocate(idim)
+      deallocate(jdim)
+      deallocate(kdim)
+      close(2)
+c
+      return
+      end
+c
+c*******************************************************************
+c
+      subroutine gridbot(n,iccg,ibase,idm,jdm,kdm,iform)
+c
+      integer stats
+      dimension isize(9)
+      allocatable :: x(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: z(:,:,:)
+c   allocate memory
+      memuse=0
+      allocate( x(idm,jdm,kdm), stat=stats )
+      call umalloc_r(idm*jdm*kdm,0,'x',memuse,stats)
+      allocate( y(idm,jdm,kdm), stat=stats )
+      call umalloc_r(idm*jdm*kdm,0,'y',memuse,stats)
+      allocate( z(idm,jdm,kdm), stat=stats )
+      call umalloc_r(idm*jdm*kdm,0,'z',memuse,stats)
+c
+c  Read CGNS file
+      nblock=1
+      write(6,'('' for zone '',i4,'', idim,jdim,kdim='',3i5)')
+     +    n,idm,jdm,kdm
+      call getgrd(iccg,ibase,n,idm,jdm,kdm,x,y,z)
+c
+c  Write out plot3d grid and q files:
+      if (iform .eq. 1) then
+c  unformatted-type
+        write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
+        write(2) (((x(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
+     +           (((y(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
+     +           (((z(i,j,k),i=1,idm),j=1,jdm),k=1,kdm)
+      else
+        write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
+        write(2,*) (((x(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
+     +             (((y(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
+     +             (((z(i,j,k),i=1,idm),j=1,jdm),k=1,kdm)
+      end if
+c
+c   deallocate memory
+      deallocate(x)
+      deallocate(y)
+      deallocate(z)
+c
+      return
+      end
+c*******************************************************************
+c
+      subroutine reader(iccg,ibase,nblock,num1to1,file1)
 c
       parameter(numbcperzone=100)
 c
       integer stats
       dimension isize(9)
-      allocatable :: x(:,:,:,:)
-      allocatable :: y(:,:,:,:)
-      allocatable :: z(:,:,:,:)
-      allocatable :: wk(:)
       allocatable :: idim(:)
       allocatable :: jdim(:)
       allocatable :: kdim(:)
@@ -98,14 +195,6 @@ c
 c
 c   allocate memory
       memuse=0
-      allocate( x(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'x',memuse,stats)
-      allocate( y(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'y',memuse,stats)
-      allocate( z(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'z',memuse,stats)
-      allocate( wk((idm+1)*(jdm+1)*(kdm+1)), stat=stats )
-      call umalloc_r((idm+1)*(jdm+1)*(kdm+1),0,'wk',memuse,stats)
       allocate( idim(nblock), stat=stats )
       call umalloc_r(nblock,0,'idim',memuse,stats)
       allocate( jdim(nblock), stat=stats )
@@ -135,52 +224,7 @@ c   Read general zone information
         idim(n)=isize(1)
         jdim(n)=isize(2)
         kdim(n)=isize(3)
-        write(6,'('' for zone '',i4,'', idim,jdim,kdim='',3i5)')
-     +    n,idim(n),jdim(n),kdim(n)
-        call getgrd(iccg,ibase,n,idim(n),jdim(n),kdim(n),wk,x,y,z,
-     +   idm,jdm,kdm,nblock)
       enddo
-c
-c  Write out plot3d grid and q files:
-      write(6,'('' do you want 0=formatted or 1=unformatted'',
-     +  '' grid file output?'')')
-      read(5,*) iform
-      if (iform .eq. 1) then
-c  unformatted-type
-      write(6,'('' input name of unformatted grid filename to write'')')
-      read(5,'(a80)') file1
-      open(2,file=file1,form='unformatted',status='unknown')
-        write(2) nbl
-        write(2) (idim(n),jdim(n),kdim(n),n=1,nbl)
-        do n=1,nbl
-          id=idim(n)
-          jd=jdim(n)
-          kd=kdim(n)
-          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
-          write(2) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +             (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +             (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
-        enddo
-      write(6,'('' unformatted files written in whatever'',
-     + '' precision (single or double)'',/,'' that you compiled'',
-     + '' this translator program in'')')
-      else
-c  formatted-type
-      write(6,'('' input name of formatted grid filename to write'')')
-      read(5,'(a80)') file1
-      open(2,file=file1,form='formatted',status='unknown')
-        write(2,*) nbl
-        write(2,*) (idim(n),jdim(n),kdim(n),n=1,nbl)
-        do n=1,nbl
-          id=idim(n)
-          jd=jdim(n)
-          kd=kdim(n)
-          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
-          write(2,*) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +               (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +               (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
-        enddo
-      end if
 c
 c   Now get 1-to-1 connectivity info
       n1to1_global=num1to1
@@ -1521,10 +1565,6 @@ c
      +  '' occurrences of xxxx and ????'')')
 c
 c   deallocate memory
-      deallocate(x)
-      deallocate(y)
-      deallocate(z)
-      deallocate(wk)
       deallocate(idim)
       deallocate(jdim)
       deallocate(kdim)
@@ -1537,8 +1577,7 @@ c
 c
 c*******************************************************************
 c
-      subroutine getgrd(iccg,ibase,igrid,idim,jdim,kdim,wk,x,y,z,
-     +  idm,jdm,kdm,nblock)
+      subroutine getgrd(iccg,ibase,igrid,idim,jdim,kdim,x,y,z)
 c
 c   Gets x,y, and z from CGNS data base for zone number "igrid".
 c   The CGNS file must already be opened.
@@ -1551,16 +1590,13 @@ c      iccg.............CGNS file index number (determined outside this routine)
 c      ibase............CGNS base index number (determined outside this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      idim,jdim,kdim...expected dimensions of this zone (zone "igrid") (integers)
-c      wk...............working space needed, of dimension (idim*jdim*kdim) or larger (real)
-c      idm,jdm,kdm,nblock..dimensions of x,y,z in main program
 c   OUTPUTS
 c      x,y,z............coordinates, output in (i,j,k) order (real)
 c
 #     include "cgnslib_f.h"
 c
-      dimension x(idm,jdm,kdm,nblock),y(idm,jdm,kdm,nblock),
-     +          z(idm,jdm,kdm,nblock)
-      dimension wk(idim,jdim,kdim)
+      dimension x(idim,jdim,kdim),y(idim,jdim,kdim),
+     +          z(idim,jdim,kdim)
       dimension isize(3*3),irmin(3),irmax(3)
 c
       character*32 zonename,coordname,testname(3)
@@ -1622,49 +1658,28 @@ c   Set up array bounds:
 c   Read x,y,z
       if (idouble .eq. 1) then
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
-     &                     RealDouble, irmin, irmax, wk, ier)
+     &                     RealDouble, irmin, irmax, x, ier)
       else
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
-     &                     RealSingle, irmin, irmax, wk, ier)
+     &                     RealSingle, irmin, irmax, x, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      do k=1,kdim
-      do j=1,jdim
-      do i=1,idim
-        x(i,j,k,igrid)=wk(i,j,k)
-      enddo
-      enddo
-      enddo
       if (idouble .eq. 1) then
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
-     &                     RealDouble, irmin, irmax, wk, ier)
+     &                     RealDouble, irmin, irmax, y, ier)
       else
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
-     &                     RealSingle, irmin, irmax, wk, ier)
+     &                     RealSingle, irmin, irmax, y, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      do k=1,kdim
-      do j=1,jdim
-      do i=1,idim
-        y(i,j,k,igrid)=wk(i,j,k)
-      enddo
-      enddo
-      enddo
       if (idouble .eq. 1) then
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
-     &                     RealDouble, irmin, irmax, wk, ier)
+     &                     RealDouble, irmin, irmax, z, ier)
       else
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
-     &                     RealSingle, irmin, irmax, wk, ier)
+     &                     RealSingle, irmin, irmax, z, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      do k=1,kdim
-      do j=1,jdim
-      do i=1,idim
-        z(i,j,k,igrid)=wk(i,j,k)
-      enddo
-      enddo
-      enddo
 c
       return
       end
