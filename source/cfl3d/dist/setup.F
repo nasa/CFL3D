@@ -2359,27 +2359,33 @@ c  If no walls at all, don't do min distance calculation
             nbl=nblg(n)
             do iset=1,nbci0(nbl)
               if (abs(ibcinfo(nbl,iset,1,1)) .eq. 2004 .or.
-     .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
+     .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcidim(nbl)
               if (abs(ibcinfo(nbl,iset,1,2)) .eq. 2004 .or.
-     .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
+     .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcj0(nbl)
               if (abs(jbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
-     .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
+     .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcjdim(nbl)
               if (abs(jbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
-     .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
+     .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbck0(nbl)
               if (abs(kbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
-     .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2014) goto 5860
+     .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbckdim(nbl)
               if (abs(kbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
-     .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2014) goto 5860
+     .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
  5858    continue
          itry=0
@@ -2401,7 +2407,10 @@ c              check storage availability
                   call cntsurf(ns2014,maxbl,maxgr,maxseg,ngrid,nblg,
      .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
-                  nsurf=ns2004+ns2014
+                  call cntsurf(ns2016,maxbl,maxgr,maxseg,ngrid,nblg,
+     .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2016)
+                  nsurf=ns2004+ns2014+ns2016
                end if
 #if defined DIST_MPI
                call MPI_Bcast (nsurf, 1, MPI_INTEGER, myhost,

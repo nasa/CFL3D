@@ -171,7 +171,8 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014 .or.
+     .            abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then
@@ -284,7 +285,8 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014 .or.
+     .            abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then
@@ -397,7 +399,8 @@ c
                nvalxs   =  4*npts
                nvalbb   =  4*npts
 c
-               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014) then
+               if(abs(nbctype).eq.2004 .or. abs(nbctype).eq.2014 .or.
+     .            abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
                      if (ivmx .eq.4) then

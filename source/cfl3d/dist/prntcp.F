@@ -71,7 +71,8 @@ c
          if (abs(ibcinfo(nbl,ns,1,1)).eq.1005 .or. 
      .       abs(ibcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2004 .or.
-     .       abs(ibcinfo(nbl,ns,1,1)).eq.2014) then
+     .       abs(ibcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(ibcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 jst  = ibcinfo(nbl,ns,2,1)
                 jfn  = ibcinfo(nbl,ns,3,1)-1
@@ -138,7 +139,8 @@ c
          if (abs(ibcinfo(nbl,ns,1,2)).eq.1005 .or. 
      .       abs(ibcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2004 .or.
-     .       abs(ibcinfo(nbl,ns,1,2)).eq.2014) then
+     .       abs(ibcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(ibcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 jst  = ibcinfo(nbl,ns,2,2)
                 jfn  = ibcinfo(nbl,ns,3,2)-1
@@ -205,7 +207,8 @@ c
          if (abs(jbcinfo(nbl,ns,1,1)).eq.1005 .or.
      .       abs(jbcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(jbcinfo(nbl,ns,1,1)).eq.2004 .or.
-     .       abs(jbcinfo(nbl,ns,1,1)).eq.2014) then
+     .       abs(jbcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(jbcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = jbcinfo(nbl,ns,2,1)
                 ifn  = jbcinfo(nbl,ns,3,1)-1
@@ -272,7 +275,8 @@ c
          if (abs(jbcinfo(nbl,ns,1,2)).eq.1005 .or.
      .       abs(jbcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(jbcinfo(nbl,ns,1,2)).eq.2004 .or.
-     .       abs(jbcinfo(nbl,ns,1,2)).eq.2014) then
+     .       abs(jbcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(jbcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = jbcinfo(nbl,ns,2,2)
                 ifn  = jbcinfo(nbl,ns,3,2)-1
@@ -339,7 +343,8 @@ c
          if (abs(kbcinfo(nbl,ns,1,1)).eq.1005 .or.
      .       abs(kbcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(kbcinfo(nbl,ns,1,1)).eq.2004 .or.
-     .       abs(kbcinfo(nbl,ns,1,1)).eq.2014) then
+     .       abs(kbcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(kbcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = kbcinfo(nbl,ns,2,1)
                 ifn  = kbcinfo(nbl,ns,3,1)-1
@@ -406,7 +411,8 @@ c
          if (abs(kbcinfo(nbl,ns,1,2)).eq.1005 .or.
      .       abs(kbcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(kbcinfo(nbl,ns,1,2)).eq.2004 .or.
-     .       abs(kbcinfo(nbl,ns,1,2)).eq.2014) then
+     .       abs(kbcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(kbcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = kbcinfo(nbl,ns,2,2)
                 ifn  = kbcinfo(nbl,ns,3,2)-1

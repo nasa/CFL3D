@@ -131,6 +131,40 @@ c               rho/rho_inf, u/a_inf, v/a_inf, w/a_inf, p/(rho_inf*a_inf**2)
 c               set ndata=5, and input the normalized primatives in the order
 c               given above.
 c      bc2008 - specify rho, u, v, and w; extrapolate p from the interior.
+c      bc2016 - viscous surface (set ndata=7)
+c           1) Twtype:
+c              Twtype > 0 (fixed wall temperature Tw/Tinf = Twtype)
+c              Twtype = 0 (adiabatic wall)
+c              Twtype < 0 (fixed wall temperature = stagnation temp)
+c
+c           2) cq  = steady component of surface jet
+c           3) cqu = unsteady component of surface jet
+c
+c              Set surface jet boundary conditions via mass-flow
+c              coefficient:
+c                                                    (rho * u)_jet
+c              mass-flow coefficient (cq + cqu)  = ------------------
+c                                                  (rho * u)_infinity
+c
+c           4) sjetx = direction number for surface jet (x-direction)
+c           5) sjety = direction number for surface jet (y-direction)
+c           6) sjetz = direction number for surface jet (z-direction)
+c           7) rfreq = reduced frequency of unsteady jet =
+c                      cqu*sin(twopi*rfreq*time)
+c              NOTES:
+c              1.  input direction numbers do not have to be normalized
+c              2.  Set (sjetx,sjety,sjetz) = (0.0,0.0,0.0) for a
+c                  wall-normal surface jet.  In this case,
+c                  cq & cqu > 0 ==> flow into domain at i,j,k=1,1,1
+c                  cq & cqu > 0 ==> flow out of domain at i,j,k=idim,jdim,kdim
+c                  cq & cqu < 0 ==> flow out of domain at i,j,k=1,1,1
+c                  cq & cqu < 0 ==> flow in to domain at i,j,k=idim,jdim,kdim
+c              3.  rfreq = freq*lref/a_inf where freq is frequency in Hertz,
+c                  lref is reference length, and a_inf is speed of sound
+c              4.  For rfreq < 0: ramp the mass flow coefficient from zero to
+c                  a terminal value where
+c                  cq  = terminal mass flow coefficient value
+c                  cqu = constant rate of change
 c      bc2018 - specify T, rhou, rhov, and rhow; extrapolate p from interior.
 c      bc2028 - specify freq, rhoumax, rhovmax, and rhowmax; extrapolate rho 
 c               and p from interior.
@@ -532,6 +566,15 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,ibcinfo(nbl,nseg,1,1))
 c
+      if (ibcinfo(nbl,nseg,1,1).eq.2016) 
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,ibcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
+c
   802 continue
 c
 c********************
@@ -725,6 +768,15 @@ c
      .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,ibcinfo(nbl,nseg,1,2))
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2016)
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,ibcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
 c
   803 continue
 c
@@ -920,6 +972,15 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,jbcinfo(nbl,nseg,1,1))
 c
+      if (jbcinfo(nbl,nseg,1,1).eq.2016)
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,jbcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
+c
   804 continue
 c
 c********************
@@ -1113,6 +1174,15 @@ c
      .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,jbcinfo(nbl,nseg,1,2))
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2016)
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,jbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
 c
   805 continue
 c
@@ -1308,6 +1378,15 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,kbcinfo(nbl,nseg,1,1))
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.2016)
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,kbcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
+c
   806 continue
 c
 c********************
@@ -1501,6 +1580,15 @@ c
      .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,kbcinfo(nbl,nseg,1,2))
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2016)
+     .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,kbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid)
 c
   807 continue
 c

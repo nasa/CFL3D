@@ -62,7 +62,8 @@ c
          lbc = abs(jbcinfo(nbl,ns,1,m))*jbcinfo(nbl,ns,6,m)
       end if
 c
-      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
+      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
+     .        (lbc-2016)
 c
       if (iflag.ne.0) goto 100
 c
@@ -108,7 +109,8 @@ c
          lbc = abs(kbcinfo(nbl,ns,1,m))*kbcinfo(nbl,ns,6,m)
       end if
 c
-      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
+      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
+     .        (lbc-2016)
 c
       if (iflag.ne.0) goto 200
 c
@@ -154,7 +156,8 @@ c
          lbc = abs(ibcinfo(nbl,ns,1,m))*ibcinfo(nbl,ns,6,m)
       end if
 c
-      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
+      iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
+     .        (lbc-2016)
 c
       if (iflag.ne.0) goto 300
 c

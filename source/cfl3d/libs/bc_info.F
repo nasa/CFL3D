@@ -214,6 +214,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
 c
+      if (ibcinfo(nbl,nseg,1,1).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
+c
       if (ibcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -363,6 +368,11 @@ c
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
@@ -514,6 +524,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
 c
+      if (jbcinfo(nbl,nseg,1,1).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
+c
       if (jbcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -663,6 +678,11 @@ c
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
@@ -814,6 +834,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
+c
       if (kbcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -963,6 +988,11 @@ c
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,0)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2016)
+     .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,5)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
@@ -6525,6 +6555,682 @@ c
  1013 format('           ',a60)
  1014 format(11x,'turb1 (nondim) = ',e12.4)
  1015 format(11x,'turb2 (nondim) = ',e12.4)
+c
+      return
+      end
+      subroutine out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
+     .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
+     .                  filname,myid,mblk2nd,maxbl,iout)
+c
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+      character*120 bou(ibufdim,nbuf)
+      character*80 filname
+c
+      dimension nou(nbuf)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
+c
+      common /wallfun/ iwf(3)
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+c
+      jend1 = jend-1
+      kend1 = kend-1
+      iend1 = iend-1
+c
+      if (nface.eq.3) then
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 1 l=1,2+iout
+         do 1 ipp=1,2
+         do 1 i=ista,iend1
+         ii = i-ista+1
+         do 1 k=ksta,kend1
+         kk = k-ksta+1
+         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(kk,ii,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   1     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(2) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3001)
+         end if
+      end if
+c 
+      if (nface.eq.4) then
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 2 l=1,2+iout
+         do 2 ipp=1,2
+         do 2 i=ista,iend1
+         ii = i-ista+1
+         do 2 k=ksta,kend1
+         kk = k-ksta+1
+         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(kk,ii,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   2     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(2) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3001)
+         end if
+      end if
+c 
+      if (nface.eq.5) then
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 3 l=1,2+iout
+         do 3 ipp=1,2
+         do 3 i=ista,iend1
+         ii = i-ista+1
+         do 3 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(jj,ii,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   3     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1003)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1003)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(3) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3002)
+         end if
+      end if
+c 
+      if (nface.eq.6) then
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 4 l=1,2+iout
+         do 4 ipp=1,2
+         do 4 i=ista,iend1
+         ii = i-ista+1
+         do 4 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(jj,ii,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   4     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1004)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1004)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1004)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(3) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3002)
+         end if
+      end if
+c 
+      if (nface.eq.1) then
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 5 l=1,2+iout
+         do 5 ipp=1,2
+         do 5 k=ksta,kend1
+         kk = k-ksta+1
+         do 5 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(jj,kk,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   5     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1005)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1005)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1005)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(1) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3003)
+         end if
+      end if
+c 
+      if (nface.eq.2) then
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 6 l=1,2+iout
+         do 6 ipp=1,2
+         do 6 k=ksta,kend1
+         kk = k-ksta+1
+         do 6 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
+         if ((real(bcdata(jj,kk,ipp,l)).ne.0.0).and.
+     +       (dt.lt.0.).and.(l.eq.3)) iflg = 2
+   6     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2016:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+           if (iflg.eq.2) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2016:'
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+     +        '  unsteady jet not allowed with dt < 0'
+              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+           end if
+
+         if (filname.eq.'null') then
+            ctemp = bcdata(1,1,1,1)
+            cq    = bcdata(1,1,1,2)
+            cqu   = bcdata(1,1,1,3)
+            sjetx = bcdata(1,1,1,4)
+            sjety = bcdata(1,1,1,5)
+            sjetz = bcdata(1,1,1,6)
+            rfreq = bcdata(1,1,1,7)
+            if (real(ctemp) .gt. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1006)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007) real(ctemp)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else if (ctemp .eq. 0.) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1006)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1009)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1006)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1010)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1008) real(cq)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1013) real(cqu)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1014) real(sjetx)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1015) real(sjety)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1016) real(sjetz)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1017) real(rfreq)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012) filname
+         end if
+         if (iwf(1) .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),3003)
+         end if
+      end if
+c
+ 1001 format(' ','  j=   1  viscous wall                   type 2016',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1002 format(' ','  j=jdim  viscous wall                   type 2016',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1003 format(' ','  k=   1  viscous wall                   type 2016',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1004 format(' ','  k=kdim  viscous wall                   type 2016',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1005 format(' ','  i=   1  viscous wall                   type 2016',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 1006 format(' ','  i=idim  viscous wall                   type 2016',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 1007 format(11x,'Tw/Tinf    = ',f8.4)
+ 1008 format(11x,'cq         = ',f8.4)
+ 1009 format(11x,'Tw/Tinf    = adiabatic wall')
+ 1010 format(11x,'Tw/Tinf    = stagnation')
+ 1011 format(11x,'Twtype, C_q set from file:')
+ 1012 format('           ',a60)
+ 1013 format(11x,'cqu        = ',f8.4)
+ 1014 format(11x,'sjetx      = ',f8.4)
+ 1015 format(11x,'sjetx      = ',f8.4)
+ 1016 format(11x,'sjetx      = ',f8.4)
+ 1017 format(11x,'rfreq      = ',f8.4)
+c
+ 3001 format(' ',10x,'Wall function employed in j-direction')
+ 3002 format(' ',10x,'Wall function employed in k-direction')
+ 3003 format(' ',10x,'Wall function employed in i-direction')
 c
       return
       end

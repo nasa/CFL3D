@@ -175,6 +175,7 @@ c
                   ibctyp = ibcinfo(nbl,nseg,1,ii)
                   if (abs(ibctyp).ne.2004 .and.
      .                abs(ibctyp).ne.2014 .and.
+     .                abs(ibctyp).ne.2016 .and.
      .                abs(ibctyp).ne.1005 .and.
      .                abs(ibctyp).ne.1006 .or.
      .                real(beta1).lt.0.) then
@@ -202,6 +203,7 @@ c
                   ibctyp = ibcinfo(nbl,nseg,1,ii)
                   if (abs(ibctyp).ne.2004 .and.
      .                abs(ibctyp).ne.2014 .and.
+     .                abs(ibctyp).ne.2016 .and.
      .                abs(ibctyp).ne.1005 .and.
      .                abs(ibctyp).ne.1006 .or.
      .                real(beta1).lt.0.) then
@@ -231,6 +233,7 @@ c
                      jbctyp = jbcinfo(nbl,nseg,1,jj)
                      if (abs(jbctyp).ne.2004 .and.
      .                   abs(jbctyp).ne.2014 .and.
+     .                   abs(jbctyp).ne.2016 .and.
      .                   abs(jbctyp).ne.1005 .and.
      .                   abs(jbctyp).ne.1006 .or.
      .                   real(beta1).lt.0.) then
@@ -258,6 +261,7 @@ c
                      jbctyp = jbcinfo(nbl,nseg,1,jj)
                      if (abs(jbctyp).ne.2004 .and.
      .                   abs(jbctyp).ne.2014 .and.
+     .                   abs(jbctyp).ne.2016 .and.
      .                   abs(jbctyp).ne.1005 .and.
      .                   abs(jbctyp).ne.1006 .or.
      .                   real(beta1).lt.0.) then
@@ -285,6 +289,7 @@ c
                      kbctyp = kbcinfo(nbl,nseg,1,kk)
                      if (abs(kbctyp).ne.2004 .and.
      .                   abs(kbctyp).ne.2014 .and.
+     .                   abs(kbctyp).ne.2016 .and.
      .                   abs(kbctyp).ne.1005 .and.
      .                   abs(kbctyp).ne.1006 .or.
      .                   real(beta1).lt.0.) then
@@ -312,6 +317,7 @@ c
                      kbctyp = kbcinfo(nbl,nseg,1,kk)
                      if (abs(kbctyp).ne.2004 .and.
      .                   abs(kbctyp).ne.2014 .and.
+     .                   abs(kbctyp).ne.2016 .and.
      .                   abs(kbctyp).ne.1005 .and.
      .                   abs(kbctyp).ne.1006 .or.
      .                   real(beta1).lt.0.) then

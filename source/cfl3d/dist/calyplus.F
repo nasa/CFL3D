@@ -164,7 +164,8 @@ c
          do 6001 nseg = 1,nbc
 c
          if (abs(kbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
-     .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2014) then
+     .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
+     .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1
 c
@@ -626,7 +627,8 @@ c
          do 7001 nseg = 1,nbc
 c
          if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
-     .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2014) then
+     .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
+     .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1
 c
@@ -1093,7 +1095,8 @@ c
          do 8001 nseg = 1,nbc
 c
          if (abs(ibcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
-     .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2014) then
+     .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
+     .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1
 c
