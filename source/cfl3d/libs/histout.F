@@ -72,7 +72,8 @@ c
      .      ''            cd            cy            cmy'')') ntt
             do 3000 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
-            write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+            write(12,'(3x,i6,6e15.7)') n,log10(real(rms(n))),
      .      real(clw(n)),real(cdw(n)),real(cyw(n)),real(cmyw(n))
  3000       continue
          else
@@ -83,7 +84,8 @@ c
      .      ''            cd            cz            cmz'')') ntt
             do 3001 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
-            write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+            write(12,'(3x,i6,6e15.7)') n,log10(real(rms(n))),
      .      real(clw(n)),real(cdw(n)),real(czw(n)),real(cmzw(n))
  3001       continue
          end if
@@ -95,7 +97,8 @@ c
      .   ''       cftp           cftv        cftmom '')') ntt
          do 3100 n=1,ntt
          if(real(rms(n)) .le. 0.) rms(n)=1.
-         write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+c        write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
+         write(12,'(3x,i6,6e15.7)') n,log10(real(rms(n))),
      .   real(fmdotw(n)),real(cftpw(n)),real(cftvw(n)),real(cftmomw(n))
  3100    continue
       else
@@ -159,7 +162,8 @@ c
                 write(34,'(''       it      time        xs(2*n-1)'',
      .             ''      xs(2*n)     gforcn(2*n)'')')
                 do n=1,ntt
-                   write(34,'(3x,i6,5e14.5)') n,real(timekeep(n)),
+c                  write(34,'(3x,i6,5e14.5)') n,real(timekeep(n)),
+                   write(34,'(3x,i6,6e15.7)') n,real(timekeep(n)),
      .             real(aehist(n,1,nm,iaes)),real(aehist(n,2,nm,iaes)),
      .             real(aehist(n,3,nm,iaes))
                 end do
