@@ -226,8 +226,8 @@ c
 c
 c        turbulence residual
 c
-         if (iviscg(nbl,1).gt.2 .or. iviscg(nbl,2).gt.2
-     .      .or. iviscg(nbl,3).gt.2 .and. iadvance(nbl).ge.0) then
+         if ((iviscg(nbl,1).gt.2 .or. iviscg(nbl,2).gt.2
+     .      .or. iviscg(nbl,3).gt.2) .and. iadvance(nbl).ge.0) then
 c
 #if defined DIST_MPI
             nd_srce = mblk2nd(nbl)
@@ -789,8 +789,8 @@ c
             iem  = iemg(igrid)
             if (iseq.ne.mseq .and. iem.gt.0) go to 8050
             if (iem.eq.0) nbl1 = nbl1 + (mseq-iseq)
-            if (iviscg(nbl1,3).gt.1 .or. iviscg(nbl1,2).gt.1
-     .         .or.iviscg(nbl1,1).gt.1) then
+            if ((iviscg(nbl1,3).gt.1 .or. iviscg(nbl1,2).gt.1
+     .         .or.iviscg(nbl1,1).gt.1) .and. iadvance(nbl).ge.0) then
                if (iskip.gt.0) then
                   write(11,3000)nbl1,igrid,real(vormax(nbl1)),
      .            jvmax(nbl1),kvmax(nbl1),ivmax(nbl1)
@@ -859,8 +859,8 @@ c
 c
 c        turbulence residual
 c
-         if (iviscg(nbl,1).gt.2 .or. iviscg(nbl,2).gt.2 .or.
-     .       iviscg(nbl,3).gt.2 .and. iadvance(nbl).ge.0) then
+         if ((iviscg(nbl,1).gt.2 .or. iviscg(nbl,2).gt.2 .or.
+     .       iviscg(nbl,3).gt.2) .and. iadvance(nbl).ge.0) then
 c
 #if defined DIST_MPI
             nd_srce = mblk2nd(nbl)
