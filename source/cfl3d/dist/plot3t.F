@@ -436,10 +436,10 @@ c
       mytag = itag_grid + nblk
 c
       if (mblk2nd(nblk).eq.myid) then
-         call MPI_Send (xg, nng, MPI_REAL, myhost, mytag,
+         call MPI_Send (xg, nng, MY_MPI_REAL, myhost, mytag,
      &                  mycomm, ierr)
       else if (myid.eq.myhost) then
-         call MPI_Recv (xg, nng, MPI_REAL, nd_srce,
+         call MPI_Recv (xg, nng, MY_MPI_REAL, nd_srce,
      &                  mytag, mycomm, istat, ierr)
       end if
 c
@@ -1028,10 +1028,10 @@ c
       mytag = itag_q + nblk
 c
       if (mblk2nd(nblk).eq.myid) then
-         call MPI_Send (xw, nnq, MPI_REAL, myhost, mytag,
+         call MPI_Send (xw, nnq, MY_MPI_REAL, myhost, mytag,
      &                  mycomm, ierr)
       else if (myid .eq. myhost) then
-         call MPI_Recv (xw, nnq, MPI_REAL, nd_srce,
+         call MPI_Recv (xw, nnq, MY_MPI_REAL, nd_srce,
      &                  mytag, mycomm, istat, ierr)
       end if
 #endif

@@ -157,7 +157,7 @@ c     currently don't need blanking data for printout option (iflag=2),
 c     so only compute blank2 array for plot3d output option
 c     also, don't compute blanking info if iblnk = 0
 c
-      if (iflag.eq.1 .or. iblnk.gt.0) then
+      if (iflag.eq.1 .and. iblnk.gt.0) then
 c
 #if defined DIST_MPI
       if (mblk2nd(nblk).eq.myid) then
@@ -779,7 +779,7 @@ c
          if (i2d .eq. 1) then
             if (iblnk .eq. 0) then
                write(11,2041)
- 2041          format(3x,39hplot3d files to be read with /mgrid/for,
+ 2041          format(3x,35hplot3d files to be read with /mgrid,
      .         14h/2d qualifiers)
             else
                write(11,2141)
@@ -789,7 +789,7 @@ c
          else
             if (iblnk .eq. 0) then
                write(11,2042)
- 2042          format(3x,39hplot3d files to be read with /mgrid/for,
+ 2042          format(3x,35hplot3d files to be read with /mgrid,
      .         11h qualifiers)
             else
                write(11,2142)
