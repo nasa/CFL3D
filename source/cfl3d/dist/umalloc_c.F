@@ -20,6 +20,10 @@ c     original version provied courtesy Steven J. Massey, AS&M Inc.
 c     modified by r. t. biedron, January, 1999.
 c***********************************************************************
 c
+#if defined DIST_MPI
+#     include "mpif.h"
+#endif
+c
       implicit complex(a-h,o-z)
 c
       parameter(len_i=4,len_r4=4)
@@ -29,6 +33,8 @@ c
       dimension dum(1)
 c
       pointer (ipoint, dum)
+c
+      common /mydist2/ nnodes,myhost,myid,mycomm
 c
 #ifdef CRAY_TIME
 c     cray_time implies cray
@@ -87,7 +93,19 @@ c
           write(6,*) 'requested more than 10^(15) bytes'
         end if
         write(6,14) memuse
+#ifdef CRAY_TIME then
+#else
+#   ifdef IBM then
+        call flush_(6)
+#   else
+        call flush(6)
+#   endif
+#endif
+#ifdef DIST_MPI then
+        call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
+#else
         stop
+#endif
       else
 c        write(6,*) 'call',icall,' umalloc: allocated ',
 c    .   n_bytes,' bytes'
