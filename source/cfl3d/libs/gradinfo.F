@@ -14,7 +14,8 @@ c
 #   endif
 c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
-     .                geom_img,surf_img
+     .                geom_img,surf_img,xrotrate_img,yrotrate_img,
+     .                zrotrate_img
 c
       if (real(xmach_img) .gt. 0.) then
          delh = xmach_img
@@ -57,6 +58,24 @@ c
          if (iunit .gt. 0) then
             write(iunit,'(''                      derivatives with '',
      .                 ''respect to (surface) geometry'')')
+         end if
+      else if (real(xrotrate_img) .gt. 0.) then
+         delh = real(xrotrate_img)
+         if (iunit .gt. 0) then
+            write(iunit,'(''                      derivatives with '',
+     .                 ''respect to omega_x (roll rate)'')')
+         end if
+      else if (real(yrotrate_img) .gt. 0.) then
+         delh = real(yrotrate_img)
+         if (iunit .gt. 0) then
+            write(iunit,'(''                      derivatives with '',
+     .                 ''respect to omega_y (pitch or yaw rate)'')')
+         end if
+      else if (real(zrotrate_img) .gt. 0.) then
+         delh = real(yrotrate_img)
+         if (iunit .gt. 0) then
+            write(iunit,'(''                      derivatives with '',
+     .                 ''respect to omega_z (yaw or pitch rate)'')')
          end if
       end if
 c
