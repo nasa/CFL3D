@@ -43,7 +43,7 @@ c
             jx2 = ix2
             is1 = ix1 + 6
             is2 = ix2 + 6
-         else if (ix1.eq.2) then
+         else if (ix1.eq.3) then
             jx1 = 5
             jx2 = 6
             is1 = 11
