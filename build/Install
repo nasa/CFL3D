@@ -621,7 +621,6 @@ case $FARCH in rs6000)
   fi
   if [ $do_no_opt = no ]; then
      FFLAG="-O3 -qhot -qstrict -bmaxdata:190000000"
-     FFLAG="$FFLAG -qarch=pwr2"
   fi
   FFLAG_SPEC="$FFLAG"
   CPPOPT_SP="-DIBM -DP3D_SINGLE"
