@@ -311,6 +311,7 @@ c
       common /unit5/ iunit5
       common /key/ nkey
       common /zero/ iexp
+      common /wrestq/ irest,irest2
 c
 #if defined DIST_MPI
 c***********************************************************************
@@ -683,7 +684,7 @@ c   Write input file used to CGNS file
         idimdesired=3
         call wopencgns(grid,basedesired,idimdesired,iccg,
      .              ibase,nzones)
-        call writeinput(iccg,ibase,iunit5)
+        call writeinput(iccg,ibase,iunit5,irest)
 c   Close data base
         call cg_close_f(iccg, ier)
         if (ier .ne. 0) then

@@ -322,7 +322,7 @@ c
 c
 c   Open CGNS file
       write(11,'(/,'' Accessing cgns database... (must'',
-     +  '' be linked to API Version 2.1 or later)'')')
+     +  '' be linked to API Version 2.2 or later)'')')
       call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
       if (ier .ne. 0) then
         write(11,'('' Error opening cgns file'')')
@@ -4213,14 +4213,11 @@ c   Get angle of attack
       return
       end
 c
-      subroutine writeinput(iccg,ibase,iunit5)
+      subroutine writeinput(iccg,ibase,iunit5,irest)
 c**********************************************************************
 c     Purpose: Writes a "copy" of the CFL3D input file to CGNS file,
 c     as a descriptor node called "InputFileUsed" under the Base.
 c     (Currently limited to a maximum of 2969 lines)
-c     Note:  if irest=0, you really want to delete any existing
-c     "InputFileUsed" nodes, but this is hard to do so we currently 
-c     keep all of them.
 c     Also writes the case title to a separate descriptor node called
 c     "CaseTitle"
 c   
@@ -4229,7 +4226,8 @@ c      iccg.............CGNS file index number (determined outside this
 c                       routine) (integer)
 c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
-c      iunit5...........unit number of the input file to copy
+c      iunit5...........unit number of the input file to copy (integer)
+c      irest............flag is zero if not a restart run (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
@@ -4255,7 +4253,7 @@ c   Currently Max of 50 allowed - beyond this, the last one keeps getting overwr
       call cg_ndescriptors_f(ndesc,ier)
       if (ier .ne. 0) call cg_error_exit_f
       inum=0
-      do n=1,ndesc
+      do n=ndesc,1,-1
         call cg_descriptor_read_f(n,name,stxsav,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (name.eq.'InputFileUsed 1'.or.name.eq.'InputFileUsed 2'.or.
@@ -4283,7 +4281,12 @@ c   Currently Max of 50 allowed - beyond this, the last one keeps getting overwr
      .      name.eq.'InputFileUsed45'.or.name.eq.'InputFileUsed46'.or.
      .      name.eq.'InputFileUsed47'.or.name.eq.'InputFileUsed48'.or.
      .      name.eq.'InputFileUsed49'.or.name.eq.'InputFileUsed50') then
-          inum=inum+1
+          if (irest .eq. 0) then
+            call cg_delete_node_f(name,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+          else
+            inum=inum+1
+          end if
         end if
       enddo
       write(filenum,102) inum+1
@@ -5513,8 +5516,6 @@ c
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
       dimension jdata(4)
       character*32 name(numnames)
-      character*48 string1,string2
-      character*96 string3
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -5542,11 +5543,6 @@ c   Go to Zone node and create a user-defined node
       enddo
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +  'UserDefinedData_t',nset,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      string1 = 'NOTE: If iwghost changed from 1 to 0 in mid-run,'
-      string2 = ' these values will be wrong'
-      string3 = string1 // string2
-      call cg_descriptor_write_f('Information',string3,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Write BC qi0 data
@@ -6008,9 +6004,6 @@ c
 #     include "cgnslib_f.h"
 c
       dimension data(3),data1(3,2),idata(2)
-      character*48 string1,string3
-      character*34 string2,string4
-      character*164 string5
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -6040,16 +6033,9 @@ c   Create SIDS-standard node for rigid motion
      +    'RigidGridMotion',VariableRate,ir,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c   Write Descriptor, Origin, Theta info
+c   Write Origin, Theta info
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'RigidGridMotion_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      string1 = 'NOTE:    If turn off the grid motion in mid-run,'
-      string2 = ' these values will be wrong. Check'
-      string3 = ' ZoneIterativeData: RigidGridMotionPointers must'
-      string4 = ' exist for info here to be valid. '
-      string5 = string1 // string2 // string3 // string4
-      call cg_descriptor_write_f('Information',string5,ier)
       if (ier .ne. 0) call cg_error_exit_f
       idata(1)=3
       idata(2)=2
@@ -7001,9 +6987,7 @@ c
      .          znm2(jdim,kdim,idim)
       dimension wk(idima,jdima,kdima)
       dimension idata(2),jdata(3)
-      character*52 string1,string3
-      character*34 string2,string4
-      character*172 string5
+      character*52 string1
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -7045,13 +7029,6 @@ c   Initialize wk array to zero
 c   Write CFL3D-specific info
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'ArbitraryGridMotion_t',1,'end')
-      string1 = 'NOTE:  If turn off deforming grid motion in mid-run,'
-      string2 = ' these values will be wrong. Check'
-      string3 = ' ZoneIterativeData: ArbitraryGridMotionPointers must'
-      string4 = ' exist for info here to be valid. '
-      string5 = string1 // string2 // string3 // string4
-      call cg_descriptor_write_f('Information',string5,ier)
-      if (ier .ne. 0) call cg_error_exit_f
       call cg_user_data_write_f('CFL3DParameters', ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -7197,13 +7174,6 @@ c   Write moved grid
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'GridCoordinates_t',ig,'end')
       if (ier .ne. 0) call cg_error_exit_f
-      string1 = 'NOTE:  If turn off deforming grid motion in mid-run,'
-      string2 = ' these values will be wrong. Check'
-      string3 = ' ZoneIterativeData:     GridCoordinatesPointers must'
-      string4 = ' exist for info here to be valid. '
-      string5 = string1 // string2 // string3 // string4
-      call cg_descriptor_write_f('Information',string5,ier)
-      if (ier .ne. 0) call cg_error_exit_f
 c   First, get "factor" in case want to write every other point, etc
       if(idim.eq.idima .and. jdim.eq.jdima .and. kdim.eq.kdima) then
         nfac=1
@@ -7229,7 +7199,7 @@ c   First, get "factor" in case want to write every other point, etc
       else
         nfaci=nfac
       end if
-      call cg_descriptor_write_f('Information2',string1,ier)
+      call cg_descriptor_write_f('Information',string1,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   Write X
       ii=0
@@ -7338,9 +7308,7 @@ c   Write moved grid at earlier time
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'GridCoordinates_t',ig,'end')
       if (ier .ne. 0) call cg_error_exit_f
-      call cg_descriptor_write_f('Information',string5,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_descriptor_write_f('Information2',string1,ier)
+      call cg_descriptor_write_f('Information',string1,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   Write X
       ii=0
@@ -8171,8 +8139,6 @@ c
      + aehist(ncycmax,3,nmds,maxaes)
       dimension wk(maxnum),wk2(maxnum2)
       character name(numnames)*32
-      character*47 string1,string2
-      character*94 string3
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -8201,12 +8167,7 @@ c   Go to Base node, write CFL3DAeroModeData array as UserDefinedData
       call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',nset,'end')
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Write Descriptor and data
-      string1 = 'NOTE:  If turn off aeroelastic mode in mid-run,'
-      string2 = ' these values will be wrong.'
-      string3 = string1 // string2 
-      call cg_descriptor_write_f('Information',string3,ier)
-      if (ier .ne. 0) call cg_error_exit_f
+c   Write data
 c
       if (idouble .eq. 1) then
         call cg_array_write_f('Timekeep',RealDouble,1,ntt,timekeep,ier)

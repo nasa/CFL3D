@@ -7,6 +7,7 @@ c   Purpose: reads in plot3d-type (or cfl3d-type) unformatted grid file
 c   and writes out a CGNS ADF file.  Also reads in as input the 1-to-1
 c   section of CFL3D input file, for creating the 1-to-1 CGNS
 c   connectivity information.
+c   Currently, you must be linked to CGNS V2.2 or later
 c
 c   This does a 3-D grid only, in MG format
 c***********************************************************************
@@ -28,6 +29,8 @@ c
 c
 c  read the CFL3D input file to determine parameter requirements
 c
+      write(6,'('' Note:  currently, you must be linked to CGNS V2.2'',
+     +  '' or later'',/)')
       write(6,'('' What is the CFL3D input file name?'')')
       read(5,'(a80)') file2
       open(3,file=file2,form='formatted',status='old')
@@ -565,7 +568,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv1(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -591,6 +594,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv1(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
@@ -693,7 +701,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv1(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -719,6 +727,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv1(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
@@ -821,7 +834,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv2(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -847,6 +860,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv2(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
@@ -949,7 +967,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv2(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -975,6 +993,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv2(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
@@ -1077,7 +1100,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv3(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -1103,6 +1126,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv3(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
@@ -1205,7 +1233,7 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 2004 .and. data(1) .eq. 0 .and.
-     +            data(2) .eq. 0 .and. iv3(n) .gt. 0) then
+     +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -1231,6 +1259,11 @@ c    +       '' CGNS yet'')') ib
             text=texta
             if(abs(ib) .eq. 2004 .and. iv3(n) .lt. 0) then
               text=texta // ' + WallFunction'
+              call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
+     +          ibc,Generic,ier)
+              call cg_bc_wallfunction_write_f(iccgr,ibase,iz(n),
+     +          ibc,Generic,ier)
+              if (ier .ne. 0) call cg_error_exit_f
             end if
             call cg_descriptor_write_f(boconame2,text,ier)
             if (abs(ib) .ge. 2000 .and. nd .gt. 0) then
