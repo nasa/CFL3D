@@ -37,7 +37,7 @@ c
 #   endif
 c
 #   ifdef INTEL
-      no flush on the intel...
+c     no flush on the intel...
 #   endif
 c
 #   ifdef PG
