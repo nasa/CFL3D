@@ -107,6 +107,13 @@ c
           else if (ktemp(l) .eq. 1) then
              jmax = max(jmax,itemp(l))
              kmax = max(kmax,jtemp(l))
+          else
+             write(6,*)'error - for 3-D movies, one output dimension',
+     +        ' must be of dimension 1'
+             write(6,*)'... (kstart=kend=1 or jstart=jend=1 or',
+     +        ' istart=iend=1 in input file)'
+             write(6,*)'stopping'
+             stop
           end if
        end do
        write(6,*)'maxbl,jmax,kmax',maxbl,jmax,kmax
