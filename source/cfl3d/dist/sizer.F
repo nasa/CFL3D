@@ -1269,7 +1269,7 @@ c              Two-equation turb models
                iwk32=iwk31+inmx
                inmx=(jdim-1)*(kdim-1)*(idim-1)*2
                iwk33=iwk32+inmx
-               inmx=(jdim+1)*(kdim+1)*(idim+1)
+               inmx=(jdim+1)*(kdim+1)*(idim+1-(2*iset))
                itemp=iwk33+inmx
             end if
          end if
