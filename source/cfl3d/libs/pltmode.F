@@ -90,7 +90,7 @@ c
                      nseg = nbcjdim(nbl)
                   end if
                   do ns = 1,nseg
-                     lbc = iabs(jbcinfo(nbl,ns,1,m))
+                     lbc = abs(jbcinfo(nbl,ns,1,m))
                      iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                                *(lbc-2016)
                      if (iflg.eq.0) then
@@ -116,7 +116,7 @@ c
                      nseg = nbckdim(nbl)
                   end if
                   do ns = 1,nseg
-                     lbc = abs(kbcinfo(nbl,ns,1,m))
+                    lbc = abs(kbcinfo(nbl,ns,1,m))
                     iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                               *(lbc-2016)
                     if (iflg.eq.0) then
@@ -179,7 +179,7 @@ c
                nseg = nbcjdim(nbl1)
             end if
             do ns = 1,nseg
-               lbc = iabs(jbcinfo(nbl1,ns,1,m))
+               lbc = abs(jbcinfo(nbl1,ns,1,m))
                iflg = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)
      .                          *(lbc-2016)
                if (iflg.eq.0) then
