@@ -89,7 +89,7 @@ c
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
 c
-      real*4 tim(3,3),tm(3)
+      real*4 tim(3,3),tm(3),walltime,totaltime
 c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
@@ -777,11 +777,28 @@ c
          else
             ncells = ncell(lglobal) + ncell(levelt(iseq))
          end if
+c
+c        best attempt at correct wall time for > 24  hour runs:
+c        the problem seems to be that tim(3,2), supposedly the wall
+c        time, gets reset after 24 hours. have to creative in the case
+c        the total time - system+user - is not *quite* 24 hours and 
+c        the true wall time is just over 24 hours, so that ndays=0
+c        but tim(3,2) is small. in that case use the total time as
+c        the wall time.
+c
+         walltime  = tim(3,1)
+         totaltime = tim(1,1) + tim(2,1)
+         ndays = int(real(totaltime))/86400
+         if (ndays .gt. 0) then
+            walltime = walltime + ndays*86400
+         else
+            walltime = max(walltime,totaltime)
+         end if
          if (real(dt).lt.0.) then
-            rate(iseq) = 1.e6*tim(3,2)/
+            rate(iseq) = 1.e6*walltime/
      .                   float(ncells)/float(ncyc1(iseq))
          else
-            rate(iseq) = 1.e6*tim(3,2)/
+            rate(iseq) = 1.e6*walltime/
      .                   float(ncells)/float(ntstep)
             ratesub(iseq) = rate(iseq)/float(ncyc1(iseq))
          end if
