@@ -406,6 +406,9 @@ c
      .                    nbdnmint,igridg(nbdnmint)
             write(11,106) int(real(ypchk))
             write(11,108) real(ypavt),real(ypstdt),nypchkt,nptst 
+            if (real(ypavt) .gt. 2.5) then
+               write(11,114)
+            end if
             if (iwarneddy .gt. 0) then
                write(11,113) edvislim
             end if
@@ -457,6 +460,13 @@ c
      .       /,1x,'points to ',e10.3,'.  Unless this run is far from',
      .         1x,'convergence, increase',
      .       /,1x,'edvislim via keyword input for subsequent runs')
+  114 format(/,1x,'WARNING: avg y+ is > 2.5.  It is recommended that',
+     .         1x,'you revise the grid',
+     .       /,1x,'to have smaller min spacing at walls.  (If you',
+     .         1x,'are employing WALL FUNCTIONS,',
+     .       /,1x,'large avg y+ values are acceptable, but wall',
+     .         1x,'functions are ad hoc',
+     .       /,1x,'and not recommended for general use.)')
 c
       return
       end
