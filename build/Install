@@ -1,3 +1,4 @@
+
 #! /bin/sh
 #
 #     $Id$
@@ -78,16 +79,18 @@ mpichdir=""     # default to native mpi (mpich base directory not specified)
 do_f90=yes      # default to f90
 cgnsdir=""      # default to not cgns compatable
 do_purify=no    # don't use purify
+linux_compiler_flags="default" # default linux compiler flags
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    -single)      do_dou=no ;;
-    -no_opt)      do_no_opt=yes ;;
-    -noredi*)     do_redirect=no ;;
-    -f77)         do_f90=no ;;
-    -purify)      do_purify=yes ;;
-    -mpichdir=*)  mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
-    -cgnsdir=*)   cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
+    -single)            do_dou=no ;;
+    -no_opt)            do_no_opt=yes ;;
+    -noredi*)           do_redirect=no ;;
+    -f77)               do_f90=no ;;
+    -purify)            do_purify=yes ;;
+    -mpichdir=*)        mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
+    -cgnsdir=*)         cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
+    -linux_compiler_flags=*)  linux_compiler_flags=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     *) echo unknown argument for Install
        cat << usage_end
 usage: Install  [options]
@@ -99,6 +102,7 @@ usage: Install  [options]
        -purify
        -mpichdir=DIR  where DIR is the mpich base directory
        -cgnsdir=DIR   where DIR is the cgns base directory
+       -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
 usage_end
        exit 1 ;;
   esac
@@ -167,7 +171,7 @@ fi
 
 for dir in /bin /usr/bin /usr/local/bin ; do
     if [ -x $dir/uname ] ; then
-	UNAME="$dir/uname"
+        UNAME="$dir/uname"
         break
     fi
 done
@@ -207,14 +211,14 @@ for LARCH in $ARCHLIST ; do
    #   LARCH4=`expr "$LARCH" : "\(....\)"`
    #   LARCH6=`expr "$LARCH" : "\(......\)"`
    case $LARCH in
-	AIX|RIOS) FARCH=rs6000; break ;;
-	HP-UX) FARCH=hpux ; break ;;
-	IRIX64|IRIX) FARCH=$LARCH ; break ;;
-	Linux)  FARCH=LINUX ; break ;;
-	i586|i486|i86pc)
-	    GARCH=$LARCH ;;
-	sun4*)
-	Version=`$UNAME -r`
+        AIX|RIOS) FARCH=rs6000; break ;;
+        HP-UX) FARCH=hpux ; break ;;
+        IRIX64|IRIX) FARCH=$LARCH ; break ;;
+        Linux)  FARCH=LINUX ; break ;;
+        i586|i486|i86pc)
+            GARCH=$LARCH ;;
+        sun4*)
+        Version=`$UNAME -r`
         # In "improving" SunOS, the useful feature of "substr" was withdrawn 
         # from expr. This means that we can't just use
         #   set MajorVersion = `expr substr $Version 1 1`
@@ -223,20 +227,20 @@ for LARCH in $ARCHLIST ; do
         MajorVersion=`expr "$Version" : "\(.\)"`
         if [ "$MajorVersion" -ge 5 ] ; then
             FARCH=solaris
-	else
-	    FARCH=sun4
-	fi
-	break ;;
-	hp9000*|hp7000*) FARCH=hpux ; break ;;
-	mips|dec-5000)   FARCH=dec5000 ; break ;;
+        else
+            FARCH=sun4
+        fi
+        break ;;
+        hp9000*|hp7000*) FARCH=hpux ; break ;;
+        mips|dec-5000)   FARCH=dec5000 ; break ;;
         IP12|iris-4d)    GARCH=IRIX ;;
 #       don't (yet) override the specific cray arch name with generic "CRAY" 
 #       cray|CRAY*)      GARCH=CRAY ;;
-        next)            FARCH=NeXT ; break ;;	
-	KSR1|KSR2)       FARCH=ksr ; break ;;	
+        next)            FARCH=NeXT ; break ;;  
+        KSR1|KSR2)       FARCH=ksr ; break ;;   
         FreeBSD)         FARCH=freebsd ; break ;;
-	i386)            GARCH=ipsc2 ;;
-	ULTRIX|RISC)     GARCH=dec5000 ;;
+        i386)            GARCH=ipsc2 ;;
+        ULTRIX|RISC)     GARCH=dec5000 ;;
    esac
    LLARCH=$LARCH
 done
@@ -244,23 +248,22 @@ done
 #   now set cray arch to the generic "CRAY", except for the T3E
 
 case $LLARCH in     
-	C90) GARCH=CRAY ;;
-	J90) GARCH=CRAY ;;
-	T90) GARCH=CRAY ;;
-	YMP) GARCH=CRAY ;;
+        C90) GARCH=CRAY ;;
+        J90) GARCH=CRAY ;;
+        T90) GARCH=CRAY ;;
+        YMP) GARCH=CRAY ;;
         SV1) GARCH=CRAY ;;
 esac
 
 if [ -z "$FARCH" ] ; then
     FARCH=$GARCH
     if [ -z "$FARCH" ] ; then
-	FARCH=$LLARCH
+        FARCH=$LLARCH
     fi
     if [ -z "$FARCH" ] ; then
-	FARCH=unknown
+        FARCH=unknown
     fi
 fi
-
 
 ####################################################
 #
@@ -417,9 +420,6 @@ case $FARCH in *)
   FTN="f90"
   CC="cc"
 
-# Intel 
-# CC="icc"
-
   if [ $do_f90 = no ]; then
      FTN="f77"
   fi
@@ -428,8 +428,13 @@ case $FARCH in *)
 
   FFLAG=""
   FFLAG_SPEC="$FFLAG"
-  LFLAG=""
+  LFLAG="-static"
   CFLAG="$PREC"
+
+# default libraries
+
+  LLIB_SEQ=""
+  LLIB=""
 
 # cpp (c-preprocessor) and cpp flags
 
@@ -465,16 +470,16 @@ case $FARCH in *)
 #    by MPI_LLIBDIR
 
   MPI_HOME="/usr"
-  MPI_INCDIR="$MPI_HOME/include"
-  MPI_LLIBDIR="$MPI_HOME/lib"
-  MPI_LLIB="mpi"
+  MPI_INCDIR="-I$MPI_HOME/include"
+  MPI_LLIBDIR="-L$MPI_HOME/lib"
+  MPI_LLIB="-lmpi"
   if [ ! x$mpichdir = x ];then
      if [ -d $mpichdir ]; then
         MPI_HOME=$mpichdir
 #       NOTE: mpich-1.1.2 structure!
-        MPI_INCDIR="$MPI_HOME/build/$FARCH/ch_p4/include"
-        MPI_LLIBDIR="$MPI_HOME/build/$FARCH/ch_p4/lib"
-        MPI_LLIB="mpich"
+        MPI_INCDIR="-I$MPI_HOME/build/$FARCH/ch_p4/include"
+        MPI_LLIBDIR="-L$MPI_HOME/build/$FARCH/ch_p4/lib"
+        MPI_LLIB="-lmpich"
      fi
   fi
 
@@ -496,8 +501,8 @@ case $FARCH in *)
   if [ ! x$cgnsdir = x ]; then
      if [ -d $cgnsdir ]; then
         CGNS_HOME="$cgnsdir"
-        CGNS_INCDIR="$CGNS_HOME"
-        CGNS_LLIBDIR="$CGNS_HOME/lib"
+        CGNS_INCDIR="-I$CGNS_HOME"
+        CGNS_LLIBDIR="-L$CGNS_HOME/lib"
         CGNS_LLIB=""
      fi
   fi
@@ -541,8 +546,8 @@ esac
 
 case $LLARCH in SV1)
   MPI_HOME="/opt/ctl/mpt/1.4.0.0"
-  MPI_INCDIR="$MPI_HOME/include"
-  MPI_LLIBDIR="$MPI_HOME/lib"
+  MPI_INCDIR="-I$MPI_HOME/include"
+  MPI_LLIBDIR="-L$MPI_HOME/lib"
   MAKEFILE="makefile_cpp"
   PREC_MPI=""
   PREC=""
@@ -591,7 +596,7 @@ case $FARCH in IRIX64)
      CGNS_LLIB="cgns.mips4_64"
   fi
   if [ x$mpichdir = x ]; then
-     MPI_LLIBDIR="$MPI_HOME/lib64"
+     MPI_LLIBDIR="-L$MPI_HOME/lib64"
   fi
   CFLAG="$CFLAG -64"
   if [ $do_purify = yes ];then
@@ -604,7 +609,7 @@ case $FARCH in IRIX64)
        CGNS_LLIB="cgns.mips4_32"
     fi
     if [ x$mpichdir = x ]; then
-       MPI_LLIBDIR="$MPI_HOME/lib32"
+       MPI_LLIBDIR="-L$MPI_HOME/lib32"
     fi
 
   fi
@@ -627,7 +632,7 @@ case $FARCH in rs6000)
   MAKEFILE="makefile_cpp"
   if [ x$mpichdir = x ]; then
      MPI_HOME="/usr/lpp/ppe.poe"
-     MPI_INCDIR="$MPI_HOME/include"
+     MPI_INCDIR="-I$MPI_HOME/include"
   fi
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.IBM"
@@ -685,15 +690,35 @@ esac
 #########################################
 
 case $FARCH in alpha)
+
+  FTN="fort"
+
+  CC="gcc"                                                                              
+  CPP="cpp"
+
   if [ $do_no_opt = no ]; then
-     FFLAG="-O4 -convert big_endian"
+     FFLAG="-O3 -fast -w -fpe3"
   else
-     FFLAG="-convert big_endian"
+     FFLAG=""
   fi
+
   FFLAG_SPEC="$FFLAG"
+  CFLAG=""
+  LLIB=""
+  LLIB_SEQ=""
+
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.ALPHA"
   fi
+
+  FFLAG_SPEC="$FFLAG"
+
+  if [ $do_dou = yes ]; then
+     PREC="-r8 -fpconstant"
+  else
+     PREC=""
+  fi
+
 esac
 
 #########################################
@@ -710,58 +735,140 @@ esac
 
 case $FARCH in LINUX)
 
+  CPPOPT_SP="$CPPOPT_SP -DLINUX"                                                        
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.linux"
+  fi
+
+# Default to INTEL:
+  CFLAG="-r8"                                                                        
+  FFLAG="-O2 -w -ip"                                                                      
+  FFLAG_SPEC="$FFLAG"                                                                
+  LFLAG="-static"                                                               
+  LLIB="-lsvml -lPEPCF90"                                                                            
+  LLIB_SEQ=$LLIB
+  LLIBDIR=""
+  MPI_LLIBDIR=""
+  MPI_LLIB=""
+  MPI_INCDIR=""
+  CC="gcc"
+  CPP="cpp"
+  FTN="mpif77"
+
+  if [ $do_dou = yes ]; then
+     PREC="-r8"
+  else
+     PREC=""
+  fi
+
+# Alternate compler choices you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+
 # Portland Group Compiler
-  FFLAG="-fast -tp p7 -byteswapio"
-
-# Alpha Compiler
-# FFLAG="-O2 -convert big_endian"
-
+#   FTN="pgf90"
 # Lahey Fujitsu Compiler
-# FFLAG="--o1 --ap"
-# Note: the following evironment variable must be set in order
+#   FTN="lf95"
+# Intel Fortan Compiler
+#   FTN="ifc"
+
+# Force alternate optimazation flags, etc. if not Intel compiler
+
+# Intel Compiler
+
+  if [ $linux_compiler_flags = Intel ]; then
+     CFLAG="-r8"
+     FFLAG="-O2 -w -ip"
+     FFLAG_SPEC="$FFLAG"
+     LFLAG="-static"
+     LLIB="-lsvml -lPEPCF90"
+     LLIB_SEQ=$LLIB
+     LLIBDIR=""
+     MPI_LLIBDIR=""
+     MPI_LLIB=""
+     MPI_INCDIR=""
+     CC="gcc"
+     CPP="cpp"
+     FTN="mpif77"
+     if [ $do_dou = yes ]; then
+        PREC="-r8"
+     else
+        PREC=""
+     fi
+  fi
+
+# Portland Group Compiler
+
+  if [ $linux_compiler_flags = PG ]; then
+     CFLAG=""
+     FFLAG="-fast"
+     FFLAG_SPEC="$FFLAG"
+     LFLAG="-Wl,-Bstatic"
+     LLIB=""
+     LLIB_SEQ=""
+     LLIBDIR=""
+     MPI_LLIBDIR=""
+     MPI_LLIB=""
+     MPI_INCDIR=""
+     CC="gcc"
+     CPP="cpp"
+     FTN="mpif77"
+     if [ $do_dou = yes ]; then
+        PREC="-r8"
+     else
+        PREC=""
+     fi
+  fi
+
+# Lahey Compiler
+
+  if [ $linux_compiler_flags = Lahey ]; then
+     CFLAG=""
+     FFLAG="-O --ap"
+     FFLAG_SPEC="$FFLAG"
+     LFLAG="--staticlink"
+     LLIB=""
+     LLIB_SEQ=""
+     LLIBDIR=""
+     MPI_LLIBDIR=""
+     MPI_LLIB=""
+     MPI_INCDIR=""
+     CC="gcc"
+     CPP="cpp"
+     FTN="mpif77"
+     if [ $do_dou = yes ]; then
+        PREC="--dbl"
+     else
+        PREC=""
+     fi
+  fi
+
+# ALPHA Compiler                                                                        
+                                                                                        
+  if [ $linux_compiler_flags = Alpha ]; then                                            
+     CFLAG=""                                                                           
+     FFLAG="-O3 -fast -w -fpe3"                                                                    
+     FFLAG_SPEC="$FFLAG"                                                                
+     LFLAG=""                                                               
+     LLIB=""                                                                            
+     LLIB_SEQ=""                                                                        
+     LLIBDIR=""                                                                         
+     MPI_LLIBDIR=""                                                                     
+     MPI_LLIB=""                                                                        
+     MPI_INCDIR=""                                                                      
+     CC="gcc"                                                                           
+     CPP="cpp"                                                                          
+     FTN="mpif77"                                                                       
+     if [ $do_dou = yes ]; then                                                         
+        PREC="-r8 -fpconstant"                                                                    
+     else                                                                               
+        PREC=""                                                                         
+     fi                                                                                 
+  fi
+
+# Note: the following environment variable must be set in order
 #       to use "bigendian" files (like those generated on an SGI)
 #       with the Lahey Fujitsu compiler
 #setenv FORT90L -Wl,-T
-
-# Intel Fortan Compiler
-# FFLAG="-O3 -tpp7 -w -ip"
-
-  FFLAG_SPEC="$FFLAG"
-  if [ $do_dou = yes ]; then
-
-#    Portland Group Compiler
-     PREC="-r8"
-
-# Alpha Compiler
-#    PREC="-r8"
-
-#    Lahey Fujitsu Compiler
-#    PREC="--dbl"
-
-# Intel Fortan Compiler
-#    PREC="-r8"
-
-  else
-
-     PREC=""
-
-  fi
-
-  CPP="cpp"
-
-# Portland Group Compiler
-  FTN="pgf90"
-
-# Alpha Compiler
-# FTN="fort"
-
-# Lahey Fujitsu Compiler
-# FTN="lf95"
-
-# Intel Fortan Compiler
-# FTN="ifc"
-
-  CPPOPT_SP="$CPPOPT_SP -DLINUX"
 
 esac
 
@@ -781,7 +888,6 @@ if [ ! x$cgnsdir = x ]; then
    fi
 fi
 
-
 ####################################################
 #
 #   CREATE ACTUAL MAKEFILE BY EDITING MAKEFILE.IN
@@ -795,21 +901,18 @@ fi
 
 # libraries
 
-LLIB="-l$MPI_LLIB"
+LLIB="$LLIB $MPI_LLIB"
 if [ ! x$cgnsdir = x ]; then
    LLIB="$LLIB -l$CGNS_LLIB"
-   LLIB_SEQ="-l$CGNS_LLIB"
+   LLIB_SEQ="$LLIB_SEQ -l$CGNS_LLIB"
 fi
-
-# Intel Fortran Compiler
-# LLIB="$LLIB -lsvml -lPEPCF90"
 
 # library directories
 
-LLIBDIR="-L$MPI_LLIBDIR"
+LLIBDIR="$MPI_LLIBDIR"
 if [ ! x$cgnsdir = x ]; then
-   LLIBDIR="$LLIBDIR -L$CGNS_LLIBDIR"
-   LLIBDIR_SEQ="-L$CGNS_LLIBDIR"
+   LLIBDIR="$LLIBDIR $CGNS_LLIBDIR"
+   LLIBDIR_SEQ="$CGNS_LLIBDIR"
 fi
 
 # include directories
@@ -817,9 +920,9 @@ fi
 # save off the non-prepended names for output to screen
 MPIINCDIR="$MPI_INCDIR"
 CGNSINCDIR="$CGNS_INCDIR"
-MPI_INCDIR="-I$MPI_INCDIR"
+MPI_INCDIR="$MPI_INCDIR"
 if [ ! x$cgnsdir = x ]; then
-   CGNS_INCDIR="-I$CGNS_INCDIR"
+   CGNS_INCDIR="$CGNS_INCDIR"
 fi
 
 echo ' '
@@ -923,14 +1026,24 @@ case $LLARCH in SV1)
    echo ' '
    echo 'On the SV1, use "mpirun -nt ..." rather than "mpirun -np ..."'
 esac
-case $LARCH in Linux)
+case $FARCH in LINUX)
    echo ' '
    echo 'NOTE: due to the variability of Linux installations,'
    echo 'available compilers, etc., it is not possible to'
    echo 'set FFLAGS, FTN, etc varables universally once'
-   echo 'Linux has been identified as the OS. See the section'
-   echo '"LINUX ARCHITECTURE" in the Install script for'
-   echo 'some values which have been used in the past -'
-   echo 'however these may well need to be tweeked for'
-   echo 'any particular installation'
+   echo 'Linux has been identified as the OS. The default flags'
+   echo 'are set for the Intel compiler; alternate flag settings'
+   echo 'for the Portland Group compiler or the Lahey-Fujitsu'
+   echo 'compiler may be obtained by rerunning this script with'
+   echo 'the the command line option -linux_compiler_flags=PG or'
+   echo '-linux_compiler_flags=Lahey or -linux_compiler_flags=Alpha'
+   echo ' '
+   echo 'Note the default Fortran compiler is currently set'
+   echo 'as mpif77 - if this does not work, you will need'
+   echo 'to change this: e.g. ifc, pgf90, etc.; also, make'
+   echo 'sure mpif77 is not pointing to /usr/bin/mpif77'
+   echo ' '
+   echo 'For certain implementations of MPI you may need to'
+   echo 'use the -noredirect install option and re-install to'
+   echo 'turn off input file redirection'
 esac
