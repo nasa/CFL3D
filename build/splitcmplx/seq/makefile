@@ -12,13 +12,14 @@ link: lncode lnhead
 lncode:
 	@ echo "        linking source code"
 	ln -s $(SPLITSRC)/*.F .
-	ln -s $(CFLSRC_S)/umalloc.F .
+	ln -s $(CFLSRC_D)/umalloc.F .
 	ln -s $(CFLSRC_S)/ufree.F .
-	ln -s $(CFLSRC_S)/umalloc_c.F .
+	ln -s $(CFLSRC_D)/umalloc_c.F .
 	ln -s $(CFLSRC_S)/ufree_c.F .
 	ln -s $(CFLSRC_S)/parser.F .
 	ln -s $(CFLSRC_S)/readkey.F .
 	ln -s $(CFLSRC_S)/outbuf.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -38,16 +39,25 @@ SOURCE = cfl3d_to_tlns3d.F  mapblk.F      movseg.F        spltsg.F \
 	 umalloc_c.F        ufree_c.F     readkey.F       parser.F \
 	 main_cmplx.F       outbuf.F
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F
 
 OBJECT = $(SOURCE:.F=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 SPLIT_HEAD  = 
 
 $(OBJECT): $(SPLIT_HEAD)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
-$(EXEC): $(SOURCE) $(OBJECT)
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(LLIBS)
+$(FOBJ_SPEC): $(SPLIT_HEAD)
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "

@@ -14,7 +14,7 @@ lncode:
 	ln -s  $(RONSRC)/*.F .
 	ln -s  $(CFLSRC_D)/cputim.F .
 	ln -s  $(CFLSRC_D)/writ_buf.F .
-	ln -s  $(CFLSRC_S)/umalloc.F .
+	ln -s  $(CFLSRC_D)/umalloc.F .
 	ln -s  $(CFLSRC_S)/ufree.F .
 	ln -s  $(CFLSRC_D)/patcher.F .
 	ln -s  $(CFLSRC_S)/lead.F .
@@ -46,6 +46,7 @@ lncode:
 	ln -s  $(CFLSRC_S)/transp.F .
 	ln -s  $(CFLSRC_S)/rotatp.F .
 	ln -s  $(CFLSRC_S)/ccomplex.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -65,15 +66,25 @@ SOURCE = arc.F        diagnos.F    extrae.F     newfit.F     rp3d.F \
 	 termn8.F     outbuf.F     transp.F     rotatp.F     umalloc.F \
 	 ufree.F      pre_patch.F  sizer.F      ccomplex.F   main.F
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F
+
 OBJECT = $(SOURCE:.F=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 RON_HEAD  =
 
 $(OBJECT): $(RON_HEAD)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
-$(EXEC): $(SOURCE) $(OBJECT)
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(LLIBS)
+$(FOBJ_SPEC): $(RON_HEAD)
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "

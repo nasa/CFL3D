@@ -15,11 +15,12 @@ lncode:
 	ln -s  $(PRERONSRC)/termn8.F .
 	ln -s  $(PRERONSRC)/usrint.F .
 	ln -s  $(PRERONSRC)/sizer.F .
-	ln -s  $(CFLSRC_S)/umalloc.F .
+	ln -s  $(CFLSRC_D)/umalloc.F .
 	ln -s  $(CFLSRC_S)/ufree.F .
 	ln -s  $(CFLSRC_S)/global2.F .
 	ln -s  $(CFLSRC_S)/outbuf.F .
 	ln -s  $(CFLSRC_S)/ccomplex.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -33,15 +34,25 @@ lnhead:
 SOURCE = global2.F    termn8.F    usrint.F    umalloc.F   ufree.F \
 	 sizer.F      outbuf.F    ccomplex.F  main_pre.F 
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F
+
 OBJECT = $(SOURCE:.F=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 PRERON_HEAD  = 
 
 $(OBJECT): $(PRERON_HEAD)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
-$(EXEC): $(SOURCE) $(OBJECT)
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(LLIBS)
+$(FOBJ_SPEC): $(PRERON_HEAD)
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "

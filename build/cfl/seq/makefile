@@ -13,6 +13,7 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_D)/*.F .
 	ln -s $(CFLSRC_S)/ccomplex.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -38,20 +39,31 @@ FSRC_DIST = \
 	wrest.F        wrestg.F       pre_bc.F       bc_embed.F \
 	updateg.F      compg2n.F      resetg.F       bc_period.F \
 	yplusout.F     sizer.F        cfl3d.F        trnsfr_vals.F \
-	updatedg.F     ae_corr.F      mgbl.F         setslave.F
+	updatedg.F     ae_corr.F      mgbl.F         setslave.F \
+	umalloc.F
+
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F
 
 FOBJ_DIST = $(FSRC_DIST:.F=.o)
 
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
+
 DISTLIB = libdist.a
 
-$(DISTLIB): $(FSRC_DIST) $(FOBJ_DIST)
-	ar $(AROPT) $(DISTLIB) $(FOBJ_DIST)
+$(DISTLIB): $(FSRC_DIST) $(FOBJ_DIST) $(FSRC_SPEC) $(FOBJ_SPEC)
+	ar $(AROPT) $(DISTLIB) $(FOBJ_DIST) $(FOBJ_SPEC)
 	@$(RANLIB) $(DISTLIB)
 
 HEAD_DIST = 
 
 $(FOBJ_DIST): $(HEAD_DIST)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+
+$(FOBJ_SPEC): $(HEAD_DIST)
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
 
 # *************************** CREATE EXECUTABLE ******************************
 

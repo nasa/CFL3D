@@ -416,6 +416,7 @@ case $FARCH in *)
 # compile/link flags
 
   FFLAG=""
+  FFLAG_SPEC="$FFLAG"
   LFLAG=""
   CFLAG="$PREC"
 
@@ -513,6 +514,7 @@ case $FARCH in CRAY)
   AROPT="ruc"
   RANLIB="ranlib"
   FFLAG="-Oscalar3,vector3"
+  FFLAG_SPEC="$FFLAG"
   INLINE="-Oinlinefrom=ccomplex.F"
 esac
 
@@ -533,6 +535,7 @@ case $LLARCH in SV1)
   AROPT="ruc"
   RANLIB="true"
   FFLAG="-Oscalar3,vector3,nopattern -a taskcommon"
+  FFLAG_SPEC="-O1 nopattern -a taskcommon"
   INLINE="-Oinlinefrom=ccomplex.F"
 esac
 
@@ -566,6 +569,7 @@ case $FARCH in IRIX64)
      FFLAG="-64"
      LFLAG="-64"
   fi
+  FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.mips4_64"
   fi
@@ -588,6 +592,7 @@ case $FARCH in rs6000)
      FFLAG="-O3 -qhot -qstrict -bmaxdata:190000000"
      FFLAG="$FFLAG -qarch=pwr2"
   fi
+  FFLAG_SPEC="$FFLAG"
   CPPOPT_SP="-DIBM -DP3D_SINGLE"
   MAKEFILE="makefile_cpp"
   if [ x$mpichdir = x ]; then
@@ -613,6 +618,7 @@ case $FARCH in sun|solaris)
   if [ $do_no_opt = no ]; then
      FFLAG="-O2"
   fi
+  FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.SOL"
   fi
@@ -631,6 +637,7 @@ case $FARCH in hpux)
         PREC="+autodblpad"
      fi
   fi
+  FFLAG_SPEC="$FFLAG"
   if [ $do_no_opt = no ]; then
      FFLAG="+U77 +FPOVZ +O2 "
   else
@@ -653,6 +660,7 @@ case $FARCH in alpha)
   else
      FFLAG="-convert big_endian"
   fi
+  FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
      CGNS_LLIB="cgns.ALPHA"
   fi
@@ -667,6 +675,7 @@ esac
 
 case $FARCH in LINUX)
    FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+  FFLAG_SPEC="$FFLAG"
   if [ $do_dou = yes ]; then
      PREC="-Mr8"
   else
@@ -738,6 +747,7 @@ sed -e "
 s;@ A MAKEFILE IS CREATED FROM THIS FILE VIA THE INSTALL SCRIPT @;;
 s;@FARCH@;$FARCH;g
 s;@FFLAG@;$FFLAG;g
+s;@FFLAG_SPEC@;$FFLAG_SPEC;g
 s;@PREC@;$PREC;g
 s;@PREC_MPI@;$PREC_MPI;g
 s;@LFLAG@;$LFLAG;g

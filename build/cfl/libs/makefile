@@ -16,6 +16,7 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_S)/*.F .
 	ln -s $(CFLSRC_S)/*.c .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -34,7 +35,7 @@ FSRC_LIBS = \
 	abcjz.F        colldat.F      dlutr.F        abckz.F \
 	collv.F        dlutrp.F       init.F         q8vrev.F \
 	collx.F        dsmin.F        initvist.F \
-	collxtb.F      expand.F       int2.F         addx.F \
+	collxtb.F      expand.F       int2.F \
 	extra.F        extrae.F       lead.F \
 	amafi.F        ffluxl.F       l2norm.F       bc_xmera.F \
 	amafj.F        dabciz.F       fhat.F         l2norm2.F \
@@ -81,7 +82,7 @@ FSRC_LIBS = \
 	mvdat.F        getibk.F       pre_embed.F    pre_period.F \
 	pre_patch.F    pre_cblki.F    pre_cblkj.F    pre_cblkk.F \
 	global.F       global2.F      bc.F           getibk0.F \
-	rpatch0.F      cntsurf.F      cctogp.F       umalloc.F \
+	rpatch0.F      cntsurf.F      cctogp.F \
 	ufree.F        modread.F      genforce.F     rotsurf.F \
 	trnsurf.F      tfiedge.F      tfiface.F      tfivol.F  \
         arclen.F       deform.F       bc_delt.F      getsurf.F \
@@ -94,20 +95,31 @@ FSRC_LIBS = \
 	rb_pred.F      rb_corr.F      init_rb.F      init_trim.F \
 	pltmode.F
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F addx.F
+
 CSRC_LIBS = bessel.c
 
 FOBJ_LIBS = $(FSRC_LIBS:.F=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 COBJ_LIBS = $(CSRC_LIBS:.c=.o)
 
 COMMONLIB = libcommon.a
 
-$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(CSRC_LIBS) $(COBJ_LIBS)
-	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(COBJ_LIBS) 
+$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
+	$(CSRC_LIBS) $(COBJ_LIBS)
+	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(FOBJ_SPEC) $(COBJ_LIBS) 
 	@$(RANLIB) $(COMMONLIB)
 
 $(FOBJ_LIBS): 
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+
+$(FOBJ_SPEC):
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
 
 $(COBJ_LIBS):
 	$(CC) $(CFLAG) -c $*.c

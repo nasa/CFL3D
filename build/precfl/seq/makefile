@@ -15,7 +15,7 @@ lncode:
 	ln -s $(CFLSRC_D)/sizer.F .
 	ln -s $(CFLSRC_D)/pointers.F .
 	ln -s $(CFLSRC_D)/compg2n.F .
-	ln -s $(CFLSRC_S)/umalloc.F .
+	ln -s $(CFLSRC_D)/umalloc.F .
 	ln -s $(CFLSRC_S)/ufree.F .
 	ln -s $(CFLSRC_D)/termn8.F .
 	ln -s $(CFLSRC_S)/outbuf.F .
@@ -36,6 +36,7 @@ lncode:
 	ln -s $(CFLSRC_S)/ccomplex.F .
 	ln -s $(CFLSRC_S)/cgnstools.F .
 	ln -s $(CFLSRC_S)/setseg.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -54,15 +55,25 @@ SOURCE = sizer.F       get_cmd_args.F   rpatch0.F        outbuf.F \
 	 global0.F     readkey.F        parser.F         ccomplex.F \
 	 cgnstools.F   setseg.F         main.F
 
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.F
+
 OBJECT = $(SOURCE:.F=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 PRE_HEAD  = 
 
 $(OBJECT): $(PRE_HEAD)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
-$(EXEC): $(SOURCE) $(OBJECT)
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(LLIBS)
+$(FOBJ_SPEC): $(PRE_HEAD)
+	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
