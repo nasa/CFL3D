@@ -170,6 +170,7 @@ c
 c
 c        write out x,y,z of modal surface
 c
+         ngd = 0
          do m = 1,2
             if (m.eq.1) then
                j    = 1
