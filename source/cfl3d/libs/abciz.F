@@ -1,6 +1,5 @@
       subroutine abciz(k,npl,jdim,kdim,idim,ai,bi,ci,blank)
 c
-c
 c     $Id$
 c
 c***********************************************************************
