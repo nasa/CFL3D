@@ -424,9 +424,10 @@ c
          end if
       end if
 c
-  100 format(/,1x,24hYPLUS STATISTICS - BLOCK,i3,
+  100 format(/,1x,46hYPLUS STATISTICS (endpts not included) - BLOCK,i3,
      .      6h (GRID,i3,1h))
-  101 format(/,1x,36hYPLUS STATISTICS - ALL GLOBAL BLOCKS)
+  101 format(/,1x,38hYPLUS STATISTICS (endpts not included),
+     .      20h - ALL GLOBAL BLOCKS)
   102 format(5x,6hY+ MAX,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
      .       2x,5hBLOCK,3x,4hGRID)
   103 format(5x,6hY+ MIN,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
