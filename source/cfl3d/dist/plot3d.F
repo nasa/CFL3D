@@ -6,7 +6,8 @@
      .                  jeg,keg,ieg,ninter,iindex,intmax,nsub1,
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
-     .                  mblk2nd,inpl3d,nblock,nblkpt,xv)
+     .                  mblk2nd,inpl3d,nblock,nblkpt,xv,
+     .                  sj,sk,si,vol)
 c
 c     $Id$
 c
@@ -65,6 +66,8 @@ c
      .          iindex(intmax,6*nsub1+9),nblkpt(maxxe),nblkk(2,mxbli),
      .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli), 
      .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
+      dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
+     .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
 c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -1373,10 +1376,12 @@ c
       if (k.eq.1) then
          kd  = 1
          kd1 = kd+1
+         kdx = 1
          m   = 2
       else
          kd  = kdim1
          kd1 = kd-1
+         kdx = kdim
          m   = 4
       end if
 c
@@ -1423,10 +1428,10 @@ c
      .                + q(j,kd1,id1,5) +q(j-1,kd1,id1,5))
       t1k3 = q5k3/q1k3
 c
-      dx = x(j,kd+1,i)-x(j,kd,i)
-      dy = y(j,kd+1,i)-y(j,kd,i)
-      dz = z(j,kd+1,i)-z(j,kd,i)
-      dn = sqrt(dx**2+dy**2+dz**2)
+      dn = (vol(j  ,kd,id )/sk(j  ,kdx,id ,4)+
+     +      vol(j-1,kd,id )/sk(j-1,kdx,id ,4)+
+     +      vol(j  ,kd,id1)/sk(j  ,kdx,id1,4)+
+     +      vol(j-1,kd,id1)/sk(j-1,kdx,id1,4))/4.
 c
       QA1 = sqrt(q2k1**2+q3k1**2+q4k1**2)
       QA2 = sqrt(q2k2**2+q3k2**2+q4k2**2)
@@ -1589,10 +1594,12 @@ c
       if (j.eq.1) then
          jd  = 1
          jd1 = jd+1
+         jdx = 1
          m   = 2
       else
          jd  = jdim1
          jd1 = jd-1
+         jdx = jdim
          m   = 4
       end if
 c
@@ -1627,22 +1634,22 @@ c
 c
 c     second cell center location - average in K and I
 c
-      q1j3 =       .25*(q(jd1,k,id,1)  +q(jd1-1,k-1,id,1)
-     .                + q(jd1,k,id1,1) +q(jd1-1,k-1,id1,1))
-      q2j3 =       .25*(q(jd1,k,id,2)  +q(jd1-1,k-1,id,2)
-     .                + q(jd1,k,id1,2) +q(jd1-1,k-1,id1,2))
-      q3j3 =       .25*(q(jd1,k,id,3)  +q(jd1-1,k-1,id,3)
-     .                + q(jd1,k,id1,3) +q(jd1-1,k-1,id1,3))
-      q4j3 =       .25*(q(jd1,k,id,4)  +q(jd1-1,k-1,id,4)
-     .                + q(jd1,k,id1,4) +q(jd1-1,k-1,id1,4))
-      q5j3 = gamma*.25*(q(jd1,k,id,5)  +q(jd1-1,k-1,id,5)
-     .                + q(jd1,k,id1,5) +q(jd1-1,k-1,id1,5))
+      q1j3 =       .25*(q(jd1,k,id,1)  +q(jd1,k-1,id,1)
+     .                + q(jd1,k,id1,1) +q(jd1,k-1,id1,1))
+      q2j3 =       .25*(q(jd1,k,id,2)  +q(jd1,k-1,id,2)
+     .                + q(jd1,k,id1,2) +q(jd1,k-1,id1,2))
+      q3j3 =       .25*(q(jd1,k,id,3)  +q(jd1,k-1,id,3)
+     .                + q(jd1,k,id1,3) +q(jd1,k-1,id1,3))
+      q4j3 =       .25*(q(jd1,k,id,4)  +q(jd1,k-1,id,4)
+     .                + q(jd1,k,id1,4) +q(jd1,k-1,id1,4))
+      q5j3 = gamma*.25*(q(jd1,k,id,5)  +q(jd1,k-1,id,5)
+     .                + q(jd1,k,id1,5) +q(jd1,k-1,id1,5))
       t1j3 = q5j3/q1j3
 c
-      dx = x(jd+1,k,i)-x(jd,k,i)
-      dy = y(jd+1,k,i)-y(jd,k,i)
-      dz = z(jd+1,k,i)-z(jd,k,i)
-      dn = sqrt(dx**2+dy**2+dz**2)
+      dn = (vol(jd,k  ,id )/sj(jdx,k  ,id ,4)+
+     +      vol(jd,k-1,id )/sj(jdx,k-1,id ,4)+
+     +      vol(jd,k  ,id1)/sj(jdx,k  ,id1,4)+
+     +      vol(jd,k-1,id1)/sj(jdx,k-1,id1,4))/4.
 c
       QA1 = sqrt(q2j1**2+q3j1**2+q4j1**2)
       QA2 = sqrt(q2j2**2+q3j2**2+q4j2**2)
@@ -1810,10 +1817,12 @@ c
       if (i.eq.1) then
          id  = 1
          id1 = id+1
+         idx = 1
          m   = 2
       else
          id  = idim1
          id1 = id-1
+         idx = idim
          m   = 4
       end if
 c
@@ -1860,10 +1869,10 @@ c
      .                + q(j-1,k,id1,5) +q(j-1,k-1,id1,5))
       t1i3 = q5i3/q1i3
 c
-      dx = x(j,k,id+1)-x(j,k,id)
-      dy = y(j,k,id+1)-y(j,k,id)
-      dz = z(j,k,id+1)-z(j,k,id)
-      dn = sqrt(dx**2+dy**2+dz**2)
+      dn = (vol(j  ,k  ,id)/si(j  ,k  ,idx,4)+
+     +      vol(j  ,k-1,id)/si(j  ,k-1,idx,4)+
+     +      vol(j-1,k  ,id)/si(j-1,k  ,idx,4)+
+     +      vol(j-1,k-1,id)/si(j-1,k-1,idx,4))/4.
 c
       QA1 = sqrt(q2i1**2+q3i1**2+q4i1**2)
       QA2 = sqrt(q2i2**2+q3i2**2+q4i2**2)
