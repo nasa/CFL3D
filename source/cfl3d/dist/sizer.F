@@ -277,6 +277,8 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
       common /moov/ movie,nframes,icall1,lhdr
       common /elastic_ss/ idef_ss
       common /memory/ memadd,memaddi
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
 c
       icall  = 0
       memuse = 0
@@ -1171,7 +1173,12 @@ c              Baldwin-Lomax
      .               ivisc(1).eq.4) then
 c              Baldwin-Barth
                iwk1=1
-               iwk5=iwk1+(jdim+1)*(kdim+1)*(idim+1)
+               iset=i2d*i2d
+               if (iturbord .eq. 1) then
+                 iwk5=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+               else
+                 iwk5=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))
+               end if
                inmx=(kdim-1)*(jdim-1)
                iwk6=iwk5+inmx
                iwk7=iwk6+inmx
@@ -1194,8 +1201,13 @@ c              Baldwin-Barth
      .               ivisc(1).eq.5) then
 c              Spalart
                iwk1=1
-               iwk3=iwk1+(jdim+1)*(kdim+1)*(idim+1)
-               iwk4=iwk3+(jdim+1)*(kdim+1)*(idim+1)
+               iset=i2d*i2d
+               if (iturbord .eq. 1) then
+                 iwk3=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
+               else
+                 iwk3=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))
+               end if
+               iwk4=iwk3+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
                inmx=(kdim-1)*(jdim-1)
                iwk5=iwk4+inmx
                iwk6=iwk5+inmx
@@ -1218,8 +1230,13 @@ c              Spalart
      .               ivisc(1).ge.6) then
 c              Two-equation turb models
                iwk1=1
-               iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1)*2
-               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1)
+               iset=i2d*i2d
+               if (iturbord .eq. 1) then
+                 iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*iset))*2
+               else
+                 iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*iset))*2
+               end if
+               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*iset))
                inmx=(kdim-1)*(jdim-1)
                iwk6=iwk5+inmx
                iwk7=iwk6+inmx
