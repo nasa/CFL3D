@@ -1528,17 +1528,17 @@ c
  1006 format(' ','  i=idim  freestream                     type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
- 2001 format('bcnonin ','  j=   1  NONINERTIAL bc type 1000',
+ 2001 format(' ','  j=   1  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2002 format('bcnonin ','  j=jdim  NONINERTIAL bc type 1000',
+ 2002 format(' ','  j=jdim  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 2003 format('bcnonin ','  k=   1  NONINERTIAL bc type 1000',
+ 2003 format(' ','  k=   1  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2004 format('bcnonin ','  k=kdim  NONINERTIAL bc type 1000',
+ 2004 format(' ','  k=kdim  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 2005 format('bcnonin ','  i=   1  NONINERTIAL bc type 1000',
+ 2005 format(' ','  i=   1  NONINERTIAL freestream         type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 2006 format('bcnonin ','  i=idim  NONINERTIAL bc type 1000',
+ 2006 format(' ','  i=idim  NONINERTIAL freestream         type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return

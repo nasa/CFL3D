@@ -625,17 +625,17 @@ c     Uinf + r x omega is the same as Uinf - omega x r
   600 continue
       end if
 c
- 1001 format('bcnonin ','  j=   1  NONINERTIAL bc type 1000',
+ 1001 format(' ','  j=   1  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1002 format('bcnonin ','  j=jdim  NONINERTIAL bc type 1000',
+ 1002 format(' ','  j=jdim  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  k=',i3,',',i3)
- 1003 format('bcnonin ','  k=   1  NONINERTIAL bc type 1000',
+ 1003 format(' ','  k=   1  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1004 format('bcnonin ','  k=kdim  NONINERTIAL bc type 1000',
+ 1004 format(' ','  k=kdim  NONINERTIAL freestream         type 1000',
      .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1005 format('bcnonin ','  i=   1  NONINERTIAL bc type 1000',
+ 1005 format(' ','  i=   1  NONINERTIAL freestream         type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1006 format('bcnonin ','  i=idim  NONINERTIAL bc type 1000',
+ 1006 format(' ','  i=idim  NONINERTIAL freestream         type 1000',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
 c
       return
