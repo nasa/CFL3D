@@ -12,8 +12,8 @@ link: lncode lnhead
 lncode:
 	@ echo "        linking source code"
 	ln -s $(TOOLSSRC)/*.F .
-	ln -s $(CFLSRC_S)/umalloc_r.F .
-	ln -s $(CFLSRC_S)/umalloc_c.F .
+	ln -s $(CFLSRC_D)/umalloc_r.F .
+	ln -s $(CFLSRC_D)/umalloc_c.F .
 	ln -s $(CFLSRC_S)/ufree_r.F .
 	ln -s $(CFLSRC_S)/ufree_c.F .
 	ln -s $(CFLSRC_S)/readkey.F .
@@ -22,6 +22,7 @@ lncode:
 	ln -s $(CFLSRC_S)/outbuf.F .
 	ln -s $(CFLSRC_S)/cgnstools.F  .
 	ln -s $(CFLSRC_D)/termn8.F .
+	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -39,18 +40,29 @@ lnhead:
 
 # **************************** CREATE EXECUTABLES ****************************
 
-SOURCELIBS = umalloc_c.f ufree_c.f umalloc_r.f ufree_r.f
+SOURCELIBS = umalloc_c.f ufree_c.f umalloc_r.f ufree_r.f \
+	readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f
+
+#place routines needing special compilation flags (e.g low-level optimization)
+#in FSRC_SPEC...include a fake routine in case there are no others
+
+FSRC_SPEC = fake.f
 
 OBJECTLIBS = $(SOURCELIBS:.f=.o)
 
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
+
 LIBS = libs.a
 
-$(LIBS): $(SOURCELIBS) $(OBJECTLIBS)
-	ar $(AROPT) $(LIBS) $(OBJECTLIBS)
+$(LIBS): $(SOURCELIBS) $(OBJECTLIBS) $(FSRC_SPEC) $(FOBJ_SPEC)
+	ar $(AROPT) $(LIBS) $(OBJECTLIBS) $(FOBJ_SPEC)
 	@$(RANLIB) $(LIBS)
 
 $(OBJECTLIBS):
 	$(FTN) $(FFLAG) -c $*.f
+
+$(FOBJ_SPEC):
+	$(FTN) $(FFLAG_SPEC) -c $*.f
 
 SOURCE1  = grid_perturb_cmplx.f 
 SOURCE2  = grid_perturb.f
@@ -60,7 +72,7 @@ SOURCE5  = plot3dg_to_cgns.f
 SOURCE6  = XINTOUT_to_ovrlp.f
 SOURCE7  = p3d_to_INGRID.f
 SOURCE8  = INGRID_to_p3d.f
-SOURCE9  = readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f cfl3d_to_pegbc.f
+SOURCE9  = cfl3d_to_pegbc.f
 SOURCE10 = everyother_xyz.f
 SOURCE11 = initialize_field.f
 SOURCE12 = p3d_to_cfl3drst.f
