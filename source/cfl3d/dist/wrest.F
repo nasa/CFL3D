@@ -780,22 +780,23 @@ c   write cell-centered plot3d files of current grid and averaged q's
      +              (((int(blank(j,k,i)),
      +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
         end if
-c   need to switch y and z if ialph .ne. 0
-        if (ialph .ne. 0) then
-          do i=1,idim-1
-            do j=1,jdim-1
-              do k=1,kdim-1
-                temp=qavg(j,k,i,3)
-                qavg(j,k,i,3)=qavg(j,k,i,4)
-                qavg(j,k,i,4)=-temp
-              enddo
-            enddo
-          enddo
-        end if
 c   xnumavg is used to store the number of averaged iterations so far
         write(97) xmach,alpha,reue,xnumavg
+        if (ialph .eq. 0) then
         write(97) ((((qavg(j,k,i,m),i=1,idim-1),j=1,jdim-1),
      +    k=1,kdim-1),m=1,5) 
+        else
+        write(97) (((qavg(j,k,i,1),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1),
+     +            (((qavg(j,k,i,2),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1),
+     +            (((qavg(j,k,i,4),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1),
+     +            (((-qavg(j,k,i,3),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1),
+     +            (((qavg(j,k,i,5),i=1,idim-1),j=1,jdim-1),
+     +    k=1,kdim-1)
+        end if
         end if
       end if
 c
