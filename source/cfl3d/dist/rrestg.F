@@ -170,7 +170,7 @@ c
 c     itime2read=1=default=YES, read 2nd order time-accurate turb info
 c     itime2read=0=NO, do not read (for use with older CFL3D 2nd-order
 c                  time-accurate restart files, which was missing this info)
-         if (itime2read .eq. 1) then
+         if (itime2read .ne. 0) then
          read(2) dtold
          read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .               l=1,2)
