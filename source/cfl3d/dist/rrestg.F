@@ -100,6 +100,7 @@ c
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
+      common /maxiv/ ivmx
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
      .                  omegaxmc,omegaymc,omegazmc,xorigmc,yorigmc,
      .                  zorigmc,xorig0mc,yorig0mc,zorig0mc,thetaxmc,
@@ -167,8 +168,12 @@ c     itime2read=0=NO, do not read (for use with older CFL3D 2nd-order
 c                  time-accurate restart files, which was missing this info)
          if (itime2read .ne. 0) then
          read(2) dtold
+         if (ivmx .ge. 4) then
          read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .               l=1,2)
+         else
+         read(2) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
+         end if
          end if
       else
 #if defined CGNS
@@ -176,7 +181,7 @@ c                  time-accurate restart files, which was missing this info)
      +    '' file for block '',i4)') nbl
          call rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +     ialph,qc0,tursav2,dtold)
+     +     ialph,qc0,tursav2,dtold,ivmx)
 #endif
       end if
       if (dtold .ne. dt) then
@@ -204,6 +209,7 @@ c
 c        fill in edge values of tursav2 array for safety before passing
 c        the data to the appropriate node
 c
+         if (ivmx .ge. 4) then
          do i=1,idim
             k = kdim
             do j=1,jdim1
@@ -220,6 +226,7 @@ c
                tursav2(j,k,i,4) = 0.
             end do
          end do
+         end if
 c
       end if
 #if defined DIST_MPI
@@ -235,6 +242,7 @@ c
          call MPI_Recv(qc0,jkim5,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
       end if
+      if (ivmx .ge. 4) then
       jki4 = jdim*kdim*idim*4
       mytag = itag_tursav + nbl
       if (myid .eq. myhost) then
@@ -243,6 +251,7 @@ c
       else if (myid .eq. mblk2nd(nbl)) then
          call MPI_Recv(tursav2,jki4,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
+      end if
       end if
       mytag = itag_dtold + nbl
       nvals=1

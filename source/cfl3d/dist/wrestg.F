@@ -82,6 +82,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
+      common /maxiv/ ivmx
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
      .                  omegaxmc,omegaymc,omegazmc,xorigmc,yorigmc,
      .                  zorigmc,xorig0mc,yorig0mc,zorig0mc,thetaxmc,
@@ -136,6 +137,7 @@ c
             call MPI_Recv(qc0,jkim5,MY_MPI_REAL,
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
+         if (ivmx .ge. 4) then
          jki4 = jdim*kdim*idim*4
          mytag = itag_tursav + nbl
          if (myid .eq. mblk2nd(nbl)) then
@@ -144,6 +146,7 @@ c
          else if (myid .eq. myhost) then
             call MPI_Recv(tursav2,jki4,MY_MPI_REAL,
      .                    nd_srce,mytag,mycomm,istat,ierr)
+         end if
          end if
 c
 #endif
@@ -159,14 +162,20 @@ c
             write(2) dt
 c   only need to store old values of turb quantities (j,k,i,1) and
 c   (j,k,i,2), NOT the deltaQ's = (j,k,i,3) and (j,k,i,4):
+            if (ivmx .ge. 4) then
             write(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),
      .                   i=1,idim1),l=1,2)
+            else
+            zero=0.
+            write(2) ((((zero,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
+            end if
          else
 #if defined CGNS
          write(11,'('' writing 2nd order time data to cgns file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
+     +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
+     +                ivmx)
 #endif
          end if
          end if

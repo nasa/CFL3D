@@ -4634,7 +4634,8 @@ c
       end
 c
       subroutine wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
+     +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
+     +                   ivmx)
 c**********************************************************************
 c     Purpose: Writes qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) for 2nd order
@@ -4678,6 +4679,7 @@ c                       1 if 2-D (rind data to be output only in j-
 c                          and k- directions) (integer)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
+c      ivmx............ turb model number for CFL3D (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
@@ -4784,6 +4786,7 @@ c   Pressure:
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   First turb quantity:
+      if (ivmx .ge. 4) then
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  tursav2,wk,wk,wk,wk,wk,wk,4,1,2,wk)
       if (idouble .eq. 1) then
@@ -4806,13 +4809,14 @@ c   Second turb quantity:
      +                      'TurbVal2LastDT', wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
+      end if
 c
       return
       end
 c
       subroutine rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                   jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +                   ialph,qc0,tursav2,dtold)
+     +                   ialph,qc0,tursav2,dtold,ivmx)
 c**********************************************************************
 c     Purpose: Reads qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) & dt for 2nd order
@@ -4845,6 +4849,7 @@ c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      dt...............current time step (real)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
+c      ivmx............ turb model number for CFL3D (integer)
 c   OUTPUTS:
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
@@ -4959,7 +4964,8 @@ c   Read Q's:
       enddo
 c
 c   Now get 2nd order turb quantities (they may not exist if this
-c   is reading an older file)
+c   is reading an older file, or if last run was not turbulent)
+      if (ivmx .ge. 4) then
       numwanted=2
       fndesired(1)='TurbVal1LastDT'
       fndesired(2)='TurbVal2LastDT'
@@ -4995,6 +5001,7 @@ c   Read old turb quantities:
         call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,tursav2(1,1,1,m))
         enddo
+      end if
       end if
 c
 c   Go to Base node, read CFL3DTimeStep array from UserDefinedData
