@@ -331,9 +331,9 @@ c
 c
 c     free memory
 c
-      call deallocate(x)
-      call deallocate(y)
-      call deallocate(z)
+      deallocate(x)
+      deallocate(y)
+      deallocate(z)
 c
       return
       end
