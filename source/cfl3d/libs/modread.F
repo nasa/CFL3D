@@ -76,10 +76,7 @@ c
 c
       do 100 ns = 1,nseg
 c
-      lbc = iabs(jbcinfo(nbl,ns,1,m))
-      if (naesrf.gt.0) then
-         lbc = abs(jbcinfo(nbl,ns,1,m))*jbcinfo(nbl,ns,6,m)
-      end if
+      lbc = abs(jbcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -149,9 +146,6 @@ c
       do 200 ns = 1,nseg
 c
       lbc = abs(kbcinfo(nbl,ns,1,m))
-      if (naesrf.gt.0) then
-         lbc = abs(kbcinfo(nbl,ns,1,m))*kbcinfo(nbl,ns,6,m)
-      end if
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -221,9 +215,6 @@ c
       do 300 ns = 1,nseg
 c
       lbc = abs(ibcinfo(nbl,ns,1,m))
-      if (naesrf.gt.0) then
-         lbc = abs(ibcinfo(nbl,ns,1,m))*ibcinfo(nbl,ns,6,m)
-      end if
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
