@@ -1,4 +1,4 @@
-      program ronnie
+      program main
 c
 c     $Id$
 c
