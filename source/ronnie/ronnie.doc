@@ -1,0 +1,474 @@
+     COMPILING AND RUNNING RONNIE:
+
+     1) start with a ronnie input file, say ronnie.inp, created using
+        the guidelines below in GENERAL NOTES ON PATCHING
+
+     2) compile the preronnie sizing code via:
+
+            f77 -o preronnie preronnie.f
+
+            note: the file precfl.h, provided with the ronnie source code,
+            must reside in the same directory
+
+     3) use preronnie to generate the requisite ron.h parameter file
+        for the particular case in hand via:
+
+             preronnie < ronnie.inp
+
+     4) compile ronnie using the makefile for the appropriate machine,
+        e.g.:
+
+             make -f makeronnie_sgi
+
+     5) run ronnie via:
+
+             ronnie <ronnie.inp
+
+     6) Hint: the first time you run ronnie for a new case, it is
+        advisable to run without creating coarser grids (set ncg=0
+        for all zones). This will insure that the block numbers and 
+        patch interfaces in the ronnie output will be the same as
+        in the ronnie input file. When coarser grids are used, ronnie
+        renumbers them and the patch interface numbers in the same
+        way that cfl3d does, so it is far more difficult to follow
+        things in the output relative to the input. When all the
+        fine grids are successfully patched, set ncg>0 and rerun.
+
+     GENERAL NOTES ON PATCHING:
+
+         i) The spacing normal to a block interface should be continuous
+            through the interface.  This need not be strictly true, but
+            the closer the better.
+        ii) A pair of local coordinates xie,eta with corresponding discrete
+            values j,k are introduced on each side of a patch interface. The
+            table below shows the relationships between these local coordinates
+            and the the global (block) coordinate indices i,j,k.  Patch
+            interfaces may lie along (global) coordinate surfaces i=constant,
+            j=constant or k=constant.
+
+               Patch Interface Type (Global)    Global index    Local index
+   
+                     i=constant                       j           j (xie)
+                                                      k           k (eta)
+
+                     j=constant                       k           j (xie)
+                                                      i           k (eta)
+
+                     k=constant                       j           j (xie)
+                                                      i           k (eta)
+
+       iii) For any of the ninter interpolations, more than one block may
+            lie on the "from" side of a patch interface (ifrom > 1, see below).
+            If so, then each "from" block will have its own local xie,eta
+            coordinate system; however as there is only one block for each
+            "to" side, only one xie,eta system is defined on that side of the
+            interface.
+        iv) Viscous surfaces should correspond (in local coordinates) to
+            j=1 (xie=0) and/or k=1 (eta=0). 
+
+         v) The patch algorithm works as follows: for each cell node on
+            the "to" side, a local polynomial fit (see below) relates the
+            physical coordinates x,y,z to the patch surface coordinates
+            xie,eta on the "to" side.  The "to" cell centers xc,yc,zc are
+            then backed out by setting xie,eta to 0.5,0.5.  Similarly, on
+            the "from" side, a polynomal fit relates the physical coordinates
+            of each cell node to the local coordinates on that side.  A search
+            is then done on the "from" side to find the xie,eta coordinates
+            xiec,etac corresponding to xc,yc,zc.  If requested, corrections
+            to xiec and etac are done to insure that the xie=0 and/or eta=0
+            boundaries on either side of the patch interface are coincident
+            (this is especially important on viscous boundaries).  
+
+
+
+
+
+
+
+             EXPLANATION OF INPUT PARAMETERS FOR RONNIE PREPROCESOR
+
+  ****************************** LINE TYPE ONE ******************************
+
+      iput/output files - up to 60 characters long,starting in column 1
+
+      in order, must specify names for the following files (one per line):
+
+            grid.......................................................binary
+
+            output.....................................................ascii 
+
+            output (interpolation coeff's read in by cfl3d)............binary
+
+
+  ****************************** LINE TYPE TWO ******************************
+
+     title describing case
+
+
+  ****************************** LINE TYPE THREE ***************************
+
+     ngrid   - number of grids input = abs(ngrid)
+             > 0  cfl3d grid format
+             < 0  plot3d/tlns3d format (3d/whole/mg)
+
+               CFL3D format (alpha measured in x-z plane):
+                do 10 n=1,ngrid
+                read() jdim(n),kdim(n),idim(n)
+                read() (((x(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n)),
+              .        (((y(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n)),
+              .        (((z(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n))
+        10      continue
+
+
+               PLOT3D/TLNS3D format (alpha measured in x-y plane):
+                read() ngrid
+                read() (idim(n),jdim(n),kdim(n),n=1,ngrid)
+                do 10 n=1,ngrid
+                read() (((x(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n)),
+              .        (((y(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n)),
+              .        (((z(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n))
+        10      continue
+
+          Note: CFL3D assumes that alpha is measured in the x-z plane. Thus,
+                for an aircraft-like configuration, x runs "streamwise", y runs
+                "spanwise" and z runs "normal". CFL3D style grids are assumed
+                to follow this convention. An alternative convention is
+                to have z run "spanwise" and y run "normal", so that alpha is
+                measured in the x-y plane (TLNS3D uses this convention). The
+                second convention is used by default for PLOT3D-style grids.
+                PLOT3D grids with alpha measured in the x-z can be accommodated
+                by altering the parameter ialph in subroutine rp3d:
+
+                ialph = 0 alpha measured in x-z plane for PLOT3D-style grids
+                      > 0 alpha measured in x-y plane for PLOT3D-style grids
+
+                remember to change ialph back for the next case!
+
+
+  **************************** LINE TYPE FOUR ******************************
+                 (DATA FOR LINE TYPE THREE REPEATED NGRID TIMES)
+
+
+     ncg  - number of coarser grids to construct for multigrid/mesh 
+             sequencing  (= 0 for embedded mesh)
+
+     iem  - embedded mesh flag
+          = 0 for global grid
+          = l level of this embedded grid above global grid level
+
+     grid dimensions:
+     idim - number of points in i-direction
+
+     jdim - number of points in j-direction
+
+     kdim - number of points in k-direction
+
+
+  **************************** LINE TYPE FIVE ****************************
+
+     ninter - total number of block interpolations
+
+     NOTE:  A patched grid with two-way communication between the grids on 
+            either side of the patch requires block interpolations in both
+            directions.  For example, a three-block grid with two blocks on
+            one side and the remaining block on the other side of a single
+            patch interface would require ninter=3, whereas a three-block 
+            grid with two patch interfaces (one block on either side of each
+            interface) would require ninter=4.  Each of the ninter 
+            interpolations corresponds to interpolating "to" a particular
+            boundary of a given block "from" the boundaries of one or more
+            different blocks.
+
+  *************************** LINE TYPE SIX *******************************
+             (DATA FOR LINE TYPE FIVE REPEATED NINTER TIMES)
+
+        int - interplolation number
+
+      iifit - type of fit
+            = 1 bi-linear fit
+            = 2 serendipity (degenerate) bi-quadratic fit
+            = 3 quadratic fit in xie, linear fit in eta 
+            = 4 linear fit in xie, quadratic fit in eta
+
+        NOTE: if iifit is negative on input (with absolute value equal to
+              one of the four values above), then a plot3d file is output
+              for this patch interface. The file is in /mg/for format, and,
+              in order, contains: all the "from" interfaces, the "to" interface
+              and the interpolated cell centers of the "to" interface.
+  
+     llimit - maximum step size (number of cells) to use in search routine
+     iitmax - maximum number of iterations allowed to find each "to" cell 
+     mmcxie - flag to indicate whether the xie=0 boundaries on either side 
+              of the patch interface are to be rendered coincident. (generally
+              required if xie=0 corresponds to a viscous surface).
+            = 0   do not render the xie=0 boundaries coincident
+            > 100 render the xie=0 boundaries coincident
+            1-100 the code will try to decide whether or not the boundaries 
+                  should be rendered coincident.  The larger the value, the 
+                  greater the number differences between the two boundaries
+                  can be before deciding they should not be rendered 
+                  coincident.
+              Note: for multiple "from" blocks, in which multiple xie,eta 
+                    coordinate systems are defined, the proper xie=0 boundary
+                    to consider is the one closest to the xie=0 boundary on 
+                    the "to" side.
+     mmceta - same as mmcxie, but pertaining to the eta=0 boundary.
+
+       iic0 - flag for C-0 continuous boundaries; an extra diagnostic 
+              check is performed on the interpolation coefficients to 
+              insure that local vules of xie and eta are equal to 0.5
+              (to within a set tolerance). Also resets iifit, mmcxie,
+              mmceta to values most robust for C-0 interfaces. Also, the
+              flag turns off the projection step in the inversion routine. 
+
+     iiorph - flag to allow points which cannot be located by the search
+              routine to be flagged as "orphan" points, and to be marked
+              as being "interpolated" from block 0. 
+              
+            = 0  do not allow orhpan points.
+            = 1  allow orphan points
+
+              The coding in CFL3D (version 4.0 and later)
+              is such that points marked as interpolated from block 0 are 
+              in fact *not* interpolated. USE THIS OPTION WITH CAUTION!!
+              The option can be useful in certain situations, for example,
+              for exposed flap edges. However, extreme care must be taken
+              since with the orphan option turned on, ronnie has no way of
+              telling the differnece between points that really are orphans
+              and those that are outside the legal range of xi and eta due 
+              to other factors - like input errors. Thus, it is strongly
+              suggested that iifit be set negative on input, so that plot3d
+              output is generated. If the orphan flag is set, then the plot3d
+              output is written in mg/for/blank format. The last two grids
+              in the resulting fort.xx plot3d files are the interpolated cell
+              centers for the non-orphan points and the cell centers of the
+              orphan points. These plot3d files must be checked to make sure
+              that the orphan points have been set correctly. NOTE: shearing
+              or arc-length corrections to render viscous surfaces cannot be
+              done when orphans are present. If portions of the boundaries
+              need to be rendered coincident, then a block face containing 
+              orphans should be broken up into multiple segments, with orphan
+              points segregated into specific segments. Then, those segments
+              that do not contain oprhan points may be rendered coincident 
+              with an opposing block via the mmcxie and mmeta parameters.
+ 
+ 
+     GENERAL GUIDELINES:
+
+             iifit: This is the most important parameter for successful 
+                    completion of the search routine.  For viscous grids,
+                    a general rule of thumb is to use a quadratic fit in 
+                    the local coordinate corresponding to the tangential 
+                    direction along the viscous surface, and a linear fit 
+                    in the local coordinate  corresponding to the viscous
+                    direction.  Alternatively, use a quadratic fit in the
+                    local direction for which the grid curvature is highest.
+                    Patch surfaces with high curvature in both directions may
+                    require the bi-quadratic fit, but experience shows this
+                    is the most difficult option to converge the search with.
+                    If the user has chosen a particular fit (other than a 
+                    bi-linear fit) and the search routine is not successful 
+                    using that fit for a particular "to" cell, the code 
+                    will back off and try a lower order fit for that cell,
+                    and print a message as to what type of fit it is using.
+                    For the next cell, the fit returns to the input value.
+                    If this happens for a large number of cells, its probably 
+                    best to start over, using whatever fit (if any) the code 
+                    finds to work in the problem cells.   
+
+                    C-0 meshes are best done with iifit = 1 
+
+            llimit: 5 is a good value to start with.  For stubborn convergence
+                    of the search routine changing llimit (usually to a 
+                    smaller value) may help.
+            iitmax: 20 is a good value to start with.  For stubborn convergence,
+                    increasing iitmax may help.  If llimit is decreased, it
+                    may be necessary to increase iitmax.
+
+             NOTE:  experience indicate the suggested values for llimit and
+                    iitmax are relatively robust. if problems occur in the 
+                    searching algorithm, other factors are *generally* the 
+                    cause. However, if no other cause for a search routine
+                    failure can be identified, try taking llimit = 1 and
+                    iitmax = (max grid dimension on the patch interface).
+
+        mmcxie/eta: These input parameters (as well as iifit) require that the 
+                    user have a clear picture of the local patch interface
+                    coordinate system (see notes ii-iv above).  In many 
+                    cases, but certainly not all, the boundaries should be
+                    rendered coincident.  Important exceptions include cases
+                    in which the global coordinates run in different 
+                    directions on either side of the patch interface, and
+                    some (but not all) cases in which more than one block
+                    lies on the "from" side.  It is recommended that the user
+                    decide before hand whether the boundaries should be 
+                    rendered coincident and use a value of mmcxie/eta of
+                    0 or > 100 accordingly.
+
+
+  *************************** LINE TYPE SEVEN ****************************
+             (DATA FOR LINE TYPE SEVEN REPEATED NINTER TIMES)
+
+        int - interplolation number
+
+        ito - block number/topology of "to" surface
+              ("to" refers to the block being interpolated)
+              See note below.
+
+       xie1 - starting index in xie for which interpolation coefficients 
+              will be found on "to" side of interface
+ 
+       xie2 - ending index in xie for which interpolation coefficients
+              will be found on "to" side of interface
+
+       eta1 - starting index in eta for which interpolation coefficients  
+              will be found on "to" side of interface
+ 
+       eta2 - ending index in eta for which interpolation coefficients
+              will be found on "to" side of interface
+
+       NOTE:  if the entire range is desired, a shortcut is to input zeros
+              for the begining and ending indicies
+
+        nfb - number of block boundaries which make up the "from" side of the
+              patch surface ("from" refers to the block(s) from which the
+              interpolations are made)
+                      
+      ifrom - block number/topology of "from" surface(s)
+
+     NOTE:  The general form is ifrom (or ito) = Nmn, 
+            where N  indicates the global block number of the block
+                  m  indicates the generalized coodinate which is constant
+                     along the patch surface (m=1 implies i=const, m=2 implies
+                     j=const, and m=3 implies k=const), and 
+                  n  indicates on which of the two possible m=constant surfaces
+                     the patch occurs (n=1 implies the patch occurs on m=1,
+                     while n=2 implies the patch occurs on m=mmax) e.g :
+
+            = 0111 patching occurs along the i=1 boundary  of block 1
+
+            = 0112 patching occurs along the i=imax boundary of block 1
+
+            = 0121 patching occurs along the j=1 boundary of block 1
+                        
+            = 0122 patching occurs along the j=jmax boundary of block 1
+  
+            = 0131 patching occurs along the k=1 boundary of block 1
+                        
+            = 0132 patching occurs along the k=kmax boundary of block 1
+
+------------------------------------------------------------------------------
+
+
+NEWEST_FEATURES
+
+1) Ronnie now supports 2 input file styles. The new style was added to 
+allow user-specified search range on from side - this should
+overcome some difficult search problems at the expense of additional
+user input.
+
+2) Ronnie has been modified to increase robustness when attempting
+to determine interpolation data on coarser levels. In the past, the
+search routines would sometimes fail on coarser levels, despite having
+successfully determined all the corresponding stencils on a finer
+level. Now, if the routines initially fail on a coarser level, ronnie
+will set coarser level stencils by collocating fine grid data.
+
+3) A preprocessor (preronnie) has been developed for ronnie. Operation 
+of preronnie is similar to precfl3d: after compiling, type
+
+preronnie <ronnie.inp
+
+where preronnie is the name of the executable, and ronnie.inp is the
+ronnie input file. Preronnie will then create or modify the parameter
+file ron1.h as needed for the particular case, and will suggest whether
+recompilation of ronnie is needed or not.
+
+preronnie may compiled simply as f77 preronnie.f (or f90 preronnie.f) -
+single precision is sufficient. NOTE: preronnie uses the same include
+file (precfl.h) as precfl3d, so this file must also be available in the 
+directory in which preronnie is compiled.  
+
+4) The file names created when diagnostic plot3d output is generated
+(either automatically or by setting ifit<0) have been changed. The old
+file names where fort.xx, where xx is the interpolation number. The
+new file names are denoted by patch_p3d.xx. The new names avoid the
+limit on some systems of creating a file past fort.99.
+
+
+
+The differences between the old and new styles are described below:
+
+OLD Style:
+
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+Title
+.
+.
+.
+
+NEW Style:
+
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+IOFLAG  ITRACE
+1       -1
+Title
+.
+.
+.
+
+where: ioflag = 1 allows new input format as indicated below
+              = 0 for the old input format (where all the "from"
+                  blocks are on one line)
+  
+       itrace = -1....no tracing
+              =  0....save trace from last cell only
+              = +1....save trace from all cells searched so far 
+                      (may give big file!)
+
+       itrace .ne. -1 primarily intended for the code developer
+
+
+
+
+OLD Style:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB  FROM  FROM  FROM  FROM...
+   1  0112      0     0      0      0     1  0411
+   2  0212      0     0      0      0     1  0411 
+   3  0312      1   113      0      0     1  0411
+   4  0312    113   245      0      0     1  0411
+   5  0312    245   337      0      0     1  0411
+   6  0411      0     0      0      0     3  0112  0212  0312
+   7  0412      0     0      0      0     1  0511
+   8  0511      0     0      0      0     1  0412
+
+
+NEW Style:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB (one per int)
+      FROM   XIE1  XIE2   ETA1   ETA2       (repeat nfb times for each int)
+   1  0112      0     0      0      0     1  
+      0411      0     0      0      0
+   2  0212      0     0      0      0     1
+      0411      0     0      0      0
+   3  0312      1   113      0      0     1
+      0411      0     0      0      0
+   4  0312    113   245      0      0     1
+      0411      0     0      0      0
+   5  0312    245   337      0      0     1
+      0411      0     0      0      0
+   6  0411      0     0      0      0     3  
+      0112      0     0      0      0
+      0212      1    21      1     97
+      0312      0     0      0      0
+   7  0412      0     0      0      0     1
+      0511      0     0      0      0
+   8  0511      0     0      0      0     1
+      0412      0     0      0      0
