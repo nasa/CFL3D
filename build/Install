@@ -706,25 +706,51 @@ esac
 # any particular installation
 
 case $FARCH in LINUX)
+
 # Portland Group Compiler
   FFLAG="-O0 -Mdalign -tp p6 -Mbyteswapio"
+
+# Alpha Compiler
+# FFLAG="-O2 -convert big_endian"
+
 # Lahey Compiler
 # FFLAG="--o1 --ap"
+# Note: the following evironment variable must be set in order
+#       to use "bigendian" files (like those generated on an SGI)
+#       with the Lahey compiler
+#setenv FORT90L -Wl,-T
+
   FFLAG_SPEC="$FFLAG"
   if [ $do_dou = yes ]; then
+
 #    Portland Group Compiler
      PREC="-r8"
+
+# Alpha Compiler
+#    PREC="-r8"
+
 #    Lahey Compiler
 #    PREC="--dbl"
+
   else
+
      PREC=""
+
   fi
+
   CPP="cpp"
+
 # Portland Group Compiler
-  FTN="/usr/local/pgi/linux86/bin/pgf90"
+  FTN="pgf90"
+
+# Alpha Compiler
+# FTN="fort"
+
 # Lahey Compiler
-#  FTN="lf95"
+# FTN="lf95"
+
   CPPOPT_SP="$CPPOPT_SP -DLINUX"
+
 esac
 
 ####################################################
