@@ -36,8 +36,6 @@ c
       common /elastic/ ndefrm,naesrf
       common /reyue/ reue,tinf,ivisc(3)
 c
-      alphw = radtodeg*alpha
-c
 c     output convergence history for mean-flow equations
 c
       write(12,2) (real(title(i)),i=1,20)
@@ -59,6 +57,9 @@ c                             b) ialph = 1 residual,cl,cd,cz,cmz
 c            = 1....control surface: residual,mass flow,pressure force,
 c                   viscous force,thrust (momentum) force 
 c                   (forces are sums in x+y+z directions)
+c            = 2....enhanced standard: ALL force/moment coefficients
+c                   are output (thus there is no need to distinguish
+c                   between ialpha=0 and ialpha=1)
 c 
       if (ihstry.eq.0) then
          if (ialph .eq.0) then
@@ -84,7 +85,7 @@ c
      .      real(clw(n)),real(cdw(n)),real(czw(n)),real(cmzw(n))
  3001       continue
          end if
-      else
+      else if (ihstry.eq.1) then
          write(12,'('' Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
      .   real(fmdotw(ntt)),real(cftpw(ntt)),real(cftvw(ntt)),
      .   real(cftmomw(ntt))
@@ -95,7 +96,25 @@ c
          write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .   real(fmdotw(n)),real(cftpw(n)),real(cftvw(n)),real(cftmomw(n))
  3100    continue
-
+      else
+         write(12,'('' Final cl,cd       ='',2e13.5)')
+     .   real(clw(ntt)),real(cdw(ntt))
+         write(12,'('' Final cx,cy,cz    ='',3e13.5)')
+     .   real(cxw(ntt)),real(cyw(ntt)),real(czw(ntt))
+         write(12,'('' Final cmx,cmy,cmz ='',3e13.5)')
+     .   real(cmxw(ntt)),real(cmyw(ntt)),real(cmzw(ntt))
+         write(12,*)
+         write(12,'(''    it     log(res)           cl'',
+     .   ''           cd           cx           cy'',
+     .   ''           cz          cmx          cmy'',
+     .   ''          cmz'')')
+         write(12,*)
+         do n=1,ntt
+            if(real(rms(n)) .le. 0.) rms(n)=1.
+            write(12,'(i6,9e13.5)') n,log10(real(rms(n))),
+     .      real(clw(n)),real(cdw(n)),real(cxw(n)),real(cyw(n)),
+     .      real(czw(n)),real(cmxw(n)),real(cmyw(n)),real(cmzw(n))
+         end do
       end if
 c
 c     output convergence history for field equation turb. model
