@@ -167,10 +167,13 @@ c
 c
             iflag = 1
 c
-            i1 = kbcinfo(nbl,nseg,2,m)
-            i2 = kbcinfo(nbl,nseg,3,m)
-            j1 = kbcinfo(nbl,nseg,4,m)
-            j2 = kbcinfo(nbl,nseg,5,m)
+c   do not include endpoints of segment, to avoid nonphysical behavior
+            i1 = kbcinfo(nbl,nseg,2,m)+1
+            i2 = kbcinfo(nbl,nseg,3,m)-1
+            j1 = kbcinfo(nbl,nseg,4,m)+1
+            j2 = kbcinfo(nbl,nseg,5,m)-1
+            if (i1 .gt. i2) i1=i2
+            if (j1 .gt. j2) j1=j2
 c
 #if defined DIST_MPI
             if (myid .ne. myhost) then
@@ -614,10 +617,14 @@ c
          if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004) then
 c
             iflag = 1
-            i1 = jbcinfo(nbl,nseg,2,m)
-            i2 = jbcinfo(nbl,nseg,3,m)
-            k1 = jbcinfo(nbl,nseg,4,m)
-            k2 = jbcinfo(nbl,nseg,5,m)
+c
+c   do not include endpoints of segment, to avoid nonphysical behavior
+            i1 = jbcinfo(nbl,nseg,2,m)+1
+            i2 = jbcinfo(nbl,nseg,3,m)-1
+            k1 = jbcinfo(nbl,nseg,4,m)+1
+            k2 = jbcinfo(nbl,nseg,5,m)-1
+            if (i1 .gt. i2) i1=i2
+            if (k1 .gt. k2) k1=k2
 c
 #if defined DIST_MPI
             if (myid .ne. myhost) then
@@ -1067,10 +1074,13 @@ c
 c
             iflag = 1
 c
-            j1 = ibcinfo(nbl,nseg,2,m)
-            j2 = ibcinfo(nbl,nseg,3,m)
-            k1 = ibcinfo(nbl,nseg,4,m)
-            k2 = ibcinfo(nbl,nseg,5,m)
+c   do not include endpoints of segment, to avoid nonphysical behavior
+            j1 = ibcinfo(nbl,nseg,2,m)+1
+            j2 = ibcinfo(nbl,nseg,3,m)-1
+            k1 = ibcinfo(nbl,nseg,4,m)+1
+            k2 = ibcinfo(nbl,nseg,5,m)-1
+            if (j1 .gt. j2) j1=j2
+            if (k1 .gt. k2) k1=k2
 c
 #if defined DIST_MPI
             if (myid .ne. myhost) then
