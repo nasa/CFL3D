@@ -2197,7 +2197,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       jend1 = jend-1
       kend1 = kend-1
@@ -2432,7 +2432,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /maxiv/ ivmx
 c
@@ -2950,7 +2950,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /wallfun/ iwf(3)
 c
@@ -3518,7 +3518,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -4203,7 +4203,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -4805,7 +4805,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /maxiv/ ivmx
 c
@@ -5352,7 +5352,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -6041,7 +6041,7 @@ c
       character*80 filname
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /maxiv/ ivmx
 c
@@ -6546,7 +6546,7 @@ c
 #   endif
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       twopi = 8.0*atan(1.0)
 c

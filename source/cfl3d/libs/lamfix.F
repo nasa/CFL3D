@@ -13,7 +13,7 @@ c
 #   endif
 c
       dimension smin(jdim-1,kdim-1,idim-1)
-      dimension bcdata(mdim,ndim,2,7)
+      dimension bcdata(mdim,ndim,2,12)
 c
 c  J-dir:
       if (nface .eq. 3) then

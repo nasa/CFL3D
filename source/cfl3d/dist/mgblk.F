@@ -119,8 +119,8 @@ c
      .          jdimg(maxbl),kdimg(maxbl),idimg(maxbl),nblcg(maxbl),
      .          jsg(maxbl),ksg(maxbl),isg(maxbl),jeg(maxbl),keg(maxbl),
      .          ieg(maxbl),mit(5,maxbl)
-      dimension bcvali(maxbl,maxseg,7,2),
-     .          bcvalj(maxbl,maxseg,7,2),bcvalk(maxbl,maxseg,7,2),
+      dimension bcvali(maxbl,maxseg,12,2),
+     .          bcvalj(maxbl,maxseg,12,2),bcvalk(maxbl,maxseg,12,2),
      .          nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
      .          nbck0(maxbl),nbckdim(maxbl),ibcinfo(maxbl,maxseg,7,2),
      .          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)

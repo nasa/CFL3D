@@ -31,7 +31,7 @@ c
      .          xp(jdim,kdim,idim),yp(jdim,kdim,idim),
      .          zp(jdim,kdim,idim) 
       dimension xyzjp(kdim,idim,3),xyzkp(jdim,idim,3),xyzip(jdim,kdim,3) 
-      dimension bcdata(mdim,ndim,2,7),period_miss(lbcprd)
+      dimension bcdata(mdim,ndim,2,12),period_miss(lbcprd)
       dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
 c
       common /conversion/ radtodeg

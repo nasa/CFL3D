@@ -115,8 +115,8 @@ c
      .          perturb(nmds,maxaes,4)
       dimension aesrfdat(5,maxaes)
       dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
-      dimension bcvali(maxbl,maxseg,7,2),
-     .          bcvalj(maxbl,maxseg,7,2),bcvalk(maxbl,maxseg,7,2),
+      dimension bcvali(maxbl,maxseg,12,2),
+     .          bcvalj(maxbl,maxseg,12,2),bcvalk(maxbl,maxseg,12,2),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
      .          kbcinfo(maxbl,maxseg,7,2)
 c
@@ -333,17 +333,17 @@ c
          iii   = nlast
          do nbl=1,maxbl
             do nseg=1,maxseg
-               do mm=1,7
+               do mm=1,12
                   do ll=1,2
                      iii = iii + 1
                      work(iii) = bcvali(nbl,nseg,mm,ll)
-                     work(iii+maxbl*maxseg*14) = bcvalj(nbl,nseg,mm,ll)
-                     work(iii+maxbl*maxseg*28) = bcvalk(nbl,nseg,mm,ll)
+                     work(iii+maxbl*maxseg*24) = bcvalj(nbl,nseg,mm,ll)
+                     work(iii+maxbl*maxseg*48) = bcvalk(nbl,nseg,mm,ll)
                   end do
                end do
             end do
          end do
-         nlast = nlast + maxbl*maxseg*42
+         nlast = nlast + maxbl*maxseg*72
 c
 c        keyword data
 c
@@ -406,7 +406,7 @@ c
          nlast = nlast+nkey
       end if
 c
-      nvals = 30*maxbl + 42*maxbl*maxseg   + 52   + 11*nmds*maxaes
+      nvals = 30*maxbl + 72*maxbl*maxseg   + 52   + 11*nmds*maxaes
      .      + 5*maxaes + 17*maxbl*maxsegdg + nkey
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
@@ -566,17 +566,17 @@ c
          iii   = nlast
          do nbl=1,maxbl
             do nseg=1,maxseg
-               do mm=1,7
+               do mm=1,12
                   do ll=1,2
                      iii = iii + 1
                      bcvali(nbl,nseg,mm,ll) = work(iii)
-                     bcvalj(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*14)
-                     bcvalk(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*28)
+                     bcvalj(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*24)
+                     bcvalk(nbl,nseg,mm,ll) = work(iii+maxbl*maxseg*48)
                   end do
                end do
             end do
          end do
-         nlast = nlast + maxbl*maxseg*42
+         nlast = nlast + maxbl*maxseg*72
 c
 c        keyword data
 c

@@ -13,8 +13,7 @@ c     file that can subsequently be viewed in order to help sort out
 c     any problems with the modal surface data.
 c***********************************************************************
       character*21 titlemode
-      dimension bcvali(maxbl,maxseg,7,2),bcvalj(maxbl,maxseg,7,2),
-     .          nblg(maxgr),nbci0(maxbl),nbcidim(maxbl),
+      dimension nblg(maxgr),nbci0(maxbl),nbcidim(maxbl),
      .          nbcj0(maxbl),nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
      .          kbcinfo(maxbl,maxseg,7,2),nsegdfrm(maxbl),

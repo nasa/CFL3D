@@ -606,7 +606,7 @@ c
          ns = 0
          if (iuns.gt.0) ns=jmkm*3*2
 c
-c........bcdataj(npts,mpts,2,7)
+c........bcdataj(npts,mpts,2,12)
 c        2000 series bc data for j-boundaries
 c        lwdat further subdivides the pointers starting at lw(42,nbl)
 c        to indicate a starting location for each boundary segment
@@ -619,21 +619,21 @@ c
          lwdat(nbl,nseg,3) = lw(42,nbl) + ns1
          if(jbcinfo(nbl,nseg,7,1).ne.0) ns1 = ns1 +
      .       (jbcinfo(nbl,nseg,3,1)-jbcinfo(nbl,nseg,2,1))*
-     .       (jbcinfo(nbl,nseg,5,1)-jbcinfo(nbl,nseg,4,1))*7*2
+     .       (jbcinfo(nbl,nseg,5,1)-jbcinfo(nbl,nseg,4,1))*12*2
  2600    continue
          do 2610 nseg=1,nbcjdim(nbl)
          lwdat(nbl,nseg,4) = lw(42,nbl) + ns1
          if(jbcinfo(nbl,nseg,7,2).ne.0) ns1 = ns1 +
      .       (jbcinfo(nbl,nseg,3,2)-jbcinfo(nbl,nseg,2,2))*
-     .       (jbcinfo(nbl,nseg,5,2)-jbcinfo(nbl,nseg,4,2))*7*2
+     .       (jbcinfo(nbl,nseg,5,2)-jbcinfo(nbl,nseg,4,2))*12*2
  2610    continue
 c
          ns = ns + ns1
          if (myid.eq.myhost .and. mpihost.eq.1) then
-            ns = jbcmax*7*2
+            ns = jbcmax*12*2
          end if
 c
-c........bcdatak(npts,mpts,2,7)
+c........bcdatak(npts,mpts,2,12)
 c        2000 series bc data for k-boundaries
 c        lwdat further subdivides the pointers starting at lw(43,nbl)
 c        to indicate a starting location for each boundary segment
@@ -646,21 +646,21 @@ c
          lwdat(nbl,nseg,5) = lw(43,nbl) + ns1
          if(kbcinfo(nbl,nseg,7,1).ne.0) ns1 = ns1 +
      .       (kbcinfo(nbl,nseg,3,1)-kbcinfo(nbl,nseg,2,1))*
-     .       (kbcinfo(nbl,nseg,5,1)-kbcinfo(nbl,nseg,4,1))*7*2
+     .       (kbcinfo(nbl,nseg,5,1)-kbcinfo(nbl,nseg,4,1))*12*2
  2620    continue
          do 2630 nseg=1,nbckdim(nbl)
          lwdat(nbl,nseg,6) = lw(43,nbl) + ns1
          if(kbcinfo(nbl,nseg,7,2).ne.0) ns1 = ns1 +
      .       (kbcinfo(nbl,nseg,3,2)-kbcinfo(nbl,nseg,2,2))*
-     .       (kbcinfo(nbl,nseg,5,2)-kbcinfo(nbl,nseg,4,2))*7*2
+     .       (kbcinfo(nbl,nseg,5,2)-kbcinfo(nbl,nseg,4,2))*12*2
  2630    continue
 c
          ns = ns + ns1
          if (myid.eq.myhost .and. mpihost.eq.1) then
-            ns = kbcmax*7*2
+            ns = kbcmax*12*2
          end if
 c
-c........bcdatai(npts,mpts,2,7)
+c........bcdatai(npts,mpts,2,12)
 c        2000 series bc data for i-boundaries
 c        lwdat further subdivides the pointers starting at lw(44,nbl)
 c        to indicate a starting location for each boundary segment
@@ -673,18 +673,18 @@ c
          lwdat(nbl,nseg,1) = lw(44,nbl)+ns1
          if(ibcinfo(nbl,nseg,7,1).ne.0) ns1 = ns1 +
      .       (ibcinfo(nbl,nseg,3,1)-ibcinfo(nbl,nseg,2,1))*
-     .       (ibcinfo(nbl,nseg,5,1)-ibcinfo(nbl,nseg,4,1))*7*2
+     .       (ibcinfo(nbl,nseg,5,1)-ibcinfo(nbl,nseg,4,1))*12*2
  2640    continue
          do 2650 nseg=1,nbcidim(nbl)
          lwdat(nbl,nseg,2) = lw(44,nbl)+ns1
          if(ibcinfo(nbl,nseg,7,2).ne.0) ns1 = ns1 +
      .       (ibcinfo(nbl,nseg,3,2)-ibcinfo(nbl,nseg,2,2))*
-     .       (ibcinfo(nbl,nseg,5,2)-ibcinfo(nbl,nseg,4,2))*7*2
+     .       (ibcinfo(nbl,nseg,5,2)-ibcinfo(nbl,nseg,4,2))*12*2
  2650    continue
 c
          ns = ns + ns1
          if (myid.eq.myhost .and. mpihost.eq.1) then
-            ns = ibcmax*7*2
+            ns = ibcmax*12*2
          end if
 c
 c........xib2(jdim,kdim,idim,4)

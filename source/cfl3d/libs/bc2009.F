@@ -36,7 +36,7 @@ c
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),
      .          sj(jdim,kdim,idim-1,5)
-      dimension bcdata(mdim,ndim,2,7)
+      dimension bcdata(mdim,ndim,2,12)
       dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),

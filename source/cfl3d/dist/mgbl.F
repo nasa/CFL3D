@@ -151,8 +151,8 @@ c
      .          gforcnm(2*nmds,maxaes),gforcs(2*nmds,maxaes),
      .          stm(2*nmds,2*nmds,maxaes),stmi(2*nmds,2*nmds,maxaes),
      .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes)
-      dimension bcvali(maxbl,maxseg,7,2),
-     .          bcvalj(maxbl,maxseg,7,2),bcvalk(maxbl,maxseg,7,2),
+      dimension bcvali(maxbl,maxseg,12,2),
+     .          bcvalj(maxbl,maxseg,12,2),bcvalk(maxbl,maxseg,12,2),
      .          nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
      .          nbck0(maxbl),nbckdim(maxbl),ibcinfo(maxbl,maxseg,7,2),
      .          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)

@@ -72,8 +72,8 @@ c
       dimension im(11),iv(maxbl),iindex(intmax,2*nsub1+9)
       dimension lig(maxbl),lbg(maxbl),ibpntsg(maxbl,4),iipntsg(maxbl)
       dimension inpl3d(nplots,11),inpr(nplots,11),ipl3dtmp(11,nplots)
-      dimension bcvali(maxbl,maxseg,7,2),bcvalj(maxbl,maxseg,7,2),
-     .          bcvalk(maxbl,maxseg,7,2),nbci0(maxbl),nbcidim(maxbl),
+      dimension bcvali(maxbl,maxseg,12,2),bcvalj(maxbl,maxseg,12,2),
+     .          bcvalk(maxbl,maxseg,12,2),nbci0(maxbl),nbcidim(maxbl),
      .          nbcj0(maxbl),nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
      .          jbcinfo(maxbl,maxseg,7,2),ibcinfo(maxbl,maxseg,7,2),
      .          kbcinfo(maxbl,maxseg,7,2),bcfilei(maxbl,maxseg,2),
@@ -1208,7 +1208,7 @@ c
       ibcinfo(nbl,iseg,6,1) = 0
       if(ifo.eq.1 .or. ifo.eq.3)ibcinfo(nbl,iseg,6,1) = 1
       bcfilei(nbl,iseg,1) = 1
-      do 1206 mm=1,7
+      do 1206 mm=1,12
       bcvali(nbl,iseg,mm,1) = -1.e15
  1206 continue
       do 1201 iseg=1,nbci0(nbl)
@@ -1396,7 +1396,7 @@ c
          ibcinfo(nbl,nseg,6,1) = ibcinfo(nbl-1,nseg,6,1)
          ibcinfo(nbl,nseg,7,1) = ibcinfo(nbl-1,nseg,7,1)
          bcfilei(nbl,nseg,1)   = bcfilei(nbl-1,nseg,1)
-         do 1279 l=1,7
+         do 1279 l=1,12
          bcvali(nbl,nseg,l,1) = bcvali(nbl-1,nseg,l,1)
  1279    continue
       end if
@@ -1464,7 +1464,7 @@ c
       ibcinfo(nbl,iseg,6,2) = 0
       if(ifo.eq.2 .or. ifo.eq.3)ibcinfo(nbl,iseg,6,2) = 1
       bcfilei(nbl,iseg,2) = 1
-      do 1306 mm=1,7
+      do 1306 mm=1,12
       bcvali(nbl,iseg,mm,2) = -1.e15
  1306 continue
       do 1301 iseg=1,nbcidim(nbl)
@@ -1636,7 +1636,7 @@ c
          ibcinfo(nbl,nseg,6,2) = ibcinfo(nbl-1,nseg,6,2)
          ibcinfo(nbl,nseg,7,2) = ibcinfo(nbl-1,nseg,7,2)
          bcfilei(nbl,nseg,2)   = bcfilei(nbl-1,nseg,2)
-         do 1379 l=1,7
+         do 1379 l=1,12
          bcvali(nbl,nseg,l,2) = bcvali(nbl-1,nseg,l,2)
  1379    continue
       end if
@@ -1704,7 +1704,7 @@ c
       jbcinfo(nbl,iseg,6,1) = 0
       if(jfo.eq.1 .or. jfo.eq.3)jbcinfo(nbl,iseg,6,1) = 1
       bcfilej(nbl,iseg,1) = 1
-      do 1406 mm=1,7
+      do 1406 mm=1,12
       bcvalj(nbl,iseg,mm,1) = -1.e15
  1406 continue
       do 1401 iseg=1,nbcj0(nbl)
@@ -1876,7 +1876,7 @@ c
          jbcinfo(nbl,nseg,6,1) = jbcinfo(nbl-1,nseg,6,1)
          jbcinfo(nbl,nseg,7,1) = jbcinfo(nbl-1,nseg,7,1)
          bcfilej(nbl,nseg,1)   = bcfilej(nbl-1,nseg,1)
-         do 1479 l=1,7
+         do 1479 l=1,12
          bcvalj(nbl,nseg,l,1) = bcvalj(nbl-1,nseg,l,1)
  1479    continue
       end if
@@ -1943,7 +1943,7 @@ c
       jbcinfo(nbl,iseg,6,2) = 0
       if(jfo.eq.2 .or. jfo.eq.3)jbcinfo(nbl,iseg,6,2) = 1
       bcfilej(nbl,iseg,2) = 1
-      do 1506 mm=1,7
+      do 1506 mm=1,12
       bcvalj(nbl,iseg,mm,2) = -1.e15
  1506 continue
       do 1501 iseg=1,nbcjdim(nbl)
@@ -2115,7 +2115,7 @@ c
          jbcinfo(nbl,nseg,6,2) = jbcinfo(nbl-1,nseg,6,2)
          jbcinfo(nbl,nseg,7,2) = jbcinfo(nbl-1,nseg,7,2)
          bcfilej(nbl,nseg,2)   = bcfilej(nbl-1,nseg,2)
-         do 1579 l=1,7
+         do 1579 l=1,12
          bcvalj(nbl,nseg,l,2) = bcvalj(nbl-1,nseg,l,2)
  1579    continue
       end if
@@ -2182,7 +2182,7 @@ c
       kbcinfo(nbl,iseg,6,1) = 0
       if(kfo.eq.1 .or. kfo.eq.3)kbcinfo(nbl,iseg,6,1) = 1
       bcfilek(nbl,iseg,1) = 1
-      do 1606 mm=1,7
+      do 1606 mm=1,12
       bcvalk(nbl,iseg,mm,1) = -1.e15
  1606 continue
       do 1601 iseg=1,nbck0(nbl)
@@ -2353,7 +2353,7 @@ c
          kbcinfo(nbl,nseg,6,1) = kbcinfo(nbl-1,nseg,6,1)
          kbcinfo(nbl,nseg,7,1) = kbcinfo(nbl-1,nseg,7,1)
          bcfilek(nbl,nseg,1)   = bcfilek(nbl-1,nseg,1)
-         do 1679 l=1,7
+         do 1679 l=1,12
          bcvalk(nbl,nseg,l,1) = bcvalk(nbl-1,nseg,l,1)
  1679    continue
       end if
@@ -2420,7 +2420,7 @@ c
       kbcinfo(nbl,iseg,6,2) = 0
       if(kfo.eq.2 .or. kfo.eq.3)kbcinfo(nbl,iseg,6,2) = 1
       bcfilek(nbl,iseg,2) = 1
-      do 1706 mm=1,7
+      do 1706 mm=1,12
       bcvalk(nbl,iseg,mm,2) = -1.e15
  1706 continue
       do 1710 iseg=1,nbckdim(nbl)
@@ -2591,7 +2591,7 @@ c
          kbcinfo(nbl,nseg,6,2) = kbcinfo(nbl-1,nseg,6,2)
          kbcinfo(nbl,nseg,7,2) = kbcinfo(nbl-1,nseg,7,2)
          bcfilek(nbl,nseg,2)   = bcfilek(nbl-1,nseg,2)
-         do 1779 l=1,7
+         do 1779 l=1,12
          bcvalk(nbl,nseg,l,2) = bcvalk(nbl-1,nseg,l,2)
  1779    continue
 c

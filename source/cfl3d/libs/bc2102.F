@@ -33,7 +33,7 @@ c
       dimension xtbj(kdim,idim-1,3,2),xtbk(jdim,idim-1,3,2),
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
-      dimension bcdata(mdim,ndim,2,7)
+      dimension bcdata(mdim,ndim,2,12)
       dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),

@@ -72,7 +72,7 @@ c
       dimension nou(nbuf)
       dimension datai0(jdim,kdim,ldim,4)
       dimension datapi(jdimp,kdimp,2,ldim)
-      dimension bcdata(mdim,ndim,2,7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)

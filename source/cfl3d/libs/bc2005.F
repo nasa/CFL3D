@@ -81,7 +81,7 @@ c
       dimension vp(jdimp,kdimp,idimp),tp(jdimp,kdimp,idimp,2)
       dimension q(jdim,kdim,idim,5), qi0(jdim,kdim,5,4),
      .          qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4)
-      dimension bcdata(mdim,ndim,2,7)
+      dimension bcdata(mdim,ndim,2,12)
       dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),

@@ -20,20 +20,20 @@ c
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
-      dimension bcdata(mdim,ndim,2,7),bcdat(7),mblk2nd(maxbl)
+      dimension bcdata(mdim,ndim,2,12),bcdat(12),mblk2nd(maxbl)
 c
 
 #ifdef CMPLX
 c     allocate real array in which to read bc data
 c
       memuse = 0
-      allocate( bcdatar(mdim,ndim,2,7), stat=stats )
-      call umalloc(mdim*ndim*2*7,0,'bcdatar',memuse,stats)
+      allocate( bcdatar(mdim,ndim,2,12), stat=stats )
+      call umalloc(mdim*ndim*2*12,0,'bcdatar',memuse,stats)
 #endif
 c
 c     initialize data array for check in bc routine
 c
-      do 5 l=1,7
+      do 5 l=1,12
       do 5 ip=1,2
       do 5 m=1,mdim
       do 5 n=1,ndim
@@ -61,9 +61,9 @@ c
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
          read(iunit,*) nvar
-         if (nvar.gt.7 .or. nvar.lt.1) then
+         if (nvar.gt.12 .or. nvar.lt.1) then
             write(11,'('' stopping in readdat...no more'',
-     .      '' than 7 variables are allowed - there are '',i6)') nvar
+     .      '' than 12 variables are allowed - there are '',i6)') nvar
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if 
 #ifdef CMPLX
@@ -97,7 +97,7 @@ c
          close(iunit)
 c
       else
-         do 30 l=1,7
+         do 30 l=1,12
          do 30 ip=1,2
          do 30 m=1,mdim
          do 30 n=1,ndim

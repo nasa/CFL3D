@@ -29,7 +29,7 @@ c
       dimension nou(nbuf)
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension xyzjp(kdim,idim,3)
-      dimension bcdata(mdim,ndim,2,7),period_miss(lbcprd)
+      dimension bcdata(mdim,ndim,2,12),period_miss(lbcprd)
       dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
 c
       common /conversion/ radtodeg

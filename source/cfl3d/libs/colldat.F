@@ -11,9 +11,9 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
-      dimension bcdata(mdim,ndim,2,7),bcdatac(mdimc,ndimc,2,7)
+      dimension bcdata(mdim,ndim,2,12),bcdatac(mdimc,ndimc,2,12)
 c
-      do 10 l=1,7
+      do 10 l=1,12
       mm   = 0
       minc = 2
       mp   = 1

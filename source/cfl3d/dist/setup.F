@@ -70,7 +70,7 @@ c
 c
       dimension nou(nbuf)
       dimension w(mgwk),wk(nwork),iwk(iwork),lw(65,maxbl),
-     .          lwdat(maxbl,maxseg,6),bcdat(7),intpts(4),lw2(43,maxbl)
+     .          lwdat(maxbl,maxseg,6),bcdat(12),intpts(4),lw2(43,maxbl)
       dimension itest(maxgr),jtest(maxgr),ktest(maxgr)
       dimension lig(maxbl),lbg(maxbl),iovrlp(maxbl),qb(iitot,5,3),
      .          iibg(iitot),kkbg(iitot),jjbg(iitot),ibcg(iitot),
@@ -86,8 +86,8 @@ c
      .          xorig0(maxbl),yorig0(maxbl),zorig0(maxbl),time2(maxbl),
      .          thetaxl(maxbl),thetayl(maxbl),thetazl(maxbl),
      .          itrans(maxbl),irotat(maxbl),idefrm(maxbl)
-      dimension bcvali(maxbl,maxseg,7,2),bcvalj(maxbl,maxseg,7,2),
-     .          bcvalk(maxbl,maxseg,7,2),nbci0(maxbl),nbcidim(maxbl),
+      dimension bcvali(maxbl,maxseg,12,2),bcvalj(maxbl,maxseg,12,2),
+     .          bcvalk(maxbl,maxseg,12,2),nbci0(maxbl),nbcidim(maxbl),
      .          nbcj0(maxbl),nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
      .          kbcinfo(maxbl,maxseg,7,2)
@@ -820,7 +820,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilei(nbl,nseg,mm))
-         do 1425 l=1,7
+         do 1425 l=1,12
  1425    bcdat(l) = bcvali(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)
@@ -850,7 +850,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilei(nbl,nseg,mm))
-         do 1435 l=1,7
+         do 1435 l=1,12
  1435    bcdat(l) = bcvali(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)
@@ -880,7 +880,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilej(nbl,nseg,mm))
-         do 1445 l=1,7
+         do 1445 l=1,12
  1445    bcdat(l) = bcvalj(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)
@@ -910,7 +910,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilej(nbl,nseg,mm))
-         do 1455 l=1,7
+         do 1455 l=1,12
  1455    bcdat(l) = bcvalj(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)
@@ -940,7 +940,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilek(nbl,nseg,mm))
-         do 1465 l=1,7
+         do 1465 l=1,12
  1465    bcdat(l) = bcvalk(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)
@@ -970,7 +970,7 @@ c
          if (myid .eq. myhost) then
 #endif
          filname = bcfiles(bcfilek(nbl,nseg,mm))
-         do 1475 l=1,7
+         do 1475 l=1,12
  1475    bcdat(l) = bcvalk(nbl,nseg,l,mm)
          call readdat(w(ldata),mdim,ndim,filname,bcdat,nou,bou,nbuf,
      .                ibufdim,myid,mblk2nd,maxbl)

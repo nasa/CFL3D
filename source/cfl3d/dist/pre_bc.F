@@ -45,8 +45,8 @@ c
       dimension lw(65,maxbl),lw2(43,maxbl),lw_temp(65,maxbl)
       dimension jjmax1(nsub1),kkmax1(nsub1),iiint1(nsub1),iiint2(nsub1)
       dimension igridg(maxbl),nblg(maxgr),levelg(maxbl),iviscg(maxbl,3)
-      dimension bcvali(maxbl,maxseg,7,2),bcvalj(maxbl,maxseg,7,2),
-     .          bcvalk(maxbl,maxseg,7,2),nbci0(maxbl),nbcidim(maxbl),
+      dimension bcvali(maxbl,maxseg,12,2),bcvalj(maxbl,maxseg,12,2),
+     .          bcvalk(maxbl,maxseg,12,2),nbci0(maxbl),nbcidim(maxbl),
      .          nbcj0(maxbl),nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
      .          kbcinfo(maxbl,maxseg,7,2)
