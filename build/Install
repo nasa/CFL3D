@@ -37,8 +37,8 @@
 #                  an mpich directory structure as obtained with 
 #                  mpich-1.1.2)
 #
-#   -cgnsdir=DIR  where DIR is the CGNS base directory, used if CGNS
-#                 compatability is desired
+#   -cgnsdir=DIR   where DIR is the CGNS base directory, used if CGNS
+#                  compatability is desired
 #
 #   -no_opt        to generate an executable that has no optimization.
 #                  results in fastest code compilation at the expense
@@ -59,6 +59,8 @@
 #   -purify        compile using Rational Software's Purify (memory checker)
 #                  - must have a licence for Purify
 #                  - this option only effective on SGI platform
+#   -linux_compiler_flags=(PG,Intel,Lahey,Alpha)
+#                  compile with particular flags for Linux operating system
 #
 # script by r.t.biedron 6/97
 #          revision 1.1 8/99
@@ -593,7 +595,7 @@ case $FARCH in IRIX64)
   fi
   FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.mips4_64"
+     CGNS_LLIB="cgns.mips64"
   fi
   if [ x$mpichdir = x ]; then
      MPI_LLIBDIR="-L$MPI_HOME/lib64"
@@ -606,7 +608,7 @@ case $FARCH in IRIX64)
      CFLAG="$PREC"
      FTN="purify $FTN"
     if [ ! x$cgnsdir = x ]; then
-       CGNS_LLIB="cgns.mips4_32"
+       CGNS_LLIB="cgns.mips4"
     fi
     if [ x$mpichdir = x ]; then
        MPI_LLIBDIR="-L$MPI_HOME/lib32"
@@ -635,7 +637,7 @@ case $FARCH in rs6000)
      MPI_INCDIR="-I$MPI_HOME/include"
   fi
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.IBM"
+     CGNS_LLIB="cgns.ibm"
   fi
 esac
 
@@ -652,7 +654,7 @@ case $FARCH in sun|solaris)
   fi
   FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.SOL"
+     CGNS_LLIB="cgns.sol"
   fi
   CPP="/usr/ccs/lib/cpp"
 esac
@@ -678,7 +680,7 @@ case $FARCH in hpux)
   LFLAG="+FPOVZ +U77"
   CPPOPT_SP="-DADP_OFF -DP3D_SINGLE"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.HP"
+     CGNS_LLIB="cgns.hp"
   fi
 esac
 
@@ -688,7 +690,10 @@ esac
 
 case $FARCH in alpha)
 
-  FTN="fort"
+  FTN="mpif77"
+# Alternate compiler you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+# FTN="fort"
 
   CC="gcc"                                                                              
   CPP="cpp"
@@ -700,12 +705,13 @@ case $FARCH in alpha)
   fi
 
   FFLAG_SPEC="$FFLAG"
+  LFLAG="-non_shared"
   CFLAG=""
   LLIB=""
   LLIB_SEQ=""
 
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.ALPHA"
+     CGNS_LLIB="cgns.alpha"
   fi
 
   FFLAG_SPEC="$FFLAG"
@@ -734,10 +740,6 @@ case $FARCH in LINUX)
 
   CPPOPT_SP="$CPPOPT_SP -DLINUX"
 
-  if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.linux"
-  fi
-
 # Default to INTEL settings:
 
   CFLAG="-r8"
@@ -752,14 +754,17 @@ case $FARCH in LINUX)
   MPI_INCDIR=""
   CC="gcc"
   CPP="cpp"
-  FTN="mpif77"
   if [ $do_dou = yes ]; then
      PREC="-r8"
   else
      PREC=""
   fi
+  if [ ! x$cgnsdir = x ]; then
+     CGNS_LLIB="cgns.linux"
+  fi
+  FTN="mpif77"
 
-# Alternate compler choices you may need if mpif77 doesn't
+# Alternate compiler choices you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 
 # Portland Group Compiler
@@ -768,6 +773,8 @@ case $FARCH in LINUX)
 #   FTN="lf95"
 # Intel Fortan Compiler
 #   FTN="ifc"
+# Alpha-using-Linux Compiler
+#   FTN="fort"
 
 # Force alternate optimazation flags, etc.
 
@@ -786,12 +793,18 @@ case $FARCH in LINUX)
      MPI_INCDIR=""
      CC="gcc"
      CPP="cpp"
-     FTN="mpif77"
      if [ $do_dou = yes ]; then
         PREC="-r8"
      else
         PREC=""
      fi
+     if [ ! x$cgnsdir = x ]; then
+        CGNS_LLIB="cgns.linux"
+     fi
+     FTN="mpif77"
+# Alternate Intel compiler you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+#    FTN="ifc"
   fi
 
 # Portland Group Compiler
@@ -809,12 +822,18 @@ case $FARCH in LINUX)
      MPI_INCDIR=""
      CC="gcc"
      CPP="cpp"
-     FTN="mpif77"
      if [ $do_dou = yes ]; then
         PREC="-r8"
      else
         PREC=""
      fi
+     if [ ! x$cgnsdir = x ]; then
+        CGNS_LLIB="cgns.linux"
+     fi
+     FTN="mpif77"
+# Alternate Portland group compiler you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+#    FTN="pgf90"
   fi
 
 # Lahey Compiler
@@ -832,12 +851,18 @@ case $FARCH in LINUX)
      MPI_INCDIR=""
      CC="gcc"
      CPP="cpp"
-     FTN="mpif77"
      if [ $do_dou = yes ]; then
         PREC="--dbl"
      else
         PREC=""
      fi
+     if [ ! x$cgnsdir = x ]; then
+        CGNS_LLIB="cgns.linux"
+     fi
+     FTN="mpif77"
+# Alternate Lahey compiler you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+#    FTN="lf95"
   fi
 
 # ALPHA Compiler
@@ -855,12 +880,18 @@ case $FARCH in LINUX)
      MPI_INCDIR=""
      CC="gcc"
      CPP="cpp"
-     FTN="mpif77"
      if [ $do_dou = yes ]; then
         PREC="-r8 -fpconstant"
      else
         PREC=""
      fi
+     if [ ! x$cgnsdir = x ]; then
+        CGNS_LLIB="cgns.alpha"
+     fi
+     FTN="mpif77"
+# Alternate Alpha compiler you may need if mpif77 doesn't
+# work (e.g. you don't have mpi installed):
+#    FTN="fort"
   fi
 
 # Note: the following environment variable must be set in order
@@ -1041,4 +1072,19 @@ case $FARCH in LINUX)
    echo 'For certain implementations of MPI you may need to'
    echo 'use the -noredirect install option and re-install to'
    echo 'turn off input file redirection'
+   echo ' '
+   echo 'Some MPI implementations have a problem'
+   echo 'with the following 2 lines of coding in main.F'
+   echo '      sysfile = rm -f stop'
+   echo '      call system(sysfile)'
+   echo 'If the code will not run for you, try commenting out'
+   echo 'these lines... you would then need to manually remove'
+   echo 'any stop files that are present'
+esac
+case $FARCH in alpha)
+   echo ' '
+   echo 'Note the default Fortran compiler is currently set'
+   echo 'as mpif77 - if this does not work, you will need'
+   echo 'to change this: e.g. fort; also, make'
+   echo 'sure mpif77 is not pointing to /usr/bin/mpif77'
 esac
