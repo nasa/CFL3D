@@ -771,7 +771,7 @@ case $FARCH in LINUX)
      CGNS_LLIB="cgns.linux"
   fi
   FTN="mpif77"
-  CPPOPT_SP="-DP3D_SINGLE -DINTEL"
+  CPPOPT_SP="$CPPOPT_SP -DINTEL"
 
 # Alternate compiler choices you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
@@ -840,7 +840,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
-     CPPOPT_SP="-DP3D_SINGLE -DPG"
+     CPPOPT_SP="$CPPOPT_SP -DPG"
 # Alternate Portland group compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="pgf90"
@@ -870,7 +870,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
-     CPPOPT_SP="-DP3D_SINGLE -DLAHEY"
+     CPPOPT_SP="$CPPOPT_SP -DLAHEY"
 # Alternate Lahey compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="lf95"
@@ -900,7 +900,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.alpha"
      fi
      FTN="mpif77"
-     CPPOPT_SP="-DP3D_SINGLE -DALPHA"
+     CPPOPT_SP="$CPPOPT_SP -DALPHA"
 # Alternate Alpha compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="fort"
