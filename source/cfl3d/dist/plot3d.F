@@ -1284,14 +1284,14 @@ c
 c
          if(icp .eq. 1) then
            write(17,77)
-   77      format(/3x,1hI,3x,1hJ,3x,1hK,5x,1hX,10x,1hY,10x,1hZ,
-     .     8x,6hU/Uinf,5x,6hV/Vinf,5x,6hW/Winf,5x,6hP/Pinf,
-     .     5x,6hT/Tinf,6x,4hMACH,6x,6h    cp,4x,9htur. vis.)
+   77      format(/3x,1hI,3x,1hJ,3x,1hK,7x,1hX,12x,1hY,12x,1hZ,
+     .     10x,6hU/Uinf,7x,6hV/Vinf,7x,6hW/Winf,7x,6hP/Pinf,
+     .     7x,6hT/Tinf,8x,4hMACH,8x,6h    cp,6x,9htur. vis.)
          else
            write(17,7)
-    7      format(/3x,1hI,3x,1hJ,3x,1hK,5x,1hX,10x,1hY,10x,1hZ,
-     .     8x,6hU/Uinf,5x,6hV/Vinf,5x,6hW/Winf,5x,6hP/Pinf,
-     .     5x,6hT/Tinf,6x,4hMACH,6x,6hpitotp,4x,9htur. vis.)
+    7      format(/3x,1hI,3x,1hJ,3x,1hK,7x,1hX,12x,1hY,12x,1hZ,
+     .     10x,6hU/Uinf,7x,6hV/Vinf,7x,6hW/Winf,7x,6hP/Pinf,
+     .     7x,6hT/Tinf,8x,4hMACH,8x,6hpitotp,6x,9htur. vis.)
          end if
 c
          term3 = 1./( (1.+0.5*gm1*xmach*xmach)**(gamma/gm1) )
@@ -1345,7 +1345,7 @@ c
          end if
  5000    continue
 c
-   29    format(3i4,11(1x,e10.4))
+   29    format(3i4,11(1x,e12.5))
 c
       end if
 c
