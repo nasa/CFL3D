@@ -1320,7 +1320,7 @@ c        must be compatable with dimension statements for arrays
 c        xs and ixs in subroutines getpts, getptsbb, collect_surf,
 c        and collect_surfbb
 c
-         nworkxs  = 3*nsurf
+         nworkxs  = 4*nsurf
          if (ivmx.eq.4) then
             nworkixs = 4*nsurf
          else
