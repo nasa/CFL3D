@@ -2319,8 +2319,6 @@ c     end upward leg of multigrid cycle
 c***********************************************
 c
  6999 continue
-c     recover original ita
-      ita=itatemp
 c
 c     write restart file if non time-accurate
 c
@@ -2438,6 +2436,8 @@ c
  7000 continue
 c
 7011  continue
+c     recover original ita
+      ita=itatemp
 c
 c***********************************************
 c
