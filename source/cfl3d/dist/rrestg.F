@@ -136,6 +136,7 @@ c
       itag_deltj = itag_znm2  + ioffset
       itag_deltk = itag_deltj + ioffset
       itag_delti = itag_deltk + ioffset
+      itag_dtold = itag_delti + ioffset
 #endif
 c
       jdim1=jdim-1
@@ -250,6 +251,15 @@ c
      .                 nd_dest,mytag,mycomm,ierr)
       else if (myid .eq. mblk2nd(nbl)) then
          call MPI_Recv(tursav2,jki4,MY_MPI_REAL,
+     .                 myhost,mytag,mycomm,istat,ierr)
+      end if
+      mytag = itag_dtold + nbl
+      nvals=1
+      if (myid .eq. myhost) then
+         call MPI_Send(dtold,nvals,MY_MPI_REAL,
+     .                 nd_dest,mytag,mycomm,ierr)
+      else if (myid .eq. mblk2nd(nbl)) then
+         call MPI_Recv(dtold,nvals,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
       end if
 c
