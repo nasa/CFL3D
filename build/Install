@@ -614,7 +614,7 @@ case $FARCH in IRIX64)
        MPI_LLIBDIR="-L$MPI_HOME/lib32"
     fi
   fi
-  CPPOPT_SP="$CPPOPT_SP -DSGI"
+  CPPOPT_SP="-DP3D_SINGLE -DSGI"
 esac
 
 #########################################
@@ -657,7 +657,7 @@ case $FARCH in sun|solaris)
      CGNS_LLIB="cgns.sol"
   fi
   CPP="/usr/ccs/lib/cpp"
-  CPPOPT_SP="-DSUN"
+  CPPOPT_SP="-DP3D_SINGLE -DSUN"
 esac
 
 #########################################
@@ -707,7 +707,7 @@ case $FARCH in alpha)
 
   FFLAG_SPEC="$FFLAG"
   LFLAG="-non_shared"
-  CPPOPT_SP="-DALPHA"
+  CPPOPT_SP="-DP3D_SINGLE -DALPHA"
   CFLAG=""
   LLIB=""
   LLIB_SEQ=""
@@ -740,7 +740,7 @@ esac
 
 case $FARCH in LINUX)
 
-  CPPOPT_SP="$CPPOPT_SP -DLINUX"
+  CPPOPT_SP="-DP3D_SINGLE -DLINUX"
 
 # Default to INTEL settings:
 
@@ -765,7 +765,7 @@ case $FARCH in LINUX)
      CGNS_LLIB="cgns.linux"
   fi
   FTN="mpif77"
-  CPPOPT_SP="$CPPOPT_SP -DINTEL"
+  CPPOPT_SP="-DP3D_SINGLE -DINTEL"
 
 # Alternate compiler choices you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
@@ -834,7 +834,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
-     CPPOPT_SP="$CPPOPT_SP -DPG"
+     CPPOPT_SP="-DP3D_SINGLE -DPG"
 # Alternate Portland group compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="pgf90"
@@ -864,7 +864,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.linux"
      fi
      FTN="mpif77"
-     CPPOPT_SP="$CPPOPT_SP -DLAHEY"
+     CPPOPT_SP="-DP3D_SINGLE -DLAHEY"
 # Alternate Lahey compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="lf95"
@@ -894,7 +894,7 @@ case $FARCH in LINUX)
         CGNS_LLIB="cgns.alpha"
      fi
      FTN="mpif77"
-     CPPOPT_SP="$CPPOPT_SP -DALPHA"
+     CPPOPT_SP="-DP3D_SINGLE -DALPHA"
 # Alternate Alpha compiler you may need if mpif77 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="fort"
