@@ -21,9 +21,11 @@ c
       write(6,*)'name of plot3d q file to read'
       read(5,'(a80)') q_in
 c
-c     call asnfile(g_in, '-F f77 -N ieee', IER)
+#if defined ASN_P3D
+      call asnfile(g_in, '-F f77 -N ieee', IER)
+      call asnfile(q_in, '-F f77 -N ieee', IER)
+#endif
       open(unit=1,file=g_in,form='unformatted',status='old')      
-c     call asnfile(q_in, '-F f77 -N ieee', IER)
       open(unit=2,file=q_in,form='unformatted',status='old')      
 c
 c     NOTE: ibflag indicates if input  plot3d files have iblank array
@@ -257,8 +259,10 @@ c
       write(6,*) 'creating file q.bin (plot3d q file with time',
      .           ' as k-direction)'
 c
-c     call asnfile('g.bin', '-F f77 -N ieee', IER)
-c     call asnfile('q.bin', '-F f77 -N ieee', IER)
+#if defined ASN_P3D
+      call asnfile('g.bin', '-F f77 -N ieee', IER)
+      call asnfile('q.bin', '-F f77 -N ieee', IER)
+#endif
       open(unit=3,file='g.bin',form='unformatted',status='unknown')
       open(unit=4,file='q.bin',form='unformatted',status='unknown')
 c
