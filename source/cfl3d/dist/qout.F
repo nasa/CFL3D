@@ -530,7 +530,8 @@ c
      .                     jeg,keg,ieg,ninter,iindex,intmax,nsub1,
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
-     .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk))
+     .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
+     .                     w(lsj),w(lsk),w(lsi),w(lvol))
             end if
 c
          end if
@@ -794,7 +795,8 @@ c
      .                     jeg,keg,ieg,ninter,iindex,intmax,nsub1,
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
-     .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk))
+     .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
+     .                     w(lsj),w(lsk),w(lsi),w(lvol))
             end if
 c
          end if
