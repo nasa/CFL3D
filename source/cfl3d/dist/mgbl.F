@@ -222,8 +222,8 @@ c
       dimension mblk2nd(maxbl)
 c
       common /elastic/ ndefrm,naesrf
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /cpurate/ rate(5),ratesub(5),ncell(20)
       common /cfl/ dt0
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1

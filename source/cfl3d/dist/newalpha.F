@@ -34,8 +34,8 @@ c
 #endif
       dimension rms(ncycmax),clw(ncycmax)
 c
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,

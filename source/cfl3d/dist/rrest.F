@@ -81,8 +81,8 @@ c   ***CGNSend
       common /sminn/ isminc
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /conversion/ radtodeg
       common /ghost/ irghost,iwghost
 c

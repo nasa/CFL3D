@@ -143,8 +143,8 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /mgv/ epsssc(3),epsssr(3),issc,issr
       common /ncyct/ ncyctot
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /reyue/ reue,tinf,ivisc(3)
       common /sminn/ isminc
       common /twod/ i2d

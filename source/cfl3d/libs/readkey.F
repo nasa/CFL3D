@@ -34,8 +34,8 @@ c
      .                geom_img,surf_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /precond/ cprec,uref,avn
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy
       common /entfix/ epsa_l,epsa_r

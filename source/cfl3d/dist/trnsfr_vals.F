@@ -129,8 +129,8 @@ c
       common /singular/ atol
       common /deformz/ beta1,ismooth,negvol
       common /mydist2/ nnodes,myhost,myid,mycomm
-      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
-     .        icycupdt,dcldal,alphalast
+      common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+     .                 ialphit,nttlast,icycupdt
       common /chk/ ichk
       common /degshf/ ideg(3)
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
