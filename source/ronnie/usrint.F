@@ -28,7 +28,7 @@ c
      .         ' (kill, floating pt. exception,',
      .         ' segmentation fault, etc.)',/)
 c
-#   ifdef IBM then
+#   ifdef IBM
       call flush_(66)
       call flush_(25)
       call flush_(99)

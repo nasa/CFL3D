@@ -17,9 +17,9 @@ c
    10 continue
       write(iunit,1) (str(k),k=1,i)
     1 format(120a1)
-#ifdef CRAY_TIME then
+#ifdef CRAY_TIME
 #else
-#   ifdef IBM then
+#   ifdef IBM
       call flush_(iunit)
 #   else
       call flush(iunit)

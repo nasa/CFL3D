@@ -738,9 +738,9 @@ c
          read(iunit5,'(a80)') string
          write(iunit11,'(a80)') string
       end if
-#ifdef CRAY_TIME then
+#ifdef CRAY_TIME
 #else
-#   ifdef IBM then
+#   ifdef IBM
       call flush_(iunit11)
 #   else
       call flush(iunit11)

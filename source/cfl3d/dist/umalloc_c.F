@@ -93,15 +93,15 @@ c
           write(6,*) 'requested more than 10^(15) bytes'
         end if
         write(6,14) memuse
-#ifdef CRAY_TIME then
+#ifdef CRAY_TIME
 #else
-#   ifdef IBM then
+#   ifdef IBM
         call flush_(6)
 #   else
         call flush(6)
 #   endif
 #endif
-#ifdef DIST_MPI then
+#ifdef DIST_MPI
         call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
 #else
         stop

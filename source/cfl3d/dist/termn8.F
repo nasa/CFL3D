@@ -106,9 +106,9 @@ c
 c
       end if
 c
-#ifdef CRAY_TIME then
+#ifdef CRAY_TIME
 #else
-#   ifdef IBM then
+#   ifdef IBM
       call flush_(3)
       call flush_(4)
       call flush_(11)

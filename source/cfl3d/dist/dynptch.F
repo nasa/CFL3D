@@ -461,7 +461,7 @@ c
             write(25,9997) len
 9997        format('  minimum dimension for parameter MAXXE in CFL3D:',
      .      i6)
-#   ifdef IBM then
+#   ifdef IBM
             call flush_(25)
 #   else
             call flush(25)

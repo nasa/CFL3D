@@ -102,7 +102,7 @@ c
 c
       end if
 c
-#   ifdef IBM then
+#   ifdef IBM
       call flush_(25)
       call flush_(99)
 #   else
