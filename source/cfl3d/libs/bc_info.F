@@ -7112,7 +7112,7 @@ c        check that the required auxiliary data has been set
          jj = j-jsta+1
          if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
          if ((real(bcdata(jj,kk,ipp,l)).ne.0.0).and.
-     +       ((real(dt).lt.0.).and.(l.eq.3)) iflg = 2
+     +       (real(dt).lt.0.).and.(l.eq.3)) iflg = 2
    6     continue
          if (iflg.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
