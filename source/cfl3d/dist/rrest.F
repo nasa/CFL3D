@@ -85,6 +85,7 @@ c   ***CGNSend
      .                 ialphit,nttlast,icycupdt
       common /conversion/ radtodeg
       common /ghost/ irghost,iwghost
+      common /igrdtyp/ ip3dgrd,ialph
 c
       idim1 = idim-1
       jdim1 = jdim-1
@@ -171,7 +172,7 @@ c  (6)=(5) - (currently checked for in getsolinfo):
       if (irinddata(3) .eq. 1) jrind=0
       if (irinddata(5) .eq. 1) krind=0
       call readsoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q,iprim)
+     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,ialph,q,iprim)
       if (iprim .eq. 0) then
 c     convert q to primitive (they are in CGNS file as conserved)
       do i=1,idim1

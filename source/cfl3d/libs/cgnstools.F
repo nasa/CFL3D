@@ -52,7 +52,7 @@ c   Get solution info
      +   a32)') GridLocationName(location+1)
         stop
       end if
-      write(11,'('' CGNS read solution of name:  '',a32)') solname
+      write(11,'('' cgns read solution of name:  '',a32)') solname
 c
 c   Check if Rind data exists
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'FlowSolution_t',
@@ -199,7 +199,7 @@ c   Read x,y,z
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c   Reorder i,j,k to j,k,i:
-      call reorderg(idim,jdim,kdim,wk,x)
+      call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,wk,x)
 c
       if (idouble .eq. 1) then
       call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
@@ -211,9 +211,9 @@ c
       if (ier .ne. 0) call cg_error_exit_f
 c   Reorder i,j,k to j,k,i:
       if (ialph .eq. 0) then
-        call reorderg(idim,jdim,kdim,wk,y)
+        call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,wk,y)
       else
-        call reorderg(idim,jdim,kdim,wk,z)
+        call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,wk,z)
       end if
 c
       if (idouble .eq. 1) then
@@ -226,16 +226,9 @@ c
       if (ier .ne. 0) call cg_error_exit_f
 c   Reorder i,j,k to j,k,i:
       if (ialph .eq. 0) then
-        call reorderg(idim,jdim,kdim,wk,z)
+        call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,wk,z)
       else
-        do i=1,idim
-        do j=1,jdim
-        do k=1,kdim
-          wk(i,j,k)=-wk(i,j,k)
-        enddo
-        enddo
-        enddo
-        call reorderg(idim,jdim,kdim,wk,y)
+        call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,-wk,y)
       end if
 c
       return
@@ -265,7 +258,7 @@ c
 c   Open CGNS file
       call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
       if (ier .ne. 0) then
-        write(66,'('' Error opening CGNS file'')')
+        write(66,'('' Error opening cgns file'')')
         write(66,'('' Make sure the file on 1st line of input IS'',
      +   '' a cgns file!'')')
         call cg_error_print_f
@@ -277,7 +270,7 @@ c   Goto base index
       call cg_goto_f(iccg,ibase,ier,'end')
       if (ier .ne. 0) then
         write(66,'('' Error attempting to find CGNSBase_t node'')')
-        write(66,'('' Make sure the CGNS file is written correctly'',
+        write(66,'('' Make sure the cgns file is written correctly'',
      +   '' (according to SIDS standards)'')')
         call cg_error_print_f
         istp=1
@@ -328,19 +321,29 @@ c
       character*32 basedesired,basename
 c
 c   Open CGNS file
+      write(11,'(/,'' Accessing cgns database... (must'',
+     +  '' be linked to API Version 2.1 or later)'')')
       call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
       if (ier .ne. 0) then
-        write(11,'('' Error opening CGNS file'')')
+        write(11,'('' Error opening cgns file'')')
         write(11,'('' Make sure the file on 1st line of input IS'',
      +   '' a cgns file!'')')
         call cg_error_exit_f
       end if
-      write(11,'(/,'' Opening CGNS database '',a32)') cgnsdesired
+      write(11,'(/,'' Opening cgns database '',a32)') cgnsdesired
+      write(11,'(''   Note: if restarting from a cgns file created'',
+     +  '' prior to early 2002, then'')')
+      write(11,'(''   it will not work if the old case was (1) second'',
+     +  '' order time accurate,'')')
+      write(11,'(''   (2) moving or deforming grid, or (3) ialph>0.'',
+     +  ''  In all of these cases,'')')
+      write(11,'(''   changes have been made in how variables are'',
+     +  '' stored in cgns.'',/)')
 c
 c   Find out how many "bases" there are
       call cg_nbases_f(iccg, nbases, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(11,'('' Found ''i5,'' base(s) in CGNS file: '',a32)') 
+      write(11,'('' Found ''i5,'' base(s) in cgns file: '',a32)') 
      +  nbases,cgnsdesired
 c
 c   Get base name and index dimension (dimensionality)
@@ -365,6 +368,7 @@ c   Get base name and index dimension (dimensionality)
         write(11,'('' Available bases found are:'')')
         do ib=1,nbases
           call cg_base_read_f(iccg, ib, basename, indx1, index_dim, ier)
+          if (ier .ne. 0) call cg_error_exit_f
           write(11,'(a32)') basename
         enddo
         stop
@@ -414,18 +418,15 @@ c
 c   Open CGNS file
       call cg_open_f(cgnsdesired,MODE_MODIFY,iccg,ier)
       if (ier .ne. 0) then
-        write(11,'('' Error opening CGNS file'')')
+        write(11,'('' Error opening cgns file'')')
         write(11,'('' Make sure the file on 1st line of input IS'',
      +   '' a cgns file!'')')
         call cg_error_exit_f
       end if
-      write(11,'(/,'' Opening CGNS database '',a32)') cgnsdesired
 c
 c   Find out how many "bases" there are
       call cg_nbases_f(iccg, nbases, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(11,'('' Found ''i5,'' base(s) in CGNS file: '',a32)') 
-     +  nbases,cgnsdesired
 c
 c   Get base name and index dimension (dimensionality)
       ifind=0
@@ -449,6 +450,7 @@ c   Get base name and index dimension (dimensionality)
         write(11,'('' Available bases found are:'')')
         do ib=1,nbases
           call cg_base_read_f(iccg, ib, basename, indx1, index_dim, ier)
+          if (ier .ne. 0) call cg_error_exit_f
           write(11,'(a32)') basename
         enddo
         stop
@@ -465,14 +467,12 @@ c
 c   Get number of zones
       call cg_nzones_f(iccg, ibase, nzones, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(11,'('' Found ''i5,'' zone(s) in basename: '',a32)') nzones,
-     +  basedesired
 c
       return
       end
 c
       subroutine writesoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,nsoluse)
+     +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,ialph,nsoluse)
 c***********************************************************************
 c     Purpose: Writes solution to CGNS data base for zone number "igrid"
 c     The CGNS file must be already opened in "MODE_MODIFY" mode.
@@ -511,7 +511,9 @@ c                       interface (real)
 c      i2d..............0 if 3-D (rind data to be output in all 3 
 c                          directions),
 c                       1 if 2-D (rind data to be output only in j- 
-c                          and k- directions)
+c                          and k- directions) (integer)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      nsoluse..........CGNS "FlowSolution" index number (integer)
 c***********************************************************************
@@ -525,7 +527,7 @@ c
      +          irinddata(6)
       dimension wk(i2d:idima-i2d,0:jdima,0:kdima)
 c
-      character*32 solname,name
+      character*32 solname
       character*80 string1
 c
 c   Determine if single or double precision is being used:
@@ -535,7 +537,7 @@ c   Determine if single or double precision is being used:
 #endif
 c
 c   Write FlowSolution node
-      write(11,'('' CGNS writing to <<FlowSolution>> node'')')
+      write(11,'('' cgns writing to <<FlowSolution>> node'')')
       write(11,'(''  ...any flow solution node of any other name'',
      + '' is left alone'')')
       write(11,'(''  ...if a FlowSolution node already exists, it'',
@@ -566,9 +568,9 @@ c   First, get "factor" in case want to write every other point, etc
      +   '' supported'')')
         stop
       end if
-      name='Information'
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'FlowSolution_t',
      + nsoluse,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_descriptor_write_f('Information',string1,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   Write rind information
@@ -607,8 +609,13 @@ c   X-momentum:
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Y-momentum:
+      if (ialph .eq. 0) then
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,3,0,wk)
+      else
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  q,bci,bcj,bck,qi0,qj0,qk0,5,4,0,wk)
+      end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'MomentumY', wk, ifindex, ier)
@@ -619,8 +626,13 @@ c   Y-momentum:
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Z-momentum:
+      if (ialph .eq. 0) then
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,4,0,wk)
+      else
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  -q,bci,bcj,bck,-qi0,-qj0,-qk0,5,3,0,wk)
+      end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'MomentumZ', wk, ifindex, ier)
@@ -646,7 +658,7 @@ c
       end
 c
       subroutine readsoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q,iprim)
+     +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,ialph,q,iprim)
 c***********************************************************************
 c     Purpose: Reads solution from CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened. If the desired 
@@ -676,7 +688,9 @@ c      nsoluse..........CGNS "FlowSolution" index number (determined
 c                       outside this routine) (integer)
 c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
-c      i2d..............0 if 3-D, 1 if 2-D
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      q................cell-centered q-values, in (j,k,i) order,
 c                       CONSERVED or PRIMITIVE quantities (real)
@@ -789,10 +803,13 @@ c   First, get "factor" in case want to read every other point, etc
 c   Check that correct grid level is stored
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'FlowSolution_t',
      + nsoluse,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_ndescriptors_f(ndesc,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       istop=0
       do n=1,ndesc
         call cg_descriptor_read_f(n,name,text,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         if (name .eq. 'Information') then
           if (text .eq. 
      +     'Fine grid solution (on same level as GridCoordinates)' .and.
@@ -806,6 +823,9 @@ c   Check that correct grid level is stored
           if (text .eq.
      +     'Every-8th-cell solution (3 levels down)' .and.
      +     nfac .ne. 8) istop=4
+          if (text .eq.
+     +     'Every-16th-cell solution (3 levels down)' .and.
+     +     nfac .ne. 8) istop=5
           goto 333
         end if
       enddo
@@ -858,8 +878,16 @@ c   read Q's:
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
+      if (m .eq. 3 .and. ialph .eq. 1) then
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,q(1,1,1,4))
+      else if (m .eq. 4 .and. ialph .eq. 1) then
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,-wk,irind,jrind,krind,q(1,1,1,3))
+      else
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,q(1,1,1,m))
+      end if
       enddo
 c
       return
@@ -987,7 +1015,7 @@ c      ti0,tj0,tk0......B.C. turbulence-values from CFL3D (real)
 c                       (CFL3D-normalization)
 c      i2d..............0 if 3-D (rind data to be output in all 3 
 c                       directions), 1 if 2-D (rind data to be output 
-c                       only in j- and k- directions)
+c                       only in j- and k- directions) (integer)
 c      xmach............Mach number (real)
 c      reue.............Reynolds number (real)
 c   OUTPUTS:
@@ -1031,7 +1059,7 @@ c   First, get "factor" in case want to write every other point, etc
       end if
 c
       if (ivisc(1).ge.2 .or. ivisc(2).ge.2 .or. ivisc(3).ge.2) then
-         write(11,'(''   writing vist3d data to CGNS file'',
+         write(11,'(''   writing vist3d data to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Eddy viscosity:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1140,7 +1168,7 @@ c        BBNearestWallBlk:
 c
       if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or. ivisc(3).eq.5) then
          write(11,'(''   writing S-A field eqn turb info'',
-     .              '' to CGNS file'',
+     .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        SANuTilde:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1169,7 +1197,7 @@ c
      .    ivisc(1).eq.12.or. ivisc(2).eq.12.or. ivisc(3).eq.12.or.
      .    ivisc(1).eq.14.or. ivisc(2).eq.14.or. ivisc(3).eq.14) then
          write(11,'(''   writing k-omega field eqn turb info'',
-     .              '' to CGNS file'',
+     .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Omega:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1208,7 +1236,7 @@ c
      .    ivisc(1).eq.11.or. ivisc(2).eq.11.or. ivisc(3).eq.11.or.
      .    ivisc(1).eq.13.or. ivisc(2).eq.13.or. ivisc(3).eq.13) then
          write(11,'(''   writing k-epsilon field eqn turb info'',
-     .              '' to CGNS file'',
+     .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Epsilon:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1309,7 +1337,7 @@ c                       This is important, because some memory may not
 c                       be set up
 c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
-c      i2d..............0 if 3-D, 1 if 2-D
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      ivmx.............turb model number for CFL3D (integer)
 c      xmach............Mach number given in CGNS file (real)
 c      reue.............Reynolds number given in CGNS file (real)
@@ -1674,7 +1702,7 @@ c   assign 1-to-1 information appropriately
             end if
           enddo
           if (iflg1 .eq. 0 .or. iflg2 .eq. 0) then
-            write(11,'('' Error.  CGNS 1-to-1 zonename not'',
+            write(11,'('' Error, cgns 1-to-1 zonename not'',
      +        '' matched'')')
             stop
           end if
@@ -2323,6 +2351,7 @@ c
      +  fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
      +  cftvw(ncycmax),cfttotw(ncycmax),rmstr1(ncycmax),
      +  rmstr2(ncycmax),nneg1(ncycmax),nneg2(ncycmax)
+      dimension idimvec(4)
       character*32 name(numnames),name2
 c
 c   Determine if single or double precision is being used:
@@ -2368,6 +2397,7 @@ c   Get Information about what is under History node
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c   Get Residual
       do n=1,narrays
@@ -2765,7 +2795,7 @@ c   Create other nodes under 'FlowEquationSet'
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
-      call cg_model_write_f('GasModel_t',Ideal,ier)
+      call cg_model_write_f('GasModel_t',CaloricallyPerfect,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_model_write_f('ViscosityModel_t',
      + SutherlandLaw,ier)
@@ -2904,6 +2934,7 @@ c   Create DataArray containing Specific Heat Ratio under GasModel
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'GasModel_t',1,'DataArray_t',
      +  1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -2922,6 +2953,7 @@ c   Create DataArray containing Prandtl number under ThermalConductivityModel
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,
      +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -2940,6 +2972,7 @@ c   Create DataArray containing turb Prandtl number under TurbulenceClosure
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'TurbulenceClosure_t',1,
      +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -2958,6 +2991,7 @@ c   Create DataArray containing Sutherland law constant under ViscosityModel
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'FlowEquationSet_t',1,'ViscosityModel_t',1,
      +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(Dimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
@@ -2999,7 +3033,7 @@ c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      dimension idata(6)
+      dimension idata(6),idimvec(4)
       character name*32,text*32
 c
 c   Determine if single or double precision is being used:
@@ -3036,7 +3070,7 @@ c   Read 'GoverningEquations' node
         if (itype .eq. Euler .or.
      +      itype .eq. NSLaminar .or.
      +      itype .eq. NSTurbulent) then
-          write(11,'('' CGNS read solution of:  '',a32)') 
+          write(11,'('' cgns read solution of:  '',a32)') 
      +     GoverningEquationsTypeName(itype)
         else
           write(11,'('' WARNING! GoverningEquations type not'',
@@ -3084,6 +3118,7 @@ c   Get gamma
         goto 205
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'SpecificHeatRatio') goto 105
       write(11,'('' WARNING. No SpecificHeatRatio node exists'')')
       write(11,'(''   setting to 1.4 & continuing'')')
@@ -3117,6 +3152,7 @@ c   Get prandtl
         goto 206
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'Prandtl') goto 106
       write(11,'('' WARNING. No Prandtl node exists'')')
       write(11,'(''   setting to 0.72 & continuing'')')
@@ -3150,6 +3186,7 @@ c   Get prandtlt
         goto 207
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'PrandtlTurbulent') goto 107
       write(11,'('' WARNING. No PrandtlTurbulent node exists'')')
       write(11,'(''   setting to 0.9 & continuing'')')
@@ -3183,6 +3220,7 @@ c   Get suth
         goto 208
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'SutherlandLawConstant') goto 108
       write(11,'('' WARNING. No SutherlandLawConstant node exists'')')
       write(11,'(''   setting to 198.6 & continuing'')')
@@ -3235,9 +3273,11 @@ c   Read 'TurbulenceModel' node, if appropriate
      +   'FlowEquationSet_t',1,'end')
         if (ier .ne. 0) call cg_error_exit_f
         call cg_model_read_f('TurbulenceModel_t',itype,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         if (itype .eq. UserDefined) then
           call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+          if (ier .ne. 0) call cg_error_exit_f
           call cg_descriptor_read_f(1,name,text,ier)
           if (ier .ne. 0) call cg_error_exit_f
         end if
@@ -3325,9 +3365,11 @@ c
       return
       end
 c
-      subroutine writetime(iccg,ibase,time,iter)
+      subroutine writetime(iccg,ibase,time,iter,dt)
 c**********************************************************************
-c     Purpose: Writes latest time info to CGNS file.
+c     Purpose: Writes latest time info to CGNS file.  This includes
+c     the time step dt, which will only be read in (by rsecord) if
+c     the run is 2nd-order time-accurate.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside 
@@ -3336,11 +3378,16 @@ c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      time.............last time (for time-accurate) (real)
 c      iter.............last iteration (integer)
+c      dt...............time step (real)
 c   OUTPUTS:
 c      none
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
+c
+      parameter (numnames=5)
+c
+      character name(numnames)*32
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -3363,12 +3410,45 @@ c   Go to BaseIterativeData level and write time value
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,
      +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   Go to BaseIterativeData level and write iteration value
       call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('IterationValues',Integer,1,1,iter,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Go to Base node, write CFL3DTimeStep array as UserDefinedData
+      call cg_goto_f(iccg,ibase,ier,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_user_data_write_f('CFL3DTimeStep', ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_nuser_data_f(nuserdata, ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .gt. numnames) then
+        write(11,'('' Error... numnames too small in writetime'')')
+        stop
+      end if
+      do n=1,nuserdata
+        call cg_user_data_read_f(n, name(n), ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(n) .eq. 'CFL3DTimeStep') then
+          nset=n
+        end if
+      enddo
+      call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',nset,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      if (idouble .eq. 1) then
+        call cg_array_write_f('LatestDTUsed',RealDouble,1,1,dt,ier)
+      else
+        call cg_array_write_f('LatestDTUsed',RealSingle,1,1,dt,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',nset,
+     +  'DataArray_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       return
       end
@@ -3391,6 +3471,7 @@ c
 c
       parameter (numnames=3)
 c
+      dimension idimvec(4)
       character name(numnames)*32
 c
 c   Determine if single or double precision is being used:
@@ -3423,6 +3504,7 @@ c   Go to BaseIterativeData node and get info
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c
 c   Get TimeValues
@@ -3510,18 +3592,24 @@ c   Go to ReferenceState node, write Mach array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
         call cg_array_write_f('Mach',RealDouble,1,1,xmach,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Mach_Velocity',RealDouble,1,1,xmach,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Mach_VelocitySound',RealDouble,1,1,
      +   c0,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       else
         call cg_array_write_f('Mach',RealSingle,1,1,xmach,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Mach_Velocity',RealSingle,1,1,xmach,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Mach_VelocitySound',RealSingle,1,1,
      +   c0,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
-      if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3530,24 +3618,32 @@ c   Go to ReferenceState node, write Reynolds array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
         call cg_array_write_f('Reynolds',RealDouble,1,1,reue,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_Velocity',RealDouble,1,1,xmach,
      +   ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_Length',RealDouble,1,1,xlength0,
      +   ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_ViscosityKinematic',RealDouble,
      +   1,1,reinverse,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       else
         call cg_array_write_f('Reynolds',RealSingle,1,1,reue,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_Velocity',RealSingle,1,1,xmach,
      +   ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_Length',RealSingle,1,1,xlength0,
      +   ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('Reynolds_ViscosityKinematic',RealSingle,
      +   1,1,reinverse,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
-      if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  4,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NondimensionalParameter,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3562,6 +3658,7 @@ c   Go to ReferenceState node, write Temperature array and dataclass & units
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  8,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(Dimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Rankine,Null,ier)
@@ -3590,6 +3687,7 @@ c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  9,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(Dimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Null,Degree,ier)
@@ -3618,6 +3716,7 @@ c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  10,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(Dimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_units_write_f(Null,Null,Null,Null,Degree,ier)
@@ -3645,6 +3744,7 @@ c   Go to ReferenceState node, write Density array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  11,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3659,6 +3759,7 @@ c   Go to ReferenceState node, write VelocitySound array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  12,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3675,6 +3776,7 @@ c   Go to ReferenceState node, write ViscosityMolecular array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  13,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3692,6 +3794,7 @@ c   (this is a CFL3D-specific node:  it is not part of the SIDS standard)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  14,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_descriptor_write_f('Explanation',
@@ -3711,6 +3814,7 @@ c   Go to ReferenceState node, write LengthReference array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  15,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3725,6 +3829,7 @@ c   Go to ReferenceState node, write Pressure array and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  16,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3739,6 +3844,7 @@ c   Go to ReferenceState node, write VelocityX, Y, and Z arrays and dataclass
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  17,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3760,6 +3866,7 @@ c
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  18,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3781,6 +3888,7 @@ c
       if (ier .ne. 0) call cg_error_exit_f
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'DataArray_t',
      +  19,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3822,6 +3930,7 @@ c
 c
       parameter (numnames=19)
 c
+      dimension idimvec(4)
       character namea*80,name(numnames)*32
 c
 c   Determine if single or double precision is being used:
@@ -3843,7 +3952,7 @@ c   Read DataClass node
          ntr=0
       else
          if(itype .ne. NormalizedByUnknownDimensional) then
-           write(11,'('' ERROR:  Restart file must have data that'',
+           write(11,'('' Error:  Restart file must have data that'',
      +       '' is NormalizedByUnknownDimensional'')')
            write(11,'('' Actual classname is: '',a32)') 
      +      DataClassName(itype)
@@ -3891,6 +4000,7 @@ c   Go to ReferenceState node and get info
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c
 c   Get Mach
@@ -4045,6 +4155,7 @@ c   Get reference temperature
          write(11,'(''   Ignoring this, and continuing.'')')
       end if
       call cg_units_read_f(im,il,it,ite,ia,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (ite .ne. Rankine) then
          write(11,'('' WARNING: Temp DimensionalUnits should be'',
      +    '' Rankine.'')')
@@ -4057,6 +4168,7 @@ c   Get reference temperature
 c
 c   Get angle of attack
       call cg_goto_f(iccg,ibase,ier,'ReferenceState_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
       do n=1,narrays
         if (name(n) .eq. 'AngleofAttack') goto 410
       enddo
@@ -4084,6 +4196,7 @@ c   Get angle of attack
          write(11,'(''   Ignoring this, and continuing.'')')
       end if
       call cg_units_read_f(im,il,it,ite,ia,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       if (ia .ne. Degree) then
          write(11,'('' WARNING: alpha DimensionalUnits should be'',
      +    '' Degree.'')')
@@ -4140,6 +4253,7 @@ c   Currently Max of 50 allowed - beyond this, the last one keeps getting overwr
       inum=0
       do n=1,ndesc
         call cg_descriptor_read_f(n,name,stxsav,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         if (name.eq.'InputFileUsed 1'.or.name.eq.'InputFileUsed 2'.or.
      .      name.eq.'InputFileUsed 3'.or.name.eq.'InputFileUsed 4'.or.
      .      name.eq.'InputFileUsed 5'.or.name.eq.'InputFileUsed 6'.or.
@@ -4361,6 +4475,7 @@ c   Tack on this to beginning of title (18 characters):
       extra='CFL3D V6.0 code:  '
       title = extra // dum
       call cg_descriptor_write_f('CaseTitle',title,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4376,6 +4491,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*10000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4383,6 +4499,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*20000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4390,6 +4507,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*30000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4397,6 +4515,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*40000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4404,6 +4523,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*50000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4411,6 +4531,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*60000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4418,6 +4539,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*80000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4425,6 +4547,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*100000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4432,6 +4555,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*120000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4439,6 +4563,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*140000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4446,6 +4571,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*160000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4453,6 +4579,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*200000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4460,6 +4587,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*240000
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4467,6 +4595,7 @@ c
 #     include "cgnslib_f.h"
       character title*32,stx*240570
       call cg_descriptor_write_f(title,stx,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       return
       end
 c
@@ -4498,10 +4627,10 @@ c
       end
 c
       subroutine wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,dt)
+     +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
 c**********************************************************************
 c     Purpose: Writes qc0 & tursav2 (Q's and turb quantities
-c     from previous time step) & dt for 2nd order
+c     from previous time step) for 2nd order
 c     time-accurate solns, for zone number "igrid".
 c     The CGNS file must be already opened in "MODE_MODIFY" mode.
 c     Writes results in the following order:
@@ -4512,9 +4641,6 @@ c     even though they are stored in CFL3D in the order: jdim,kdim,idim
 c     Also writes rind cell information: No B.C info exists for these.
 c     Currently we output -999 to indicate they are not applicable.
 c     For 2-D solutions, rind cells are not written in the i-direction.
-c     Currently writes dt to the BaseIterativeData node...
-c     We do this until a 'UserDefinedDataArray' node is allowed in
-c     CGNS.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -4542,16 +4668,20 @@ c                       stored (integer)
 c      i2d..............0 if 3-D (rind data to be output in all 3
 c                          directions),
 c                       1 if 2-D (rind data to be output only in j-
-c                          and k- directions)
-c      dt...............time step (real)
+c                          and k- directions) (integer)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
+      parameter(numnames=20)
+c
       dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4),
      .          wk(i2d:idima-i2d,0:jdima,0:kdima)
+      character*32 name(numnames)
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -4601,8 +4731,13 @@ c   U-velocity:
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   V-velocity:
+      if (ialph .eq. 0) then
       call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim,kdim,
      +  qc0,wk,wk,wk,wk,wk,wk,5,3,2,wk)
+      else
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim,kdim,
+     +  qc0,wk,wk,wk,wk,wk,wk,5,4,2,wk)
+      end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'VelocityYLastDT', wk, ifindex, ier)
@@ -4613,8 +4748,13 @@ c   V-velocity:
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   W-velocity:
+      if (ialph .eq. 0) then
       call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim,kdim,
      +  qc0,wk,wk,wk,wk,wk,wk,5,4,2,wk)
+      else
+      call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim,kdim,
+     +  -qc0,wk,wk,wk,wk,wk,wk,5,3,2,wk)
+      end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'VelocityZLastDT', wk, ifindex, ier)
@@ -4660,43 +4800,12 @@ c   Second turb quantity:
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Go to BaseIterativeData level and write delta t
-      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      if (idouble .eq. 1) then
-        call cg_array_write_f('LatestDTUsed',RealDouble,1,1,dt,ier)
-      else
-        call cg_array_write_f('LatestDTUsed',RealSingle,1,1,dt,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,
-     +  'DataArray_t',3,'end')
-      call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c   Go to Base node, write TimeStep array as UserDefinedData
-c     call cg_goto_f(iccg,ibase,ier,'end')
-c     if (ier .ne. 0) call cg_error_exit_f
-c     call cg_user_data_write_f('TimeStep', indexu, ier)
-c     if (ier .ne. 0) call cg_error_exit_f
-c     call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',1,'end')
-c     if (ier .ne. 0) call cg_error_exit_f
-c     if (idouble .eq. 1) then
-c       call cg_array_write_f('LatestDTUsed',RealDouble,1,1,dt,ier)
-c     else
-c       call cg_array_write_f('LatestDTUsed',RealSingle,1,1,dt,ier)
-c     end if
-c     if (ier .ne. 0) call cg_error_exit_f
-c     call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',1,
-c    +  'DataArray_t',1,'end')
-c     call cg_dataclass_write_f(NormalizedByUnknownDimensional,ier)
-c     if (ier .ne. 0) call cg_error_exit_f
-c
       return
       end
 c
       subroutine rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                   jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +                   qc0,tursav2,dtold)
+     +                   ialph,qc0,tursav2,dtold)
 c**********************************************************************
 c     Purpose: Reads qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) & dt for 2nd order
@@ -4708,9 +4817,6 @@ c       (jdim,kdim,idim) <- necessary for CFL3D!,
 c
 c     and assumes they are stored in the CGNS database in the order:
 c     (idim,jdim,kdim)
-c     Currently reads dtold from the BaseIterativeData node...
-c     We do this until a 'UserDefinedDataArray' node is allowed in
-c     CGNS.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -4728,8 +4834,10 @@ c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      nsoluse..........CGNS "FlowSolution" index number (integer)
 c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
-c      i2d..............0 if 3-D, 1 if 2-D
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      dt...............current time step (real)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
@@ -4831,8 +4939,16 @@ c   Read Q's:
      +     fndesired(m), RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
+      if (m .eq. 3 .and. ialph .eq. 1) then
+      call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,4))
+      else if (m .eq. 4 .and. ialph .eq. 1) then
+      call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
+     +    nfaci,-wk,irind,jrind,krind,qc0(1,1,1,3))
+      else
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,m))
+      end if
       enddo
 c
 c   Now get 2nd order turb quantities (they may not exist if this
@@ -4873,85 +4989,65 @@ c   Read old turb quantities:
      +    nfaci,wk,irind,jrind,krind,tursav2(1,1,1,m))
         enddo
       end if
-c   Read BaseIterativeData node
-      call cg_biter_read_f(iccg,ibase,name,nsteps,ier)
-      if (ier .gt. 0) then
-         write(11,'('' WARNING: BaseIterativeData node does not '',
-     +    ''exist.'')')
-         write(11,'(''   Setting dtold=dt and continuing'')')
-         dtold=dt
-         return
-      end if
-c   Go to BaseIterativeData node and get info
-      call cg_goto_f(iccg,ibase,ier,'BaseIterativeData_t',1,'end')
-      if (ier .ne. 0) call cg_error_exit_f
-      call cg_narrays_f(narrays,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-      if (narrays .gt. numnames) then
-         write(11,'('' WARNING.  Too many BaseIterativeData'',
-     +    '' arrays.'')')
-         write(11,'(''   Setting dtold=dt and continuing'')')
-         dtold=dt
-         return
-      end if
-      do n=1,narrays
-        call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
-      enddo
 c
-c   Get TimeValues
-      do n=1,narrays
-        if (name(n) .eq. 'LatestDTUsed') goto 101
-      enddo
-      write(11,'('' WARNING. No LatestDTUsed node exists'')')
-      write(11,'(''   Setting dtold=dt and continuing'')')
-      dtold=dt
-      goto 201
- 101  continue
-      if (idouble .eq. 1) then
-        call cg_array_read_as_f(n,RealDouble,dtold,ier)
+c   Go to Base node, read CFL3DTimeStep array from UserDefinedData
+      call cg_goto_f(iccg,ibase,ier,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .eq. 0) then
+        write(11,'('' no user data exists in base, so'',
+     +    '' no old time step is available: set to current'')')
+        dtold=dt
+      else if (nuserdata .gt. numfield) then
+        write(11,'('' Error... numfield too small in rsecord'')')
+        stop
       else
-        call cg_array_read_as_f(n,RealSingle,dtold,ier)
+        do n=1,nuserdata
+          call cg_user_data_read_f(n,fieldname(n),ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+        do n=1,nuserdata
+          if(fieldname(n) .eq. 'CFL3DTimeStep') goto 101
+        enddo
+        write(11,'('' WARNING. No CFL3DTimeStep node exists'')')
+        write(11,'(''   setting dtold=dt and continuing'')')
+        dtold=dt
+        goto 201
+ 101    continue
+        call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',n,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        if (idouble .eq. 1) then
+          call cg_array_read_as_f(1,RealDouble,dtold,ier)
+        else
+          call cg_array_read_as_f(1,RealSingle,dtold,ier)
+        end if
+        if (ier .ne. 0) call cg_error_exit_f
       end if
-      if (ier .ne. 0) call cg_error_exit_f
  201  continue
-c
-c   Go to Base node, read TimeStep array from UserDefinedData
-c     call cg_goto_f(iccg,ibase,ier,'end')
-c     if (ier .ne. 0) call cg_error_exit_f
-c     call cg_nuser_data_f(nuserdata,ier)
-c     if (nuserdata .eq. 0) then
-c       write(11,'('' no old time step available, set to current'')')
-c       dtold=dt
-c     else
-c       do n=1,nuserdata
-c         call cg_user_data_read_f(n,fieldname(n),ier)
-c       enddo
-c       fndesired(1)='TimeStep'
-c       dtold=dt
-c       do n=1,nuserdata
-c         if(fndesired(1) .eq. fieldname(n)) then
-c           call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',n,'end')
-c           if (ier .ne. 0) call cg_error_exit_f
-c           if (idouble .eq. 1) then
-c             call cg_array_read_as_f(1,RealDouble,dtold,ier)
-c           else
-c             call cg_array_read_as_f(1,RealSingle,dtold,ier)
-c           end if
-c           if (ier .ne. 0) call cg_error_exit_f
-c         end if
-c       enddo
-c     end if
       return
       end
 c
-      subroutine reorderg(idim,jdim,kdim,wk,xyz)
+      subroutine reorderg(nfac,nfaci,idima,jdima,kdima,
+     .   idim,jdim,kdim,wk,xyz)
 c**********************************************************************
 c     Purpose: Given wk array, reorder i,j,k to j,k,i for grid
 c     (this routine contains no CGNS calls - it merely manipulates
-c     the data)
+c     the data).
 c
 c   INPUTS:
-c      idim,jdim,kdim...dimensions used in arrays (integers)
+c      nfac.............factor denoting "level" of grid (e.g.,
+c                       1=grid on finest level, 2=1-level down,
+c                       4=2-levels down, 8=3-levels down,
+c                       16=4-levels down (integer)
+c      nfaci............same as nfac, except for i-direction only
+c                       (when 2-D, the i-direction does not coarsen)
+c                       (integer)
+c      idima,jdima,kdima...expected dimensions of this zone
+c                          (zone "igrid") at finest level (integers)
+c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
+c                       for this zone (e.g., could be every other point
+c                       of fine grid) (integers)
 c      wk...............grid coordinates array (usually x,
 c                       y, or z) in i,j,k-ordering, as stored
 c                       in CGNS file (real)
@@ -4960,12 +5056,18 @@ c      xyz..............grid coordinates array (usually x,
 c                       y, or z) in j,k,i-ordering (real)
 c**********************************************************************
 c
-      dimension xyz(jdim,kdim,idim),wk(idim,jdim,kdim)
+      dimension xyz(jdim,kdim,idim),wk(idima,jdima,kdima)
 c
-      do k=1,kdim
-      do j=1,jdim
-      do i=1,idim
-        xyz(j,k,i)=wk(i,j,k)
+      kk=0
+      do k=1,kdima,nfac
+      kk=kk+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+        xyz(jj,kk,ii)=wk(i,j,k)
       enddo
       enddo
       enddo
@@ -4978,7 +5080,7 @@ c
 c**********************************************************************
 c     Purpose: given wk array, reorder i,j,k to j,k,i for q
 c     (this routine contains no CGNS calls - it merely manipulates
-c     the data)
+c     the data).
 c
 c   INPUTS:
 c      idima,jdima,kdima...expected dimensions of this zone
@@ -4992,7 +5094,8 @@ c                       prolonged to the fine grid and written at that
 c                       level (integers)
 c      nfac.............factor denoting "level" of solution (e.g.,
 c                       1=soln on finest level, 2=1-level down,
-c                       4=2-levels down, 8=3-levels down (integer)
+c                       4=2-levels down, 8=3-levels down,
+c                       16=4-levels down (integer)
 c      nfaci............same as nfac, except for i-direction only
 c                       (when 2-D, the i-direction does not coarsen)
 c                       (integer)
@@ -5029,15 +5132,16 @@ c
      +  q,bci,bcj,bck,qi0,qj0,qk0,ldim,luse,iflag,wk)
 c**********************************************************************
 c     Purpose: Given q array, reorder solution j,k,i to i,j,k (include
-c     factor if on coarser level, and include rind (BC) data)
+c     factor if on coarser level, and include rind (BC) data).
 c     Note:  when iflag=1, bci,bcj,bck are not accessed, and when
-c     iflag=2, bci,bcj,bck,qi0,qj0,qk0 are not accessed
+c     iflag=2, bci,bcj,bck,qi0,qj0,qk0 are not accessed.
 c
 c   INPUTS:
 c      nfac.............factor denoting "level" of solution (e.g.,
 c                       1=soln on finest level, 2=1-level down,
-c                       4=2-levels down, 8=3-levels down (integer)
-c      i2d..............0 if 3-D, 1 if 2-D
+c                       4=2-levels down, 8=3-levels down,
+c                       16=4-levels down (integer)
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      idima,jdima,kdima...expected dimensions of this zone
 c                          (zone "igrid") at finest level,
 c                          modified by i2d (integers)
@@ -5051,9 +5155,6 @@ c      q................solution array in j,k,i ordering (real)
 c      bci,bcj,bck......arrays denoting where BCs stored (0=at cell
 c                       center, 1=at face center) (real)
 c      qi0,qj0,qk0......arrays of BC data (real)
-c     
-c      irind,jrind,krind...= 0 if rind data exists for the direction,
-c                          = 1 if it does not (integers)
 c      ldim.............last dimension of q-array (integer)
 c      luse.............which last-dimension of q-array to use 
 c                       (integer)
@@ -5238,7 +5339,7 @@ c     If DensityLastDT exists in any zone, then it means that it is
 c     a second order solution.
 c     If ANY RigidGridMotion_t nodes exist in CFL3D file, then it 
 c     means that it is an unsteady run (there is unsteady data that 
-c     needs to be read)
+c     needs to be read).
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -5262,13 +5363,17 @@ c
 c
       parameter(numfield=50)
 c
+      dimension idimvec(4)
       character*32 fieldname(numfield)
 c
       iflagg=0
+c   Find out how many zones there are
+      call cg_nzones_f(iccg, ibase, nzones, ier)
+      if (ier .ne. 0) call cg_error_exit_f
 c   Check over all zones
-      do igrid=1,10000
+      do igrid=1,nzones
       call cg_nfields_f(iccg, ibase, igrid, nsoluse, nfields, ier)
-      if (ier .ne. 0) goto 999
+      if (ier .ne. 0) call cg_error_exit_f
       if (nfields .gt. numfield) then
         write(11,'('' Need to increase numfield parameter'',
      +    '' in getiflagg'')')
@@ -5286,8 +5391,10 @@ c   Check to see if any of the fields have the name 'DensityLastDT'
         end if
       enddo
 c   Now check for moving grid info
-c   If ANY RigidGridMotion_t nodes exist in CFL3D file, then it means that
-c   it is an unsteady run (there is unsteady data that needs to be read)
+c   If ANY RigidGridMotion_t nodes exist in CFL3D file -and- if
+c   ZoneIterativeData contains RigidGridMotionPointers, then it 
+c   it is an unsteady moving grid run (there is unsteady data that  
+c   needs to be read)
       call cg_n_rigid_motions_f(iccg, ibase, igrid, nmotions, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
@@ -5296,16 +5403,40 @@ c   it is an unsteady run (there is unsteady data that needs to be read)
         write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       else
-        if (iflagg .eq. 0) then
-          iflagg = 2
-        else if (iflagg .eq. 1) then
-          iflagg = 3
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'ZoneIterativeData_t',1,'end')
+        if (ier .eq. 0) then
+c         Find out how many arrays
+          call cg_narrays_f(narrays,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+          if (narrays .gt. numfield) then
+            write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
+            write(11,'(''   increase numfield in getiflagg'')')
+            stop
+          end if
+          do n=1,narrays
+            call cg_array_info_f(n,fieldname(n),itype,idatadim,
+     +        idimvec,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+          enddo
+          imov=1
+          do n=1,narrays
+            if (fieldname(n) .eq. 'RigidGridMotionPointers') goto 101
+          enddo
+          write(11,'('' No RigidGridMotionPointers exists... assume'',
+     +      '' restart from non-moving grid case'')')
+          imov=0
+ 101      continue
+          if (imov .eq. 1) then
+            if (iflagg .eq. 0) then
+              iflagg = 2
+            else if (iflagg .eq. 1) then
+              iflagg = 3
+            end if
+          end if
         end if
       end if
       enddo
-      write(11,'('' Error.  Too many zones!'')')
-      stop
- 999  continue
       return
       end
 
@@ -5346,14 +5477,10 @@ c
       subroutine writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +  vj0,vk0,vi0,tj0,tk0,ti0,i2d)
 c**********************************************************************
-c     Purpose:  Use ZoneIterativeData to store BC info
-c     necessary for CFL3D V6.  We do this because until a
-c     'UserDefinedDataArray' node is allowed in CGNS, there is no
-c     better place to put data arrays that are of different size from
-c     the grid size.
-c     If i2d=1, don't write qi0, vi0, or ti0
+c     Purpose:  Store BC info necessary for CFL3D V6 in a
+c     'UserDefinedData'.  If i2d=1, don't write qi0, vi0, or ti0 
 c     (not ever needed, and writing them triples the size of the
-c     CGNS file unnecessarily!)
+c     CGNS file unnecessarily!).
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside
@@ -5366,12 +5493,14 @@ c                       for this zone (integers)
 c      qi0,qj0,qk0......arrays of BC data (CONSERVED quantities) (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
-c      i2d..............0 if 3-D, 1 if 2-D
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
+c
+      parameter(numnames=20)
 c
       dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4), 
      .          qk0(jdim,idim-1,5,4)
@@ -5379,6 +5508,9 @@ c
      .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
       dimension jdata(4)
+      character*32 name(numnames)
+      character*48 string1,string2
+      character*96 string3
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -5386,13 +5518,32 @@ c   Determine if single or double precision is being used:
       idouble=1
 #endif
 c
-c   Go to ZoneIterativeData node
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'ZoneIterativeData_t',1,'end')
-      if (ier .ne. 0) then
-        write(11,'('' Error.  ZoneIterativeData node does not exist'')')
+c   Go to Zone node and create a user-defined node
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_user_data_write_f('CFL3DBoundaryValues', ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_nuser_data_f(nuserdata, ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .gt. numnames) then
+        write(11,'('' Error... numnames too small in writebcs'')')
         stop
       end if
+      do n=1,nuserdata
+        call cg_user_data_read_f(n, name(n), ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(n) .eq. 'CFL3DBoundaryValues') then
+          nset=n
+        end if
+      enddo
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +  'UserDefinedData_t',nset,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      string1 = 'NOTE: If iwghost changed from 1 to 0 in mid-run,'
+      string2 = ' these values will be wrong'
+      string3 = string1 // string2
+      call cg_descriptor_write_f('Information',string3,ier)
+      if (ier .ne. 0) call cg_error_exit_f
 c
 c   Write BC qi0 data
       if (i2d .ne. 1) then
@@ -5524,13 +5675,8 @@ c
       subroutine readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
      +  qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
 c**********************************************************************
-c     Purpose:  Reads CFL3D's BC info from 'ZoneIterativeData' node.
-c     (We are also using ZoneIterativeData to store BC info
-c     necessary for CFL3D V6.  We do this because until a
-c     'UserDefinedDataArray' node is allowed in CGNS, there is no
-c     better place to put data arrays that are of different size from
-c     the grid size.)
-c     If i2d=1, don't need to read qi0, vi0, or ti0
+c     Purpose:  Reads CFL3D's BC info.
+c     If i2d=1, don't need to read qi0, vi0, or ti0.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside
@@ -5540,7 +5686,7 @@ c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
-c      i2d..............0 if 3-D, 1 if 2-D
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c   OUTPUTS:
 c      qi0,qj0,qk0......arrays of BC data (CONSERVED or PRIMITIVE
 c                       quantities - same type as Q's read in
@@ -5558,7 +5704,7 @@ c
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
-      dimension idata(2),jdata(4)
+      dimension idata(2),jdata(4),idimvec(4)
       character name(numnames)*32
 c
 c   Determine if single or double precision is being used:
@@ -5567,25 +5713,104 @@ c   Determine if single or double precision is being used:
       idouble=1
 #endif
 c
-c   Get Information about what is under ZoneIterativeData node
-      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     . 'ZoneIterativeData_t',1,'end')
-      if (ier .ne. 0) then
-        write(11,'('' WARNING... ZoneIterativeData node does not'',
-     +    '' exist'')')
-        write(11,'(''   not changing default BCs... continuing'')')
-        return
-      end if
-      call cg_narrays_f(narrays,ier)
+c   We must locate the BCs:
+c   In new method, they are stored under Zone in a UserDefinedData node
+c   called CFL3DBoundaryValues.  In old method, they were put under
+c   ZoneIterativeData (because there was no better place to put them
+c   at the time).  Check both places, just in case.
+c
+c   Go to Zone and look for UserDefinedData
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
       if (ier .ne. 0) call cg_error_exit_f
-      if (narrays .gt. numnames) then
-        write(11,'('' WARNING.  Too many ZoneIterativeData arrays.'')')
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .gt. numnames) then
+        write(11,'('' WARNING... numnames too small in readbcs'')')
         write(11,'(''   not changing default BCs... continuing'')')
         return
       end if
-      do n=1,narrays
-        call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
-      enddo
+      if (nuserdata .ne. 0) then
+        do n=1,nuserdata
+          call cg_user_data_read_f(n,name(n),ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+        do n=1,nuserdata
+          if(name(n) .eq. 'CFL3DBoundaryValues') goto 1001
+        enddo
+c   No CFL3DBoundaryValues... Try reading BCs from old location
+        write(11,'('' no BC data exists in UserDefinedData nodes'')')
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     .    'ZoneIterativeData_t',1,'end')
+        if (ier .ne. 0) then
+          write(11,'('' WARNING... BCs not in ZoneIterativeData or'',
+     +      '' a UserDefinedData array'')')
+          write(11,'(''   not changing default BCs... continuing'')')
+          return
+        end if
+        call cg_narrays_f(narrays,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if (narrays .gt. numnames) then
+          write(11,'('' WARNING.  Too many ZoneIterativeData'',
+     +     '' arrays.'')')
+          write(11,'(''   not changing default BCs... continuing'')')
+          return
+        end if
+        write(11,'('' Reading BC info from ZoneIterativeData (old'',
+     +    '' method)'')')
+        write(11,'(''  ... it will be moved to new location of'',
+     +    '' UserDefinedData node CFL3DBoundaryValues when written'')')
+        do n=1,narrays
+          call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+        goto 1002
+c   Read BCs from new location
+ 1001   continue
+        write(11,'('' Reading BC info from UserDefinedData'')')
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +    'UserDefinedData_t',n,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_narrays_f(narrays,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if (narrays .gt. numnames) then
+          write(11,'('' WARNING.  Too many arrays in'',
+     +      '' CFL3DBoundaryValues...'')')
+          write(11,'(''   not changing default BCs... continuing'')')
+          return
+        end if
+        do n=1,narrays
+          call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+ 1002   continue
+      else
+c   Try reading BCs from old location
+        write(11,'('' no BC data exists in UserDefinedData nodes'')')
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     .    'ZoneIterativeData_t',1,'end')
+        if (ier .ne. 0) then
+          write(11,'('' WARNING... BCs not in ZoneIterativeData or'',
+     +      '' a UserDefinedData array'')')
+          write(11,'(''   not changing default BCs... continuing'')')
+          return
+        end if
+        call cg_narrays_f(narrays,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if (narrays .gt. numnames) then
+          write(11,'('' WARNING.  Too many ZoneIterativeData'',
+     +      '' arrays.'')')
+          write(11,'(''   not changing default BCs... continuing'')')
+          return
+        end if
+        write(11,'('' Reading BC info from ZoneIterativeData (old'',
+     +    '' method)'')')
+        write(11,'(''  ... it will be moved to new location of'',
+     +    '' UserDefinedData node CFL3DBoundaryValues when written'')')
+        do n=1,narrays
+          call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+          if (ier .ne. 0) call cg_error_exit_f
+        enddo
+      end if
 c
 c   Get BC qi0
       if (i2d .ne. 1) then
@@ -5750,11 +5975,11 @@ c
      .                  omegax,omegay,omegaz,dthxmx,dthymx,dthzmx,
      .                  irotatmc,rfreqrmc,thetaxmc,thetaymc,thetazmc,
      .                  omegaxmc,omegaymc,omegazmc,dthxmxmc,dthymxmc,
-     .                  dthzmxmc,time2,time2mc,dt)
+     .                  dthzmxmc,time2,time2mc,dt,ialph)
 c**********************************************************************
 c     Purpose: Creates 'RigidGridMotion' node and writes moving grid 
 c     info under it (including CFL3D-specific info).
-c     Also adds RigidGridMotionPointers to ZoneIterativeData
+c     Also adds RigidGridMotionPointers to ZoneIterativeData.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside 
@@ -5771,6 +5996,8 @@ c      irotat...........flag to indicate whether rotating or not
 c                       (integer)
 c      etc...
 c      dt...............time step (real)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
@@ -5778,6 +6005,9 @@ c
 #     include "cgnslib_f.h"
 c
       dimension data(3),data1(3,2),idata(2)
+      character*48 string1,string3
+      character*34 string2,string4
+      character*164 string5
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -5807,35 +6037,63 @@ c   Create SIDS-standard node for rigid motion
      +    'RigidGridMotion',VariableRate,ir,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c   Write Origin, Theta info
+c   Write Descriptor, Origin, Theta info
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'RigidGridMotion_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
+      string1 = 'NOTE:    If turn off the grid motion in mid-run,'
+      string2 = ' these values will be wrong. Check'
+      string3 = ' ZoneIterativeData: RigidGridMotionPointers must'
+      string4 = ' exist for info here to be valid. '
+      string5 = string1 // string2 // string3 // string4
+      call cg_descriptor_write_f('Information',string5,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       idata(1)=3
       idata(2)=2
-      data1(1,1)=xorig0
-      data1(2,1)=yorig0
-      data1(3,1)=zorig0
-      data1(1,2)=xorig
-      data1(2,2)=yorig
-      data1(3,2)=zorig
-      data(1)=thetax
-      data(2)=thetay
-      data(3)=thetaz
+      if (ialph .eq. 0) then
+        data1(1,1)=xorig0
+        data1(2,1)=yorig0
+        data1(3,1)=zorig0
+        data1(1,2)=xorig
+        data1(2,2)=yorig
+        data1(3,2)=zorig
+        data(1)=thetax
+        data(2)=thetay
+        data(3)=thetaz
+      else
+        data1(1,1)=xorig0
+        data1(2,1)=zorig0
+        data1(3,1)=-yorig0
+        data1(1,2)=xorig
+        data1(2,2)=zorig
+        data1(3,2)=-yorig
+        data(1)=thetax
+        data(2)=thetaz
+        data(3)=-thetay
+      end if
       if (idouble .eq. 1) then
         call cg_array_write_f('OriginLocation',RealDouble,2,idata,
      +    data1,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('RigidRotationAngle',RealDouble,1,3,
      +    data,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       else
         call cg_array_write_f('OriginLocation',RealSingle,2,idata,
      +    data1,ier)
+        if (ier .ne. 0) call cg_error_exit_f
         call cg_array_write_f('RigidRotationAngle',RealSingle,1,3,
      +    data,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
+c
+c   Next write other (cfl3d-specific) data:
+      call cg_user_data_write_f('CFL3DParameters', ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'RigidGridMotion_t',1,'UserDefinedData_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Next write other (cfl3d-specific) real data:
       if (idouble .eq. 1) then
         call cg_array_write_f('Rfreqt',RealDouble,1,1,rfreqt,ier)
       else
@@ -6006,16 +6264,20 @@ c
       if (ier .ne. 0) call cg_error_exit_f
 c
       call cg_array_write_f('Itrans',Integer,1,1,itrans,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('Itransmc',Integer,1,1,itransmc,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('Irotat',Integer,1,1,irotat,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('Irotatmc',Integer,1,1,irotatmc,ier)
+      if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('Iuns',Integer,1,1,iuns,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
       return
       end
 
-      subroutine rgrdmov(iccg,ibase,igrid,
+      subroutine rgrdmov(iccg,ibase,igrid,ialph,
      .                  itrans,rfreqt,xorig,yorig,zorig,xorig0,yorig0,
      .                  zorig0,utrans,vtrans,wtrans,dxmx,dymx,dzmx,
      .                  itransmc,rfreqtmc,xorigmc,yorigmc,zorigmc,
@@ -6027,7 +6289,7 @@ c
      .                  omegaxmc,omegaymc,omegazmc,dthxmxmc,dthymxmc,
      .                  dthzmxmc,time2,time2mc,dt)
 c**********************************************************************
-c     Purpose:  Reads 'GridMotionDefinition' node moving grid info
+c     Purpose:  Reads 'GridMotionDefinition' node moving grid info.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside 
@@ -6035,6 +6297,8 @@ c                       this routine) (integer)
 c      ibase............CGNS base index number (determined outside 
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      itrans...........flag to indicate whether translating or not 
 c                       (integer)
@@ -6049,8 +6313,8 @@ c
 c
       parameter (numnames=50)
 c
-      dimension data(3),data1(3,2)
-      character*32 name(numnames),namer
+      dimension data(3),data1(3,2),idimvec(4)
+      character*32 name(numnames)
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -6123,8 +6387,6 @@ c   Find out how many RigidGridMotion_t nodes there are
         write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       end if
-c   Read RigidGridMotion_t node
-      call cg_rigid_motion_read_f(iccg,ibase,igrid,1,namer,itype,ier)
 c   Go to RigidGridMotion_t node
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'RigidGridMotion_t',1,'end')
@@ -6139,6 +6401,7 @@ c   Find out how many arrays
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c   Get Origin
       do n=1,narrays
@@ -6153,12 +6416,21 @@ c   Get Origin
         call cg_array_read_as_f(n,RealSingle,data1,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      xorig0=data1(1,1)
-      yorig0=data1(2,1)
-      zorig0=data1(3,1)
-      xorig=data1(1,2)
-      yorig=data1(2,2)
-      zorig=data1(3,2)
+      if (ialph .eq. 0) then
+        xorig0=data1(1,1)
+        yorig0=data1(2,1)
+        zorig0=data1(3,1)
+        xorig=data1(1,2)
+        yorig=data1(2,2)
+        zorig=data1(3,2)
+      else
+        xorig0=data1(1,1)
+        zorig0=data1(2,1)
+        yorig0=-data1(3,1)
+        xorig=data1(1,2)
+        zorig=data1(2,2)
+        yorig=-data1(3,2)
+      end if
 c
 c   Get Thetas
       do n=1,narrays
@@ -6173,9 +6445,46 @@ c   Get Thetas
         call cg_array_read_as_f(n,RealSingle,data,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      thetax=data(1)
-      thetay=data(2)
-      thetaz=data(3)
+      if (ialph .eq. 0) then
+        thetax=data(1)
+        thetay=data(2)
+        thetaz=data(3)
+      else
+        thetax=data(1)
+        thetaz=data(2)
+        thetay=-data(3)
+      end if
+c
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .ne. 1) then
+        write(11,'('' Error... should be 1 user data node in'', 
+     +    '' RigidGridMotion'')')
+        stop
+      else
+        call cg_user_data_read_f(1,name(1),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(1) .eq. 'CFL3DParameters') goto 1004
+        write(11,'('' Error. No CFL3DParameters node exists'')')
+        stop
+ 1004   continue
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'RigidGridMotion_t',1,'UserDefinedData_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
+c   Find out how many arrays
+      call cg_narrays_f(narrays,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (narrays .gt. numnames) then
+        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
+        write(11,'(''   increase numnames in rgrdmov'')')
+        stop
+      end if
+      do n=1,narrays
+        call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      enddo
 c
 c   Get Rfreqt
       do n=1,narrays
@@ -6525,7 +6834,7 @@ c
       subroutine readiuns(iccg,ibase,igrid,iuns)
 c**********************************************************************
 c     Purpose: Reads 'GridMotionDefinition' node and gets iuns 
-c     parameter
+c     parameter.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside 
@@ -6542,7 +6851,8 @@ c
 c
       parameter (numnames=50)
 c
-      character*32 name(numnames),namer
+      dimension idimvec(4)
+      character*32 name(numnames)
 c
 c   Find out how many RigidGridMotion_t nodes there are
       call cg_n_rigid_motions_f(iccg,ibase,igrid,nmotions,ier)
@@ -6557,13 +6867,28 @@ c   Find out how many RigidGridMotion_t nodes there are
         write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       end if
-c   Read RigidGridMotion_t node
-      call cg_rigid_motion_read_f(iccg,ibase,igrid,1,namer,itype,ier)
-      if (ier .ne. 0) call cg_error_exit_f
 c   Go to RigidGridMotion_t node
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'RigidGridMotion_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
+c   Find out how many UserDefinedData_t nodes there are
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .ne. 1) then
+        write(11,'('' Error... should be 1 user data node in'',
+     +    '' RigidGridMotion'')')
+        stop
+      else
+        call cg_user_data_read_f(1,name(1),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(1) .eq. 'CFL3DParameters') goto 1004
+        write(11,'('' Error. No CFL3DParameters node exists'')')
+        stop
+ 1004   continue
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'RigidGridMotion_t',1,'UserDefinedData_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
 c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
@@ -6574,6 +6899,7 @@ c   Find out how many arrays
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c   Get Iuns
       do n=1,narrays
@@ -6595,18 +6921,13 @@ c
      .            yorgae,zorgae,thtxae,
      .            thtyae,thtzae,rfrqtae,
      .            rfrqrae,icsi,icsf,jcsi,
-     .            jcsf,kcsi,kcsf,jdim,kdim,idim,
-     .            x,y,z,xnm2,ynm2,znm2,wk)
+     .            jcsf,kcsi,kcsf,jdima,kdima,idima,
+     .            jdim,kdim,idim,x,y,z,xnm2,ynm2,znm2,wk,ialph,i2d)
 c**********************************************************************
 c     Purpose: Creates 'ArbitraryGridMotion' node and writes 
 c     arbitrary moving grid info (including CFL3D-specific info).
-c     All the CFL3D-specific info is currently stored under
-c     the RigidGridMotion node (because arbitrary arrays are
-c     not allowed under ArbitraryGridMotion).
-c     We do this until a 'UserDefinedDataArray' node is allowed in 
-c     CGNS.
 c     Also adds ArbitraryGridMotionPointers and GridCoordinatesPointers
-c     to ZoneIterativeData
+c     to ZoneIterativeData.
 c     Writes grids in the following order:
 c
 c     (idim,jdim,kdim) <- necessary for CGNS!,
@@ -6642,7 +6963,11 @@ c      jcsi.............CFL3D-specific parameter (integer)
 c      jcsf.............CFL3D-specific parameter (integer)
 c      kcsi.............CFL3D-specific parameter (integer)
 c      kcsf.............CFL3D-specific parameter (integer)
-c      jdim,kdim,idim...dimensions of grid (integers)
+c      idima,jdima,kdima...expected dimensions of this zone
+c                          (zone "igrid"), at finest level (integers)
+c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
+c                       for this zone (e.g., could be every other point
+c                       of fine grid) (integers)
 c      x................new grid x-value (real)
 c      y................new grid y-value (real)
 c      z................new grid z-value (real)
@@ -6650,7 +6975,10 @@ c      xnm2.............last time-step grid x-value (real)
 c      ynm2.............last time-step grid y-value (real)
 c      znm2.............last time-step grid z-value (real)
 c      wk...............working space needed, of dimension
-c                       (idim*jdim*kdim) or larger (real)
+c                       (idima*jdima*kdima) or larger (real)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
@@ -6668,8 +6996,11 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim),
      .          xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension wk(idim,jdim,kdim)
+      dimension wk(idima,jdima,kdima)
       dimension idata(2),jdata(3)
+      character*52 string1,string3
+      character*34 string2,string4
+      character*172 string5
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -6696,10 +7027,34 @@ c   Create SIDS-standard node for arbitrary motion
      +  'ArbitraryGridMotion',DeformingGrid,ir,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Write CFL3D-specific info into RigidGridMotion node for now
+c   Set dimensions
+      jdata(1)=idima
+      jdata(2)=jdima
+      jdata(3)=kdima
+c   Initialize wk array to zero
+      do i=1,idima
+      do j=1,jdima
+      do k=1,kdima
+        wk(i,j,k)=0.
+      enddo
+      enddo
+      enddo
+c   Write CFL3D-specific info
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'RigidGridMotion_t',1,'end')
+     + 'ArbitraryGridMotion_t',1,'end')
+      string1 = 'NOTE:  If turn off deforming grid motion in mid-run,'
+      string2 = ' these values will be wrong. Check'
+      string3 = ' ZoneIterativeData: ArbitraryGridMotionPointers must'
+      string4 = ' exist for info here to be valid. '
+      string5 = string1 // string2 // string3 // string4
+      call cg_descriptor_write_f('Information',string5,ier)
       if (ier .ne. 0) call cg_error_exit_f
+      call cg_user_data_write_f('CFL3DParameters', ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'ArbitraryGridMotion_t',1,'UserDefinedData_t',1,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+c
       call cg_array_write_f('Idefrm',Integer,1,1,idefrm,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_array_write_f('Nsegdfrm',Integer,1,1,nsegdfrm,ier)
@@ -6716,10 +7071,10 @@ c   Write CFL3D-specific info into RigidGridMotion node for now
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
         call cg_array_write_f('Vtrnsae',RealDouble,1,nsegdfrm,
-     +   Vtrnsae,ier)
+     +   vtrnsae,ier)
       else
         call cg_array_write_f('Vtrnsae',RealSingle,1,nsegdfrm,
-     +   Vtrnsae,ier)
+     +   vtrnsae,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
@@ -6831,10 +7186,6 @@ c   Write CFL3D-specific info into RigidGridMotion node for now
       call cg_array_write_f('Kcsf',Integer,1,nsegdfrm,kcsf,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Set dimensions for grid info
-      jdata(1)=idim
-      jdata(2)=jdim
-      jdata(3)=kdim
 c   Write moved grid
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
       if (ier .ne. 0) call cg_error_exit_f
@@ -6843,11 +7194,51 @@ c   Write moved grid
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'GridCoordinates_t',ig,'end')
       if (ier .ne. 0) call cg_error_exit_f
+      string1 = 'NOTE:  If turn off deforming grid motion in mid-run,'
+      string2 = ' these values will be wrong. Check'
+      string3 = ' ZoneIterativeData:     GridCoordinatesPointers must'
+      string4 = ' exist for info here to be valid. '
+      string5 = string1 // string2 // string3 // string4
+      call cg_descriptor_write_f('Information',string5,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c   First, get "factor" in case want to write every other point, etc
+      if(idim.eq.idima .and. jdim.eq.jdima .and. kdim.eq.kdima) then
+        nfac=1
+        string1='Fine grid level'
+      else if(jdim.eq.(jdima+1)/2 .and. kdim.eq.(kdima+1)/2) then
+        nfac=2
+        string1='Every-2nd-gridpoint written (1 level down)'
+      else if(jdim.eq.(jdima+3)/4 .and. kdim.eq.(kdima+3)/4) then
+        nfac=4
+        string1='Every-4th-gridpoint written (2 levels down)'
+      else if(jdim.eq.(jdima+7)/8 .and. kdim.eq.(kdima+7)/8) then
+        nfac=8
+        string1='Every-8th-gridpoint written (3 levels down)'
+      else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
+        nfac=16
+        string1='Every-16th-gridpoint written (4 levels down)'
+      else
+        write(11,'('' Error.  Desired grid level not supported'')')
+        stop
+      end if
+      if(i2d .eq. 1) then
+        nfaci=1
+      else
+        nfaci=nfac
+      end if
+      call cg_descriptor_write_f('Information2',string1,ier)
+      if (ier .ne. 0) call cg_error_exit_f
 c   Write X
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=x(j,k,i)
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=x(jj,kk,ii)
       enddo
       enddo
       enddo
@@ -6860,13 +7251,35 @@ c   Write X
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c   Write Y
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=y(j,k,i)
+      if (ialph .eq. 0) then
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=y(jj,kk,ii)
       enddo
       enddo
       enddo
+      else
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=z(jj,kk,ii)
+      enddo
+      enddo
+      enddo
+      end if
       if (idouble .eq. 1) then
         call cg_array_write_f('CoordinateY',RealDouble,3,jdata,
      +   wk,ier)
@@ -6876,13 +7289,35 @@ c   Write Y
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c   Write Z
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=z(j,k,i)
+      if (ialph .eq. 0) then
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=z(jj,kk,ii)
       enddo
       enddo
       enddo
+      else
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=-y(jj,kk,ii)
+      enddo
+      enddo
+      enddo
+      end if
       if (idouble .eq. 1) then
         call cg_array_write_f('CoordinateZ',RealDouble,3,jdata,
      +   wk,ier)
@@ -6900,11 +7335,21 @@ c   Write moved grid at earlier time
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'GridCoordinates_t',ig,'end')
       if (ier .ne. 0) call cg_error_exit_f
+      call cg_descriptor_write_f('Information',string5,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_descriptor_write_f('Information2',string1,ier)
+      if (ier .ne. 0) call cg_error_exit_f
 c   Write X
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=xnm2(j,k,i)
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=xnm2(jj,kk,ii)
       enddo
       enddo
       enddo
@@ -6916,14 +7361,36 @@ c   Write X
      +   wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c   Write X
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=ynm2(j,k,i)
+c   Write Y
+      if (ialph .eq. 0) then
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=ynm2(jj,kk,ii)
       enddo
       enddo
       enddo
+      else
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=znm2(jj,kk,ii)
+      enddo
+      enddo
+      enddo
+      end if
       if (idouble .eq. 1) then
         call cg_array_write_f('CoordinateY',RealDouble,3,jdata,
      +   wk,ier)
@@ -6932,14 +7399,36 @@ c   Write X
      +   wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c   Write X
-      do i=1,idim
-      do j=1,jdim
-      do k=1,kdim
-        wk(i,j,k)=znm2(j,k,i)
+c   Write Z
+      if (ialph .eq. 0) then
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=znm2(jj,kk,ii)
       enddo
       enddo
       enddo
+      else
+      ii=0
+      do i=1,idima,nfaci
+      ii=ii+1
+      jj=0
+      do j=1,jdima,nfac
+      jj=jj+1
+      kk=0
+      do k=1,kdima,nfac
+        kk=kk+1
+        wk(i,j,k)=-ynm2(jj,kk,ii)
+      enddo
+      enddo
+      enddo
+      end if
       if (idouble .eq. 1) then
         call cg_array_write_f('CoordinateZ',RealDouble,3,jdata,
      +   wk,ier)
@@ -6954,12 +7443,7 @@ c
 
       subroutine getnsegdfrm(iccg,ibase,igrid,nsegdfrm)
 c**********************************************************************
-c     Purpose:  Get parameter nsegdfrm from deforming grid info
-c     This parameter is currently stored under
-c     the RigidGridMotion node (because arbitrary arrays are
-c     not allowed under ArbitraryGridMotion).
-c     We do this until a 'UserDefinedDataArray' node is allowed in
-c     CGNS.
+c     Purpose:  Get parameter nsegdfrm from deforming grid info.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside
@@ -6975,39 +7459,58 @@ c
 c
       parameter (numnames=50)
 c
-      character*32 name(numnames),namer
+      dimension idimvec(4)
+      character*32 name(numnames)
 c
-c   Find out how many RigidGridMotion_t nodes there are
-      call cg_n_rigid_motions_f(iccg,ibase,igrid,nmotions,ier)
+c   Find out how many ArbitraryGridMotion_t nodes there are
+      call cg_n_arbitrary_motions_f(iccg,ibase,igrid,nmotions,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
-        write(11,'('' Error.  No RigidGridMotion nodes, igrid='',i5)') 
-     +   igrid
+        write(11,'('' Error.  No ArbitraryGridMotion nodes,'',
+     +   '' igrid='',i5)') igrid
         write(11,'(''   cannot get nsegdfrm'')')
         stop
       end if
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
+        write(11,'('' Error, more than 1 ArbitraryGridMotion_t'',
+     +   '' nodes!'')')
         stop
       end if
-c   Read RigidGridMotion_t node
-      call cg_rigid_motion_read_f(iccg,ibase,igrid,1,namer,itype,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c   Go to RigidGridMotion_t node
+c   Go to ArbitraryGridMotion_t node
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'RigidGridMotion_t',1,'end')
+     + 'ArbitraryGridMotion_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
+c   Find out how many UserDefinedData_t nodes there are
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .ne. 1) then
+        write(11,'('' Error... should be 1 user data node in'',
+     +    '' ArbitraryGridMotion'')')
+        stop
+      else
+        call cg_user_data_read_f(1,name(1),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(1) .eq. 'CFL3DParameters') goto 1004
+        write(11,'('' Error. No CFL3DParameters node exists'')')
+        stop
+ 1004   continue
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'ArbitraryGridMotion_t',1,'UserDefinedData_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
 c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
-        write(11,'(''   increase numnames in getnsegdfrm'')')
+        write(11,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
+        write(11,'(''   increase numnames in readiuns'')')
         stop
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
+c
 c   Get Nsegdfrm
       do n=1,narrays
         if (name(n) .eq. 'Nsegdfrm') goto 101
@@ -7022,7 +7525,8 @@ c
       end
 
       subroutine rdeform(iccg,ibase,igrid,nsegdfrm,
-     .            wk,jdim,kdim,idim,idefrm,utrnsae,
+     .            wk,jdima,kdima,idima,i2d,
+     .            jdim,kdim,idim,ialph,idefrm,utrnsae,
      .            vtrnsae,wtrnsae,omgxae,
      .            omgyae,omgzae,xorgae,
      .            yorgae,zorgae,thtxae,
@@ -7032,12 +7536,7 @@ c
      .            x,y,z,xnm2,ynm2,znm2)
 c**********************************************************************
 c     Purpose:  Reads deforming grid info (note:  don't need
-c     to get idfrmseg)
-c     All the CFL3D-specific info is currently stored under
-c     the RigidGridMotion node (because arbitrary arrays are
-c     not allowed under ArbitraryGridMotion).
-c     We do this until a 'UserDefinedDataArray' node is allowed in
-c     CGNS.
+c     to get idfrmseg).
 c     Gets results in the following order:
 c
 c          (jdim,kdim,idim) <- necessary for CFL3D!,
@@ -7055,7 +7554,14 @@ c      nsegdfrm.........CFL3D-specific parameter that defines the
 c                       array sizes (integer)
 c      wk...............working space needed, of dimension
 c                       (idim*jdim*kdim) or larger (real)
-c      jdim,kdim,idim...dimensions of grid (integers)
+c      idima,jdima,kdima...expected dimensions of this zone
+c                          (zone "igrid"), at finest level (integers)
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
+c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
+c                       for this zone (e.g., could be every other point
+c                       of fine grid) (integers)
+c      ialph............parameter in CFL3D for determining whether y
+c                       or z is "up" (integer)
 c   OUTPUTS:
 c      idefrm...........CFL3D-specific parameter (integer)
 c      utrnsae..........CFL3D-specific parameter (real)
@@ -7101,8 +7607,10 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim),
      .          xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension wk(idim,jdim,kdim)
-      character*32 name(numnames),namer,nameg(3)
+      dimension wk(idima,jdima,kdima)
+      dimension idimvec(4)
+      character*32 name(numnames),nameg(3),namei
+      character*52 text
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -7110,36 +7618,53 @@ c   Determine if single or double precision is being used:
       idouble=1
 #endif
 c
-c   Find out how many RigidGridMotion_t nodes there are
-      call cg_n_rigid_motions_f(iccg,ibase,igrid,nmotions,ier)
+c   Find out how many ArbitraryGridMotion_t nodes there are
+      call cg_n_arbitrary_motions_f(iccg,ibase,igrid,nmotions,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
-        write(11,'('' Error.  No RigidGridMotion nodes, igrid='',i5)')
-     +   igrid
-        write(11,'(''   cannot get deforming data'')')
+        write(11,'('' Error.  No ArbitraryGridMotion nodes,'',
+     +   '' igrid='',i5)') igrid
+        write(11,'(''   cannot get nsegdfrm'')')
         stop
       end if
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
+        write(11,'('' Error, more than 1 ArbitraryGridMotion_t'',
+     +   '' nodes!'')')
         stop
       end if
-c   Read RigidGridMotion_t node
-      call cg_rigid_motion_read_f(iccg,ibase,igrid,1,namer,itype,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c   Go to RigidGridMotion_t node
+c   Go to ArbitraryGridMotion_t node
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
-     + 'RigidGridMotion_t',1,'end')
+     + 'ArbitraryGridMotion_t',1,'end')
       if (ier .ne. 0) call cg_error_exit_f
+c   Find out how many UserDefinedData_t nodes there are
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .ne. 1) then
+        write(11,'('' Error... should be 1 user data node in'',
+     +    '' ArbitraryGridMotion'')')
+        stop
+      else
+        call cg_user_data_read_f(1,name(1),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(1) .eq. 'CFL3DParameters') goto 1004
+        write(11,'('' Error. No CFL3DParameters node exists'')')
+        stop
+ 1004   continue
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     + 'ArbitraryGridMotion_t',1,'UserDefinedData_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
 c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
+        write(11,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
         write(11,'(''   increase numnames in rdeform'')')
         stop
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c
 c   Get Idefrm
@@ -7408,6 +7933,27 @@ c   Get Kcsf
       call cg_array_read_as_f(n,Integer,kcsf,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
+c   First, get "factor" in case want to read every other point, etc
+      if(idim.eq.idima .and. jdim.eq.jdima .and. kdim.eq.kdima) then
+        nfac=1
+      else if(jdim.eq.(jdima+1)/2 .and. kdim.eq.(kdima+1)/2) then
+        nfac=2
+      else if(jdim.eq.(jdima+3)/4 .and. kdim.eq.(kdima+3)/4) then
+        nfac=4
+      else if(jdim.eq.(jdima+7)/8 .and. kdim.eq.(kdima+7)/8) then
+        nfac=8
+      else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
+        nfac=16
+      else
+        write(11,'('' Error.  Desired grid level not supported'')')
+        stop
+      end if
+      if(i2d .eq. 1) then
+        nfaci=1
+      else
+        nfaci=nfac
+      end if
+c
 c   Find out how many grids there are
       call cg_ngrids_f(iccg,ibase,igrid,ngrids,ier)
       if (ier .ne. 0) call cg_error_exit_f
@@ -7431,6 +7977,7 @@ c   Get MovedGrid info
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      + 'GridCoordinates_t',n,'end')
       if (ier .ne. 0) call cg_error_exit_f
+c
 c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
@@ -7441,6 +7988,7 @@ c   Find out how many arrays
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c   Get X
       do n=1,narrays
@@ -7456,7 +8004,8 @@ c   Get X
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,x)
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,x)
 c   Get Y
       do n=1,narrays
         if (name(n) .eq. 'CoordinateY') goto 124
@@ -7471,7 +8020,13 @@ c   Get Y
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,y)
+      if (ialph .eq. 0) then
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,y)
+      else
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,z)
+      end if
 c   Get Z
       do n=1,narrays
         if (name(n) .eq. 'CoordinateZ') goto 125
@@ -7486,7 +8041,13 @@ c   Get Z
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,z)
+      if (ialph .eq. 0) then
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,z)
+      else
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,-wk,y)
+      end if
 c
 c   Get MovedGridLastDT info
       do n=1,ngrids
@@ -7508,6 +8069,7 @@ c   Find out how many arrays
       end if
       do n=1,narrays
         call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
+        if (ier .ne. 0) call cg_error_exit_f
       enddo
 c   Get X
       do n=1,narrays
@@ -7523,7 +8085,8 @@ c   Get X
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,xnm2)
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,xnm2)
 c   Get Y
       do n=1,narrays
         if (name(n) .eq. 'CoordinateY') goto 128
@@ -7538,7 +8101,13 @@ c   Get Y
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,ynm2)
+      if (ialph .eq. 0) then
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,ynm2)
+      else
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,znm2)
+      end if
 c   Get Z
       do n=1,narrays
         if (name(n) .eq. 'CoordinateZ') goto 129
@@ -7553,12 +8122,363 @@ c   Get Z
         call cg_array_read_as_f(n,RealSingle,wk,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-      call reorderg(idim,jdim,kdim,wk,znm2)
+      if (ialph .eq. 0) then
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,wk,znm2)
+      else
+      call reorderg(nfac,nfaci,idima,jdima,kdima,
+     +   idim,jdim,kdim,-wk,ynm2)
+      end if
+c
+      return
+      end
+
+      subroutine waeromode(iccg,ibase,timekeep,xxn,gforcn,
+     .         gforcnm,aehist,ncycmax,nmds,maxaes,
+     .         ntt,naesrf,wk,maxnum,wk2,maxnum2)
+c**********************************************************************
+c     Purpose:  Write aeroelastic mode data.
+c
+c   INPUTS:
+c      iccg.............CGNS file index number (determined outside
+c                       this routine) (integer)
+c      ibase............CGNS base index number (determined outside
+c                       this routine) (integer)
+c      timekeep, xnn, gforcn, gforcnm, aehist
+c           ............aeroelastic mode data (real)
+c      ncycmax, nmds, maxaes, ntt
+c           ............dimension arguments (integer)
+c      naesrf...........number of aeroelastic surfaces (integer)
+c      wk...............working space needed, of dimension
+c                       (maxnum) or larger (real)
+c      maxnum...........dimension of wk array (integer)
+c      wk2..............working space needed, of dimension
+c                       (maxnum2) or larger (real)
+c      maxnum2..........dimension of wk2 array (integer)
+c   OUTPUTS:
+c      none
+c**********************************************************************
+c
+#     include "cgnslib_f.h"
+c
+      parameter (numnames=5)
+c
+      dimension timekeep(ntt),xxn(2*nmds,maxaes),
+     + gforcn(2*nmds,maxaes),gforcnm(2*nmds,maxaes),
+     + aehist(ncycmax,3,nmds,maxaes)
+      dimension wk(maxnum),wk2(maxnum2)
+      character name(numnames)*32
+      character*47 string1,string2
+      character*94 string3
+c
+c   Determine if single or double precision is being used:
+      idouble=0
+#if defined DBLE_PRECSN
+      idouble=1
+#endif
+c
+c   Go to Base node, write CFL3DAeroModeData array as UserDefinedData
+      call cg_goto_f(iccg,ibase,ier,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_user_data_write_f('CFL3DAeroModeData', ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      call cg_nuser_data_f(nuserdata, ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .gt. numnames) then
+        write(11,'('' Error... numnames too small in waeromode'')')
+        stop
+      end if
+      do n=1,nuserdata
+        call cg_user_data_read_f(n, name(n), ier)
+        if (ier .ne. 0) call cg_error_exit_f
+        if(name(n) .eq. 'CFL3DAeroModeData') then
+          nset=n
+        end if
+      enddo
+      call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',nset,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Write Descriptor and data
+      string1 = 'NOTE:  If turn off aeroelastic mode in mid-run,'
+      string2 = ' these values will be wrong.'
+      string3 = string1 // string2 
+      call cg_descriptor_write_f('Information',string3,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Timekeep',RealDouble,1,ntt,timekeep,ier)
+      else
+        call cg_array_write_f('Timekeep',RealSingle,1,ntt,timekeep,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          wk(j)=xxn(n,i)
+        enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Xxn',RealDouble,1,j,wk,ier)
+      else
+        call cg_array_write_f('Xxn',RealSingle,1,j,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          wk(j)=gforcn(n,i)
+        enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Gforcn',RealDouble,1,j,wk,ier)
+      else
+        call cg_array_write_f('Gforcn',RealSingle,1,j,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          wk(j)=gforcnm(n,i)
+        enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Gforcnm',RealDouble,1,j,wk,ier)
+      else
+        call cg_array_write_f('Gforcnm',RealSingle,1,j,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      j=0
+      do i=1,naesrf
+        do n=1,nmds
+          do m=1,3
+            do l=1,ntt
+              j=j+1
+              wk2(j)=aehist(l,m,n,i)
+            enddo
+          enddo
+        enddo
+      enddo
+      if (idouble .eq. 1) then
+        call cg_array_write_f('Aehist',RealDouble,1,j,wk2,ier)
+      else
+        call cg_array_write_f('Aehist',RealSingle,1,j,wk2,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+      return
+      end
+
+      subroutine raeromode(iccg,ibase,ncycmax,nmds,maxaes,
+     .         ntt,naesrf,wk,maxnum,wk2,maxnum2,
+     .         timekeep,xxn,gforcn,gforcnm,aehist)
+c**********************************************************************
+c     Purpose:  Read aeroelastic mode data.
+c
+c   INPUTS:
+c      iccg.............CGNS file index number (determined outside
+c                       this routine) (integer)
+c      ibase............CGNS base index number (determined outside
+c                       this routine) (integer)
+c      ncycmax, nmds, maxaes, ntt
+c           ............dimension arguments (integer)
+c      naesrf...........number of aeroelastic surfaces (integer)
+c      wk...............working space needed, of dimension
+c                       (maxnum) or larger (real)
+c      maxnum...........dimension of wk array (integer)
+c      wk2..............working space needed, of dimension
+c                       (maxnum2) or larger (real)
+c      maxnum2..........dimension of wk2 array (integer)
+c   OUTPUTS:
+c      timekeep, xnn, gforcn, gforcnm, aehist
+c           ............aeroelastic mode data (real)
+c**********************************************************************
+c
+#     include "cgnslib_f.h"
+c
+      parameter (numnames=5)
+c
+      dimension timekeep(ntt),xxn(2*nmds,maxaes),
+     + gforcn(2*nmds,maxaes),gforcnm(2*nmds,maxaes),
+     + aehist(ncycmax,3,nmds,maxaes)
+      dimension wk(maxnum),wk2(maxnum2),idimvec(numnames)
+      character name(numnames)*32
+c
+c   Determine if single or double precision is being used:
+      idouble=0
+#if defined DBLE_PRECSN
+      idouble=1
+#endif
+c
+c   Go to Base node:
+      call cg_goto_f(iccg,ibase,ier,'end')
+c   Find out how many UserDefinedData_t nodes there are
+      call cg_nuser_data_f(nuserdata,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nuserdata .gt. numnames) then
+        write(11,'('' Error... numnames not big enough'',
+     +    '' in raeromode'')')
+        write(11,'(''   increase numnames in raeromode'')')
+        stop
+      else
+        do n=1,nuserdata
+          call cg_user_data_read_f(n, name(n), ier)
+          if (ier .ne. 0) call cg_error_exit_f
+          if(name(n) .eq. 'CFL3DAeroModeData') goto 100
+        enddo
+        write(11,'('' Error. No CFL3DAeroModeData node exists'')')
+        stop
+ 100    continue
+        call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',n,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
+c   Find out how many arrays
+      call cg_narrays_f(narrays,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (narrays .gt. numnames) then
+        write(11,'('' Error.  Too many arrays under'',
+     +    '' CFL3DAeroModeData'')')
+        write(11,'(''   increase numnames in raeromode'')')
+        stop
+      end if
+      do n=1,narrays
+        call cg_array_info_f(n,name(n),itype,idatadim,idimvec(n),ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      enddo
+c
+c   Get Timekeep
+      do n=1,narrays
+        if (name(n) .eq. 'Timekeep') goto 101
+      enddo
+      write(11,'('' Error. No Timekeep node exists'')')
+      stop
+ 101  continue
+      if (idimvec(n) .ne. ntt) then
+        write(11,'('' Error, Timekeep is wrong size'')')
+        stop
+      end if
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,timekeep,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,timekeep,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c
+c   Get Xxn
+      do n=1,narrays
+        if (name(n) .eq. 'Xxn') goto 201
+      enddo
+      write(11,'('' Error. No Xxn node exists'')')
+      stop
+ 201  continue
+      if (idimvec(n) .ne. maxnum) then
+        write(11,'('' Error, Xxn is wrong size'')')
+        stop
+      end if
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,wk,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          xxn(n,i)=wk(j)
+        enddo
+      enddo
+c
+c   Get Gforcn
+      do n=1,narrays
+        if (name(n) .eq. 'Gforcn') goto 301
+      enddo
+      write(11,'('' Error. No Gforcn node exists'')')
+      stop
+ 301  continue
+      if (idimvec(n) .ne. maxnum) then
+        write(11,'('' Error, Gforcn is wrong size'')')
+        stop
+      end if
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,wk,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          gforcn(n,i)=wk(j)
+        enddo
+      enddo
+c
+c   Get Gforcnm
+      do n=1,narrays
+        if (name(n) .eq. 'Gforcnm') goto 401
+      enddo
+      write(11,'('' Error. No Gforcnm node exists'')')
+      stop
+ 401  continue
+      if (idimvec(n) .ne. maxnum) then
+        write(11,'('' Error, Gforcnm is wrong size'')')
+        stop
+      end if
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,wk,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,wk,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      j=0
+      do i=1,naesrf
+        do n=1,2*nmds
+          j=j+1
+          gforcnm(n,i)=wk(j)
+        enddo
+      enddo
+c
+c   Get Aehist
+      do n=1,narrays
+        if (name(n) .eq. 'Aehist') goto 501
+      enddo
+      write(11,'('' Error. No Aehist node exists'')')
+      stop
+ 501  continue
+      if (idimvec(n) .ne. maxnum2) then
+        write(11,'('' Error, Aehist is wrong size'')')
+        stop
+      end if
+      if (idouble .eq. 1) then
+        call cg_array_read_as_f(n,RealDouble,wk2,ier)
+      else
+        call cg_array_read_as_f(n,RealSingle,wk2,ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      j=0
+      do i=1,naesrf
+        do n=1,nmds
+          do m=1,3
+            do l=1,ntt
+              j=j+1
+              aehist(l,m,n,i)=wk2(j)
+            enddo
+          enddo
+        enddo
+      enddo
 c
       return
       end
 
 #else
+
       subroutine dummycgns
 c**********************************************************************
 c     Purpose: Provide a dummy routine to compile if CGNS option is

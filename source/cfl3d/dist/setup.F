@@ -2093,7 +2093,7 @@ c
                  write(bou(nou(1),1),'('' WARNING:  You are '',
      .           ''restarting a 2nd order in time solution with no'')')
                  nou(1) = min(nou(1)+1,ibufdim)
-                 write(bou(nou(1),1),'(''           qc0 data saved'',
+                 write(bou(nou(1),1),'(''           qc0 data saved '',
      .           ''in restart. You may see a glitch in the'')')
                  nou(1) = min(nou(1)+1,ibufdim)
                  write(bou(nou(1),1),
@@ -2136,8 +2136,21 @@ c
                end do
 c   ***CGNSstart
             else
-               write(11,'('' cgns not working for deforming yet'')')
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               maxnum=2*nmds*naesrf
+               maxnum2=ntt*3*nmds*naesrf
+               if ((maxnum+maxnum2) .gt. nwork) then
+                 write(11,'('' not enough room in wk for'',
+     .             '' writing data in raeromode'')')
+                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),'('' reading generalized force/'',
+     .         ''displacement data from cgns file for'')')
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),'(''    all aeroelastic surfaces'')')
+               call raeromode(iccg,ibase,ncycmax,nmds,maxaes,
+     .         ntt,naesrf,wk,maxnum,wk2,maxnum2,
+     .         timekeep,xxn,gforcn,gforcnm,aehist)
             end if
 c   ***CGNSend
             end if

@@ -92,6 +92,7 @@ c
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /unst/ time,cfltau,ntstep,ita,iunst
+      common /igrdtyp/ ip3dgrd,ialph
 c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
@@ -173,7 +174,7 @@ c   ***CGNSstart
          write(11,'('' writing 2nd order time data to CGNS file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,dt)
+     +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
 #endif
          end if
 c   ***CGNSend
@@ -281,7 +282,7 @@ c   ***CGNSstart
      .                  omegaz(nbl),dthxmx(nbl),dthymx(nbl),dthzmx(nbl),
      .                  irotatmc,rfreqrmc,thetaxmc,thetaymc,thetazmc,
      .                  omegaxmc,omegaymc,omegazmc,dthxmxmc,dthymxmc,
-     .                  dthzmxmc,time2(nbl),time2mc,dt)
+     .                  dthzmxmc,time2(nbl),time2mc,dt,ialph)
 #endif
                end if
 c   ***CGNSend
@@ -398,8 +399,8 @@ c   ***CGNSstart
      .            yorgae(nbl,1),zorgae(nbl,1),thtxae(nbl,1),
      .            thtyae(nbl,1),thtzae(nbl,1),rfrqtae(nbl,1),
      .            rfrqrae(nbl,1),icsi(nbl,1),icsf(nbl,1),jcsi(nbl,1),
-     .            jcsf(nbl,1),kcsi(nbl,1),kcsf(nbl,1),jdim,kdim,idim,
-     .            x,y,z,xnm2,ynm2,znm2,wk)
+     .            jcsf(nbl,1),kcsi(nbl,1),kcsf(nbl,1),jdima,kdima,idima,
+     .            jdim,kdim,idim,x,y,z,xnm2,ynm2,znm2,wk,ialph,i2d)
                 else
                 call wdeform(iccg,ibase,igrid,idefrm(nbl),
      .            nsegdfrm(nbl),idfrmseg(nbl,1),utrnsae(nbl,1),
@@ -408,8 +409,8 @@ c   ***CGNSstart
      .            yorgae(nbl,1),zorgae(nbl,1),thtxae(nbl,1),
      .            thtyae(nbl,1),thtzae(nbl,1),rfrqtae(nbl,1),
      .            rfrqrae(nbl,1),icsi(nbl,1),icsf(nbl,1),jcsi(nbl,1),
-     .            jcsf(nbl,1),kcsi(nbl,1),kcsf(nbl,1),jdim,kdim,idim,
-     .            x,y,z,x,y,z,wk)
+     .            jcsf(nbl,1),kcsi(nbl,1),kcsf(nbl,1),jdima,kdima,idima,
+     .            jdim,kdim,idim,x,y,z,x,y,z,wk,ialph,i2d)
                 end if
 #endif
                end if

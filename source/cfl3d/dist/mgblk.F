@@ -2332,8 +2332,6 @@ c   ***CGNSend
 c   ***CGNSstart
                else
 #if defined CGNS
-c   Write input file used to CGNS file
-                 call writeinput(iccg,ibase,iunit5)
 c   Close data base
                  call cg_close_f(iccg, ier)
                  if (ier .ne. 0) then
@@ -2620,9 +2618,16 @@ c   ***CGNSend
                       end do
 c   ***CGNSstart
                       else
-                         write(11,'('' cgns not working for '',
-     .                    ''deforming yet'')')
-                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                         maxnum=2*nmds*naesrf
+                         maxnum2=ntt*3*nmds*naesrf
+                         if ((maxnum+maxnum2) .gt. nwork) then
+                           write(11,'('' not enough room in wk for'',
+     .                       '' writing data in waeromode'')')
+                           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                         end if
+                         call waeromode(iccg,ibase,timekeep,xxn,gforcn,
+     .                    gforcnm,aehist,ncycmax,nmds,maxaes,
+     .                    ntt,naesrf,wk,maxnum,wk(maxnum+1),maxnum2)
                       end if
 c   ***CGNSend
                    end if
@@ -2633,8 +2638,6 @@ c   ***CGNSend
 c   ***CGNSstart
                else
 #if defined CGNS
-c   Write input file used to CGNS file
-                 call writeinput(iccg,ibase,iunit5)
 c   Close data base
                  call cg_close_f(iccg, ier)
                  if (ier .ne. 0) then

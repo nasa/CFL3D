@@ -290,6 +290,9 @@ c
       character*80 inpstring
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
+c   ***CGNSstart
+      character*32 basedesired
+c   ***CGNSend
 c
       dimension itrnsfr(27),titlw(20),nou(nbuf)
 c
@@ -665,6 +668,24 @@ c
 c***********************************************************************
 c     normal program termnination
 c***********************************************************************
+c   ***CGNSstart
+c   Write input file used to CGNS file
+#if defined CGNS
+      if (icgns .eq. 1) then
+        basedesired='Base'
+        idimdesired=3
+        call wopencgns(grid,basedesired,idimdesired,iccg,
+     .              ibase,nzones)
+        call writeinput(iccg,ibase,iunit5)
+c   Close data base
+        call cg_close_f(iccg, ier)
+        if (ier .ne. 0) then
+          call cg_error_print_f
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+        end if
+      end if
+#endif
+c   ***CGNSend
 c
 c     remove the temporary input file, if used
 c

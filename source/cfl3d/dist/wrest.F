@@ -322,7 +322,7 @@ c     translate to conserved (for CGNS output only)
       enddo
       enddo
       call writesoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
-     +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,nsoluse)
+     +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,ialph,nsoluse)
 c     write overset holes
       if (iover .eq. 1) then
 c     first, find out how many holes
@@ -403,7 +403,7 @@ c     translate back to primitive (so don't mess anything up that may come later
         call writeref(iccg,ibase,xmach,reue,
      +   rho0,c0,p0,vkk0,xlength0,tinf,alphw,betaw,
      +   u0,v0,w0,ialph)
-        call writetime(iccg,ibase,time,ntt)
+        call writetime(iccg,ibase,time,ntt,dt)
       end if
 #endif
       end if

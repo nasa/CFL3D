@@ -110,6 +110,7 @@ c
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /unst/ time,cfltau,ntstep,ita,iunst
+      common /igrdtyp/ ip3dgrd,ialph
 c   ***CGNSstart
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
@@ -178,11 +179,11 @@ c                  time-accurate restart files, which was missing this info)
 c   ***CGNSstart
       else
 #if defined CGNS
-         write(11,'('' reading 2nd order time data from CGNS'',
+         write(11,'('' reading 2nd order time data from cgns'',
      +    '' file for block '',i4)') nbl
          call rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +     qc0,tursav2,dtold)
+     +     ialph,qc0,tursav2,dtold)
 #endif
       end if
 c   ***CGNSend
@@ -374,7 +375,7 @@ c   ***CGNSstart
 #if defined CGNS
             write(11,'('' reading dynamic mesh data from cgns file'',
      +        '' for block'',i4)') nbl
-            call rgrdmov(iccg,ibase,igrid,
+            call rgrdmov(iccg,ibase,igrid,ialph,
      .            itrans1,rfreqt1,xorig1,yorig1,zorig1,xorig01,yorig01,
      .            zorig01,utrans1,vtrans1,wtrans1,dxmx1,dymx1,dzmx1,
      .            itransmc1,rfreqtmc1,xorigmc1,yorigmc1,zorigmc1,
@@ -590,11 +591,12 @@ c   ***CGNSstart
                   else
 #if defined CGNS
                   write(11,'('' reading deforming grid info from'',
-     .             '' CGNS file'')')
+     .             '' cgns file for block '',i4)') nbl
                   call getnsegdfrm(iccg,ibase,igrid,nsegdfrm(nbl))
                   if (abs(ita) .gt. 1) then
                   call rdeform(iccg,ibase,igrid,nsegdfrm(nbl),
-     .            wk,jdim,kdim,idim,idefrm(nbl),utrnsae(nbl,1),
+     .            wk,jdima,kdima,idima,i2d,
+     .            jdim,kdim,idim,ialph,idefrm(nbl),utrnsae(nbl,1),
      .            vtrnsae(nbl,1),wtrnsae(nbl,1),omgxae(nbl,1),
      .            omgyae(nbl,1),omgzae(nbl,1),xorgae(nbl,1),
      .            yorgae(nbl,1),zorgae(nbl,1),thtxae(nbl,1),
@@ -604,7 +606,8 @@ c   ***CGNSstart
      .            x,y,z,xnm2,ynm2,znm2)
                   else
                   call rdeform(iccg,ibase,igrid,nsegdfrm(nbl),
-     .            wk,jdim,kdim,idim,idefrm(nbl),utrnsae(nbl,1),
+     .            wk,jdima,kdima,idima,i2d,
+     .            jdim,kdim,idim,ialph,idefrm(nbl),utrnsae(nbl,1),
      .            vtrnsae(nbl,1),wtrnsae(nbl,1),omgxae(nbl,1),
      .            omgyae(nbl,1),omgzae(nbl,1),xorgae(nbl,1),
      .            yorgae(nbl,1),zorgae(nbl,1),thtxae(nbl,1),
