@@ -41,6 +41,7 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut
       common /unst/ time,cfltau,ntstep,ita,iunst
+      common /konew/ ikoprod,isstdenom,pklimterm
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -151,10 +152,33 @@ c
         if(ivmx .eq. 6) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega (Wilcox)'')')
+           if(ikoprod .eq. 0) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     +       '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     exact production term'')')
+           end if
         end if
         if(ivmx .eq. 7) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'')')
+           if(ikoprod .eq. 0) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     +       '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     exact production term'')')
+           end if
+           if(isstdenom .eq. 0) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     vort in denom of mut term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     S in denom of mut term'')')
+           end if
         end if
         if(ivmx .eq. 8) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -183,6 +207,14 @@ c
         if(ivmx .eq.10) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-epsilon (Abid)'')')
+           if(ikoprod .eq. 0) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     +       '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     exact production term'')')
+           end if
         end if
         if(ivmx .eq.11) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -1318,12 +1350,28 @@ c  Source terms for k-omega (Wilcox & SST):
               cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
 c            Add to RHS:
+              if (ikoprod .eq. 1) then
+c            Determine Sij values:
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +         2.*xis - re*betax*turre(j,k,i,1)**2
+     +         +(1.-blend(j,k,i))*damp1(j,k,i)
+              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+              else
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
      +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
      +         +(1.-blend(j,k,i))*damp1(j,k,i)
               pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+              end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
-              pk=ccmin(pk,(20.*dk))
+              pk=ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
             enddo
           enddo
@@ -1421,7 +1469,7 @@ c            Add to RHS:
      +         turre(j,k,i,1)/turre(j,k,i,2) -
      +         re*beta1*turre(j,k,i,1)**2
               dk = re*turre(j,k,i,1)*turre(j,k,i,2)
-              pk = ccmin(pk,(20.*dk))
+              pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
             enddo
           enddo
@@ -1445,14 +1493,32 @@ c  Source terms for k-epsilon (Abid):
 c            Store quantities to be added to certain implicit LHS terms:
               damp1(j,k,i)=1.5*re*beta1*turre(j,k,i,1)*f2/turre(j,k,i,2)
 c            Add to RHS:
+              if (ikoprod .eq. 1) then
+c            Determine Sij values:
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp1*
+     +         turre(j,k,i,1)*
+     +         vist3d(j,k,i)*2.*xis/(re*turre(j,k,i,2)*
+     +         q(j,k,i,1)) - re*beta1*(turre(j,k,i,1)**2)*f2/
+     +         turre(j,k,i,2)
+              pk = vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+              else
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp1*
      +         turre(j,k,i,1)*
      +         vist3d(j,k,i)*vor(j,k,i)**2/(re*turre(j,k,i,2)*
      +         q(j,k,i,1)) - re*beta1*(turre(j,k,i,1)**2)*f2/
      +         turre(j,k,i,2)
               pk = vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+              end if
               dk = re*turre(j,k,i,1)
-              pk = ccmin(pk,(20.*dk))
+              pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
             enddo
           enddo
@@ -1565,7 +1631,7 @@ c            Add to RHS:
      +         re*beta1*(turre(j,k,i,1)**2)*f2/
      +         turre(j,k,i,2)
               dk = re*turre(j,k,i,1)
-              pk = ccmin(pk,(20.*dk))
+              pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
             enddo
           enddo
@@ -1667,7 +1733,7 @@ c            Add to RHS:
      +         re*beta1*(turre(j,k,i,1)**2)*f2/
      +         turre(j,k,i,2)
               dk = re*turre(j,k,i,1)
-              pk = ccmin(pk,(20.*dk))
+              pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
             enddo
           enddo
@@ -1763,7 +1829,7 @@ c            Find nonlinear tauij values:
      +         turre(j,k,i,1)/turre(j,k,i,2) -
      +         fbeta*re*beta1*turre(j,k,i,1)**2
               dk = damp1(j,k,i)*re*turre(j,k,i,1)*turre(j,k,i,2)
-              pk=ccmin(pk,(20.*dk))
+              pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
             enddo
           enddo
@@ -2730,7 +2796,21 @@ c Update VIST3D and save omega and k values
      +       smin(j,k,i)*turre(j,k,i,1))
             arg2=ccmax(denom1,denom2)
             f2=cctanh(arg2*arg2)
+            if (isstdenom .eq. 1) then
+c            Determine Sij values:
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+            xxx=sqrt(2.*xis)
+            denom=ccmax(a1*turre(j,k,i,1),xxx*f2/re)
+            else
             denom=ccmax(a1*turre(j,k,i,1),vor(j,k,i)*f2/re)
+            end if
             vist3d(j,k,i)=a1*q(j,k,i,1)*turre(j,k,i,2)/denom
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)

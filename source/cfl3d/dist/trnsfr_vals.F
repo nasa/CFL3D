@@ -130,6 +130,8 @@ c
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
+      common /konew/ ikoprod,isstdenom,pklimterm
+      common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,ismooth,negvol
       common /mydist2/ nnodes,myhost,myid,mycomm
@@ -403,6 +405,10 @@ c
          work(nlast+54) = tur20
          work(nlast+55) = tur1cut
          work(nlast+56) = roll_angle
+         work(nlast+57) = ikoprod
+         work(nlast+58) = isstdenom
+         work(nlast+59) = pklimterm
+         work(nlast+60) = iaxi2plane
          nlast = nlast+nkey
       end if
 c
@@ -636,6 +642,10 @@ c
          tur20     = work(nlast+54)
          tur1cut   = work(nlast+55)
          roll_angle= work(nlast+56)
+         ikoprod   = int(work(nlast+57))
+         isstdenom = int(work(nlast+58))
+         pklimterm = work(nlast+59)
+         iaxi2plane= int(work(nlast+60))
       end if
 c
 c**************************

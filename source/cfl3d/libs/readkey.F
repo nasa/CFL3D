@@ -53,6 +53,8 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /gridtrans/ roll_angle
+      common /konew/ ikoprod,isstdenom,pklimterm
+      common /axisym/ iaxi2plane
 c
       ititr = 0
       nkey  = 0
@@ -370,6 +372,23 @@ c     applied only if it goes negative
 c
 c     roll angle
       roll_angle = 0.
+      nkey       = nkey + 1
+c     k-omega/sst/k-epsilon parameter controlling production term
+      ikoprod = 0
+      nkey       = nkey + 1
+c
+c     sst parameter controlling denominator of mut term
+      isstdenom = 0
+      nkey       = nkey + 1
+c
+c     limiter term on Pk in the two-eqn models
+      pklimterm = 20.
+      nkey       = nkey + 1
+c
+c     parameter for use with particular axi cases (for which
+c     i2d=0 & idim=2); modifies time step based on CFL number
+c     so it does not depend on the i-direction metrics
+      iaxi2plane = 0
       nkey       = nkey + 1
 c
 c*********************************************
@@ -725,6 +744,23 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          roll_angle = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'ikoprod') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ikoprod
+c
+      else if (inpstr(lc1:lc2).eq.'isstdenom') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isstdenom
+c
+      else if (inpstr(lc1:lc2).eq.'pklimterm') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         pklimterm = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'iaxi2plane') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iaxi2plane
 c
       else
 c

@@ -38,6 +38,7 @@ c
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /precond/ cprec,uref,avn
+      common /axisym/ iaxi2plane
 c
       idim1 = idim-1
       jdim1 = jdim-1
@@ -92,7 +93,7 @@ c
 c
       vterm = ccmaxrc( 1.3333 , gamma/pr )*xmach/reue
       term  = 1.
-      if (i2d.eq.1) term = 0.
+      if (i2d.eq.1 .or. iaxi2plane.eq.1) term = 0.
       delt  = 0.0
       if (iunst.gt.0.and.real(dttemp).gt.0.0) delt = dttemp
       cfl1  = 1.e0/ccabs(dt)

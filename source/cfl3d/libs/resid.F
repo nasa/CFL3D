@@ -76,6 +76,8 @@ c
       common /account/ iaccnt,ioutsub
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
+      common /konew/ ikoprod,isstdenom,pklimterm
+      common /maxiv/ ivmx
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -234,7 +236,9 @@ c
      .    icall = 1
       if (ivisc(3).eq.8 .or. ivisc(2).eq.8 .or. ivisc(1).eq.8 .or.
      .    ivisc(3).eq.9 .or. ivisc(2).eq.9 .or. ivisc(1).eq.9 .or.
-     .    ivisc(3).ge.11.or. ivisc(2).ge.11.or. ivisc(1).ge.11) then
+     .    ivisc(3).ge.11.or. ivisc(2).ge.11.or. ivisc(1).ge.11 .or.
+     .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
+     .    ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1)) then
       call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)

@@ -168,6 +168,7 @@ c
       common /deformz/ beta1,ismooth,negvol
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut
+      common /axisym/ iaxi2plane
 c
       pi = 4.0*atan(1.0)
 c
@@ -778,6 +779,11 @@ c
          write(iunit11,338)
   338    format(49h WARNING: idim=2 for i2d=0 may not be a good idea)
       end if
+      if (iaxi2plane.eq.1 .and. (i2d .ne. 0 .or. idim .ne. 2)) then
+        write(iunit11,'('' WARNING: iaxi2plane set back to 0'')')
+        write(iunit11,'(''    (i2d must=0 and idim must=2)'')')
+        iaxi2plane=0
+      end if
       if (ides .eq. 1 .and. idim .eq. 2) then
          write(iunit11,339)
   339    format(47h WARNING: idim=2 for DES may not be a good idea)
@@ -1060,6 +1066,13 @@ c
       write(iunit11,1950) ifds(1),ifds(2),ifds(3),real(rkap0(1)),
      .                    real(rkap0(2)),real(rkap0(3))
  1950 format(3i10,3f10.4)
+      if (iaxi2plane.eq.1 .and. (ifds(1).eq.1.or.ifds(2).eq.1.or.
+     .    ifds(3).eq.1)) then
+        write(iunit11,'('' WARNING: if problems occur when running'',
+     .    '' two-plane axisymmetric case with'')')
+        write(iunit11,'(''   singular or near-singular axis,'',
+     .    '' the use of IFDS=0 may help'')')
+      end if
       ifdsg(nbl,1)  = ifds(1)
       ifdsg(nbl,2)  = ifds(2)
       ifdsg(nbl,3)  = ifds(3)

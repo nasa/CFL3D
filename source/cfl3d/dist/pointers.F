@@ -54,6 +54,7 @@ c
       common /elastic/ ndefrm,naesrf
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /avgdata/ xnumavg,iteravg
+      common /konew/ ikoprod,isstdenom,pklimterm
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -703,12 +704,15 @@ c
 c
 c........ux(jdim-1,kdim-1,idim-1,9)    
 c        velocity gradients for EASM k-omega or k-epsilon turb models
+c        or for k-o/SST/k-e model when isstprod or isstdenom are active
 c
          lw(47,nbl) = lw(46,nbl) + ns
          ns = 0
          if(ivisc(3).eq. 8 .or. ivisc(2).eq. 8 .or. ivisc(1).eq. 8 .or.
      .      ivisc(3).eq. 9 .or. ivisc(2).eq. 9 .or. ivisc(1).eq. 9 .or.
-     .      ivisc(3).ge.11 .or. ivisc(2).ge.11 .or. ivisc(1).ge.11)
+     .      ivisc(3).ge.11 .or. ivisc(2).ge.11 .or. ivisc(1).ge.11 .or.
+     .      ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
+     .      ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1))
      .      ns = jm1km1im1*9
 c
 c        cmuv(jdim-1,kdim-1,idim-1)
