@@ -125,6 +125,7 @@ c
      .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /des/ ides,cdes
+      common /cfl/ dt0,dtold
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -281,13 +282,14 @@ c
          work(nlast+39) = dt
          work(nlast+40) = fmax
          work(nlast+41) = cfltau
+         work(nlast+42) = dtold
          do j = 1,3
-            work(nlast+41+j) = epsssc(j)
-            work(nlast+44+j) = epsssr(j)
-            work(nlast+47+j) = rkap0(j)
+            work(nlast+42+j) = epsssc(j)
+            work(nlast+45+j) = epsssr(j)
+            work(nlast+48+j) = rkap0(j)
          end do
-         work(nlast+51) = beta1
-         nlast = nlast + 51
+         work(nlast+52) = beta1
+         nlast = nlast + 52
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
@@ -397,7 +399,7 @@ c
          nlast = nlast+nkey
       end if
 c
-      nvals = 30*maxbl + 42*maxbl*maxseg   + 51   + 11*nmds*maxaes
+      nvals = 30*maxbl + 42*maxbl*maxseg   + 52   + 11*nmds*maxaes
      .      + 5*maxaes + 17*maxbl*maxsegdg + nkey
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
@@ -509,13 +511,14 @@ c
          dt       = work(nlast+39)
          fmax     = work(nlast+40)
          cfltau   = work(nlast+41)
+         dtold    = work(nlast+42)
          do j = 1,3
-            epsssc(j) = work(nlast+41+j)
-            epsssr(j) = work(nlast+44+j)
-            rkap0(j)  = work(nlast+47+j)
+            epsssc(j) = work(nlast+42+j)
+            epsssr(j) = work(nlast+45+j)
+            rkap0(j)  = work(nlast+48+j)
          end do
-         beta1    = work(nlast+51)
-         nlast = nlast + 51
+         beta1    = work(nlast+52)
+         nlast = nlast + 52
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
