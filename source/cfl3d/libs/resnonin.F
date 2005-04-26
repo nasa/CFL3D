@@ -5,9 +5,8 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose: Compute the residual contributions to the right-hand-side
-c                (due only to performing calculations using relative
-c                 velocities in a rotating noninertial reference frame.)
-c     Original coding by Mike Park
+c              arising from source terms in a steadily rotating 
+c              noninertial reference frame
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -39,18 +38,6 @@ c
  101        format(34h   adding NONINERTIAL source terms)
       end if
  
-c  The residual contributions to the right-hand-side (due only to 
-c  performing calculations using velocities in a rotating 
-c  noninertial reference frame) are broken into three parts: the 
-c  contribution due to centripetal forces f(omega, grid position), 
-c  the contribution due to Coriolis effects f(omega, q), and the 
-c  acceleration of the reference frame origin f(omega, freestream 
-c  velocity). All parts are calculated in this section, but the 
-c  centripetal and reference frame acceleration calculations are 
-c  independent of the solution or q so it could be moved to the 
-c  code initialization and stored in memory to increase speed by 
-c  avoiding computing these terms at each iteration.
- 
 c  rename xrotrate, yrotrate, zrotrate -> wx, wy, wz to save typing
                   
       wx = xrotrate
@@ -78,74 +65,26 @@ c  (constant with respect to solution or q)
  
 c Find the indices corresponding to the 8 corners of a volume
  
-      ind000 = (i-1) * jdim * kdim + (k-1) * jdim + (j-1) + 1
-      ind001 = (i-1) * jdim * kdim + (k-1) * jdim + (j  ) + 1
-      ind010 = (i-1) * jdim * kdim + (k  ) * jdim + (j-1) + 1
-      ind011 = (i-1) * jdim * kdim + (k  ) * jdim + (j  ) + 1
-      ind100 = (i  ) * jdim * kdim + (k-1) * jdim + (j-1) + 1
-      ind101 = (i  ) * jdim * kdim + (k-1) * jdim + (j  ) + 1
-      ind110 = (i  ) * jdim * kdim + (k  ) * jdim + (j-1) + 1
-      ind111 = (i  ) * jdim * kdim + (k  ) * jdim + (j  ) + 1
- 
-c  find the radius vector (rx, ry, rz) from the center of rotation 
-c  to the center of the volume 
- 
-      rx = 0.125 * ( 
-     .   x(ind000) + 
-     .   x(ind001) + 
-     .   x(ind010) + 
-     .   x(ind011) + 
-     .   x(ind100) + 
-     .   x(ind101) + 
-     .   x(ind110) + 
-     .   x(ind111) ) - xcentrot
- 
-      ry = 0.125 * ( 
-     .   y(ind000) + 
-     .   y(ind001) + 
-     .   y(ind010) + 
-     .   y(ind011) + 
-     .   y(ind100) + 
-     .   y(ind101) + 
-     .   y(ind110) + 
-     .   y(ind111) ) - ycentrot
- 
-      rz = 0.125 * ( 
-     .   z(ind000) + 
-     .   z(ind001) + 
-     .   z(ind010) + 
-     .   z(ind011) + 
-     .   z(ind100) + 
-     .   z(ind101) + 
-     .   z(ind110) + 
-     .   z(ind111) ) - zcentrot 
- 
-c  compute centripetal pseudo-acceleration vector 
-c  (constant with respect to q) = -w x (w x r)
- 
-      centaccx = wy * (wx*ry - wy*rx) - wz * (wz*rx - wx*rz) 
-      centaccy = wz * (wy*rz - wz*ry) - wx * (wx*ry - wy*rx) 
-      centaccz = wx * (wz*rx - wx*rz) - wy * (wy*rz - wz*ry) 
+          ind000 = (i-1) * jdim * kdim + (k-1) * jdim + (j-1) + 1
+          ind001 = (i-1) * jdim * kdim + (k-1) * jdim + (j  ) + 1
+          ind010 = (i-1) * jdim * kdim + (k  ) * jdim + (j-1) + 1
+          ind011 = (i-1) * jdim * kdim + (k  ) * jdim + (j  ) + 1
+          ind100 = (i  ) * jdim * kdim + (k-1) * jdim + (j-1) + 1
+          ind101 = (i  ) * jdim * kdim + (k-1) * jdim + (j  ) + 1
+          ind110 = (i  ) * jdim * kdim + (k  ) * jdim + (j-1) + 1
+          ind111 = (i  ) * jdim * kdim + (k  ) * jdim + (j  ) + 1
  
 c  Coriolis part of pseudo-acceleration
  
-      corx = 2. * ( wy * q(ind000,4) - wz * q(ind000,3) )
-      cory = 2. * ( wz * q(ind000,2) - wx * q(ind000,4) )
-      corz = 2. * ( wx * q(ind000,3) - wy * q(ind000,2) )
- 
-      totx = -OmegaxUx + centaccx + corx
-      toty = -OmegaxUy + centaccy + cory
-      totz = -OmegaxUz + centaccz + corz
+          corx = ( wy * q(ind000,4) - wz * q(ind000,3) )
+          cory = ( wz * q(ind000,2) - wx * q(ind000,4) )
+          corz = ( wx * q(ind000,3) - wy * q(ind000,2) )
  
 c  increment residual (in conserved vars.)
  
-      res(ind000,2) = res(ind000,2) + q(ind000,1) * totx * vol(ind000)
-      res(ind000,3) = res(ind000,3) + q(ind000,1) * toty * vol(ind000)
-      res(ind000,4) = res(ind000,4) + q(ind000,1) * totz * vol(ind000)
-      res(ind000,5) = res(ind000,5) + q(ind000,1) * vol(ind000) * (
-     . totx * q(ind000,2) + 
-     . toty * q(ind000,3) + 
-     . totz * q(ind000,4) )
+          res(ind000,2) = res(ind000,2) + q(ind000,1)*corx*vol(ind000)
+          res(ind000,3) = res(ind000,3) + q(ind000,1)*cory*vol(ind000)
+          res(ind000,4) = res(ind000,4) + q(ind000,1)*corz*vol(ind000)
  
           enddo
         enddo
