@@ -930,10 +930,10 @@ c      v'w'/(u_inf)**2:
 c      S*k/epsilon:
       if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
      +    ivmx .eq. 14) then
-        ske=sqrt(xis)/(turre(j,k,i,1)*re)
+        ske=sqrt(2.*xis)/(turre(j,k,i,1)*re)
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or. 
      .         ivmx.eq.13) then
-        ske=sqrt(xis)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
+        ske=sqrt(2.*xis)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
       end if
 c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
 c      unit 1 of grid)
