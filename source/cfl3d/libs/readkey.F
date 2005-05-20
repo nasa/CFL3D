@@ -39,7 +39,8 @@ c
       common /precond/ cprec,uref,avn
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
       common /entfix/ epsa_l,epsa_r
       common /key/ nkey
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
@@ -365,8 +366,8 @@ c     (defaults=-1)
       tur20 = -1.
       nkey     = nkey + 2
 c
-c     lower limit on epsilon or omega for 2-eqn models,
-c     applied only if it goes negative
+c     value that epsilon or omega is set to for 2-eqn models if 
+c     it goes below tur1cutlev
       tur1cut = 1.e-20
       nkey     = nkey + 1
 c
@@ -396,6 +397,21 @@ c     are 1st or 2nd order upwind on RHS (1=1st, 2=2nd)
 c     (note: LHS uses 1st order in both cases)
       iturbord = 1
       nkey       = nkey + 1
+c
+c     value that k is set to for 2-eqn models if 
+c     it goes below tur2cutlev
+      tur2cut = 1.e-20
+      nkey     = nkey + 1
+c
+c     lower limit on epsilon or omega for 2-eqn models that,
+c     when reached, causes it to be reset to tur1cut
+      tur1cutlev = 0.
+      nkey     = nkey + 1
+c
+c     lower limit on k for 2-eqn models that,
+c     when reached, causes it to be reset to tur2cut
+      tur2cutlev = 0.
+      nkey     = nkey + 1
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -771,6 +787,21 @@ c
       else if (inpstr(lc1:lc2).eq.'iturbord') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iturbord
+c
+      else if (inpstr(lc1:lc2).eq.'tur2cut') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur2cut = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur1cutlev') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur1cutlev = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur2cutlev') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur2cutlev = realval(1)
 c
       else
 c

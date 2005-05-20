@@ -74,7 +74,8 @@ c
       common /maxiv/ ivmx
       common /ghost/ irghost,iwghost
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /degshf/ ideg(3)
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1

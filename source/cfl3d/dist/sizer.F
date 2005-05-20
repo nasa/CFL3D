@@ -278,7 +278,8 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
       common /elastic_ss/ idef_ss
       common /memory/ memadd,memaddi
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
       icall  = 0
       memuse = 0

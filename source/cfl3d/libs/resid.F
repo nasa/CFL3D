@@ -79,7 +79,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
       jdim1 = jdim-1
       kdim1 = kdim-1

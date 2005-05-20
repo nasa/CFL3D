@@ -112,7 +112,8 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
 #if defined DIST_MPI
       nd_dest = mblk2nd(nbl)

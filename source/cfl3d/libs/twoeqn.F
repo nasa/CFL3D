@@ -40,7 +40,8 @@ c
       common /twod/ i2d
       common /wallfun/ iwf(3)
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /konew/ ikoprod,isstdenom,pklimterm
 c
@@ -2912,16 +2913,18 @@ c    Update TURRE
           do k=1,kdim-1
             do j=1,jdim-1
               sumno=sumno+rhside(j,k,i,1)**2
-              if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le. 0.) then
+              if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le. 
+     +          tur1cutlev) then
                 negno=negno+1
                 turre(j,k,i,1)=tur1cut
               else
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
-              if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 0.) then
+              if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
+     +          tur2cutlev) then
                 negnk=negnk+1
-                turre(j,k,i,2)=1.e-20
+                turre(j,k,i,2)=tur2cut
               else
                 turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)
               end if

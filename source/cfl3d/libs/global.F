@@ -167,7 +167,8 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /deformz/ beta1,ismooth,negvol
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
       common /axisym/ iaxi2plane
 c
       pi = 4.0*atan(1.0)

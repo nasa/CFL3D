@@ -270,7 +270,8 @@ c
      .              tp(4,4)
       common /rigidbody/ irigb,irbtrim
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
 c      time step cycle:
 c

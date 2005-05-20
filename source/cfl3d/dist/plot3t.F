@@ -90,7 +90,8 @@ c
       common /moov/movie,nframes,icall1,lhdr
       common /conversion/ radtodeg
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
 #if defined DIST_MPI
 c     set baseline tag values

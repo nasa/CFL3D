@@ -31,7 +31,8 @@ c
       common /sklton/ isklton
       common /twod/ i2d
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut,iturbord
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),

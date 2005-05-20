@@ -57,7 +57,8 @@ c
      .                iypminb,jdnmaxb,kdnmaxb,idnmaxb,jdnminb,
      .                kdnminb,idnminb,nypchkb
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
-     .                  iwarneddy,itime2read,itaturb,tur1cut
+     .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
+     .                  iturbord,tur1cutlev,tur2cutlev
 c
 c     check for number of points with yplus > ypchk
 c
