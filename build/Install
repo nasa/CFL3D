@@ -601,7 +601,7 @@ case $FARCH in IRIX64)
   fi
   FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.mips64"
+     CGNS_LLIB="cgns.SGI64"
   fi
   if [ x$mpichdir = x ]; then
      MPI_LLIBDIR="-L$MPI_HOME/lib64"
@@ -614,7 +614,7 @@ case $FARCH in IRIX64)
      CFLAG="$PREC"
      FTN="purify $FTN"
     if [ ! x$cgnsdir = x ]; then
-       CGNS_LLIB="cgns.mips4"
+       CGNS_LLIB="cgns.SGI6"
     fi
     if [ x$mpichdir = x ]; then
        MPI_LLIBDIR="-L$MPI_HOME/lib32"
@@ -643,7 +643,7 @@ case $FARCH in rs6000)
      MPI_INCDIR="-I$MPI_HOME/include"
   fi
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.ibm"
+     CGNS_LLIB="cgns.IBM"
   fi
 esac
 
@@ -660,7 +660,7 @@ case $FARCH in sun|solaris)
   fi
   FFLAG_SPEC="$FFLAG"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.sol"
+     CGNS_LLIB="cgns.SUN64"
   fi
   CPP="/usr/ccs/lib/cpp"
   CPPOPT_SP="-DP3D_SINGLE -DSUN"
@@ -687,7 +687,7 @@ case $FARCH in hpux)
   LFLAG="+FPOVZ +U77"
   CPPOPT_SP="-DADP_OFF -DP3D_SINGLE -DHP"
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.hp"
+     CGNS_LLIB="cgns.HP"
   fi
 esac
 
@@ -719,7 +719,7 @@ case $FARCH in alpha)
   LLIB_SEQ=""
 
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.alpha"
+     CGNS_LLIB="cgns.ALPHA"
   fi
 
   FFLAG_SPEC="$FFLAG"
@@ -768,7 +768,7 @@ case $FARCH in LINUX)
      PREC=""
   fi
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIB="cgns.linux"
+     CGNS_LLIB="cgns.LINUX"
   fi
   FTN="mpif90"
   CPPOPT_SP="$CPPOPT_SP -DINTEL"
@@ -808,7 +808,7 @@ case $FARCH in LINUX)
         PREC=""
      fi
      if [ ! x$cgnsdir = x ]; then
-        CGNS_LLIB="cgns.linux"
+        CGNS_LLIB="cgns.LINUX"
      fi
      FTN="mpif90"
 # Alternate Intel compiler you may need if mpif90 doesn't
@@ -837,7 +837,7 @@ case $FARCH in LINUX)
         PREC=""
      fi
      if [ ! x$cgnsdir = x ]; then
-        CGNS_LLIB="cgns.linux"
+        CGNS_LLIB="cgns.LINUX"
      fi
      FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DPG"
@@ -867,7 +867,7 @@ case $FARCH in LINUX)
         PREC=""
      fi
      if [ ! x$cgnsdir = x ]; then
-        CGNS_LLIB="cgns.linux"
+        CGNS_LLIB="cgns.LINUX"
      fi
      FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DLAHEY"
@@ -897,7 +897,7 @@ case $FARCH in LINUX)
         PREC=""
      fi
      if [ ! x$cgnsdir = x ]; then
-        CGNS_LLIB="cgns.alpha"
+        CGNS_LLIB="cgns.ALPHA"
      fi
      FTN="mpif90"
      CPPOPT_SP="$CPPOPT_SP -DALPHA"
