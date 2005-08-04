@@ -341,7 +341,7 @@ c   CFL3D-type
 c
 c   open ADF file
       write(6,'(/,'' This program creates a grid file SEPARATE'',
-     + '' from the CGNS file soln.cgns'')')
+     + '' from the file solutiononly.cgns'')')
       write(6,'(''   (they are LINKED, eliminating redundancy'')')
       write(6,'(''    in having to keep multiple copies of the'')')
       write(6,'(''    grid for multiple restarts)'')')
@@ -1598,7 +1598,7 @@ c
       write(6,'('' the CGNS file, CFL3D currently still reads this'',
      + '' info from the input file!'')')
       write(6,'('' Also, currently no patched or overset info is put'',
-     + '' into the CGNS file'')')
+     + '' into the file'')')
 c
       write(6,'(/,'' Be sure to set keyword icgns=1 in the input'',
      + '' file'')')
