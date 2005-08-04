@@ -13,7 +13,7 @@ c   This does a 3-D grid only, in MG format
 c***********************************************************************
 c
 #ifdef CGNS
-      character*80 file2
+      character*80 file2,file3
       parameter (ibufdim0=2000,nbuf0=4,mxbcfil0=100)
 c
       character*120 bou(ibufdim0,nbuf0)
@@ -34,6 +34,14 @@ c
       write(6,'('' What is the CFL3D input file name?'')')
       read(5,'(a80)') file2
       open(3,file=file2,form='formatted',status='old')
+      write(6,'('' Does this case use a patch file (e.g., '',
+     +  ''patch.bin)? (1=yes)'')')
+      read(5,*) ipatch
+      if (ipatch .eq. 1) then
+        write(6,'('' input patch filename:'')')
+        read(5,'(a80)') file3
+        open(22,file=file3,form='unformatted',status='old')
+      end if
 c
 c     determine machine zero for use in setting tolerances
 c     (10.**(-iexp) is machine zero)
@@ -1591,6 +1599,9 @@ c
      + '' info from the input file!'')')
       write(6,'('' Also, currently no patched or overset info is put'',
      + '' into the CGNS file'')')
+c
+      write(6,'(/,'' Be sure to set keyword icgns=1 in the input'',
+     + '' file'')')
 c
 c     deallocate memory
 c
