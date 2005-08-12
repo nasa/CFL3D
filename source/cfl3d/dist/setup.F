@@ -160,7 +160,7 @@ c
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /elastic/ ndefrm,naesrf
       common /elastic_ss/ idef_ss 
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
       common /ghost/ irghost,iwghost
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,

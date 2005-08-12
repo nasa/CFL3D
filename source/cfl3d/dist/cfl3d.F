@@ -357,6 +357,7 @@ c
 
 c
       common /mydist2/ nnodes,myhost,myid,mycomm
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
 c
 c***********************************************************************
 c     memory allocation

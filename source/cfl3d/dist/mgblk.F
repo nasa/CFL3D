@@ -272,6 +272,7 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
 c
 c      time step cycle:
 c

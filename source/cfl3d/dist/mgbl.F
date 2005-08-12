@@ -249,6 +249,7 @@ c
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
 c
 c***********************************************************************
 c     initialization
@@ -449,9 +450,9 @@ c***********************************************************************
 c     transfer data from host to nodes
 c***********************************************************************
 c
-      nvalsr = 44*maxbl + maxbl*maxseg*42 + 52 + 11*nmds*maxaes
-     .       + 5*maxaes
-      nvalsi = 53*maxbl + 117       + 8*maxbl*maxsegdg + 48*maxbl*maxseg
+      nvalsr = 30*maxbl + maxbl*maxseg*72 + 53 + 11*nmds*maxaes
+     .       + 5*maxaes + 17*maxbl*maxsegdg + nkey
+      nvalsi = 53*maxbl + 119      + 9*maxbl*maxsegdg + 48*maxbl*maxseg
      .       + 19*mxbli + 22*nplots + 4*maxgr          + 9*maxcs
       if (mwork .lt. nvalsr) then
          nou(1) = min(nou(1)+1,ibufdim)

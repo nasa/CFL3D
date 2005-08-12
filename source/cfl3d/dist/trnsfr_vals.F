@@ -133,7 +133,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm
       common /axisym/ iaxi2plane
       common /singular/ atol
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /chk/ ichk
@@ -295,7 +295,8 @@ c
             work(nlast+48+j) = rkap0(j)
          end do
          work(nlast+52) = beta1
-         nlast = nlast + 52
+         work(nlast+53) = alpha1
+         nlast = nlast + 53
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
@@ -414,10 +415,11 @@ c
          work(nlast+62) = tur2cut
          work(nlast+63) = tur1cutlev
          work(nlast+64) = tur2cutlev
+         work(nlast+65) = meshdef
          nlast = nlast+nkey
       end if
 c
-      nvals = 30*maxbl + 72*maxbl*maxseg   + 52   + 11*nmds*maxaes
+      nvals = 30*maxbl + 72*maxbl*maxseg   + 53   + 11*nmds*maxaes
      .      + 5*maxaes + 17*maxbl*maxsegdg + nkey
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
@@ -536,7 +538,8 @@ c
             rkap0(j)  = work(nlast+48+j)
          end do
          beta1    = work(nlast+52)
-         nlast = nlast + 52
+         alpha1   = work(nlast+53)
+         nlast = nlast + 53
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
@@ -655,6 +658,7 @@ c
          tur2cut   = work(nlast+62)
          tur1cutlev= work(nlast+63)
          tur2cutlev= work(nlast+64)
+         meshdef   = int(work(nlast+65))
       end if
 c
 c**************************
@@ -719,9 +723,10 @@ c
          iwork(nlast+49) = ncs
          iwork(nlast+50) = ialphit
          iwork(nlast+51) = ip3dsurf
-         iwork(nlast+52) = ismooth
+         iwork(nlast+52) = isktyp
          iwork(nlast+53) = iprnsurf
-         nlast = nlast + 53
+         iwork(nlast+54) = nsprgit
+         nlast = nlast + 54
          do iii=1,maxgr
             iwork(nlast+iii)         = ncgg(iii)
             iwork(nlast+iii+maxgr)   = iemg(iii)
@@ -912,7 +917,7 @@ c
 c
       end if
 c
-      nvals = 53*maxbl + 118       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+      nvals = 53*maxbl + 119       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
      .      + 19*mxbli + 22*nplots + 4*maxgr          + 9*maxcs
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
@@ -983,9 +988,10 @@ c
          ncs      = iwork(nlast+49)
          ialphit  = iwork(nlast+50)
          ip3dsurf = iwork(nlast+51)
-         ismooth  = iwork(nlast+52)
+         isktyp   = iwork(nlast+52)
          iprnsurf = iwork(nlast+53)
-         nlast = nlast + 53
+         nsprgit  = iwork(nlast+54)
+         nlast = nlast + 54
          do iii=1,maxgr
             ncgg(iii)   = iwork(nlast+iii)
             iemg(iii)   = iwork(nlast+iii+maxgr)

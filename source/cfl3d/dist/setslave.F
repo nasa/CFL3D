@@ -68,7 +68,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /elastic_ss/ idef_ss
       common /twod/ i2d
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
 c
 c
 #if defined DIST_MPI
