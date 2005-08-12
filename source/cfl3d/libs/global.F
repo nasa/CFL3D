@@ -165,7 +165,7 @@ c
      .                  thetaymc,thetazmc,dxmxmc,dymxmc,dzmxmc,
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
@@ -5100,7 +5100,7 @@ c        for offbody/multiblock mesh movement
 c
          read(iunit5,*)
          read(iunit5,*)
-         read(iunit5,*) nskip,realval(1),nmastr,ismooth
+         read(iunit5,*) nskip,realval(1),nmastr,isktyp
          beta1 = realval(1)
          write(iunit11,'('' moving grid data - data for field/'',
      .                   ''multiblock mesh movement'')')
@@ -5108,12 +5108,12 @@ c
          if (nskip.gt.0) then
             if (nskip.gt.ngrid) then
                write(iunit11,'(i8,f9.6,2i9)') nskip,beta1,nmastr,
-     .              ismooth
+     .              isktyp
                write(iunit11,'('' input error: nskip > ngrid'')')
                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
             write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .            ismooth
+     .            isktyp
             if (real(beta1).lt.0.) then
                write(iunit11,'(/,'' WARNING: beta<0 may severely '',
      .         ''compromise fidelity of surface geometry'',/)')
@@ -5155,7 +5155,7 @@ c              skip value must divide evenly into dim-1 value
             end do
          else if (nskip.lt.0) then
             write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .            ismooth
+     .            isktyp
             if (real(beta1).lt.0.) then
                write(iunit11,'(/,'' WARNING: beta<0 may result in a '',
      .         ''potentially significant loss of surface fidelity'',/)')
@@ -5200,7 +5200,7 @@ c              skip value must divide evenly into dim-1 value
             end do
          else
             write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .                                     ismooth
+     .                                     isktyp
             if (real(beta1).lt.0.) then
                write(iunit11,'(/,'' WARNING: beta<0 may result in a '',
      .         ''potentially significant loss of surface fidelity'',/)')

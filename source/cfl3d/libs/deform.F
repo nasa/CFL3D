@@ -20,8 +20,8 @@ c     irst    = 0 standard update; do all steps described above
 c               1 restart - compute the mesh deformation and update
 c                 only the grid shape; do not update the grid speeds.
 c
-c     ismooth = 0 use only transfinite interpolation 
-c             > 0 do ismooth smoothing steps using the spring analogy 
+c     isktyp  = 0 use only transfinite interpolation 
+c             > 0 do isktyp smoothing steps using the spring analogy 
 c                 and mesh shape preservation near the k=1 and k=kdim
 c                 surfaces
 c***********************************************************************
@@ -97,7 +97,7 @@ c
       allocatable :: xok(:,:)
 
       common /twod/ i2d
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
 c
 c     allocate memory
 c
@@ -535,7 +535,7 @@ c
      .            dx3,dy3,dz3,arci,arcj,arck,nou,bou,nbuf,ibufdim,
      .            myid)
 c
-      if (ismooth.gt.0) then
+      if (isktyp.gt.0) then
 c
 c        This step incorporates the correct translation and rota-
 c        tion of the interior mesh near the k=1 and k=kdim boundaries,
@@ -564,7 +564,7 @@ c
          call gdsa(time,xmach,dt,dx,dy,dz,x,y,z,xnm1,
      .             ynm1,znm1,dvol,xok,xoi,xoj,irotat,ndeftp1,
      .             iupdat,nbl,nt,idim,jdim,kdim,iaesol,jsta,jend,
-     .             ismooth)
+     .             isktyp)
 c
 c        release memory
 c
@@ -1498,7 +1498,7 @@ c***********************************************************************
       subroutine gdsa(time,xmach,dt,dx,dy,dz,x,y,z,xnm1,ynm1,
      .                znm1,dvol,xok,xoi,xoj,irotat,ndeftp1,
      .                iupdat,nbl,nt,idmt,jdmt,kdmt,iaesol,jsta,jend,
-     .                ismooth)
+     .                isktyp)
 c***********************************************************************
 c     Purpose:  Determines increment to grid position due to mesh smoothing
 c               caused by movement of the solid surface 
@@ -2219,7 +2219,7 @@ c
 
        nnt = 1
        kdmot = kdm/2 + 1
-       do 400 iter = 1,ismooth                   
+       do 400 iter = 1,isktyp                   
         xdel = 0.
         ydel = 0.
         zdel = 0.  
@@ -2461,7 +2461,7 @@ c       do 445 k = 2,kdmot
 1220   format(e12.5,2i7,3(1x,e12.5))   
 
 400    continue
-c      write(43,1220) real(time),nbl,ismooth,real(xdel)/(real(jdm)*
+c      write(43,1220) real(time),nbl,isktyp,real(xdel)/(real(jdm)*
 c    .            real(kdm)*real(idm)),
 c    .               real(ydel)/(real(jdm)*real(kdm)*real(idm)),
 c    .               real(zdel)/(real(jdm)*real(kdm)*real(idm))

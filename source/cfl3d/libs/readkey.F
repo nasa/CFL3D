@@ -47,7 +47,7 @@ c
       common /elastic_ss/ idef_ss
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /memory/ memadd,memaddi
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
       common /ghost/ irghost,iwghost
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
@@ -234,6 +234,13 @@ c     default is to stop when negative volumes/bad metrics are
 c     found
 c
       negvol    = 0
+      nkey      = nkey + 1
+c
+c     flag to turn on/off time marching flow solver.  When 0 the
+c     flow solver is turned on.  When 1, only the mesh deformation
+c     and grid metric subroutines are turned on.
+c
+      meshdef   = 0
       nkey      = nkey + 1
 c
 c     eddy viscosity limiter for two eqn. turbulence models: limit
@@ -650,6 +657,10 @@ c
       else if (inpstr(lc1:lc2).eq.'negvol') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) negvol
+c
+      else if (inpstr(lc1:lc2).eq.'meshdef') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) meshdef
 c
       else if (inpstr(lc1:lc2).eq.'edvislim') then
          lc2 = lc2 +1

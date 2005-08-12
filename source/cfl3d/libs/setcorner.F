@@ -30,7 +30,7 @@ c
       dimension wk(9*nsurf),slavept(nslave,3,nmaster,5),ibl(nsurf)
 c
       common /zero/ iexp
-      common /deformz/ beta1,ismooth,negvol
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
 c
       ivert = ivert + 1
