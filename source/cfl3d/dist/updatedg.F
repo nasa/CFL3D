@@ -804,3 +804,2379 @@ c
 c
       return
       end
+      subroutine elglobfe(sa,xst,yst,zst,xix,xiy,xiz,etax,etay,
+     .                    etaz,zetax,zetay,zetaz,ei,ej,ek,gij,gjk,
+     .                    gik,ooj,eps,stiffl,islavept,ija,nslave,
+     .                    nmaster,nnodes,myhost,myid,mycomm,mblk2nd,
+     .                    nblelst,maxbl,iseqr)
+#if defined DIST_MPI
+#     include "mpif.h"
+#   ifdef DBLE_PRECSN
+#      ifdef CMPLX
+#        define MY_MPI_REAL MPI_DOUBLE_COMPLEX
+#      else
+#        define MY_MPI_REAL MPI_DOUBLE_PRECISION
+#      endif
+#   else
+#      ifdef CMPLX
+#        define MY_MPI_REAL MPI_COMPLEX
+#      else
+#        define MY_MPI_REAL MPI_REAL
+#      endif
+#   endif
+      dimension istat(MPI_STATUS_SIZE)
+#endif
+c
+       dimension xst(nslave),yst(nslave),zst(nslave),xix(nslave),
+     .           xiy(nslave),xiz(nslave),etax(nslave),etay(nslave),
+     .           etaz(nslave),zetax(nslave),zetay(nslave),zetaz(nslave),
+     .           ei(nslave),ej(nslave),ek(nslave),gij(nslave),
+     .           gjk(nslave),gik(nslave),tinv(6,6),t(6,6),ul(6,6),
+     .           c(6,6),cjp1(6,6),cjm1(6,6),cim1(6,6),cip1(6,6),
+     .           ckm1(6,6),ckp1(6,6),ooj(nslave)
+      dimension sa(245*nslave+2),stiffl(24,24)
+      dimension ija(245*nslave+2)
+      dimension islavept(nslave,nmaster,5)
+      dimension n1(0:7),n2(0:7),n11(0:7),n11i(20,0:7),n33i(20,0:7),
+     .          iimax(0:7),n44i(0:7)
+      dimension mblk2nd(maxbl)
+      dimension nblelst(maxbl,2)
+      common /twod/ i2d
+c
+c
+c
+      isl1 = 8
+      isl2 = 2
+      isl3 = 3
+      isl4 = 4
+      isl5 = 5
+      if(i2d.ne.0) then
+        isl6 = 4
+        isl7 = 5
+      else
+        isl6 = 6
+        isl7 = 7
+      end if
+      n2(0) = 1
+      n2(1) = 4
+      n2(2) = 16
+      n2(3) = 13
+      n2(4) = 7
+      n2(5) = 19
+      n2(6) = 10
+      n2(7) = 22
+c
+       do 200 n = 1,nslave
+c
+        n1(0)    = n
+        n1(1)    = islavept(n,3,iseqr)
+        n1(2)    = islavept(n,5,iseqr)
+        n1(3)    = islavept(n1(2),3,iseqr)
+        n1(4)    = islavept(n,7,iseqr)
+        n1(5)    = islavept(n1(2),7,iseqr)
+        n1(6)    = islavept(n1(1),7,iseqr)
+        n1(7)    = islavept(n1(6),5,iseqr)
+        nbl = islavept(n,9,iseqr)
+        if(n1(1).ne.n.and.n1(2).ne.n.and.n1(4).ne.n.and.
+     .     islavept(n1(1),9,iseqr).eq.nbl.and.
+     .     islavept(n1(2),9,iseqr).eq.nbl.and.
+     .     islavept(n1(4),9,iseqr).eq.nbl) then
+c
+        xi =.25*(xst(n1(4))-xst(n1(0))+xst(n1(5))-xst(n1(2))
+     .          +xst(n1(6))-xst(n1(1))+xst(n1(7))-xst(n1(3)))
+        zi =.25*(zst(n1(4))-zst(n1(0))+zst(n1(5))-zst(n1(2))
+     .          +zst(n1(6))-zst(n1(1))+zst(n1(7))-zst(n1(3)))
+        yi =.25*(yst(n1(4))-yst(n1(0))+yst(n1(5))-yst(n1(2))
+     .          +yst(n1(6))-yst(n1(1))+yst(n1(7))-yst(n1(3)))
+        xj =.25*(xst(n1(1))-xst(n1(0))+xst(n1(3))-xst(n1(2))
+     .          +xst(n1(6))-xst(n1(4))+xst(n1(7))-xst(n1(5)))
+        yj =.25*(yst(n1(1))-yst(n1(0))+yst(n1(3))-yst(n1(2))
+     .          +yst(n1(6))-yst(n1(4))+yst(n1(7))-yst(n1(5)))
+        zj =.25*(zst(n1(1))-zst(n1(0))+zst(n1(3))-zst(n1(2))
+     .          +zst(n1(6))-zst(n1(4))+zst(n1(7))-zst(n1(5)))
+        denomi= sqrt(xi*xi+yi*yi+zi*zi)
+        xi = xi/denomi
+        yi = yi/denomi
+        zi = zi/denomi
+        denomj= sqrt(xj*xj+yj*yj+zj*zj)
+        xj = xj/denomj
+        yj = yj/denomj
+        zj = zj/denomj
+        xk = yi*zj - zi*yj
+        yk = zi*xj - xi*zj
+        zk = xi*yj - yi*xj
+        xi = yj*zk - zj*yk
+        yi = zj*xk - xj*zk
+        zi = xj*yk - yj*xk
+c
+c  Note the row-column ordering here because
+c  the transformation is from local coord to
+c  the x,y,z - coordinate system
+c
+        t11 = xi
+        t21 = yi
+        t31 = zi
+        t12 = xj
+        t22 = yj
+        t32 = zj
+        t13 = xk
+        t23 = yk
+        t33 = zk
+        t(1,1) = t11*t11
+        t(1,2) = t12*t12
+        t(1,3) = t13*t13
+        t(1,4) = 2.*t11*t12
+        t(1,5) = 2.*t12*t13
+        t(1,6) = 2.*t11*t13
+        t(2,1) = t21*t21
+        t(2,2) = t22*t22
+        t(2,3) = t23*t23
+        t(2,4) = 2.*t21*t22
+        t(2,5) = 2.*t22*t23
+        t(2,6) = 2.*t21*t23
+        t(3,1) = t31*t31
+        t(3,2) = t32*t32
+        t(3,3) = t33*t33
+        t(3,4) = 2.*t31*t32
+        t(3,5) = 2.*t32*t33
+        t(3,6) = 2.*t31*t33
+        t(4,1) = t11*t21
+        t(4,2) = t12*t22
+        t(4,3) = t13*t23
+        t(4,4) = t11*t22+t21*t12
+        t(4,5) = t12*t23+t13*t22
+        t(4,6) = t11*t23+t13*t21
+        t(5,1) = t31*t21
+        t(5,2) = t22*t32
+        t(5,3) = t23*t33
+        t(5,4) = t21*t32+t22*t31
+        t(5,5) = t22*t33+t32*t23
+        t(5,6) = t21*t33+t23*t31
+        t(6,1) = t11*t31
+        t(6,2) = t12*t32
+        t(6,3) = t13*t33
+        t(6,4) = t11*t32+t12*t31
+        t(6,5) = t12*t33+t13*t32
+        t(6,6) = t11*t33+t31*t13
+ 
+c
+c  The inverse must be used:
+c
+        call INVDET(ul,t,6,DTNRM,DETM)
+c
+        do jj = 1,6
+         tinv(1,jj) =  ei(n) *ul(1,jj)
+         tinv(2,jj) =  ej(n) *ul(2,jj)
+         tinv(3,jj) =  ek(n) *ul(3,jj)
+         tinv(4,jj) =  gij(n)*ul(4,jj)
+         tinv(5,jj) =  gjk(n)*ul(5,jj)
+         tinv(6,jj) =  gik(n)*ul(6,jj)
+        enddo
+        do jj = 1,6
+          do ii = 1,6
+            sum = 0.
+            do kk = 1,6
+              sum = sum + t(ii,kk)*tinv(kk,jj)
+            enddo
+            c(ii,jj) = sum
+          enddo
+        enddo
+c
+      c0 = 1./2.
+      c1 = 1./6.
+      c2 = 1./9.
+      c3 = 1./12.
+      c4 = 1./18.
+      c5 = 1./24.
+      c6 = 1./36.
+c
+c    Rows 1-3
+c
+       term1 = xix(n)  *xix(n)  +etax(n) *etax(n) +zetax(n)*zetax(n)
+       term2 = etax(n) *xix(n)  +zetax(n)*xix(n)  +zetax(n)* etax(n)
+       term3 = xiy(n)  *xiy(n)  +etay(n) *etay(n) +zetay(n)*zetay(n)
+       term4 = etay(n) *xiy(n)  +zetay(n)*xiy(n)  +zetay(n)* etay(n)
+       term5 = xiz(n)  *xiz(n)  +etaz(n) *etaz(n) +zetaz(n)*zetaz(n)
+       term6 = etaz(n) *xiz(n)  +zetaz(n)*xiz(n)  +zetaz(n)* etaz(n)
+       term7 = xix(n)  *xiy(n)  +etay(n) *etax(n) +zetay(n)*zetax(n)
+       term8 = xix(n)  *etay(n) +xix(n)  *zetay(n)+xiy(n)  *etax(n)
+     .        +zetay(n)*etax(n) +xiy(n)  *zetax(n)+etay(n) *zetax(n)
+       term9 = xiz(n)  *xix(n)  +etaz(n) *etax(n) +zetaz(n)*zetax(n)
+       term10= xix(n)  *etaz(n) +xix(n)  *zetaz(n)+xiz(n)  *etax(n)
+     .        +zetaz(n)*etax(n) +xiz(n)  *zetax(n)+etaz(n) *zetax(n)
+       term11= xiz(n)  *xiy(n)  +etaz(n) *etay(n) +zetaz(n)*zetay(n)
+       term12= xiy(n)  *etaz(n) +xiy(n)  *zetaz(n)+xiz(n)  *etay(n)
+     .        +zetaz(n)*etay(n) +xiz(n)  *zetay(n)+etaz(n) *zetay(n)
+ 
+ 
+       term13 = c2*term1+c1*term2
+       term14 = c2*term3+c1*term4
+       term15 = c2*term5+c1*term6
+       term16 = c2*term7 +c3*term8
+       term17 = c2*term9 +c3*term10
+       term18 = c2*term11+c3*term12
+       stiffl(1,1)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16
+     .             +(c(1,6)+c(6,1))*term17
+     .             +(c(4,6)+c(6,4))*term18
+       stiffl(1,2)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(1,2)+c(4,4))*term16
+     .             +(c(1,5)+c(6,4))*term17
+     .             +(c(4,5)+c(6,2))*term18
+       stiffl(1,3)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(1,5)+c(4,6))*term16
+     .             +(c(1,3)+c(6,6))*term17
+     .             +(c(4,3)+c(6,5))*term18
+       stiffl(2,2)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16
+     .             +(c(2,5)+c(5,2))*term18
+     .             +(c(4,5)+c(5,4))*term17
+       stiffl(2,3)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16
+     .             +(c(2,3)+c(5,5))*term18
+     .             +(c(4,3)+c(5,6))*term17
+       stiffl(3,3)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(6,5)+c(5,6))*term16
+     .             +(c(3,5)+c(5,3))*term18
+     .             +(c(3,6)+c(6,3))*term17
+  
+       term13= -c2*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
+     .         +c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14= -c2*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
+     .         +c3*zetay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15= -c2*xiz(n)  *  xiz(n)+c4* etaz(n) *etaz(n)
+     .         +c3*zetaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16= -c2*xiy(n)  *  xix(n)+c4* etay(n) *etax(n)
+     .         +c5*zetay(n)* etax(n)+c5* etay(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*( etax(n)*  xiy(n)+   zetax(n)*  xiy(n)
+     .            -  xix(n)* etay(n)-     xix(n)*zetay(n))
+       term18= -c2*xiz(n)  *  xix(n)+c4* etaz(n) *etax(n)
+     .         +c5*zetaz(n)* etax(n)+c5* etaz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*( etax(n)*  xiz(n)+   zetax(n)*  xiz(n)
+     .            -  xix(n)* etaz(n)-     xix(n)*zetaz(n))
+       term20= -c2*xiz(n)  *  xiy(n)+c4* etaz(n) *etay(n)
+     .         +c5*zetaz(n)* etay(n)+c5* etaz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*( etay(n)*  xiz(n)+   zetay(n)*  xiz(n)
+     .            -  xiy(n)* etaz(n)-     xiy(n)*zetaz(n))
+       stiffl(1,4)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(4,1)-c(1,4))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(6,1)-c(1,6))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(6,4)-c(4,6))*term21
+       stiffl(2,4)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(2,1)-c(4,4))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(5,1)-c(4,6))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(5,4)-c(2,6))*term21
+       stiffl(3,4)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(5,1)-c(6,4))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(3,1)-c(6,6))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(3,4)-c(5,6))*term21
+       stiffl(3,5)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(5,4)-c(6,2))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(3,4)-c(6,5))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(3,2)-c(5,5))*term21
+       stiffl(2,5)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(2,4)-c(4,2))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(5,4)-c(4,5))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(5,2)-c(2,5))*term21
+       stiffl(1,5)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(4,4)-c(1,2))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(6,4)-c(1,5))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(6,2)-c(4,5))*term21
+       stiffl(3,6)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(5,6)-c(6,5))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(3,6)-c(6,3))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(3,5)-c(5,3))*term21
+       stiffl(2,6)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(2,6)-c(4,5))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(5,6)-c(4,3))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(5,5)-c(2,3))*term21
+       stiffl(1,6)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(4,6)-c(1,5))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(6,6)-c(1,3))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(6,5)-c(4,3))*term21
+  
+       term13=  c4*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
+     .         +c3*  xix(n)* etax(n)-c2*zetax(n)*zetax(n)
+       term14=  c4*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
+     .         +c3*  xiy(n)* etay(n)-c2*zetay(n)*zetay(n)
+       term15=  c4*xiz(n)  *  xiz(n)+c4* etaz(n) *etaz(n)
+     .         +c3*  xiz(n)* etaz(n)-c2*zetaz(n)*zetaz(n)
+       term16=  c4*xiy(n)  *  xix(n)+c5* etay(n) * xix(n)
+     .         +c5*  xiy(n)* etax(n)+c4* etay(n)* etax(n)
+     .         -c2*zetay(n)*zetax(n)
+       term17= c3*(zetax(n)*  xiy(n)+   zetax(n)* etay(n)
+     .            -  xix(n)*zetay(n)-    etax(n)*zetay(n))
+       term18=  c4*xiz(n)  *  xix(n)+c5* etaz(n) * xix(n)
+     .         +c5*  xiz(n)* etax(n)+c4* etaz(n)* etax(n)
+     .         -c2*zetaz(n)*zetax(n)
+       term19= c3*(zetax(n)*  xiz(n)+   zetax(n)* etaz(n)
+     .            -  xix(n)*zetaz(n)-    etax(n)*zetaz(n))
+       term20=  c4*xiz(n)  *  xiy(n)+c5* etaz(n) * xiy(n)
+     .         +c5*  xiz(n)* etay(n)+c4* etaz(n)* etay(n)
+     .         -c2*zetaz(n)*zetay(n)
+       term21= c3*(zetay(n)*  xiz(n)+   zetay(n)* etaz(n)
+     .            -  xiy(n)*zetaz(n)-    etay(n)*zetaz(n))
+       stiffl(1,7)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(2,7)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(3,7)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(3,8)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(2,8)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(1,8)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(3,9)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(2,9)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(1,9)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+       term13= -c4*xix(n)  *  xix(n)+c6* etax(n) *etax(n)
+     .         -c1*  xix(n)*zetax(n)-c4*zetax(n)*zetax(n)
+       term14= -c4*xiy(n)  *  xiy(n)+c6* etay(n) *etay(n)
+     .         -c1*  xiy(n)*zetay(n)-c4*zetay(n)*zetay(n)
+       term15= -c4*xiz(n)  *  xiz(n)+c6* etaz(n) *etaz(n)
+     .         -c1*  xiz(n)*zetaz(n)-c4*zetaz(n)*zetaz(n)
+       term16= -c4*xiy(n)  *  xix(n)-c3*zetay(n) * xix(n)
+     .         +c6* etay(n)* etax(n)-c3*  xiy(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*(-etax(n)*  xiy(n)+     xix(n)* etay(n)
+     .            +zetax(n)* etay(n)-    etax(n)*zetay(n))
+       term18= -c4*xiz(n)  *  xix(n)-c3*zetaz(n) * xix(n)
+     .         +c6* etaz(n)* etax(n)-c3*  xiz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*(-etax(n)*  xiz(n)+     xix(n)* etaz(n)
+     .            +zetax(n)* etaz(n)-    etax(n)*zetaz(n))
+       term20= -c4*xiz(n)  *  xiy(n)-c3*zetaz(n) * xiy(n)
+     .         +c6* etaz(n)* etay(n)-c3*  xiz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*(-etay(n)*  xiz(n)+     xiy(n)* etaz(n)
+     .            +zetay(n)* etaz(n)-    etay(n)*zetaz(n))
+       stiffl(1,10)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(2,10)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(3,10)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(3,11)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(2,11)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(1,11)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(3,12)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(2,12)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(1,12)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*xix(n)  *  xix(n)-c4* etax(n) *etax(n)
+     .         -c1*  xix(n)* etax(n)+c6*zetax(n)*zetax(n)
+       term14= -c4*xiy(n)  *  xiy(n)-c4* etay(n) *etay(n)
+     .         -c1*  xiy(n)* etay(n)+c6*zetay(n)*zetay(n)
+       term15= -c4*xiz(n)  *  xiz(n)-c4* etaz(n) *etaz(n)
+     .         -c1*  xiz(n)* etaz(n)+c6*zetaz(n)*zetaz(n)
+       term16= -c4*xiy(n)  *  xix(n)-c3* etay(n) * xix(n)
+     .         -c3*  xiy(n)* etax(n)-c4* etay(n)* etax(n)
+     .         +c6*zetay(n)*zetax(n)
+       term17= c5*(-zetax(n)*  xiy(n) -  zetax(n)* etay(n)
+     .             +zetay(n)*  xix(n) +   etax(n)*zetay(n))
+       term18= -c4*xiz(n)  *  xix(n)-c3* etaz(n) * xix(n)
+     .         -c3*  xiz(n)* etax(n)-c4* etaz(n)* etax(n)
+     .         +c6*zetaz(n)*zetax(n)
+       term19= c5*(-zetax(n)*  xiz(n) -  zetax(n)* etaz(n)
+     .             +zetaz(n)*  xix(n) +   etax(n)*zetaz(n))
+       term20= -c4*xiz(n)  *  xiy(n)-c3* etaz(n) * xiy(n)
+     .         -c3*  xiz(n)* etay(n)-c4* etaz(n)* etay(n)
+     .         +c6*zetaz(n)*zetay(n)
+       term21= c5*(-zetay(n)*  xiz(n) -  zetay(n)* etaz(n)
+     .             +zetaz(n)*  xiy(n) +   etay(n)*zetaz(n))
+       stiffl(1,13)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(2,13)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(3,13)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(3,14)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(2,14)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(1,14)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(3,15)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(2,15)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(1,15)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*xix(n)  *  xix(n)-c2* etax(n) *etax(n)
+     .         +c3*  xix(n)*zetax(n)+c4*zetax(n)*zetax(n)
+       term14=  c4*xiy(n)  *  xiy(n)-c2* etay(n) *etay(n)
+     .         +c3*  xiy(n)*zetay(n)+c4*zetay(n)*zetay(n)
+       term15=  c4*xiz(n)  *  xiz(n)-c2* etaz(n) *etaz(n)
+     .         +c3*  xiz(n)*zetaz(n)+c4*zetaz(n)*zetaz(n)
+       term16=  c4*xiy(n)  *  xix(n)+c5*zetay(n) * xix(n)
+     .         +c5*  xiy(n)*zetax(n)-c2* etay(n)* etax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*(-etay(n)*  xix(n) +   etax(n)*  xiy(n)
+     .             +etax(n)*zetay(n) -  zetax(n)* etay(n))
+       term18=  c4*xiz(n)  *  xix(n)+c5*zetaz(n) * xix(n)
+     .         +c5*  xiz(n)*zetax(n)-c2* etaz(n)* etax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*(-etaz(n)*  xix(n) +   etax(n)*  xiz(n)
+     .             +etax(n)*zetaz(n) -  zetax(n)* etaz(n))
+       term20=  c4*xiz(n)  *  xiy(n)+c5*zetaz(n) * xiy(n)
+     .         +c5*  xiz(n)*zetay(n)-c2* etaz(n)* etay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*(-etaz(n)*  xiy(n) +   etay(n)*  xiz(n)
+     .             +etay(n)*zetaz(n) -  zetay(n)* etaz(n))
+       stiffl(1,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(2,16)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(3,16)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(3,17)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(2,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(1,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(3,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(2,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(1,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c6*xix(n)  *  xix(n)-c4* etax(n) *etax(n)
+     .         -c1*zetax(n)* etax(n)-c4*zetax(n)*zetax(n)
+       term14=  c6*xiy(n)  *  xiy(n)-c4* etay(n) *etay(n)
+     .         -c1*zetay(n)* etay(n)-c4*zetay(n)*zetay(n)
+       term15=  c6*xiz(n)  *  xiz(n)-c4* etaz(n) *etaz(n)
+     .         -c1*zetaz(n)* etaz(n)-c4*zetaz(n)*zetaz(n)
+       term16=  c6*xiy(n)  *  xix(n)-c4* etay(n) *etax(n)
+     .         -c3*zetay(n)* etax(n)-c3* etay(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*( etax(n)*  xiy(n) +  zetax(n)*  xiy(n)
+     .            -  xix(n)* etay(n) -    xix(n)*zetay(n))
+       term18=  c6*xiz(n)  *  xix(n)-c4* etaz(n) *etax(n)
+     .         -c3*zetaz(n)* etax(n)-c3* etaz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*( etax(n)*  xiz(n) +  zetax(n)*  xiz(n)
+     .            -  xix(n)* etaz(n) -    xix(n)*zetaz(n))
+       term20=  c6*xiz(n)  *  xiy(n)-c4* etaz(n) *etay(n)
+     .         -c3*zetaz(n)* etay(n)-c3* etaz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*( etay(n)*  xiz(n) +  zetay(n)*  xiz(n)
+     .            -  xiy(n)* etaz(n) -    xiy(n)*zetaz(n))
+       stiffl(1,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(2,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(3,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(3,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(2,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(1,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(3,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(2,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(1,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c6*xix(n)  *  xix(n)-c3* etax(n) * xix(n)
+     .         -c3*zetax(n)*  xix(n)-c6* etax(n)* etax(n)
+     .         -c3*zetax(n)* etax(n)-c6*zetax(n)*zetax(n)
+       term14= -c6*xiy(n)  *  xiy(n)-c3* etay(n) * xiy(n)
+     .         -c3*zetay(n)*  xiy(n)-c6* etay(n)* etay(n)
+     .         -c3*zetay(n)* etay(n)-c6*zetay(n)*zetay(n)
+       term15= -c6*xiz(n)  *  xiz(n)-c3* etaz(n) * xiz(n)
+     .         -c3*zetaz(n)*  xiz(n)-c6* etaz(n)* etaz(n)
+     .         -c3*zetaz(n)* etaz(n)-c6*zetaz(n)*zetaz(n)
+       term16= -c6*xiy(n)  *  xix(n)-c6* etay(n) *etax(n)
+     .         -c6*zetay(n)*zetax(n)
+       term17= c5*(-etay(n)*  xix(n) -  zetay(n)*  xix(n)
+     .            -  xiy(n)* etax(n) -  zetay(n)* etax(n)
+     .            -  xiy(n)*zetax(n) -   etay(n)*zetax(n))
+       term18= -c6*xiz(n)  *  xix(n)-c6* etaz(n) *etax(n)
+     .         -c6*zetaz(n)*zetax(n)
+       term19= c5*(-etaz(n)*  xix(n) -  zetaz(n)*  xix(n)
+     .            -  xiz(n)* etax(n) -  zetaz(n)* etax(n)
+     .            -  xiz(n)*zetax(n) -   etaz(n)*zetax(n))
+       term20= -c6*xiz(n)  *  xiy(n)-c6* etaz(n) *etay(n)
+     .         -c6*zetaz(n)*zetay(n)
+       term21= c5*(-etaz(n)*  xiy(n) -  zetaz(n)*  xiy(n)
+     .            -  xiz(n)* etay(n) -  zetaz(n)* etay(n)
+     .            -  xiz(n)*zetay(n) -   etaz(n)*zetay(n))
+       stiffl(1,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)+c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)+c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)+c(6,4))*term21
+       stiffl(2,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)+c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)+c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)+c(5,4))*term21
+       stiffl(3,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)+c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)+c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)+c(3,4))*term21
+       stiffl(3,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)+c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)+c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)+c(3,2))*term21
+       stiffl(2,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)+c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)+c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)+c(5,2))*term21
+       stiffl(1,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)+c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)+c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)+c(6,2))*term21
+       stiffl(3,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)+c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)+c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)+c(3,5))*term21
+       stiffl(2,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)+c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)+c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)+c(5,5))*term21
+       stiffl(1,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)+c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)+c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)+c(6,5))*term21
+c
+c
+c    Rows 4-6
+c
+       term1 = xix(n)  *xix(n)  +etax(n) *etax(n) +zetax(n)*zetax(n)
+       term2 =-etax(n) *xix(n)  -zetax(n)*xix(n)  +zetax(n)* etax(n)
+       term3 = xiy(n)  *xiy(n)  +etay(n) *etay(n) +zetay(n)*zetay(n)
+       term4 =-etay(n) *xiy(n)  -zetay(n)*xiy(n)  +zetay(n)* etay(n)
+       term5 = xiz(n)  *xiz(n)  +etaz(n) *etaz(n) +zetaz(n)*zetaz(n)
+       term6 =-etaz(n) *xiz(n)  -zetaz(n)*xiz(n)  +zetaz(n)* etaz(n)
+       term7 = xix(n)  *xiy(n)  +etay(n) *etax(n) +zetay(n)*zetax(n)
+       term8 =-xix(n)  *etay(n) -xix(n)  *zetay(n)-xiy(n)  *etax(n)
+     .        +zetay(n)*etax(n) -xiy(n)  *zetax(n)+etay(n) *zetax(n)
+       term9 = xiz(n)  *xix(n)  +etaz(n) *etax(n) +zetaz(n)*zetax(n)
+       term10=-xix(n)  *etaz(n) -xix(n)  *zetaz(n)-xiz(n)  *etax(n)
+     .        +zetaz(n)*etax(n) -xiz(n)  *zetax(n)+etaz(n) *zetax(n)
+       term11= xiz(n)  *xiy(n)  +etaz(n) *etay(n) +zetaz(n)*zetay(n)
+       term12=-xiz(n)  *etay(n) -xiz(n)  *zetay(n)-xiy(n)  *etaz(n)
+     .        +zetay(n)*etaz(n) -xiy(n)  *zetaz(n)+etay(n) *zetaz(n)
+       term13 = c2*term1+c1*term2
+       term14 = c2*term3+c1*term4
+       term15 = c2*term5+c1*term6
+       term16 = c2*term7 +c3*term8
+       term17 = c2*term9 +c3*term10
+       term18 = c2*term11+c3*term12
+       stiffl(4,4)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16
+     .             +(c(1,6)+c(6,1))*term17
+     .             +(c(4,6)+c(6,4))*term18
+       stiffl(4,5)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(1,2)+c(4,4))*term16
+     .             +(c(1,5)+c(6,4))*term17
+     .             +(c(4,5)+c(6,2))*term18
+       stiffl(4,6)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(1,5)+c(4,6))*term16
+     .             +(c(1,3)+c(6,6))*term17
+     .             +(c(4,3)+c(6,5))*term18
+       stiffl(5,5)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16
+     .             +(c(4,5)+c(5,4))*term17
+     .             +(c(2,5)+c(5,2))*term18
+       stiffl(5,6)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16
+     .             +(c(4,3)+c(5,6))*term17
+     .             +(c(2,3)+c(5,5))*term18
+       stiffl(6,6)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(6,5)+c(5,6))*term16
+     .             +(c(3,6)+c(6,3))*term17
+     .             +(c(3,5)+c(5,3))*term18
+  
+       term13= -c4*xix(n)  *  xix(n)+c6* etax(n) *etax(n)
+     .         +c1*  xix(n)*zetax(n)-c4*zetax(n)*zetax(n)
+       term14= -c4*xiy(n)  *  xiy(n)+c6* etay(n) *etay(n)
+     .         +c1*  xiy(n)*zetay(n)-c4*zetay(n)*zetay(n)
+       term15= -c4*xiz(n)  *  xiz(n)+c6* etaz(n) *etaz(n)
+     .         +c1*  xiz(n)*zetaz(n)-c4*zetaz(n)*zetaz(n)
+       term16= -c4*xiy(n)  *  xix(n)+c3*zetay(n) * xix(n)
+     .         +c3*  xiy(n)*zetax(n)+c6* etay(n)* etax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*( etax(n)*  xiy(n)-     xix(n)* etay(n)
+     .            +zetax(n)* etay(n)-    etax(n)*zetay(n))
+       term18= -c4*xiz(n)  *  xix(n)+c3*zetaz(n) * xix(n)
+     .         +c3*  xiz(n)*zetax(n)+c6* etaz(n)* etax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*( etax(n)*  xiz(n)-     xix(n)* etaz(n)
+     .            +zetax(n)* etaz(n)-    etax(n)*zetaz(n))
+       term20= -c4*xiz(n)  *  xiy(n)+c3*zetaz(n) * xiy(n)
+     .         +c3*  xiz(n)*zetay(n)+c6* etaz(n)* etay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*( etay(n)*  xiz(n)-     xiy(n)* etaz(n)
+     .            +zetay(n)* etaz(n)-    etay(n)*zetaz(n))
+       stiffl(4,7)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(5,7)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(6,7)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(6,8)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(5,8)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(4,8)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(6,9)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(5,9)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(4,9)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+ 
+       term13=  c4*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
+     .         -c3*  xix(n)* etax(n)-c2*zetax(n)*zetax(n)
+       term14=  c4*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
+     .         -c3*  xiy(n)* etay(n)-c2*zetay(n)*zetay(n)
+       term15=  c4*xiz(n)  *  xiz(n)+c4* etaz(n) *etaz(n)
+     .         -c3*  xiz(n)* etaz(n)-c2*zetaz(n)*zetaz(n)
+       term16=  c4*xiy(n)  *  xix(n)-c5* etax(n) * xiy(n)
+     .         +c4* etay(n)* etax(n)-c5*  xix(n)* etay(n)
+     .         -c2*zetay(n)*zetax(n)
+       term17= c3*(zetay(n)*  xix(n)-   zetay(n)* etax(n)
+     .            -zetax(n)*  xiy(n)+    etay(n)*zetax(n))
+       term18=  c4*xiz(n)  *  xix(n)-c5* etax(n) * xiz(n)
+     .         +c4* etaz(n)* etax(n)-c5*  xix(n)* etaz(n)
+     .         -c2*zetaz(n)*zetax(n)
+       term19= c3*(zetaz(n)*  xix(n)-   zetaz(n)* etax(n)
+     .            -zetax(n)*  xiz(n)+    etaz(n)*zetax(n))
+       term20=  c4*xiz(n)  *  xiy(n)-c5* etay(n) * xiz(n)
+     .         +c4* etaz(n)* etay(n)-c5*  xiy(n)* etaz(n)
+     .         -c2*zetaz(n)*zetay(n)
+       term21= c3*(zetaz(n)*  xiy(n)-   zetaz(n)* etay(n)
+     .            -zetay(n)*  xiz(n)+    etaz(n)*zetay(n))
+       stiffl(4,10)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(5,10)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(6,10)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(6,11)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(5,11)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(4,11)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(6,12)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(5,12)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(4,12)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*xix(n)  *  xix(n)-c3*zetax(n) * xix(n)
+     .         -c2* etax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14=  c4*xiy(n)  *  xiy(n)-c3*zetay(n) * xiy(n)
+     .         -c2* etay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15=  c4*xiz(n)  *  xiz(n)-c3*zetaz(n) * xiz(n)
+     .         -c2* etaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16=  c4*xiy(n)  *  xix(n)-c5*zetay(n) * xix(n)
+     .         -c2* etay(n)* etax(n)-c5*  xiy(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*(- etax(n)*  xiy(n) +    xix(n)* etay(n)
+     .             -zetax(n)* etay(n) +   etax(n)*zetay(n))
+       term18=  c4*xiz(n)  *  xix(n)-c5*zetaz(n) * xix(n)
+     .         -c2* etaz(n)* etax(n)-c5*  xiz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*(- etax(n)*  xiz(n) +    xix(n)* etaz(n)
+     .             -zetax(n)* etaz(n) +   etax(n)*zetaz(n))
+       term20=  c4*xiz(n)  *  xiy(n)-c5*zetaz(n) * xiy(n)
+     .         -c2* etaz(n)* etay(n)-c5*  xiz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*(- etay(n)*  xiz(n) +    xiy(n)* etaz(n)
+     .             -zetay(n)* etaz(n) +   etay(n)*zetaz(n))
+       stiffl(4,13)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(5,13)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(6,13)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(6,14)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(5,14)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(4,14)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(6,15)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(5,15)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(4,15)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*xix(n)  *  xix(n)+c1* etax(n) * xix(n)
+     .         -c4* etax(n)* etax(n)+c6*zetax(n)*zetax(n)
+       term14= -c4*xiy(n)  *  xiy(n)+c1* etay(n) * xiy(n)
+     .         -c4* etay(n)* etay(n)+c6*zetay(n)*zetay(n)
+       term15= -c4*xiz(n)  *  xiz(n)+c1* etaz(n) * xiz(n)
+     .         -c4* etaz(n)* etaz(n)+c6*zetaz(n)*zetaz(n)
+       term16= -c4*xiy(n)  *  xix(n)+c3* etay(n) * xix(n)
+     .         +c3*  xiy(n)* etax(n)-c4* etay(n)* etax(n)
+     .         +c6*zetay(n)*zetax(n)
+       term17= c5*(zetax(n)*  xiy(n) -  zetax(n)* etay(n)
+     .             - xix(n)*zetay(n) +   etax(n)*zetay(n))
+       term18= -c4*xiz(n)  *  xix(n)+c3* etaz(n) * xix(n)
+     .         +c3*  xiz(n)* etax(n)-c4* etaz(n)* etax(n)
+     .         +c6*zetaz(n)*zetax(n)
+       term19= c5*(zetax(n)*  xiz(n) -  zetax(n)* etaz(n)
+     .             - xix(n)*zetaz(n) +   etax(n)*zetaz(n))
+       term20= -c4*xiz(n)  *  xiy(n)+c3* etaz(n) * xiy(n)
+     .         +c3*  xiz(n)* etay(n)-c4* etaz(n)* etay(n)
+     .         +c6*zetaz(n)*zetay(n)
+       term21= c5*(zetay(n)*  xiz(n) -  zetay(n)* etaz(n)
+     .             - xiy(n)*zetaz(n) +   etay(n)*zetaz(n))
+       stiffl(4,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(5,16)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(6,16)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(6,17)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(5,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(4,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(6,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(5,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(4,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c6*(xix(n)  *  xix(n)+ etax(n) *etax(n)
+     .           +zetax(n)  *zetax(n))
+     .        + c3*(etax(n) *  xix(n)+zetax(n) * xix(n)
+     .        -     zetax(n)* etax(n))
+       term14= -c6*(xiy(n)  *  xiy(n)+ etay(n) *etay(n)
+     .           +zetay(n)  *zetay(n))
+     .        + c3*(etay(n) *  xiy(n)+zetay(n) * xiy(n)
+     .        -     zetay(n)* etay(n))
+       term15= -c6*(xiz(n)  *  xiz(n)+ etaz(n) *etaz(n)
+     .           +zetaz(n)  *zetaz(n))
+     .        + c3*(etaz(n) *  xiz(n)+zetaz(n) * xiz(n)
+     .        -     zetaz(n)* etaz(n))
+       term16= -c6*xiy(n)  *  xix(n)-c4* etay(n) *etax(n)
+     .         -c6*zetay(n)*zetax(n)+c5* etay(n)*  xix(n)
+     .         +c5*zetay(n)*  xix(n)
+       term17= c5*( etax(n)*  xiy(n) -   etax(n)*zetay(n)
+     .            +  xiy(n)*zetax(n) -   etay(n)*zetax(n))
+       term18= -c6*xiz(n)  *  xix(n)-c4* etaz(n) *etax(n)
+     .         -c6*zetaz(n)*zetax(n)+c5* etaz(n)*  xix(n)
+     .         +c5*zetaz(n)*  xix(n)
+       term19= c5*( etax(n)*  xiz(n) -   etax(n)*zetaz(n)
+     .            +  xiz(n)*zetax(n) -   etaz(n)*zetax(n))
+       term20= -c6*xiz(n)  *  xiy(n)-c4* etaz(n) *etay(n)
+     .         -c6*zetaz(n)*zetay(n)+c5* etay(n)*  xiz(n)
+     .         +c5*zetay(n)*  xiz(n)
+       term21= c5*( etaz(n)*  xiy(n) -   etaz(n)*zetay(n)
+     .            +  xiy(n)*zetaz(n) -   etay(n)*zetaz(n))
+       stiffl(4,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)+c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)+c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)+c(6,4))*term21
+       stiffl(5,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)+c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)+c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)+c(5,4))*term21
+       stiffl(6,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)+c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)+c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)+c(3,4))*term21
+       stiffl(6,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)+c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)+c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)+c(3,2))*term21
+       stiffl(5,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)+c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)+c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)+c(5,2))*term21
+       stiffl(4,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)+c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)+c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)+c(6,2))*term21
+       stiffl(6,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)+c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)+c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)+c(3,5))*term21
+       stiffl(5,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)+c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)+c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)+c(5,5))*term21
+       stiffl(4,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)+c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)+c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)+c(6,5))*term21
+c
+       term13=  c6*xix(n)  *  xix(n)-c4* etax(n) *etax(n)
+     .         -c1*zetax(n)* etax(n)-c4*zetax(n)*zetax(n)
+       term14=  c6*xiy(n)  *  xiy(n)-c4* etay(n) *etay(n)
+     .         -c1*zetay(n)* etay(n)-c4*zetay(n)*zetay(n)
+       term15=  c6*xiz(n)  *  xiz(n)-c4* etaz(n) *etaz(n)
+     .         -c1*zetaz(n)* etaz(n)-c4*zetaz(n)*zetaz(n)
+       term16=  c6*xiy(n)  *  xix(n)-c4* etay(n) *etax(n)
+     .         -c3*zetay(n)* etax(n)-c3* etay(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*(-etax(n)*  xiy(n) -  zetax(n)*  xiy(n)
+     .            +  xix(n)* etay(n) +  zetay(n)*  xix(n))
+       term18=  c6*xiz(n)  *  xix(n)-c4* etaz(n) *etax(n)
+     .         -c3*zetaz(n)* etax(n)-c3* etaz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*(-etax(n)*  xiz(n) -  zetax(n)*  xiz(n)
+     .            +  xix(n)* etaz(n) +  zetaz(n)*  xix(n))
+       term20=  c6*xiz(n)  *  xiy(n)-c4* etaz(n) *etay(n)
+     .         -c3*zetaz(n)* etay(n)-c3* etaz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*(-etay(n)*  xiz(n) -  zetay(n)*  xiz(n)
+     .            +  xiy(n)* etaz(n) +  zetaz(n)*  xiy(n))
+       stiffl(4,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(5,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(6,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(6,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(5,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(4,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(6,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(5,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(4,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+c    Rows 7-9
+c
+       term13=  c2*xix(n)  *  xix(n)+c2* etax(n) *etax(n)
+     .                              +c2*zetax(n)*zetax(n)
+     .         +c1* etax(n)*  xix(n)-c1*zetax(n) * xix(n)
+     .         -c1*zetax(n)* etax(n)
+       term14=  c2*xiy(n)  *  xiy(n)+c2* etay(n) *etay(n)
+     .                              +c2*zetay(n)*zetay(n)
+     .         +c1* etay(n)*  xiy(n)-c1*zetay(n) * xiy(n)
+     .         -c1*zetay(n)* etay(n)
+       term15=  c2*xiz(n)  *  xiz(n)+c2* etaz(n) *etaz(n)
+     .                              +c2*zetaz(n)*zetaz(n)
+     .         +c1* etaz(n)*  xiz(n)-c1*zetaz(n) * xiz(n)
+     .         -c1*zetaz(n)* etaz(n)
+       term16=  c2*xiy(n)  *  xix(n)+c2* etay(n)* etax(n)
+     .         +c2*zetay(n)*zetax(n)+c3* etay(n)*  xix(n)
+     .         -c3*zetay(n)*  xix(n)+c3*  xiy(n)* etax(n)
+     .         -c3*zetay(n)* etax(n)-c3*  xiy(n)*zetax(n)
+     .         -c3* etay(n)*zetax(n)
+       term18=  c2*xiz(n)  *  xix(n)+c2* etaz(n)* etax(n)
+     .         +c2*zetaz(n)*zetax(n)+c3* etaz(n)*  xix(n)
+     .         -c3*zetaz(n)*  xix(n)+c3*  xiz(n)* etax(n)
+     .         -c3*zetaz(n)* etax(n)-c3*  xiz(n)*zetax(n)
+     .         -c3* etaz(n)*zetax(n)
+       term20=  c2*xiz(n)  *  xiy(n)+c2* etaz(n)* etay(n)
+     .         +c2*zetaz(n)*zetay(n)+c3* etaz(n)*  xiy(n)
+     .         -c3*zetaz(n)*  xiy(n)+c3*  xiz(n)* etay(n)
+     .         -c3*zetaz(n)* etay(n)-c3*  xiz(n)*zetay(n)
+     .         -c3* etaz(n)*zetay(n)
+       stiffl(7,7)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16
+     .             +(c(1,6)+c(6,1))*term18
+     .             +(c(4,6)+c(6,4))*term20
+       stiffl(8,8)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16
+     .             +(c(5,4)+c(4,5))*term18
+     .             +(c(5,2)+c(2,5))*term20
+       stiffl(7,8)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16
+     .             +(c(6,4)+c(1,5))*term18
+     .             +(c(6,2)+c(4,5))*term20
+       stiffl(9,9)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16
+     .             +(c(3,6)+c(6,3))*term18
+     .             +(c(3,5)+c(5,3))*term20
+       stiffl(8,9)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16
+     .             +(c(5,6)+c(4,3))*term18
+     .             +(c(5,5)+c(2,3))*term20
+       stiffl(7,9)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16
+     .             +(c(6,6)+c(1,3))*term18
+     .             +(c(6,5)+c(4,3))*term20
+ 
+       term13= -c2*  xix(n)*  xix(n)+c4* etax(n) *etax(n)
+     .         -c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14= -c2*  xiy(n)*  xiy(n)+c4* etay(n) *etay(n)
+     .         -c3*zetay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15= -c2*  xiz(n)*  xiz(n)+c4* etaz(n) *etaz(n)
+     .         -c3*zetaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16= -c2*  xiy(n)*  xix(n)+c4* etay(n)* etax(n)
+     .         -c5*zetay(n)* etax(n)-c5* etay(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= -c3* etax(n)*  xiy(n)+c3*zetax(n)*  xiy(n)
+     .         +c3*  xix(n)* etay(n)-c3*  xix(n)*zetay(n)
+       term18= -c2*  xiz(n)*  xix(n)+c4* etaz(n)* etax(n)
+     .         -c5*zetaz(n)* etax(n)-c5* etaz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= -c3* etax(n)*  xiz(n)+c3*zetax(n)*  xiz(n)
+     .         +c3*  xix(n)* etaz(n)-c3*  xix(n)*zetaz(n)
+       term20= -c2*  xiz(n)*  xiy(n)+c4* etaz(n)* etay(n)
+     .         -c5*zetaz(n)* etay(n)-c5* etaz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= -c3* etay(n)*  xiz(n)+c3*zetay(n)*  xiz(n)
+     .         +c3*  xiy(n)* etaz(n)-c3*  xiy(n)*zetaz(n)
+       stiffl(7,10)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(8,10)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(9,10)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(9,11)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(8,11)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(7,11)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(9,12)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(8,12)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(7,12)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c6*xix(n)  *  xix(n)-c6* etax(n) *etax(n)
+     .                              -c6*zetax(n)*zetax(n)
+     .         -c3* etax(n)*  xix(n)+c3*zetax(n) * xix(n)
+     .         +c3*zetax(n)* etax(n)
+       term14= -c6*xiy(n)  *  xiy(n)-c6* etay(n) *etay(n)
+     .                              -c6*zetay(n)*zetay(n)
+     .         -c3* etay(n)*  xiy(n)+c3*zetay(n) * xiy(n)
+     .         +c3*zetay(n)* etay(n)
+       term15= -c6*xiz(n)  *  xiz(n)-c6* etaz(n) *etaz(n)
+     .                              -c6*zetaz(n)*zetaz(n)
+     .         -c3* etaz(n)*  xiz(n)+c3*zetaz(n) * xiz(n)
+     .         +c3*zetaz(n)* etaz(n)
+       term16= -c6*xiy(n)  *  xix(n)-c6* etay(n)* etax(n)
+     .         -c6*zetay(n)*zetax(n)-c5* etay(n)*  xix(n)
+     .         +c5*zetay(n)*  xix(n)-c5*  xiy(n)* etax(n)
+     .         +c5*zetay(n)* etax(n)+c5*  xiy(n)*zetax(n)
+     .         +c5* etay(n)*zetax(n)
+       term18= -c6*xiz(n)  *  xix(n)-c6* etaz(n)* etax(n)
+     .         -c6*zetaz(n)*zetax(n)-c5* etaz(n)*  xix(n)
+     .         +c5*zetaz(n)*  xix(n)-c5*  xiz(n)* etax(n)
+     .         +c5*zetaz(n)* etax(n)+c5*  xiz(n)*zetax(n)
+     .         +c5* etaz(n)*zetax(n)
+       term20= -c6*xiz(n)  *  xiy(n)-c6* etaz(n)* etay(n)
+     .         -c6*zetaz(n)*zetay(n)-c5* etaz(n)*  xiy(n)
+     .         +c5*zetaz(n)*  xiy(n)-c5*  xiz(n)* etay(n)
+     .         +c5*zetaz(n)* etay(n)+c5*  xiz(n)*zetay(n)
+     .         +c5* etaz(n)*zetay(n)
+       stiffl(7,13)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16
+     .             +(c(1,6)+c(6,1))*term18
+     .             +(c(4,6)+c(6,4))*term20
+       stiffl(8,13)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16
+     .             +(c(5,1)+c(4,6))*term18
+     .             +(c(5,4)+c(2,6))*term20
+       stiffl(9,13)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16
+     .             +(c(3,1)+c(6,6))*term18
+     .             +(c(3,4)+c(5,6))*term20
+       stiffl(9,14)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16
+     .             +(c(3,4)+c(6,5))*term18
+     .             +(c(3,2)+c(5,5))*term20
+       stiffl(8,14)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16
+     .             +(c(5,4)+c(4,5))*term18
+     .             +(c(5,2)+c(2,5))*term20
+       stiffl(7,14)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16
+     .             +(c(6,4)+c(1,5))*term18
+     .             +(c(6,2)+c(4,5))*term20
+       stiffl(9,15)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16
+     .             +(c(3,6)+c(6,3))*term18
+     .             +(c(3,5)+c(5,3))*term20
+       stiffl(8,15)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16
+     .             +(c(5,6)+c(4,3))*term18
+     .             +(c(5,5)+c(2,3))*term20
+       stiffl(7,15)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16
+     .             +(c(6,6)+c(1,3))*term18
+     .             +(c(6,5)+c(4,3))*term20
+c
+       term13=  c6*  xix(n)*  xix(n)-c4* etax(n) *etax(n)
+     .         +c1*zetax(n)* etax(n)-c4*zetax(n)*zetax(n)
+       term14=  c6*  xiy(n)*  xiy(n)-c4* etay(n) *etay(n)
+     .         +c1*zetay(n)* etay(n)-c4*zetay(n)*zetay(n)
+       term15=  c6*  xiz(n)*  xiz(n)-c4* etaz(n) *etaz(n)
+     .         +c1*zetaz(n)* etaz(n)-c4*zetaz(n)*zetaz(n)
+       term16=  c6*  xiy(n)*  xix(n)-c4* etay(n)* etax(n)
+     .         +c3*zetay(n)* etax(n)+c3* etay(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= -c5* etay(n)*  xix(n)+c5*zetay(n)*  xix(n)
+     .         +c5*  xiy(n)* etax(n)-c5*  xiy(n)*zetax(n)
+       term18=  c6*  xiz(n)*  xix(n)-c4* etaz(n)* etax(n)
+     .         +c3*zetaz(n)* etax(n)+c3* etaz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= -c5* etaz(n)*  xix(n)+c5*zetaz(n)*  xix(n)
+     .         +c5*  xiz(n)* etax(n)-c5*  xiz(n)*zetax(n)
+       term20=  c6*  xiz(n)*  xiy(n)-c4* etaz(n)* etay(n)
+     .         +c3*zetaz(n)* etay(n)+c3* etaz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= -c5* etaz(n)*  xiy(n)+c5*zetaz(n)*  xiy(n)
+     .         +c5*  xiz(n)* etay(n)-c5*  xiz(n)*zetay(n)
+       stiffl(7,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(8,16)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(9,16)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(9,17)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(8,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(7,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(9,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(8,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(7,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*  xix(n)*  xix(n)-c3*zetax(n)*  xix(n)
+     .         -c2* etax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14=  c4*  xiy(n)*  xiy(n)-c3*zetay(n)*  xiy(n)
+     .         -c2* etay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15=  c4*  xiz(n)*  xiz(n)-c3*zetaz(n)*  xiz(n)
+     .         -c2* etaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16=  c4*  xiy(n)*  xix(n)-c5*zetay(n)*  xix(n)
+     .         -c2* etay(n)* etax(n)-c5*  xiy(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*(  xiy(n)* etax(n) -    xix(n)* etay(n)
+     .            +zetax(n)* etay(n) -   etax(n)*zetay(n))
+       term18=  c4*  xiz(n)*  xix(n)-c5*zetaz(n)*  xix(n)
+     .         -c2* etaz(n)* etax(n)-c5*  xiz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*(  xiz(n)* etax(n) -    xix(n)* etaz(n)
+     .            +zetax(n)* etaz(n) -   etax(n)*zetaz(n))
+       term20=  c4*  xiz(n)*  xiy(n)-c5*zetaz(n)*  xiy(n)
+     .         -c2* etaz(n)* etay(n)-c5*  xiz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*(  xiz(n)* etay(n) -    xiy(n)* etaz(n)
+     .            +zetay(n)* etaz(n) -   etay(n)*zetaz(n))
+       stiffl(7,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(8,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(9,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(9,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(8,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(7,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(9,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(8,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(7,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*  xix(n)*  xix(n)-c4* etax(n)* etax(n)
+     .         -c1* etax(n)*  xix(n)+c6*zetax(n)*zetax(n)
+       term14= -c4*  xiy(n)*  xiy(n)-c4* etay(n)* etay(n)
+     .         -c1* etay(n)*  xiy(n)+c6*zetay(n)*zetay(n)
+       term15= -c4*  xiz(n)*  xiz(n)-c4* etaz(n)* etaz(n)
+     .         -c1* etaz(n)*  xiz(n)+c6*zetaz(n)*zetaz(n)
+       term16= -c4*  xiy(n)*  xix(n)-c3* etay(n)*  xix(n)
+     .         -c3*  xiy(n)* etax(n)-c4* etay(n)* etax(n)
+     .         +c6*zetay(n)*zetax(n)
+       term17= c5*(- xix(n)*zetay(n) -   etax(n)*zetay(n)
+     .            +zetax(n)*  xiy(n) +  zetax(n)* etay(n))
+       term18= -c4*  xiz(n)*  xix(n)-c3* etaz(n)*  xix(n)
+     .         -c3*  xiz(n)* etax(n)-c4* etaz(n)* etax(n)
+     .         +c6*zetaz(n)*zetax(n)
+       term19= c5*(- xix(n)*zetaz(n) -   etax(n)*zetaz(n)
+     .            +zetax(n)*  xiz(n) +  zetax(n)* etaz(n))
+       term20= -c4*  xiz(n)*  xiy(n)-c3* etaz(n)*  xiy(n)
+     .         -c3*  xiz(n)* etay(n)-c4* etaz(n)* etay(n)
+     .         +c6*zetaz(n)*zetay(n)
+       term21= c5*(- xiy(n)*zetaz(n) -   etay(n)*zetaz(n)
+     .            +zetay(n)*  xiz(n) +  zetay(n)* etaz(n))
+       stiffl(7,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(8,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(9,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(9,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(8,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(7,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(9,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(8,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(7,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c     Rows 10-12
+c
+       term13=  c2*  xix(n)*  xix(n)+c2* etax(n)* etax(n)
+     .         -c1* etax(n)*  xix(n)+c1*zetax(n)*  xix(n)
+     .         -c1*zetax(n)* etax(n)+c2*zetax(n)*zetax(n)
+       term14=  c2*  xiy(n)*  xiy(n)+c2* etay(n)* etay(n)
+     .         -c1* etay(n)*  xiy(n)+c1*zetay(n)*  xiy(n)
+     .         -c1*zetay(n)* etay(n)+c2*zetay(n)*zetay(n)
+       term15=  c2*  xiz(n)*  xiz(n)+c2* etaz(n)* etaz(n)
+     .         -c1* etaz(n)*  xiz(n)+c1*zetaz(n)*  xiz(n)
+     .         -c1*zetaz(n)* etaz(n)+c2*zetaz(n)*zetaz(n)
+       term16=  c2*  xiy(n)*  xix(n)-c3* etay(n)*  xix(n)
+     .         +c3*zetay(n)*  xix(n)-c3*  xiy(n)* etax(n)
+     .         +c2* etay(n)* etax(n)-c3*zetay(n)* etax(n)
+     .         +c3*  xiy(n)*zetax(n)-c3* etay(n)*zetax(n)
+     .         +c2*zetay(n)*zetax(n)
+       term17= 0.
+       term18=  c2*  xiz(n)*  xix(n)-c3* etaz(n)*  xix(n)
+     .         +c3*zetaz(n)*  xix(n)-c3*  xiz(n)* etax(n)
+     .         +c2* etaz(n)* etax(n)-c3*zetaz(n)* etax(n)
+     .         +c3*  xiz(n)*zetax(n)-c3* etaz(n)*zetax(n)
+     .         +c2*zetaz(n)*zetax(n)
+       term19= 0.
+       term20=  c2*  xiz(n)*  xiy(n)-c3* etaz(n)*  xiy(n)
+     .         +c3*zetaz(n)*  xiy(n)-c3*  xiz(n)* etay(n)
+     .         +c2* etaz(n)* etay(n)-c3*zetaz(n)* etay(n)
+     .         +c3*  xiz(n)*zetay(n)-c3* etaz(n)*zetay(n)
+     .         +c2*zetaz(n)*zetay(n)
+       term21= 0.
+       stiffl(10,10)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(11,11)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(10,11)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(12,12)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(11,12)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(10,12)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c6*xix(n)  *  xix(n)-c4* etax(n) *etax(n)
+     .                              -c4*zetax(n)*zetax(n)
+     .         +c1*zetax(n)* etax(n)
+       term14=  c6*xiy(n)  *  xiy(n)-c4* etay(n) *etay(n)
+     .                              -c4*zetay(n)*zetay(n)
+     .         +c1*zetay(n)* etay(n)
+       term15=  c6*xiz(n)  *  xiz(n)-c4* etaz(n) *etaz(n)
+     .                              -c4*zetaz(n)*zetaz(n)
+     .         +c1*zetaz(n)* etaz(n)
+       term16=  c6*  xiy(n)*  xix(n)-c4* etay(n)* etax(n)
+     .         +c3*zetay(n)* etax(n)+c3* etay(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= -c5* etax(n)*  xiy(n)+c5*zetax(n)*  xiy(n)
+     .         +c5*  xix(n)* etay(n)-c5*  xix(n)*zetay(n)
+       term18=  c6*  xiz(n)*  xix(n)-c4* etaz(n)* etax(n)
+     .         +c3*zetaz(n)* etax(n)+c3* etaz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= -c5* etax(n)*  xiz(n)+c5*zetax(n)*  xiz(n)
+     .         +c5*  xix(n)* etaz(n)-c5*  xix(n)*zetaz(n)
+       term20=  c6*  xiz(n)*  xiy(n)-c4* etaz(n)* etay(n)
+     .         +c3*zetaz(n)* etay(n)+c3* etaz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= -c5* etay(n)*  xiz(n)+c5*zetay(n)*  xiz(n)
+     .         +c5*  xiy(n)* etaz(n)-c5*  xiy(n)*zetaz(n)
+       stiffl(10,13)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(11,13)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(4,4)+c(2,1))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(4,6)+c(5,1))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(2,6)+c(5,4))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(12,13)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(6,4)+c(5,1))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(6,6)+c(3,1))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(5,6)+c(3,4))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(12,14)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(6,2)+c(5,4))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(6,5)+c(3,4))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(5,5)+c(3,2))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(11,14)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(4,2)+c(2,4))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(4,5)+c(5,4))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(2,5)+c(5,2))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(10,14)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(1,2)+c(4,4))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(1,5)+c(6,4))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(4,5)+c(6,2))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(12,15)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(6,5)+c(5,6))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(6,3)+c(3,6))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(5,3)+c(3,5))*term20+(c(5,3)-c(3,5))*term20
+       stiffl(11,15)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(4,5)+c(2,6))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(4,3)+c(5,6))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(2,3)+c(5,5))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(10,15)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(1,5)+c(4,6))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(1,3)+c(6,6))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(4,3)+c(6,5))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c6*  xix(n)*  xix(n)+c3* etax(n) * xix(n)
+     .         -c3*zetax(n)*  xix(n)-c6* etax(n)* etax(n)
+     .         +c3*zetax(n)* etax(n)-c6*zetax(n)*zetax(n)
+       term14= -c6*  xiy(n)*  xiy(n)+c3* etay(n) * xiy(n)
+     .         -c3*zetay(n)*  xiy(n)-c6* etay(n)* etay(n)
+     .         +c3*zetay(n)* etay(n)-c6*zetay(n)*zetay(n)
+       term15= -c6*  xiz(n)*  xiz(n)+c3* etaz(n) * xiz(n)
+     .         -c3*zetaz(n)*  xiz(n)-c6* etaz(n)* etaz(n)
+     .         +c3*zetaz(n)* etaz(n)-c6*zetaz(n)*zetaz(n)
+       term16= -c6*  xiy(n)*  xix(n)+c5* etay(n)*  xix(n)
+     .         -c5*zetay(n)*  xix(n)+c5*  xiy(n)* etax(n)
+     .         -c6* etay(n)* etax(n)+c5*zetay(n)* etax(n)
+     .         -c5*  xiy(n)*zetax(n)+c5* etay(n)*zetax(n)
+     .         -c6*zetay(n)*zetax(n)
+       term17= 0.
+       term18= -c6*  xiz(n)*  xix(n)+c5* etaz(n)*  xix(n)
+     .         -c5*zetaz(n)*  xix(n)+c5*  xiz(n)* etax(n)
+     .         -c6* etaz(n)* etax(n)+c5*zetaz(n)* etax(n)
+     .         -c5*  xiz(n)*zetax(n)+c5* etaz(n)*zetax(n)
+     .         -c6*zetaz(n)*zetax(n)
+       term19= 0.
+       term20= -c6*  xiz(n)*  xiy(n)+c5* etaz(n)*  xiy(n)
+     .         -c5*zetaz(n)*  xiy(n)+c5*  xiz(n)* etay(n)
+     .         -c6* etaz(n)* etay(n)+c5*zetaz(n)* etay(n)
+     .         -c5*  xiz(n)*zetay(n)+c5* etaz(n)*zetay(n)
+     .         -c6*zetaz(n)*zetay(n)
+       term21= 0.
+       stiffl(10,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(11,16)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(12,16)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(12,17)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(11,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(10,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(12,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(11,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(10,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*  xix(n)*  xix(n)+c1* etax(n)*  xix(n)
+     .         -c4* etax(n)* etax(n)+c6*zetax(n)*zetax(n)
+       term14= -c4*  xiy(n)*  xiy(n)+c1* etay(n)*  xiy(n)
+     .         -c4* etay(n)* etay(n)+c6*zetay(n)*zetay(n)
+       term15= -c4*  xiz(n)*  xiz(n)+c1* etaz(n)*  xiz(n)
+     .         -c4* etaz(n)* etaz(n)+c6*zetaz(n)*zetaz(n)
+       term16= -c4*  xiy(n)*  xix(n)+c3* etay(n)*  xix(n)
+     .         +c3*  xiy(n)* etax(n)-c4* etay(n)* etax(n)
+     .         +c6*zetay(n)*zetax(n)
+       term17= c5*(-zetax(n)*  xiy(n) + zetax(n)* etay(n)
+     .             +  xix(n)*zetay(n) -  etax(n)*zetay(n))
+       term18= -c4*  xiz(n)*  xix(n)+c3* etaz(n)*  xix(n)
+     .         +c3*  xiz(n)* etax(n)-c4* etaz(n)* etax(n)
+     .         +c6*zetaz(n)*zetax(n)
+       term19= c5*(-zetax(n)*  xiz(n) + zetax(n)* etaz(n)
+     .             +  xix(n)*zetaz(n) -  etax(n)*zetaz(n))
+       term20= -c4*  xiz(n)*  xiy(n)+c3* etaz(n)*  xiy(n)
+     .         +c3*  xiz(n)* etay(n)-c4* etaz(n)* etay(n)
+     .         +c6*zetaz(n)*zetay(n)
+       term21= c5*(-zetay(n)*  xiz(n) + zetay(n)* etaz(n)
+     .             +  xiy(n)*zetaz(n) -  etay(n)*zetaz(n))
+       stiffl(10,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(11,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(12,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(12,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(11,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(10,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(12,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(11,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(10,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*  xix(n)*  xix(n)+c3*zetax(n)*  xix(n)
+     .         -c2* etax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14=  c4*  xiy(n)*  xiy(n)+c3*zetay(n)*  xiy(n)
+     .         -c2* etay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15=  c4*  xiz(n)*  xiz(n)+c3*zetaz(n)*  xiz(n)
+     .         -c2* etaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16=  c4*  xiy(n)*  xix(n)+c5*zetay(n)*  xix(n)
+     .         -c2* etay(n)* etax(n)+c5*  xiy(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*(-etax(n)*  xiy(n) +    xix(n)* etay(n)
+     .            +zetax(n)* etay(n) -   etax(n)*zetay(n))
+       term18=  c4*  xiz(n)*  xix(n)+c5*zetaz(n)*  xix(n)
+     .         -c2* etaz(n)* etax(n)+c5*  xiz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*(-etax(n)*  xiz(n) +    xix(n)* etaz(n)
+     .            +zetax(n)* etaz(n) -   etax(n)*zetaz(n))
+       term20=  c4*  xiz(n)*  xiy(n)+c5*zetaz(n)*  xiy(n)
+     .         -c2* etaz(n)* etay(n)+c5*  xiz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*(-etay(n)*  xiz(n) +    xiy(n)* etaz(n)
+     .            +zetay(n)* etaz(n) -   etay(n)*zetaz(n))
+       stiffl(10,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(11,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(12,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(12,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(11,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(10,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(12,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(11,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(10,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+c     Rows 13-15
+c
+c
+       term13=  c2*  xix(n)*  xix(n)+c2* etax(n) *etax(n)
+     .                              +c2*zetax(n)*zetax(n)
+     .         +c1* etax(n)*  xix(n)-c1*zetax(n)*  xix(n)
+     .         -c1*zetax(n)* etax(n)
+       term14=  c2*  xiy(n)*  xiy(n)+c2* etay(n) *etay(n)
+     .                              +c2*zetay(n)*zetay(n)
+     .         +c1* etay(n)*  xiy(n)-c1*zetay(n)*  xiy(n)
+     .         -c1*zetay(n)* etay(n)
+       term15=  c2*  xiz(n)*  xiz(n)+c2* etaz(n) *etaz(n)
+     .                              +c2*zetaz(n)*zetaz(n)
+     .         +c1* etaz(n)*  xiz(n)-c1*zetaz(n)*  xiz(n)
+     .         -c1*zetaz(n)* etaz(n)
+       term16=  c2*  xiy(n)*  xix(n)+c3* etay(n)*  xix(n)
+     .         -c3*zetay(n)*  xix(n)+c3*  xiy(n)* etax(n)
+     .         +c2* etay(n)* etax(n)-c3*zetay(n)* etax(n)
+     .         -c3*  xiy(n)*zetax(n)-c3* etay(n)*zetax(n)
+     .         +c2*zetay(n)*zetax(n)
+       term17= 0.
+       term18=  c2*  xiz(n)*  xix(n)+c3* etaz(n)*  xix(n)
+     .         -c3*zetaz(n)*  xix(n)+c3*  xiz(n)* etax(n)
+     .         +c2* etaz(n)* etax(n)-c3*zetaz(n)* etax(n)
+     .         -c3*  xiz(n)*zetax(n)-c3* etaz(n)*zetax(n)
+     .         +c2*zetaz(n)*zetax(n)
+       term19= 0.
+       term20=  c2*  xiz(n)*  xiy(n)+c3* etaz(n)*  xiy(n)
+     .         -c3*zetaz(n)*  xiy(n)+c3*  xiz(n)* etay(n)
+     .         +c2* etaz(n)* etay(n)-c3*zetaz(n)* etay(n)
+     .         -c3*  xiz(n)*zetay(n)-c3* etaz(n)*zetay(n)
+     .         +c2*zetaz(n)*zetay(n)
+       term21= 0.
+       stiffl(13,13)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(14,14)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(4,2)+c(2,4))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(4,5)+c(5,4))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(2,5)+c(5,2))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(13,14)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(1,2)+c(4,4))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(1,5)+c(6,4))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(4,5)+c(6,2))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(15,15)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(6,5)+c(5,6))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(6,3)+c(3,6))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(5,3)+c(3,5))*term20+(c(5,3)-c(3,5))*term20
+       stiffl(14,15)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(4,5)+c(2,6))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(4,3)+c(5,6))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(2,3)+c(5,5))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(13,15)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(1,5)+c(4,6))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(1,3)+c(6,6))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(4,3)+c(6,5))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c2*  xix(n)*  xix(n)+c4* etax(n) *etax(n)
+     .         -c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14= -c2*  xiy(n)*  xiy(n)+c4* etay(n) *etay(n)
+     .         -c3*zetay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15= -c2*  xiz(n)*  xiz(n)+c4* etaz(n) *etaz(n)
+     .         -c3*zetaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16= -c2*  xiy(n)*  xix(n)+c4* etay(n)* etax(n)
+     .         -c5*zetay(n)* etax(n)-c5* etay(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= -c3* etax(n)*  xiy(n)+c3*zetax(n)*  xiy(n)
+     .         +c3*  xix(n)* etay(n)-c3*  xix(n)*zetay(n)
+       term18= -c2*  xiz(n)*  xix(n)+c4* etaz(n)* etax(n)
+     .         -c5*zetaz(n)* etax(n)-c5* etaz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= -c3* etax(n)*  xiz(n)+c3*zetax(n)*  xiz(n)
+     .         +c3*  xix(n)* etaz(n)-c3*  xix(n)*zetaz(n)
+       term20= -c2*  xiz(n)*  xiy(n)+c4* etaz(n)* etay(n)
+     .         -c5*zetaz(n)* etay(n)-c5* etaz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= -c3* etay(n)*  xiz(n)+c3*zetay(n)*  xiz(n)
+     .         +c3*  xiy(n)* etaz(n)-c3*  xiy(n)*zetaz(n)
+       stiffl(13,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(14,16)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(15,16)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(15,17)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(14,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(13,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(15,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(14,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(13,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*  xix(n)*  xix(n)+c1*zetax(n)*  xix(n)
+     .         +c6* etax(n)* etax(n)-c4*zetax(n)*zetax(n)
+       term14= -c4*  xiy(n)*  xiy(n)+c1*zetay(n)*  xiy(n)
+     .         +c6* etay(n)* etay(n)-c4*zetay(n)*zetay(n)
+       term15= -c4*  xiz(n)*  xiz(n)+c1*zetaz(n)*  xiz(n)
+     .         +c6* etaz(n)* etaz(n)-c4*zetaz(n)*zetaz(n)
+       term16= -c4*  xiy(n)*  xix(n)+c3*zetay(n)*  xix(n)
+     .         +c6* etay(n)* etax(n)+c3*  xiy(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*(- etax(n)*  xiy(n) +   xix(n)* etay(n)
+     .             -zetax(n)* etay(n) +  etax(n)*zetay(n))
+       term18= -c4*  xiz(n)*  xix(n)+c3*zetaz(n)*  xix(n)
+     .         +c6* etaz(n)* etax(n)+c3*  xiz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*(- etax(n)*  xiz(n) +   xix(n)* etaz(n)
+     .             -zetax(n)* etaz(n) +  etax(n)*zetaz(n))
+       term20= -c4*  xiz(n)*  xiy(n)+c3*zetaz(n)*  xiy(n)
+     .         +c6* etaz(n)* etay(n)+c3*  xiz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*(- etay(n)*  xiz(n) +   xiy(n)* etaz(n)
+     .             -zetay(n)* etaz(n) +  etay(n)*zetaz(n))
+       stiffl(13,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(14,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(15,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(15,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(14,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(13,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(15,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(14,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(13,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*  xix(n)*  xix(n)+c3* etax(n)*  xix(n)
+     .         +c4* etax(n)* etax(n)-c2*zetax(n)*zetax(n)
+       term14=  c4*  xiy(n)*  xiy(n)+c3* etay(n)*  xiy(n)
+     .         +c4* etay(n)* etay(n)-c2*zetay(n)*zetay(n)
+       term15=  c4*  xiz(n)*  xiz(n)+c3* etaz(n)*  xiz(n)
+     .         +c4* etaz(n)* etaz(n)-c2*zetaz(n)*zetaz(n)
+       term16=  c4*  xiy(n)*  xix(n)+c5* etay(n)*  xix(n)
+     .         +c5*  xiy(n)* etax(n)+c4* etay(n)* etax(n)
+     .         -c2*zetay(n)*zetax(n)
+       term17= c3*(-zetax(n)* xiy(n) -  zetax(n)* etay(n)
+     .            +  xix(n)*zetay(n) +   etax(n)*zetay(n))
+       term18=  c4*  xiz(n)*  xix(n)+c5* etaz(n)*  xix(n)
+     .         +c5*  xiz(n)* etax(n)+c4* etaz(n)* etax(n)
+     .         -c2*zetaz(n)*zetax(n)
+       term19= c3*(-zetax(n)* xiz(n) -  zetax(n)* etaz(n)
+     .            +  xix(n)*zetaz(n) +   etax(n)*zetaz(n))
+       term20=  c4*  xiz(n)*  xiy(n)+c5* etaz(n)*  xiy(n)
+     .         +c5*  xiz(n)* etay(n)+c4* etaz(n)* etay(n)
+     .         -c2*zetaz(n)*zetay(n)
+       term21= c3*(-zetay(n)* xiz(n) -  zetay(n)* etaz(n)
+     .            +  xiy(n)*zetaz(n) +   etay(n)*zetaz(n))
+       stiffl(13,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(14,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(15,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(15,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(14,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(13,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(15,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(14,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(13,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+c
+c     Rows 16-18
+c
+c
+c
+       term13=  c2*  xix(n)*  xix(n)-c1* etax(n) * xix(n)
+     .         +c1*zetax(n)*  xix(n)+c2* etax(n)* etax(n)
+     .         -c1*zetax(n)* etax(n)+c2*zetax(n)*zetax(n)
+       term14=  c2*  xiy(n)*  xiy(n)-c1* etay(n) * xiy(n)
+     .         +c1*zetay(n)*  xiy(n)+c2* etay(n)* etay(n)
+     .         -c1*zetay(n)* etay(n)+c2*zetay(n)*zetay(n)
+       term15=  c2*  xiz(n)*  xiz(n)-c1* etaz(n) * xiz(n)
+     .         +c1*zetaz(n)*  xiz(n)+c2* etaz(n)* etaz(n)
+     .         -c1*zetaz(n)* etaz(n)+c2*zetaz(n)*zetaz(n)
+       term16=  c2*  xiy(n)*  xix(n)-c3* etay(n)*  xix(n)
+     .         +c3*zetay(n)*  xix(n)-c3*  xiy(n)* etax(n)
+     .         +c2* etay(n)* etax(n)-c3*zetay(n)* etax(n)
+     .         +c3*  xiy(n)*zetax(n)-c3* etay(n)*zetax(n)
+     .         +c2*zetay(n)*zetax(n)
+       term17= 0.
+       term18=  c2*  xiz(n)*  xix(n)-c3* etaz(n)*  xix(n)
+     .         +c3*zetaz(n)*  xix(n)-c3*  xiz(n)* etax(n)
+     .         +c2* etaz(n)* etax(n)-c3*zetaz(n)* etax(n)
+     .         +c3*  xiz(n)*zetax(n)-c3* etaz(n)*zetax(n)
+     .         +c2*zetaz(n)*zetax(n)
+       term19= 0.
+       term20=  c2*  xiy(n)*  xiz(n)-c3* etay(n)*  xiz(n)
+     .         +c3*zetay(n)*  xiz(n)-c3*  xiy(n)* etaz(n)
+     .         +c2* etay(n)* etaz(n)-c3*zetay(n)* etaz(n)
+     .         +c3*  xiy(n)*zetaz(n)-c3* etay(n)*zetaz(n)
+     .         +c2*zetay(n)*zetaz(n)
+       term21= 0.
+       stiffl(16,16)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(17,17)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(16,17)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(18,18)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(17,18)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(16,18)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13=  c4*  xix(n)*  xix(n)-c3* etax(n)*  xix(n)
+     .         +c4* etax(n)* etax(n)-c2*zetax(n)*zetax(n)
+       term14=  c4*  xiy(n)*  xiy(n)-c3* etay(n)*  xiy(n)
+     .         +c4* etay(n)* etay(n)-c2*zetay(n)*zetay(n)
+       term15=  c4*  xiz(n)*  xiz(n)-c3* etaz(n)*  xiz(n)
+     .         +c4* etaz(n)* etaz(n)-c2*zetaz(n)*zetaz(n)
+       term16=  c4*  xiy(n)*  xix(n)-c5* etay(n)*  xix(n)
+     .         -c5*  xiy(n)* etax(n)+c4* etay(n)* etax(n)
+     .         -c2*zetay(n)*zetax(n)
+       term17= c3*( zetax(n)*  xiy(n) - zetax(n)* etay(n)
+     .             -  xix(n)*zetay(n) +  etax(n)*zetay(n))
+       term18=  c4*  xiz(n)*  xix(n)-c5* etaz(n)*  xix(n)
+     .         -c5*  xiz(n)* etax(n)+c4* etaz(n)* etax(n)
+     .         -c2*zetaz(n)*zetax(n)
+       term19= c3*( zetax(n)*  xiz(n) - zetax(n)* etaz(n)
+     .             -  xix(n)*zetaz(n) +  etax(n)*zetaz(n))
+       term20=  c4*  xiz(n)*  xiy(n)-c5* etaz(n)*  xiy(n)
+     .         -c5*  xiz(n)* etay(n)+c4* etaz(n)* etay(n)
+     .         -c2*zetaz(n)*zetay(n)
+       term21= c3*( zetay(n)*  xiz(n) - zetay(n)* etaz(n)
+     .             -  xiy(n)*zetaz(n) +  etay(n)*zetaz(n))
+       stiffl(16,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(17,19)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(18,19)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(18,20)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(17,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(16,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(18,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(17,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(16,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+       term13= -c4*  xix(n)*  xix(n)-c1*zetax(n)*  xix(n)
+     .         +c6* etax(n)* etax(n)-c4*zetax(n)*zetax(n)
+       term14= -c4*  xiy(n)*  xiy(n)-c1*zetay(n)*  xiy(n)
+     .         +c6* etay(n)* etay(n)-c4*zetay(n)*zetay(n)
+       term15= -c4*  xiz(n)*  xiz(n)-c1*zetaz(n)*  xiz(n)
+     .         +c6* etaz(n)* etaz(n)-c4*zetaz(n)*zetaz(n)
+       term16= -c4*  xiy(n)*  xix(n)-c3*zetay(n)*  xix(n)
+     .         +c6* etay(n)* etax(n)-c3*  xiy(n)*zetax(n)
+     .         -c4*zetay(n)*zetax(n)
+       term17= c5*(  etax(n)* xiy(n) -    xix(n)* etay(n)
+     .            -zetax(n)* etay(n) +   etax(n)*zetay(n))
+       term18= -c4*  xiz(n)*  xix(n)-c3*zetaz(n)*  xix(n)
+     .         +c6* etaz(n)* etax(n)-c3*  xiz(n)*zetax(n)
+     .         -c4*zetaz(n)*zetax(n)
+       term19= c5*(  etax(n)* xiz(n) -    xix(n)* etaz(n)
+     .            -zetax(n)* etaz(n) +   etax(n)*zetaz(n))
+       term20= -c4*  xiz(n)*  xiy(n)-c3*zetaz(n)*  xiy(n)
+     .         +c6* etaz(n)* etay(n)-c3*  xiz(n)*zetay(n)
+     .         -c4*zetaz(n)*zetay(n)
+       term21= c5*(  etay(n)* xiz(n) -    xiy(n)* etaz(n)
+     .            -zetay(n)* etaz(n) +   etay(n)*zetaz(n))
+       stiffl(16,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(17,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(18,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(18,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(17,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(16,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(18,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(17,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(16,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+c
+c
+c
+c     Rows 19-21
+c
+c
+c
+       term13=  c2*  xix(n)*  xix(n)-c1* etax(n)*  xix(n)
+     .         -c1*zetax(n)*  xix(n)+c2* etax(n)* etax(n)
+     .         +c1*zetax(n)* etax(n)+c2*zetax(n)*zetax(n)
+       term14=  c2*  xiy(n)*  xiy(n)-c1* etay(n)*  xiy(n)
+     .         -c1*zetay(n)*  xiy(n)+c2* etay(n)* etay(n)
+     .         +c1*zetay(n)* etay(n)+c2*zetay(n)*zetay(n)
+       term15=  c2*  xiz(n)*  xiz(n)-c1* etaz(n)*  xiz(n)
+     .         -c1*zetaz(n)*  xiz(n)+c2* etaz(n)* etaz(n)
+     .         +c1*zetaz(n)* etaz(n)+c2*zetaz(n)*zetaz(n)
+       term16=  c2*  xiy(n)*  xix(n)-c3* etay(n)*  xix(n)
+     .         -c3*zetay(n)*  xix(n)-c3*  xiy(n)* etax(n)
+     .         +c2* etay(n)* etax(n)+c3*zetay(n)* etax(n)
+     .         -c3*  xiy(n)*zetax(n)+c3* etay(n)*zetax(n)
+     .         +c2*zetay(n)*zetax(n)
+       term17= 0.
+       term18=  c2*  xiz(n)*  xix(n)-c3* etaz(n)*  xix(n)
+     .         -c3*zetaz(n)*  xix(n)-c3*  xiz(n)* etax(n)
+     .         +c2* etaz(n)* etax(n)+c3*zetaz(n)* etax(n)
+     .         -c3*  xiz(n)*zetax(n)+c3* etaz(n)*zetax(n)
+     .         +c2*zetaz(n)*zetax(n)
+       term19= 0.
+       term20=  c2*  xiz(n)*  xiy(n)-c3* etaz(n)*  xiy(n)
+     .         -c3*zetaz(n)*  xiy(n)-c3*  xiz(n)* etay(n)
+     .         +c2* etaz(n)* etay(n)+c3*zetaz(n)* etay(n)
+     .         -c3*  xiz(n)*zetay(n)+c3* etaz(n)*zetay(n)
+     .         +c2*zetaz(n)*zetay(n)
+       term21= 0.
+       stiffl(19,19)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(20,20)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(19,20)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(21,21)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(20,21)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(19,21)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+       term13= -c2*  xix(n)*  xix(n)+c4* etax(n)* etax(n)
+     .         +c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
+       term14= -c2*  xiy(n)*  xiy(n)+c4* etay(n)* etay(n)
+     .         +c3*zetay(n)* etay(n)+c4*zetay(n)*zetay(n)
+       term15= -c2*  xiz(n)*  xiz(n)+c4* etaz(n)* etaz(n)
+     .         +c3*zetaz(n)* etaz(n)+c4*zetaz(n)*zetaz(n)
+       term16= -c2*  xiy(n)*  xix(n)+c4* etay(n)* etax(n)
+     .         +c5*zetay(n)* etax(n)+c5* etay(n)*zetax(n)
+     .         +c4*zetay(n)*zetax(n)
+       term17= c3*(  etax(n)* xiy(n) +  zetax(n)*  xiy(n)
+     .            -  xix(n)* etay(n) -    xix(n)*zetay(n))
+       term18= -c2*  xiz(n)*  xix(n)+c4* etaz(n)* etax(n)
+     .         +c5*zetaz(n)* etax(n)+c5* etaz(n)*zetax(n)
+     .         +c4*zetaz(n)*zetax(n)
+       term19= c3*(  etax(n)* xiz(n) +  zetax(n)*  xiz(n)
+     .            -  xix(n)* etaz(n) -    xix(n)*zetaz(n))
+       term20= -c2*  xiz(n)*  xiy(n)+c4* etaz(n)* etay(n)
+     .         +c5*zetaz(n)* etay(n)+c5* etaz(n)*zetay(n)
+     .         +c4*zetaz(n)*zetay(n)
+       term21= c3*(  etay(n)* xiz(n) +  zetay(n)*  xiz(n)
+     .            -  xiy(n)* etaz(n) -    xiy(n)*zetaz(n))
+       stiffl(19,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(20,22)=c(4,1)*term13+c(2,4)*term14+c(5,6)*term15
+     .             +(c(2,1)+c(4,4))*term16+(c(4,4)-c(2,1))*term17
+     .             +(c(5,1)+c(4,6))*term18+(c(4,6)-c(5,1))*term19
+     .             +(c(5,4)+c(2,6))*term20+(c(2,6)-c(5,4))*term21
+       stiffl(21,22)=c(6,1)*term13+c(5,4)*term14+c(3,6)*term15
+     .             +(c(5,1)+c(6,4))*term16+(c(6,4)-c(5,1))*term17
+     .             +(c(3,1)+c(6,6))*term18+(c(6,6)-c(3,1))*term19
+     .             +(c(3,4)+c(5,6))*term20+(c(5,6)-c(3,4))*term21
+       stiffl(21,23)=c(6,4)*term13+c(5,2)*term14+c(3,5)*term15
+     .             +(c(5,4)+c(6,2))*term16+(c(6,2)-c(5,4))*term17
+     .             +(c(3,4)+c(6,5))*term18+(c(6,5)-c(3,4))*term19
+     .             +(c(3,2)+c(5,5))*term20+(c(5,5)-c(3,2))*term21
+       stiffl(20,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(19,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(21,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(20,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(19,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+c
+c
+c
+c     Rows 22-24
+c
+c
+c
+c
+       term13=  c2*  xix(n)*  xix(n)+c1* etax(n)*  xix(n)
+     .         +c1*zetax(n)*  xix(n)+c2* etax(n)* etax(n)
+     .         +c1*zetax(n)* etax(n)+c2*zetax(n)*zetax(n)
+       term14=  c2*  xiy(n)*  xiy(n)+c1* etay(n)*  xiy(n)
+     .         +c1*zetay(n)*  xiy(n)+c2* etay(n)* etay(n)
+     .         +c1*zetay(n)* etay(n)+c2*zetay(n)*zetay(n)
+       term15=  c2*  xiz(n)*  xiz(n)+c1* etaz(n)*  xiz(n)
+     .         +c1*zetaz(n)*  xiz(n)+c2* etaz(n)* etaz(n)
+     .         +c1*zetaz(n)* etaz(n)+c2*zetaz(n)*zetaz(n)
+       term16=  c2*  xiy(n)*  xix(n)+c3* etay(n)*  xix(n)
+     .         +c3*zetay(n)*  xix(n)+c3*  xiy(n)* etax(n)
+     .         +c2* etay(n)* etax(n)+c3*zetay(n)* etax(n)
+     .         +c3*  xiy(n)*zetax(n)+c3* etay(n)*zetax(n)
+     .         +c2*zetay(n)*zetax(n)
+       term17= 0.
+       term18=  c2*  xiz(n)*  xix(n)+c3* etaz(n)*  xix(n)
+     .         +c3*zetaz(n)*  xix(n)+c3*  xiz(n)* etax(n)
+     .         +c2* etaz(n)* etax(n)+c3*zetaz(n)* etax(n)
+     .         +c3*  xiz(n)*zetax(n)+c3* etaz(n)*zetax(n)
+     .         +c2*zetaz(n)*zetax(n)
+       term19= 0.
+       term20=  c2*  xiz(n)*  xiy(n)+c3* etaz(n)*  xiy(n)
+     .         +c3*zetaz(n)*  xiy(n)+c3*  xiz(n)* etay(n)
+     .         +c2* etaz(n)* etay(n)+c3*zetaz(n)* etay(n)
+     .         +c3*  xiz(n)*zetay(n)+c3* etaz(n)*zetay(n)
+     .         +c2*zetaz(n)*zetay(n)
+       term21= 0.
+       stiffl(22,22)=c(1,1)*term13+c(4,4)*term14+c(6,6)*term15
+     .             +(c(1,4)+c(4,1))*term16+(c(1,4)-c(4,1))*term17
+     .             +(c(1,6)+c(6,1))*term18+(c(1,6)-c(6,1))*term19
+     .             +(c(4,6)+c(6,4))*term20+(c(4,6)-c(6,4))*term21
+       stiffl(23,23)=c(4,4)*term13+c(2,2)*term14+c(5,5)*term15
+     .             +(c(2,4)+c(4,2))*term16+(c(4,2)-c(2,4))*term17
+     .             +(c(5,4)+c(4,5))*term18+(c(4,5)-c(5,4))*term19
+     .             +(c(5,2)+c(2,5))*term20+(c(2,5)-c(5,2))*term21
+       stiffl(22,23)=c(1,4)*term13+c(4,2)*term14+c(6,5)*term15
+     .             +(c(4,4)+c(1,2))*term16+(c(1,2)-c(4,4))*term17
+     .             +(c(6,4)+c(1,5))*term18+(c(1,5)-c(6,4))*term19
+     .             +(c(6,2)+c(4,5))*term20+(c(4,5)-c(6,2))*term21
+       stiffl(24,24)=c(6,6)*term13+c(5,5)*term14+c(3,3)*term15
+     .             +(c(5,6)+c(6,5))*term16+(c(6,5)-c(5,6))*term17
+     .             +(c(3,6)+c(6,3))*term18+(c(6,3)-c(3,6))*term19
+     .             +(c(3,5)+c(5,3))*term20+(c(5,3)-c(3,5))*term21
+       stiffl(23,24)=c(4,6)*term13+c(2,5)*term14+c(5,3)*term15
+     .             +(c(2,6)+c(4,5))*term16+(c(4,5)-c(2,6))*term17
+     .             +(c(5,6)+c(4,3))*term18+(c(4,3)-c(5,6))*term19
+     .             +(c(5,5)+c(2,3))*term20+(c(2,3)-c(5,5))*term21
+       stiffl(22,24)=c(1,6)*term13+c(4,5)*term14+c(6,3)*term15
+     .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
+     .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
+     .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
+      do ii = 1,24
+        do jj = ii+1,24
+          stiffl(jj,ii) = stiffl(ii,jj)
+        enddo
+      enddo
+c
+c     n1(0) = n
+c     n1(1) = j + 1
+c     n1(2) = k + 1
+c     n1(3) = j + 1,k + 1
+c     n1(4) = i + 1
+c     n1(5) = i + 1,k + 1
+c     n1(6) = j + 1,i + 1
+c     n1(7) = j + 1,i + 1,k + 1
+c
+           n11i    = 0
+           n33i    = 0
+           n44i    = 1
+           do ii = 0,7
+             n11i(1,ii) = n1(ii)
+             iimax(ii)  = 1
+             if(islavept(n1(ii),8,iseqr).eq.0) n44i(ii) = 0
+             if(islavept(n1(ii),11,iseqr).gt.1) then
+               iimax(ii)  = islavept(n1(ii),11,iseqr)
+               do ii4 = 2,iimax(ii)
+                 n11i(ii4,ii) = islavept(n1(ii),12+ii4-2,iseqr)
+                 if(islavept(n11i(ii4,ii),8,iseqr).eq.0) then
+                   n44i(ii) = 0
+                 end if
+               enddo
+             end if
+             do ii4 = 1,iimax(ii)
+               n33i(ii4,ii) = 3*(n11i(ii4,ii)-1)
+             enddo
+           enddo
+        oj  = 1./ooj(n)
+c
+        do ii = 0,7
+         if(n44i(ii).ne.0) then
+              do ii3 = 1,iimax(ii)
+                  n22i = n11i(ii3,ii)
+                     do j = 1,3
+                      irow = n2(ii)+j-1
+                      itst1= n33i(ii3,ii)+j
+                      itst2= ija(itst1)
+                      sa (itst1)=sa(itst1)+stiffl(irow,irow)*oj
+                      i1 = 0
+                      do j1= 1,3
+                       if(j1.ne.j) then
+                        sa (itst2+i1) = sa(itst2+i1)+
+     .                               stiffl(irow,n2(ii)+j1-1)*oj
+                        ija(itst2+i1) = n33i(ii3,ii)+j1
+                        i1 = i1 + 1
+                       end if
+                      enddo
+                      j2sta =  ija(itst1)+2
+                      j2end =  ija(itst1+1)-1
+                      do kk = 0,7
+                       if(kk.ne.ii) then
+                          do j2 = j2sta,j2end,3
+                            if(ija(j2).eq.0) then
+                             do j1 = 1,3
+                               icol  = n2(kk)+j1-1
+                               j3 = j2 + j1 - 1
+                               sa (j3) = sa(j3)+stiffl(irow,icol)*oj
+                               ija(j3) = n33i(1,kk)+j1
+                             enddo
+                             goto 2200
+                            else
+                              do ii4 = 1,iimax(kk)
+                               itst1 = n33i(ii4,kk)+1
+                               if(ija(j2).eq.itst1) then
+                                do j1 = 1,3
+                                  icol  = n2(kk)+j1-1
+                                  j3 = j2 + j1 - 1
+                                  sa (j3)=sa(j3)+stiffl(irow,icol)*oj
+                                enddo
+                                goto 2200
+                               end if
+                              enddo
+                            end if
+                          enddo
+2200                      continue
+                       end if
+                      enddo
+                     enddo
+              enddo
+3000       continue
+         else
+            do j = 1,3
+              sa (3*(n1(ii)-1)+j) = 1.d0
+            enddo
+         end if
+        enddo
+        end if
+200    continue
+ 
+       return
+       end
