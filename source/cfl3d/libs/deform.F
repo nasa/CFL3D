@@ -2517,6 +2517,707 @@ c    .               real(zdel)/(real(jdm)*real(kdm)*real(idm))
 
        return
        end 
+      subroutine deform_el(islavept,nslave,nmaster,u,xst,yst,zst,
+     .                     nt,myhost,mycomm,myid,nnodes,
+     .                     mblk2nd,nblelst,maxbl,iseqr)
+c
+c***********************************************************************
+c     Purpose: Compute mesh deformation via Elastic Equations
+c***********************************************************************
+c
+
+      integer stats
+c
+      dimension islavept(nslave,nmaster,5)
+      dimension xst(nslave),yst(nslave),zst(nslave)
+      dimension u(3*nslave)
+      dimension mblk2nd(maxbl)
+      dimension nblelst(maxbl,2)
+
+      allocatable :: sa(:)
+      allocatable :: stiffl(:,:)
+      allocatable :: ija(:)
+      allocatable :: b(:)
+      allocatable :: ei(:)
+      allocatable :: ripm(:,:)
+      allocatable :: ej(:)
+      allocatable :: ek(:)
+      allocatable :: gij(:)
+      allocatable :: gjk(:)
+      allocatable :: gik(:)
+      allocatable :: xix(:)
+      allocatable :: xiy(:)
+      allocatable :: xiz(:)
+      allocatable :: etax(:)
+      allocatable :: etay(:)
+      allocatable :: etaz(:)
+      allocatable :: zetax(:)
+      allocatable :: zetay(:)
+      allocatable :: zetaz(:)
+      allocatable :: ooj(:)
+      allocatable :: volij(:)
+      allocatable :: volik(:)
+      allocatable :: tinv(:,:)
+      allocatable :: cjm1(:,:)
+      allocatable :: cjp1(:,:)
+      allocatable :: cim1(:,:)
+      allocatable :: cip1(:,:)
+      allocatable :: ckm1(:,:)
+      allocatable :: ckp1(:,:)
+      allocatable :: c(:,:)
+      allocatable :: t(:,:)
+      allocatable :: ul(:,:)
+      allocatable :: n1(:)
+
+c
+      common /twod/ i2d
+      common /zero/ iexp
+      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+
+c
+      memuse = 0
+c
+      allocate( sa(245*nslave+2), stat=stats )
+      call umalloc(245*nslave+2,0,'sa',memuse,stats)
+      allocate( stiffl(24,24), stat=stats )
+      call umalloc(576,0,'stiffl',memuse,stats)
+      allocate( ija(245*nslave+2), stat=stats )
+      call umalloc(245*nslave+2,1,'ija',memuse,stats)
+      allocate( b(3*nslave), stat=stats )
+      call umalloc(3*nslave,0,'b',memuse,stats)
+      allocate( ripm(7,nslave), stat=stats )
+      call umalloc(7*nslave,0,'ripm',memuse,stats)
+      allocate( ei(nslave), stat=stats )
+      call umalloc(nslave,0,'ei',memuse,stats)
+      allocate( ej(nslave), stat=stats )
+      call umalloc(nslave,0,'ej',memuse,stats)
+      allocate( ek(nslave), stat=stats )
+      call umalloc(nslave,0,'ek',memuse,stats)
+      allocate( gjk(nslave), stat=stats )
+      call umalloc(nslave,0,'gjk',memuse,stats)
+      allocate( gij(nslave), stat=stats )
+      call umalloc(nslave,0,'gij',memuse,stats)
+      allocate( gik(nslave), stat=stats )
+      call umalloc(nslave,0,'gik',memuse,stats)
+      allocate( xix(nslave), stat=stats )
+      call umalloc(nslave,0,'xix',memuse,stats)
+      allocate( xiy(nslave), stat=stats )
+      call umalloc(nslave,0,'xiy',memuse,stats)
+      allocate( xiz(nslave), stat=stats )
+      call umalloc(nslave,0,'xiz',memuse,stats)
+      allocate( etax(nslave), stat=stats )
+      call umalloc(nslave,0,'etax',memuse,stats)
+      allocate( etay(nslave), stat=stats )
+      call umalloc(nslave,0,'etay',memuse,stats)
+      allocate( etaz(nslave), stat=stats )
+      call umalloc(nslave,0,'etaz',memuse,stats)
+      allocate( zetax(nslave), stat=stats )
+      call umalloc(nslave,0,'zetax',memuse,stats)
+      allocate( zetay(nslave), stat=stats )
+      call umalloc(nslave,0,'zetay',memuse,stats)
+      allocate( zetaz(nslave), stat=stats )
+      call umalloc(nslave,0,'zetaz',memuse,stats)
+      allocate( ooj(nslave), stat=stats )
+      call umalloc(nslave,0,'ooj',memuse,stats)
+c     allocate( volij(nslave), stat=stats )
+c     call umalloc(nslave,0,'volij',memuse,stats)
+      allocate( volij(3*nslave), stat=stats )
+      call umalloc(3*nslave,0,'volij',memuse,stats)
+      allocate( volik(nslave), stat=stats )
+      call umalloc(nslave,0,'volik',memuse,stats)
+      allocate( tinv(6,6), stat=stats )
+      call umalloc(36,0,'tinv',memuse,stats)
+      allocate( cjm1(6,6), stat=stats )
+      call umalloc(36,0,'cjm1',memuse,stats)
+      allocate( cjp1(6,6), stat=stats )
+      call umalloc(36,0,'cjp1',memuse,stats)
+      allocate( cim1(6,6), stat=stats )
+      call umalloc(36,0,'cim1',memuse,stats)
+      allocate( cip1(6,6), stat=stats )
+      call umalloc(36,0,'cip1',memuse,stats)
+      allocate( ckm1(6,6), stat=stats )
+      call umalloc(36,0,'ckm1',memuse,stats)
+      allocate( ckp1(6,6), stat=stats )
+      call umalloc(36,0,'ckp1',memuse,stats)
+      allocate( c(6,6), stat=stats )
+      call umalloc(36,0,'c',memuse,stats)
+      allocate( t(6,6), stat=stats )
+      call umalloc(36,0,'t',memuse,stats)
+      allocate( ul(6,6), stat=stats )
+      call umalloc(36,0,'ul',memuse,stats)
+      allocate( n1(20), stat=stats )
+      call umalloc(20,1,'n1',memuse,stats)
+
+      eps  = 100.*10.**(-iexp)
+c 
+c     n       = i,j,k
+c     islavept(2) = j - 1
+c     islavept(3) = j + 1
+c     islavept(4) = k - 1
+c     islavept(5) = k + 1
+c     islavept(6) = i - 1
+c     islavept(7) = i + 1
+c     islavept(10) = number of ija and sa array values to reserve for this
+c                    point
+c     islavept(11) = max number of coincident points at block interfaces
+c     islavept(12) = coincident pt 2 (pt n is the first)   
+c     islavept(13) = coincident pt 3
+c     islavept(14) = coincident pt 4
+c     islavept(15) = coincident pt 5
+c     islavept(16) = coincident pt 6
+c     islavept(17) = coincident pt 7
+c     islavept(18) = coincident pt 8
+c     islavept(19) = coincident pt 9
+c     islavept(20) = coincident pt 10
+c     islavept(21) = number of the nearest surface pt
+c
+      ipt = 3*nslave+2 
+      ija(1) = ipt
+      do n = 1,nslave 
+         ija(3*(n-1)+2)= ija(3*(n-1)+1) + islavept(n,10,iseqr)
+         ija(3*(n-1)+3)= ija(3*(n-1)+2) + islavept(n,10,iseqr) 
+         ija(3*n    +1)= ija(3*(n-1)+3) + islavept(n,10,iseqr) 
+      enddo
+      do n = 3*nslave+2,245*nslave+2
+        ija(n) = 0
+      enddo 
+c
+c
+       if(nt.eq.1.and.meshdef.eq.1) then
+          do n = 1,nslave
+           iimax = islavept(n,11,iseqr)
+           if(iimax.gt.1) then
+                do ii2 = 2,iimax
+                  n2 = islavept(n,12+ii2-2,iseqr)
+                  test  = (xst(n2)-xst(n))*(xst(n2)-xst(n))
+     .                   +(yst(n2)-yst(n))*(yst(n2)-yst(n))
+     .                   +(zst(n2)-zst(n))*(zst(n2)-zst(n))
+                  test = sqrt(test)
+                  if(test.gt.100.*eps) then
+                   write(11,29102) n,n2,test
+29102              format(' WARNING: Macro-elements ',i6,' and ',i6,
+     .           ' at 1-1 blocking interface have geometric mismatch'
+     .              ,' = ',e16.8)
+                  end if
+                enddo
+           end if
+          enddo
+       end if
+
+c
+      if(isktyp.gt.0) then 
+        gini = 10.d0 
+        eini = 10.d0 
+
+        mxiter1 = 1      
+c
+        call elrhs(b,u,islavept,nslave,nmaster,iseqr) 
+
+        do itr1 = 1,mxiter1 
+
+          do n = 1,245*nslave+2
+            sa(n) = 0.d0 
+          enddo
+
+
+          if(meshdef.eq.1) then
+           if(myid.eq.myhost) then
+             write(11,21022) nslave 
+21022        format(' Calculating macroelement moduli ',
+     .               'for ',i8,' element nodes')
+           end if
+          end if
+          call hookefe(ei,ej,ek,gij,gjk,gik,xst,yst,zst,volij,
+     .                 volik,eps,eini,gini,arg1,arg2,islavept,
+     .                 nslave,nmaster,nt,nnodes,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,iseqr)
+
+          if(meshdef.eq.1) then
+           if(myid.eq.myhost) then
+             write(11,21023) 
+21023        format(' Calculating macroelement metrics ')
+           end if
+          end if
+
+          call elmetricsfe(xix,xiy,xiz,etax,etay,etaz,zetax,zetay,
+     .                     zetaz,ooj,xst,yst,zst,eps,islavept,nslave,
+     .                     nmaster,nnodes,myhost,myid,mycomm,
+     .                     mblk2nd,maxbl,iseqr)
+ 
+          if(meshdef.eq.1) then
+           if(myid.eq.myhost) then
+             write(11,21024) 
+21024        format(' Calculating and assembling macroelement stiffness'
+     .                ,'  matrix ')
+           end if
+          end if
+
+          call elglobfe(sa,xst,yst,zst,xix,xiy,xiz,etax,etay,
+     .                  etaz,zetax,zetay,zetaz,ei,ej,ek,gij,gjk,
+     .                  gik,ooj,eps,stiffl,islavept,ija,nslave,
+     .                  nmaster,nnodes,myhost,myid,mycomm,mblk2nd,
+     .                  nblelst,maxbl,iseqr)
+
+          if(meshdef.eq.1) then
+           if(myid.eq.myhost) then
+             write(11,21025) 
+21025        format(' Solving the macroelement system ')
+           end if
+          end if
+         
+          ncount = 245*nslave+2
+          ndim   = 3*nslave
+c
+          call gaussseidel(ncount,ndim,b,u,sa,ija,1e-6,9*nslave,err
+     .                     ,volij,myid,myhost) 
+c         call dprec(sa,ija,b,ndim,ncount)
+
+c         call linbcg(ncount,ndim,b,u,sa,ija,1,1e-6,nslave,iter,err
+c    .                ,time,eps,myid) 
+          
+          call coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
+        enddo
+      else
+
+          if(meshdef.eq.1) then
+           if(myid.eq.myhost) then
+             write(11,21027) 
+21027        format(' Solving nodal displacements using exponential'
+     .              ,' decay  ')
+           end if
+          end if
+         
+          call expdecay(xst,yst,zst,u,volij,ei,ripm,eps,
+     .                  islavept,nslave,nmaster,ndim,nt,
+     .                  nnodes,myhost,myid,mycomm,mblk2nd,
+     .                  maxbl,iseqr)
+          call coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
+      end if
+
+        if(i2d.ne.0) then 
+          do n = 1,nslave
+            if(islavept(n,6,iseqr).eq.n) then
+              nip1     = islavept(n,7,iseqr)
+              u(3*(n-1)+1)    = .5*(u(3*(n-1)+1) + u(3*(nip1-1)+1))
+              u(3*(nip1-1)+1) = u(3*(n-1)+1)
+              u(3*(nip1-1)+2) = 0.
+              u(3*(n-1)+2)    = 0. 
+              u(3*(n-1)+3)    = .5*(u(3*(n-1)+3) + u(3*(nip1-1)+3))
+              u(3*(nip1-1)+3) = u(3*(n-1)+3) 
+            end if
+          enddo
+        end if
+c
+c     release memory
+c
+      deallocate(sa)
+      deallocate(stiffl)
+      deallocate(ija)
+      deallocate(b)
+      deallocate(ei)
+      deallocate(ripm)
+      deallocate(ej)
+      deallocate(ek)
+      deallocate(gij)
+      deallocate(gjk)
+      deallocate(gik)
+      deallocate(xix)
+      deallocate(xiy)
+      deallocate(xiz)
+      deallocate(etax)
+      deallocate(etay)
+      deallocate(etaz)
+      deallocate(zetax)
+      deallocate(zetay)
+      deallocate(zetaz)
+      deallocate(ooj)
+      deallocate(volij)
+      deallocate(volik)
+      deallocate(tinv)
+      deallocate(cjm1)
+      deallocate(cjp1)
+      deallocate(ckm1)
+      deallocate(ckp1)
+      deallocate(cim1)
+      deallocate(cip1)
+      deallocate(c)
+      deallocate(t)
+      deallocate(ul)
+      deallocate(n1)
+
+
+      return
+      end
+c
+      subroutine coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
+      dimension islavept(nslave,nmaster,5)
+      dimension u(3*nslave),volij(3*nslave)
+      dimension n1(20) 
+c
+          volij = 0.
+          do n = 1,nslave
+           iimax = islavept(n,11,iseqr)
+           if(iimax.gt.1) then
+              n1(1) = n
+              if(islavept(n,8,iseqr).ne.0) then
+                ii3 = 0
+                do ii2 = 2,iimax
+                  n1(ii2) = islavept(n,12+ii2-2,iseqr)
+                  if(islavept(n1(ii2),8,iseqr).eq.0) ii3 = ii2
+                enddo
+                if(ii3.eq.0) then
+                  rooiim = 1./real(iimax)
+                  do ii2 = 1,iimax
+                    do j = 1,3
+                      volij(3*(n-1)+j) = volij(3*(n-1)+j) + 
+     .                                   u(3*(n1(ii2)-1)+j)*rooiim
+                    enddo
+                  enddo
+                else
+                  do j = 1,3
+                    volij(3*(n-1)+j) = u(3*(n1(ii3)-1)+j)
+                  enddo
+                end if
+              else
+                 do j = 1,3
+                   volij(3*(n-1)+j) = u(3*(n-1)+j)
+                 enddo
+              end if
+           end if
+          enddo
+          do n = 1,nslave
+           iimax = islavept(n,11,iseqr)
+           if(iimax.gt.1) then
+              n1(1) = n
+              do ii2 = 2,iimax
+                n1(ii2) = islavept(n,12+ii2-2,iseqr)
+              enddo
+              do ii2 = 1,iimax
+                do j = 1,3
+                  u(3*(n1(ii2)-1)+j) = volij(3*(n-1)+j)
+                enddo
+              enddo
+           end if
+          enddo
+
+      return
+      end
+c
+      SUBROUTINE gaussseidel(nc,n,b,x,sa,ija,tol,itmax,err, 
+     .                       xt,myid,myhost) 
+      parameter(EPS=1.d-12)  
+      INTEGER iter,itmax,itol,n 
+      INTEGER j 
+      dimension b(n),x(n)
+      dimension xt(n)
+      dimension ija(nc)
+      dimension sa(nc)
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+
+      it1 = 0
+      itmx1 =200
+      err   = 1.e+10
+      do it = 1,itmax
+        sum = 0.
+        resid = 0.
+        do i = 1,n
+          ut = b(i)/sa(i)  
+          do j = ija(i),ija(i+1)-1
+            ut = ut - sa(j)*x(ija(j))/sa(i)
+          enddo
+          xt(i) = beta1*ut + (1.-beta1)*x(i) 
+          sum = sum + (xt(i)-x(i))*(xt(i)-x(i))
+          resid1= sqrt((xt(i)-x(i))*(xt(i)-x(i)))
+          if(resid1.gt.resid) then
+           resid = resid1
+           nresmx= i
+          end if
+          x(i) = xt(i)
+        enddo
+        errold = err
+        err = sqrt(sum)
+        nresmx = 1+(nresmx-1)/3
+        if(meshdef.eq.1.and.myid.eq.myhost) 
+     .               write(197+myid,31029) it,err,nresmx,resid   
+31029   format(i8,e16.8,i8,e16.8)
+        if(err.lt.tol) goto 2000 
+        if(errold.lt.err) then
+          it1 = it1 + 1
+          if(it1.gt.itmx1) then
+             write(197,21022) 
+             stop
+          end if
+21022     format(' Stopping, Gauss-Seidel scheme not converging: '
+     .        ,/,' Reduce BETA1 or change Macro-element definition')
+        else
+          it1 = 0
+        end if
+      enddo
+2000  continue 
+      if(myid.eq.myhost) write(197+myid,31029) it,err   
+ 
+      return
+      end
+      SUBROUTINE linbcg(nc,n,b,x,sa,ija,itol,tol,itmax,iter,err
+     .                  ,time,eps,myid) 
+      INTEGER iter,itmax,itol,n 
+      INTEGER j 
+      dimension b(n),x(n)
+      dimension ija(nc)
+      dimension sa(nc)
+      dimension p(n),pp(n),r(n),rr(n),z(n),zz(n)
+CU    USES atimes,asolve,snrm 
+      iter=0 
+
+      test = 0.
+      do 5 j = 1,n
+        if(test.lt.abs(b(j))) test = abs(b(j))
+5     continue
+      if(test.le.eps) return
+      call atimes(n,nc,x,r,sa,ija,0) 
+      do 11 j=1,n 
+        r(j)=b(j)-r(j) 
+        rr(j)=r(j) 
+11    continue 
+      call atimes(n,nc,r,rr,sa,ija,0) 
+      znrm=1.d0 
+      if(itol.eq.1) then 
+        bnrm=snrm(n,b,itol) 
+      else if (itol.eq.2) then 
+        call asolve(n,nc,b,z,sa,0)
+        bnrm=snrm(n,z,itol) 
+      else if (itol.eq.3.or.itol.eq.4) then 
+        call asolve(n,nc,b,z,sa,0)
+        bnrm=snrm(n,z,itol) 
+        call asolve(n,nc,r,z,sa,0)
+        znrm=snrm(n,z,itol) 
+      else 
+        write(197+myid,31922)
+31922   format('illegal itol in linbcg') 
+        stop
+      endif 
+      if(bnrm.lt.EPS) then
+        err = 0.
+        znrm= 0.
+        goto 200 
+      end if
+      call asolve(n,nc,r,z,sa,0)
+100   if (iter.le.itmax) then 
+        iter=iter+1 
+        call asolve(n,nc,rr,zz,sa,1)
+        bknum=0.d0 
+        do 12 j=1,n 
+          bknum=bknum+z(j)*rr(j) 
+12      continue 
+        if(iter.eq.1) then 
+          do 13 j=1,n 
+            p(j)=z(j) 
+            pp(j)=zz(j) 
+13        continue 
+        else 
+          bk=bknum/bkden 
+          do 14 j=1,n 
+            p(j)=bk*p(j)+z(j) 
+            pp(j)=bk*pp(j)+zz(j) 
+14        continue 
+        endif 
+        bkden=bknum 
+        call atimes(n,nc,p,z,sa,ija,0) 
+        akden=0.d0 
+        do 15 j=1,n 
+          akden=akden+z(j)*pp(j) 
+15      continue 
+        ak=bknum/akden 
+        call atimes(n,nc,pp,zz,sa,ija,1) 
+c
+c
+        do 16 j=1,n 
+          x(j)=x(j)+ak*p(j) 
+          r(j)=r(j)-ak*z(j) 
+          rr(j)=rr(j)-ak*zz(j) 
+16      continue 
+c
+        
+        call asolve(n,nc,r,z,sa,0)
+        if(itol.eq.1.) then
+          if(bnrm.gt.EPS) then
+            err=snrm(n,r,itol)/bnrm 
+          else
+            err = 0.
+          end if
+             write(197+myid,5040) iter,log10(err),znrm  
+        else if(itol.eq.2) then 
+          if(bnrm.gt.EPS) then
+            err=snrm(n,z,itol)/bnrm 
+          else
+            err = 0.
+          end if
+             write(197+myid,5040) iter,log10(err),znrm  
+        else if(itol.eq.3.or.itol.eq.4)then 
+          zm1nrm=znrm 
+          znrm=snrm(n,z,itol)  
+c
+          if(abs(zm1nrm-znrm).gt.EPS*znrm) then 
+            dxnrm=abs(ak)*snrm(n,p,itol) 
+            if(abs(zm1nrm-znrm).gt.EPS) then
+              err=znrm/abs(zm1nrm-znrm)*dxnrm 
+            else
+              err = 0.
+            end if
+          else
+            if(bnrm.gt.EPS) then
+              err=znrm/bnrm 
+            else
+              err = 0.
+              znrm= 0. 
+            end if
+c            write(197+myid,5042) iter,log10(err),znrm  
+            goto 100 
+          endif 
+          xnrm=snrm(n,x,itol) 
+c
+          if(err.le.0.5d0*xnrm) then 
+              if(xnrm.gt.EPS) then
+                err=err/xnrm 
+              else
+                err = 0.
+              end if
+             write(197+myid,5043) iter,log10(err),znrm  
+          else 
+            if(bnrm.gt.EPS) then
+              err=znrm/bnrm 
+            else
+              err = 0.
+              znrm= 0. 
+            end if
+c            write(197+myid,5044) iter,log10(err),znrm  
+            goto 100 
+          endif 
+        endif 
+      if(err.gt.tol) goto 100 
+      endif 
+200   continue
+5040    format('1',i8,2x,2(1x,e12.5)) 
+5041    format('2',i8,2x,6(1x,e12.5)) 
+5042    format('3',i8,2x,2(1x,e12.5)) 
+5043    format('4',i8,2x,2(1x,e12.5)) 
+5044    format('5',i8,2x,2(1x,e12.5)) 
+
+      return 
+      END 
+
+
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3. 
+
+
+
+      SUBROUTINE atimes(n,nc,x,r,sa,ija,itrnsp) 
+      INTEGER n,itrnsp
+      dimension ija(nc)
+      dimension x(n),r(n),sa(nc) 
+CU    USES dsprsax,dsprstx 
+      if (itrnsp.eq.0) then 
+        call dsprsax(sa,ija,x,r,n,nc) 
+      else 
+        call dsprstx(sa,ija,x,r,n,nc) 
+      endif 
+      return 
+      END 
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
+
+      SUBROUTINE dsprstx(sa,ija,x,b,n,nc)
+      INTEGER n,ija(nc)
+      dimension b(n),sa(nc),x(n)
+      INTEGER i,j,k
+      if (ija(1).ne.n+2) then
+        write(197+myid,3111) ija(1),n+2,nc 
+3111    format('mismatched vector and matrix in sprstx',3i8) 
+        stop
+      end if 
+      do 11 i=1,n
+        b(i)=sa(i)*x(i)
+11    continue
+      do 13 i=1,n
+        do 12 k=ija(i),ija(i+1)-1
+          j=ija(k)
+          b(j)=b(j)+sa(k)*x(i)
+12      continue
+13    continue
+c
+      return
+      END
+c
+c  Bartels preconditioner
+c
+      SUBROUTINE dprec(sa,ija,b,n,nc)
+      INTEGER ija(nc)
+      dimension sa(nc),b(n) 
+      INTEGER i,k
+      if (ija(1).ne.n+2) then
+        write(197+myid,3111) ija(1),n+2,nc 
+3111    format('mismatched vector and matrix in sprsax',3i8) 
+        stop
+      end if 
+      do 12 i=1,n
+        b(i) = b(i)/sa(i)
+        do 11 k=ija(i),ija(i+1)-1
+          sa(k)=sa(k)/sa(i)
+11      continue
+        sa(i)=1.
+12    continue
+      return
+      END
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
+
+      SUBROUTINE dsprsax(sa,ija,x,b,n,nc)
+      INTEGER n,ija(nc)
+      dimension b(n),sa(nc),x(n)
+      INTEGER i,k
+      if (ija(1).ne.n+2) then
+        write(197+myid,3111) ija(1),n+2,nc 
+3111    format('mismatched vector and matrix in sprsax',3i8) 
+        stop
+      end if 
+      do 12 i=1,n
+        b(i)=sa(i)*x(i)
+        do 11 k=ija(i),ija(i+1)-1
+          b(i)=b(i)+sa(k)*x(ija(k))
+11      continue
+12    continue
+      return
+      END
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
+
+      SUBROUTINE asolve(n,nc,b,x,sa,itrnsp) 
+      INTEGER n,itrnsp,i 
+      dimension x(n),b(n),sa(nc)
+      do 11 i=1,n 
+        x(i)=b(i)/sa(i) 
+11    continue 
+
+      return 
+      END 
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
+
+      FUNCTION snrm(n,sx,itol) 
+      INTEGER n,itol,i,isamax 
+      dimension sx(n)
+      if (itol.le.3)then 
+        snrm=0. 
+        do 11 i=1,n 
+          snrm=snrm+sx(i)**2 
+11      continue 
+        snrm=sqrt(snrm) 
+      else 
+        isamax=1 
+        do 12 i=1,n 
+          if(abs(sx(i)).gt.abs(sx(isamax))) isamax=i 
+12      continue 
+        snrm=abs(sx(isamax)) 
+      endif 
+      return 
+      END 
 c
 ************************************************************************
 *
@@ -2537,7 +3238,7 @@ c
         DD = 0.D0
         DO 123 K = 1,N
 123     DD = DD + C(L,K)*C(L,K)
-        DD = DSQRT(DD)
+        DD = SQRT(DD)
 124   PD = PD*DD
       DETM = 1.D0
       DO 125 L = 1,N
@@ -2593,3 +3294,536 @@ c
 210   CONTINUE
       RETURN
       END
+      subroutine expdecay(xst,yst,zst,u,ut,r,ripm,eps,
+     .                    islavept,nslave,nmaster,ndim,nt,
+     .                    nnodes,myhost,myid,mycomm,mblk2nd,
+     .                    maxbl,iseqr)
+      dimension islavept(nslave,nmaster,5)
+      dimension xst(nslave),yst(nslave),zst(nslave)
+      dimension ut(ndim),u(ndim)
+      dimension r(nslave),ripm(7,nslave)
+      dimension mblk2nd(maxbl)
+      dimension arg(7),coef(8),dm(7),rsn(7)
+      dimension nipm(7),nsf(7),n3(7)
+      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /sgminmax/ rmin,rmax
+
+      relax = 1.0
+c
+c    Do this at every time step because the closest surface
+c    point to a control point will potentially change as a
+c    surface moves.
+c
+        do n1 = 1,nslave
+          r(n1) = 1.e6 
+          if(islavept(n1,8,iseqr).ne.0) then
+           do n2 = 1,nslave
+            if(islavept(n2,8,iseqr).eq.0) then
+              test  = (xst(n2)-xst(n1))*(xst(n2)-xst(n1))
+     .               +(yst(n2)-yst(n1))*(yst(n2)-yst(n1))
+     .               +(zst(n2)-zst(n1))*(zst(n2)-zst(n1))
+              test  = sqrt(test)
+              if(r(n1).gt.test) then
+                r(n1)             = test
+                islavept(n1,21,iseqr) = n2
+              end if
+            end if
+           enddo
+          else
+           r(n1) = 0.
+           islavept(n1,21,iseqr) = n1
+          end if
+        enddo
+        if(nt.eq.1) then
+          rmax = 0. 
+          rmin = 1.e+30  
+          do n = 1,nslave
+            rave =  r(n)
+            if(rave.gt.rmax) rmax = rave   
+            if(rave.lt.rmin.and.rave.gt.0.) rmin = rave  
+          enddo
+        end if
+        eps = rmin/10000.
+        do n = 1,nslave
+          nsf(1)  = islavept(n,8,iseqr)
+          if(nsf(1).ne.0) then
+            nipm(1)= n
+            nipm(2)= islavept(n,2,iseqr)
+            nipm(3)= islavept(n,3,iseqr)
+            nipm(4)= islavept(n,4,iseqr)
+            nipm(5)= islavept(n,5,iseqr)
+            nipm(6)= islavept(n,6,iseqr)
+            nipm(7)= islavept(n,7,iseqr)
+            do ii = 1,7
+              nsf(ii)  = islavept(nipm(ii),8,iseqr)
+              if(n.ne.nipm(ii)) then 
+                ripm(ii,n)=(xst(n)-xst(nipm(ii)))*(xst(n)-xst(nipm(ii)))
+     .                    +(yst(n)-yst(nipm(ii)))*(yst(n)-yst(nipm(ii)))
+     .                    +(zst(n)-zst(nipm(ii)))*(zst(n)-zst(nipm(ii)))
+     .                     +eps 
+                ripm(ii,n) = sqrt(ripm(ii,n))
+              else
+                ripm(ii,n) = 1.e+30
+              end if  
+            enddo
+            coef   = 0.
+            coef(8)= 1.
+            coef(1)= 1.
+            do ii = 2,7
+              if(n.ne.nipm(ii)) then
+                coef(ii)= exp(-100.*ripm(ii,n)/rmax)
+                coef(8)= coef(8) + coef(ii)
+              end if
+            enddo
+            n3(1) = islavept(n,21,iseqr)
+            rsn(1)= r(n)
+            do ii = 2,7
+              n3(ii) = islavept(nipm(ii),21,iseqr)
+              rsn(ii)= r(nipm(ii))
+            enddo
+            n2    = n3(1)
+            dm(1) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
+     .                   u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
+     .                   u(3*(n2-1)+3)*u(3*(n2-1)+3))
+            arg(1) = - beta1*(rsn(1)/rmax  - alpha1) 
+            if(arg(1).gt.0.) arg(1) = 0.
+            coef(1)= coef(1)/coef(8) 
+            do ii = 2,7
+              if(n.ne.nipm(ii)) then 
+                n2    = n3(ii)
+                dm(ii) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
+     .                        u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
+     .                        u(3*(n2-1)+3)*u(3*(n2-1)+3))
+                arg(ii) = - beta1*(rsn(ii)/rmax  - alpha1) 
+                if(arg(ii).gt.0.) arg(ii) = 0.
+                coef(ii)= coef(ii)/coef(8) 
+              else
+                coef(ii) = 0.
+                arg(ii)  = 0.
+              end if
+            enddo
+            do j = 1,3
+              u(3*(n-1)+j) = 0.
+              do ii = 1,7
+                n2 = n3(ii)
+                u(3*(n-1)+j) = u(3*(n-1)+j) + 
+     .                      u(3*(n2-1)+j)*coef(ii)*exp(arg(ii))
+              enddo
+            enddo
+          end if
+        enddo
+       do it = 1,nsprgit   
+        do n = 1,nslave
+          nipm(2)= islavept(n,2,iseqr)
+          nipm(3)= islavept(n,3,iseqr)
+          nipm(4)= islavept(n,4,iseqr)
+          nipm(5)= islavept(n,5,iseqr)
+          nipm(6)= islavept(n,6,iseqr)
+          nipm(7)= islavept(n,7,iseqr)
+          nsf(1) = islavept(n,8,iseqr)
+c         do ii = 2,7
+c           nsf(ii) = islavept(nipm(ii),8,iseqr)
+c         enddo
+          if(nsf(1).ne.0) then
+            coef1 = 0. 
+            do ii = 2,7
+              coef1= coef1 + 1./ripm(ii,n)
+            enddo
+            do j = 1,3
+              ut(3*(n-1)+j) = 0.
+              do ii = 2,7
+               ut(3*(n-1)+j)= ut(3*(n-1)+j)
+     .             + u(3*(nipm(ii)-1)+j)/ripm(ii,n)/coef1   
+              enddo
+            enddo
+          end if
+        enddo
+        do n = 1,nslave
+          nipm(2)= islavept(n,2,iseqr)
+          nipm(3)= islavept(n,3,iseqr)
+          nipm(4)= islavept(n,4,iseqr)
+          nipm(5)= islavept(n,5,iseqr)
+          nipm(6)= islavept(n,6,iseqr)
+          nipm(7)= islavept(n,7,iseqr)
+          nsf(1) = islavept(n,8,iseqr)
+c         do ii = 2,7
+c           nsf(ii) = islavept(nipm(ii),8,iseqr)
+c         enddo
+          if(nsf(1).ne.0) then
+            u(3*(n-1)+1) = relax*ut(3*(n-1)+1)+(1.-relax)*u(3*(n-1)+1) 
+            u(3*(n-1)+2) = relax*ut(3*(n-1)+2)+(1.-relax)*u(3*(n-1)+2) 
+            u(3*(n-1)+3) = relax*ut(3*(n-1)+3)+(1.-relax)*u(3*(n-1)+3) 
+          end if
+        enddo
+       enddo
+
+      return
+      end
+
+      subroutine hookefe(ei,ej,ek,gij,gjk,gik,xst,yst,zst,volij,
+     .                   volik,eps,eini,gini,arg1,arg2,islavept,
+     .                   nslave,nmaster,nt,nnodes,myhost,myid,
+     .                   mycomm,mblk2nd,maxbl,iseqr)
+      dimension islavept(nslave,nmaster,5)
+      dimension xst(nslave),yst(nslave),zst(nslave)
+      dimension ei(nslave),ej(nslave),ek(nslave),gij(nslave),
+     .          gjk(nslave),gik(nslave)
+      dimension volik(nslave),volij(3*nslave)
+      dimension r(nslave),r1(0:8) 
+      dimension ni1(0:8),ni0(0:8),test1(0:8) 
+      dimension mblk2nd(maxbl)
+      common /sgminmax/ rmin,rmax
+
+      beta2 = 1.000 
+c
+c    Do this at every time step because the closest surface
+c    point to a control point will potentially change as a
+c    surface moves.
+c
+c       if(nt.eq.1) then
+          rmax = 0. 
+          rmin = 1.e+30  
+c       end if  
+        do n1 = 1,nslave
+          r(n1) = 1.e6 
+          ni0(0)    = n1
+          ni0(1)    = islavept(n1    ,3,iseqr)
+          ni0(2)    = islavept(n1    ,5,iseqr)
+          ni0(3)    = islavept(ni0(1),5,iseqr)
+          ni0(4)    = islavept(n1    ,7,iseqr)
+          ni0(5)    = islavept(ni0(2),7,iseqr)
+          ni0(6)    = islavept(ni0(1),7,iseqr)
+          ni0(7)    = islavept(ni0(6),5,iseqr)
+          if(ni0(1).ne.n1.and.ni0(2).ne.n1.and.ni0(4).ne.n1) then
+           xcent = 0.
+           ycent = 0.
+           zcent = 0.
+           do ii = 0,7
+             xcent = xcent + xst(ni0(ii))/8. 
+             ycent = ycent + yst(ni0(ii))/8. 
+             zcent = zcent + zst(ni0(ii))/8. 
+           enddo
+           do n2 = 1,nslave
+            if(islavept(n2,8,iseqr).eq.0) then
+              ni1(0)    = n2
+              ni1(1)    = islavept(n2    ,3,iseqr)
+              ni1(2)    = islavept(n2    ,5,iseqr)
+              ni1(3)    = islavept(ni1(1),5,iseqr)
+              ni1(4)    = islavept(n2    ,7,iseqr)
+              ni1(5)    = islavept(ni1(2),7,iseqr)
+              ni1(6)    = islavept(ni1(1),7,iseqr)
+              ni1(7)    = islavept(ni1(6),5,iseqr)
+              test  = (xst(n2)-xcent)*(xst(n2)-xcent)
+     .               +(yst(n2)-ycent)*(yst(n2)-ycent)
+     .               +(zst(n2)-zcent)*(zst(n2)-zcent)
+              test    = sqrt(test)
+              if(r(n1).gt.test) then
+                r(n1)                 = test   
+                islavept(n1,21,iseqr) = n2
+              end if
+              if(islavept(ni1(1),8,iseqr).eq.0.and.
+     .           islavept(ni1(2),8,iseqr).eq.0) then 
+                 xsct = (xst(n2)+xst(ni1(1))+xst(ni1(2))
+     .                    +xst(ni1(3)))/4.
+                 ysct = (yst(n2)+yst(ni1(1))+yst(ni1(2))
+     .                    +yst(ni1(3)))/4.
+                 zsct = (zst(n2)+zst(ni1(1))+zst(ni1(2))
+     .                    +zst(ni1(3)))/4.
+                 test  = (xsct-xcent)*(xsct-xcent)
+     .                  +(ysct-ycent)*(ysct-ycent)
+     .                  +(zsct-zcent)*(zsct-zcent)
+                 test    = sqrt(test)
+                 if(r(n1).gt.test) then
+                    r(n1)                 = test   
+                    islavept(n1,21,iseqr) = n2
+                 end if
+              end if
+              if(islavept(ni1(2),8,iseqr).eq.0.and.
+     .           islavept(ni1(4),8,iseqr).eq.0) then 
+                 xsct = (xst(n2)+xst(ni1(2))+xst(ni1(4))
+     .                    +xst(ni1(5)))/4.
+                 ysct = (yst(n2)+yst(ni1(2))+yst(ni1(4))
+     .                    +yst(ni1(5)))/4.
+                 zsct = (zst(n2)+zst(ni1(2))+zst(ni1(4))
+     .                    +zst(ni1(5)))/4.
+                 test  = (xsct-xcent)*(xsct-xcent)
+     .                  +(ysct-ycent)*(ysct-ycent)
+     .                  +(zsct-zcent)*(zsct-zcent)
+                 test    = sqrt(test)
+                 if(r(n1).gt.test) then
+                    r(n1)                 = test   
+                    islavept(n1,21,iseqr) = n2
+                 end if
+              end if
+              if(islavept(ni1(1),8,iseqr).eq.0.and.
+     .           islavept(ni1(4),8,iseqr).eq.0) then 
+                 xsct = (xst(n2)+xst(ni1(1))+xst(ni1(4))
+     .                    +xst(ni1(6)))/4.
+                 ysct = (yst(n2)+yst(ni1(1))+yst(ni1(4))
+     .                    +yst(ni1(6)))/4.
+                 zsct = (zst(n2)+zst(ni1(1))+zst(ni1(4))
+     .                    +zst(ni1(6)))/4.
+                 test  = (xsct-xcent)*(xsct-xcent)
+     .                  +(ysct-ycent)*(ysct-ycent)
+     .                  +(zsct-zcent)*(zsct-zcent)
+                 test    = sqrt(test)
+                 if(r(n1).gt.test) then
+                    r(n1)                 = test   
+                    islavept(n1,21,iseqr) = n2
+                 end if
+              end if
+          
+            end if
+           enddo
+c          if(nt.eq.1) then
+             n2    = islavept(n1,21,iseqr)
+             if(r(n1).gt.rmax) rmax = r(n1)    
+             if(r(n1).lt.rmin.and.r(n1).gt.0.) rmin = r(n1)   
+c          end if
+          end if 
+        enddo
+
+         
+ 
+      e0 = 500000.
+      r0 = (rmax*alog(1.-eini/e0)+beta2*rmin)/
+     .     (     alog(1.-eini/e0)+beta2     ) 
+  
+      do n = 1,nslave
+       nbl = islavept(n,9,iseqr)
+        ni0(1)    = islavept(n     ,3,iseqr)
+        ni0(2)    = islavept(n     ,5,iseqr)
+        ni0(4)    = islavept(n     ,7,iseqr)
+        if(ni0(1).ne.n.and.ni0(2).ne.n.and.ni0(4).ne.n) then
+          rave = r(n)
+          fact     = 1./(1.-exp(-beta2*(rave-r0)/(rmax-r0))) 
+c         fact     = 1.
+          ej(n) = eini*fact
+          ek(n) = eini*fact
+          ei(n) = eini*fact
+          gij(n)= gini*fact
+          gik(n)= gini*fact
+          gjk(n)= gini*fact
+        end if
+      enddo
+      return
+      end
+
+      subroutine elmetricsfe(xix,xiy,xiz,etax,etay,etaz,zetax,zetay,
+     .                       zetaz,ooj,xs,ys,zs,eps,islavept,nslave,
+     .                       nmaster,nnodes,myhost,myid,mycomm,
+     .                       mblk2nd,maxbl,iseqr)
+
+      dimension islavept(nslave,nmaster,5)
+      dimension xs(nslave),ys(nslave),zs(nslave)
+      dimension xix(nslave),xiy(nslave),xiz(nslave),
+     .          etax(nslave),etay(nslave),etaz(nslave),
+     .          zetax(nslave),zetay(nslave),zetaz(nslave),
+     .          ooj(nslave)
+      dimension mblk2nd(maxbl)
+
+c
+      do n = 1,nslave
+       nbl = islavept(n,9,iseqr)
+c      if (myid .eq. mblk2nd(nbl)) then 
+        njp    = islavept(n,3,iseqr)
+        nkp    = islavept(n,5,iseqr)
+        njpkp  = islavept(nkp,3,iseqr)
+        nip    = islavept(n,7,iseqr)
+        nipkp  = islavept(nkp,7,iseqr)
+        njpip  = islavept(njp,7,iseqr)
+        njpipkp= islavept(njpip,5,iseqr)
+        if(njp.ne.n.and.nip.ne.n.and.nkp.ne.n) then
+          xxi    =.25*(xs(njp)  -xs(n)  +xs(njpkp)  -xs(nkp)
+     .                +xs(njpip)-xs(nip)+xs(njpipkp)-xs(nipkp))
+          xeta   =.25*(xs(nkp)  -xs(n)  +xs(njpkp)  -xs(njp)
+     .                +xs(nipkp)-xs(nip)+xs(njpipkp)-xs(njpip))
+          xzeta  =.25*(xs(nip)  -xs(n)  +xs(nipkp)  -xs(nkp)
+     .                +xs(njpip)-xs(njp)+xs(njpipkp)-xs(njpkp))
+          yxi    =.25*(ys(njp)  -ys(n)  +ys(njpkp)  -ys(nkp)
+     .                +ys(njpip)-ys(nip)+ys(njpipkp)-ys(nipkp))
+          yeta   =.25*(ys(nkp)  -ys(n)  +ys(njpkp)  -ys(njp)
+     .                +ys(nipkp)-ys(nip)+ys(njpipkp)-ys(njpip))
+          yzeta  =.25*(ys(nip)  -ys(n)  +ys(nipkp)  -ys(nkp)
+     .                +ys(njpip)-ys(njp)+ys(njpipkp)-ys(njpkp))
+          zxi    =.25*(zs(njp)  -zs(n)  +zs(njpkp)  -zs(nkp)
+     .                +zs(njpip)-zs(nip)+zs(njpipkp)-zs(nipkp))
+          zeta   =.25*(zs(nkp)  -zs(n)  +zs(njpkp)  -zs(njp)
+     .                +zs(nipkp)-zs(nip)+zs(njpipkp)-zs(njpip))
+          zzeta  =.25*(zs(nip)  -zs(n)  +zs(nipkp)  -zs(nkp)
+     .                +zs(njpip)-zs(njp)+zs(njpipkp)-zs(njpkp))
+          ooj(n)  = 1./(  xxi*(yeta*zzeta-yzeta*zeta)
+     .                  -xeta*(yxi *zzeta-yzeta*zxi )
+     .                 +xzeta*(yxi *zeta -yeta *zxi )) 
+          xix(n)  =(yeta*zzeta-yzeta*zeta)*ooj(n)
+          xiy(n)  =(xzeta*zeta-xeta*zzeta)*ooj(n)
+          xiz(n)  =(xeta*yzeta-xzeta*yeta)*ooj(n)
+          etax(n) =(yzeta*zxi -yxi *zzeta)*ooj(n)
+          etay(n) =(xxi*zzeta -xzeta* zxi)*ooj(n)
+          etaz(n) =(xzeta*yxi -xxi *yzeta)*ooj(n)
+          zetax(n)=(yxi *zeta -yeta*  zxi)*ooj(n)
+          zetay(n)=(xeta*zxi  -xxi * zeta)*ooj(n)
+          zetaz(n)=(xxi *yeta -xeta*  yxi)*ooj(n)
+        else
+          ooj(n)  = 0.
+          xix(n)  = 0.
+          xiy(n)  = 0.
+          xiz(n)  = 0.
+          etax(n) = 0.
+          etay(n) = 0.
+          etaz(n) = 0.
+          zetax(n)= 0.
+          zetay(n)= 0.
+          zetaz(n)= 0.
+        end if
+c      end if
+      enddo
+  
+      return
+      end
+c
+      subroutine elrhs(b,u,islavept,nslave,nmaster,iseqr) 
+      dimension islavept(nslave,nmaster,5)
+      dimension b(3*nslave)
+      dimension u(3*nslave)
+c
+c
+      do n = 1,nslave
+         ii4  = 1
+         ni3  = 0 
+         if(islavept(n,8,iseqr).eq.0) ii4 = 0
+         if(ii4.ne.0) then
+           iimax = islavept(n,11,iseqr)
+           do ii2 = 2,iimax
+             ni3 = islavept(n,12+ii2-2,iseqr)
+             if(islavept(ni3,8,iseqr).eq.0) then
+               ii4 = 0
+               goto 1500
+             end if
+           enddo
+         end if
+1500     continue
+
+       if(ii4.eq.0.and.ni3.eq.0) then
+         b(3*(n-1)+1) =  u(3*(n-1)+1)
+         b(3*(n-1)+2) =  u(3*(n-1)+2)
+         b(3*(n-1)+3) =  u(3*(n-1)+3)
+       else if(ii4.eq.0.and.ni3.ne.0) then
+         b(3*(n-1)+1) =  u(3*(ni3-1)+1)
+         b(3*(n-1)+2) =  u(3*(ni3-1)+2)
+         b(3*(n-1)+3) =  u(3*(ni3-1)+3)
+       else
+         b(3*(n-1)+1) =  0.
+         b(3*(n-1)+2) =  0.
+         b(3*(n-1)+3) =  0.
+       end if
+      enddo
+
+      return
+      end
+      subroutine deform_surf(nbl,idim,jdim,kdim,deltj,deltk,delti,
+     .                       lw,lw2,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
+     .                       maxbl,mseq,time,dt,ita,nou,bou,nbuf,
+     .                       ibufdim,myid,idefrm,nbci0,nbcidim,nbcj0,
+     .                       nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,
+     .                       kbcinfo,maxseg,wk,u,nsurf,irst,iflag,
+     .                       islavept,nslave,nsegdfrm,idfrmseg,iaesurf,
+     .                       maxsegdg,nmaster,iseq)
+c
+c     $Id$
+c
+c***********************************************************************
+c     Purpose: Compute solid surface deformations for initializing the
+c              mesh deformation scheme.
+c
+c***********************************************************************
+c
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+      character*120 bou(ibufdim,nbuf)
+c
+      integer stats
+c
+      dimension lw(65,maxbl),lw2(43,maxbl)
+      dimension delti(jdim,kdim,3,2)
+      dimension deltj(kdim,idim,3,2)
+      dimension deltk(jdim,idim,3,2)
+      dimension iaesurf(maxbl,maxsegdg)
+      dimension ibcinfo(maxbl,maxseg,7,2)
+      dimension icsf(maxbl,maxsegdg)
+      dimension icsi(maxbl,maxsegdg)
+      dimension idefrm(maxbl)
+      dimension idfrmseg(maxbl,maxsegdg)
+      dimension jbcinfo(maxbl,maxseg,7,2)
+      dimension jcsf(maxbl,maxsegdg)
+      dimension jcsi(maxbl,maxsegdg)
+      dimension kbcinfo(maxbl,maxseg,7,2)
+      dimension kcsf(maxbl,maxsegdg)
+      dimension kcsi(maxbl,maxsegdg)
+      dimension nbci0(maxbl)
+      dimension nbcidim(maxbl)
+      dimension nbcj0(maxbl)
+      dimension nbcjdim(maxbl)
+      dimension nbck0(maxbl)
+      dimension nbckdim(maxbl)
+      dimension nou(nbuf)
+      dimension nsegdfrm(maxbl)
+      dimension islavept(nslave,nmaster,5)
+      dimension wk(9*nsurf)
+      dimension u(3*nslave)
+c
+      allocatable :: dx(:)
+      allocatable :: dy(:)
+      allocatable :: dz(:)
+
+      common /twod/ i2d
+c
+c     allocate memory
+c
+      memuse = 0
+c
+      allocate( dx(jdim*kdim*idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dx',memuse,stats)
+      allocate( dy(jdim*kdim*idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dy',memuse,stats)
+      allocate( dz(jdim*kdim*idim), stat=stats )
+      call umalloc(jdim*kdim*idim,0,'dz',memuse,stats)
+c
+c     initialize deltas
+c
+      do i=1,jdim*kdim*idim
+        dx(i) = 0.
+        dy(i) = 0.
+        dz(i) = 0.
+      end do
+c
+c               preserve deltas on edges of solid surfaces
+c
+       if (idefrm(nbl).lt.999) then
+          call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
+     .                 jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
+     .                 idim,maxbl,maxsegdg,nsegdfrm)
+c
+        do n = 1,nslave
+          nbl1= islavept(n,9,iseq)
+          ll  = islavept(n,1,iseq)
+          isrf= islavept(n,8,iseq)
+          if(nbl1.eq.nbl.and.isrf.eq.0) then
+            u(3*(n-1)+1) = dx(ll+1)
+            u(3*(n-1)+2) = dy(ll+1)
+            u(3*(n-1)+3) = dz(ll+1)
+          end if
+        enddo
+      end if
+c
+c     release memory
+c
+      deallocate(dx)
+      deallocate(dy)
+      deallocate(dz)
+
+
+      return
+      end
