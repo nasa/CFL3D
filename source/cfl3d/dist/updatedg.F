@@ -255,68 +255,6 @@ c           surface translation
 c
             do is = 1,nsegdfrm(nbl)
                if (idfrmseg(nbl,is) .eq. 1) then
-                 ist = icsi(nbl,is)
-                 ifn = icsf(nbl,is)
-                 jst = jcsi(nbl,is)
-                 jfn = jcsf(nbl,is)
-                 kst = kcsi(nbl,is)
-                 kfn = kcsf(nbl,is)
-c
-c              Are multiple segments defined. If yes increment start/end
-c              indices to eliminate doubling of displacement
-c
-                 if (jst .eq. jfn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(jcsi(nbl,is1).eq.jst.and.jcsf(nbl,is1).
-     .                 eq.jst) then
-                     if(kcsf(nbl,is1).eq.kst) then
-                      kst = kst+1
-                     else if(kcsi(nbl,is1).eq.kfn) then
-                      kfn = kfn-1
-                     else if(icsf(nbl,is1).eq.ist) then
-                      ist = ist+1
-                     else if(icsi(nbl,is1).eq.ifn) then
-                      ifn = ifn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                 else if (kst .eq. kfn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(kcsi(nbl,is1).eq.kst.and.kcsf(nbl,is1).
-     .                 eq.kst) then
-                     if(icsf(nbl,is1).eq.ist) then
-                      ist = ist+1
-                     else if(icsi(nbl,is1).eq.ifn) then
-                      ifn = ifn-1
-                     else if(jcsf(nbl,is1).eq.jst) then
-                      jst = jst+1
-                     else if(jcsi(nbl,is1).eq.jfn) then
-                      jfn = jfn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                 else if (ist .eq. ifn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(icsi(nbl,is1).eq.ist.and.icsf(nbl,is1).
-     .                 eq.ist) then
-                     if(kcsf(nbl,is1).eq.kst) then
-                      kst = kst+1
-                     else if(kcsi(nbl,is1).eq.kfn) then
-                      kfn = kfn-1
-                     else if(jcsf(nbl,is1).eq.jst) then
-                      jst = jst+1
-                     else if(jcsi(nbl,is1).eq.jfn) then
-                      jfn = jfn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                 end if
                   call trnsurf(jdim,kdim,idim,w(lx),w(ly),w(lz),
      .                         w(ldeltj),w(ldeltk),w(ldelti),nbl,
      .                         idfrmseg(nbl,is),xorgae(nbl,is),
@@ -339,68 +277,6 @@ c           surface rotation
 c
             do is = 1,nsegdfrm(nbl)
                if (idfrmseg(nbl,is) .eq. 2) then
-                 ist = icsi(nbl,is)
-                 ifn = icsf(nbl,is)
-                 jst = jcsi(nbl,is)
-                 jfn = jcsf(nbl,is)
-                 kst = kcsi(nbl,is)
-                 kfn = kcsf(nbl,is)
-c
-c              Are multiple segments defined. If yes increment start/end
-c              indices to eliminate doubling of displacement
-c
-                 if (jst .eq. jfn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(jcsi(nbl,is1).eq.jst.and.jcsf(nbl,is1).
-     .                 eq.jst) then
-                     if(kcsf(nbl,is1).eq.kst) then
-                      kst = kst+1
-                     else if(kcsi(nbl,is1).eq.kfn) then
-                      kfn = kfn-1
-                     else if(icsf(nbl,is1).eq.ist) then
-                      ist = ist+1
-                     else if(icsi(nbl,is1).eq.ifn) then
-                      ifn = ifn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                 else if (kst .eq. kfn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(kcsi(nbl,is1).eq.kst.and.kcsf(nbl,is1).
-     .                 eq.kst) then
-                     if(icsf(nbl,is1).eq.ist) then
-                      ist = ist+1
-                     else if(icsi(nbl,is1).eq.ifn) then
-                      ifn = ifn-1
-                     else if(jcsf(nbl,is1).eq.jst) then
-                      jst = jst+1
-                     else if(jcsi(nbl,is1).eq.jfn) then
-                      jfn = jfn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                else if (ist .eq. ifn) then
-                  if(is.gt.1) then
-                   do is1 = 1,is-1
-                    if(icsi(nbl,is1).eq.ist.and.icsf(nbl,is1).
-     .                 eq.ist) then
-                     if(kcsf(nbl,is1).eq.kst) then
-                      kst = kst+1
-                     else if(kcsi(nbl,is1).eq.kfn) then
-                      kfn = kfn-1
-                     else if(jcsf(nbl,is1).eq.jst) then
-                      jst = jst+1
-                     else if(jcsi(nbl,is1).eq.jfn) then
-                      jfn = jfn-1
-                     end if
-                    end if
-                   enddo
-                  end if
-                 end if
                   call rotsurf(jdim,kdim,idim,w(lx),w(ly),w(lz),
      .                         w(ldeltj),w(ldeltk),w(ldelti),nbl,
      .                         idfrmseg(nbl,is),xorgae(nbl,is),
@@ -424,9 +300,14 @@ c           aeroelastic surface
 c
             call aesurf(nbl,jdim,kdim,idim,w(ldeltj),w(ldeltk),
      .                  w(ldelti),w(lxmdj),w(lxmdk),w(lxmdi),
-     .                  maxbl,maxseg,nmds,maxaes,aesrfdat,
-     .                  xs,xxn,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
-     .                  nsegdfrm,idfrmseg,iaesurf,maxsegdg)
+     .                  wk(lwk1),wk(lwk2),wk(lwk3),maxbl,maxseg,
+     .                  nmds,maxaes,aesrfdat,xs,xxn,icsi,icsf,
+     .                  jcsi,jcsf,kcsi,kcsf,nsegdfrm,idfrmseg,
+     .                  iaesurf,maxsegdg)
+c
+            do lll=lwk1,lwk4
+               wk(lll) = 1.
+            end do
 c
          end if
       end if
