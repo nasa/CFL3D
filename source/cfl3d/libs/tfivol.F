@@ -1,5 +1,7 @@
-      subroutine tfivol(idim,jdim,kdim,x,y,z,x1,y1,z1,x2,y2,z2,x3,y3,z3,
-     .                  arci,arcj,arck,nou,bou,nbuf,ibufdim,myid)
+      subroutine tfivol(idim,jdim,kdim,iskp,jskp,kskp,x,y,z, 
+     .            x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4,x5,y5,
+     .            z5,x6,y6,z6,x7,y7,z7,arci,arcj,arck,nou,bou,
+     .            nbuf,ibufdim,myid,maxbl,nbl)
 c
 c     $Id$
 c
@@ -19,82 +21,150 @@ c
       dimension x1(jdim,kdim,idim),y1(jdim,kdim,idim),z1(jdim,kdim,idim)
       dimension x2(jdim,kdim,idim),y2(jdim,kdim,idim),z2(jdim,kdim,idim)
       dimension x3(jdim,kdim,idim),y3(jdim,kdim,idim),z3(jdim,kdim,idim)
+      dimension x4(jdim,kdim,idim),y4(jdim,kdim,idim),z4(jdim,kdim,idim)
+      dimension x5(jdim,kdim,idim),y5(jdim,kdim,idim),z5(jdim,kdim,idim)
+      dimension x6(jdim,kdim,idim),y6(jdim,kdim,idim),z6(jdim,kdim,idim)
+      dimension x7(jdim,kdim,idim),y7(jdim,kdim,idim),z7(jdim,kdim,idim)
       dimension arci(jdim,kdim,idim),arcj(jdim,kdim,idim),
      .          arck(jdim,kdim,idim)
 c 
       dimension phi(2),psi(2),omg(2)
 c
-c     eta projector  -  1st step 
+      common /zero/ iexp
 c
-      do j=1,jdim
-         do k=1,kdim
-            do i=1,idim
-               eta = arcj(j,k,i)
+c     tolerance for switch to linear blending function
+c     (10.**(-iexp) is machine zero)
+c
+      tol = max(1.e-07,10.**(-iexp+1))
+c
+       do i1= 1,idim-iskp,iskp
+        is = i1
+        ie = i1+iskp
+        do j1= 1,jdim-jskp,jskp
+         js = j1
+         je = j1+jskp
+         do k1= 1,kdim-kskp,kskp
+          ks = k1
+          ke = k1+kskp
+          do j=js,je
+           do k=ks,ke
+            do i=is,ie
+               denomj= (arcj(je,k,i)- arcj(js,k,i))
+               if(real(denomj).lt.real(tol)) then
+                 eta = 0.
+               else
+                 eta = (arcj(j,k,i) - arcj(js,k,i))
+     .                  / denomj
+               end if
                psi(1) = eta
                psi(2) = 1.-eta
-               x1(j,k,i) = psi(2)*x(1,k,i) 
-     .                   + psi(1)*x(jdim,k,i)
-               y1(j,k,i) = psi(2)*y(1,k,i) 
-     .                   + psi(1)*y(jdim,k,i)
-               z1(j,k,i) = psi(2)*z(1,k,i) 
-     .                   + psi(1)*z(jdim,k,i)
-            end do
-         end do
-      end do
-c 
-c     zeta projector  -  2nd step
-c
-      do k=1,kdim
-         do j=1,jdim
-            do i=1,idim
-               zeta = arck(j,k,i)
+               denomk= (arck(j,ke,i)- arck(j,ks,i))
+               if(real(denomk).lt.real(tol)) then
+                 zeta = 0.
+               else
+                 zeta = (arck(j,k,i) - arck(j,ks,i))
+     .                  / denomk
+               end if
                omg(1) = zeta
                omg(2) = 1.-zeta
-               x2(j,k,i) = omg(2)*(x(j,1,i)    - x1(j,1,i))
-     .                   + omg(1)*(x(j,kdim,i) - x1(j,kdim,i))
-               y2(j,k,i) = omg(2)*(y(j,1,i)    - y1(j,1,i))
-     .                   + omg(1)*(y(j,kdim,i) - y1(j,kdim,i))
-               z2(j,k,i) = omg(2)*(z(j,1,i)    - z1(j,1,i))
-     .                   + omg(1)*(z(j,kdim,i) - z1(j,kdim,i))
-            end do
-         end do
-      end do
-c 
-c     xi projector  -  3rd step
-c
-      do i=1,idim
-         do j=1,jdim
-            do k=1,kdim
-               xi = arci(j,k,i)
+               denomi = (arci(j,k,ie)- arci(j,k,is))
+               if(real(denomi).lt.real(tol)) then
+                 xi = 0.
+               else
+                 xi = (arci(j,k,i) - arci(j,k,is))
+     .                  / denomi
+               end if
                phi(1) = xi
                phi(2) = 1.-xi
-               x3(j,k,i) = phi(2)*(x(j,k,1)    - x1(j,k,1)
-     .                   - x2(j,k,1))
-     .                   + phi(1)*(x(j,k,idim) - x1(j,k,idim)
-     .                   - x2(j,k,idim))
-               y3(j,k,i) = phi(2)*(y(j,k,1)    - y1(j,k,1)
-     .                   - y2(j,k,1))
-     .                   + phi(1)*(y(j,k,idim) - y1(j,k,idim)
-     .                   - y2(j,k,idim))
-               z3(j,k,i) = phi(2)*(z(j,k,1)    - z1(j,k,1)
-     .                   - z2(j,k,1))
-     .                   + phi(1)*(z(j,k,idim) - z1(j,k,idim)
-     .                   - z2(j,k,idim))
+               x1(j,k,i) = psi(2)*x(js,k,i) + psi(1)*x(je,k,i)
+               y1(j,k,i) = psi(2)*y(js,k,i) + psi(1)*y(je,k,i)
+               z1(j,k,i) = psi(2)*z(js,k,i) + psi(1)*z(je,k,i)
+               x2(j,k,i) = omg(2)*x(j,ks,i) + omg(1)*x(j,ke,i)
+               y2(j,k,i) = omg(2)*y(j,ks,i) + omg(1)*y(j,ke,i)
+               z2(j,k,i) = omg(2)*z(j,ks,i) + omg(1)*z(j,ke,i)
+               x3(j,k,i) = phi(2)*x(j,k,is) + phi(1)*x(j,k,ie)
+               y3(j,k,i) = phi(2)*y(j,k,is) + phi(1)*y(j,k,ie)
+               z3(j,k,i) = phi(2)*z(j,k,is) + phi(1)*z(j,k,ie)
+               x4(j,k,i) = psi(2)*omg(2)     *x(js,ks,i)
+     .                    +psi(2)*omg(1)     *x(js,ke,i)
+     .                    +psi(1)*omg(2)     *x(je,ks,i)
+     .                    +psi(1)*omg(1)     *x(je,ke,i)
+               y4(j,k,i) = psi(2)*omg(2)     *y(js,ks,i)
+     .                    +psi(2)*omg(1)     *y(js,ke,i)
+     .                    +psi(1)*omg(2)     *y(je,ks,i)
+     .                    +psi(1)*omg(1)     *y(je,ke,i)
+               z4(j,k,i) = psi(2)*omg(2)     *z(js,ks,i)
+     .                    +psi(2)*omg(1)     *z(js,ke,i)
+     .                    +psi(1)*omg(2)     *z(je,ks,i)
+     .                    +psi(1)*omg(1)     *z(je,ke,i)
+               x5(j,k,i) = psi(2)*phi(2)     *x(js,k,is)
+     .                    +psi(2)*phi(1)     *x(js,k,ie)
+     .                    +psi(1)*phi(2)     *x(je,k,is)
+     .                    +psi(1)*phi(1)     *x(je,k,ie)
+               y5(j,k,i) = psi(2)*phi(2)     *y(js,k,is)
+     .                    +psi(2)*phi(1)     *y(js,k,ie)
+     .                    +psi(1)*phi(2)     *y(je,k,is)
+     .                    +psi(1)*phi(1)     *y(je,k,ie)
+               z5(j,k,i) = psi(2)*phi(2)     *z(js,k,is)
+     .                    +psi(2)*phi(1)     *z(js,k,ie)
+     .                    +psi(1)*phi(2)     *z(je,k,is)
+     .                    +psi(1)*phi(1)     *z(je,k,ie)
+               x6(j,k,i) = omg(2)*phi(2)     *x(j,ks,is)
+     .                    +omg(2)*phi(1)     *x(j,ks,ie)
+     .                    +omg(1)*phi(2)     *x(j,ke,is)
+     .                    +omg(1)*phi(1)     *x(j,ke,ie)
+               y6(j,k,i) = omg(2)*phi(2)     *y(j,ks,is)
+     .                    +omg(2)*phi(1)     *y(j,ks,ie)
+     .                    +omg(1)*phi(2)     *y(j,ke,is)
+     .                    +omg(1)*phi(1)     *y(j,ke,ie)
+               z6(j,k,i) = omg(2)*phi(2)     *z(j,ks,is)
+     .                    +omg(2)*phi(1)     *z(j,ks,ie)
+     .                    +omg(1)*phi(2)     *z(j,ke,is)
+     .                    +omg(1)*phi(1)     *z(j,ke,ie)
+               x7(j,k,i) = psi(2)*omg(2)*phi(2)*x(js,ks,is)
+     .                    +psi(2)*omg(2)*phi(1)*x(js,ks,ie)
+     .                    +psi(2)*omg(1)*phi(2)*x(js,ke,is)
+     .                    +psi(2)*omg(1)*phi(1)*x(js,ke,ie)
+     .                    +psi(1)*omg(2)*phi(2)*x(je,ks,is)
+     .                    +psi(1)*omg(2)*phi(1)*x(je,ks,ie)
+     .                    +psi(1)*omg(1)*phi(2)*x(je,ke,is)
+     .                    +psi(1)*omg(1)*phi(1)*x(je,ke,ie)
+               y7(j,k,i) = psi(2)*omg(2)*phi(2)*y(js,ks,is)
+     .                    +psi(2)*omg(2)*phi(1)*y(js,ks,ie)
+     .                    +psi(2)*omg(1)*phi(2)*y(js,ke,is)
+     .                    +psi(2)*omg(1)*phi(1)*y(js,ke,ie)
+     .                    +psi(1)*omg(2)*phi(2)*y(je,ks,is)
+     .                    +psi(1)*omg(2)*phi(1)*y(je,ks,ie)
+     .                    +psi(1)*omg(1)*phi(2)*y(je,ke,is)
+     .                    +psi(1)*omg(1)*phi(1)*y(je,ke,ie)
+               z7(j,k,i) = psi(2)*omg(2)*phi(2)*z(js,ks,is)
+     .                    +psi(2)*omg(2)*phi(1)*z(js,ks,ie)
+     .                    +psi(2)*omg(1)*phi(2)*z(js,ke,is)
+     .                    +psi(2)*omg(1)*phi(1)*z(js,ke,ie)
+     .                    +psi(1)*omg(2)*phi(2)*z(je,ks,is)
+     .                    +psi(1)*omg(2)*phi(1)*z(je,ks,ie)
+     .                    +psi(1)*omg(1)*phi(2)*z(je,ke,is)
+     .                    +psi(1)*omg(1)*phi(1)*z(je,ke,ie)
             end do
-         end do
-      end do
-c
-c     summation of xi, eta, and zeta projectors  -  4th step
-c
-      do i=1,idim
-         do j=1,jdim
-            do k=1,kdim
+           end do
+          end do
+          do i=is+1,ie-1
+           do j=js+1,je-1
+            do k=ks+1,ke-1
                x(j,k,i)  = x1(j,k,i) + x2(j,k,i) + x3(j,k,i)
+     .                   - x4(j,k,i) - x5(j,k,i) - x6(j,k,i)
+     .                   + x7(j,k,i)
                y(j,k,i)  = y1(j,k,i) + y2(j,k,i) + y3(j,k,i)
+     .                   - y4(j,k,i) - y5(j,k,i) - y6(j,k,i)
+     .                   + y7(j,k,i)
                z(j,k,i)  = z1(j,k,i) + z2(j,k,i) + z3(j,k,i)
+     .                   - z4(j,k,i) - z5(j,k,i) - z6(j,k,i)
+     .                   + z7(j,k,i)
             end do
-         end do
-      end do
-c
+           end do
+          end do
+         enddo
+        enddo
+       enddo
       return
       end 
