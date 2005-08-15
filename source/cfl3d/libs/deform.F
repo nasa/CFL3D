@@ -2517,3 +2517,79 @@ c    .               real(zdel)/(real(jdm)*real(kdm)*real(idm))
 
        return
        end 
+c
+************************************************************************
+*
+*         SUBROUTINE FOR THE INVERSION OF COMIN USING GAUSS-JORDAN
+*         WITH PIVOTING.
+*
+************************************************************************
+      SUBROUTINE INVDET(UL,COMIN,N,DTNRM,DETM)
+      DIMENSION  UL(N,N),COMIN(N,N)
+      DIMENSION C(N,N),J(550)
+      DO 10 K = 1,n
+        DO 12 I = 1,n
+          C(I,K) = COMIN(I,K)
+12      CONTINUE
+10    CONTINUE
+      PD = 1.D0
+      DO 124 L = 1,N
+        DD = 0.D0
+        DO 123 K = 1,N
+123     DD = DD + C(L,K)*C(L,K)
+        DD = DSQRT(DD)
+124   PD = PD*DD
+      DETM = 1.D0
+      DO 125 L = 1,N
+125   J(L+20) = L
+      DO 144 L = 1,N
+        CC = 0.D0
+        M  = L
+        DO 135 K = L,N
+          IF((ABS(CC)-ABS(C(L,K))).GE.0.D0) GOTO 135
+126       M = K
+          CC = C(L,K)
+135     CONTINUE
+127     IF(L.EQ.M) GOTO 138
+128     K = J(M+20)
+        J(M+20) = J(L+20)
+        J(L+20) = K
+        DO 137 K = 1,N
+          S = C(K,L)
+          C(K,L) = C(K,M)
+137     C(K,M) = S
+138     C(L,L) = 1.D0
+        DETM = DETM*CC
+        DO 139 M = 1,N
+139     C(L,M) = C(L,M)/CC
+        DO 142 M = 1,N
+          IF(L.EQ.M) GOTO 142
+129       CC = C(M,L)
+          IF(CC.EQ.0.D0) GOTO 142
+130       C(M,L) = 0.D0
+          DO 141 K = 1,N
+141       C(M,K) = C(M,K) - CC*C(L,K)
+142     CONTINUE
+144   CONTINUE
+      DO 143 L = 1,N
+        IF(J(L+20).EQ.L) GOTO 143
+131     M = L
+132     M = M + 1
+        IF(J(M+20).EQ.L) GOTO 133
+136     IF(N.GT.M) GOTO 132
+133     J(M+20) = J(L+20)
+        DO 163 K = 1,N
+          CC = C(L,K)
+          C(L,K) = C(M,K)
+163     C(M,K) = CC
+        J(L+20) = L
+143   CONTINUE
+      DETM = ABS(DETM)
+      DTNRM = DETM/PD
+      DO 210 k = 1,N
+        DO 212 I = 1,N
+          UL(I,K) = C(I,K)
+212     CONTINUE
+210   CONTINUE
+      RETURN
+      END
