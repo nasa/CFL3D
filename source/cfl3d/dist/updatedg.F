@@ -7,11 +7,12 @@
      .                    xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .                    rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .                    kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .                    aesrfdat,perturb,itrans,irotat,slavept,nslave,
-     .                    iskip,jskip,kskip,xs,xxn,nsegdfrm,idfrmseg,
-     .                    iaesurf,maxsegdg,iwk,nmaster,nt,xorig,
-     .                    yorig,zorig,xorgae0,yorgae0,zorgae0,icouple,
-     .                    ireq,nnodes)
+     .                    aesrfdat,perturb,itrans,irotat,islavept,
+     .                    nslave,iskip,jskip,kskip,xs,xxn,nsegdfrm,
+     .                    idfrmseg,iaesurf,maxsegdg,iwk,nmaster,nt,
+     .                    xorig,yorig,zorig,xorgae0,yorgae0,zorgae0,
+     .                    icouple,ireq,nnodes,nblelst,iskmax,jskmax,
+     .                    kskmax,ue)
 c
 c     $Id$
 c
@@ -85,12 +86,17 @@ c
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4),xs(2*nmds,maxaes),
      .          xxn(2*nmds,maxaes)
-      dimension aesrfdat(5,maxaes),slavept(nslave,3,nmaster,5)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension aesrfdat(5,maxaes),islavept(nslave,nmaster,5)
+      dimension xst(nslave),yst(nslave),zst(nslave),ue(3*nslave)
+      dimension iskip(maxbl,500),jskip(maxbl,500),kskip(maxbl,500)
       dimension xorgae0(maxbl,maxsegdg),yorgae0(maxbl,maxsegdg),
      .          zorgae0(maxbl,maxsegdg),icouple(maxbl,maxsegdg)
       dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
       dimension ireq(maxbl)
+      dimension nblelst(maxbl,2)
+      dimension iskmax(maxbl)
+      dimension jskmax(maxbl)
+      dimension kskmax(maxbl)
 c
       common /ginfo/ jdim,kdim,idim,jj2,kk2,ii2,nblc,js,ks,is,je,ke,ie,
      .        lq,lqj0,lqk0,lqi0,lsj,lsk,lsi,lvol,ldtj,lx,ly,lz,lvis,
@@ -455,11 +461,186 @@ c
       call MPI_Bcast (wk,nsurf*9,MY_MPI_REAL,myhost,
      .                mycomm,ierr)
 #endif
+      if (iunst.gt.1 .or. idef_ss.gt.0) then
+ 
+         do 150 nbl = 1,nblock
+         if (myid.eq.mblk2nd(nbl) .and. (levelg(nbl).ge.lglobal .and.
+     .       levelg(nbl).le.levelt(iseqr))) then
+c
+            call lead(nbl,lw,lw2,maxbl)
+c
+            if (idefrm(nbl) .gt. 0) then
+c
+c              temporary storage locations:
+c              lvel  = start of grid point velocity array
+c              lacci = start of i-boundary point acceleration array
+c              laccj = start of j-boundary point acceleration array
+c              lacck = start of k-boundary point acceleration array
+c              lt1wk = start of work array for subroutine metric
+c              lt2wk = start of work array for subroutine metric
+c              lt3wk = start of work array for subroutine metric
+c              lt4wk = start of work array for subroutine cellvol
+c
+               lvel  = 9*nsurf + 1
+               lacci = jdim*kdim*idim*3+lvel
+               laccj = jdim*kdim*3*2+lacci
+               lacck = kdim*idim*3*2+laccj
+               lt1wk = jdim*idim*3*2+lacck
+               lt2wk = jdim*kdim*idim*3+lt1wk
+               lt3wk = jdim*kdim*6+lt2wk
+               lt4wk = jdim*kdim*idim*5+lt3wk 
+c
+               mdim  = jdim*kdim*idim*3
+               if (nwork.lt.mdim) then
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),445)
+                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+c
+               if (isklton.eq.1)then
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),'('' deforming block  '',i4,
+     .                  '' to new shape'')') nbl
+               end if
+c
+
+               nflag = 0
+               irst = 0
+               if (idef_ss .gt. 0) irst = 1
+               call deform_surf(nbl,idim,jdim,kdim,w(ldeltj),w(ldeltk),
+     .                          w(ldelti),lw,lw2,icsi,icsf,jcsi,jcsf,
+     .                          kcsi,kcsf,maxbl,mseq,time,dt,ita,nou,
+     .                          bou,nbuf,ibufdim,myid,idefrm,nbci0,
+     .                          nbcidim,nbcj0,nbcjdim,nbck0,nbckdim,
+     .                          ibcinfo,jbcinfo,kbcinfo,maxseg,wk,ue,
+     .                          nsurf,irst,nflag,islavept,nslave,
+     .                          nsegdfrm,idfrmseg,iaesurf,
+     .                          maxsegdg,nmaster,iseqr)
+
+c
+            end if
+         end if
+150      continue
+      end if
+c
+#if defined DIST_MPI
+      do nn = 1,maxbl
+        if(nblelst(nn,1).ne.0) then
+          nbl   = nblelst(nn,1)
+          n1    = nblelst(nn,2)
+          n2    = nblelst(nn+1,2)
+          nstrt = 3*(n1-1) + 1  
+          nend  = 3*(n2-1) + 1  
+          ndata = nend - nstrt
+          if (myid .eq. mblk2nd(nbl)) then 
+            mytag   = n1 
+            nd_dest = myhost
+            call MPI_Send (ue(nstrt),ndata,MY_MPI_REAL,
+     .                     nd_dest,mytag,mycomm,ierr)
+          else if (myid .eq. myhost) then 
+            mytag   = n1 
+            nd_srce = mblk2nd(nbl)
+            call MPI_Recv (ue(nstrt),ndata,MY_MPI_REAL,
+     .                     nd_srce,mytag,mycomm,istat,ierr)
+          end if
+        end if
+      enddo
+      call MPI_Bcast (ue,3*nslave,MY_MPI_REAL,myhost,
+     .                mycomm,ierr)
+#endif
+c
 c
 c     update faces and interior of deforming meshes, and finite
 c     difference old and new grid positions to get new grid velocities
 c     (velocities stored in work array, at position lvel)
 c
+      if (iunst.gt.1 .or. idef_ss.gt.0) then
+ 
+           do n = 1,nslave
+             nbl = islavept(n,9,iseqr)
+             ll  = islavept(n,1,iseqr)
+             if (myid .eq. mblk2nd(nbl)) then
+               call lead(nbl,lw,lw2,maxbl)
+               xst(n) = w(lx+ll)  
+               yst(n) = w(ly+ll)  
+               zst(n) = w(lz+ll)  
+             end if
+           enddo
+#if defined DIST_MPI
+           do nn = 1,maxbl
+             if(nblelst(nn,1).ne.0) then
+               nbl   = nblelst(nn,1)
+               nstrt = nblelst(nn,2) 
+               nend  = nblelst(nn+1,2) 
+               ndata = nend - nstrt
+               if (myid .eq. mblk2nd(nbl)) then
+                   mytag   = nstrt  
+                   nd_dest = myhost
+                   call MPI_Send (xst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_dest,
+     .                            mytag,mycomm,ierr)
+               else if (myid .eq. myhost) then
+                   mytag   = nstrt  
+                   nd_srce = mblk2nd(nbl)
+                   call MPI_Recv (xst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_srce,mytag,
+     .                            mycomm,istat,ierr)
+               end if
+             end if
+           enddo
+           do nn = 1,maxbl
+             if(nblelst(nn,1).ne.0) then
+               nbl   = nblelst(nn,1)
+               nstrt = nblelst(nn,2) 
+               nend  = nblelst(nn+1,2) 
+               ndata = nend - nstrt
+               if (myid .eq. mblk2nd(nbl)) then
+                   mytag   = nstrt  
+                   nd_dest = myhost
+                   call MPI_Send (yst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_dest,
+     .                            mytag,mycomm,ierr)
+               else if (myid .eq. myhost) then
+                   mytag   = nstrt  
+                   nd_srce = mblk2nd(nbl)
+                   call MPI_Recv (yst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_srce,mytag,
+     .                            mycomm,istat,ierr)
+               end if
+             end if
+           enddo
+           do nn = 1,maxbl
+             if(nblelst(nn,1).ne.0) then
+               nbl   = nblelst(nn,1)
+               nstrt = nblelst(nn,2) 
+               nend  = nblelst(nn+1,2) 
+               ndata = nend - nstrt
+               if (myid .eq. mblk2nd(nbl)) then
+                   mytag   = nstrt  
+                   nd_dest = myhost
+                   call MPI_Send (zst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_dest,
+     .                            mytag,mycomm,ierr)
+               else if (myid .eq. myhost) then
+                   mytag   = nstrt  
+                   nd_srce = mblk2nd(nbl)
+                   call MPI_Recv (zst(nstrt),ndata,
+     .                            MY_MPI_REAL,nd_srce,mytag,
+     .                            mycomm,istat,ierr)
+               end if
+             end if
+           enddo
+           call MPI_Bcast (xst,nslave,MY_MPI_REAL,myhost,
+     .                     mycomm,ierr)
+           call MPI_Bcast (yst,nslave,MY_MPI_REAL,myhost,
+     .                     mycomm,ierr)
+           call MPI_Bcast (zst,nslave,MY_MPI_REAL,myhost,
+     .                     mycomm,ierr)
+#endif
+         call deform_el(islavept,nslave,nmaster,ue,xst,yst,zst,
+     .                  nt,myhost,mycomm,myid,nnodes,mblk2nd,nblelst,
+     .                  maxbl,iseqr)
+      end if
       if (iunst.gt.1 .or. idef_ss.gt.0) then
          ivert = 0
          do 200 nbl = 1,nblock
@@ -508,16 +689,16 @@ c
                irst = 0
                if (idef_ss .gt. 0) irst = 1
                call deform(nbl,idim,jdim,kdim,w(lx),w(ly),w(lz),
-     .                     w(lxnm2),w(lynm2),w(lznm2),
-     .                     w(lxnm1),w(lynm1),w(lznm1),
-     .                     w(ldeltj),w(ldeltk),w(ldelti),wk(lvel),
-     .                     icsi,icsf,jcsi,jcsf,kcsi,kcsf,maxbl,time,
-     .                     dt,ita,nou,bou,nbuf,ibufdim,myid,idefrm,
-     .                     nbci0,nbcidim,nbcj0,nbcjdim,nbck0,nbckdim,
-     .                     ibcinfo,jbcinfo,kbcinfo,maxseg,wk,nsurf,irst,
-     .                     nflag,ivert,slavept,nslave,iskip,jskip,
-     .                     kskip,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
-     .                     nmaster,iseqr)
+     .                     w(lxnm2),w(lynm2),w(lznm2),w(lxnm1),
+     .                     w(lynm1),w(lznm1),w(ldeltj),w(ldeltk),
+     .                     w(ldelti),ue,wk(lvel),icsi,icsf,jcsi,
+     .                     jcsf,kcsi,kcsf,maxbl,dt,nou,bou,
+     .                     nbuf,ibufdim,myid,idefrm,nbci0,nbcidim,
+     .                     nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,
+     .                     kbcinfo,maxseg,wk,nsurf,irst,nflag,
+     .                     islavept,nslave,iskip,jskip,kskip,nsegdfrm,
+     .                     idfrmseg,iaesurf,maxsegdg,nmaster,iseqr,
+     .                     iskmax,jskmax,kskmax,nt)
                if (iunst .gt. 1) then
 c
 c              calculate face-average values of velocity and acceleration

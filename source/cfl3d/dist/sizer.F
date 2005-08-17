@@ -135,7 +135,7 @@ c
       allocatable :: isav_pat_b(:,:,:)
       allocatable :: isav_prd(:,:)
       allocatable :: isg(:)
-      allocatable :: iskip(:)
+      allocatable :: iskip(:,:)
       allocatable :: isva(:,:,:)
       allocatable :: itrans(:)
       allocatable :: iv(:)
@@ -151,7 +151,7 @@ c
       allocatable :: jlamhig(:)
       allocatable :: jlamlog(:)
       allocatable :: jsg(:)
-      allocatable :: jskip(:)
+      allocatable :: jskip(:,:)
       allocatable :: kbcinfo(:,:,:,:)
       allocatable :: kcsf(:,:)
       allocatable :: kcsi(:,:)
@@ -161,7 +161,7 @@ c
       allocatable :: klamhig(:)
       allocatable :: klamlog(:)
       allocatable :: ksg(:)
-      allocatable :: kskip(:)
+      allocatable :: kskip(:,:)
       allocatable :: lbg(:)
       allocatable :: levelg(:)
       allocatable :: lig(:)
@@ -280,6 +280,8 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 c
       icall  = 0
       memuse = 0
@@ -428,8 +430,8 @@ c
       call umalloc(lbcprd0*12,1,'isav_prd',memuse,stats)
       allocate( isg(maxbl0), stat=stats )
       call umalloc(maxbl0,1,'isg',memuse,stats)
-      allocate( iskip(maxbl0), stat=stats )
-      call umalloc(maxbl0,1,'iskip',memuse,stats)
+      allocate( iskip(maxbl0,500), stat=stats )
+      call umalloc(500*maxbl0,1,'iskip',memuse,stats)
       allocate( isva(2,2,mxbli0), stat=stats )
       call umalloc(2*2*mxbli0,1,'isva',memuse,stats)
       allocate( itrans(maxbl0), stat=stats )
@@ -460,8 +462,8 @@ c
       call umalloc(maxbl0,1,'jlamlog',memuse,stats)
       allocate( jsg(maxbl0), stat=stats )
       call umalloc(maxbl0,1,'jsg',memuse,stats)
-      allocate( jskip(maxbl0), stat=stats )
-      call umalloc(maxbl0,1,'jskip',memuse,stats)
+      allocate( jskip(maxbl0,500), stat=stats )
+      call umalloc(500*maxbl0,1,'jskip',memuse,stats)
       allocate( kbcinfo(maxbl0,maxseg0,7,2), stat=stats )
       call umalloc(maxbl0*maxseg0*7*2,1,'kbcinfo',memuse,stats)
       allocate( kcsf(maxbl0,maxsegdg0), stat=stats )
@@ -480,8 +482,8 @@ c
       call umalloc(maxbl0,1,'klamlog',memuse,stats)
       allocate( ksg(maxbl0), stat=stats )
       call umalloc(maxbl0,1,'ksg',memuse,stats)
-      allocate( kskip(maxbl0), stat=stats )
-      call umalloc(maxbl0,1,'kskip',memuse,stats)
+      allocate( kskip(maxbl0,500), stat=stats )
+      call umalloc(500*maxbl0,1,'kskip',memuse,stats)
       allocate( lbg(maxbl0), stat=stats )
       call umalloc(maxbl0,1,'lbg',memuse,stats)
       allocate( levelg(maxbl0), stat=stats )
@@ -2243,7 +2245,7 @@ c     in mgbl, to call global
       needi  = max(needi,needi_glo)
 c
 c     in mgbl, to call trnsfr_vals
-      needi_trn = 53*lmaxbl        + 118      + 9*lmaxbl*lmxsegdg
+      needi_trn =1550*lmaxbl       + 119      + 9*lmaxbl*lmxsegdg
      .          + 48*lmaxbl*lmxseg + 19*lmxbli + 22*lnplts
      .          + 4*lmaxgr         + 9*lmaxcs
       needi  = max(needi,needi_trn)
@@ -2379,143 +2381,48 @@ c     determine number of slave points for deforming mesh case
 c
 c***********************************************************************
 c
+      ivert = 0
       if (iunst.gt.1 .or. idef_ss.gt.0) then
-      do inode = 1,nodel
-         ivert = 0
          do nbl = 1,nblock
-            iskp = iskip(nbl)
-            jskp = jskip(nbl)
-            kskp = kskip(nbl)
-            if (mblk2nd(nbl).eq.inode) then
-c              i=1 subfaces
-               do nseg=1,nbci0(nbl)
-                  ii     = 1
-                  ibctyp = ibcinfo(nbl,nseg,1,ii)
-                  if (abs(ibctyp).ne.2004 .or.
-     .                abs(ibctyp).ne.2014 .or.
-     .                abs(ibctyp).ne.2016 .or.
-     .                abs(ibctyp).ne.1005 .or.
-     .                abs(ibctyp).ne.1006) then
-                      js = ibcinfo(nbl,nseg,2,ii)
-                      je = ibcinfo(nbl,nseg,3,ii)
-                      ks = ibcinfo(nbl,nseg,4,ii)
-                      ke = ibcinfo(nbl,nseg,5,ii)
-                      do j=js,je,jskp
-                         do k=ks,ke,kskp
-                            ivert = ivert + 1
-                         end do
-                      end do
-                  end if
-               end do
-c              i=idim subfaces
-               do nseg=1,nbcidim(nbl)
-                  ii     = 2
-                  ibctyp = ibcinfo(nbl,nseg,1,ii)
-                  if (abs(ibctyp).ne.2004 .or.
-     .                abs(ibctyp).ne.2014 .or.
-     .                abs(ibctyp).ne.2016 .or.
-     .                abs(ibctyp).ne.1005 .or.
-     .                abs(ibctyp).ne.1006) then
-                      js = ibcinfo(nbl,nseg,2,ii)
-                      je = ibcinfo(nbl,nseg,3,ii)
-                      ks = ibcinfo(nbl,nseg,4,ii)
-                      ke = ibcinfo(nbl,nseg,5,ii)
-                      do j=js,je,jskp
-                         do k=ks,ke,kskp
-                            ivert = ivert + 1
-                         end do
-                      end do
-                  end if
-               end do
-               if (i2d .eq. 0) then
-c                 j=1 subfaces
-                  do nseg=1,nbcj0(nbl)
-                     jj     = 1
-                     jbctyp = jbcinfo(nbl,nseg,1,jj)
-                     if (abs(jbctyp).ne.2004 .or.
-     .                   abs(jbctyp).ne.2014 .or.
-     .                   abs(jbctyp).ne.2016 .or.
-     .                   abs(jbctyp).ne.1005 .or.
-     .                   abs(jbctyp).ne.1006) then
-                         is = jbcinfo(nbl,nseg,2,jj)
-                         ie = jbcinfo(nbl,nseg,3,jj)
-                         ks = jbcinfo(nbl,nseg,4,jj)
-                         ke = jbcinfo(nbl,nseg,5,jj)
-                         do i=is,ie,iskp
-                            do k=ks,ke,kskp
-                               ivert = ivert + 1
-                            end do
-                         end do
-                     end if
+          if (levelg(nbl).ge.lglobal) then
+            if(abs(isktyp).eq.1) then
+              call lead(nbl,lw,lw2,maxbl0)
+              iskp = iskip(nbl,1)
+              jskp = jskip(nbl,1)
+              kskp = kskip(nbl,1)
+              do i=1,idim,iskp
+                do j=1,jdim,jskp
+                  do k=1,kdim,kskp
+                    ivert = ivert + 1
                   end do
-c                 j=jdim subfaces
-                  do nseg=1,nbcjdim(nbl)
-                     jj     = 2
-                     jbctyp = jbcinfo(nbl,nseg,1,jj)
-                     if (abs(jbctyp).ne.2004 .or.
-     .                   abs(jbctyp).ne.2014 .or.
-     .                   abs(jbctyp).ne.2016 .or.
-     .                   abs(jbctyp).ne.1005 .or.
-     .                   abs(jbctyp).ne.1006) then
-                         is = jbcinfo(nbl,nseg,2,jj)
-                         ie = jbcinfo(nbl,nseg,3,jj)
-                         ks = jbcinfo(nbl,nseg,4,jj)
-                         ke = jbcinfo(nbl,nseg,5,jj)
-                         do i=is,ie,iskp
-                            do k=ks,ke,kskp
-                               ivert = ivert + 1
-                            end do
-                         end do
-                     end if
-                  end do
-c                 k=1 subfaces
-                  do nseg=1,nbck0(nbl)
-                     kk     = 1
-                     kbctyp = kbcinfo(nbl,nseg,1,kk)
-                     if (abs(kbctyp).ne.2004 .or.
-     .                   abs(kbctyp).ne.2014 .or.
-     .                   abs(kbctyp).ne.2016 .or.
-     .                   abs(kbctyp).ne.1005 .or.
-     .                   abs(kbctyp).ne.1006) then
-                         is = kbcinfo(nbl,nseg,2,kk)
-                         ie = kbcinfo(nbl,nseg,3,kk)
-                         js = kbcinfo(nbl,nseg,4,kk)
-                         je = kbcinfo(nbl,nseg,5,kk)
-                         do i=is,ie,iskp
-                            do j=js,je,jskp
-                               ivert = ivert + 1
-                            end do
-                         end do
-                     end if
-                  end do
-c                 k=kdim subfaces
-                  do nseg=1,nbckdim(nbl)
-                     kk     = 2
-                     kbctyp = kbcinfo(nbl,nseg,1,kk)
-                     if (abs(kbctyp).ne.2004 .or.
-     .                   abs(kbctyp).ne.2014 .or.
-     .                   abs(kbctyp).ne.2016 .or.
-     .                   abs(kbctyp).ne.1005 .or.
-     .                   abs(kbctyp).ne.1006) then
-                         is = kbcinfo(nbl,nseg,2,kk)
-                         ie = kbcinfo(nbl,nseg,3,kk)
-                         js = kbcinfo(nbl,nseg,4,kk)
-                         je = kbcinfo(nbl,nseg,5,kk)
-                         do i=is,ie,iskp
-                            do j=js,je,jskp
-                               ivert = ivert + 1
-                            end do
-                         end do
-                     end if
-                  end do
-               end if
+                end do
+              end do
+            else if(abs(isktyp).eq.2) then
+              itot = 0
+              jtot = 0
+              ktot = 0
+              do ii = 1,500
+                if(iskip(nbl,ii).eq.0) goto 300
+                itot = itot + 1
+              enddo
+300           continue
+              do ii = 1,500
+                if(jskip(nbl,ii).eq.0) goto 320
+                jtot = jtot + 1
+              enddo
+320           continue
+              do ii = 1,500
+                if(kskip(nbl,ii).eq.0) goto 340
+                ktot = ktot + 1
+              enddo
+340           continue
+              ivert = ivert + itot*jtot*ktot
             end if
+          end if
          end do
-c
-         lnslave = max(ivert,lnslave)
-c
-      end do
       end if
+c
+      lnslave = max(ivert,lnslave)
 c
 c     add any extra memory input by the user
 c     (memadd, memaddi default to zero)

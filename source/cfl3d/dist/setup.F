@@ -1,5 +1,5 @@
-      subroutine setup(lw,lw2,w,mgwk,wk,nwork,iwk,iwork,
-     .                 itest,jtest,ktest,maxbl,maxgr,maxseg,nsub1,
+      subroutine setup(lw,lw2,w,mgwk,wk,nwork,iwk,iwork,itest,
+     .                 jtest,ktest,maxbl,mxbli,maxgr,maxseg,nsub1,
      .                 maxxe,intmax,iitot,ncycmax,lwdat,lig,lbg,iovrlp,
      .                 qb,nblock,iviscg,jdimg,kdimg,idimg,utrans,
      .                 vtrans,wtrans,omegax,omegay,omegaz,xorig,
@@ -21,12 +21,13 @@
      .                 xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .                 rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .                 kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .                 aesrfdat,perturb,slavept,nslave,iskip,jskip,
+     .                 aesrfdat,perturb,islavept,nslave,iskip,jskip,
      .                 kskip,bmat,stm,stmi,gforcn,gforcnm,xxn,
      .                 nsegdfrm,idfrmseg,iaesurf,maxsegdg,nmaster,
      .                 aehist,timekeep,inpl3d,nplots,nplot3d,levelg,
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
-     .                 icouple,lfgm)
+     .                 icouple,lfgm,nblk,limblk,isva,nblelst,
+     .                 iskmax,jskmax,kskmax,ue)
 c
 c     $Id$
 c
@@ -122,13 +123,20 @@ c
       dimension freq(nmds,maxaes),gmass(nmds,maxaes),x0(2*nmds,maxaes),
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4),aehist(ncycmax,3,nmds,maxaes)
-      dimension aesrfdat(5,maxaes),slavept(nslave,3,nmaster,5)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension aesrfdat(5,maxaes),islavept(nslave,nmaster,5)
+      dimension iskip(maxbl,500),jskip(maxbl,500),kskip(maxbl,500)
+      dimension ue(3*nslave)
       dimension bmat(2*nmds,2*nmds,maxaes),stm(2*nmds,2*nmds,maxaes),
      .          stmi(2*nmds,2*nmds,maxaes),xxn(2*nmds,maxaes),
      .          gforcn(2*nmds,maxaes),gforcnm(2*nmds,maxaes),
      .          gforcs(2*nmds,maxaes),xs(2*nmds,maxaes)
       dimension inpl3d(nplots,11),levelg(maxbl),iadvance(maxbl)
+      dimension nblk(2,mxbli),limblk(2,6,mxbli),
+     .          isva(2,2,mxbli)
+      dimension nblelst(maxbl,2)
+      dimension iskmax(maxbl)
+      dimension jskmax(maxbl)
+      dimension kskmax(maxbl)
 c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
@@ -160,7 +168,8 @@ c
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /elastic/ ndefrm,naesrf
       common /elastic_ss/ idef_ss 
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
       common /ghost/ irghost,iwghost
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
@@ -206,6 +215,11 @@ c
             end do
          end if
       end do
+      if(iunst.gt.1) then
+        do ns = 1,3*nslave
+          ue(ns) = 0.
+        enddo
+      end if
 c
       lig(1) = 1
       lbg(1) = 1
@@ -465,14 +479,15 @@ c
 c     initialize slavept data for mesh deformation
 c
       if (iunst.gt.1 .or. idef_ss .gt. 0) then
-         call setslave(lw,lw2,w,mgwk,wk,nwork,maxbl,maxgr,maxseg,
+         call setslave(lw,lw2,w,mgwk,wk,nwork,maxbl,mxbli,maxgr,maxseg,
      .                 nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .                 ibcinfo,jbcinfo,kbcinfo,nblock,idefrm,
      .                 iadvance,nou,bou,nbuf,ibufdim,myid,myhost,
      .                 mycomm,mblk2nd,icsi,icsf,jcsi,jcsf,kcsi,
-     .                 kcsf,slavept,nslave,nsegdfrm,idfrmseg,
+     .                 kcsf,islavept,nslave,nsegdfrm,idfrmseg,
      .                 maxsegdg,iwk,iwork,nmaster,ngrid,jskip,kskip,
-     .                 iskip,nblg,levelg,lfgm)
+     .                 iskip,nblg,levelg,lfgm,nblk,limblk,isva,nblelst,
+     .                 nnodes,iskmax,jskmax,kskmax)
       end if
 c
       if (idef_ss .gt. 0) then
@@ -608,11 +623,12 @@ c
      .                 xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .                 rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .                 kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .                 aesrfdat,perturb,itrans,irotat,slavept,nslave,
+     .                 aesrfdat,perturb,itrans,irotat,islavept,nslave,
      .                 iskip,jskip,kskip,xs,xxn,nsegdfrm,idfrmseg,
      .                 iaesurf,maxsegdg,iwk,nmaster,1,xorig,yorig,
      .                 zorig,xorgae0,yorgae0,zorgae0,icouple,
-     .                 iwk(maxbl),nnodes)
+     .                 iwk(maxbl),nnodes,nblelst,iskmax,jskmax,kskmax,
+     .                 ue)
 c
 c         collocate deformed grid points on coarser levels
 c

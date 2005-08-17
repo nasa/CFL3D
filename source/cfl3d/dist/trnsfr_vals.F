@@ -114,7 +114,7 @@ c
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4)
       dimension aesrfdat(5,maxaes)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension iskip(maxbl,500),jskip(maxbl,500),kskip(maxbl,500)
       dimension bcvali(maxbl,maxseg,12,2),
      .          bcvalj(maxbl,maxseg,12,2),bcvalk(maxbl,maxseg,12,2),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
@@ -133,7 +133,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm
       common /axisym/ iaxi2plane
       common /singular/ atol
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /chk/ ichk
@@ -296,7 +297,9 @@ c
          end do
          work(nlast+52) = beta1
          work(nlast+53) = alpha1
-         nlast = nlast + 53
+         work(nlast+54) = beta2
+         work(nlast+55) = alpha2
+         nlast = nlast + 55
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
@@ -539,7 +542,9 @@ c
          end do
          beta1    = work(nlast+52)
          alpha1   = work(nlast+53)
-         nlast = nlast + 53
+         beta2    = work(nlast+54)
+         alpha2   = work(nlast+55)
+         nlast = nlast + 55
          iii   = nlast
          do kk=1,maxaes
             do jj=1,nmds
@@ -908,16 +913,18 @@ c
             end do
          end do
          nlast = nlast + 22*nplots
-         do nbl=1,maxbl
-            iwork(nlast+nbl)         = iskip(nbl)
-            iwork(nlast+nbl+maxbl)   = jskip(nbl)
-            iwork(nlast+nbl+2*maxbl) = kskip(nbl)
+         do j = 1,500
+          do nbl=1,maxbl
+            iwork(nlast+j+500*(nbl-1))           = iskip(nbl,j)
+            iwork(nlast+j+500*maxbl+500*(nbl-1)) = jskip(nbl,j)
+            iwork(nlast+j+1000*maxbl+500*(nbl-1))= kskip(nbl,j)
+          enddo
          end do
-         nlast = nlast + 3*maxbl
+         nlast = nlast + 1500*maxbl
 c
       end if
 c
-      nvals = 53*maxbl + 119       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+      nvals =1550*maxbl + 119      + 9*maxbl*maxsegdg + 48*maxbl*maxseg
      .      + 19*mxbli + 22*nplots + 4*maxgr          + 9*maxcs
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
@@ -1173,12 +1180,14 @@ c
             end do
          end do
          nlast = nlast + 22*nplots
-         do nbl=1,maxbl
-            iskip(nbl) = iwork(nlast+nbl)
-            jskip(nbl) = iwork(nlast+nbl+maxbl)
-            kskip(nbl) = iwork(nlast+nbl+2*maxbl)
+         do j = 1,500
+          do nbl=1,maxbl
+            iskip(nbl,j) =  iwork(nlast+j+500*(nbl-1))
+            jskip(nbl,j) =  iwork(nlast+j+500*maxbl+500*(nbl-1))
+            kskip(nbl,j) =  iwork(nlast+j+1000*maxbl+500*(nbl-1))
+          end do
          end do
-         nlast = nlast + 3*maxbl
+         nlast = nlast + 1500*maxbl
       end if
 c
 c****************************

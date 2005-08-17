@@ -44,11 +44,11 @@
      .                omgxae,omgyae,omgzae,xorgae,yorgae,zorgae,thtxae,
      .                thtyae,thtzae,rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .                kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .                aesrfdat,perturb,memuse,bcfiles,slavept,nslave,
+     .                aesrfdat,perturb,memuse,bcfiles,islavept,nslave,
      .                iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .                gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
-     .                zorgae0,icouple)
+     .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue)
 c
 c     $Id$
 c
@@ -145,8 +145,9 @@ c
       dimension freq(nmds,maxaes),gmass(nmds,maxaes),x0(2*nmds,maxaes),
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4),aehist(ncycmax,3,nmds,maxaes)
-      dimension aesrfdat(5,maxaes),slavept(nslave,3,nmaster,5)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension aesrfdat(5,maxaes),islavept(nslave,nmaster,5)
+      dimension ue(3*nslave)
+      dimension iskip(maxbl,500),jskip(maxbl,500),kskip(maxbl,500)
       dimension bmat(2*nmds,2*nmds,maxaes),gforcn(2*nmds,maxaes),
      .          gforcnm(2*nmds,maxaes),gforcs(2*nmds,maxaes),
      .          stm(2*nmds,2*nmds,maxaes),stmi(2*nmds,2*nmds,maxaes),
@@ -220,6 +221,10 @@ c
       dimension isav_dpat(intmx,17),isav_dpat_b(intmx,msub1,6)
       dimension isav_emb(lbcemb,12)
       dimension mblk2nd(maxbl)
+      dimension nblelst(maxbl,2)
+      dimension iskmax(maxbl)
+      dimension jskmax(maxbl)
+      dimension kskmax(maxbl)
 c
       common /elastic/ ndefrm,naesrf
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
@@ -249,7 +254,8 @@ c
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 c
 c***********************************************************************
 c     initialization
@@ -450,9 +456,9 @@ c***********************************************************************
 c     transfer data from host to nodes
 c***********************************************************************
 c
-      nvalsr = 30*maxbl + maxbl*maxseg*72 + 53 + 11*nmds*maxaes
+      nvalsr = 30*maxbl + maxbl*maxseg*72 + 55 + 11*nmds*maxaes
      .       + 5*maxaes + 17*maxbl*maxsegdg + nkey
-      nvalsi = 53*maxbl + 119      + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+      nvalsi =1550*maxbl+ 119      + 9*maxbl*maxsegdg + 48*maxbl*maxseg
      .       + 19*mxbli + 22*nplots + 4*maxgr          + 9*maxcs
       if (mwork .lt. nvalsr) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -588,7 +594,7 @@ c
 c
       call setup(lw,lw2,work,nstart,work(nstart+1),nwork,iwork(iwk5),
      .           mworki1,iwork(iwk1),iwork(iwk2),iwork(iwk3),
-     .           maxbl,maxgr,maxseg,nsub1,maxxe,intmax,
+     .           maxbl,mxbli,maxgr,maxseg,nsub1,maxxe,intmax,
      .           iitot,ncycmax,lwdat,lig,lbg,iovrlp,
      .           qb,nblock,iviscg,jdimg,kdimg,idimg,utrans,
      .           vtrans,wtrans,omegax,omegay,omegaz,xorig,
@@ -610,11 +616,12 @@ c
      .           xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .           rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
      .           freq,gmass,damp,x0,gf0,nmds,maxaes,aesrfdat,perturb,
-     .           slavept,nslave,iskip,jskip,kskip,bmat,stm,stmi,
+     .           islavept,nslave,iskip,jskip,kskip,bmat,stm,stmi,
      .           gforcn,gforcnm,xxn,nsegdfrm,idfrmseg,iaesurf,
      .           maxsegdg,nmaster,aehist,timekeep,inpl3d,nplots,
      .           nplot3d,levelg,iadvance,xs,gforcs,xorgae0,yorgae0,
-     .           zorgae0,icouple,lfgm)
+     .           zorgae0,icouple,lfgm,nblk,limblk,isva,nblelst,iskmax,
+     .           jskmax,kskmax,ue)
 c
       do iii = 1,mworki
          iwork(iii) = 0
@@ -750,10 +757,11 @@ c
      .              xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .              rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
      .              freq,gmass,damp,x0,gf0,nmds,maxaes,aesrfdat,perturb,
-     .              slavept,nslave,iskip,jskip,kskip,bmat,stm,stmi,
+     .              islavept,nslave,iskip,jskip,kskip,bmat,stm,stmi,
      .              xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
-     .              yorgae0,zorgae0,icouple,iprnsurf)
+     .              yorgae0,zorgae0,icouple,iprnsurf,nblelst,iskmax,
+     .              jskmax,kskmax,ue)
 c
          do iii = 1,mworki
             iwork(iii) = 0
@@ -804,6 +812,10 @@ c
      .                   float(ncells)/float(ntstep)
             ratesub(iseq) = rate(iseq)/float(ncyc1(iseq))
          end if
+c
+c   meshdef = 1 if flow solution is to be bipassed, and mesh deformation only:
+c
+      if(meshdef.eq.1) goto 8100
 c
 c***********************************************************************
 c        output for the current sequence level
@@ -927,6 +939,7 @@ c
       end if
 c
  8000 continue
+ 8100 continue
 c
 c     end of mesh sequencing
 c
@@ -937,6 +950,10 @@ c
 #if defined DIST_MPI
       if (myid.eq.myhost) then
 #endif
+c
+c   meshdef = 1 if flow solution is to be bipassed, and mesh deformation only:
+c
+      if(meshdef.eq.1) goto 8110
 c
       call histout(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .             cmxw,cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,
@@ -959,6 +976,7 @@ c
   161    format(7h output,i4,
      .   36h frames of plot3d data for animation)
       end if
+8110  continue
 c
 c***********************************************************************
 c     output computational rates based on *wall time*

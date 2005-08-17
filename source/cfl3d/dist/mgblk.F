@@ -44,11 +44,11 @@
      .                 xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .                 rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
      .                 freq,gmass,damp,x0,gf0,nmds,maxaes,aesrfdat,
-     .                 perturb,slavept,nslave,iskip,jskip,kskip,bmat,
+     .                 perturb,islavept,nslave,iskip,jskip,kskip,bmat,
      .                 stm,stmi,xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,
      .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
      .                 timekeep,xorgae0,yorgae0,zorgae0,icouple,
-     .                 iprnsurf)
+     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue)
 c
 c     $Id$
 c
@@ -152,8 +152,9 @@ c
       dimension freq(nmds,maxaes),gmass(nmds,maxaes),x0(2*nmds,maxaes),
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4),aehist(ncycmax,3,nmds,maxaes)
-      dimension aesrfdat(5,maxaes),slavept(nslave,3,nmaster,5)
-      dimension iskip(maxbl),jskip(maxbl),kskip(maxbl)
+      dimension aesrfdat(5,maxaes),islavept(nslave,nmaster,5)
+      dimension ue(3*nslave)
+      dimension iskip(maxbl,500),jskip(maxbl,500),kskip(maxbl,500)
       dimension bmat(2*nmds,2*nmds,maxaes),gforcn(2*nmds,maxaes),
      .          gforcnm(2*nmds,maxaes),gforcs(2*nmds,maxaes),
      .          stm(2*nmds,2*nmds,maxaes),stmi(2*nmds,2*nmds,maxaes),
@@ -224,6 +225,10 @@ c
       dimension factjlo(intmx,msub1),factjhi(intmx,msub1),
      .          factklo(intmx,msub1),factkhi(intmx,msub1)
       dimension istop_data(10)
+      dimension nblelst(maxbl,2)
+      dimension iskmax(maxbl)
+      dimension jskmax(maxbl)
+      dimension kskmax(maxbl)
 c
       common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
@@ -272,7 +277,8 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 c
 c      time step cycle:
 c
@@ -719,6 +725,17 @@ c
 c        store off old grid position for 2nd order (in time) update
 c        of deforming grid speeds
 c
+c
+c      if meshdef = 1, deform mesh and calculate volumes and metrics only
+c
+       if(meshdef.eq.1) then
+         if(myid.eq.myhost) then
+           write(11,10229) nt
+10229      format(' Deforming mesh and calculating volumes and metrics,'
+     .             ,' time step ',i5)
+         end if
+       end if
+
          do nbl = 1,nblock
             if (myid.eq.mblk2nd(nbl) .and. (levelg(nbl).ge.lglobal .and.
      .         levelg(nbl).le.levelt(iseq))) then
@@ -801,11 +818,12 @@ c
      .                    xorgae,yorgae,zorgae,thtxae,thtyae,thtzae,
      .                    rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .                    kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .                    aesrfdat,perturb,itrans,irotat,slavept,nslave,
-     .                    iskip,jskip,kskip,xs,xxn,nsegdfrm,idfrmseg,
-     .                    iaesurf,maxsegdg,iwk,nmaster,nt,xorig,
-     .                    yorig,zorig,xorgae0,yorgae0,zorgae0,icouple,
-     .                    iwk(maxbl+1),nnodes)
+     .                    aesrfdat,perturb,itrans,irotat,islavept,
+     .                    nslave,iskip,jskip,kskip,xs,xxn,nsegdfrm,
+     .                    idfrmseg,iaesurf,maxsegdg,iwk,nmaster,nt,
+     .                    xorig,yorig,zorig,xorgae0,yorgae0,zorgae0,
+     .                    icouple,iwk(maxbl+1),nnodes,nblelst,iskmax,
+     .                    jskmax,kskmax,ue)
          end if
       end if
       if (iunst.gt.0) then
@@ -1027,6 +1045,10 @@ c
          negn1  = 0
          negn2  = 0
       end if
+c
+c   meshdef = 1 if flow solution is to be bipassed, and mesh deformation only:
+c
+      if(meshdef.eq.1) goto 6998
 c
 c     nit1 = number of residual evaluations on each multigrid level;
 c     on the downward leg, one extra residual evaluation is performed
@@ -2442,6 +2464,8 @@ c     the following line is added to allow exit from
 c     loop 7000 if the user has altered ntstep via
 c     the "stop" file
 c
+6998  continue
+c
       if (icyc.ge.ncyc) go to 7011
 c
 
@@ -2494,6 +2518,11 @@ c
 #endif
          call rb_corr(clw(ntt),cmyw(ntt))
       end if
+c
+c
+c   meshdef = 1 if flow solution is to be bipassed, and mesh deformation only:
+c
+      if(meshdef.eq.1) goto 5990
 c
 c     write restart file if time-accurate
 c
@@ -2812,6 +2841,8 @@ c
             nframes = nframes + 1
          end if
       end if
+c
+5990  continue
 c
 c     the following line is added to allow exit from
 c     loop 6000 if the user has altered ntstep via

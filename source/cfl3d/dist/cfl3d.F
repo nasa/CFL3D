@@ -186,7 +186,7 @@ c
       allocatable :: isav_pat_b(:,:,:)
       allocatable :: isav_prd(:,:)
       allocatable :: isg(:)
-      allocatable :: iskip(:)
+      allocatable :: iskip(:,:)
       allocatable :: istat2_bl(:,:)
       allocatable :: istat2_em(:,:)
       allocatable :: istat2_pa(:,:)
@@ -211,7 +211,7 @@ c
       allocatable :: jmm(:)
       allocatable :: jmx(:)
       allocatable :: jsg(:)
-      allocatable :: jskip(:)
+      allocatable :: jskip(:,:)
       allocatable :: jte(:)
       allocatable :: jvmax(:)
       allocatable :: kbcinfo(:,:,:,:)
@@ -228,7 +228,7 @@ c
       allocatable :: kmm(:)
       allocatable :: kmx(:)
       allocatable :: ksg(:)
-      allocatable :: kskip(:)
+      allocatable :: kskip(:,:)
       allocatable :: kte(:)
       allocatable :: kvmax(:)
       allocatable :: lbg(:)
@@ -285,7 +285,12 @@ c
       allocatable :: rmstr2(:)
       allocatable :: seta(:,:,:)
       allocatable :: seta2(:,:)
-      allocatable :: slavept(:,:,:,:)
+      allocatable :: islavept(:,:,:)
+      allocatable :: nblelst(:,:)
+      allocatable :: iskmax(:)
+      allocatable :: jskmax(:)
+      allocatable :: kskmax(:)
+      allocatable :: ue(:)
       allocatable :: stm(:,:,:)
       allocatable :: stmi(:,:,:)
       allocatable :: stot(:)
@@ -357,7 +362,8 @@ c
 
 c
       common /mydist2/ nnodes,myhost,myid,mycomm
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 c
 c***********************************************************************
 c     memory allocation
@@ -651,8 +657,8 @@ c
       call umalloc(lbcprd*12,1,'isav_prd',memuse,stats)
       allocate( isg(maxbl),stat=stats )
       call umalloc(maxbl,1,'isg',memuse,stats)
-      allocate( iskip(maxbl),stat=stats )
-      call umalloc(maxbl,1,'iskip',memuse,stats)
+      allocate( iskip(maxbl,500),stat=stats )
+      call umalloc(500*maxbl,1,'iskip',memuse,stats)
       allocate( istat2_bl(istat_size,mxbli*5),stat=stats )
       call umalloc(istat_size*mxbli*5,1,'istat2_bl',memuse,stats)
       allocate( istat2_em(istat_size,lbcemb*3),stat=stats )
@@ -701,8 +707,8 @@ c
       call umalloc(maxbl,1,'jmx',memuse,stats)
       allocate( jsg(maxbl),stat=stats )
       call umalloc(maxbl,1,'jsg',memuse,stats)
-      allocate( jskip(maxbl),stat=stats )
-      call umalloc(maxbl,1,'jskip',memuse,stats)
+      allocate( jskip(maxbl,500),stat=stats )
+      call umalloc(500*maxbl,1,'jskip',memuse,stats)
       allocate( jte(msub1),stat=stats )
       call umalloc(msub1,1,'jte',memuse,stats)
       allocate( jvmax(maxbl),stat=stats )
@@ -735,8 +741,8 @@ c
       call umalloc(maxbl,1,'kmx',memuse,stats)
       allocate( ksg(maxbl),stat=stats )
       call umalloc(maxbl,1,'ksg',memuse,stats)
-      allocate( kskip(maxbl),stat=stats )
-      call umalloc(maxbl,1,'kskip',memuse,stats)
+      allocate( kskip(maxbl,500),stat=stats )
+      call umalloc(500*maxbl,1,'kskip',memuse,stats)
       allocate( kte(msub1),stat=stats )
       call umalloc(msub1,1,'kte',memuse,stats)
       allocate( kvmax(maxbl),stat=stats )
@@ -849,8 +855,18 @@ c
       call umalloc((mptch+2)*(mptch+2)*msub1,0,'seta',memuse,stats)
       allocate( seta2(mptch+2,mptch+2),stat=stats )
       call umalloc((mptch+2)*(mptch+2),0,'seta2',memuse,stats)
-      allocate( slavept(nslave,3,nmaster,5),stat=stats )
-      call umalloc(nslave*3*nmaster*5,0,'slavept',memuse,stats)
+      allocate( islavept(nslave,nmaster,5),stat=stats )
+      call umalloc(nslave*nmaster*5,1,'islavept',memuse,stats)
+      allocate( nblelst(maxbl,2),stat=stats )
+      call umalloc(maxbl*2,1,'nblelst',memuse,stats)
+      allocate( iskmax(maxbl),stat=stats )
+      call umalloc(maxbl,1,'iskmax',memuse,stats)
+      allocate( jskmax(maxbl),stat=stats )
+      call umalloc(maxbl,1,'jskmax',memuse,stats)
+      allocate( kskmax(maxbl),stat=stats )
+      call umalloc(maxbl,1,'kskmax',memuse,stats)
+      allocate( ue(3*nslave),stat=stats )
+      call umalloc(3*nslave,0,'ue',memuse,stats)
       allocate( stm(2*nmds,2*nmds,maxaes),stat=stats )
       call umalloc(2*nmds*2*nmds*maxaes,0,'stm',memuse,stats)
       allocate( stmi(2*nmds,2*nmds,maxaes),stat=stats )
@@ -1049,12 +1065,11 @@ c
      .          omgxae,omgyae,omgzae,xorgae,yorgae,zorgae,thtxae,
      .          thtyae,thtzae,rfrqtae,rfrqrae,icsi,icsf,jcsi,jcsf,
      .          kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
-     .          aesrfdat,perturb,memuse,bcfiles,slavept,nslave,
+     .          aesrfdat,perturb,memuse,bcfiles,islavept,nslave,
      .          iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .          gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
-c    .          nmaster,aehist,timekeep)
      .          nmaster,aehist,timekeep,xorgae0,yorgae0,zorgae0,
-     .          icouple)
+     .          icouple,nblelst,iskmax,jskmax,kskmax,ue)
 c
 c***********************************************************************
 c     deallocate memory 
@@ -1365,7 +1380,12 @@ c
          deallocate(damp)
          deallocate(perturb)
          deallocate(aesrfdat)
-         deallocate(slavept)
+         deallocate(islavept)
+         deallocate(nblelst)
+         deallocate(iskmax)
+         deallocate(jskmax)
+         deallocate(kskmax)
+         deallocate(ue)
          deallocate(iskip)
          deallocate(jskip)
          deallocate(kskip)
