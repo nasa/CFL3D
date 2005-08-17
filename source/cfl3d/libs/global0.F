@@ -528,7 +528,7 @@ c        offbody/multiblock mesh deformation data
          call echoinp(iunit5,iunit11,1)
          read(iunit5,*) nskip,idum1,realval(1),realval(2),realval(3)
      .                  ,realval(4),idum2
-         write(iunit11,'(i8,f9.6,2i9)') nskip,idum1,realval(1),
+         write(iunit11,'(2i8,4f9.6,i9)') nskip,idum1,realval(1),
      .                  realval(2),realval(3),realval(4),idum2
          if(abs(idum1).eq.1) then
            call echoinp(iunit5,iunit11,1)
