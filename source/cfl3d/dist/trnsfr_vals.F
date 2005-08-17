@@ -422,7 +422,7 @@ c
          nlast = nlast+nkey
       end if
 c
-      nvals = 30*maxbl + 72*maxbl*maxseg   + 53   + 11*nmds*maxaes
+      nvals = 30*maxbl + 72*maxbl*maxseg   + 55   + 11*nmds*maxaes
      .      + 5*maxaes + 17*maxbl*maxsegdg + nkey
       if (myid.eq.myhost) then
          if (nvals.ne.nlast) then
