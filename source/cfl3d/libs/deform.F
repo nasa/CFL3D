@@ -54,7 +54,8 @@ c
       common /twod/ i2d
       common /zero/ iexp
       common /unst/ time,cfltau,ntstep,ita,iunst
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 
 c
       memuse = 0
@@ -394,7 +395,8 @@ c
       dimension xt(n)
       dimension ija(nc)
       dimension sa(nc)
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 
       it1 = 0
       itmx1 =200
@@ -407,7 +409,7 @@ c
           do j = ija(i),ija(i+1)-1
             ut = ut - sa(j)*x(ija(j))/sa(i)
           enddo
-          xt(i) = beta1*ut + (1.-beta1)*x(i) 
+          xt(i) = alpha1*ut + (1.-alpha1)*x(i) 
           sum = sum + (xt(i)-x(i))*(xt(i)-x(i))
           resid1= sqrt((xt(i)-x(i))*(xt(i)-x(i)))
           if(resid1.gt.resid) then
@@ -786,7 +788,8 @@ c
       dimension mblk2nd(maxbl)
       dimension arg(7),coef(8),dm(7),rsn(7)
       dimension nipm(7),nsf(7),n3(7)
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
       common /sgminmax/ rmin,rmax
 
       relax = 1.0
@@ -866,7 +869,7 @@ c
             dm(1) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
      .                   u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
      .                   u(3*(n2-1)+3)*u(3*(n2-1)+3))
-            arg(1) = - beta1*(rsn(1)/rmax  - alpha1) 
+            arg(1) = - beta2*(rsn(1)/rmax  - alpha2) 
             if(arg(1).gt.0.) arg(1) = 0.
             coef(1)= coef(1)/coef(8) 
             do ii = 2,7
@@ -875,7 +878,7 @@ c
                 dm(ii) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
      .                        u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
      .                        u(3*(n2-1)+3)*u(3*(n2-1)+3))
-                arg(ii) = - beta1*(rsn(ii)/rmax  - alpha1) 
+                arg(ii) = - beta2*(rsn(ii)/rmax  - alpha2) 
                 if(arg(ii).gt.0.) arg(ii) = 0.
                 coef(ii)= coef(ii)/coef(8) 
               else
@@ -954,8 +957,9 @@ c         enddo
       dimension ni1(0:8),ni0(0:8),test1(0:8) 
       dimension mblk2nd(maxbl)
       common /sgminmax/ rmin,rmax
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 
-      beta2 = 1.000 
 c
 c    Do this at every time step because the closest surface
 c    point to a control point will potentially change as a
@@ -1067,8 +1071,8 @@ c          end if
          
  
       e0 = 500000.
-      r0 = (rmax*alog(1.-eini/e0)+beta2*rmin)/
-     .     (     alog(1.-eini/e0)+beta2     ) 
+      r0 = (rmax*alog(1.-eini/e0)+beta1*rmin)/
+     .     (     alog(1.-eini/e0)+beta1     ) 
   
       do n = 1,nslave
        nbl = islavept(n,9,iseqr)
@@ -1077,8 +1081,7 @@ c          end if
         ni0(4)    = islavept(n     ,7,iseqr)
         if(ni0(1).ne.n.and.ni0(2).ne.n.and.ni0(4).ne.n) then
           rave = r(n)
-          fact     = 1./(1.-exp(-beta2*(rave-r0)/(rmax-r0))) 
-c         fact     = 1.
+          fact     = 1./(1.-exp(-beta1*(rave-r0)/(rmax-r0))) 
           ej(n) = eini*fact
           ek(n) = eini*fact
           ei(n) = eini*fact
@@ -1203,14 +1206,14 @@ c
       return
       end
       subroutine deform(nbl,idim,jdim,kdim,x,y,z,xnm2,ynm2,znm2,
-     .                  xnm1,ynm1,znm1,deltj,deltk,delti,
+     .                  xnm1,ynm1,znm1,deltj,deltk,delti,u,
      .                  vel,icsi,icsf,jcsi,jcsf,kcsi,kcsf,
-     .                  maxbl,time,dt,ita,nou,bou,nbuf,ibufdim,myid,
+     .                  maxbl,dt,nou,bou,nbuf,ibufdim,myid,
      .                  idefrm,nbci0,nbcidim,nbcj0,nbcjdim,nbck0,
      .                  nbckdim,ibcinfo,jbcinfo,kbcinfo,maxseg,wk,nsurf,
-     .                  irst,iflag,ivert,slavept,nslave,iskip,jskip,
+     .                  irst,iflag,islavept,nslave,iskip,jskip,
      .                  kskip,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
-     .                  nmaster,iseq)
+     .                  nmaster,iseq,iskmax,jskmax,kskmax,nt)
 c
 c     $Id$
 c
@@ -1247,15 +1250,15 @@ c
       dimension icsi(maxbl,maxsegdg)
       dimension idefrm(maxbl)
       dimension idfrmseg(maxbl,maxsegdg)
-      dimension iskip(maxbl)
+      dimension iskip(maxbl,500)
       dimension jbcinfo(maxbl,maxseg,7,2)
       dimension jcsf(maxbl,maxsegdg)
       dimension jcsi(maxbl,maxsegdg)
-      dimension jskip(maxbl)
+      dimension jskip(maxbl,500)
       dimension kbcinfo(maxbl,maxseg,7,2)
       dimension kcsf(maxbl,maxsegdg)
       dimension kcsi(maxbl,maxsegdg)
-      dimension kskip(maxbl)
+      dimension kskip(maxbl,500)
       dimension nbci0(maxbl)
       dimension nbcidim(maxbl)
       dimension nbcj0(maxbl)
@@ -1264,24 +1267,27 @@ c
       dimension nbckdim(maxbl)
       dimension nou(nbuf)
       dimension nsegdfrm(maxbl)
-      dimension slavept(nslave,3,nmaster,5)
+      dimension islavept(nslave,nmaster,5)
       dimension vel(jdim,kdim,idim,3)
       dimension wk(9*nsurf)
-      dimension x(jdim,kdim,idim)
-      dimension xnm1(jdim,kdim,idim)
-      dimension xnm2(jdim,kdim,idim)
-      dimension y(jdim,kdim,idim)
-      dimension ynm1(jdim,kdim,idim)
-      dimension ynm2(jdim,kdim,idim)
-      dimension z(jdim,kdim,idim)
-      dimension znm1(jdim,kdim,idim)
-      dimension znm2(jdim,kdim,idim)
+      dimension x(jdim*kdim*idim)
+      dimension xnm1(jdim*kdim*idim)
+      dimension xnm2(jdim*kdim*idim)
+      dimension y(jdim*kdim*idim)
+      dimension ynm1(jdim*kdim*idim)
+      dimension ynm2(jdim*kdim*idim)
+      dimension z(jdim*kdim*idim)
+      dimension znm1(jdim*kdim*idim)
+      dimension znm2(jdim*kdim*idim)
+      dimension u(3*nslave)
+      dimension iskmax(maxbl)
+      dimension jskmax(maxbl)
+      dimension kskmax(maxbl)
 c
       allocatable :: arci(:,:,:)
       allocatable :: arcj(:,:,:)
       allocatable :: arck(:,:,:)
-      allocatable :: dvol(:)
-      allocatable :: dx(:,:,:)
+      allocatable :: dx(:)
       allocatable :: dx1(:,:,:)
       allocatable :: dx2(:,:,:)
       allocatable :: dx3(:,:,:)
@@ -1289,7 +1295,7 @@ c
       allocatable :: dx5(:,:,:)
       allocatable :: dx6(:,:,:)
       allocatable :: dx7(:,:,:)
-      allocatable :: dy(:,:,:)
+      allocatable :: dy(:)
       allocatable :: dy1(:,:,:)
       allocatable :: dy2(:,:,:)
       allocatable :: dy3(:,:,:)
@@ -1297,7 +1303,7 @@ c
       allocatable :: dy5(:,:,:)
       allocatable :: dy6(:,:,:)
       allocatable :: dy7(:,:,:)
-      allocatable :: dz(:,:,:)
+      allocatable :: dz(:)
       allocatable :: dz1(:,:,:)
       allocatable :: dz2(:,:,:)
       allocatable :: dz3(:,:,:)
@@ -1306,14 +1312,12 @@ c
       allocatable :: dz6(:,:,:)
       allocatable :: dz7(:,:,:)
       allocatable :: ibl(:)
-      allocatable :: jend(:)
-      allocatable :: jsta(:)
-      allocatable :: xoi(:,:)
-      allocatable :: xoj(:,:)
-      allocatable :: xok(:,:)
 
       common /twod/ i2d
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
+      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /moov/movie,nframes,icall1,lhdr
 c
 c     allocate memory
 c
@@ -1325,7 +1329,7 @@ c
       call umalloc(jdim*kdim*idim,0,'arcj',memuse,stats)
       allocate( arck(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'arck',memuse,stats)
-      allocate( dx(jdim,kdim,idim), stat=stats )
+      allocate( dx(jdim*kdim*idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dx',memuse,stats)
       allocate( dx1(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dx1',memuse,stats)
@@ -1341,7 +1345,7 @@ c
       call umalloc(jdim*kdim*idim,0,'dx6',memuse,stats)
       allocate( dx7(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dx7',memuse,stats)
-      allocate( dy(jdim,kdim,idim), stat=stats )
+      allocate( dy(jdim*kdim*idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dy',memuse,stats)
       allocate( dy1(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dy1',memuse,stats)
@@ -1357,7 +1361,7 @@ c
       call umalloc(jdim*kdim*idim,0,'dy6',memuse,stats)
       allocate( dy7(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dy7',memuse,stats)
-      allocate( dz(jdim,kdim,idim), stat=stats )
+      allocate( dz(jdim*kdim*idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dz',memuse,stats)
       allocate( dz1(jdim,kdim,idim), stat=stats )
       call umalloc(jdim*kdim*idim,0,'dz1',memuse,stats)
@@ -1383,27 +1387,112 @@ c
 c
 c     initialize deltas
 c
-      do i=1,idim
-         do j=1,jdim
-            do k=1,kdim
-               dx(j,k,i) = 0.
-               dy(j,k,i) = 0.
-               dz(j,k,i) = 0.
+      do j=1,idim*jdim*kdim
+        dx(j) = 0.
+        dy(j) = 0.
+        dz(j) = 0.
+      end do
+      do n = 1,nslave
+        nbl1= islavept(n,9,iseq)
+        ll  = islavept(n,1,iseq)
+        if(nbl1.eq.nbl) then
+          dx(ll+1) = u(3*(n-1)+1)
+          dy(ll+1) = u(3*(n-1)+2)
+          dz(ll+1) = u(3*(n-1)+3)
+        end if
+      enddo
+      if(meshdef.eq.1) then
+        inc = ntstep
+        if(movie.ne.0) then
+          rinc1 = real(nt)/real(movie)
+          inc1  = nt/movie
+          if(real(inc1).eq.rinc1) inc = nt
+        end if
+        if(nt.eq.inc) then
+          write(398+myid,81621) jskmax(nbl),kskmax(nbl),iskmax(nbl),nbl
+     .                        ,nt
+81621 format('ZONE I = ',i8,'  J = ',i8,' K = ',i8,
+     .               ' T="Block ',i5,' Time Step = ',i6,'"')
+31920   format(3(1x,e16.8),1x,e16.8,2(1x,e16.8),2i8)
+          do n = 1,nslave
+            nbl1= islavept(n,9,iseq)
+            ll  = islavept(n,1,iseq)
+            n2  = islavept(n,21,iseq)
+            if(nbl1.eq.nbl) then
+              write(398+myid,31920) x(ll+1)+u(3*(n-1)+1)
+     .                             ,y(ll+1)+u(3*(n-1)+2)
+     .                             ,z(ll+1)+u(3*(n-1)+3)
+     .                             ,u(3*(n-1)+1)
+     .                             ,u(3*(n-1)+2)
+     .                             ,u(3*(n-1)+3),n,n2
+            end if
+          enddo
+        end if
+      end if
+c
+c
+      if(abs(isktyp).eq.1) then
+        iskp = iskip(nbl,1)
+        jskp = jskip(nbl,1)
+        kskp = kskip(nbl,1)
+      end if
+c
+c     i=1 to idim  subfaces
+c
+      if(abs(isktyp).eq.1) then
+       do i = 1,idim,iskp     
+         js = 1
+         je = jdim
+         ks = 1
+         ke = kdim
+         do j=js,je-jskp,jskp
+            do k=ks,ke,kskp
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
+     .                      j,j+jskp,k,k,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
             end do
          end do
-      end do
+         do j=js,je,jskp
+            do k=ks,ke-kskp,kskp
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
+     .                      j,j,k,k+kskp,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
+            end do
+         end do
+       enddo
+      else
+       do i1 = 1,iskmax(nbl)     
+         i = iskip(nbl,i1)
+         do j1=1,jskmax(nbl)-1 
+            j = jskip(nbl,j1)
+            jskp = jskip(nbl,j1+1)
+            do k1=1,kskmax(nbl) 
+               k = kskip(nbl,k1)
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
+     .                      j,jskp,k,k,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
+            end do
+         end do
+         do j1=1,jskmax(nbl)
+            j = jskip(nbl,j1)
+            do k1=1,kskmax(nbl)-1
+               k = kskip(nbl,k1)
+               kskp = kskip(nbl,k1+1)
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
+     .                      j,j,k,kskp,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
+            end do
+         end do
+       enddo
+      end if
 c
-c     determine the master surface point for the 4 corner
-c     points of each block subface that is NOT on a solid
-c     surface, and calculate the deltas for the corner
-c     points based on a decaying function of distance.
-c     (the x,y,z and dx,dy,dz of the master surface points
-c     are stored in wk); then set deltas interior to such
-c     subfaces via TFI 
+c            preserve deltas on edges of solid surfaces
 c
-      iskp = iskip(nbl)
-      jskp = jskip(nbl)
-      kskp = kskip(nbl)
+             if (idefrm(nbl).lt.999) then
+                  call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
+     .                         jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
+     .                         idim,maxbl,maxsegdg,nsegdfrm)
+             end if
 c
 c     i=1 subfaces
 c
@@ -1414,56 +1503,39 @@ c
      .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.2016 .and.
      .       abs(ibctyp).ne.1005 .and.
-     .       abs(ibctyp).ne.1006 .or.
-     .       real(beta1).lt.0.) then
+     .       abs(ibctyp).ne.1006) then 
              js = ibcinfo(nbl,nseg,2,ii)
              je = ibcinfo(nbl,nseg,3,ii)
              ks = ibcinfo(nbl,nseg,4,ii)
              ke = ibcinfo(nbl,nseg,5,ii)
-             do j=js,je,jskp
-                do k=ks,ke,kskp
-                   call setcorner(j,k,1,xnm1,ynm1,znm1,dx,dy,
-     .                            dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                            ivert,slavept,nslave,nou,bou,
-     .                            ibufdim,nbuf,myid,ibl,nmaster,
-     .                            iseq)
-                end do
-             end do
-             do j=js,je-jskp,jskp
-                do k=ks,ke,kskp
-                   call tfiedge(idim,jdim,kdim,dx,dy,dz,1,1,
-     .                          j,j+jskp,k,k,arci,arcj,arck,
-     .                          nou,bou,nbuf,ibufdim,myid)
-                end do
-             end do
-             do j=js,je,jskp
-                do k=ks,ke-kskp,kskp
-                   call tfiedge(idim,jdim,kdim,dx,dy,dz,1,1,
-     .                          j,j,k,k+kskp,arci,arcj,arck,
-     .                          nou,bou,nbuf,ibufdim,myid)
-                end do
-             end do
-c
-c            preserve deltas on edges of solid surfaces
-c
-             if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                if (js.eq.1 .or. je.eq.jdim .or.
-     .              ks.eq.1 .or. ke.eq.kdim) then
-                    call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                           jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                           idim,maxbl,maxsegdg,nsegdfrm)
-                end if
+             if(abs(isktyp).eq.1) then
+               do j=js,je-jskp,jskp
+                  do k=ks,ke-kskp,kskp
+                     call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                            dx2,dy2,dz2,arci,arcj,arck,1,1,
+     .                            j,j+jskp,k,k+kskp,nou,bou,nbuf,
+     .                            ibufdim,myid)
+                  end do
+               end do
+             else
+               do j1=1,jskmax(nbl)-1
+                  j = jskip(nbl,j1)
+                  jskp = jskip(nbl,j1+1)
+                  do k1=1,kskmax(nbl)-1
+                     k = kskip(nbl,k1)
+                     kskp = kskip(nbl,k1+1)
+                     if((j.ge.js.and.j.lt.je).and.(k.ge.ks.
+     .                  and.k.lt.ke)) then
+                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                              dx2,dy2,dz2,arci,arcj,arck,1,1,
+     .                              j,jskp,k,kskp,nou,bou,nbuf,
+     .                              ibufdim,myid)
+                     end if
+                  enddo
+               enddo
              end if
-             do j=js,je-jskp,jskp
-                do k=ks,ke-kskp,kskp
-                   call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
-     .                          dx2,dy2,dz2,arci,arcj,arck,1,1,
-     .                          j,j+jskp,k,k+kskp,nou,bou,nbuf,
-     .                          ibufdim,myid)
-                end do
-             end do
          end if
-      end do
+      enddo
 c
 c     i=idim subfaces
 c
@@ -1474,108 +1546,134 @@ c
      .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.2016 .and.
      .       abs(ibctyp).ne.1005 .and.
-     .       abs(ibctyp).ne.1006 .or.
-     .       real(beta1).lt.0.) then
+     .       abs(ibctyp).ne.1006) then
              js = ibcinfo(nbl,nseg,2,ii)
              je = ibcinfo(nbl,nseg,3,ii)
              ks = ibcinfo(nbl,nseg,4,ii)
              ke = ibcinfo(nbl,nseg,5,ii)
-             do j=js,je,jskp
-                do k=ks,ke,kskp
-                   call setcorner(j,k,idim,xnm1,ynm1,znm1,dx,dy,
-     .                            dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                            ivert,slavept,nslave,nou,bou,
-     .                            ibufdim,nbuf,myid,ibl,nmaster,
-     .                            iseq)
-                end do
+             if(abs(isktyp).eq.1) then
+               do j=js,je-jskp,jskp
+                  do k=ks,ke-kskp,kskp
+                     call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                            dx2,dy2,dz2,arci,arcj,arck,idim,idim,
+     .                            j,j+jskp,k,k+kskp,nou,bou,nbuf,
+     .                            ibufdim,myid)
+                  end do
+               end do
+             else
+               do j1=1,jskmax(nbl)-1
+                  j = jskip(nbl,j1)
+                  jskp = jskip(nbl,j1+1)
+                  do k1=1,kskmax(nbl)-1
+                     k = kskip(nbl,k1)
+                     kskp = kskip(nbl,k1+1)
+                     if((j.ge.js.and.j.lt.je).and.(k.ge.ks.
+     .                  and.k.lt.ke)) then
+                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                              dx2,dy2,dz2,arci,arcj,arck,idim,     
+     .                              idim,j,jskp,k,kskp,nou,bou,nbuf,
+     .                              ibufdim,myid)
+                     end if
+                  enddo
+               enddo
+             end if
+         end if
+      enddo
+c
+c     Intermediate i subfaces
+c
+      if(idim.gt.2) then
+        if(abs(isktyp).eq.1) then 
+         do i = 1+iskp,idim-iskp       
+          js = 1
+          je = jdim
+          ks = 1
+          ke = kdim
+          do j=js,je-jskp,jskp
+            do k=ks,ke-kskp,kskp
+               call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                      dx2,dy2,dz2,arci,arcj,arck,i,i,
+     .                      j,j+jskp,k,k+kskp,nou,bou,nbuf,
+     .                      ibufdim,myid)
+            end do
+          end do
+         enddo
+        else
+         do i1 = 2,iskmax(nbl)-1     
+          i = iskip(nbl,i1)
+          do j1=1,jskmax(nbl)-1 
+            j = jskip(nbl,j1)
+            jskp = jskip(nbl,j1+1)
+            do k1=1,kskmax(nbl)-1 
+               k = kskip(nbl,k1)
+               kskp = kskip(nbl,k1+1)
+               call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                      dx2,dy2,dz2,arci,arcj,arck,i,i,
+     .                      j,jskp,k,kskp,nou,bou,nbuf,
+     .                      ibufdim,myid)
+            enddo
+          enddo
+         enddo
+        end if
+      end if
+c
+      if (i2d .eq. 0) then
+c
+c     j=1 to jdim  subfaces
+c
+        if(abs(isktyp).eq.1) then
+         do j = 1,jdim,jskp     
+           is = 1
+           ie = idim
+           ks = 1
+           ke = kdim
+           do i=is,ie-iskp,iskp
+             do k=ks,ke,kskp
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i+iskp,
+     .                      j,j,k,k,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
              end do
-             do j=js,je-jskp,jskp
-                do k=ks,ke,kskp
-                   call tfiedge(idim,jdim,kdim,dx,dy,dz,idim,idim,
-     .                          j,j+jskp,k,k,arci,arcj,arck,
-     .                          nou,bou,nbuf,ibufdim,myid)
-                end do
+           end do
+         enddo
+        else
+         do j1 = 1,jskmax(nbl)     
+           j = jskip(nbl,j1)
+           do i1=1,iskmax(nbl)-1 
+             i = iskip(nbl,i1)
+             iskp = iskip(nbl,i1+1)
+             do k1=1,kskmax(nbl) 
+               k = kskip(nbl,k1)
+               call tfiedge(idim,jdim,kdim,dx,dy,dz,i,iskp,
+     .                      j,j,k,k,arci,arcj,arck,
+     .                      nou,bou,nbuf,ibufdim,myid,nbl)
              end do
-             do j=js,je,jskp
-                do k=ks,ke-kskp,kskp
-                   call tfiedge(idim,jdim,kdim,dx,dy,dz,idim,idim,
-     .                          j,j,k,k+kskp,arci,arcj,arck,
-     .                          nou,bou,nbuf,ibufdim,myid)
-                end do
-             end do
+           end do
+         enddo
+        end if
 c
 c            preserve deltas on edges of solid surfaces
 c
-             if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                if (js.eq.1 .or. je.eq.jdim .or.
-     .              ks.eq.1 .or. ke.eq.kdim) then
-                    call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                           jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                           idim,maxbl,maxsegdg,nsegdfrm)
-                end if
-             end if
-             do j=js,je-jskp,jskp
-                do k=ks,ke-kskp,kskp
-                   call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
-     .                          dx2,dy2,dz2,arci,arcj,arck,idim,idim,
-     .                          j,j+jskp,k,k+kskp,nou,bou,nbuf,
-     .                          ibufdim,myid)
-                end do
-             end do
-         end if
-      end do
-c
-      if (i2d .eq. 0) then
+        if (idefrm(nbl).lt.999) then
+           call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
+     .                  jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
+     .                  idim,maxbl,maxsegdg,nsegdfrm)
+        end if
 c
 c        j=1 subfaces
 c
          do nseg=1,nbcj0(nbl)
-            jj     = 1
-            jbctyp = jbcinfo(nbl,nseg,1,jj)
-            if (abs(jbctyp).ne.2004 .and.
-     .          abs(jbctyp).ne.2014 .and.
-     .          abs(jbctyp).ne.2016 .and.
-     .          abs(jbctyp).ne.1005 .and.
-     .          abs(jbctyp).ne.1006 .or.
-     .          real(beta1).lt.0.) then
-                is = jbcinfo(nbl,nseg,2,jj)
-                ie = jbcinfo(nbl,nseg,3,jj)
-                ks = jbcinfo(nbl,nseg,4,jj)
-                ke = jbcinfo(nbl,nseg,5,jj)
-                do i=is,ie,iskp
-                   do k=ks,ke,kskp
-                      call setcorner(1,k,i,xnm1,ynm1,znm1,dx,dy,
-     .                               dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                               ivert,slavept,nslave,nou,bou,
-     .                               ibufdim,nbuf,myid,ibl,nmaster,
-     .                               iseq)
-                   end do
-                end do
-                do i=is,ie-iskp,iskp
-                   do k=ks,ke,kskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i+iskp,
-     .                             1,1,k,k,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-                do i=is,ie,iskp
-                   do k=ks,ke-kskp,kskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
-     .                             1,1,k,k+kskp,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-c
-c               preserve deltas on edges of solid surfaces
-c
-                if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                   if (is.eq.1 .or. ie.eq.idim .or.
-     .                 ks.eq.1 .or. ke.eq.kdim) then
-                       call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                              jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                              idim,maxbl,maxsegdg,nsegdfrm)
-                   end if
-                end if
+           jj     = 1
+           jbctyp = jbcinfo(nbl,nseg,1,jj)
+           if (abs(jbctyp).ne.2004 .and.
+     .         abs(jbctyp).ne.2014 .and.
+     .         abs(jbctyp).ne.2016 .and.
+     .         abs(jbctyp).ne.1005 .and.
+     .         abs(jbctyp).ne.1006) then
+               is = jbcinfo(nbl,nseg,2,jj)
+               ie = jbcinfo(nbl,nseg,3,jj)
+               ks = jbcinfo(nbl,nseg,4,jj)
+               ke = jbcinfo(nbl,nseg,5,jj)
+               if(abs(isktyp).eq.1) then
                 do i=is,ie-iskp,iskp
                    do k=ks,ke-kskp,kskp
                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
@@ -1584,58 +1682,41 @@ c
      .                             ibufdim,myid)
                    end do
                 end do
-            end if
+               else
+                do i1=1,iskmax(nbl)-1
+                  i = iskip(nbl,i1)
+                  iskp = iskip(nbl,i1+1)
+                  do k1=1,kskmax(nbl)-1
+                     k = kskip(nbl,k1)
+                     kskp = kskip(nbl,k1+1)
+                     if((i.ge.is.and.i.lt.ie).and.(k.ge.ks.
+     .                  and.k.lt.ke)) then
+                      call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                             dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                             1,1,k,kskp,nou,bou,nbuf,
+     .                             ibufdim,myid)
+                     end if
+                  enddo
+                enddo
+               end if
+           end if
          end do
 c
 c        j=jdim subfaces
 c
          do nseg=1,nbcjdim(nbl)
-            jj     = 2
-            jbctyp = jbcinfo(nbl,nseg,1,jj)
-            if (abs(jbctyp).ne.2004 .and.
-     .          abs(jbctyp).ne.2014 .and.
-     .          abs(jbctyp).ne.2016 .and.
-     .          abs(jbctyp).ne.1005 .and.
-     .          abs(jbctyp).ne.1006 .or.
-     .          real(beta1).lt.0.) then
-                is = jbcinfo(nbl,nseg,2,jj)
-                ie = jbcinfo(nbl,nseg,3,jj)
-                ks = jbcinfo(nbl,nseg,4,jj)
-                ke = jbcinfo(nbl,nseg,5,jj)
-                do i=is,ie,iskp
-                   do k=ks,ke,kskp
-                      call setcorner(jdim,k,i,xnm1,ynm1,znm1,dx,dy,
-     .                               dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                               ivert,slavept,nslave,nou,bou,
-     .                               ibufdim,nbuf,myid,ibl,nmaster,
-     .                               iseq)
-                   end do
-                end do
-                do i=is,ie-iskp,iskp
-                   do k=ks,ke,kskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i+iskp,
-     .                             jdim,jdim,k,k,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-                do i=is,ie,iskp
-                   do k=ks,ke-kskp,kskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
-     .                             jdim,jdim,k,k+kskp,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-c
-c               preserve deltas on edges of solid surfaces
-c
-                if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                   if (is.eq.1 .or. ie.eq.idim .or.
-     .                 ks.eq.1 .or. ke.eq.kdim) then
-                       call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                              jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                              idim,maxbl,maxsegdg,nsegdfrm)
-                   end if
-                end if
+           jj     = 2
+           jbctyp = jbcinfo(nbl,nseg,1,jj)
+           if (abs(jbctyp).ne.2004 .and.
+     .         abs(jbctyp).ne.2014 .and.
+     .         abs(jbctyp).ne.2016 .and.
+     .         abs(jbctyp).ne.1005 .and.
+     .         abs(jbctyp).ne.1006) then
+               is = jbcinfo(nbl,nseg,2,jj)
+               ie = jbcinfo(nbl,nseg,3,jj)
+               ks = jbcinfo(nbl,nseg,4,jj)
+               ke = jbcinfo(nbl,nseg,5,jj)
+               if(abs(isktyp).eq.1) then
                 do i=is,ie-iskp,iskp
                    do k=ks,ke-kskp,kskp
                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
@@ -1644,136 +1725,190 @@ c
      .                             ibufdim,myid)
                    end do
                 end do
+               else
+                do i1=1,iskmax(nbl)-1
+                  i = iskip(nbl,i1)
+                  iskp = iskip(nbl,i1+1)
+                  do k1=1,kskmax(nbl)-1
+                     k = kskip(nbl,k1)
+                     kskp = kskip(nbl,k1+1)
+                     if((i.ge.is.and.i.lt.ie).and.(k.ge.ks.
+     .                  and.k.lt.ke)) then
+                      call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                             dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                             jdim,jdim,k,kskp,nou,bou,nbuf,
+     .                             ibufdim,myid)
+                     end if
+                  enddo
+                enddo
+               end if
             end if
          end do
+c
+c     Intermediate j subfaces
+c
+         if(abs(isktyp).eq.1) then
+           do j = 1+jskp,jdim-jskp       
+             is = 1
+             ie = idim
+             ks = 1
+             ke = kdim
+             do i=is,ie-iskp,iskp
+                do k=ks,ke-kskp,kskp
+                   call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                          dx2,dy2,dz2,arci,arcj,arck,i,i+iskp,
+     .                          j,j,k,k+kskp,nou,bou,nbuf,
+     .                          ibufdim,myid)
+                end do
+             end do
+           end do
+         else
+           do j1 = 2,jskmax(nbl)-1     
+             j = jskip(nbl,j1)
+             do i1=1,iskmax(nbl)-1
+               i = iskip(nbl,i1)
+               iskp = iskip(nbl,i1+1)
+               do k1=1,kskmax(nbl)-1
+                  k = kskip(nbl,k1)
+                  kskp = kskip(nbl,k1+1)
+                  call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                         dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                         j,j,k,kskp,nou,bou,nbuf,
+     .                         ibufdim,myid)
+               enddo
+             enddo
+           enddo
+         end if
 c
 c        k=1 subfaces
 c
          do nseg=1,nbck0(nbl)
-            kk     = 1
-            kbctyp = kbcinfo(nbl,nseg,1,kk)
-            if (abs(kbctyp).ne.2004 .and.
-     .          abs(kbctyp).ne.2014 .and.
-     .          abs(kbctyp).ne.2016 .and.
-     .          abs(kbctyp).ne.1005 .and.
-     .          abs(kbctyp).ne.1006 .or.
-     .          real(beta1).lt.0.) then
-                is = kbcinfo(nbl,nseg,2,kk)
-                ie = kbcinfo(nbl,nseg,3,kk)
-                js = kbcinfo(nbl,nseg,4,kk)
-                je = kbcinfo(nbl,nseg,5,kk)
-                do i=is,ie,iskp
-                   do j=js,je,jskp
-                      call setcorner(j,1,i,xnm1,ynm1,znm1,dx,dy,
-     .                               dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                               ivert,slavept,nslave,nou,bou,
-     .                               ibufdim,nbuf,myid,ibl,nmaster,
-     .                               iseq)
-                   end do
-                end do
-                do i=is,ie-iskp,iskp
-                   do j=js,je,jskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i+iskp,
-     .                             j,j,1,1,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-                do i=is,ie,iskp
-                   do j=js,je-jskp,jskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
-     .                             j,j+jskp,1,1,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-c
-c               preserve deltas on edges of solid surfaces
-c
-                if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                   if (is.eq.1 .or. ie.eq.idim .or.
-     .                 js.eq.1 .or. je.eq.jdim) then
-                       call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                              jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                              idim,maxbl,maxsegdg,nsegdfrm)
-                   end if
-                end if
-                do i=is,ie-iskp,iskp
+           kk     = 1
+           kbctyp = kbcinfo(nbl,nseg,1,kk)
+           if (abs(kbctyp).ne.2004 .and.
+     .         abs(kbctyp).ne.2014 .and.
+     .         abs(kbctyp).ne.2016 .and.
+     .         abs(kbctyp).ne.1005 .and.
+     .         abs(kbctyp).ne.1006) then
+               is = kbcinfo(nbl,nseg,2,kk)
+               ie = kbcinfo(nbl,nseg,3,kk)
+               js = kbcinfo(nbl,nseg,4,kk)
+               je = kbcinfo(nbl,nseg,5,kk)
+               if(abs(isktyp).eq.1) then
+                 do i=is,ie-iskp,iskp
                    do j=js,je-jskp,jskp
                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
      .                             dx2,dy2,dz2,arci,arcj,arck,i,i+iskp,
      .                             j,j+jskp,1,1,nou,bou,nbuf,
      .                             ibufdim,myid)
                    end do
-                end do
-            end if
+                 end do
+               else
+                do i1=1,iskmax(nbl)-1
+                  i = iskip(nbl,i1)
+                  iskp = iskip(nbl,i1+1)
+                  do j1=1,jskmax(nbl)-1
+                     j = jskip(nbl,j1)
+                     jskp = jskip(nbl,j1+1)
+                     if((i.ge.is.and.i.lt.ie).and.(j.ge.js.
+     .                  and.j.lt.je)) then
+                      call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                             dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                             j,jskp,1,1,nou,bou,nbuf,
+     .                             ibufdim,myid)
+                     end if
+                  enddo
+                enddo
+               end if
+           end if
          end do
 c
 c        k=kdim subfaces
 c
          do nseg=1,nbckdim(nbl)
-            kk     = 2
-            kbctyp = kbcinfo(nbl,nseg,1,kk)
-            if (abs(kbctyp).ne.2004 .and.
-     .          abs(kbctyp).ne.2014 .and.
-     .          abs(kbctyp).ne.2016 .and.
-     .          abs(kbctyp).ne.1005 .and.
-     .          abs(kbctyp).ne.1006 .or.
-     .          real(beta1).lt.0.) then
-                is = kbcinfo(nbl,nseg,2,kk)
-                ie = kbcinfo(nbl,nseg,3,kk)
-                js = kbcinfo(nbl,nseg,4,kk)
-                je = kbcinfo(nbl,nseg,5,kk)
-                do i=is,ie,iskp
-                   do j=js,je,jskp
-                      call setcorner(j,kdim,i,xnm1,ynm1,znm1,dx,dy,
-     .                               dz,jdim,kdim,idim,wk,nsurf,iflag,
-     .                               ivert,slavept,nslave,nou,bou,
-     .                               ibufdim,nbuf,myid,ibl,nmaster,
-     .                               iseq)
-                   end do
-                end do
-                do i=is,ie-iskp,iskp
-                   do j=js,je,jskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i+iskp,
-     .                             j,j,kdim,kdim,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-                do i=is,ie,iskp
-                   do j=js,je-jskp,jskp
-                      call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
-     .                             j,j+jskp,kdim,kdim,arci,arcj,arck,
-     .                             nou,bou,nbuf,ibufdim,myid)
-                   end do
-                end do
-c
-c               preserve deltas on edges of solid surfaces
-c
-                if (idefrm(nbl).lt.999 .and. real(beta1).ge.0.) then
-                   if (is.eq.1 .or. ie.eq.idim .or.
-     .                 js.eq.1 .or. je.eq.jdim) then
-                       call bc_delt(nbl,dx,dy,dz,deltj,deltk,delti,jcsi,
-     .                              jcsf,kcsi,kcsf,icsi,icsf,jdim,kdim,
-     .                              idim,maxbl,maxsegdg,nsegdfrm)
-                   end if
-                end if
-                do i=is,ie-iskp,iskp
+           kk     = 2
+           kbctyp = kbcinfo(nbl,nseg,1,kk)
+           if (abs(kbctyp).ne.2004 .and.
+     .         abs(kbctyp).ne.2014 .and.
+     .         abs(kbctyp).ne.2016 .and.
+     .         abs(kbctyp).ne.1005 .and.
+     .         abs(kbctyp).ne.1006) then
+               is = kbcinfo(nbl,nseg,2,kk)
+               ie = kbcinfo(nbl,nseg,3,kk)
+               js = kbcinfo(nbl,nseg,4,kk)
+               je = kbcinfo(nbl,nseg,5,kk)
+               if(abs(isktyp).eq.1) then
+                 do i=is,ie-iskp,iskp
                    do j=js,je-jskp,jskp
                       call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
      .                             dx2,dy2,dz2,arci,arcj,arck,i,i+iskp,
      .                             j,j+jskp,kdim,kdim,nou,bou,nbuf,
      .                             ibufdim,myid)
                    end do
-                end do
-            end if
+                 end do
+               else
+                do i1=1,iskmax(nbl)-1
+                  i = iskip(nbl,i1)
+                  iskp = iskip(nbl,i1+1)
+                  do j1=1,jskmax(nbl)-1
+                     j = jskip(nbl,j1)
+                     jskp = jskip(nbl,j1+1)
+                     if((i.ge.is.and.i.lt.ie).and.(j.ge.js.
+     .                  and.j.lt.je)) then
+                      call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                             dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                             j,jskp,kdim,kdim,nou,bou,nbuf,
+     .                             ibufdim,myid)
+                     end if
+                  enddo
+                enddo
+               end if
+           end if
          end do
+c
+c     Intermediate k subfaces
+c
+         if(abs(isktyp).eq.1) then
+           do k = 1+kskp,kdim-kskp       
+             is = 1
+             ie = idim
+             js = 1
+             je = jdim
+             do i=is,ie-iskp,iskp
+               do j=js,je-jskp,jskp
+                  call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                         dx2,dy2,dz2,arci,arcj,arck,i,i+iskp,
+     .                         j,j+jskp,k,k,nou,bou,nbuf,
+     .                         ibufdim,myid)
+               end do
+             end do
+           end do
+         else
+           do k1=2,kskmax(nbl)-1
+             k = kskip(nbl,k1)
+             do i1=1,iskmax(nbl)-1
+               i = iskip(nbl,i1)
+               iskp = iskip(nbl,i1+1)
+               do j1=1,jskmax(nbl)-1
+                  j = jskip(nbl,j1)
+                  jskp = jskip(nbl,j1+1)
+                   call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
+     .                          dx2,dy2,dz2,arci,arcj,arck,i,iskp,
+     .                          j,jskp,k,k,nou,bou,nbuf,
+     .                          ibufdim,myid)
+               enddo
+             enddo
+           enddo
+         end if
 c
 c     TFI to get deltas throughout the volume
 c
-      call tfivol(idim,jdim,kdim,iskp,jskp,kskp,dx,dy,dz,
-     .            dx1,dy1,dz1,dx2,dy2,dz2,dx3,dy3,dz3,dx4,dy4,
-     .            dz4,dx5,dy5,dz5,dx6,dy6,dz6,dx7,dy7,dz7,
-     .            arci,arcj,arck,nou,bou,nbuf,ibufdim,myid,
-     .            maxbl,nbl)
+         call tfivol(idim,jdim,kdim,iskp,jskp,kskp,iskmax,jskmax,
+     .               kskmax,iskip,jskip,kskip,isktyp,dx,dy,dz,
+     .               dx1,dy1,dz1,dx2,dy2,dz2,dx3,dy3,dz3,dx4,dy4,
+     .               dz4,dx5,dy5,dz5,dx6,dy6,dz6,dx7,dy7,dz7,
+     .               arci,arcj,arck,nou,bou,nbuf,ibufdim,myid,
+     .               maxbl,nbl)
 c
       end if
 c
@@ -1789,12 +1924,10 @@ c
             do i=1,idim
                do k=1,kdim
                   do j=1,jdim
-                     vel(j,k,i,1) = fact*((dx(j,k,i)+x(j,k,i))
-     .                            - xnm1(j,k,i))
-                     vel(j,k,i,2) = fact*((dy(j,k,i)+y(j,k,i))
-     .                            - ynm1(j,k,i))
-                     vel(j,k,i,3) = fact*((dz(j,k,i)+z(j,k,i))
-     .                            - znm1(j,k,i))
+                     jj = j + (k-1)*jdim + (i-1)*jdim*kdim
+                     vel(j,k,i,1) = fact*((dx(jj)+x(jj)) - xnm1(jj))
+                     vel(j,k,i,2) = fact*((dy(jj)+y(jj)) - ynm1(jj))
+                     vel(j,k,i,3) = fact*((dz(jj)+z(jj)) - znm1(jj))
                   end do
                end do
             end do
@@ -1807,12 +1940,13 @@ c
             do i=1,idim
                do k=1,kdim
                   do j=1,jdim
-                     vel(j,k,i,1) = fact*(3.*(dx(j,k,i)+x(j,k,i))
-     .                            - 4*xnm1(j,k,i)+xnm2(j,k,i))
-                     vel(j,k,i,2) = fact*(3.*(dy(j,k,i)+y(j,k,i))
-     .                            - 4*ynm1(j,k,i)+ynm2(j,k,i))
-                     vel(j,k,i,3) = fact*(3.*(dz(j,k,i)+z(j,k,i))
-     .                            - 4*znm1(j,k,i)+znm2(j,k,i))
+                     jj = j + (k-1)*jdim + (i-1)*jdim*kdim
+                     vel(j,k,i,1) = fact*(3.*(dx(jj)+x(jj))
+     .                            - 4*xnm1(jj)+xnm2(jj))
+                     vel(j,k,i,2) = fact*(3.*(dy(jj)+y(jj))
+     .                            - 4*ynm1(jj)+ynm2(jj))
+                     vel(j,k,i,3) = fact*(3.*(dz(jj)+z(jj))
+     .                            - 4*znm1(jj)+znm2(jj))
                   end do
                end do
             end do
@@ -1825,27 +1959,19 @@ c     for second order case, store current--->old before
 c     updating grid
 c
       if (abs(ita).gt.1) then
-         do i=1,idim
-            do k=1,kdim
-               do j=1,jdim
-                  xnm2(j,k,i) = xnm1(j,k,i)
-                  ynm2(j,k,i) = ynm1(j,k,i)
-                  znm2(j,k,i) = znm1(j,k,i)
-               end do
-            end do
+         do i=1,jdim*kdim*idim
+           xnm2(i) = xnm1(i)
+           ynm2(i) = ynm1(i)
+           znm2(i) = znm1(i)
          end do
       end if
 c
 c     add deltas to the current mesh to get the new one
 c
-      do i=1,idim
-         do k=1,kdim
-            do j=1,jdim
-               x(j,k,i) = x(j,k,i) + dx(j,k,i)
-               y(j,k,i) = y(j,k,i) + dy(j,k,i)
-               z(j,k,i) = z(j,k,i) + dz(j,k,i)
-            end do
-         end do
+      do i=1,jdim*kdim*idim
+        x(i) = x(i) + dx(i)
+        y(i) = y(i) + dy(i)
+        z(i) = z(i) + dz(i)
       end do
 c
 c     release memory

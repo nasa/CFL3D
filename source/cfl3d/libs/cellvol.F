@@ -20,7 +20,8 @@ c
       dimension sj(jdim*kdim,idim-1,5),sk(jdim*kdim,idim-1,5),
      .          si(jdim*kdim,idim,5)
 c
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
 c
       jdim1 = jdim-1
       kdim1 = kdim-1

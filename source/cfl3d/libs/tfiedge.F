@@ -1,5 +1,5 @@
       subroutine tfiedge(idim,jdim,kdim,x,y,z,i1,i2,j1,j2,k1,k2,
-     .                   arci,arcj,arck,nou,bou,nbuf,ibufdim,myid)
+     .                   arci,arcj,arck,nou,bou,nbuf,ibufdim,myid,nbl)
 c
 c     $Id$
 c

@@ -47,7 +47,8 @@ c
       common /elastic_ss/ idef_ss
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /memory/ memadd,memaddi
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
       common /ghost/ irghost,iwghost
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag

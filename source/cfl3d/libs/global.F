@@ -111,8 +111,10 @@ c
       dimension freq(nmds,maxaes),gmass(nmds,maxaes),x0(2*nmds,maxaes),
      .          gf0(2*nmds,maxaes),damp(nmds,maxaes),
      .          perturb(nmds,maxaes,4)
-      dimension aesrfdat(5,maxaes),iskip(maxbl),jskip(maxbl),
-     .          kskip(maxbl)
+      dimension aesrfdat(5,maxaes),iskip(maxbl,500),jskip(maxbl,500),
+     .          kskip(maxbl,500)
+      dimension iskipt(maxbl,500),jskipt(maxbl,500),kskipt(maxbl,500)
+      dimension nskpi1(maxbl),nskpj1(maxbl),nskpk1(maxbl)
       dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg),
      .          iaesurf(maxbl,maxsegdg)
       dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr),
@@ -165,7 +167,8 @@ c
      .                  thetaymc,thetazmc,dxmxmc,dymxmc,dzmxmc,
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
-      common /deformz/ beta1,alpha1,isktyp,negvol,meshdef,nsprgit
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
@@ -4316,7 +4319,7 @@ c
       mxmds    = 1
       mxaes    = 1
       mxdefseg = 1
-      nmastr   = 1
+      nsprgit  = 0
 c
 c     default to no deformation, no aeroelasticty
 c
@@ -4419,6 +4422,13 @@ c
 c
 c        set default skip values for block
 c
+         do nb = 1,maxbl
+           do ii = 1,500
+             iskip(nb,ii) = 0
+             jskip(nb,ii) = 0
+             kskip(nb,ii) = 0
+           enddo
+         enddo
          do ig=1,ngrid
             nbl     = nblg(ig) 
             jdim1   = jdimg(nbl)-1
@@ -4561,93 +4571,114 @@ c
                jskip_k = min(jskip_k0,jskip_kd)
             end if
 c
-            iskip(nbl) = min(iskip_j,iskip_k)
-            jskip(nbl) = min(jskip_i,jskip_k)
-            kskip(nbl) = min(kskip_i,kskip_j)
+            iskip(nbl,1) = min(iskip_j,iskip_k)
+            jskip(nbl,1) = min(jskip_i,jskip_k)
+            kskip(nbl,1) = min(kskip_i,kskip_j)
 c
          end do 
 c
 c        account for 1-1 interfaces
 c
          if (abs(nbli).gt.0) then
+           do it = 1,ngrid
+            nskpdif = 0
             do n=1,abs(nbli)
                igr1 = nblk(1,n)
                igr2 = nblk(2,n)
                nbl1 = nblg(igr1)
                nbl2 = nblg(igr2)
-c
+               iskipt(nbl1,1) = iskip(nbl1,1)
+               iskipt(nbl2,1) = iskip(nbl2,1)
+               jskipt(nbl1,1) = jskip(nbl1,1)
+               jskipt(nbl2,1) = jskip(nbl2,1)
+               kskipt(nbl1,1) = kskip(nbl1,1)
+               kskipt(nbl2,1) = kskip(nbl2,1)
                if (isva(1,1,n) .eq. 1) then
                   if (isva(2,1,n) .eq. 1) then
-                     iskip(nbl1) = min(iskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 iskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 2) then
-                     iskip(nbl1) = min(iskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 iskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 3) then
-                     iskip(nbl1) = min(iskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 iskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                else if (isva(1,1,n) .eq. 2) then
                   if (isva(2,1,n) .eq. 1) then
-                     jskip(nbl1) = min(jskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 jskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 2) then
-                     jskip(nbl1) = min(jskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 jskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 3) then
-                     jskip(nbl1) = min(jskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 jskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                else if (isva(1,1,n) .eq. 3) then
                   if (isva(2,1,n) .eq. 1) then
-                     kskip(nbl1) = min(kskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 kskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 2) then
-                     kskip(nbl1) = min(kskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 kskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,1,n) .eq. 3) then
-                     kskip(nbl1) = min(kskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 kskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                end if
 c
                if (isva(1,2,n) .eq. 1) then
                   if (isva(2,2,n) .eq. 1) then
-                     iskip(nbl1) = min(iskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 iskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 2) then
-                     iskip(nbl1) = min(iskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 iskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 3) then
-                     iskip(nbl1) = min(iskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = iskip(nbl1)
+                    call blocking_skip(iskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 iskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                else if (isva(1,2,n) .eq. 2) then
                   if (isva(2,2,n) .eq. 1) then
-                     jskip(nbl1) = min(jskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 jskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 2) then
-                     jskip(nbl1) = min(jskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 jskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 3) then
-                     jskip(nbl1) = min(jskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = jskip(nbl1)
+                    call blocking_skip(jskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 jskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                else if (isva(1,2,n) .eq. 3) then
                   if (isva(2,2,n) .eq. 1) then
-                     kskip(nbl1) = min(kskip(nbl1),iskip(nbl2))
-                     iskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,iskip(nbl2,1),
+     .                                 kskipt(nbl1,1),iskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 2) then
-                     kskip(nbl1) = min(kskip(nbl1),jskip(nbl2))
-                     jskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,jskip(nbl2,1),
+     .                                 kskipt(nbl1,1),jskipt(nbl2,1))
                   else if (isva(2,2,n) .eq. 3) then
-                     kskip(nbl1) = min(kskip(nbl1),kskip(nbl2))
-                     kskip(nbl2) = kskip(nbl1)
+                    call blocking_skip(kskip(nbl1,1) ,kskip(nbl2,1),
+     .                                 kskipt(nbl1,1),kskipt(nbl2,1))
                   end if
                end if
-c
-            end do 
+               nskpdif = nskpdif + abs(iskip(nbl1,1) - iskipt(nbl1,1))
+               nskpdif = nskpdif + abs(iskip(nbl2,1) - iskipt(nbl2,1))
+               nskpdif = nskpdif + abs(jskip(nbl1,1) - jskipt(nbl1,1))
+               nskpdif = nskpdif + abs(jskip(nbl2,1) - jskipt(nbl2,1))
+               nskpdif = nskpdif + abs(kskip(nbl1,1) - kskipt(nbl1,1))
+               nskpdif = nskpdif + abs(kskip(nbl2,1) - kskipt(nbl2,1))
+               iskip(nbl1,1) = iskipt(nbl1,1)
+               iskip(nbl2,1) = iskipt(nbl2,1)
+               jskip(nbl1,1) = jskipt(nbl1,1)
+               jskip(nbl2,1) = jskipt(nbl2,1)
+               kskip(nbl1,1) = kskipt(nbl1,1)
+               kskip(nbl2,1) = kskipt(nbl2,1)
+            end do
+            if(nskpdif.eq.0) goto 850
+           end do
          end if
+850      continue
 c
          read(iunit5,*)
          read(iunit5,*)
@@ -5098,131 +5129,438 @@ c
 c        deforming mesh skip data - used to determine slave points
 c        for offbody/multiblock mesh movement
 c
+c        Set default skip type so that standard skip values are read:
+c
+         isktyp = 1
+c
+c        If isktyp = 2 then an array of points in the i,j,k directions
+c        are read in.  These points are the control points rather than
+c        those computed using standard skip values
+c
          read(iunit5,*)
          read(iunit5,*)
-         read(iunit5,*) nskip,realval(1),nmastr,isktyp
+         read(iunit5,*) nskip,isktyp,realval(1),realval(2),
+     .                  realval(3),realval(4),nsprgit 
          beta1 = realval(1)
+         alpha1= realval(2)
+         beta2 = realval(3)
+         alpha2= realval(4)
          write(iunit11,'('' moving grid data - data for field/'',
      .                   ''multiblock mesh movement'')')
-         write(iunit11,'(''   nskip    beta1  nmaster  ismooth'')')
-         if (nskip.gt.0) then
-            if (nskip.gt.ngrid) then
-               write(iunit11,'(i8,f9.6,2i9)') nskip,beta1,nmastr,
-     .              isktyp
+         write(iunit11,
+     .        '(''   nskip   isktyp  beta1   alpha1  beta2   alpha2'',
+     .                   ''  nsprngit'')')
+         if(abs(isktyp).lt.1.or.abs(isktyp).gt.2) then
+           write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,alpha1,
+     .          beta2,alpha2,nsprgit
+           write(iunit11,'('' input error: Invalid isktyp value'')')
+           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+         end if
+         if(abs(isktyp).eq.1) then
+           if (nskip.gt.0) then
+              if (nskip.gt.ngrid) then
+               write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,
+     .              alpha1,beta2,alpha2,nsprgit
                write(iunit11,'('' input error: nskip > ngrid'')')
                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+              end if
+              write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,
+     .             real(beta1),real(alpha1),real(beta2),real(alpha2),
+     .             nsprgit
+              if (real(beta1).lt.0.2) then
+                 write(iunit11,'(/,'' WARNING: beta this small may '',
+     .        ''severely compromise fidelity of surface geometry'',/)')
+              end if
+ 
+              read(iunit5,*)
+              do ng = 1,nskip
+                 read(iunit5,*) igr,iskp,jskp,kskp
+                 nbl = nblg(igr)
+                 ncg = ncgg(igr)
+c                zero is shortcut for max skip value
+                 if (iskp.eq.0) then
+                    iskp = idimg(nbl)-1
+                 end if
+                 if (jskp.eq.0) then
+                    jskp = jdimg(nbl)-1
+                 end if
+                 if (kskp.eq.0) then
+                    kskp = kdimg(nbl)-1
+                 end if
+                 if (i2d.ne.0)  iskp = idimg(nbl)-1
+c                skip value must divide evenly into dim-1 value
+                 istop = 0
+                 if ((idimg(nbl)-1)/iskp*iskp.ne.(idimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...iskip must divide'',
+     .                  '' evenly into idim-1 for grid'',i4)') igr
+                 end if
+                 if ((jdimg(nbl)-1)/jskp*jskp.ne.(jdimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...jskip must divide'',
+     .                    '' evenly into jdim-1 for grid'',i4)') igr
+                 end if
+                 if ((kdimg(nbl)-1)/kskp*kskp.ne.(kdimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...kskip must divide'',
+     .                  '' evenly into kdim-1 for grid'',i4)') igr
+                 end if
+                 if (istop .eq. 1) then
+                    call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+                 end if
+                 iskip(nbl,1) = iskp
+                 jskip(nbl,1) = jskp
+                 kskip(nbl,1) = kskp
+              end do
+           else if (nskip.lt.0) then
+               write(iunit11,'(i8,i9,4f9.6,i9)') ngrid,isktyp,
+     .              real(beta1),real(alpha1),real(beta2),real(alpha2),
+     .              nsprgit
+              if (real(beta1).lt.0.2) then
+                 write(iunit11,'(/,'' WARNING: beta this small may '',
+     .        ''severely compromise fidelity of surface geometry'',/)')
+              end if
+              read(iunit5,*)
+              do ng = 1,abs(nskip)
+                 read(iunit5,*) igr,iskp0,jskp0,kskp0
+              end do
+              do igr=1,ngrid
+                 nbl = nblg(igr)
+                 ncg = ncgg(igr)
+                 iskp = iskp0
+                 jskp = jskp0
+                 kskp = kskp0
+c                zero is shortcut for max skip value
+                 if (iskp0.eq.0) iskp = idimg(nbl)-1
+                 if (jskp0.eq.0) jskp = jdimg(nbl)-1
+                 if (kskp0.eq.0) kskp = kdimg(nbl)-1
+c                skip value must divide evenly into dim-1 value
+                 istop = 0
+                 if ((idimg(nbl)-1)/iskp*iskp.ne.(idimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...iskip must divide'',
+     .                    '' evenly into idim-1 for grid'',i4)') igr
+                 end if
+                 if ((jdimg(nbl)-1)/jskp*jskp.ne.(jdimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...jskip must divide'',
+     .                    '' evenly into jdim-1 for grid'',i4)') igr
+                 end if
+                 if ((kdimg(nbl)-1)/kskp*kskp.ne.(kdimg(nbl)-1)) then
+                    istop = 1
+                    write(iunit11,'('' stopping...kskip must divide'',
+     .                    '' evenly into kdim-1 for grid'',i4)') igr
+                 end if
+                 if (istop .eq. 1) then
+                    call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+                 end if
+                 iskip(nbl,1) = iskp
+                 jskip(nbl,1) = jskp
+                 kskip(nbl,1) = kskp
+              end do
+           else
+               write(iunit11,'(i8,i9,4f9.6,i9)') ngrid,isktyp,
+     .              real(beta1),real(alpha1),real(beta2),real(alpha2),
+     .              nsprgit
+              if (real(beta1).lt.0.2) then
+                 write(iunit11,'(/,'' WARNING: beta this small may '',
+     .        ''severely compromise fidelity of surface geometry'',/)')
+              end if
+              read(iunit5,*)
+           end if
+         else
+            if (nskip.ne.ngrid) then
+             write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,
+     .              alpha1,beta2,alpha2,nsprgit
+             write(iunit11,'('' input error: nskip .ne. ngrid'')')
+             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
-            write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .            isktyp
-            if (real(beta1).lt.0.) then
-               write(iunit11,'(/,'' WARNING: beta<0 may severely '',
-     .         ''compromise fidelity of surface geometry'',/)')
-            end if
-
+            write(iunit11,'(i8,i9,4f9.6,i9)') ngrid,isktyp,
+     .              real(beta1),real(alpha1),real(beta2),real(alpha2),
+     .              nsprgit
+              if (real(beta1).lt.0.2) then
+                 write(iunit11,'(/,'' WARNING: beta this small may '',
+     .        ''severely compromise fidelity of surface geometry'',/)')
+              end if
+ 
             read(iunit5,*)
             do ng = 1,nskip
-               read(iunit5,*) igr,iskp,jskp,kskp
-               nbl = nblg(igr)
-               ncg = ncgg(igr)
-c              zero is shortcut for max skip value 
-               if (iskp.eq.0) iskp = idimg(nbl)-1
-               if (jskp.eq.0) jskp = jdimg(nbl)-1
-               if (kskp.eq.0) kskp = kdimg(nbl)-1
-               if (i2d.ne.0)  iskp = idimg(nbl)-1
-c              skip value must divide evenly into dim-1 value
-               istop = 0
-               if ((idimg(nbl)-1)/iskp*iskp.ne.(idimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...iskip must divide'',
-     .                  '' evenly into idim-1 for grid'',i4)') igr
-               end if
-               if ((jdimg(nbl)-1)/jskp*jskp.ne.(jdimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...jskip must divide'',
-     .                  '' evenly into jdim-1 for grid'',i4)') igr
-               end if
-               if ((kdimg(nbl)-1)/kskp*kskp.ne.(kdimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...kskip must divide'',
-     .                  '' evenly into kdim-1 for grid'',i4)') igr
-               end if
-               if (istop .eq. 1) then
+               read(iunit5,*)
+               read(iunit5,*) igr,nskpi1(ng),nskpj1(ng),nskpk1(ng)
+               if (igr.ne.ng) then
+                  write(iunit11,'(/,'' ERROR: control point input '',
+     .            ''must include all blocks, and be entered in '',/,
+     .            ''ascending block order'',/)')
                   call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
                end if
-               iskip(nbl) = iskp
-               jskip(nbl) = jskp
-               kskip(nbl) = kskp
-            end do
-         else if (nskip.lt.0) then
-            write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .            isktyp
-            if (real(beta1).lt.0.) then
-               write(iunit11,'(/,'' WARNING: beta<0 may result in a '',
-     .         ''potentially significant loss of surface fidelity'',/)')
-            end if
-            read(iunit5,*)
-            do ng = 1,abs(nskip)
-               read(iunit5,*) igr,iskp0,jskp0,kskp0
-            end do
-            do igr=1,ngrid
-               nbl = nblg(igr)
-               ncg = ncgg(igr)
-               iskp = iskp0
-               jskp = jskp0
-               kskp = kskp0
-c              zero is shortcut for max skip value
-               if (iskp0.eq.0) iskp = idimg(nbl)-1
-               if (jskp0.eq.0) jskp = jdimg(nbl)-1
-               if (kskp0.eq.0) kskp = kdimg(nbl)-1
-c              skip value must divide evenly into dim-1 value
-               istop = 0
-               if ((idimg(nbl)-1)/iskp*iskp.ne.(idimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...iskip must divide'',
-     .                  '' evenly into idim-1 for grid'',i4)') igr
-               end if
-               if ((jdimg(nbl)-1)/jskp*jskp.ne.(jdimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...jskip must divide'',
-     .                  '' evenly into jdim-1 for grid'',i4)') igr
-               end if
-               if ((kdimg(nbl)-1)/kskp*kskp.ne.(kdimg(nbl)-1)) then
-                  istop = 1
-                  write(iunit11,'('' stopping...kskip must divide'',
-     .                  '' evenly into kdim-1 for grid'',i4)') igr
-               end if
-               if (istop .eq. 1) then
+               if (nskpi1(ng).gt.500) then
+                  write(iunit11,'(/,'' ERROR: control point input '',
+     .            ''number of control points must be <= 500'',/)')
                   call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
                end if
-               iskip(nbl) = iskp
-               jskip(nbl) = jskp
-               kskip(nbl) = kskp
-            end do
-         else
-            write(iunit11,'(i8,f9.6,2i9)') ngrid,real(beta1),nmastr,
-     .                                     isktyp
-            if (real(beta1).lt.0.) then
-               write(iunit11,'(/,'' WARNING: beta<0 may result in a '',
-     .         ''potentially significant loss of surface fidelity'',/)')
-            end if
-            read(iunit5,*)
+               if (nskpj1(ng).gt.500) then
+                  write(iunit11,'(/,'' ERROR: control point input '',
+     .            ''number of control points must be <= 500'',/)')
+                  call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+               end if
+               if (nskpk1(ng).gt.500) then
+                  write(iunit11,'(/,'' ERROR: control point input '',
+     .            ''number of control points must be <= 500'',/)')
+                  call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+               end if
+               nbl = nblg(igr)
+               ncg = ncgg(igr)
+               read(iunit5,*)
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpi1(ng)) iie = nskpi1(ng)
+                 read(iunit5,*) (iskip(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpi1(ng)) goto 325
+               enddo
+325            continue
+               read(iunit5,*)
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpj1(ng)) iie = nskpj1(ng)
+                 read(iunit5,*) (jskip(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpj1(ng)) goto 350
+               enddo
+350            continue
+               read(iunit5,*)
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpk1(ng)) iie = nskpk1(ng)
+                 read(iunit5,*) (kskip(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpk1(ng)) goto 375
+               enddo
+375            continue
+               jdim   = jdimg(nbl)
+               kdim   = kdimg(nbl)
+               idim   = idimg(nbl)
+               if(iskip(nbl,nskpi1(ng)).ne.idim) then
+               write(iunit11,'(/,'' STOPPING: ic(iskip) ne idim'',/)')
+                  stop
+               end if
+               if(jskip(nbl,nskpj1(ng)).ne.jdim) then
+               write(iunit11,'(/,'' STOPPING: ic(jskip) ne jdim'',/)')
+                  stop
+               end if
+               if(kskip(nbl,nskpk1(ng)).ne.kdim) then
+               write(iunit11,'(/,'' STOPPING: ic(kskip) ne kdim'',/)')
+                  stop
+               end if
+               do jj = 1,nskpi1(ng)
+                 iskipt(nbl,jj) = iskip(nbl,jj)
+               enddo
+               do jj = 1,nskpj1(ng)
+                 jskipt(nbl,jj) = jskip(nbl,jj)
+               enddo
+               do jj = 1,nskpk1(ng)
+                 kskipt(nbl,jj) = kskip(nbl,jj)
+               enddo
+            enddo
          end if
 c
-         write(iunit11,'(''    grid    iskip    jskip    kskip'')')
+         if(abs(isktyp).eq.1) then
+           write(iunit11,'(''    grid    iskip    jskip    kskip'')')
+           if(meshdef.eq.1.and.myid.eq.myhost) then
+              open(196,file='meshdef.inp',status='unknown',form=
+     .             'formatted')
+           end if
+           do ng=1,ngrid
+             nbl = nblg(ng)
+             ncg = ncgg(ng)
+             write(iunit11,'(i8,6i9)') ng,iskip(nbl,1),jskip(nbl,1),
+     .                                  kskip(nbl,1)
+             if (ncg.gt.0) then
+                do n=1,ncg
+                   nbl = nbl + 1
+                   iskip(nbl,1) = (iskip(nbl-1,1)-1)/2 + 1
+                   jskip(nbl,1) = (jskip(nbl-1,1)-1)/2 + 1
+                   kskip(nbl,1) = (kskip(nbl-1,1)-1)/2 + 1
+                end do
+                nbl = nblg(ng)
+             end if
+             ncgt = ncg
+             if(i2d.ne.0) then
+               nskpi1(ng) = 2
+             else
+               nskpi1(ng) = (idimg(nbl)-1)/iskip(nbl,1) + 1
+             end if
+             nskpj1(ng) = (jdimg(nbl)-1)/jskip(nbl,1) + 1
+             nskpk1(ng) = (kdimg(nbl)-1)/kskip(nbl,1) + 1
+             iskipt(nbl,1) = 1
+             jskipt(nbl,1) = 1
+             kskipt(nbl,1) = 1
+             if (nskpi1(ng).gt.500) then
+                write(iunit11,'(/,'' ERROR: nskpi1 > 500 '',
+     .          '' Too many i-control points (iskip too small)'',/)')
+                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+             end if
+             if (nskpj1(ng).gt.500) then
+                write(iunit11,'(/,'' ERROR: nskpj1 > 500 '',
+     .          '' Too many j-control points (jskip too small)'',/)')
+                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+             end if
+             if (nskpk1(ng).gt.500) then
+                write(iunit11,'(/,'' ERROR: nskpk1 > 500 '',
+     .          '' Too many k-control points (kskip too small)'',/)')
+                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+             end if
+             do jj = 2,nskpi1(ng)
+               iskipt(nbl,jj) = iskipt(nbl,jj-1)+iskip(nbl,1)
+             enddo
+             do jj = 2,nskpj1(ng)
+               jskipt(nbl,jj) = jskipt(nbl,jj-1)+jskip(nbl,1)
+             enddo
+             do jj = 2,nskpk1(ng)
+               kskipt(nbl,jj) = kskipt(nbl,jj-1)+kskip(nbl,1)
+             enddo
+             if(meshdef.eq.1.and.myid.eq.myhost) then
+               write(196,19019)
+19019          format('   GRID   NIND   NJND   NKND ')
+               write(196,19020) ng,nskpi1(ng),nskpj1(ng),nskpk1(ng)
+19020          format(10i7)
+               write(196,19018)
+19018          format('************************** I NODE INDICES ******'
+     .                 ,'**********************')
+               nbl = nblg(ng)
+               ncg = ncgg(ng)
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpi1(ng)) iie = nskpi1(ng)
+                 write(196,19020) (iskipt(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpi1(ng)) goto 525
+               enddo
+525            continue
+               write(196,19017)
+19017          format('************************** J NODE INDICES ******'
+     .                 ,'**********************')
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpj1(ng)) iie = nskpj1(ng)
+                 write(196,19020) (jskipt(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpj1(ng)) goto 550
+               enddo
+550            continue
+               write(196,19016)
+19016          format('************************** K NODE INDICES ******'
+     .                 ,'**********************')
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpk1(ng)) iie = nskpk1(ng)
+                 write(196,19020) (kskipt(nbl,ii),ii=iis,iie)
+                 if(iie.eq.nskpk1(ng)) goto 575
+               enddo
+575            continue
+              end if
+           enddo
+           if(meshdef.eq.1.and.myid.eq.myhost) then
+              close(196)
+           end if
+         else
+           do ng=1,nskip
+              nbl = nblg(ng)
+              ncg = ncgg(ng)
+              if (ncg.gt.0) then
+                do ii = 1,nskpi1(ng)
+                 nbl = nblg(ng)
+                 iskipt(nbl,ii)= iskip(nbl,ii)
+                 do n=1,ncg
+                    nbl = nbl + 1
+                    iskip(nbl,ii) = (iskip(nbl-1,ii)-1)/2 + 1
+                 end do
+                enddo
+                do ii = 1,nskpj1(ng)
+                 nbl = nblg(ng)
+                 jskipt(nbl,ii)= jskip(nbl,ii)
+                 do n=1,ncg
+                    nbl = nbl + 1
+                    jskip(nbl,ii) = (jskip(nbl-1,ii)-1)/2 + 1
+                 end do
+                enddo
+                do ii = 1,nskpk1(ng)
+                 nbl = nblg(ng)
+                 jskipt(nbl,ii)= jskip(nbl,ii)
+                 do n=1,ncg
+                    nbl = nbl + 1
+                    kskip(nbl,ii) = (kskip(nbl-1,ii)-1)/2 + 1
+                 end do
+                enddo
+              end if
+           enddo
+         end if
          do ng=1,ngrid
             nbl = nblg(ng)
             ncg = ncgg(ng)
-            write(iunit11,'(i8,6i9)') ng,iskip(nbl),jskip(nbl),
-     .                                kskip(nbl)
+            ncgt = ncg
             if (ncg.gt.0) then
+              do ii = 1,nskpi1(ng)
+               nbl = nblg(ng)
                do n=1,ncg
                   nbl = nbl + 1
-                  iskip(nbl) = (iskip(nbl-1)-1)/2 + 1
-                  jskip(nbl) = (jskip(nbl-1)-1)/2 + 1
-                  kskip(nbl) = (kskip(nbl-1)-1)/2 + 1
+                  iskipt(nbl,ii)= (iskipt(nbl-1,ii)-1)/2 + 1
                end do
+              enddo
+              do ii = 1,nskpj1(ng)
+               nbl = nblg(ng)
+               do n=1,ncg
+                  nbl = nbl + 1
+                  jskipt(nbl,ii)= (jskipt(nbl-1,ii)-1)/2 + 1
+               end do
+              enddo
+              do ii = 1,nskpk1(ng)
+               nbl = nblg(ng)
+               do n=1,ncg
+                  nbl = nbl + 1
+                  kskipt(nbl,ii)= (kskipt(nbl-1,ii)-1)/2 + 1
+               end do
+              enddo
             end if
-         end do
+            write(iunit11,
+     .      '(''      ng     nipt     njpt     nkpt  '')')
+            write(iunit11,'(i8,4i9)') ng,nskpi1(ng),nskpj1(ng)
+     .                          ,nskpk1(ng)
+            nbl = nblg(ng)
+            write(iunit11,
+     .    '(''    control point i-indices for grid levels  '',5i4)')
+     .            (nbl+i-1,i=1,ncgt+1)
+            do i = 1,nskpi1(ng)
+              write(iunit11,'(i8,5i9)') (iskipt(nbl+ii-1,i),ii=1,ncgt+1)
+            enddo
+            nbl = nblg(ng)
+            write(iunit11,
+     .    '(''    control point j-indices for grid levels  '',5i4)')
+     .            (nbl+i-1,i=1,ncgt+1)
+            do i = 1,nskpj1(ng)
+              write(iunit11,'(i8,5i9)') (jskipt(nbl+ii-1,i),ii=1,ncgt+1)
+            enddo
+            nbl = nblg(ng)
+            write(iunit11,
+     .    '(''    control point k-indices for grid levels  '',5i4)')
+     .            (nbl+i-1,i=1,ncgt+1)
+            do i = 1,nskpk1(ng)
+              write(iunit11,'(i8,5i9)') (kskipt(nbl+ii-1,i),ii=1,ncgt+1)
+            enddo
+         enddo
 c
 c        for all blocks that have not yet been identified as 
 c        deforming, set idefrm flag to 999...indicating the mesh 
@@ -5835,8 +6173,48 @@ c
          lnmds    = mxmds
          lmaxaes  = mxaes
          lmxsegdg = mxdefseg
-         lnmaster = max(nmastr,1)
+         lnmaster = 21
       end if
 c
       return
       end
+ 
+       subroutine blocking_skip(nskip1,nskip2,nskipt1,nskipt2)
+c
+c      This subroutine checks if the iskip,jskip,kskip
+c      values across 1-1 block interfaces is the same.
+c      If not, the skip values are set at a common divisor
+c      of the two values.
+c
+       if(nskip1.gt.nskip2) then
+        if(real(nskip1)/real(nskip2).eq.real(nskip1/nskip2)) then
+         nskipt1 = nskip2
+         nskipt2 = nskip2
+        else
+         do i = 1,8
+           nskip2 = nskip2/2
+           if(real(nskip1)/real(nskip2).eq.real(nskip1/nskip2)) then
+            nskipt1 = nskip2
+            nskipt2 = nskip2
+            return
+           end if
+         enddo
+        end if
+       else
+        if(real(nskip2)/real(nskip1).eq.real(nskip2/nskip1)) then
+         nskipt1 = nskip1
+         nskipt2 = nskip1
+        else
+         do i = 1,8
+           nskip1 = nskip1/2
+           if(real(nskip2)/real(nskip1).eq.real(nskip2/nskip1)) then
+            nskipt1 = nskip1
+            nskipt2 = nskip1
+            return
+           end if
+         enddo
+        end if
+       end if
+ 
+       return
+       end
