@@ -5149,7 +5149,7 @@ c
      .                   ''multiblock mesh movement'')')
          write(iunit11,
      .     '(''   nskip   isktyp    beta1   alpha1    beta2   alpha2'',
-     .                   ''  nsprngit'')')
+     .                   '' nsprngit'')')
          if(abs(isktyp).lt.1.or.abs(isktyp).gt.2) then
            write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,alpha1,
      .          beta2,alpha2,nsprgit
