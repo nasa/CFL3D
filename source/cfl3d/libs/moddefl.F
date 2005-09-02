@@ -43,6 +43,9 @@ c
          nmodes = aesrfdat(5,iaes)
          grefl  = aesrfdat(2,iaes)
          uinf   = aesrfdat(3,iaes)
+         ainf   = uinf/xmach
+         times  = time*grefl/ainf
+         dts    = dt*grefl/ainf
 c
          do nm=1,nmodes
 c
@@ -60,8 +63,8 @@ c
             if (moddfl.eq.1) then
                amp             = perturb(nm,iaes,2)
                freqp           = perturb(nm,iaes,3)
-               xs(2*nm-1,iaes) = amp*sin(freqp*time)
-               xs(2*nm,iaes)   = amp*freqp*cos(freqp*time)
+               xs(2*nm-1,iaes) = amp*sin(freqp*times)
+               xs(2*nm,iaes)   = amp*freqp*cos(freqp*times)
             end if
 c
 c           Gaussian pulse modal deflection (half is the pulse half-life)
@@ -71,11 +74,12 @@ c
                half            = perturb(nm,iaes,3)
                t0              = perturb(nm,iaes,4)
                const           = log(2.)/half**2
-               dtime           = const*(time-t0)**2
+               dtime           = const*(times-t0)**2
                dtime           = ccmin(dtime,dtimemx)
                expterm         = exp(-dtime)
                xs(2*nm-1,iaes) = amp*expterm
-               xs(2*nm,iaes)   = -2.*const*(time-t0)*xs(2*nm-1,iaes)
+               xs(2*nm,iaes)   = -2.*const*(times-t0)*
+     .                            xs(2*nm-1,iaes)
             end if
 c
 c           step pulse modal deflection
@@ -83,13 +87,14 @@ c
             if (moddfl.eq.3) then
                amp         = perturb(nm,iaes,2)
                t0          = perturb(nm,iaes,4)
-               if (real(time).lt.real(t0-dt/2.)) then
+               if (real(times).lt.real(t0-dts/2.))
+     .             then
                   xs(2*nm-1,iaes) = 0.
                   xs(2*nm,iaes)   = 0.
-               else if (real(time).gt.real(t0-dt/2.) .and. 
-     .                  real(time).lt.real(t0+dt/2.)) then 
+               else if (real(times).gt.real(t0-dts/2.) .and. 
+     .                  real(times).lt.real(t0+dts/2.)) then 
                   xs(2*nm-1,iaes) = amp
-                  xs(2*nm,iaes)   = amp/dt
+                  xs(2*nm,iaes)   = amp/dts 
                else
                   xs(2*nm-1,iaes) = amp
                   xs(2*nm,iaes)   = 0.
