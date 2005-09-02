@@ -75,6 +75,7 @@ c
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
+      common /igrdtyp/ ip3dgrd,ialph
 c
    36 format(13i6)
    38 format(i6,i6,10i9)
@@ -305,11 +306,18 @@ c     make sure parameter msub1 is big enough
             read(iunit5,*)
             read(iunit5,*) (realval(i),i=1,6)
             dx(int,l)     = realval(1)
-            dy(int,l)     = realval(2)
-            dz(int,l)     = realval(3)
             dthetx(int,l) = realval(4)
-            dthety(int,l) = realval(5)
-            dthetz(int,l) = realval(6)
+            if(ialph > 0) then
+              dy(int,l)     = -realval(3)
+              dthety(int,l) = -realval(6)
+              dz(int,l)     = realval(2)
+              dthetz(int,l) = realval(5)
+            else
+              dy(int,l)     = realval(2)
+              dthety(int,l) = realval(5)
+              dz(int,l)     = realval(3)
+              dthetz(int,l) = realval(6)
+            end if
          end do
       end if
 c
