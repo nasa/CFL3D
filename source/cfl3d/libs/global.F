@@ -5272,7 +5272,8 @@ c                skip value must divide evenly into dim-1 value
             if (nskip.ne.ngrid) then
              write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,
      .              alpha1,beta2,alpha2,nsprgit
-             write(iunit11,'('' input error: nskip .ne. ngrid'')')
+             write(iunit11,'('' input error: nskip .ne. ngrid.'',
+     .        '' May mean improper isktyp value.'',/)')
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
             write(iunit11,'(i8,i9,4f9.6,i9)') ngrid,isktyp,
