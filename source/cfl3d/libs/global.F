@@ -173,6 +173,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /axisym/ iaxi2plane
+      common /fullns/ ifullns
 c
       pi = 4.0*atan(1.0)
 c
@@ -787,6 +788,35 @@ c
         write(iunit11,'('' WARNING: iaxi2plane set back to 0'')')
         write(iunit11,'(''    (i2d must=0 and idim must=2)'')')
         iaxi2plane=0
+      end if
+c   check usage of full N-S
+      if (ifullns .ne. 0) then
+        if (i2d .eq. 0 .and. idim .gt. 2 .and. (ivisc(1).eq.0 .or. 
+     .      ivisc(2).eq.0 .or. ivisc(3).eq.0)) then
+          write(iunit11,'('' WARNING: When using full N-S in 3-D, '',
+     .      ''viscous terms (ivisc) usually '')')
+          write(iunit11,'(''must be ON in all 3 directions'')')
+        end if
+        if (i2d .eq. 0 .and. idim .eq. 2 .and. (ivisc(2).eq.0 .or. 
+     .    ivisc(3).eq.0)) then
+          write(iunit11,'('' ERROR: When using full N-S in 3-D, '',
+     .      ''with idim=2, viscous terms (ivisc) must be'')')
+          write(iunit11,'('' ON in both J and K directions'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (i2d .ne. 0 .and. (ivisc(2).eq.0 .or. ivisc(3).eq.0)) then
+          write(iunit11,'('' ERROR: When using full N-S in 2-D, '',
+     .      ''viscous terms (ivisc) must be'')')
+          write(iunit11,'('' ON in both J and K directions'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (idim .eq. 2 .and. ivisc(1).ne.0) then
+          write(iunit11,'('' ERROR: Having ifullns .ne. 0 with'',
+     .      '' idim=2 and ivisc(1) .ne. 0'')')
+          write(iunit11,'('' can cause major problems; recommend'',
+     .      '' setting ivisc(1)=0'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
       end if
       if (ides .eq. 1 .and. idim .eq. 2) then
          write(iunit11,339)

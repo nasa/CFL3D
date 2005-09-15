@@ -57,6 +57,7 @@ c
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm
       common /axisym/ iaxi2plane
+      common /fullns/ ifullns
 c
       ititr = 0
       nkey  = 0
@@ -419,6 +420,10 @@ c
 c     lower limit on k for 2-eqn models that,
 c     when reached, causes it to be reset to tur2cut
       tur2cutlev = 0.
+      nkey     = nkey + 1
+c
+c     full Navier-Stokes
+      ifullns = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -814,6 +819,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          tur2cutlev = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'ifullns') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ifullns
 c
       else
 c

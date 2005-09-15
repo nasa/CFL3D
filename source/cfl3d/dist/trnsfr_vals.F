@@ -184,6 +184,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /gridtrans/ roll_angle
+      common /fullns/ ifullns
 #if defined DIST_MPI
 c
 c***********************
@@ -419,6 +420,7 @@ c
          work(nlast+63) = tur1cutlev
          work(nlast+64) = tur2cutlev
          work(nlast+65) = meshdef
+         work(nlast+66) = ifullns
          nlast = nlast+nkey
       end if
 c
@@ -664,6 +666,7 @@ c
          tur1cutlev= work(nlast+63)
          tur2cutlev= work(nlast+64)
          meshdef   = int(work(nlast+65))
+         ifullns   = int(work(nlast+66))
       end if
 c
 c**************************

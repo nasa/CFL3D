@@ -81,6 +81,7 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /fullns/ ifullns
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -502,8 +503,13 @@ c
          write(bou(nou(1),1),*)
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),7) nbl
+         if (ifullns .ne. 0) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),777)
+         end if
       end if
     7 format(1x,29hcomputing residuals for block,i4)
+  777 format(1x,21hFull N-S terms are ON)
 c
       end if  ! iadvance .ge. 0
 c
@@ -568,6 +574,15 @@ c
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
      .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl))
+c
+c-- full viscous terms
+c
+         if (ifullns .ne. 0) then
+         call gfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
+     .                sj,sk,si,vol,wk,nvtq,wj0,vist3d,vj0,
+     .                bcj,bck,bci,volj0,
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+         end if
   201    continue
       end if
 c
@@ -613,6 +628,15 @@ c
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
      .               iadvance(nbl))
+c
+c-- full viscous terms
+c
+         if (ifullns .ne. 0) then
+         call hfluxv1(i,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
+     .                sj,sk,si,vol,wk,nvtq,wk0,vist3d,vk0,
+     .                bcj,bck,bci,volk0,
+     .                nou,bou,nbuf,ibufdim,iadvance(nbl))
+         end if
   211    continue
       end if
 c
@@ -661,6 +685,15 @@ c
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
      .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl))
+c
+c-- full viscous terms
+c
+            if (ifullns .ne. 0) then
+            call ffluxv1(k,npl,jdim,kdim,idim,res,q,qj0,qk0,qi0,
+     .                   sj,sk,si,vol,wk,nvtq,wi0,vist3d,vi0,
+     .                   bcj,bck,bci,voli0,
+     .                   nou,bou,nbuf,ibufdim,iadvance(nbl))
+            end if
   277       continue
          end if
 c
