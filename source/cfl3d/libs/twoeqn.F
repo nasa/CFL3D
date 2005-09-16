@@ -6,7 +6,14 @@
      + ux,rhside,zksav2,v3dtmp,cmuv,bcj,bck,bci,nbci0,nbcidim,
      + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
      + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
-     + iex3)
+     + iex3,
+     + dkdx,dkdy,dkdz,dzdx,dzdy,dzdz,dw1dx,dw1dy,dw1dz,
+     + dw2dx,dw2dy,dw2dz,dw3dx,dw3dy,dw3dz,drdx,drdy,drdz,
+     + dpdx,dpdy,dpdz,
+     + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
+     + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
+     + dpdj,dpdk,dpdi,
+     + w1,w2,w3,srce)
 c
 c     $Id$
 c
@@ -43,7 +50,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst
-      common /konew/ ikoprod,isstdenom,pklimterm
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -81,6 +88,24 @@ c
      +          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
+      dimension  dkdx(jdim),dkdy(jdim),dkdz(jdim),
+     +           dzdx(jdim),dzdy(jdim),dzdz(jdim),
+     +           dw1dx(jdim),dw1dy(jdim),dw1dz(jdim),
+     +           dw2dx(jdim),dw2dy(jdim),dw2dz(jdim),
+     +           dw3dx(jdim),dw3dy(jdim),dw3dz(jdim),
+     +           drdx(jdim),drdy(jdim),drdz(jdim),
+     +           dpdx(jdim),dpdy(jdim),dpdz(jdim)
+      dimension dkdj(jdim),dkdk(jdim),dkdi(jdim),
+     +          dzdj(jdim),dzdk(jdim),dzdi(jdim),
+     +          dw1dj(jdim),dw1dk(jdim),dw1di(jdim),
+     +          dw2dj(jdim),dw2dk(jdim),dw2di(jdim),
+     +          dw3dj(jdim),dw3dk(jdim),dw3di(jdim),
+     +          drdj(jdim),drdk(jdim),drdi(jdim),
+     +          dpdj(jdim),dpdk(jdim),dpdi(jdim)
+      dimension w1(0:jdim,0:kdim,0:idim),
+     +          w2(0:jdim,0:kdim,0:idim),
+     +          w3(0:jdim,0:kdim,0:idim)
+      dimension srce(0:jdim,0:kdim,0:idim,2)
 c
 c
 c   Variables:
@@ -163,25 +188,27 @@ c
         if(ivmx .eq. 6) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega (Wilcox)'')')
-           if(ikoprod .eq. 0) then
+           if(ikoprod .eq. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx (vort) production'',
+             write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     exact production term'')')
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
            end if
         end if
         if(ivmx .eq. 7) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'')')
-           if(ikoprod .eq. 0) then
+           if(ikoprod .eq. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx (vort) production'',
+             write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     exact production term'')')
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
            end if
            if(isstdenom .eq. 0) then
              nou(1) = min(nou(1)+1,ibufdim)
@@ -197,7 +224,8 @@ c
      .   ''linear)'')')
            if(iturbprod .eq. 0) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx production term'')')
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
@@ -209,7 +237,8 @@ c
      .   ''linear)'')')
            if(iturbprod .eq. 0) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx production term'')')
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
@@ -218,13 +247,14 @@ c
         if(ivmx .eq.10) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-epsilon (Abid)'')')
-           if(ikoprod .eq. 0) then
+           if(ikoprod .eq. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx (vort) production'',
+             write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     exact production term'')')
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
            end if
         end if
         if(ivmx .eq.11) then
@@ -243,7 +273,8 @@ c
      .   ''nonlinear)'')')
            if(iturbprod .eq. 0) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx production term'')')
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
@@ -255,18 +286,36 @@ c
      .   ''nonlinear)'')')
            if(iturbprod .eq. 0) then
              nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx production term'')')
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
            end if
         end if
+        if(ivmx .eq.15) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     k-enstrophy (Note: default '',
+     .   ''tur1cut=-1 if no keyword)'')')
+           if(ikoprod .eq. 2) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     exact production term'')')
+           else if (ikoprod .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
+           end if
+        end if
 
         if(ivmx .eq. 9 .or. ivmx .eq.10 .or. ivmx .eq.11 .or.
-     .     ivmx .eq. 13) then
+     .     ivmx .eq. 13.or. ivmx .eq .15) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     WARNING: k-epsilon models can'',
-     .     '' easily fail to go turbulent!'')')
+           write(bou(nou(1),1),'(''     WARNING: k-epsilon and '',
+     .     ''k-enstrophy models sometimes fail to go turbulent!'')')
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''         We recommend either'',
      .     '' restarting from a different converged model,'')')
@@ -274,11 +323,25 @@ c
            write(bou(nou(1),1),'(''         or, if starting from'',
      .     '' scratch, freezing the model to its initialzed'')')
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''         levels (using NFREEZE)'',
-     .     '' until the flowfield is converged enough'')')
+           write(bou(nou(1),1),'(''         levels (using keyword'',
+     .     '' NFREEZE) until the flowfield is converged enough'')')
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''         for turbulence to'',
+     .     '' sustain itself'')')
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     ALWAYS check vist3d levels to'',
      .     '' insure turbulence has tripped!'')')
+           if (ikoprod .ne. 0) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Also check that there is'',
+     .       '' not excessive turbulence at stagnation regions.'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''         Try ikoprod=0 if'',
+     .       '' there is.'')')
+           end if
+        end if
+        if(ivmx .eq. 9 .or. ivmx .eq.10 .or. ivmx .eq.11 .or.
+     .     ivmx .eq. 13) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     Also, k-e models are NOT'',
      .     '' RECOMMENDED for'')')
@@ -294,7 +357,8 @@ c
      .       '' for k-epsilon models'')')
            end if
         end if
-        if(ivmx .ge. 11) then
+        if(ivmx .eq. 11 .or. ivmx .eq. 12 .or. ivmx .eq. 13 .or.
+     .     ivmx .eq. 14) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     WARNING: when using nonlinear'',
      .     '' models, the grid'')')
@@ -305,7 +369,7 @@ c
            write(bou(nou(1),1),'(''         you may need'',
      .     '' WallFunctions to keep from blowing up!'')')
         end if
-
+c
       end if
 c
 c Set number of subiterations to solve turbulence field eqn per iteration
@@ -324,6 +388,7 @@ c
       if(ivmx .eq. 8 .or. ivmx .eq. 12 .or. ivmx .eq. 14) factor=5.
       if(ivmx .eq. 10 .or. ivmx .eq. 11) factor=2.
       if(ivmx .eq. 9 .or. ivmx .eq. 13) factor=5.
+      if(ivmx .eq. 15) factor=10.
 c
 c Overwrite with keyword value if nonzero
 c
@@ -381,11 +446,13 @@ c  beta1 (constant in omega or epsilon destruction term):
       if(ivmx.eq.8 .or. ivmx.eq.14)                 beta1=0.83
       if(ivmx.eq.10 .or. ivmx.eq.11 .or.ivmx.eq.9
      .              .or. ivmx.eq.13)                beta1=1.83
-c  sigo1 (constant in omega or epsilon diffusion term):
+c  sigo1 (constant in omega, epsilon, or zeta diffusion term):
       if(ivmx.eq.6 .or. ivmx.eq.7)                  sigo1=0.5
       if(ivmx.eq.12)                                sigo1=1./2.20
       if(ivmx.eq.10)                                sigo1=0.71429
       if(ivmx.eq.11)                                sigo1=1./1.3
+      if(ivmx.eq.15)                                sigo1=1.46
+c
 c  sigk1 (constant in k diffusion term):
       if(ivmx.eq.6)                                 sigk1=0.5
       if(ivmx.eq.7)                                 sigk1=0.85
@@ -393,6 +460,8 @@ c  sigk1 (constant in k diffusion term):
       if(ivmx.eq.10 .or. ivmx.eq.11 .or.ivmx.eq.9
      .              .or. ivmx.eq.13)                sigk1=1.00
       if(ivmx.eq.8 .or. ivmx.eq.14)                 sigk1=1./1.0
+      if(ivmx.eq.15)                                sigk1 = 1.8
+c
 c  alp1 (constant in omega or epsilon production term):
       if(ivmx.eq.6 .or. ivmx.eq.7)                  alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
@@ -405,6 +474,13 @@ c  alp1 (constant in omega or epsilon production term):
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
       if(ivmx.eq.8 .or. ivmx.eq.14)                 sigo1=
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
+c
+c Coefficient for fnu in diffusion term
+      sigkmu = 1.0
+      if(ivmx.eq.15) then
+        sigkmu = 1./3.
+      endif
+c
 c Constants for Set 2 (2-layer SST model only):
       cmuc2=0.09
       beta2=0.0828
@@ -846,8 +922,8 @@ c       Interior points
               dyy=-cdp
               rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
      +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
@@ -902,8 +978,8 @@ c       K0 boundary points
               dyy=-cdp
               rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
      +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
@@ -957,8 +1033,8 @@ c       KDIM points
               dyy=-cdp
               rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
      +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
@@ -1072,8 +1148,8 @@ c       Interior points
               dxx=-cdp
               rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
      +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
@@ -1128,8 +1204,8 @@ c       J0 boundary points
               dxx=-cdp
               rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
      +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
@@ -1183,8 +1259,8 @@ c       JDIM boundary points
               dxx=-cdp
               rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
      +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
@@ -1299,8 +1375,8 @@ c         Interior points
                 dzz=-cdp
                 rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
      +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
@@ -1355,8 +1431,8 @@ c         I0 boundary points
                 dzz=-cdp
                 rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
      +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
@@ -1410,8 +1486,8 @@ c         IDIM boundary points
                 dzz=-cdp
                 rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
      +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
@@ -2005,6 +2081,310 @@ c            Find nonlinear tauij values:
             enddo
           enddo
         enddo
+c
+      else if (ivmx .eq. 15) then
+c ---- enstrophy equation additions
+c      see AIAA J, Vol 36, No 10, Oct 1998, p. 1825-1833
+c
+c ---- define constants
+c
+        cmu = 0.09
+        rcmu = 1./cmu
+        alpha3 = 0.35  
+        beta4 = 0.42
+        beta5 = 2.37
+        beta6 = 0.10
+        beta7 = 1.50
+c   beta8=0 (default) often required to prevent numerical oscillations
+        if (ibeta8kzeta .ne. 0) then
+          beta8 = 2.3
+        else
+          beta8 = 0.0
+        end if
+        sigr = 0.07
+        c1 = 0.6
+        czeta1 = 2.1
+        ck = 2.0
+        sigp = 0.13
+        sigrho = 91.9
+        fnuef = 198.6/tinf
+        delta = 0.1
+c
+        wt1 = 1.0
+        wt2 = (1.-wt1)
+c
+        wlim = 1.e-6  
+        slim = 1.e-6  
+c
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              w1(j,k,i) = ux(j,k,i,8) - ux(j,k,i,6)
+              w2(j,k,i) = ux(j,k,i,3) - ux(j,k,i,7)
+              w3(j,k,i) = ux(j,k,i,4) - ux(j,k,i,2)
+            end do
+          end do
+        end do
+c
+        do i=1,idim-1
+          ip=1
+          im=1
+          if(i.eq.1)im=0
+          if(i.eq.idim-1)ip=0
+          if(idim-1.eq.1) then
+            ti=1.
+          else
+            ti=1./float(ip+im)
+          end if
+          do k=1,kdim-1
+            kp=1
+            km=1
+            if(k.eq.1)km=0
+            if(k.eq.kdim-1)kp=0
+            if(kdim-1.eq.1) then
+              tk=1.
+            else
+              tk=1./float(kp+km)
+            end if
+c
+c ---- compute gradients of vorticity and turbulence variables
+c
+            j=1
+            dkdj(j)=(turre(j+1,k,i,2)-turre(j,k,i,2))
+            dzdj(j)=(turre(j+1,k,i,1)-turre(j,k,i,1))
+            dw1dj(j)=(w1(j+1,k,i)-w1(j,k,i))
+            dw2dj(j)=(w2(j+1,k,i)-w2(j,k,i))
+            dw3dj(j)=(w3(j+1,k,i)-w3(j,k,i))
+            dpdj(j)=(q(j+1,k,i,5)-q(j,k,i,5))
+            drdj(j)=(q(j+1,k,i,1)-q(j,k,i,1))
+c
+            do j=2,jdim-2
+              dkdj(j)=0.5*(turre(j+1,k,i,2)-turre(j-1,k,i,2))
+              dzdj(j)=0.5*(turre(j+1,k,i,1)-turre(j-1,k,i,1))
+              dw1dj(j)=0.5*(w1(j+1,k,i)-w1(j-1,k,i))
+              dw2dj(j)=0.5*(w2(j+1,k,i)-w2(j-1,k,i))
+              dw3dj(j)=0.5*(w3(j+1,k,i)-w3(j-1,k,i))
+              dpdj(j)=0.5*(q(j+1,k,i,5)-q(j-1,k,i,5))
+              drdj(j)=0.5*(q(j+1,k,i,1)-q(j-1,k,i,1))
+            enddo
+c
+            j=jdim-1
+            dkdj(j)=(turre(j,k,i,2)-turre(j-1,k,i,2))
+            dzdj(j)=(turre(j,k,i,1)-turre(j-1,k,i,1))
+            dw1dj(j)=(w1(j,k,i)-w1(j-1,k,i))
+            dw2dj(j)=(w2(j,k,i)-w2(j-1,k,i))
+            dw3dj(j)=(w3(j,k,i)-w3(j-1,k,i))
+            dpdj(j)=(q(j,k,i,5)-q(j-1,k,i,5))
+            drdj(j)=(q(j,k,i,1)-q(j-1,k,i,1))
+c
+            do j=1,jdim-1
+c
+              dkdk(j)=tk*(turre(j,k+kp,i,2)-turre(j,k-km,i,2))
+              dkdi(j)=ti*(turre(j,k,i+ip,2)-turre(j,k,i-im,2))
+c
+              dzdk(j)=tk*(turre(j,k+kp,i,1)-turre(j,k-km,i,1))
+              dzdi(j)=ti*(turre(j,k,i+ip,1)-turre(j,k,i-im,1))
+c
+              dw1dk(j)=tk*(w1(j,k+kp,i)-w1(j,k-km,i))
+              dw1di(j)=ti*(w1(j,k,i+ip)-w1(j,k,i-im)) 
+c
+              dw2dk(j)=tk*(w2(j,k+kp,i)-w2(j,k-km,i))
+              dw2di(j)=ti*(w2(j,k,i+ip)-w2(j,k,i-im)) 
+c
+              dw3dk(j)=tk*(w3(j,k+kp,i)-w3(j,k-km,i))
+              dw3di(j)=ti*(w3(j,k,i+ip)-w3(j,k,i-im)) 
+c
+              dpdk(j)=tk*(q(j,k+kp,i,5)-q(j,k-km,i,5))
+              dpdi(j)=ti*(q(j,k,i+ip,5)-q(j,k,i-im,5))
+c
+              drdk(j)=tk*(q(j,k+kp,i,1)-q(j,k-km,i,1))
+              drdi(j)=ti*(q(j,k,i+ip,1)-q(j,k,i-im,1))
+c
+            enddo
+            do j=1,jdim-1
+c
+              rvol = 1.0/vol(j,k,i)
+              sj4=sj(j,k,i,4)
+              sj4p=sj(j+1,k,i,4)
+              xjp=0.5*(sj(j,k,i,1)*sj4+sj(j+1,k,i,1)*sj4p) 
+              yjp=0.5*(sj(j,k,i,2)*sj4+sj(j+1,k,i,2)*sj4p)
+              zjp=0.5*(sj(j,k,i,3)*sj4+sj(j+1,k,i,3)*sj4p)
+c
+              sk4=sk(j,k,i,4)
+              sk4p=sk(j,k+1,i,4)
+              xkp=0.5*(sk(j,k,i,1)*sk4+sk(j,k+1,i,1)*sk4p)
+              ykp=0.5*(sk(j,k,i,2)*sk4+sk(j,k+1,i,2)*sk4p)
+              zkp=0.5*(sk(j,k,i,3)*sk4+sk(j,k+1,i,3)*sk4p)
+c
+              si4=si(j,k,i,4)
+              si4p=si(j,k,i+1,4)
+              xip=0.5*(si(j,k,i,1)*si4+si(j,k,i+1,1)*si4p)
+              yip=0.5*(si(j,k,i,2)*si4+si(j,k,i+1,2)*si4p)
+              zip=0.5*(si(j,k,i,3)*si4+si(j,k,i+1,3)*si4p)
+c
+              dkdx(j)=(xjp*dkdj(j)+xkp*dkdk(j)+xip*dkdi(j))*rvol
+              dkdy(j)=(yjp*dkdj(j)+ykp*dkdk(j)+yip*dkdi(j))*rvol
+              dkdz(j)=(zjp*dkdj(j)+zkp*dkdk(j)+zip*dkdi(j))*rvol
+c
+              dzdx(j)=(xjp*dzdj(j)+xkp*dzdk(j)+xip*dzdi(j))*rvol
+              dzdy(j)=(yjp*dzdj(j)+ykp*dzdk(j)+yip*dzdi(j))*rvol
+              dzdz(j)=(zjp*dzdj(j)+zkp*dzdk(j)+zip*dzdi(j))*rvol
+c
+              dw1dx(j)=(xjp*dw1dj(j)+xkp*dw1dk(j)+xip*dw1di(j))*rvol
+              dw1dy(j)=(yjp*dw1dj(j)+ykp*dw1dk(j)+yip*dw1di(j))*rvol
+              dw1dz(j)=(zjp*dw1dj(j)+zkp*dw1dk(j)+zip*dw1di(j))*rvol
+c
+              dw2dx(j)=(xjp*dw2dj(j)+xkp*dw2dk(j)+xip*dw2di(j))*rvol
+              dw2dy(j)=(yjp*dw2dj(j)+ykp*dw2dk(j)+yip*dw2di(j))*rvol
+              dw2dz(j)=(zjp*dw2dj(j)+zkp*dw2dk(j)+zip*dw2di(j))*rvol
+c
+              dw3dx(j)=(xjp*dw3dj(j)+xkp*dw3dk(j)+xip*dw3di(j))*rvol
+              dw3dy(j)=(yjp*dw3dj(j)+ykp*dw3dk(j)+yip*dw3di(j))*rvol
+              dw3dz(j)=(zjp*dw3dj(j)+zkp*dw3dk(j)+zip*dw3di(j))*rvol
+c
+              dpdx(j)=(xjp*dpdj(j)+xkp*dpdk(j)+xip*dpdi(j))*rvol
+              dpdy(j)=(yjp*dpdj(j)+ykp*dpdk(j)+yip*dpdi(j))*rvol
+              dpdz(j)=(zjp*dpdj(j)+zkp*dpdk(j)+zip*dpdi(j))*rvol
+c
+              drdx(j)=(xjp*drdj(j)+xkp*drdk(j)+xip*drdi(j))*rvol
+              drdy(j)=(yjp*drdj(j)+ykp*drdk(j)+yip*drdi(j))*rvol
+              drdz(j)=(zjp*drdj(j)+zkp*drdk(j)+zip*drdi(j))*rvol
+c
+            enddo
+            do j=1,jdim-1
+c
+              fnut=vist3d(j,k,i)
+c
+c ----- determine strain and vorticity values
+c               
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              divv = s11 + s22 + s33   
+c
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              wis = w1(j,k,i)**2 + w2(j,k,i)**2 + w3(j,k,i)**2 
+              omemag = sqrt(wis)
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+     +            + slim
+c
+c ----- compute tau_i,j 
+c
+              t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*fnut*(s11 - 0.33333*divv)
+              t11=ccmaxcr(t11,0.)
+              t22 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*fnut*(s22 - 0.33333*divv)
+              t22=ccmaxcr(t22,0.)
+              t33 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
+     +             -2.*fnut*(s33 - 0.33333*divv)
+              t33=ccmaxcr(t33,0.)
+              t12 =-2.*fnut*s12
+              t13 =-2.*fnut*s13
+              t23 =-2.*fnut*s23
+c
+c ---- calculate enstrophy production terms
+c
+              p3 = 2.0*fnut*alpha3*turre(j,k,i,1)*(xis-slim)
+     +           / turre(j,k,i,2) 
+     +           + 2.0*q(j,k,i,1)*re*turre(j,k,i,1)*divv/3.
+c
+              p8 = -2.0*beta8/turre(j,k,i,2)/(xis+0.5*wis)*
+     +           ((w1(j,k,i)*t13+w2(j,k,i)*t23+w3(j,k,i)*t33)
+     +           *(dkdx(j)*dzdy(j)-dkdy(j)*dzdx(j)) +
+     +           (w1(j,k,i)*t11+w2(j,k,i)*t12+w3(j,k,i)*t13)
+     +           *(dkdy(j)*dzdz(j)-dkdz(j)*dzdy(j)) +
+     +           (w1(j,k,i)*t12+w2(j,k,i)*t22+w3(j,k,i)*t23)
+     +           *(dkdz(j)*dzdx(j)-dkdx(j)*dzdz(j)))
+c         
+              wiwjtauij =   
+     +            w1(j,k,i)**2*t11 + w2(j,k,i)**2*t22 + w3(j,k,i)**2*t33 
+     +      + 2.*(w1(j,k,i)*w2(j,k,i)*t12 + w1(j,k,i)*w3(j,k,i)*t13
+     +      + w2(j,k,i)*w3(j,k,i)*t23)
+c
+              p4p6 = (beta4*turre(j,k,i,1)/(omemag + wlim)
+     +           + 2.0*beta6*fnut*omemag/(fnu(j,k,i)*re*re))
+     +             *wiwjtauij/turre(j,k,i,2)
+c
+              p7 = beta7*re*q(j,k,i,1)*turre(j,k,i,1)*
+     +           (w1(j,k,i)**2*s11 + w2(j,k,i)**2*s22 + w3(j,k,i)**2*s33 
+     +      + 2.*(w1(j,k,i)*w2(j,k,i)*s12 + w1(j,k,i)*w3(j,k,i)*s13 
+     +      + w2(j,k,i)*w3(j,k,i)*s23))
+     +          /(wis+wlim)
+c
+              p5 = fnut/(sigr*re*re)*
+     +           (2.*(dw1dx(j)**2+dw2dy(j)**2+dw3dz(j)**2)+
+     +           (dw2dx(j)+dw1dy(j))**2+(dw3dx(j)+dw1dz(j))**2+
+     +           (dw3dy(j)+dw2dz(j))**2)
+c
+c ---- calculate enstrophy destruction term (already divided by density)
+c
+              xnu = fnu(j,k,i)/q(j,k,i,1)
+              rt = (turre(j,k,i,2)/xnu)**2/turre(j,k,i,1)
+              ft = 1.90*(1. + 
+     +        (beta5/1.90-1.)*cctanh(turre(j,k,i,1)/tur10))/beta5
+              ft= 1.0
+              d5 = re*beta5*ft*turre(j,k,i,1)**1.5/(sqrt(rt)+delta)
+c
+c ---- calculate compressibility terms for k-equation
+c
+              ct1 = -fnut*(drdx(j)*dpdx(j) + drdy(j)*dpdy(j) 
+     +            + drdz(j)*dpdz(j))/(re*ck*q(j,k,i,1)**3)  
+              rtaurho = sqrt(turre(j,k,i,2)*(drdx(j)**2 + drdy(j)**2 +
+     +                                       drdz(j)**2))/q(j,k,i,1)
+              ct2 = -c1*turre(j,k,i,2)*rtaurho
+c
+c ---- calculate compressibility terms for enstrophy equation
+c
+              DpDt = q(j,k,i,2)*dpdx(j) + q(j,k,i,3)*dpdy(j) +
+     +               q(j,k,i,4)*dpdz(j)
+
+              termn = (q(j,k,i,1)*turre(j,k,i,2)*omemag)/
+     +                (xnu*q(j,k,i,5)*sigp)   
+              termd = 1. + sigrho*rtaurho*sqrt(rt/turre(j,k,i,1))/re
+              ct3 = ccmaxcr(termn*DpDt/termd,0.)
+              ct4 = -czeta1*fnut*omemag*turre(j,k,i,1)*rtaurho
+     +             /turre(j,k,i,2)
+              ct5 = -2.0*re*q(j,k,i,1)*turre(j,k,i,1)*divv
+c                     
+c ---- calculate source terms for k-equation
+c
+              if (ikoprod .eq. 2) then
+              pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
+     +              +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
+     +                               + t13*(ux(j,k,i,3)+ux(j,k,i,7))
+     +                               + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
+     +              (q(j,k,i,1)*re)
+              else if (ikoprod .eq. 1) then
+              pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
+              else
+              pk=vist3d(j,k,i)*vor(j,k,i)**2/(q(j,k,i,1)*re)
+              end if
+c
+              rtauk=re*fnu(j,k,i)*turre(j,k,i,1)/(turre(j,k,i,2)*
+     +           q(j,k,i,1))
+c
+              dk = turre(j,k,i,2)*rtauk
+c
+              pklim = ccmin(pk,pklimterm*dk)
+              pk = pklim
+c
+              srce(j,k,i,2) = pk + ct1 + ct2 - dk 
+              rhside(j,k,i,2) = rhside(j,k,i,2)
+     +       + srce(j,k,i,2)
+c
+              srce(j,k,i,1) = 
+     +        (p3+p4p6 + p5 + p7 + p8 + ct3 + ct4 + ct5)
+     +        /(q(j,k,i,1)*re) - d5
+              rhside(j,k,i,1) = rhside(j,k,i,1) 
+     +       + srce(j,k,i,1)
+c
+            enddo
+          enddo
+        enddo
       end if
 c
 c    Implicit F_eta_eta viscous terms.  Do over all i's
@@ -2051,8 +2431,8 @@ c         Interior points
               by(j,k)=-cdm
               cy(j,k)= cdp+cdm
               dy(j,k)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
@@ -2099,6 +2479,15 @@ c      diagonal dominance)
      +                 ivmx .eq. 11 .or. ivmx .eq.13) then
                 cyadd= damp1(j,k,i)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
+              else if (ivmx .eq.  15) then
+c
+                term1 = -0.5*(srce(j,k,i,1) 
+     c                  - ccabs(srce(j,k,i,1)))
+                term2 = -0.5*(srce(j,k,i,2) 
+     c                  - ccabs(srce(j,k,i,2)))
+                cyadd = term1/turre(j,k,i,1)   
+                cy2add = term2/turre(j,k,i,2)   
+c
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -2165,8 +2554,8 @@ c         K0 boundary points
               by(j,k)=-cdm
               cy(j,k)= cdp+cdm
               dy(j,k)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
@@ -2213,6 +2602,14 @@ c      diagonal dominance)
      +                 ivmx .eq. 11 .or. ivmx .eq.13) then
                 cyadd= damp1(j,k,i)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
+              else if (ivmx .eq.  15) then
+c
+                term1 = -0.5*(srce(j,k,i,1) 
+     c                  - ccabs(srce(j,k,i,1)))
+                term2 = -0.5*(srce(j,k,i,2) 
+     c                  - ccabs(srce(j,k,i,2)))
+                cyadd = term1/turre(j,k,i,1)   
+                cy2add = term2/turre(j,k,i,2)   
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -2278,8 +2675,8 @@ c         KDIM boundary points
               by(j,k)=-cdm
               cy(j,k)= cdp+cdm
               dy(j,k)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
@@ -2326,6 +2723,14 @@ c      diagonal dominance)
      +                 ivmx .eq. 11 .or. ivmx .eq.13) then
                 cyadd= damp1(j,k,i)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
+              else if (ivmx .eq.  15) then
+c
+                term1 = -0.5*(srce(j,k,i,1) 
+     c                  - ccabs(srce(j,k,i,1)))
+                term2 = -0.5*(srce(j,k,i,2) 
+     c                  - ccabs(srce(j,k,i,2)))
+                cyadd = term1/turre(j,k,i,1)   
+                cy2add = term2/turre(j,k,i,2)   
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -2417,8 +2822,8 @@ c         Interior points
               bx(k,j)=-cdm
               cx(k,j)= cdp+cdm
               dx(k,j)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
@@ -2497,8 +2902,8 @@ c         J0 boundary points
               bx(k,j)=-cdm
               cx(k,j)= cdp+cdm
               dx(k,j)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
@@ -2576,8 +2981,8 @@ c         JDIM boundary points
               bx(k,j)=-cdm
               cx(k,j)= cdp+cdm
               dx(k,j)=-cdp
-              cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
@@ -2682,8 +3087,8 @@ c           Interior points
                 bz(k,i)=-cdm
                 cz(k,i)= cdp+cdm
                 dz(k,i)=-cdp
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
@@ -2762,8 +3167,8 @@ c           I0 boundary points
                 bz(k,i)=-cdm
                 cz(k,i)= cdp+cdm
                 dz(k,i)=-cdp
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
@@ -2841,8 +3246,8 @@ c           IDIM boundary points
                 bz(k,i)=-cdm
                 cz(k,i)= cdp+cdm
                 dz(k,i)=-cdp
-                cdp=(fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
@@ -2916,7 +3321,7 @@ c    Update TURRE
               if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le. 
      +          tur1cutlev) then
                 negno=negno+1
-                turre(j,k,i,1)=tur1cut
+                if (tur1cut.gt.0.) turre(j,k,i,1)=tur1cut
               else
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
               end if
@@ -2924,14 +3329,13 @@ c    Update TURRE
               if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
      +          tur2cutlev) then
                 negnk=negnk+1
-                turre(j,k,i,2)=tur2cut
+                if (tur2cut.gt.0.) turre(j,k,i,2)=tur2cut
               else
                 turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)
               end if
             enddo
           enddo
         enddo
-c  
         sumno=sqrt(sumno)/float((kdim-1)*(jdim-1)*(idim-1))
         sumnk=sqrt(sumnk)/float((kdim-1)*(jdim-1)*(idim-1))
 c
@@ -3254,6 +3658,21 @@ c           cmuj=-cmuc1
           enddo
         enddo
         enddo
+c
+      else if (ivmx .eq. 15) then
+c
+        do i=1,idim-1
+        do k=1,kdim-1
+        do j=1,jdim-1
+          vist3d(j,k,i)=q(j,k,i,1)**2*cmu*turre(j,k,i,2)**2/
+     +                   (fnu(j,k,i)*turre(j,k,i,1))
+          vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
+          zksav(j,k,i,1)=turre(j,k,i,1)
+          zksav(j,k,i,2)=turre(j,k,i,2)
+        end do
+        end do
+        end do
+c
       end if
 c   for wall functions, force k & omega (or epsilon) in 1st cell off solid wall
 c     wall function in k-direction
@@ -3297,6 +3716,10 @@ c     wall function in k-direction
                 else if(ivmx .eq. 8 .or. ivmx .eq. 12 .or.
      +                  ivmx .eq. 14) then
                   zksav(j,k,i,1)=omegatemp*cmuc1
+                  zksav(j,k,i,2)=zktemp
+                else if(ivmx .eq. 15) then
+                  zksav(j,k,i,1)=omegatemp*cmuc1*zktemp*q(j,k,i,1)/
+     +              fnu(j,k,i)
                   zksav(j,k,i,2)=zktemp
                 else
                   zksav(j,k,i,1)=omegatemp*cmuc1*zktemp
@@ -3351,6 +3774,10 @@ c     wall function in j-direction
      +                  ivmx .eq. 14) then
                   zksav(j,k,i,1)=omegatemp*cmuc1
                   zksav(j,k,i,2)=zktemp
+                else if(ivmx .eq. 15) then
+                  zksav(j,k,i,1)=omegatemp*cmuc1*zktemp*q(j,k,i,1)/
+     +              fnu(j,k,i)
+                  zksav(j,k,i,2)=zktemp
                 else
                   zksav(j,k,i,1)=omegatemp*cmuc1*zktemp
                   zksav(j,k,i,2)=zktemp
@@ -3404,6 +3831,10 @@ c     wall function in i-direction
      +                  ivmx .eq. 14) then
                   zksav(j,k,i,1)=omegatemp*cmuc1
                   zksav(j,k,i,2)=zktemp
+                else if(ivmx .eq. 15) then
+                  zksav(j,k,i,1)=omegatemp*cmuc1*zktemp*q(j,k,i,1)/
+     +              fnu(j,k,i)
+                  zksav(j,k,i,2)=zktemp
                 else
                   zksav(j,k,i,1)=omegatemp*cmuc1*zktemp
                   zksav(j,k,i,2)=zktemp
@@ -3451,6 +3882,7 @@ c
         uplus=sqrt(q(jset,k,1,2)**2+q(jset,k,1,3)**2+q(jset,k,1,4)**2)
      +        /utau
         zkplus=turre(jset,k,1,2)/(utau**2)
+c     Note: the following works for k-epsilon model only:
         eplus=turre(jset,k,1,1)*re/(utau*utau*qset/
      +        ccabs(smin(jset,1,1)))
         uvplus=vist3d(jset,k,1)*vor(jset,k,1)/

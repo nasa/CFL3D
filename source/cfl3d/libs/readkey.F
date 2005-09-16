@@ -55,9 +55,10 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /gridtrans/ roll_angle
-      common /konew/ ikoprod,isstdenom,pklimterm
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
+      common /maxiv/ ivmx
 c
       ititr = 0
       nkey  = 0
@@ -377,7 +378,11 @@ c     (defaults=-1)
 c
 c     value that epsilon or omega is set to for 2-eqn models if 
 c     it goes below tur1cutlev
-      tur1cut = 1.e-20
+      if (ivmx .eq. 15) then
+        tur1cut = -1.
+      else
+        tur1cut = 1.e-20
+      end if
       nkey     = nkey + 1
 c
 c     roll angle
@@ -424,6 +429,10 @@ c     when reached, causes it to be reset to tur2cut
 c
 c     full Navier-Stokes
       ifullns = 0
+      nkey     = nkey + 1
+c
+c     beta8 parameter in k-enstrophy model
+      ibeta8kzeta = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -823,6 +832,10 @@ c
       else if (inpstr(lc1:lc2).eq.'ifullns') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ifullns
+c
+      else if (inpstr(lc1:lc2).eq.'ibeta8kzeta') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ibeta8kzeta
 c
       else
 c

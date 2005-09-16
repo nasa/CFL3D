@@ -56,7 +56,9 @@ c   For field eqn turbulence models:
      .           ivisc(3).eq.10 .or.
      .           ivisc(1).eq. 9 .or. ivisc(2).eq. 9 .or.
      .           ivisc(3).eq. 9 .or. ivisc(1).eq.13 .or.
-     .           ivisc(2).eq.13 .or. ivisc(3).eq.13) then
+     .           ivisc(2).eq.13 .or. ivisc(3).eq.13 .or.
+     .           ivisc(1).eq.15 .or. ivisc(2).eq.15 .or.
+     .           ivisc(3).eq.15) then
           do 2002 i=1,idim-1
             do 2002 k=1,kdim-1
               do 2002 j=1,jdim-1

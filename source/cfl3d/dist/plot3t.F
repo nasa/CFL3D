@@ -614,7 +614,7 @@ c   Otherwise, use exact computed turb kinetic energy
               zk=turre(j,k,i,2)
             end if
 c
-            if (ivmx .le. 7 .or. ivmx .eq. 10) then
+            if (ivmx .le. 7 .or. ivmx .eq. 10 .or. ivmx .eq. 15) then
               t11 = -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
               t22 = -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
               t33 = -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
@@ -928,6 +928,11 @@ c      v'w'/(u_inf)**2:
       else
         vwprime=-t23/(q(j,k,i,1)*re)/xmach**2
       end if
+c      Laminar Viscosity:
+      c2b=cbar/tinf
+      c2bp=c2b+1.0
+      tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+      fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
 c      S*k/epsilon:
       if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
      +    ivmx .eq. 14) then
@@ -935,6 +940,9 @@ c      S*k/epsilon:
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or. 
      .         ivmx.eq.13) then
         ske=sqrt(2.*xis)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
+      else if (ivmx.eq.15) then
+        ske=sqrt(2.*xis)*turre(j,k,i,2)*q(j,k,i,1)/
+     +    (fnu*turre(j,k,i,1)*re)
       end if
 c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
 c      unit 1 of grid)
@@ -946,18 +954,19 @@ c      P(k)/epsilon:
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
      .         ivmx.eq.13) then
         povere=pk/(turre(j,k,i,1)*re)
+      else if (ivmx.eq.15) then
+        povere=pk*q(j,k,i,1)/(fnu*turre(j,k,i,1)*re)
       end if
-c      Turb Reynolds number:
-      c2b=cbar/tinf
-      c2bp=c2b+1.0
-      tt=gamma*q(j,k,i,5)/q(j,k,i,1)
-      fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+c      Turb Reynolds number (4/9*k^2/(nu*epsilon), from NASA-CR 198221, 1995:
       if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
      +    ivmx .eq. 14) then
-        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)**2/(9.*fnu*turre(j,k,i,1))
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)/(9.*fnu*turre(j,k,i,1))
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
      .         ivmx.eq.13) then
-        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)/(9.*fnu*turre(j,k,i,1))
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)**2/(9.*fnu*turre(j,k,i,1))
+      else if (ivmx.eq.15) then
+        turbre=4.*q(j,k,i,1)*q(j,k,i,1)*turre(j,k,i,2)**2/
+     +    (9.*fnu*fnu*turre(j,k,i,1))
       end if
 c      Mean deformation:
       def=(xis-wis)/(xis+wis)

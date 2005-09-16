@@ -351,6 +351,10 @@ c
       fmax   = realval(2)
       cfltau = realval(3)
       if (real(dt) .lt. 0.0)  iunst = 0
+      if (real(dt) .lt. 0.0 .and. ides .eq. 1) then
+        write(iunit11,'('' WARNING: DES SHOULD be run time-'',
+     .   ''accurately (dt>0)'')')
+      end if
       if (real(dt) .gt. 0.0 .and. cltarg.ne.99999.0) then
          write(iunit11,'('' Cannot use cltarg with time-accurate'')')
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -558,6 +562,7 @@ c              =11  turbulent - k-epsilon EASM-Gatski/Speziale NONLINEAR
 c              =12  turbulent - k-omega EASM-Gatski/Speziale NONLINEAR
 c              =13  turbulent - k-epsilon EASM-variable-g NONLINEAR
 c              =14  turbulent - k-omega EASM-variable-g NONLINEAR
+c              =15  turbulent - k-enstrophy model
 c       if ivisc(m) < 0 on input, a wall function is employed.  Should only
 c                       (officially) be used for attached flow, when 1st 
 c                       gridpoint off wall is not in the sublayer (typically
@@ -659,7 +664,7 @@ c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       end if
       iv(igrid) = max(ivisc(1),ivisc(2))
       iv(igrid) = max(ivisc(3),iv(igrid))
-      if (ivisc(1).gt.14.or. ivisc(2).gt.14.or. ivisc(3).gt.14) then
+      if (ivisc(1).gt.15.or. ivisc(2).gt.15.or. ivisc(3).gt.15) then
         write(iunit11,'('' Unknown turb model type chosen'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if

@@ -1270,7 +1270,72 @@ c              Two-equation turb models
                inmx=(jdim-1)*(kdim-1)*(idim-1)*2
                iwk33=iwk32+inmx
                inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
-               itemp=iwk33+inmx
+c allocate for gradients of vorticity and turbulence - k-zeta only:
+               iwk34=iwk33+inmx
+               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .         ivisc(3).eq.15) then
+               inmx=jdim
+               else
+               inmx=0
+               end if
+               iwk35=iwk34+inmx
+               iwk36=iwk35+inmx
+               iwk37=iwk36+inmx
+               iwk38=iwk37+inmx
+               iwk39=iwk38+inmx
+               iwk40=iwk39+inmx
+               iwk41=iwk40+inmx
+               iwk42=iwk41+inmx
+               iwk43=iwk42+inmx
+               iwk44=iwk43+inmx
+               iwk45=iwk44+inmx
+               iwk46=iwk45+inmx
+               iwk47=iwk46+inmx
+               iwk48=iwk47+inmx
+               iwk49=iwk48+inmx
+               iwk50=iwk49+inmx
+               iwk51=iwk50+inmx
+               iwk52=iwk51+inmx
+               iwk53=iwk52+inmx
+               iwk54=iwk53+inmx
+               iwk55=iwk54+inmx
+               iwk56=iwk55+inmx
+               iwk57=iwk56+inmx
+               iwk58=iwk57+inmx
+               iwk59=iwk58+inmx
+               iwk60=iwk59+inmx
+               iwk61=iwk60+inmx
+               iwk62=iwk61+inmx
+               iwk63=iwk62+inmx
+               iwk64=iwk63+inmx
+               iwk65=iwk64+inmx
+               iwk66=iwk65+inmx
+               iwk67=iwk66+inmx
+               iwk68=iwk67+inmx
+               iwk69=iwk68+inmx
+               iwk70=iwk69+inmx
+               iwk71=iwk70+inmx
+               iwk72=iwk71+inmx
+               iwk73=iwk72+inmx
+               iwk74=iwk73+inmx
+               iwk75=iwk74+inmx
+               iwk76=iwk75+inmx
+               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .         ivisc(3).eq.15) then
+               inmx=(jdim+1)*(kdim+1)*(idim+1)
+               else
+               inmx=0
+               end if
+               iwk77=iwk76+inmx
+               iwk78=iwk77+inmx
+               iwk79=iwk78+inmx
+               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .         ivisc(3).eq.15) then
+               inmx=(jdim+1)*(kdim+1)*(idim+1)*2
+               else
+               inmx=0
+               end if
+               itemp=iwk79+inmx
             end if
          end if
 c

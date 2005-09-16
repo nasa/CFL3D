@@ -788,8 +788,8 @@ c
       ivmxold=max(ivmxold,iv3)
       iread = 1
       if (ivmxold.ne.ivmx) iread=0
-      if ((ivmxold.ge.6.and.ivmxold.le.14) .and.
-     .    (ivmx.ge.6.and.ivmx.le.14)) iread = 1
+      if ((ivmxold.ge.6.and.ivmxold.le.15) .and.
+     .    (ivmx.ge.6.and.ivmx.le.15)) iread = 1
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 #if defined CGNS
         call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
@@ -1004,7 +1004,8 @@ c
      .  .and.(iv1.eq.9.or.iv2.eq.9.or.iv3.eq.9.or.
      .        iv1.eq.10.or.iv2.eq.10.or.iv3.eq.10.or.
      .        iv1.eq.11.or.iv2.eq.11.or.iv3.eq.11.or.
-     .        iv1.eq.13.or.iv2.eq.13.or.iv3.eq.13)) then
+     .        iv1.eq.13.or.iv2.eq.13.or.iv3.eq.13.or.
+     .        iv1.eq.15.or.iv2.eq.15.or.iv3.eq.15)) then
           do i=1,idim1
             do k=1,kdim1
               do j=1,jdim1
@@ -1020,7 +1021,8 @@ c               Limit new omega to handle extremes
      .       (iv1.eq.9.or.iv2.eq.9.or.iv3.eq.9.or.
      .        iv1.eq.10.or.iv2.eq.10.or.iv3.eq.10.or.
      .        iv1.eq.11.or.iv2.eq.11.or.iv3.eq.11.or.
-     .        iv1.eq.13.or.iv2.eq.13.or.iv3.eq.13)) then
+     .        iv1.eq.13.or.iv2.eq.13.or.iv3.eq.13.or.
+     .        iv1.eq.15.or.iv2.eq.15.or.iv3.eq.15)) then
           do i=1,idim1
             do k=1,kdim1
               do j=1,jdim1
@@ -1035,7 +1037,8 @@ c               Limit new omega to handle extremes
         if ((ivisc(1).eq.9.or.ivisc(2).eq.9.or.ivisc(3).eq.9.or.
      .       ivisc(1).eq.10.or.ivisc(2).eq.10.or.ivisc(3).eq.10.or.
      .       ivisc(1).eq.11.or.ivisc(2).eq.11.or.ivisc(3).eq.11.or.
-     .       ivisc(1).eq.13.or.ivisc(2).eq.13.or.ivisc(3).eq.13)
+     .       ivisc(1).eq.13.or.ivisc(2).eq.13.or.ivisc(3).eq.13.or.
+     .       ivisc(1).eq.15.or.ivisc(2).eq.15.or.ivisc(3).eq.15)
      .  .and.(iv1.eq.8.or.iv2.eq.8.or.iv3.eq.8.or.
      .        iv1.eq.12.or.iv2.eq.12.or.iv3.eq.12.or.
      .        iv1.eq.14.or.iv2.eq.14.or.iv3.eq.14)) then
@@ -1052,7 +1055,8 @@ c               Limit new epsilon to handle extremes
         if ((ivisc(1).eq.9.or.ivisc(2).eq.9.or.ivisc(3).eq.9.or.
      .       ivisc(1).eq.10.or.ivisc(2).eq.10.or.ivisc(3).eq.10.or.
      .       ivisc(1).eq.11.or.ivisc(2).eq.11.or.ivisc(3).eq.11.or.
-     .       ivisc(1).eq.13.or.ivisc(2).eq.13.or.ivisc(3).eq.13)
+     .       ivisc(1).eq.13.or.ivisc(2).eq.13.or.ivisc(3).eq.13.or.
+     .       ivisc(1).eq.15.or.ivisc(2).eq.15.or.ivisc(3).eq.15)
      .  .and.(iv1.eq.6.or.iv2.eq.6.or.iv3.eq.6.or.
      .        iv1.eq.7.or.iv2.eq.7.or.iv3.eq.7)) then
           do i=1,idim1

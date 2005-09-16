@@ -130,7 +130,7 @@ c
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
-      common /konew/ ikoprod,isstdenom,pklimterm
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -421,6 +421,7 @@ c
          work(nlast+64) = tur2cutlev
          work(nlast+65) = meshdef
          work(nlast+66) = ifullns
+         work(nlast+67) = ibeta8kzeta
          nlast = nlast+nkey
       end if
 c
@@ -667,6 +668,7 @@ c
          tur2cutlev= work(nlast+64)
          meshdef   = int(work(nlast+65))
          ifullns   = int(work(nlast+66))
+         ibeta8kzeta=int(work(nlast+67))
       end if
 c
 c**************************

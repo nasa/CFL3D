@@ -76,7 +76,7 @@ c
       common /account/ iaccnt,ioutsub
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
-      common /konew/ ikoprod,isstdenom,pklimterm
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
@@ -469,7 +469,72 @@ c   two-equation turb model
       inmx=(jdim-1)*(kdim-1)*(idim-1)*2
       iwk33=iwk32+inmx
       inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
-      nroom=nwork-(iwk33+inmx)
+c allocate for gradients of vorticity and turbulence - k-zeta only
+      iwk34=iwk33+inmx
+      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .    ivisc(3).eq.15) then
+      inmx=jdim
+      else
+      inmx=0
+      end if
+      iwk35=iwk34+inmx
+      iwk36=iwk35+inmx
+      iwk37=iwk36+inmx
+      iwk38=iwk37+inmx
+      iwk39=iwk38+inmx
+      iwk40=iwk39+inmx
+      iwk41=iwk40+inmx
+      iwk42=iwk41+inmx
+      iwk43=iwk42+inmx
+      iwk44=iwk43+inmx
+      iwk45=iwk44+inmx
+      iwk46=iwk45+inmx
+      iwk47=iwk46+inmx
+      iwk48=iwk47+inmx
+      iwk49=iwk48+inmx
+      iwk50=iwk49+inmx
+      iwk51=iwk50+inmx
+      iwk52=iwk51+inmx
+      iwk53=iwk52+inmx
+      iwk54=iwk53+inmx
+      iwk55=iwk54+inmx
+      iwk56=iwk55+inmx
+      iwk57=iwk56+inmx
+      iwk58=iwk57+inmx
+      iwk59=iwk58+inmx
+      iwk60=iwk59+inmx
+      iwk61=iwk60+inmx
+      iwk62=iwk61+inmx
+      iwk63=iwk62+inmx
+      iwk64=iwk63+inmx
+      iwk65=iwk64+inmx
+      iwk66=iwk65+inmx
+      iwk67=iwk66+inmx
+      iwk68=iwk67+inmx
+      iwk69=iwk68+inmx
+      iwk70=iwk69+inmx
+      iwk71=iwk70+inmx
+      iwk72=iwk71+inmx
+      iwk73=iwk72+inmx
+      iwk74=iwk73+inmx
+      iwk75=iwk74+inmx
+      iwk76=iwk75+inmx
+      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .    ivisc(3).eq.15) then
+      inmx=(jdim+1)*(kdim+1)*(idim+1)
+      else
+      inmx=0
+      end if
+      iwk77=iwk76+inmx
+      iwk78=iwk77+inmx
+      iwk79=iwk78+inmx
+      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
+     .    ivisc(3).eq.15) then
+      inmx=(jdim+1)*(kdim+1)*(idim+1)*2
+      else
+      inmx=0
+      end if
+      nroom=nwork-(iwk79+inmx)
       if(nroom .lt. 0.) then
        nou(1) = min(nou(1)+1,ibufdim)
        write(bou(nou(1),1),'('' not enough memory for 2-eqn turb'',
@@ -490,7 +555,16 @@ c   two-equation turb model
      + xib2,wk(iwk33),cmuv,bcj,bck,bci,nbci0,nbcidim,
      + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
      + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
-     + iex3)
+     + iex3,
+     + wk(iwk34),wk(iwk35),wk(iwk36),wk(iwk37),wk(iwk38),wk(iwk39),
+     + wk(iwk40),wk(iwk41),wk(iwk42),wk(iwk43),wk(iwk44),wk(iwk45),
+     + wk(iwk46),wk(iwk47),wk(iwk48),wk(iwk49),wk(iwk50),wk(iwk51),
+     + wk(iwk52),wk(iwk53),wk(iwk54),
+     + wk(iwk55),wk(iwk56),wk(iwk57),wk(iwk58),wk(iwk59),wk(iwk60),
+     + wk(iwk61),wk(iwk62),wk(iwk63),wk(iwk64),wk(iwk65),wk(iwk66),
+     + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
+     + wk(iwk73),wk(iwk74),wk(iwk75),
+     + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79))
 c   *********
       end if
       end if

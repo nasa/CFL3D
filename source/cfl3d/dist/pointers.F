@@ -54,7 +54,7 @@ c
       common /elastic/ ndefrm,naesrf
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /avgdata/ xnumavg,iteravg
-      common /konew/ ikoprod,isstdenom,pklimterm
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
 c
       if (icall .eq. 0) then
          ierrflg = -99

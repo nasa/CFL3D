@@ -1270,6 +1270,42 @@ c        K:
          if (ier .ne. 0) call cg_error_exit_f
       end if
 c
+      if (ivisc(1).eq.15.or. ivisc(2).eq.15.or. ivisc(3).eq.15) then
+         write(11,'(''   writing k-enstrophy field eqn turb info'',
+     .              '' to cgns file'',
+     +     '' (SIDS-consistent-normalization)'')')
+c        Enstrophy:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+c        put in SIDS-like-"consistent normalization"
+         do i=i2d,idima-i2d
+         do j=0,jdima
+         do k=0,kdima
+           wk(i,j,k)=wk(i,j,k)*reue/xmach
+         enddo
+         enddo
+         enddo
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentEnstrophy', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentEnstrophy', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        K:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,2,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
       if (ivisc(1).eq.8 .or. ivisc(2).eq.8 .or. ivisc(3).eq.8 .or.
      .    ivisc(1).eq.9 .or. ivisc(2).eq.9 .or. ivisc(3).eq.9 .or.
      .    ivisc(1).eq.13.or. ivisc(2).eq.13.or. ivisc(3).eq.13.or.
@@ -1583,6 +1619,41 @@ c   Read k-epsilon info
      +     ivmxold .eq.11 .or. ivmxold .eq. 13) .and.
      +     iread .eq. 1) then
       solname='TurbulentDissipation'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c   Change from SIDS-"consistent-normalization" back to CFL3D-type
+      do i=1,idima-2*irind+1
+      do j=1,jdima-2*jrind+1
+      do k=1,kdima-2*krind+1
+        wk(i,j,k)=wk(i,j,k)*xmach/reue
+      enddo
+      enddo
+      enddo
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,1))
+c
+      solname='TurbulentEnergyKinetic'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,2))
+      end if
+c
+c   Read k-enstrophy info
+      if (ivmxold .eq.15 .and. iread .eq. 1) then
+      solname='TurbulentEnstrophy'
       if (idouble .eq. 1) then
       call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealDouble, irmin, irmax, wk, ier)
@@ -2990,6 +3061,16 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_EASM_KO',ier)
         if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 15) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_K_Enstrophy',ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -3345,6 +3426,11 @@ c   Read 'TurbulenceModel' node, if appropriate
           iv1=idata(1)*14
           iv2=idata(2)*14
           iv3=idata(3)*14
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_K_Enstrophy') then
+          iv1=idata(1)*15
+          iv2=idata(2)*15
+          iv3=idata(3)*15
         else
           write(11,'('' Model name not recognized:'',a32)')
      +     ModelTypeName(itype)
@@ -5413,7 +5499,7 @@ c   needs to be read)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
         continue
-      elseif (nmotions .gt. 1) then
+      else if (nmotions .gt. 1) then
         write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       else
