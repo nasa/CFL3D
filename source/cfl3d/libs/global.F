@@ -174,6 +174,9 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
+c   ***rumsey
+      common /sarc/ isarc2d, sarccr3
+c   *********
 c
       pi = 4.0*atan(1.0)
 c
@@ -447,6 +450,7 @@ c
      .  '('' NWREST is very small... be sure you want this'')')
       end if
       write(iunit11,36) ngrid,nplot3d,nprint,nwrest,ichk,i2d,ntstep,ita
+   36 format(8i10)
       iipv=0
       if (i2d .eq. -1) then
         iipv=1
@@ -457,7 +461,15 @@ c   DES must be run in 3-D
         write(iunit11,'('' WARNING: DES SHOULD be run 3-D (i2d=0)'')')
 c        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-   36 format(8i10)
+c   Check for SARC model
+      if (isarc2d .eq. 1 .and. i2d .eq. 0) then
+        write(iunit11,'('' WARNING: SARC currently only coded for'',
+     .  '' 2-D curvature in x-z or x-y planes;'')')
+        write(iunit11,'(''          (i-index MUST be in spanwise'',
+     .  '' direction; i-index derivatives are not accounted for)...'')')
+        write(iunit11,'(''          usage in 3-D cases is'',
+     .  '' discouraged'')')
+      end if
 c
 c     for cfl3d type grids, set ialph = 0 regardless of input value
 c     note: if it is desired to allow ialph to be used with cfl3d 
@@ -3955,7 +3967,7 @@ c
 c NOTE: at the end (after both rigid and deforming/aeroelastic mesh data
 c       are set), if ialph = 1 we swap y and z grid motion parameters
 c       so that they remain consitant with the grid orientation as it
-c       also gets swapped around at a later in the code if ialph=1
+c       also gets swapped around later in the code if ialph=1
 c
 c****************************************
 c

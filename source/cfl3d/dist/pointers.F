@@ -55,6 +55,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /avgdata/ xnumavg,iteravg
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
+      common /sarc/ isarc2d, sarccr3
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -712,7 +713,9 @@ c
      .      ivisc(3).eq. 9 .or. ivisc(2).eq. 9 .or. ivisc(1).eq. 9 .or.
      .      ivisc(3).ge.11 .or. ivisc(2).ge.11 .or. ivisc(1).ge.11 .or.
      .      ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
-     .      ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1))
+     .      ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1) .or.
+     .      ((ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. ivisc(1).eq.5) .and.
+     .      isarc2d.eq.1))
      .      ns = jm1km1im1*9
 c
 c        cmuv(jdim-1,kdim-1,idim-1)

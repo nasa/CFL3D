@@ -59,6 +59,7 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
+      common /sarc/ isarc2d, sarccr3
 c
       ititr = 0
       nkey  = 0
@@ -433,6 +434,14 @@ c     full Navier-Stokes
 c
 c     beta8 parameter in k-enstrophy model
       ibeta8kzeta = 0
+      nkey     = nkey + 1
+c
+c     SARC - Spalart-Allmaras rotation/curvature correction
+      isarc2d = 0
+      nkey     = nkey + 1
+c
+c     parameter cr3 in SARC model
+      sarccr3 = 0.6
       nkey     = nkey + 1
 c
 c*********************************************
@@ -836,6 +845,15 @@ c
       else if (inpstr(lc1:lc2).eq.'ibeta8kzeta') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ibeta8kzeta
+c
+      else if (inpstr(lc1:lc2).eq.'isarc2d') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isarc2d
+c
+      else if (inpstr(lc1:lc2).eq.'sarccr3') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sarccr3 = realval(1)
 c
       else
 c

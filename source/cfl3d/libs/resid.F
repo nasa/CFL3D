@@ -82,6 +82,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
+      common /sarc/ isarc2d, sarccr3
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -242,7 +243,9 @@ c
      .    ivisc(3).eq.9 .or. ivisc(2).eq.9 .or. ivisc(1).eq.9 .or.
      .    ivisc(3).ge.11.or. ivisc(2).ge.11.or. ivisc(1).ge.11 .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
-     .    ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1)) then
+     .    ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1) .or.
+     .    ((ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. ivisc(1).eq.5) .and.
+     .    isarc2d.eq.1)) then
       call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)
@@ -404,7 +407,19 @@ c   Spalart
       iwk16=iwk15+inmx
       iwk17=iwk16+inmx
       iwk18=iwk17+inmx
-      nroom=nwork-(iwk18+inmx)
+      iwk19=iwk18+inmx
+      if (isarc2d .eq. 1) then
+        inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+      else
+        inmx=0
+      end if
+      iwk20=iwk19+inmx
+      if (isarc2d .eq. 1) then
+        inmx=(jdim-1)*(kdim-1)*(idim-1)
+      else
+        inmx=0
+      end if
+      nroom=nwork-(iwk20+inmx)
       if(nroom .lt. 0.) then
        nou(1) = min(nou(1)+1,ibufdim)
        write(bou(nou(1),1),'('' not enough memory for Spalart'',
@@ -420,7 +435,7 @@ c   Spalart
      + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
      + wk(iwk18),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,
      + sumn1,sumn2,negn1,negn2,xib2,volj0,volk0,voli0,nou,bou,nbuf,
-     + ibufdim,iex,iex2,iex3)
+     + ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19),wk(iwk20))
       else if (ivisc(3).ge.6 .or. ivisc(2).ge.6 .or.
      .         ivisc(1).ge.6) then
 c   two-equation turb model
