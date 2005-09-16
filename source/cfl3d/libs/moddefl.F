@@ -63,8 +63,9 @@ c
             if (moddfl.eq.1) then
                amp             = perturb(nm,iaes,2)
                freqp           = perturb(nm,iaes,3)
-               xs(2*nm-1,iaes) = amp*sin(freqp*times)
-               xs(2*nm,iaes)   = amp*freqp*cos(freqp*times)
+               t0              = perturb(nm,iaes,4)
+               xs(2*nm-1,iaes) = amp*sin(freqp*(times-t0))
+               xs(2*nm,iaes)   = amp*freqp*cos(freqp*(times-t0))
             end if
 c
 c           Gaussian pulse modal deflection (half is the pulse half-life)
