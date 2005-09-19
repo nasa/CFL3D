@@ -59,7 +59,7 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
-      common /sarc/ isarc2d, sarccr3
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       ititr = 0
       nkey  = 0
@@ -436,12 +436,16 @@ c     beta8 parameter in k-enstrophy model
       ibeta8kzeta = 0
       nkey     = nkey + 1
 c
-c     SARC - Spalart-Allmaras rotation/curvature correction
+c     SARC - Spalart-Allmaras curvature correction in 2D sense only
       isarc2d = 0
       nkey     = nkey + 1
 c
 c     parameter cr3 in SARC model
       sarccr3 = 0.6
+      nkey     = nkey + 1
+c
+c     EASMCC - EASM curvature correction in 2D sense only
+      ieasmcc2d = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -854,6 +858,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          sarccr3 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'ieasmcc2d') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ieasmcc2d
 c
       else
 c

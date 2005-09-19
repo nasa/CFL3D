@@ -174,9 +174,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
-c   ***rumsey
-      common /sarc/ isarc2d, sarccr3
-c   *********
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       pi = 4.0*atan(1.0)
 c
@@ -461,10 +459,10 @@ c   DES must be run in 3-D
         write(iunit11,'('' WARNING: DES SHOULD be run 3-D (i2d=0)'')')
 c        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-c   Check for SARC model
-      if (isarc2d .eq. 1 .and. i2d .eq. 0) then
-        write(iunit11,'('' WARNING: SARC currently only coded for'',
-     .  '' 2-D curvature in x-z or x-y planes;'')')
+c   Check for SARC & EASMCC models
+      if ((isarc2d .eq. 1 .or. ieasmcc2d .eq. 1) .and. i2d .eq. 0) then
+        write(iunit11,'('' WARNING: SARC & EASMCC currently only'',
+     .  '' coded for 2-D curvature in x-z or x-y planes;'')')
         write(iunit11,'(''          (i-index MUST be in spanwise'',
      .  '' direction; i-index derivatives are not accounted for)...'')')
         write(iunit11,'(''          usage in 3-D cases is'',
@@ -771,6 +769,17 @@ c
             end if
    72     continue
         end if
+      end if
+c
+      if (isarc2d .eq. 1 .and. ivmx .ne. 5) then
+        write(iunit11,'('' WARNING: isarc2d not active'',
+     .  '' unless SA model (ivisc=5) used'')')
+      end if
+      if (ieasmcc2d .eq. 1 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.
+     .  ivmx.ne.11 .and. ivmx.ne.12 .and. ivmx.ne.13 .and.
+     .  ivmx.ne.14)) then
+        write(iunit11,'('' WARNING: ieasmcc2d not active'',
+     .  '' unless EASM model (ivisc=8,9,11,12,13, or 14) used'')')
       end if
 c
 c

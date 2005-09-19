@@ -282,7 +282,7 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit
-      common /sarc/ isarc2d, sarccr3
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       icall  = 0
       memuse = 0
@@ -1233,13 +1233,7 @@ c              Spalart
                else
                  inmx=0
                end if
-               iwk20=iwk19+inmx
-               if (isarc2d .eq. 1) then
-                 inmx=(jdim-1)*(kdim-1)*(idim-1)
-               else
-                 inmx=0
-               end if
-               itemp=iwk20+inmx
+               itemp=iwk19+inmx
             else if (ivisc(3).ge.6 .or. ivisc(2).ge.6 .or.
      .               ivisc(1).ge.6) then
 c              Two-equation turb models
@@ -1348,7 +1342,14 @@ c allocate for gradients of vorticity and turbulence - k-zeta only:
                else
                inmx=0
                end if
-               itemp=iwk79+inmx
+               iwk80=iwk79+inmx
+c allocate for easmcc2d
+               if (ieasmcc2d .eq. 1) then
+                 inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+               else
+                 inmx=0
+               end if
+               itemp=iwk80+inmx
             end if
          end if
 c

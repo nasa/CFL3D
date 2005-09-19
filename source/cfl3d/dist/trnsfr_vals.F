@@ -185,7 +185,7 @@ c
      .        tur10,tur20
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
-      common /sarc/ isarc2d, sarccr3
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 #if defined DIST_MPI
 c
 c***********************
@@ -425,6 +425,7 @@ c
          work(nlast+67) = ibeta8kzeta
          work(nlast+68) = isarc2d
          work(nlast+69) = sarccr3
+         work(nlast+70) = ieasmcc2d
          nlast = nlast+nkey
       end if
 c
@@ -674,6 +675,7 @@ c
          ibeta8kzeta=int(work(nlast+67))
          isarc2d   = int(work(nlast+68))
          sarccr3   = work(nlast+69)
+         ieasmcc2d = int(work(nlast+70))
       end if
 c
 c**************************

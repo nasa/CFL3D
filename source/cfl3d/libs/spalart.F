@@ -3,7 +3,7 @@
      + fx,workx,by,cy,dy,fy,worky,bz,cz,dz,fz,workz,ntime,
      + tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,sumn1,sumn2,negn1,negn2,
      + tursav2,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,iex3,
-     + bcj,bck,bci,ux,vx,dadt)
+     + bcj,bck,bci,ux,vx)
 c
 c     $Id$
 c
@@ -37,7 +37,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst
-      common /sarc/ isarc2d, sarccr3
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -61,8 +61,7 @@ c
       dimension tursav2(jdim,kdim,idim,4)
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
-      dimension dadt(jdim-1,kdim-1,idim-1),
-     + bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2),
+      dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2),
      + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,4)
 c
       if(isklton .gt. 0) then
@@ -76,7 +75,7 @@ c
          write(bou(nou(1),1),'(''   computing turbulent'',
      +'' viscosity using Spalart SARC, block ='',i4)') nbl
          nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''      WARNING: rot/curv terms are'',
+         write(bou(nou(1),1),'(''      WARNING: curv terms are'',
      +'' active in 2-D sense only!!!'')')
          else
          nou(1) = min(nou(1)+1,ibufdim)
@@ -976,210 +975,13 @@ c
         enddo
         end if
       if (isarc2d .eq. 1) then
-c For SARC model, compute rtilde as fn of Dalpha/Dt
+c For SARC model, eventually need to compute rtilde as fn of Dalpha/Dt
 c   Note SARC currently only set up for curvature in x-z plane, with
 c   y direction (necessarily) in the i-direction
-c   Put q (u and w) velocities in vx(1) and (2), and fill edges with
-c   appropriate BC values:
-        do i=1,idim-1
-        do j=1,jdim-1
-        do k=1,kdim-1
-          vx(j,k,i,1)=q(j,k,i,2)
-          vx(j,k,i,2)=q(j,k,i,4)
-        enddo
-        enddo
-c     Get ghost cell values
-        do j=1,jdim-1
-          vx(j,0,i,1)=qk0(j,i,2,1)*(1.-bck(j,i,1))+
-     +      (2.*qk0(j,i,2,1)-q(j,1,i,2))*bck(j,i,1)
-          vx(j,0,i,2)=qk0(j,i,4,1)*(1.-bck(j,i,1))+
-     +      (2.*qk0(j,i,4,1)-q(j,1,i,4))*bck(j,i,1)
-          vx(j,kdim,i,1)=qk0(j,i,2,3)*(1.-bck(j,i,2))+
-     +      (2.*qk0(j,i,2,3)-q(j,kdim-1,i,2))*bck(j,i,2)
-          vx(j,kdim,i,2)=qk0(j,i,4,3)*(1.-bck(j,i,2))+
-     +      (2.*qk0(j,i,4,3)-q(j,kdim-1,i,4))*bck(j,i,2)
-        enddo
-        do k=1,kdim-1
-          vx(0,k,i,1)=qj0(k,i,2,1)*(1.-bcj(k,i,1))+
-     +      (2.*qj0(k,i,2,1)-q(1,k,i,2))*bcj(k,i,1)
-          vx(0,k,i,2)=qj0(k,i,4,1)*(1.-bcj(k,i,1))+
-     +      (2.*qj0(k,i,4,1)-q(1,k,i,4))*bcj(k,i,1)
-          vx(jdim,k,i,1)=qj0(k,i,2,3)*(1.-bcj(k,i,2))+
-     +      (2.*qj0(k,i,2,3)-q(jdim-1,k,i,2))*bcj(k,i,2)
-          vx(jdim,k,i,2)=qj0(k,i,4,3)*(1.-bcj(k,i,2))+
-     +      (2.*qj0(k,i,4,3)-q(jdim-1,k,i,4))*bcj(k,i,2)
-        enddo
-        enddo
-c   compute material derivative of principal strain directions (ignore time term)
-c   the following assumes that the boundary terms are at ghost cells
-c     do for each component (2-D for now only):
-c     j-direction:
-        do i=1,idim-1
-          do j=1,jdim-1
-            if (j .eq. 1) then
-              jm=j
-            else
-              jm=j-1
-            end if
-            if (j .eq. jdim-1) then
-              jp=j
-            else
-              jp=j+1
-            end if
-            do k=1,kdim-1
-              voll=vol(jm,k,i)
-              volu=vol(jp,k,i)
-              skm1u=sk(jm,k+1,i,1)
-              skm3u=sk(jm,k+1,i,3)
-              skm4u=sk(jm,k+1,i,4)
-              skm1x=sk(jm,k,i,1)
-              skm3x=sk(jm,k,i,3)
-              skm4x=sk(jm,k,i,4)
-              skp1u=sk(jp,k+1,i,1)
-              skp3u=sk(jp,k+1,i,3)
-              skp4u=sk(jp,k+1,i,4)
-              skp1x=sk(jp,k,i,1)
-              skp3x=sk(jp,k,i,3)
-              skp4x=sk(jp,k,i,4)
-              xc=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
-     +                sj(j,k,i  ,1)*sj(j,k,i  ,4))/vol(j,k,i)
-              zc=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4)+
-     +                sj(j,k,i  ,3)*sj(j,k,i  ,4))/vol(j,k,i)
-              tc=0.5*(sj(j+1,k,i,5)*sj(j+1,k,i,4)+
-     +                sj(j,k,i  ,5)*sj(j,k,i  ,4))/vol(j,k,i)
-              xp=sj(j+1,k,i,1)*sj(j+1,k,i,4)/(0.5*(vol(j,k,i)+volu))
-              zp=sj(j+1,k,i,3)*sj(j+1,k,i,4)/(0.5*(vol(j,k,i)+volu))
-              xm=sj(j  ,k,i,1)*sj(j  ,k,i,4)/(0.5*(vol(j,k,i)+voll))
-              zm=sj(j  ,k,i,3)*sj(j  ,k,i,4)/(0.5*(vol(j,k,i)+voll))
-              uu=xc*q(j,k,i,2)+zc*q(j,k,i,4)+tc
-              d2udn2=xp*(vx(j+1,k,i,1)-vx(j  ,k,i,1)) -
-     +               xm*(vx(j  ,k,i,1)-vx(j-1,k,i,1))
-              d2wdn2=zp*(vx(j+1,k,i,2)-vx(j  ,k,i,2)) -
-     +               zm*(vx(j  ,k,i,2)-vx(j-1,k,i,2))
-              d2udn3=zp*(vx(j+1,k,i,1)-vx(j  ,k,i,1)) -
-     +               zm*(vx(j  ,k,i,1)-vx(j-1,k,i,1))
-              d2wdn3=xp*(vx(j+1,k,i,2)-vx(j  ,k,i,2)) -
-     +               xm*(vx(j  ,k,i,2)-vx(j-1,k,i,2))
-              vx(j,k,i,3)=0.5*uu*(d2udn2-d2wdn2)
-              vx(j,k,i,4)=0.5*uu*(d2udn3+d2wdn3)
-c  x-deriv terms:
-              xp=0.25*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
-     +                skp1u*skp4u+sk(j,k,i,1)*sk(j,k,i,4)+
-     +                skp1x*skp4x)/(0.5*(vol(j,k,i)+volu))
-              zp=0.25*(sk(j,k+1,i,3)*sk(j,k+1,i,4)+
-     +                skp3u*skp4u+sk(j,k,i,3)*sk(j,k,i,4)+
-     +                skp3x*skp4x)/(0.5*(vol(j,k,i)+volu))
-              xm=0.25*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
-     +                skm1u*skm4u+sk(j,k,i,1)*sk(j,k,i,4)+
-     +                skm1x*skm4x)/(0.5*(vol(j,k,i)+voll))
-              zm=0.25*(sk(j,k+1,i,3)*sk(j,k+1,i,4)+
-     +                skm3u*skm4u+sk(j,k,i,3)*sk(j,k,i,4)+
-     +                skm3x*skm4x)/(0.5*(vol(j,k,i)+voll))
-              dxunx=0.25*(xp*(vx(jp ,k+1,i,1)-vx(jp ,k-1,i,1)-
-     +                        vx(j  ,k-1,i,1)+vx(j  ,k+1,i,1))
-     +                   -xm*(vx(jm ,k+1,i,1)-vx(jm ,k-1,i,1)-
-     +                        vx(j  ,k-1,i,1)+vx(j  ,k+1,i,1)))
-              dxwnz=0.25*(zp*(vx(jp ,k+1,i,2)-vx(jp ,k-1,i,2)-
-     +                        vx(j  ,k-1,i,2)+vx(j  ,k+1,i,2))
-     +                   -zm*(vx(jm ,k+1,i,2)-vx(jm ,k-1,i,2)-
-     +                        vx(j  ,k-1,i,2)+vx(j  ,k+1,i,2)))
-              dxunz=0.25*(zp*(vx(jp ,k+1,i,1)-vx(jp ,k-1,i,1)-
-     +                        vx(j  ,k-1,i,1)+vx(j  ,k+1,i,1))
-     +                   -zm*(vx(jm ,k+1,i,1)-vx(jm ,k-1,i,1)-
-     +                        vx(j  ,k-1,i,1)+vx(j  ,k+1,i,1)))
-              dxwnx=0.25*(xp*(vx(jp ,k+1,i,2)-vx(jp ,k-1,i,2)-
-     +                        vx(j  ,k-1,i,2)+vx(j  ,k+1,i,2))
-     +                   -xm*(vx(jm ,k+1,i,2)-vx(jm ,k-1,i,2)-
-     +                        vx(j  ,k-1,i,2)+vx(j  ,k+1,i,2)))
-              vx(j,k,i,3)=vx(j,k,i,3)+0.5*uu*(dxunx-dxwnz)
-              vx(j,k,i,4)=vx(j,k,i,4)+0.5*uu*(dxunz+dxwnx)
-            enddo
-          enddo
-        enddo
-c     k-direction:
-        do i=1,idim-1
-          do k=1,kdim-1
-            if (k .eq. 1) then
-              km=k
-            else
-              km=k-1
-            end if
-            if (k .eq. kdim-1) then
-              kp=k
-            else
-              kp=k+1
-            end if
-            do j=1,jdim-1
-              voll=vol(j,km,i)
-              volu=vol(j,kp,i)
-              sjm1u=sj(j+1,km,i,1)
-              sjm3u=sj(j+1,km,i,3)
-              sjm4u=sj(j+1,km,i,4)
-              sjm1x=sj(j,km,i,1)
-              sjm3x=sj(j,km,i,3)
-              sjm4x=sj(j,km,i,4)
-              sjp1u=sj(j+1,kp,i,1)
-              sjp3u=sj(j+1,kp,i,3)
-              sjp4u=sj(j+1,kp,i,4)
-              sjp1x=sj(j,kp,i,1)
-              sjp3x=sj(j,kp,i,3)
-              sjp4x=sj(j,kp,i,4)
-              xc=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
-     +                sk(j,k,i  ,1)*sk(j,k,i  ,4))/vol(j,k,i)
-              zc=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4)+
-     +                sk(j,k,i  ,3)*sk(j,k,i  ,4))/vol(j,k,i)
-              tc=0.5*(sk(j,k+1,i,5)*sk(j,k+1,i,4)+
-     +                sk(j,k,i  ,5)*sk(j,k,i  ,4))/vol(j,k,i)
-              xp=sk(j,k+1,i,1)*sk(j,k+1,i,4)/(0.5*(vol(j,k,i)+volu))
-              zp=sk(j,k+1,i,3)*sk(j,k+1,i,4)/(0.5*(vol(j,k,i)+volu))
-              xm=sk(j,k  ,i,1)*sk(j,k  ,i,4)/(0.5*(vol(j,k,i)+voll))
-              zm=sk(j,k  ,i,3)*sk(j,k  ,i,4)/(0.5*(vol(j,k,i)+voll))
-              uu=xc*q(j,k,i,2)+zc*q(j,k,i,4)+tc
-              d2udn2=xp*(vx(j,k+1,i,1)-vx(j,k  ,i,1)) -
-     +               xm*(vx(j,k  ,i,1)-vx(j,k-1,i,1))
-              d2wdn2=zp*(vx(j,k+1,i,2)-vx(j,k  ,i,2)) -
-     +               zm*(vx(j,k  ,i,2)-vx(j,k-1,i,2))
-              d2udn3=zp*(vx(j,k+1,i,1)-vx(j,k  ,i,1)) -
-     +               zm*(vx(j,k  ,i,1)-vx(j,k-1,i,1))
-              d2wdn3=xp*(vx(j,k+1,i,2)-vx(j,k  ,i,2)) -
-     +               xm*(vx(j,k  ,i,2)-vx(j,k-1,i,2))
-              vx(j,k,i,3)=vx(j,k,i,3)+0.5*uu*(d2udn2-d2wdn2)
-              vx(j,k,i,4)=vx(j,k,i,4)+0.5*uu*(d2udn3+d2wdn3)
-c  x-deriv terms:
-              xp=0.25*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
-     +                sjp1u*sjp4u+sj(j,k,i,1)*sj(j,k,i,4)+
-     +                sjp1x*sjp4x)/(0.5*(vol(j,k,i)+volu))
-              zp=0.25*(sj(j+1,k,i,3)*sj(j+1,k,i,4)+
-     +                sjp3u*sjp4u+sj(j,k,i,3)*sj(j,k,i,4)+
-     +                sjp3x*sjp4x)/(0.5*(vol(j,k,i)+volu))
-              xm=0.25*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
-     +                sjm1u*sjm4u+sj(j,k,i,1)*sj(j,k,i,4)+
-     +                sjm1x*sjm4x)/(0.5*(vol(j,k,i)+voll))
-              zm=0.25*(sj(j+1,k,i,3)*sj(j+1,k,i,4)+
-     +                sjm3u*sjm4u+sj(j,k,i,3)*sj(j,k,i,4)+
-     +                sjm3x*sjm4x)/(0.5*(vol(j,k,i)+voll))
-              dxunx=0.25*(xp*(vx(j+1,kp ,i,1)-vx(j-1,kp ,i,1)-
-     +                        vx(j-1,k  ,i,1)+vx(j+1,k  ,i,1))
-     +                   -xm*(vx(j+1,km ,i,1)-vx(j-1,km ,i,1)-
-     +                        vx(j-1,k  ,i,1)+vx(j+1,k  ,i,1)))
-              dxwnz=0.25*(zp*(vx(j+1,kp ,i,2)-vx(j-1,kp ,i,2)-
-     +                        vx(j-1,k  ,i,2)+vx(j+1,k  ,i,2))
-     +                   -zm*(vx(j+1,km ,i,2)-vx(j-1,km ,i,2)-
-     +                        vx(j-1,k  ,i,2)+vx(j+1,k  ,i,2)))
-              dxunz=0.25*(zp*(vx(j+1,kp ,i,1)-vx(j-1,kp ,i,1)-
-     +                        vx(j-1,k  ,i,1)+vx(j+1,k  ,i,1))
-     +                   -zm*(vx(j+1,km ,i,1)-vx(j-1,km ,i,1)-
-     +                        vx(j-1,k  ,i,1)+vx(j+1,k  ,i,1)))
-              dxwnx=0.25*(xp*(vx(j+1,kp ,i,2)-vx(j-1,kp ,i,2)-
-     +                        vx(j-1,k  ,i,2)+vx(j+1,k  ,i,2))
-     +                   -xm*(vx(j+1,km ,i,2)-vx(j-1,km ,i,2)-
-     +                        vx(j-1,k  ,i,2)+vx(j+1,k  ,i,2)))
-              vx(j,k,i,3)=vx(j,k,i,3)+0.5*uu*(dxunx-dxwnz)
-              vx(j,k,i,4)=vx(j,k,i,4)+0.5*uu*(dxunz+dxwnx)
-            enddo
-          enddo
-        enddo
-c   compute dadt=curvature term Dalpha/Dt
+c   Get vx(3)=DS11/Dt and vx(4)=DS13/Dt:
+        call sijrate2d(idim,jdim,kdim,q,qj0,qk0,
+     .  bcj,bck,vol,sj,sk,vx)
+c   compute curvature term, part of Dalpha/Dt: store in vx(1)
 c   modify Sij such that its diagonal terms are traceless in the 2D sense
         do i=1,idim-1
           do j=1,jdim-1
@@ -1187,7 +989,7 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
               s11 = ux(j,k,i,1)
      +           -(ux(j,k,i,1)+ux(j,k,i,9))/2.
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-              dadt(j,k,i)=s11*vx(j,k,i,4)-s13*vx(j,k,i,3)
+              vx(j,k,i,1)=s11*vx(j,k,i,4)-s13*vx(j,k,i,3)
             enddo
           enddo
         enddo
@@ -1202,20 +1004,6 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
                 cutoff=0.
               else
                 cutoff=1.
-              end if
-              if (isarc2d .eq. 1) then
-c            Determine Sij and Wij values:
-              s11 = ux(j,k,i,1)
-              s22 = ux(j,k,i,5)
-              s33 = ux(j,k,i,9)
-              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
-              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
-              w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
-              w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
-     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               end if
               ss=vor(j,k,i)
               chi=turre(j,k,i)/fnu(j,k,i)
@@ -1234,11 +1022,23 @@ c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
               term1=cb1*(1.-ft2)*ss
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
               if (isarc2d .eq. 1) then
+c               Determine Sij and Wij values:
+                s11 = ux(j,k,i,1)
+                s22 = ux(j,k,i,5)
+                s33 = ux(j,k,i,9)
+                s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+                s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+                s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+                w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
+                w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+                w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+                xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 ss=ccmax(ss,xminn)
                 xisabs=sqrt(2.*xis)
                 rstar=xisabs/ss
                 xisabs=ccmax(xisabs,xminn)
-                rtilde=-4.*dadt(j,k,i)*w13/
+                rtilde=-4.*vx(j,k,i,1)*w13/
      +             (0.5*(ss**2+xisabs**2))**2
                 fr1=4.*rstar/(1.+rstar)*(1.-sarccr3*
      +             ccatan(12.*rtilde))-1.

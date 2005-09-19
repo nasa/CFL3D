@@ -588,7 +588,7 @@ esac
 
 case $FARCH in IRIX64)
   if [ $do_no_opt = no ]; then
-     FFLAG="-O2 -64 -mips4 -r10000 -align64 -OPT:Olimit=4000"
+     FFLAG="-O2 -64 -mips4 -r10000 -align64 -OPT:Olimit=4300"
      FFLAG="$FFLAG -OPT:swp=ON -LNO:prefetch=2"
      FFLAG="$FFLAG -TARG:madd=ON"
      if [ do_f90=yes ]; then

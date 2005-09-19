@@ -55,7 +55,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /avgdata/ xnumavg,iteravg
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
-      common /sarc/ isarc2d, sarccr3
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       if (icall .eq. 0) then
          ierrflg = -99

@@ -13,7 +13,7 @@
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce)
+     + w1,w2,w3,srce,vx)
 c
 c     $Id$
 c
@@ -45,12 +45,14 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /twod/ i2d
+      common /zero/ iexp
       common /wallfun/ iwf(3)
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -106,6 +108,7 @@ c
      +          w2(0:jdim,0:kdim,0:idim),
      +          w3(0:jdim,0:kdim,0:idim)
       dimension srce(0:jdim,0:kdim,0:idim,2)
+      dimension vx(0:jdim,0:kdim,idim-1,4)
 c
 c
 c   Variables:
@@ -230,6 +233,13 @@ c
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
            end if
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
+           end if
         end if
         if(ivmx .eq. 9) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -242,6 +252,13 @@ c
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
+           end if
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
            end if
         end if
         if(ivmx .eq.10) then
@@ -261,11 +278,25 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-epsilon (G-S EASM, '',
      .   ''nonlinear)'')')
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
+           end if
         end if
         if(ivmx .eq.12) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega (G-S EASM, '',
      .   ''nonlinear)'')')
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
+           end if
         end if
         if(ivmx .eq.13) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -279,6 +310,13 @@ c
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
            end if
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
+           end if
         end if
         if(ivmx .eq.14) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -291,6 +329,13 @@ c
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     exact production term'')')
+           end if
+           if (ieasmcc2d .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     curvature correction ON'')')
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''       WARNING: curv terms are'',
+     +      '' active in 2-D sense only!!!'')')
            end if
         end if
         if(ivmx .eq.15) then
@@ -371,6 +416,9 @@ c
         end if
 c
       end if
+c
+c   Note: (10.**(-iexp) is machine zero)
+      xminn=10.**(-iexp+1)
 c
 c Set number of subiterations to solve turbulence field eqn per iteration
 c (usually, 1 is sufficient... but if residual diverges then may need more)
@@ -1556,6 +1604,33 @@ c       2nd order upwind; LHS remains 1st order everywhere
           end if
         end if
 c
+c   Curvature terms for EASMCC
+        if ((ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.11 .or. 
+     .       ivmx.eq.12.or. ivmx.eq.13.or. ivmx.eq.14) .and. 
+     .       ieasmcc2d .eq. 1) then
+c   Note EASMCC currently only set up for curvature in x-z plane, with
+c   y direction (necessarily) in the i-direction
+c   Get vx(3)=DS11/Dt and vx(4)=DS13/Dt:
+        call sijrate2d(idim,jdim,kdim,q,qj0,qk0,
+     .  bcj,bck,vol,sj,sk,vx)
+c   compute curvature term Dalpha/Dt: store in vx(1)
+c   modify Sij such that its diagonal terms are traceless in the 2D sense
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              s11 = ux(j,k,i,1)
+     +           -(ux(j,k,i,1)+ux(j,k,i,9))/2.
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+c             denom=2.*(s11**2+s13**2)+
+c    +              (xmach*reue/2.3e6)**2
+              denom=2.*(s11**2+s13**2)
+              denom=ccmax(denom,xminn)
+              vx(j,k,i,1)=(s11*vx(j,k,i,4)-
+     +         s13*vx(j,k,i,3))/denom
+            enddo
+          enddo
+        enddo
+        end if
 c    * * * * * * * * * * * *
 c    ADD SOURCE TERMS TO RHS
 c    * * * * * * * * * * * *
@@ -3412,6 +3487,9 @@ c          Determine Sij and Wij values:
             s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
             w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
             w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+            if (ieasmcc2d .eq. 1) then
+              w13=w13+(2./(c4-2.))*vx(j,k,i,1)
+            end if
             w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
             xis = s11*s11 + s22*s22 + s33*s33 +
      +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
@@ -3472,6 +3550,9 @@ c            Determine Sij and Wij values:
             s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
             w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
             w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+            if (ieasmcc2d .eq. 1) then
+              w13=w13+(2./(c4-2.))*vx(j,k,i,1)
+            end if
             w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
             xis = s11*s11 + s22*s22 + s33*s33 +
      +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
@@ -3524,6 +3605,9 @@ c            Determine Sij and Wij values:
             s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
             w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
             w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+            if (ieasmcc2d .eq. 1) then
+              w13=w13+(2./(c4-2.))*vx(j,k,i,1)
+            end if
             w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
             xis = s11*s11 + s22*s22 + s33*s33 +
      +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
@@ -3605,6 +3689,9 @@ c            Determine Sij and Wij values:
             s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
             w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
             w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+            if (ieasmcc2d .eq. 1) then
+              w13=w13+(2./(c4-2.))*vx(j,k,i,1)
+            end if
             w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
             xis = s11*s11 + s22*s22 + s33*s33 +
      +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
