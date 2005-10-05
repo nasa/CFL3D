@@ -335,21 +335,21 @@ c           if (myid.eq.mblk2nd(nbl)) then
                    end do
                  end do
                else
-                 do n = 1,100
+                 do n = 1,500
                    if(iskip(nbl,n).eq.0) then
                       iskmax(nbl) = n - 1
                       goto 10
                    end if
                  enddo
 10               continue
-                 do n = 1,100
+                 do n = 1,500
                    if(jskip(nbl,n).eq.0) then
                       jskmax(nbl) = n - 1
                       goto 20
                    end if
                  enddo
 20               continue
-                 do n = 1,100
+                 do n = 1,500
                    if(kskip(nbl,n).eq.0) then
                       kskmax(nbl) = n - 1
                       goto 30
