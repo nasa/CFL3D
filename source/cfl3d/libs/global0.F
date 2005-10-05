@@ -539,43 +539,45 @@ c        offbody/multiblock mesh deformation data
            end if
          else
            call echoinp(iunit5,iunit11,1)
-           do ng = 1,abs(nskip)
-             call echoinp(iunit5,iunit11,1)
-             read(iunit5,*) igr,nskpi,nskpj,nskpk
-             call echoinp(iunit5,iunit11,1)
-             iis = -9
-             iie =  0
-             do jj = 1,50
-               iis = iis + 10
-               iie = iie + 10
-               if(iie.gt.nskpi) iie = nskpi
+           if(abs(nskip).gt.0) then
+             do ng = 1,abs(nskip)
                call echoinp(iunit5,iunit11,1)
-               if(iie.eq.nskpi) goto 325
-             enddo
-325          continue
-             call echoinp(iunit5,iunit11,1)
-             iis = -9
-             iie =  0
-             do jj = 1,50
-               iis = iis + 10
-               iie = iie + 10
-               if(iie.gt.nskpj) iie = nskpj
+               read(iunit5,*) igr,nskpi,nskpj,nskpk
                call echoinp(iunit5,iunit11,1)
-               if(iie.eq.nskpj) goto 350
-             enddo
-350          continue
-             call echoinp(iunit5,iunit11,1)
-             iis = -9
-             iie =  0
-             do jj = 1,50
-               iis = iis + 10
-               iie = iie + 10
-               if(iie.gt.nskpk) iie = nskpk
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpi) iie = nskpi
+                 call echoinp(iunit5,iunit11,1)
+                 if(iie.eq.nskpi) goto 325
+               enddo
+325            continue
                call echoinp(iunit5,iunit11,1)
-               if(iie.eq.nskpk) goto 375
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpj) iie = nskpj
+                 call echoinp(iunit5,iunit11,1)
+                 if(iie.eq.nskpj) goto 350
+               enddo
+350            continue
+               call echoinp(iunit5,iunit11,1)
+               iis = -9
+               iie =  0
+               do jj = 1,50
+                 iis = iis + 10
+                 iie = iie + 10
+                 if(iie.gt.nskpk) iie = nskpk
+                 call echoinp(iunit5,iunit11,1)
+                 if(iie.eq.nskpk) goto 375
+               enddo
+375            continue
              enddo
-375          continue
-           enddo
+           end if
          end if
 c
 c        multi-motion coupling

@@ -786,7 +786,7 @@ c
       dimension ut(ndim),u(ndim)
       dimension r(nslave),ripm(7,nslave)
       dimension mblk2nd(maxbl)
-      dimension arg(7),coef(8),dm(7),rsn(7)
+      dimension arg(7),coef(8),rsn(7)
       dimension nipm(7),nsf(7),n3(7)
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit
@@ -866,18 +866,12 @@ c
               rsn(ii)= r(nipm(ii))
             enddo
             n2    = n3(1)
-            dm(1) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
-     .                   u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
-     .                   u(3*(n2-1)+3)*u(3*(n2-1)+3))
             arg(1) = - beta2*(rsn(1)/rmax  - alpha2) 
             if(arg(1).gt.0.) arg(1) = 0.
             coef(1)= coef(1)/coef(8) 
             do ii = 2,7
               if(n.ne.nipm(ii)) then 
                 n2    = n3(ii)
-                dm(ii) = sqrt(u(3*(n2-1)+1)*u(3*(n2-1)+1) + 
-     .                        u(3*(n2-1)+2)*u(3*(n2-1)+2) + 
-     .                        u(3*(n2-1)+3)*u(3*(n2-1)+3))
                 arg(ii) = - beta2*(rsn(ii)/rmax  - alpha2) 
                 if(arg(ii).gt.0.) arg(ii) = 0.
                 coef(ii)= coef(ii)/coef(8) 
@@ -887,12 +881,8 @@ c
               end if
             enddo
             do j = 1,3
-              u(3*(n-1)+j) = 0.
-              do ii = 1,7
-                n2 = n3(ii)
-                u(3*(n-1)+j) = u(3*(n-1)+j) + 
-     .                      u(3*(n2-1)+j)*coef(ii)*exp(arg(ii))
-              enddo
+              n2 = n3(1)
+              u(3*(n-1)+j) = u(3*(n2-1)+j)*exp(arg(1))
             enddo
           end if
         enddo

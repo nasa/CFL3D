@@ -5325,7 +5325,7 @@ c                skip value must divide evenly into dim-1 value
               read(iunit5,*)
            end if
          else
-            if (nskip.ne.ngrid) then
+            if (nskip.ne.ngrid.and.nskip.ne.0) then
              write(iunit11,'(i8,i9,4f9.6,i9)') nskip,isktyp,beta1,
      .              alpha1,beta2,alpha2,nsprgit
              write(iunit11,'('' input error: nskip .ne. ngrid.'',
@@ -5335,13 +5335,13 @@ c                skip value must divide evenly into dim-1 value
             write(iunit11,'(i8,i9,4f9.6,i9)') ngrid,isktyp,
      .              real(beta1),real(alpha1),real(beta2),real(alpha2),
      .              nsprgit
-              if (real(beta1).lt.0.2) then
-                 write(iunit11,'(/,'' WARNING: beta this small may '',
-     .        ''severely compromise fidelity of surface geometry'',/)')
-              end if
- 
+            if (real(beta1).lt.0.2) then
+               write(iunit11,'(/,'' WARNING: beta this small may '',
+     .      ''severely compromise fidelity of surface geometry'',/)')
+            end if
             read(iunit5,*)
-            do ng = 1,nskip
+            if(nskip.eq.ngrid) then
+             do ng = 1,nskip
                read(iunit5,*)
                read(iunit5,*) igr,nskpi1(ng),nskpj1(ng),nskpk1(ng)
                if (igr.ne.ng) then
@@ -5424,15 +5424,523 @@ c                skip value must divide evenly into dim-1 value
                do jj = 1,nskpk1(ng)
                  kskipt(nbl,jj) = kskip(nbl,jj)
                enddo
-            enddo
+             enddo
+            else
+             do ng = 1,ngrid    
+               nbl          = nblg(ng)
+               ncg          = ncgg(ng)
+               jdim   = jdimg(nbl)
+               kdim   = kdimg(nbl)
+               idim   = idimg(nbl)
+               nskpi1(ng)   = 2
+               nskpj1(ng)   = 2
+               nskpk1(ng)   = 2
+               iskip(nbl,1) = 1
+               iskip(nbl,2) = idim 
+               jskip(nbl,1) = 1
+               jskip(nbl,2) = jdim 
+               kskip(nbl,1) = 1
+               kskip(nbl,2) = kdim 
+             enddo  
+             do n = 1,abs(nbli)
+               do ii = 1,2
+                nbl    = nblg(nblk(ii,n))
+                jdim   = jdimg(nbl)
+                kdim   = kdimg(nbl)
+                idim   = idimg(nbl)
+                do jj = 1,2
+                 if(isva(ii,jj,n).eq.1) then
+                   if(limblk(ii,1,n).gt.1.and.limblk(ii,1,n).lt.idim)
+     .                call skordr(nbl,nskpi1(nblk(ii,n)),
+     .                            limblk(ii,1,n),iskip,maxbl) 
+                   if(limblk(ii,4,n).gt.1.and.limblk(ii,4,n).lt.idim)
+     .                call skordr(nbl,nskpi1(nblk(ii,n)),
+     .                            limblk(ii,4,n),iskip,maxbl) 
+                 else if(isva(ii,jj,n).eq.2) then
+                   if(limblk(ii,2,n).gt.1.and.limblk(ii,2,n).lt.jdim)
+     .                call skordr(nbl,nskpj1(nblk(ii,n)),
+     .                            limblk(ii,2,n),jskip,maxbl) 
+                   if(limblk(ii,5,n).gt.1.and.limblk(ii,5,n).lt.jdim)
+     .                call skordr(nbl,nskpj1(nblk(ii,n)),
+     .                              limblk(ii,5,n),jskip,maxbl) 
+                 else if(isva(ii,jj,n).eq.3) then
+                   if(limblk(ii,3,n).gt.1.and.limblk(ii,3,n).lt.kdim)
+     .                call skordr(nbl,nskpk1(nblk(ii,n)),
+     .                            limblk(ii,3,n),kskip,maxbl) 
+                   if(limblk(ii,6,n).gt.1.and.limblk(ii,6,n).lt.kdim)
+     .                call skordr(nbl,nskpk1(nblk(ii,n)),
+     .                            limblk(ii,6,n),kskip,maxbl) 
+                 end if
+                enddo
+               enddo
+             enddo
+             do n=1,ngrid
+               nbl = nblg(n)
+               jdim   = jdimg(nbl)
+               kdim   = kdimg(nbl)
+               idim   = idimg(nbl)
+c
+               do iseg = 1,nsegdfrm(nbl)
+c
+c icsi surface boundary
+c
+                 if(icsi(nbl,iseg).gt.1.and.icsi(nbl,iseg).lt.idim) 
+     .              then 
+                  call skordr(nbl,nskpi1(n),icsi(nbl,iseg)
+     .                        ,iskip,maxbl) 
+c
+c          Check J0 boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,jbcinfo,nbcj0,icsi) 
+                  end if
+c
+c          Check JDIM boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.jdim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsi) 
+                  end if
+c
+c          Check K0 boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,kbcinfo,nbck0,icsi) 
+                  end if
+c
+c          Check KDIM boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.kdim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,kbcinfo,nbckdim,icsi) 
+                  end if
+                 end if
+c
+c icsf surface boundary
+c
+                 if(icsf(nbl,iseg).gt.1.and.icsf(nbl,iseg).lt.idim)
+     .              then 
+                  call skordr(nbl,nskpi1(n),icsf(nbl,iseg)
+     .                        ,iskip,maxbl) 
+c
+c          Check J0 boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,jbcinfo,nbcj0,icsf) 
+                  end if
+c
+c          Check JDIM boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.jdim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsf) 
+                  end if
+c
+c          Check K0 boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,kbcinfo,nbck0,icsf) 
+                  end if
+c
+c          Check KDIM boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.kdim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          iskip,nskpi1,kbcinfo,nbckdim,icsf) 
+                  end if
+                 end if
+c
+c jcsi surface boundary
+c
+                 if(jcsi(nbl,iseg).gt.1.and.jcsi(nbl,iseg).lt.jdim)
+     .              then 
+                  call skordr(nbl,nskpj1(n),jcsi(nbl,iseg)
+     .                        ,jskip,maxbl) 
+c
+c          Check K0 boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,kbcinfo,nbck0,jcsi) 
+                  end if
+c
+c          Check KDIM boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.kdim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsi) 
+                  end if
+c
+c          Check I0 boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,ibcinfo,nbci0,jcsi) 
+                  end if
+c
+c          Check IDIM boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.idim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsi) 
+                  end if
+                 end if
+c
+c jcsf surface boundary
+c
+                 if(jcsf(nbl,iseg).gt.1.and.jcsf(nbl,iseg).lt.jdim)
+     .              then 
+                  call skordr(nbl,nskpj1(n),jcsf(nbl,iseg)
+     .                        ,jskip,maxbl) 
+c
+c          Check K0 boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,kbcinfo,nbck0,jcsf) 
+                  end if
+c
+c          Check KDIM boundary
+c
+                  if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
+     .               kcsi(nbl,iseg).eq.kdim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsf) 
+                  end if
+c
+c          Check I0 boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,ibcinfo,nbci0,jcsf) 
+                  end if
+c
+c          Check IDIM boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.idim) then
+                    call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
+     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsf) 
+                  end if
+                 end if
+c
+c kcsi surface boundary
+c
+                 if(kcsi(nbl,iseg).gt.1.and.kcsi(nbl,iseg).lt.kdim)
+     .              then 
+                  call skordr(nbl,nskpk1(n),kcsi(nbl,iseg)
+     .                        ,kskip,maxbl) 
+c
+c          Check I0 boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,ibcinfo,nbci0,kcsi) 
+                  end if
+c
+c          Check IDIM boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.idim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsi) 
+                  end if
+c
+c          Check J0 boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsi) 
+                  end if
+c
+c          Check JDIM boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.jdim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsi) 
+                  end if
+                 end if
+c
+c kcsf surface boundary
+c
+                 if(kcsf(nbl,iseg).gt.1.and.kcsf(nbl,iseg).lt.kdim)
+     .              then 
+                  call skordr(nbl,nskpk1(n),kcsf(nbl,iseg)
+     .                        ,kskip,maxbl) 
+c
+c          Check I0 boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,ibcinfo,nbci0,kcsf) 
+                  end if
+c
+c          Check IDIM boundary
+c
+                  if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
+     .               icsi(nbl,iseg).eq.idim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsf) 
+                  end if
+c
+c          Check J0 boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.1) then
+                    call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsf) 
+                  end if
+c
+c          Check JDIM boundary
+c
+                  if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
+     .               jcsi(nbl,iseg).eq.jdim) then
+                    call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
+     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsf) 
+                  end if
+                 end if
+               enddo
+             enddo
+             do n = 1,ngrid
+               nbl = nblg(n)
+               jdim   = jdimg(nbl)
+               kdim   = kdimg(nbl)
+               idim   = idimg(nbl)
+               do iseg=1,nbci0(nbl)
+                 if   (ibcinfo(nbl,iseg,2,1).gt.1.
+     .             and.ibcinfo(nbl,iseg,2,1).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,2,1)
+     .                        ,jskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,3,1).gt.1.
+     .             and.ibcinfo(nbl,iseg,3,1).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,3,1)
+     .                        ,jskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,4,1).gt.1.
+     .             and.ibcinfo(nbl,iseg,4,1).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,4,1)
+     .                        ,kskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,5,1).gt.1.
+     .             and.ibcinfo(nbl,iseg,5,1).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,5,1)
+     .                        ,kskip,maxbl) 
+               enddo
+               do iseg=1,nbcidim(nbl)
+                 if   (ibcinfo(nbl,iseg,2,2).gt.1.
+     .             and.ibcinfo(nbl,iseg,2,2).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,2,2)
+     .                        ,jskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,3,2).gt.1.
+     .             and.ibcinfo(nbl,iseg,3,2).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,3,2)
+     .                        ,jskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,4,2).gt.1.
+     .             and.ibcinfo(nbl,iseg,4,2).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,4,2)
+     .                        ,kskip,maxbl) 
+                 if   (ibcinfo(nbl,iseg,5,2).gt.1.
+     .             and.ibcinfo(nbl,iseg,5,2).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,5,2)
+     .                        ,kskip,maxbl) 
+               enddo
+               do iseg=1,nbcj0(nbl)
+                 if   (jbcinfo(nbl,iseg,2,1).gt.1.
+     .             and.jbcinfo(nbl,iseg,2,1).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,2,1)
+     .                        ,iskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,3,1).gt.1.
+     .             and.jbcinfo(nbl,iseg,3,1).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,3,1)
+     .                        ,iskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,4,1).gt.1.
+     .             and.jbcinfo(nbl,iseg,4,1).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,4,1)
+     .                        ,kskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,5,1).gt.1.
+     .             and.jbcinfo(nbl,iseg,5,1).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,5,1)
+     .                        ,kskip,maxbl) 
+               enddo
+               do iseg=1,nbcjdim(nbl)
+                 if   (jbcinfo(nbl,iseg,2,2).gt.1.
+     .             and.jbcinfo(nbl,iseg,2,2).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,2,2)
+     .                        ,iskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,3,2).gt.1.
+     .             and.jbcinfo(nbl,iseg,3,2).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,3,2)
+     .                        ,iskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,4,2).gt.1.
+     .             and.jbcinfo(nbl,iseg,4,2).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,4,2)
+     .                        ,kskip,maxbl) 
+                 if   (jbcinfo(nbl,iseg,5,2).gt.1.
+     .             and.jbcinfo(nbl,iseg,5,2).lt.kdim) 
+     .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,5,2)
+     .                        ,kskip,maxbl) 
+               enddo
+               do iseg=1,nbck0(nbl)
+                 if   (kbcinfo(nbl,iseg,2,1).gt.1.
+     .             and.kbcinfo(nbl,iseg,2,1).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,2,1)
+     .                        ,iskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,3,1).gt.1.
+     .             and.kbcinfo(nbl,iseg,3,1).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,3,1)
+     .                        ,iskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,4,1).gt.1.
+     .             and.kbcinfo(nbl,iseg,4,1).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,4,1)
+     .                        ,jskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,5,1).gt.1.
+     .             and.kbcinfo(nbl,iseg,5,1).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,5,1)
+     .                        ,jskip,maxbl) 
+               enddo
+               do iseg=1,nbckdim(nbl)
+                 if   (kbcinfo(nbl,iseg,2,2).gt.1.
+     .             and.kbcinfo(nbl,iseg,2,2).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,2,2)
+     .                        ,iskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,3,2).gt.1.
+     .             and.kbcinfo(nbl,iseg,3,2).lt.idim) 
+     .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,3,2)
+     .                        ,iskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,4,2).gt.1.
+     .             and.kbcinfo(nbl,iseg,4,2).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,4,2)
+     .                        ,jskip,maxbl) 
+                 if   (kbcinfo(nbl,iseg,5,2).gt.1.
+     .             and.kbcinfo(nbl,iseg,5,2).lt.jdim) 
+     .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,5,2)
+     .                        ,jskip,maxbl) 
+               enddo
+             enddo
+             do iter = 1,ngrid
+               nskpsmo = 0
+               nskpsmn = 0
+               do n = 1,ngrid
+                 nskpsmo = nskpsmo+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+               enddo
+	       do n = 1,abs(nbli)
+                nbl1   = nblg(nblk(1,n))
+                jdim1  = jdimg(nbl1)
+                kdim1  = kdimg(nbl1)
+                idim1  = idimg(nbl1)
+                nbl2   = nblg(nblk(2,n))
+                jdim2  = jdimg(nbl2)
+                kdim2  = kdimg(nbl2)
+                idim2  = idimg(nbl2) 
+                do jj = 1,2    
+                 if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.1) then 
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,1,n),
+     .                        limblk(2,4,n),nskpi1(nblk(1,n)),
+     .                        iskip(nbl1,1:500),nskpi1(nblk(2,n)), 
+     .                        iskip(nbl2,1:500),maxbl,idim1,idim2,1,1)
+                 else          
+     .           if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.2) then 
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,2,n),
+     .                        limblk(2,5,n),nskpi1(nblk(1,n)),
+     .                        iskip(nbl1,1:500),nskpj1(nblk(2,n)), 
+     .                        jskip(nbl2,1:500),maxbl,idim1,jdim2,1,2)
+                 else          
+     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.1) then 
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,1,n),
+     .                        limblk(2,4,n),nskpj1(nblk(1,n)),
+     .                        jskip(nbl1,1:500),nskpi1(nblk(2,n)),
+     .                        iskip(nbl2,1:500),maxbl,jdim1,idim2,2,1)
+                 else
+     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.2) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,2,n),
+     .                        limblk(2,5,n),nskpj1(nblk(1,n)),
+     .                        jskip(nbl1,1:500),nskpj1(nblk(2,n)),
+     .                        jskip(nbl2,1:500),maxbl,jdim1,jdim2,2,2)
+                 else
+     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.2) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,2,n),
+     .                        limblk(2,5,n),nskpk1(nblk(1,n)),
+     .                        kskip(nbl1,1:500),nskpj1(nblk(2,n)),
+     .                        jskip(nbl2,1:500),maxbl,kdim1,jdim2,3,2)
+                 else
+     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.3) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,3,n),
+     .                        limblk(2,6,n),nskpj1(nblk(1,n)),
+     .                        jskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                        kskip(nbl2,1:500),maxbl,jdim1,kdim2,2,3)
+                 else
+     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.3) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,3,n),
+     .                        limblk(2,6,n),nskpk1(nblk(1,n)),
+     .                        kskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                        kskip(nbl2,1:500),maxbl,kdim1,kdim2,3,3)
+                 else
+     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.1) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,1,n),
+     .                        limblk(2,4,n),nskpk1(nblk(1,n)),
+     .                        kskip(nbl1,1:500),nskpi1(nblk(2,n)),
+     .                        iskip(nbl2,1:500),maxbl,kdim1,idim2,3,1)
+                 else
+     .           if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.3) then
+                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,3,n),
+     .                        limblk(2,6,n),nskpi1(nblk(1,n)),
+     .                        iskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                        kskip(nbl2,1:500),maxbl,idim1,kdim2,1,3)
+                 end if
+                enddo
+               enddo
+               do n = 1,ngrid
+                 nskpsmn = nskpsmn+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+               enddo
+               if(nskpsmn.eq.nskpsmo) goto 378
+             enddo
+378          continue 
+             do n = 1,ngrid    
+               nbl   = nblg(n)
+               do jj = 1,nskpi1(n)
+                 iskipt(nbl,jj) = iskip(nbl,jj)
+               enddo
+               do jj = 1,nskpj1(n)
+                 jskipt(nbl,jj) = jskip(nbl,jj)
+               enddo
+               do jj = 1,nskpk1(n)
+                 kskipt(nbl,jj) = kskip(nbl,jj)
+               enddo
+             enddo
+            end if
          end if
 c
          if(abs(isktyp).eq.1) then
            write(iunit11,'(''    grid    iskip    jskip    kskip'')')
-           if(meshdef.eq.1.and.myid.eq.myhost) then
-              open(196,file='meshdef.inp',status='unknown',form=
-     .             'formatted')
-           end if
            do ng=1,ngrid
              nbl = nblg(ng)
              ncg = ncgg(ng)
@@ -5482,57 +5990,7 @@ c
              do jj = 2,nskpk1(ng)
                kskipt(nbl,jj) = kskipt(nbl,jj-1)+kskip(nbl,1)
              enddo
-             if(meshdef.eq.1.and.myid.eq.myhost) then
-               write(196,19019)
-19019          format('   GRID   NIND   NJND   NKND ')
-               write(196,19020) ng,nskpi1(ng),nskpj1(ng),nskpk1(ng)
-19020          format(10i7)
-               write(196,19018)
-19018          format('************************** I NODE INDICES ******'
-     .                 ,'**********************')
-               nbl = nblg(ng)
-               ncg = ncgg(ng)
-               iis = -9
-               iie =  0
-               do jj = 1,50
-                 iis = iis + 10
-                 iie = iie + 10
-                 if(iie.gt.nskpi1(ng)) iie = nskpi1(ng)
-                 write(196,19020) (iskipt(nbl,ii),ii=iis,iie)
-                 if(iie.eq.nskpi1(ng)) goto 525
-               enddo
-525            continue
-               write(196,19017)
-19017          format('************************** J NODE INDICES ******'
-     .                 ,'**********************')
-               iis = -9
-               iie =  0
-               do jj = 1,50
-                 iis = iis + 10
-                 iie = iie + 10
-                 if(iie.gt.nskpj1(ng)) iie = nskpj1(ng)
-                 write(196,19020) (jskipt(nbl,ii),ii=iis,iie)
-                 if(iie.eq.nskpj1(ng)) goto 550
-               enddo
-550            continue
-               write(196,19016)
-19016          format('************************** K NODE INDICES ******'
-     .                 ,'**********************')
-               iis = -9
-               iie =  0
-               do jj = 1,50
-                 iis = iis + 10
-                 iie = iie + 10
-                 if(iie.gt.nskpk1(ng)) iie = nskpk1(ng)
-                 write(196,19020) (kskipt(nbl,ii),ii=iis,iie)
-                 if(iie.eq.nskpk1(ng)) goto 575
-               enddo
-575            continue
-              end if
            enddo
-           if(meshdef.eq.1.and.myid.eq.myhost) then
-              close(196)
-           end if
          else
            do ng=1,nskip
               nbl = nblg(ng)
@@ -5564,6 +6022,60 @@ c
                 enddo
               end if
            enddo
+         end if
+         if(abs(isktyp).eq.1.or.(abs(isktyp).eq.2.and.nskip.eq.0)) then
+          if(meshdef.eq.1.and.myid.eq.myhost) then
+           open(196,file='meshdef.inp',status='unknown',form=
+     .             'formatted')
+           do ng=1,ngrid
+             nbl = nblg(ng)
+             ncg = ncgg(ng)
+             write(196,19019)
+19019        format('   GRID   NIND   NJND   NKND ')
+             write(196,19020) ng,nskpi1(ng),nskpj1(ng),nskpk1(ng)
+19020        format(10i7)
+             write(196,19018)
+19018        format('************************** I NODE INDICES ******'
+     .             ,'**********************')
+             iis = -9
+             iie =  0
+             do jj = 1,50
+               iis = iis + 10
+               iie = iie + 10
+               if(iie.gt.nskpi1(ng)) iie = nskpi1(ng)
+               write(196,19020) (iskipt(nbl,ii),ii=iis,iie)
+               if(iie.eq.nskpi1(ng)) goto 525
+             enddo
+525          continue
+             write(196,19017)
+19017        format('************************** J NODE INDICES ******'
+     .             ,'**********************')
+             iis = -9
+             iie =  0
+             do jj = 1,50
+               iis = iis + 10
+               iie = iie + 10
+               if(iie.gt.nskpj1(ng)) iie = nskpj1(ng)
+               write(196,19020) (jskipt(nbl,ii),ii=iis,iie)
+               if(iie.eq.nskpj1(ng)) goto 550
+             enddo
+550          continue
+             write(196,19016)
+19016        format('************************** K NODE INDICES ******'
+     .             ,'**********************')
+             iis = -9
+             iie =  0
+             do jj = 1,50
+               iis = iis + 10
+               iie = iie + 10
+               if(iie.gt.nskpk1(ng)) iie = nskpk1(ng)
+               write(196,19020) (kskipt(nbl,ii),ii=iis,iie)
+               if(iie.eq.nskpk1(ng)) goto 575
+             enddo
+575          continue
+           enddo
+           close(196)
+          end if
          end if
          do ng=1,ngrid
             nbl = nblg(ng)
@@ -6273,5 +6785,230 @@ c
         end if
        end if
  
+       return
+       end
+       subroutine skordr(nbl,nskp,i1,ijkskip,maxbl)
+       dimension ijkskip(maxbl,500)
+       do ii1 = nskp,1,-1
+         if(ijkskip(nbl,ii1).eq.i1) return
+       enddo
+       nskp = nskp + 1 
+       ijkskip(nbl,nskp) = ijkskip(nbl,nskp-1) 
+       do ii1 = nskp-1,2,-1
+         if(ijkskip(nbl,ii1-1).lt.i1) then
+           ijkskip(nbl,ii1) = i1
+           return 
+         else
+           ijkskip(nbl,ii1) = ijkskip(nbl,ii1-1) 
+         end if
+       enddo
+       return
+       end
+       subroutine bndchk(n,nbl,iseg,n1,n2,n3,maxbl,maxsegdg,maxseg,
+     .                   ijkskip,nskpijk1,nbcinfo,nbc,ncs) 
+       dimension nbcinfo(maxbl,maxseg,7,2),ijkskip(maxbl,500)
+       dimension nskpijk1(maxbl),nbc(maxbl)
+       dimension ncs(maxbl,maxsegdg)
+c
+       do nseg=1,nbc(nbl)
+        if(nbcinfo(nbl,nseg,1,n3).eq.2004.or. 
+     .     nbcinfo(nbl,nseg,1,n3).eq.1005.or. 
+     .     nbcinfo(nbl,nseg,1,n3).eq.1006) then
+           if(nbcinfo(nbl,nseg,n1,n3).lt.ncs(nbl,iseg).and.      
+     .        nbcinfo(nbl,nseg,n2,n3).ge.ncs(nbl,iseg)) 
+     .        call skordr(nbl,nskpijk1(n),ncs(nbl,iseg)-1
+     .                    ,ijkskip,maxbl) 
+           if(nbcinfo(nbl,nseg,n1,n3).le.ncs(nbl,iseg).and.      
+     .        nbcinfo(nbl,nseg,n2,n3).gt.ncs(nbl,iseg)) 
+     .        call skordr(nbl,nskpijk1(n),ncs(nbl,iseg)+1
+     .                    ,ijkskip,maxbl) 
+        end if  
+       enddo
+       return
+       end
+       subroutine cpadd(nbl1,nbl2,nblk1,nblk2,lmblk11,lmblk12,
+     .                  lmblk21,lmblk22,nskp1,ijkskip1,nskp2,
+     .                  ijkskip2,maxbl,ijkdim1,ijkdim2,icrd1,icrd2) 
+       dimension ijkskip1(500),ijkskip2(500)
+       dimension ijkskpt1(maxbl,500),ijkskpt2(maxbl,500)
+c
+       lmskp11 = 0
+       lmskp12 = 0
+       lmskp21 = 0
+       lmskp22 = 0
+       ijkskpt1= 0
+       ijkskpt2= 0
+       do n = 1,nskp1
+         ijkskpt1(nbl1,n) = ijkskip1(n)
+         if(ijkskpt1(nbl1,n).eq.lmblk11) lmskp11 = n
+         if(ijkskpt1(nbl1,n).eq.lmblk12) lmskp12 = n
+       end do
+       do n = 1,nskp2
+         ijkskpt2(nbl2,n) = ijkskip2(n)
+         if(ijkskpt2(nbl2,n).eq.lmblk21) lmskp21 = n
+         if(ijkskpt2(nbl2,n).eq.lmblk22) lmskp22 = n
+       end do
+       if((nblk1.eq.nblk2).and.(icrd1.eq.icrd2)) then
+         if(lmblk11.lt.lmblk12) then
+           if(lmblk21.lt.lmblk22) then
+             do n1 = lmskp11,lmskp12   
+               itst1 = ijkskip1(n1) - lmblk11 + lmblk21
+               do n2 = lmskp21,lmskp22   
+                 if(ijkskip2(n2).eq.itst1) goto 100
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+100            continue
+             enddo
+             do n2 = lmskp21,lmskp22   
+               itst1 = ijkskip2(n2) - lmblk21 + lmblk11
+               do n1 = lmskp11,lmskp12   
+                 if(itst1.eq.ijkskip1(n1)) goto 200
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+200            continue
+             enddo
+           else
+             do n1 = lmskp11,lmskp12   
+               itst1 = lmblk12 - ijkskip1(n1) + lmblk22
+               do n2 = lmskp22,lmskp21   
+                 if(ijkskip2(n2).eq.itst1) goto 300
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+300            continue
+             enddo
+             do n2 = lmskp22,lmskp21   
+               itst1 = lmblk21 - ijkskip2(n2) + lmblk11  
+               do n1 = lmskp11,lmskp12   
+                 if(itst1.eq.ijkskip1(n1)) goto 400
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+400            continue
+             enddo
+           end if 
+         else
+           if(lmblk21.lt.lmblk22) then
+             do n1 = lmskp12,lmskp11   
+               itst1 = lmblk11 - ijkskip1(n1) + lmblk21
+               do n2 = lmskp21,lmskp22   
+                 if(ijkskip2(n2).eq.itst1) goto 500
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+500            continue
+             enddo
+             do n2 = lmskp21,lmskp22   
+               itst1 = lmblk22 - ijkskip2(n2) + lmblk12
+               do n1 = lmskp12,lmskp11   
+                 if(itst1.eq.ijkskip1(n1)) goto 600
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+600            continue
+             enddo 
+           else
+             do n1 = lmskp12,lmskp11   
+               itst1 = ijkskip1(n1) - lmblk12 + lmblk22
+               do n2 = lmskp22,lmskp21   
+                 if(ijkskip2(n2).eq.itst1) goto 700
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+700            continue
+             enddo
+             do n2 = lmskp22,lmskp21   
+               itst1 = ijkskip2(n2) - lmblk22 + lmblk12
+               do n1 = lmskp12,lmskp11   
+                 if(itst1.eq.ijkskip1(n1)) goto 800
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+800            continue
+             enddo
+           end if 
+         end if
+         nskp1 = nskp2
+         do n = 1,nskp1
+           ijkskip1(n) = ijkskpt2(nbl2,n)
+         enddo 
+         do n = 1,nskp2
+           ijkskip2(n) = ijkskpt2(nbl2,n)
+         enddo 
+       else 
+         if(lmblk11.lt.lmblk12) then
+           if(lmblk21.lt.lmblk22) then
+             do n1 = lmskp11,lmskp12   
+               itst1 = ijkskip1(n1) - lmblk11 + lmblk21
+               do n2 = lmskp21,lmskp22   
+                 if(ijkskip2(n2).eq.itst1) goto 1100
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+1100           continue
+             enddo
+             do n2 = lmskp21,lmskp22   
+               itst1 = ijkskip2(n2) - lmblk21 + lmblk11
+               do n1 = lmskp11,lmskp12   
+                 if(itst1.eq.ijkskip1(n1)) goto 1200
+               enddo
+               call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
+1200           continue
+             enddo
+           else
+             do n1 = lmskp11,lmskp12   
+               itst1 = lmblk12 - ijkskip1(n1) + lmblk22
+               do n2 = lmskp22,lmskp21   
+                 if(ijkskip2(n2).eq.itst1) goto 1300
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+1300           continue
+             enddo
+             do n2 = lmskp22,lmskp21   
+               itst1 = lmblk21 - ijkskip2(n2) + lmblk11  
+               do n1 = lmskp11,lmskp12   
+                 if(itst1.eq.ijkskip1(n1)) goto 1400
+               enddo
+               call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
+1400           continue
+             enddo
+           end if 
+         else
+           if(lmblk21.lt.lmblk22) then
+             do n1 = lmskp12,lmskp11   
+               itst1 = lmblk11 - ijkskip1(n1) + lmblk21
+               do n2 = lmskp21,lmskp22   
+                 if(ijkskip2(n2).eq.itst1) goto 1500
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+1500           continue
+             enddo
+             do n2 = lmskp21,lmskp22   
+               itst1 = lmblk22 - ijkskip2(n2) + lmblk12
+               do n1 = lmskp12,lmskp11   
+                 if(itst1.eq.ijkskip1(n1)) goto 1600
+               enddo
+               call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
+1600           continue
+             enddo 
+           else
+             do n1 = lmskp12,lmskp11   
+               itst1 = ijkskip1(n1) - lmblk12 + lmblk22
+               do n2 = lmskp22,lmskp21   
+                 if(ijkskip2(n2).eq.itst1) goto 1700
+               enddo
+               call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
+1700           continue
+             enddo
+             do n2 = lmskp22,lmskp21   
+               itst1 = ijkskip2(n2) - lmblk22 + lmblk12
+               do n1 = lmskp12,lmskp11   
+                 if(itst1.eq.ijkskip1(n1)) goto 1800
+               enddo
+               call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
+1800           continue
+             enddo
+           end if 
+         end if
+         do n = 1,nskp1
+           ijkskip1(n) = ijkskpt1(nbl1,n)
+         enddo 
+         do n = 1,nskp2
+           ijkskip2(n) = ijkskpt2(nbl2,n)
+         enddo 
+       end if
        return
        end
