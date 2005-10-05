@@ -157,10 +157,10 @@ c
 #endif
       if (icgns .eq. 1) then
 #if defined CGNS
-      write(11,'('' cgns read in rrest'')')
-      write(11,'(''  ...reading conserved variables and'',
+      write(901,'('' cgns read in rrest'')')
+      write(901,'(''  ...reading conserved variables and'',
      +  '' translating to primitive'')')
-      write(11,'(''  (this may result in machine-order differences'',
+      write(901,'(''  (this may result in machine-order differences'',
      +  '' compared to a non-cgns run)'')')
       call getsolinfo(iccg,ibase,igrid,nsoluse,irinddata)
       irind=1
@@ -188,7 +188,7 @@ c     convert q to primitive (they are in CGNS file as conserved)
       enddo
       end if
       if (irghost .ne. 0) then
-        write(11,'('' cgns reading specific BC values'')')
+        write(901,'('' cgns reading specific BC values'')')
         call readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
      +    qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
       end if
@@ -200,23 +200,23 @@ c     convert q to primitive (they are in CGNS file as conserved)
         call readref(iccg,ibase,xmachw,reuew,
      +   rho0w,c0w,vk0w,xlength0w,tinfw,alphw)
         if (rho0w.ne.1. .or. c0w.ne.1. .or. xlength0w.ne.1.) then
-          write(11,'('' ERROR, cgns restart file has different'',
+          write(901,'('' ERROR, cgns restart file has different'',
      +      '' nondimensionalization'')')
-          write(11,'('' rho0w,c0w,xlength0w='',3e15.5)')
+          write(901,'('' rho0w,c0w,xlength0w='',3e15.5)')
      +      rho0w,c0w,xlength0w
-          write(11,'('' Stopping.'')')
+          write(901,'('' Stopping.'')')
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
         if (abs(vk0w-1.) .gt. 1.e-4) then
-          write(11,'('' ERROR, cgns restart file has different'',
+          write(901,'('' ERROR, cgns restart file has different'',
      +      '' nondimensionalization'')')
-          write(11,'('' vk0w='',e15.5)') vk0w
-          write(11,'('' Stopping.'')')
+          write(901,'('' vk0w='',e15.5)') vk0w
+          write(901,'('' Stopping.'')')
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
         if(tinfw .ne. tinf) then
-          write(11,'('' WARNING:  changing tinf!'')')
-          write(11,'(''    old='',f12.5,'' new='',f12.5)')
+          write(901,'('' WARNING:  changing tinf!'')')
+          write(901,'(''    old='',f12.5,'' new='',f12.5)')
      +     tinfw,tinf
         end if
         call readtime(iccg,ibase,time)
@@ -650,23 +650,23 @@ c
         call readeqn(iccg,ibase,igrid,iv1,iv2,iv3,gammaw,
      +    prw,prtw,cbarw)
         if(gammaw .ne. gamma) then
-          write(11,'('' WARNING:  changing gamma!'')')
-          write(11,'(''    old='',f12.5,'' new='',f12.5)')
+          write(901,'('' WARNING:  changing gamma!'')')
+          write(901,'(''    old='',f12.5,'' new='',f12.5)')
      +     gammaw,gamma
         end if
         if(prw .ne. pr) then
-          write(11,'('' WARNING:  changing pr!'')')
-          write(11,'(''    old='',f12.5,'' new='',f12.5)')
+          write(901,'('' WARNING:  changing pr!'')')
+          write(901,'(''    old='',f12.5,'' new='',f12.5)')
      +     prw,pr
         end if
         if(prtw .ne. prt) then
-          write(11,'('' WARNING:  changing prt!'')')
-          write(11,'(''    old='',f12.5,'' new='',f12.5)')
+          write(901,'('' WARNING:  changing prt!'')')
+          write(901,'(''    old='',f12.5,'' new='',f12.5)')
      +     prtw,prt
         end if
         if(cbarw .ne. cbar) then
-          write(11,'('' WARNING:  changing cbar!'')')
-          write(11,'(''    old='',f12.5,'' new='',f12.5)')
+          write(901,'('' WARNING:  changing cbar!'')')
+          write(901,'(''    old='',f12.5,'' new='',f12.5)')
      +     cbarw,cbar
         end if
 #endif

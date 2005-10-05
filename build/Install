@@ -79,6 +79,7 @@ mpichdir=""     # default to native mpi (mpich base directory not specified)
 do_f90=yes      # default to f90
 cgnsdir=""      # default to not cgns compatable
 do_purify=no    # don't use purify
+do_fastio=no    # default flag to not do fast I/O option
 linux_compiler_flags="default" # default linux compiler flags
 
 while [ $# -gt 0 ]; do
@@ -87,6 +88,7 @@ while [ $# -gt 0 ]; do
     -no_opt)            do_no_opt=yes ;;
     -noredi*)           do_redirect=no ;;
     -purify)            do_purify=yes ;;
+    -fastio)            do_fastio=yes ;;
     -mpichdir=*)        mpichdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     -cgnsdir=*)         cgnsdir=`echo $1 | sed 's/[-a-z_]*=//'` ;;
     -linux_compiler_flags=*)  linux_compiler_flags=`echo $1 | sed 's/[-a-z_]*=//'` ;;
@@ -94,10 +96,11 @@ while [ $# -gt 0 ]; do
        cat << usage_end
 usage: Install  [options]
        where [options] may be one or more of the following:
-       -single
-       -no_opt
-       -noredirect
-       -purify
+       -single  create single precision executables
+       -no_opt  create executables with little optimization but fast compilation
+       -noredirect  disallow redirected input file; needed only for SP2 and sometimes on Linux with MPI
+       -purify  fortran memory checker: need 3rd party license for this
+       -fastio  fast I/O option when using MPI: creates cfl3d.out.reass file
        -mpichdir=DIR  where DIR is the mpich base directory
        -cgnsdir=DIR   where DIR is the cgns base directory
        -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
@@ -108,10 +111,11 @@ usage_end
        cat << usage_end
 usage: Install  [options]
        where [options] may be one or more of the following:
-       -single
-       -no_opt
-       -noredirect
-       -purify
+       -single  create single precision executables
+       -no_opt  create executables with little optimization but fast compilation
+       -noredirect  disallow redirected input file; needed only for SP2 and sometimes on Linux with MPI
+       -purify  fortran memory checker: need 3rd party license for this
+       -fastio  fast I/O option when using MPI: creates cfl3d.out.reass file
        -mpichdir=DIR  where DIR is the mpich base directory
        -cgnsdir=DIR   where DIR is the cgns base directory
        -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
@@ -449,6 +453,10 @@ case $FARCH in *)
   CPP="/usr/lib/cpp"
   CPPFLAG="-P"
   CPPOPT_SP="-DP3D_SINGLE"
+  CPPOPT_F=""
+  if [ $do_fastio = yes ] ; then
+    CPPOPT_F="-DFASTIO"
+  fi
   MAKEFILE="makefile"
 
 # rules for creating cfl3d libraries
@@ -991,6 +999,7 @@ s;@LFLAG@;$LFLAG;g
 s;@CPP@;$CPP;g
 s;@CPPFLAG@;$CPPFLAG;g
 s;@CPPOPT_SP@;$CPPOPT_SP;g
+s;@CPPOPT_F@;$CPPOPT_F;g
 s;@LLIB@;$LLIB;g
 s;@LLIBDIR@;$LLIBDIR;g
 s;@LLIB_SEQ@;$LLIB_SEQ;g

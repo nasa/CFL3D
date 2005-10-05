@@ -1277,8 +1277,13 @@ c
       end if
 c
       if (isklton.gt.0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,02)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
 c
  6988 continue
@@ -1309,8 +1314,13 @@ c
          end if
       end if
       if (isklton.gt.0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,03)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
  6989 continue
 c
@@ -1490,11 +1500,21 @@ c
       end if
 c
       if (isklton.gt.0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,04)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
          if (ivmx.eq.2 .or. ivmx.eq.3) then
+#   ifdef FASTIO
+            call writ_buffast(nbl,14,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                    mycomm,mblk2nd,maxbl,05)
+#   else
             call writ_buf(nbl,14,nou,bou,nbuf,ibufdim,myhost,myid,
      .                    mycomm,mblk2nd,maxbl)
+#   endif
          end if
       else
 c
@@ -1506,8 +1526,13 @@ c
             if (((icyc.eq.iflagts+1) .or.
      .         (icyc.eq.ncyc.and.iflagts+1.gt.ncyc))  .and.
      .         level.eq.levt.and.nbl.eq.nblstat_h.and.nt.eq.1) then
+#   ifdef FASTIO
+               call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,
+     .                       myid,mycomm,mblk2nd,maxbl,06)
+#   else
                call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                       mycomm,mblk2nd,maxbl)
+#   endif
             end if
          end if
          if (iflagts.gt.0 .and. abs(real(fmax)) .gt. 0. .and.
@@ -1515,8 +1540,13 @@ c
             if (((nt.eq.iflagts+1) .or.
      .         (nt.eq.ntstep.and.iflagts+1.gt.ntstep)) .and.
      .         level.eq.levt.and.nbl.eq.nblstat_h.and.icyc.eq.1) then
+#   ifdef FASTIO
+               call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,
+     .                       myid,mycomm,mblk2nd,maxbl,07)
+#   else
                call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                       mycomm,mblk2nd,maxbl)
+#   endif
             end if
          end if
       end if
@@ -1538,8 +1568,13 @@ c
       end if
 c
       if (isklton.gt.0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,08)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
 c
 c     compute force coefficients and L2 norm of residual
@@ -1906,8 +1941,13 @@ c
  7999 continue
 c
       if (isklton.gt.0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,09)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
 c
  8000 continue
@@ -2285,8 +2325,13 @@ c
                end if
 c
                if (isklton.gt.0) then
+#   ifdef FASTIO
+                  call writ_buffast(nblz,11,nou,bou,nbuf,ibufdim,myhost,
+     .                          myid,mycomm,mblk2nd,maxbl,10)
+#   else
                   call writ_buf(nblz,11,nou,bou,nbuf,ibufdim,myhost,
      .                          myid,mycomm,mblk2nd,maxbl)
+#   endif
                end if
 c
  6030          continue
@@ -2294,8 +2339,13 @@ c
          end if
 c
          if (isklton.gt.0) then
+#   ifdef FASTIO
+            call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                    mycomm,mblk2nd,maxbl,11)
+#   else
             call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                    mycomm,mblk2nd,maxbl)
+#   endif
          end if
 c
  7020    continue
@@ -2418,8 +2468,8 @@ c   Open database
                   call lead(nbl,lw,lw2,maxbl)
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for cgns Q write.'')')
-                 write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+                 write(901,'('' not enough memory for cgns Q write.'')')
+                 write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                  end if
@@ -2586,8 +2636,8 @@ c   Open database
                   call lead(nbl,lw,lw2,maxbl)
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for cgns Q write.'')')
-                 write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+                 write(901,'('' not enough memory for cgns Q write.'')')
+                 write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                  end if
@@ -2644,9 +2694,9 @@ c
                   call lead(nbl,lw,lw2,maxbl)
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for cgns'',
+                 write(901,'('' not enough memory for cgns'',
      +              '' unsteady Q write.'')')
-                 write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+                 write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                  end if
@@ -2692,9 +2742,9 @@ c
                      call lead(nbl,lw,lw2,maxbl)
                if (icgns .eq. 1) then
                  if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-                 write(11,'('' not enough memory for cgns'',
+                 write(901,'('' not enough memory for cgns'',
      +              '' unsteady Q write.'')')
-                 write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+                 write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +              nwork,(idima+1)*(jdima+1)*(kdima+1)
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                  end if
@@ -2755,7 +2805,7 @@ c
                          maxnum=2*nmds*naesrf
                          maxnum2=ntt*3*nmds*naesrf
                          if ((maxnum+maxnum2) .gt. nwork) then
-                           write(11,'('' not enough room in wk for'',
+                           write(901,'('' not enough room in wk for'',
      .                       '' writing data in waeromode'')')
                            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                          end if

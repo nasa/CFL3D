@@ -27,7 +27,7 @@
      .                 aehist,timekeep,inpl3d,nplots,nplot3d,levelg,
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
      .                 icouple,lfgm,nblk,limblk,isva,nblelst,
-     .                 iskmax,jskmax,kskmax,ue)
+     .                 iskmax,jskmax,kskmax,ue,irdrea)
 c
 c     $Id$
 c
@@ -68,6 +68,8 @@ c
       character*32 basedesired
 c
       integer bcfilei,bcfilej,bcfilek
+      integer isndrea(2)
+      integer irdrea(maxgr)
 c
       dimension nou(nbuf)
       dimension w(mgwk),wk(nwork),iwk(iwork),lw(65,maxbl),
@@ -261,7 +263,7 @@ c
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 c   Check number of zones
       if (nzones .ne. ngrid) then
-        write(11,'('' inconsistency between cgns # of zones & input.'',
+        write(901,'('' inconsistency between cgns # of zones & input.'',
      + '' nzones,ngrid='',2i5)') nzones,ngrid
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
@@ -277,15 +279,35 @@ c
 #if defined CGNS
         if (myid.eq.myhost) then
         if(nwork .lt. idim*jdim*kdim) then
-          write(11,'('' not enough memory for cgns grid read.'')')
-          write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+          write(901,'('' not enough memory for cgns grid read.'')')
+          write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +      nwork,idim*jdim*kdim
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
-        write(11,100)igrid,idim,jdim,kdim
         call getgrid(iccg,ibase,igrid,idim,jdim,kdim,wk,
      +    ialph,w(lx),w(ly),w(lz))
         end if
+#   ifdef FASTIO
+         mytag   = itag_flag + nbl
+         nd_scrc = mblk2nd(nbl)
+         if (mblk2nd(nbl).eq.myid) then
+            isndrea(1)=myid
+            isndrea(2)=igrid
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),100) igrid,idim,jdim,kdim
+            call MPI_Send (isndrea, 2, MPI_INTEGER,
+     *                     myhost, mytag, mycomm, ierr)
+         else if (myid.eq.myhost) then
+            call MPI_Recv (isndrea, 2, MPI_INTEGER,
+     *                     nd_scrc,mytag,mycomm,istat,ierr)
+            irdrea(isndrea(2))=isndrea(1)
+         end if
+#   else
+         if (myid.eq.mblk2nd(nbl)) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),100)igrid,idim,jdim,kdim
+         end if
+#   endif
 #endif
       else
       if (ip3dgrd.eq.0) then
@@ -296,11 +318,28 @@ c
             read(1) jdum,kdum,idum  
          end if
 c
+  100       format(13h reading grid,i4,24h of dimensions (I/J/K) :,3i4)
+#   ifdef FASTIO
+         mytag   = itag_flag + nbl
+         nd_scrc = mblk2nd(nbl)
          if (myid.eq.mblk2nd(nbl)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),100) igrid,idim,jdim,kdim
-  100       format(13h reading grid,i4,24h of dimensions (I/J/K) :,3i4)
+            isndrea(1)=myid
+            isndrea(2)=igrid
+            call MPI_Send (isndrea, 2, MPI_INTEGER,
+     *                     myhost, mytag, mycomm, ierr)
+         else if (myid.eq.myhost) then
+            call MPI_Recv (isndrea, 2, MPI_INTEGER,
+     *                     nd_scrc,mytag,mycomm,istat,ierr)
+            irdrea(isndrea(2))=isndrea(1)
          end if
+#   else
+         if (myid.eq.mblk2nd(nbl)) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),100) igrid,idim,jdim,kdim
+         end if
+#   endif
 c
          if (myid .eq. myhost) then
             if (jdum.ne.jdim .or. kdum.ne.kdim .or. idum.ne.idim) then
@@ -352,10 +391,27 @@ c
             end if
          end if
 c
+#   ifdef FASTIO
+         mytag   = itag_flag + nbl
+         nd_scrc = mblk2nd(nbl)
+         if (mblk2nd(nbl).eq.myid) then
+            isndrea(1)=myid
+            isndrea(2)=igrid
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),100) igrid,idim,jdim,kdim
+            call MPI_Send (isndrea, 2, MPI_INTEGER,
+     *                     myhost, mytag, mycomm, ierr)
+         else if (myid.eq.myhost) then
+            call MPI_Recv (isndrea, 2, MPI_INTEGER,
+     *                     nd_scrc,mytag,mycomm,istat,ierr)
+            irdrea(isndrea(2))=isndrea(1)
+         end if
+#   else
          if (myid.eq.mblk2nd(nbl)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),100)igrid,idim,jdim,kdim
          end if
+#   endif
 c
          if (myid .eq.myhost) then
             if (jtest(igrid).ne.jdim .or. ktest(igrid).ne.kdim .or. 
@@ -471,8 +527,13 @@ c
       end if
 c        
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,16)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
  1000 continue
 c
@@ -713,8 +774,13 @@ c
       end if
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,17)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
 #if defined DIST_MPI
          mytag   = itag_flag + nblout
@@ -787,8 +853,13 @@ c
       end if
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,18)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
  1300 continue
 c
@@ -1420,8 +1491,13 @@ c
       end if
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,19)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
  1600 continue
 c
@@ -1557,8 +1633,13 @@ c        call the noninertial initization to speed convergence
  1110 continue
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,20)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
  1100 continue
 c
@@ -1793,8 +1874,13 @@ c
                end if
 c
                nblout = nblg(igrid)
+#   ifdef FASTIO
+               call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,
+     .                       myid,mycomm,mblk2nd,maxbl,21)
+#   else
                call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,
      .                       myid,mycomm,mblk2nd,maxbl)
+#   endif
 c
             end do
             do nm=1,nmodes
@@ -1918,8 +2004,13 @@ c
          end if
  1701    continue
 c
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,22)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
 c
  1700    continue
 c
@@ -2072,9 +2163,9 @@ c
                call lead(nbl,lw,lw2,maxbl)
            if (icgns .eq. 1) then
              if(nwork .lt. (idima+1)*(jdima+1)*(kdima+1)) then
-             write(11,'('' not enough memory for cgns '',
+             write(901,'('' not enough memory for cgns '',
      +          ''unsteady Q read.'')')
-             write(11,'('' nwork in wk='',i6,''.  Needed = '',i6)')
+             write(901,'('' nwork in wk='',i6,''.  Needed = '',i6)')
      +          nwork,(idima+1)*(jdima+1)*(kdima+1)
              call termn8(myid,-1,ibufdim,nbuf,bou,nou)
              end if
@@ -2112,8 +2203,13 @@ c
                end if
  1801          continue
 c
+#   ifdef FASTIO
+               call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,
+     .                       myid,mycomm,mblk2nd,maxbl,23)
+#   else
                call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                       mycomm,mblk2nd,maxbl)
+#   endif
 c
  1800          continue
 c
@@ -2139,8 +2235,13 @@ c
      .                          thetaz(nbl))
                         end if
                      end if
+#   ifdef FASTIO
+                     call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,
+     .                             myhost,myid,mycomm,mblk2nd,maxbl,24)
+#   else
                      call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,
      .                             myid,mycomm,mblk2nd,maxbl)
+#   endif
                   end do
                end if
 c 
@@ -2202,7 +2303,7 @@ c
                maxnum=2*nmds*naesrf
                maxnum2=ntt*3*nmds*naesrf
                if ((maxnum+maxnum2) .gt. nwork) then
-                 write(11,'('' not enough room in wk for'',
+                 write(901,'('' not enough room in wk for'',
      .             '' writing data in raeromode'')')
                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
@@ -2301,8 +2402,13 @@ c
       end if
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,25)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
 1900  continue
 c
@@ -2540,8 +2646,13 @@ c
 #endif
 c
                do nbl=1,nblock
+#   ifdef FASTIO
+                  call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,
+     .                          myid,mycomm,mblk2nd,maxbl,26)
+#   else
                   call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                          mycomm,mblk2nd,maxbl)
+#   endif
                end do
 c
          end if
@@ -2568,8 +2679,13 @@ c
      .                       w(lsnk0),w(lcmuv))
             endif
 c
+#   ifdef FASTIO
+            call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                    mycomm,mblk2nd,maxbl,27)
+#   else
             call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                    mycomm,mblk2nd,maxbl)
+#   endif
 c
  2070       continue
 c
@@ -2831,8 +2947,13 @@ c
   350 format(1x,43hinterpolating for cells overlapped to block,i4)
 c
       nblout = nblg(igrid)
+#   ifdef FASTIO
+      call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .              mycomm,mblk2nd,maxbl,28)
+#   else
       call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .              mycomm,mblk2nd,maxbl)
+#   endif
 c
  2100 continue
 c

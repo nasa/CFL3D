@@ -3,7 +3,7 @@
      .                 maxgr,maxseg,maxcs,ncycmax,intmx,mxxe,mptch,
      .                 msub1,ibufdim,nbuf,mxbcfil,istat_size,ntr,
      .                 nmds,maxaes,nslave,maxsegdg,nmaster,bcfiles,
-     .                 bou,nou)
+     .                 bou,nou,grid)
 c
 c     $Id$
 c
@@ -36,6 +36,8 @@ c
 c
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
+      character*32 basedesired
+      character*80 grid
 c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
@@ -359,11 +361,14 @@ c
       allocatable :: zorig(:)
       allocatable :: zorig0(:)
       allocatable :: zte(:,:,:)
-
+      allocatable :: irdrea(:)
 c
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit
+      common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
+      common /unit5/ iunit5
+      common /wrestq/ irest,irest2
 c
 c***********************************************************************
 c     memory allocation
@@ -1003,9 +1008,11 @@ c
       call umalloc(maxbl,0,'zorig0',memuse,stats)
       allocate( zte(mptch+2,mptch+2,msub1),stat=stats )
       call umalloc((mptch+2)*(mptch+2)*msub1,0,'zte',memuse,stats)
+      allocate( irdrea(maxgr),stat=stats )
+      call umalloc(maxgr,1,'irdrea',memuse,stats)
 c
 c***********************************************************************
-c     initiialize output buffer
+c     initialize output buffer
 c***********************************************************************
 c
       do ii=1,nbuf
@@ -1069,7 +1076,7 @@ c
      .          iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .          gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
      .          nmaster,aehist,timekeep,xorgae0,yorgae0,zorgae0,
-     .          icouple,nblelst,iskmax,jskmax,kskmax,ue)
+     .          icouple,nblelst,iskmax,jskmax,kskmax,ue,irdrea)
 c
 c***********************************************************************
 c     deallocate memory 
@@ -1403,6 +1410,23 @@ c
             write(11,'(/,'' memory for cfl3d has been deallocated'')')
          end if
       end if
+c   Write input file used to CGNS file
+#if defined CGNS
+      if (icgns .eq. 1 .and. myid .eq. myhost) then
+        basedesired='Base'
+        idimdesired=3
+        call wopencgns(grid,basedesired,idimdesired,iccg,
+     .              ibase,nzones)
+        call writeinput(iccg,ibase,iunit5,irest)
+      end if
+#endif
+c   Close unit 11
+      close(11)
+#   ifdef FASTIO
+      if (myid.eq.myhost) then
+       call reass(maxgr,irdrea)
+      end if
+#   endif
 c
       return
       end

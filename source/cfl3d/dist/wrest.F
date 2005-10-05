@@ -85,6 +85,9 @@ c
      .        tur10,tur20
       common /twod/ i2d
       common /avgdata/ xnumavg,iteravg
+      common /fullns/ ifullns
+      common /des/ cdes,ides
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
@@ -284,9 +287,9 @@ c
      .            ((((qk0(j,i,l,m),j=1,jdim1),i=1,idim1),l=1,5),m=1,4)
       else
 #if defined CGNS
-      write(11,'('' cgns write in wrest'')')
+      write(901,'('' cgns write in wrest'')')
       if (iwghost .ne. 0) then
-        write(11,'('' cgns writing specific BC values (primitive)'')')
+        write(901,'('' cgns writing specific BC values (primitive)'')')
         call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
       else
@@ -294,7 +297,7 @@ c       need to delete CFL3DBoundaryValues node if it exists
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
         call cg_delete_node_f('CFL3DBoundaryValues',ier)
       end if
-      write(11,'(''  ...writing conserved q variables'')')
+      write(901,'(''  ...writing conserved q variables'')')
 c     translate to conserved (for CGNS output only)
       do i=1,idim1
         do k=1,kdim1
@@ -391,9 +394,9 @@ c     first, find out how many holes
         npnts=n
         if (npnts .gt. 0) then
         if (iwork .lt. npnts*3) then
-          write(11,'('' not enough memory for cgns blank'',
+          write(901,'('' not enough memory for cgns blank'',
      +      '' write.'')')
-          write(11,'('' iwork in iwk='',i6,''.  Needed = '',i6)')
+          write(901,'('' iwork in iwk='',i6,''.  Needed = '',i6)')
      +      iwork,npnts*3
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
@@ -490,9 +493,9 @@ c
                   end do
                end do
             end if
-         if (icgns .ne. 1) then
          write(11,'(''   writing vist3d data to restart file'',
      .   '', block'',i5)') nbl
+         if (icgns .ne. 1) then
          write(2) (((vist3d(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
          if (iwghost .ne. 0)
      .   write(2) ((((vi0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,1),m=1,4),
@@ -552,10 +555,10 @@ c
 #endif
 c
          if (myid .eq. myhost) then
-         if (icgns .ne. 1) then
          write(11,'(''   writing field eqn turb quantities'',
      .              '' to restart file'',
      .              '', block'',i5)') nbl
+         if (icgns .ne. 1) then
          write(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .            m=1,2)
          if (iwghost .ne. 0)
@@ -689,7 +692,7 @@ c
       if (icgns .eq. 1 .and. myid .eq. myhost) then
 #if defined CGNS
         call writeeqn(iccg,ibase,igrid,ivisc(1),ivisc(2),ivisc(3),ideg,
-     +   gamma,pr,prt,cbar)
+     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d)
         call writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
      +   tursav(1,1,1,2),blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,

@@ -195,8 +195,13 @@ c
          end if
 c
          nblout = nblg(igrid)
+#   ifdef FASTIO
+         call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,13)
+#   else
          call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
 c
  1000    continue
 c
@@ -447,8 +452,13 @@ c
 #endif
 c
          nblout = nblg(igrid)
+#   ifdef FASTIO
+         call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,14)
+#   else
          call writ_buf(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
 c
  2100    continue
  2000    continue

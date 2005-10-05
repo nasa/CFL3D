@@ -48,7 +48,8 @@
      .                iskip,jskip,kskip,bmat,stm,stmi,xs,xxn,gforcn,
      .                gforcnm,gforcs,nsegdfrm,idfrmseg,iaesurf,
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
-     .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue)
+     .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
+     .                irdrea)
 c
 c     $Id$
 c
@@ -93,6 +94,7 @@ c
 c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
+      integer irdrea(maxgr)
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -543,8 +545,13 @@ c
       do m=1,nnodes
          do nbl=1,nblock
             if (mblk2nd(nbl).eq.m) then
+#   ifdef FASTIO
+               call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,
+     .                       myid,mycomm,mblk2nd,maxbl,01)
+#   else
                call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                       mycomm,mblk2nd,maxbl)
+#   endif
                go to 777
             end if
          end do
@@ -621,7 +628,7 @@ c
      .           maxsegdg,nmaster,aehist,timekeep,inpl3d,nplots,
      .           nplot3d,levelg,iadvance,xs,gforcs,xorgae0,yorgae0,
      .           zorgae0,icouple,lfgm,nblk,limblk,isva,nblelst,iskmax,
-     .           jskmax,kskmax,ue)
+     .           jskmax,kskmax,ue,irdrea)
 c
       do iii = 1,mworki
          iwork(iii) = 0

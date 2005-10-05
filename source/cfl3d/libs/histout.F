@@ -41,16 +41,16 @@ c
 c     output convergence history for mean-flow equations
 c
       write(12,2) (real(title(i)),i=1,20)
-    2 format(20a4)
+    2 format(2h# ,20a4)
 c
-      write(12,'('' Mach='',e12.4,'', alpha='',e12.4,
+      write(12,'(''# Mach='',e12.4,'', alpha='',e12.4,
      . '', ReUe='',e12.4)') real(xmach),real(alphw),real(reue)
       if (real(dt) .gt. 0) then
-        write(12,'('' Final res='',e12.4,
+        write(12,'(''# Final res='',e12.4,
      .   ''   Final time (for unsteady)='',f10.4)') 
      .    real(rms(ntt)),real(time)
       else
-        write(12,'('' Final res='',e12.4)') real(rms(ntt))
+        write(12,'(''# Final res='',e12.4)') real(rms(ntt))
       end if
 c
 c     mean-flow convergence history file options:
@@ -65,10 +65,10 @@ c                   between ialpha=0 and ialpha=1)
 c 
       if (ihstry.eq.0) then
          if (ialph .eq.0) then
-            write(12,'('' Final cl,cd,cy,cmy='',4e12.4)')
+            write(12,'(''# Final cl,cd,cy,cmy='',4e12.4)')
      .      real(clw(ntt)),real(cdw(ntt)),real(cyw(ntt)),
      .      real(cmyw(ntt))
-            write(12,'(i6,'' it    log(res)        cl'',
+            write(12,'(''#'',i5,'' it    log(res)        cl'',
      .      ''            cd            cy            cmy'')') ntt
             do 3000 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
@@ -77,10 +77,10 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .      real(clw(n)),real(cdw(n)),real(cyw(n)),real(cmyw(n))
  3000       continue
          else
-            write(12,'('' Final cl,cd,cz,cmz='',4e12.4)')
+            write(12,'(''# Final cl,cd,cz,cmz='',4e12.4)')
      .      real(clw(ntt)),real(cdw(ntt)),real(czw(ntt)),
      .      real(cmzw(ntt))
-            write(12,'(i6,'' it    log(res)        cl'',
+            write(12,'(''#'',i5,'' it    log(res)        cl'',
      .      ''            cd            cz            cmz'')') ntt
             do 3001 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
@@ -90,10 +90,10 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
  3001       continue
          end if
       else if (ihstry.eq.1) then
-         write(12,'('' Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
+         write(12,'(''# Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
      .   real(fmdotw(ntt)),real(cftpw(ntt)),real(cftvw(ntt)),
      .   real(cftmomw(ntt))
-         write(12,'(i6,'' it    log(res)      mass_flow'',
+         write(12,'(''#'',i5,'' it    log(res)      mass_flow'',
      .   ''       cftp           cftv        cftmom '')') ntt
          do 3100 n=1,ntt
          if(real(rms(n)) .le. 0.) rms(n)=1.
@@ -102,14 +102,14 @@ c        write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .   real(fmdotw(n)),real(cftpw(n)),real(cftvw(n)),real(cftmomw(n))
  3100    continue
       else
-         write(12,'('' Final cl,cd       ='',2e13.5)')
+         write(12,'(''# Final cl,cd       ='',2e13.5)')
      .   real(clw(ntt)),real(cdw(ntt))
-         write(12,'('' Final cx,cy,cz    ='',3e13.5)')
+         write(12,'(''# Final cx,cy,cz    ='',3e13.5)')
      .   real(cxw(ntt)),real(cyw(ntt)),real(czw(ntt))
-         write(12,'('' Final cmx,cmy,cmz ='',3e13.5)')
+         write(12,'(''# Final cmx,cmy,cmz ='',3e13.5)')
      .   real(cmxw(ntt)),real(cmyw(ntt)),real(cmzw(ntt))
          write(12,*)
-         write(12,'(''    it     log(res)           cl'',
+         write(12,'(''#   it     log(res)           cl'',
      .   ''           cd           cx           cy'',
      .   ''           cz          cmx          cmy'',
      .   ''          cmz'')')

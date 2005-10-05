@@ -171,7 +171,7 @@ c   (j,k,i,2), NOT the deltaQ's = (j,k,i,3) and (j,k,i,4):
             end if
          else
 #if defined CGNS
-         write(11,'('' writing 2nd order time data to cgns file,'',
+         write(901,'('' writing 2nd order time data to cgns file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
@@ -256,7 +256,7 @@ c
      .                  dthymxmc,dthzmxmc,time2(nbl),time2mc,dt
                else
 #if defined CGNS
-              write(11,'('' writing dynamic mesh data to cgns file,'',
+              write(901,'('' writing dynamic mesh data to cgns file,'',
      +         '' block'',i4)') nbl
               call wgrdmov(iccg,ibase,igrid,iuns,
      .                  itrans(nbl),rfreqt(nbl),xorig(nbl),yorig(nbl),
@@ -374,7 +374,7 @@ c
      .                     (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
                else
 #if defined CGNS
-                write(11,'('' writing deforming mesh data to cgns'',
+                write(901,'('' writing deforming mesh data to cgns'',
      .           '' file, block'',i4)') nbl
                 if (abs(ita).gt.1) then
                 call wdeform(iccg,ibase,igrid,idefrm(nbl),

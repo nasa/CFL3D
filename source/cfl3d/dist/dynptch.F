@@ -306,10 +306,17 @@ c
       end if
 #endif
       if (ioutpt .gt. 0) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,25,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,33)
+         call writ_buffast(nbl,9,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,33)
+#   else
          call writ_buf(nbl,25,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
          call writ_buf(nbl,9,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
 7000  continue
 c

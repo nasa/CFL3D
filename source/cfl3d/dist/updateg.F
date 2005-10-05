@@ -438,8 +438,13 @@ c
       end if
 c
       if (isklton.eq.1) then
+#   ifdef FASTIO
+         call writ_buffast(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
+     .                 mycomm,mblk2nd,maxbl,32)
+#   else
          call writ_buf(nbl,11,nou,bou,nbuf,ibufdim,myhost,myid,
      .                 mycomm,mblk2nd,maxbl)
+#   endif
       end if
 c
   100 continue

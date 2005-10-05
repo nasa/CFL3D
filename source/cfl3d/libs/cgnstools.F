@@ -32,14 +32,14 @@ c   Find out how many Flow solutions exist
       call cg_nsols_f(iccg, ibase, igrid, nsols, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nsols .gt. 1) then
-        write(11,'('' nsols='',i5,''.  Expecting 1.'')') nsols
-        write(11,'('' Will read LAST one.'')')
+        write(901,'('' nsols='',i5,''.  Expecting 1.'')') nsols
+        write(901,'('' Will read LAST one.'')')
         nsoluse=nsols
       else if (nsols .eq. 1) then
-        write(11,'('' solution node exists.  Reading it...'')')
+        write(901,'('' solution node exists.  Reading it...'')')
         nsoluse=nsols
       else
-        write(11,'('' Error.  Solution node does not exist!'')')
+        write(901,'('' Error.  Solution node does not exist!'')')
         stop
       end if
 c
@@ -48,11 +48,11 @@ c   Get solution info
      +  location, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (location .ne. CellCenter) then
-        write(11,'('' GridLocation must be CellCenter!  Currently:'',
+        write(901,'('' GridLocation must be CellCenter!  Currently:'',
      +   a32)') GridLocationName(location+1)
         stop
       end if
-      write(11,'('' cgns read solution of name:  '',a32)') solname
+      write(901,'('' cgns read solution of name:  '',a32)') solname
 c
 c   Check if Rind data exists
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'FlowSolution_t',
@@ -60,7 +60,7 @@ c   Check if Rind data exists
       if (ier .ne. 0) call cg_error_exit_f
       call cg_rind_read_f(irinddata,ier)
       if (ier .ne. 0) then
-        write(11,'('' rind info does not exist.  setting to zero'')')
+        write(901,'('' rind info does not exist.  setting to zero'')')
         do n=1,6
           irinddata(n)=0
         enddo
@@ -68,7 +68,7 @@ c   Check if Rind data exists
 c
       do n=1,6
         if (irinddata(n) .gt. 1) then
-          write(11,'('' error... currently cannot handle rind'',
+          write(901,'('' error... currently cannot handle rind'',
      +     '' data > 1'')')
           stop
         end if
@@ -76,9 +76,9 @@ c
       if (irinddata(1).ne.irinddata(2) .or.
      +    irinddata(3).ne.irinddata(4) .or.
      +    irinddata(5).ne.irinddata(6)) then
-        write(11,'('' error... currently must have same rind'',
+        write(901,'('' error... currently must have same rind'',
      +    '' info on both sides of given index direction'')')
-        write(11,'('' irinddata='',6i3)') irinddata(1),
+        write(901,'('' irinddata='',6i3)') irinddata(1),
      +    irinddata(2),irinddata(3),irinddata(4),irinddata(5),
      +    irinddata(6)
         stop
@@ -142,8 +142,8 @@ c   Read general zone information
       call cg_zone_type_f(iccg, ibase, igrid, izonetype, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (izonetype .ne. Structured) then
-        write(11,'('' Error, zone must be Structured type.'')')
-        write(11,'(''   Currently, it is '',a32)')
+        write(901,'('' Error, zone must be Structured type.'')')
+        write(901,'(''   Currently, it is '',a32)')
      +    ZoneTypeName(izonetype)
         stop
       end if
@@ -151,10 +151,10 @@ c   Read general zone information
       if (ier .ne. 0) call cg_error_exit_f
       if(isize(1) .ne. idim .or. isize(2) .ne. jdim .or.
      +   isize(3) .ne. kdim) then
-        write(11,'('' Grid index inconsistencies:  isize='',3i5,
+        write(901,'('' Grid index inconsistencies:  isize='',3i5,
      +   ''idim,jdim,kdim='',3i5)') isize(1),isize(2),isize(3),
      +   idim,jdim,kdim
-        write(11,'('' Be sure to order the zones alphabetically'',
+        write(901,'('' Be sure to order the zones alphabetically'',
      +   '' in the input file!'')')
         stop
       end if
@@ -162,7 +162,7 @@ c   Find out how many grid coordinates exist
       call cg_ncoords_f(iccg, ibase, igrid, ncoords, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (ncoords .ne. 3) then
-        write(11,'('' ncoords='',i5,''.  Expecting 3.'')') ncoords
+        write(901,'('' ncoords='',i5,''.  Expecting 3.'')') ncoords
         stop
       end if
 c   Check coordinate names in data base
@@ -175,9 +175,9 @@ c   Check coordinate names in data base
      +     coordname .eq. testname(3)) then
           continue
         else
-          write(11,'('' coordname of '',a32,'' unrecognized.'')') 
+          write(901,'('' coordname of '',a32,'' unrecognized.'')') 
      +     coordname
-          write(11,'('' Looking for CoordinateX, CoordinateY, and'',
+          write(901,'('' Looking for CoordinateX, CoordinateY, and'',
      +     '' CoordinateZ'')')
           stop
         end if
@@ -321,29 +321,29 @@ c
       character*32 basedesired,basename
 c
 c   Open CGNS file
-      write(11,'(/,'' Accessing cgns database... (must'',
+      write(901,'(/,'' Accessing cgns database... (must'',
      +  '' be linked to API Version 2.2 or later)'')')
       call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
       if (ier .ne. 0) then
-        write(11,'('' Error opening cgns file'')')
-        write(11,'('' Make sure the file on 1st line of input IS'',
+        write(901,'('' Error opening cgns file'')')
+        write(901,'('' Make sure the file on 1st line of input IS'',
      +   '' a cgns file!'')')
         call cg_error_exit_f
       end if
-      write(11,'(/,'' Opening cgns database '',a32)') cgnsdesired
-      write(11,'(''   Note: if restarting from a cgns file created'',
+      write(901,'(/,'' Opening cgns database '',a32)') cgnsdesired
+      write(901,'(''   Note: if restarting from a cgns file created'',
      +  '' prior to early 2002, then'')')
-      write(11,'(''   it will not work if the old case was (1) second'',
+      write(901,'(''   it will not work if the old case was (1) second'',
      +  '' order time accurate,'')')
-      write(11,'(''   (2) moving or deforming grid, or (3) ialph>0.'',
+      write(901,'(''   (2) moving or deforming grid, or (3) ialph>0.'',
      +  ''  In all of these cases,'')')
-      write(11,'(''   changes have been made in how variables are'',
+      write(901,'(''   changes have been made in how variables are'',
      +  '' stored in cgns.'',/)')
 c
 c   Find out how many "bases" there are
       call cg_nbases_f(iccg, nbases, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(11,'('' Found ''i5,'' base(s) in cgns file: '',a32)') 
+      write(901,'('' Found ''i5,'' base(s) in cgns file: '',a32)') 
      +  nbases,cgnsdesired
 c
 c   Get base name and index dimension (dimensionality)
@@ -352,7 +352,7 @@ c   Get base name and index dimension (dimensionality)
         call cg_base_read_f(iccg, ib, basename, indx1, indx2, ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (indx1 .ne. indx2) then
-          write(11,'('' Error, celldim MUST be same as physdim'',
+          write(901,'('' Error, celldim MUST be same as physdim'',
      +     '' for CFL3D to use this file'')')
           stop
         end if
@@ -363,21 +363,21 @@ c   Get base name and index dimension (dimensionality)
         end if
       end do
       if (ifind .eq. 0) then
-        write(11,'('' Desired base name '',a32,'' not found'')')
+        write(901,'('' Desired base name '',a32,'' not found'')')
      +   basedesired
-        write(11,'('' Available bases found are:'')')
+        write(901,'('' Available bases found are:'')')
         do ib=1,nbases
           call cg_base_read_f(iccg, ib, basename, indx1, index_dim, ier)
           if (ier .ne. 0) call cg_error_exit_f
-          write(11,'(a32)') basename
+          write(901,'(a32)') basename
         enddo
         stop
       end if
 c
       if (index_dim .ne. idimdesired) then
-        write(11,'('' Index dimension wrong in base'',a32)')
+        write(901,'('' Index dimension wrong in base'',a32)')
      +   basedesired
-        write(11,'('' index_dim='',i5,''.  Wanted = '',i5)')
+        write(901,'('' index_dim='',i5,''.  Wanted = '',i5)')
      +   index_dim,idimdesired
         stop
       end if
@@ -385,7 +385,7 @@ c
 c   Get number of zones
       call cg_nzones_f(iccg, ibase, nzones, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(11,'('' Found ''i5,'' zone(s) in basename: '',a32)') nzones,
+      write(901,'('' Found ''i5,'' zone(s) in basename: '',a32)') nzones,
      +  basedesired
 c
       return
@@ -418,8 +418,8 @@ c
 c   Open CGNS file
       call cg_open_f(cgnsdesired,MODE_MODIFY,iccg,ier)
       if (ier .ne. 0) then
-        write(11,'('' Error opening cgns file'')')
-        write(11,'('' Make sure the file on 1st line of input IS'',
+        write(901,'('' Error opening cgns file'')')
+        write(901,'('' Make sure the file on 1st line of input IS'',
      +   '' a cgns file!'')')
         call cg_error_exit_f
       end if
@@ -434,7 +434,7 @@ c   Get base name and index dimension (dimensionality)
         call cg_base_read_f(iccg, ib, basename, indx1, indx2, ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (indx1 .ne. indx2) then
-          write(11,'('' Error, celldim MUST be same as physdim'',
+          write(901,'('' Error, celldim MUST be same as physdim'',
      +     '' for CFL3D to use this file'')')
           stop
         end if
@@ -445,21 +445,21 @@ c   Get base name and index dimension (dimensionality)
         end if
       end do
       if (ifind .eq. 0) then
-        write(11,'('' Desired base name '',a32,'' not found'')')
+        write(901,'('' Desired base name '',a32,'' not found'')')
      +   basedesired
-        write(11,'('' Available bases found are:'')')
+        write(901,'('' Available bases found are:'')')
         do ib=1,nbases
           call cg_base_read_f(iccg, ib, basename, indx1, index_dim, ier)
           if (ier .ne. 0) call cg_error_exit_f
-          write(11,'(a32)') basename
+          write(901,'(a32)') basename
         enddo
         stop
       end if
 c
       if (index_dim .ne. idimdesired) then
-        write(11,'('' Index dimension wrong in base'',a32)')
+        write(901,'('' Index dimension wrong in base'',a32)')
      +   basedesired
-        write(11,'('' index_dim='',i5,''.  Wanted = '',i5)')
+        write(901,'('' index_dim='',i5,''.  Wanted = '',i5)')
      +   index_dim,idimdesired
         stop
       end if
@@ -537,10 +537,10 @@ c   Determine if single or double precision is being used:
 #endif
 c
 c   Write FlowSolution node
-      write(11,'('' cgns writing to <<FlowSolution>> node'')')
-      write(11,'(''  ...any flow solution node of any other name'',
+      write(901,'('' cgns writing to <<FlowSolution>> node'')')
+      write(901,'(''  ...any flow solution node of any other name'',
      + '' is left alone'')')
-      write(11,'(''  ...if a FlowSolution node already exists, it'',
+      write(901,'(''  ...if a FlowSolution node already exists, it'',
      + '' is overwritten'')')
       solname='FlowSolution'
       call cg_sol_write_f(iccg,ibase,igrid,solname,CellCenter,
@@ -564,7 +564,7 @@ c   First, get "factor" in case want to write every other point, etc
         nfac=16
         string1='Every-16th-cell solution (4 levels down)'
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
@@ -719,7 +719,7 @@ c   Find out how many fields there are and their names:
       call cg_nfields_f(iccg, ibase, igrid, nsoluse, nfields, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nfields .gt. numfield) then
-        write(11,'('' Need to increase numfield parameter'',
+        write(901,'('' Need to increase numfield parameter'',
      +    '' in readsoln'')')
         stop
       end if
@@ -745,9 +745,9 @@ c   Check to make sure the conserved field names needed exist:
           end if
         enddo
         if (ido .eq. 0) then
-          write(11,'('' Cannot find solution of name '',a32)') 
+          write(901,'('' Cannot find solution of name '',a32)') 
      +      fndesired(n)
-          write(11,'(''   for conservative... try primitive instead'')')
+          write(901,'(''  for conservative... try primitive instead'')')
           iprim=1
         end if
       enddo
@@ -766,9 +766,9 @@ c       if conserved do not exist, try reading primitive variables
           end if
         enddo
         if (ido .eq. 0) then
-          write(11,'('' Cannot find solution of name '',a32)')
+          write(901,'('' Cannot find solution of name '',a32)')
      +      fndesired(n)
-          write(11,'(''   for primitive either...'')')
+          write(901,'(''   for primitive either...'')')
           iprim=2
         end if
       enddo
@@ -791,7 +791,7 @@ c   First, get "factor" in case want to read every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
@@ -830,32 +830,32 @@ c   Check that correct grid level is stored
         end if
       enddo
       if (nfac .eq. 1) then
-      write(11,'('' Information node not found.  Defaulting to read'',
+      write(901,'('' Information node not found.  Defaulting to read'',
      + '' of fine level flowfield'')')
       else if (nfac .eq. 2) then
-      write(11,'('' Information node not found.  Defaulting to read'',
+      write(901,'('' Information node not found.  Defaulting to read'',
      + '' of every 2nd pt of fine level flowfield'')')
       else if (nfac .eq. 4) then
-      write(11,'('' Information node not found.  Defaulting to read'',
+      write(901,'('' Information node not found.  Defaulting to read'',
      + '' of every 4th pt of fine level flowfield'')')
       else
-      write(11,'('' Information node not found.  Defaulting to read'',
+      write(901,'('' Information node not found.  Defaulting to read'',
      + '' of every 8th pt of fine level flowfield'')')
       end if
       goto 334
  333  continue
       if (istop .gt. 0) then
         if (nfac .eq. 1) then
-        write(11,'('' Expecting read on level '',i5,'' of grid...'',
+        write(901,'('' Expecting read on level '',i5,'' of grid...'',
      +   '' you are asking for level 1'')') istop
         else if (nfac .eq. 2) then
-        write(11,'('' Expecting read on level '',i5,'' of grid...'',
+        write(901,'('' Expecting read on level '',i5,'' of grid...'',
      +   '' you are asking for level 2'')') istop
         else if (nfac .eq. 4) then
-        write(11,'('' Expecting read on level '',i5,'' of grid...'',
+        write(901,'('' Expecting read on level '',i5,'' of grid...'',
      +   '' you are asking for level 3'')') istop
         else
-        write(11,'('' Expecting read on level '',i5,'' of grid...'',
+        write(901,'('' Expecting read on level '',i5,'' of grid...'',
      +   '' you are asking for level 4'')') istop
         end if
         stop
@@ -1053,13 +1053,13 @@ c   First, get "factor" in case want to write every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
 c
       if (ivisc(1).ge.2 .or. ivisc(2).ge.2 .or. ivisc(3).ge.2) then
-         write(11,'(''   writing vist3d data to cgns file'',
+         write(901,'(''   writing vist3d data to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Eddy viscosity:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1083,7 +1083,7 @@ c        put in SIDS-like-"consistent normalization"
       end if
 c
       if (ivisc(1).ge.4 .or. ivisc(2).ge.4 .or. ivisc(3).ge.4) then
-         write(11,'(''   writing field eqn turb quantity'',
+         write(901,'(''   writing field eqn turb quantity'',
      .              '' min dist to cgns file'')')
 c        Min distance:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
@@ -1099,7 +1099,7 @@ c        Min distance:
       end if
 c
       if (ivisc(1).eq.4 .or. ivisc(2).eq.4 .or. ivisc(3).eq.4) then
-         write(11,'(''   writing B-B field eqn turb info'',
+         write(901,'(''   writing B-B field eqn turb info'',
      .              '' to cgns file'')')
 c        BBReynolds:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
@@ -1167,7 +1167,7 @@ c        BBNearestWallBlk:
       end if
 c
       if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or. ivisc(3).eq.5) then
-         write(11,'(''   writing S-A field eqn turb info'',
+         write(901,'(''   writing S-A field eqn turb info'',
      .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        SANuTilde:
@@ -1196,7 +1196,7 @@ c
      .    ivisc(1).eq.8 .or. ivisc(2).eq.8 .or. ivisc(3).eq.8 .or.
      .    ivisc(1).eq.12.or. ivisc(2).eq.12.or. ivisc(3).eq.12.or.
      .    ivisc(1).eq.14.or. ivisc(2).eq.14.or. ivisc(3).eq.14) then
-         write(11,'(''   writing k-omega field eqn turb info'',
+         write(901,'(''   writing k-omega field eqn turb info'',
      .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Omega:
@@ -1235,7 +1235,7 @@ c
      .    ivisc(1).eq.10.or. ivisc(2).eq.10.or. ivisc(3).eq.10.or.
      .    ivisc(1).eq.11.or. ivisc(2).eq.11.or. ivisc(3).eq.11.or.
      .    ivisc(1).eq.13.or. ivisc(2).eq.13.or. ivisc(3).eq.13) then
-         write(11,'(''   writing k-epsilon field eqn turb info'',
+         write(901,'(''   writing k-epsilon field eqn turb info'',
      .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Epsilon:
@@ -1271,7 +1271,7 @@ c        K:
       end if
 c
       if (ivisc(1).eq.15.or. ivisc(2).eq.15.or. ivisc(3).eq.15) then
-         write(11,'(''   writing k-enstrophy field eqn turb info'',
+         write(901,'(''   writing k-enstrophy field eqn turb info'',
      .              '' to cgns file'',
      +     '' (SIDS-consistent-normalization)'')')
 c        Enstrophy:
@@ -1310,7 +1310,7 @@ c
      .    ivisc(1).eq.9 .or. ivisc(2).eq.9 .or. ivisc(3).eq.9 .or.
      .    ivisc(1).eq.13.or. ivisc(2).eq.13.or. ivisc(3).eq.13.or.
      .    ivisc(1).eq.14.or. ivisc(2).eq.14.or. ivisc(3).eq.14) then
-         write(11,'(''   writing EASM variable cmu info'',
+         write(901,'(''   writing EASM variable cmu info'',
      .              '' to cgns file'')')
 c        Cmu:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
@@ -1428,7 +1428,7 @@ c   First, get "factor" in case want to read every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
@@ -1773,7 +1773,7 @@ c   assign 1-to-1 information appropriately
             end if
           enddo
           if (iflg1 .eq. 0 .or. iflg2 .eq. 0) then
-            write(11,'('' Error, cgns 1-to-1 zonename not'',
+            write(901,'('' Error, cgns 1-to-1 zonename not'',
      +        '' matched'')')
             stop
           end if
@@ -1812,12 +1812,12 @@ c   first, get values of hi-lo
 c   the absolute value of the differences should match
           if ((abs(ival1rec) .ne. abs(ival1don)) .or. 
      +        (abs(ival2rec) .ne. abs(ival2don))) then
-            write(11,'('' 1-to-1 donor & reciever ranges do not'',
+            write(901,'('' 1-to-1 donor & reciever ranges do not'',
      +       '' match, interface #'',i5)') n
-            write(11,'(''    irange1='',6i6)') irange(1,1,n),
+            write(901,'(''    irange1='',6i6)') irange(1,1,n),
      +       irange(1,2,n),irange(1,3,n),irange(1,4,n),
      +       irange(1,5,n),irange(1,6,n)
-            write(11,'(''    irange2='',6i6)') irange(2,1,n),
+            write(901,'(''    irange2='',6i6)') irange(2,1,n),
      +       irange(2,2,n),irange(2,3,n),irange(2,4,n),
      +       irange(2,5,n),irange(2,6,n)
             stop
@@ -1826,15 +1826,15 @@ c   check the directionality
           icheck1=ival1rec*ival1don*itransform(index_vary(1,1,n),n)
           icheck2=ival2rec*ival2don*itransform(index_vary(1,2,n),n)
           if (icheck1 .lt. 0 .or. icheck2 .lt. 0) then
-            write(11,'('' directionality of transform wrong'',
+            write(901,'('' directionality of transform wrong'',
      +       '', interface #'',i5)') n
-            write(11,'(''    irange1='',6i6)') irange(1,1,n),
+            write(901,'(''    irange1='',6i6)') irange(1,1,n),
      +       irange(1,2,n),irange(1,3,n),irange(1,4,n),
      +       irange(1,5,n),irange(1,6,n)
-            write(11,'(''    irange2='',6i6)') irange(2,1,n),
+            write(901,'(''    irange2='',6i6)') irange(2,1,n),
      +       irange(2,2,n),irange(2,3,n),irange(2,4,n),
      +       irange(2,5,n),irange(2,6,n)
-            write(11,'(''    itransform='',3i5)') itransform(1,n),
+            write(901,'(''    itransform='',3i5)') itransform(1,n),
      +       itransform(2,n),itransform(3,n)
             stop
           end if
@@ -1903,7 +1903,7 @@ c   Next get all BC info
      +    ndataset,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (iptset .ne. PointRange) then
-          write(11,'('' Error.  Currently BCs must be set up as'',
+          write(901,'('' Error.  Currently BCs must be set up as'',
      +     '' PointRange type'',a32)') PointSetTypeName(iptset)
           stop
         end if
@@ -1993,7 +1993,7 @@ c   Determine appropriate indices for faces:
         n3=2
         n4=5
       else
-        write(11,'('' given value of ifacedesired not allowed='',i5)')
+        write(901,'('' given value of ifacedesired not allowed='',i5)')
      +   ifacedesired
         stop
       end if
@@ -2039,7 +2039,7 @@ c   Next get all BC info
      +    ndataset,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (iptset .ne. PointRange) then
-          write(11,'('' Error.  Currently BCs must be set up as'',
+          write(901,'('' Error.  Currently BCs must be set up as'',
      +     '' PointRange type'',a32)') PointSetTypeName(iptset)
           stop
         end if
@@ -2072,7 +2072,7 @@ c       Increment if correct surface only
               bcval(numseg,1)=0.
               bcval(numseg,2)=0.
             else
-              write(11,'('' BCtype '',i5,'' not implemented yet'')')
+              write(901,'('' BCtype '',i5,'' not implemented yet'')')
      +         ibocotype
             end if
             ibcinf(numseg,1)=ipts(n1,1)
@@ -2112,7 +2112,7 @@ c       Increment if correct surface only
               bcval(numseg,1)=0.
               bcval(numseg,2)=0.
             else
-              write(11,'('' BCtype '',i5,'' not implemented yet'')')
+              write(901,'('' BCtype '',i5,'' not implemented yet'')')
      +         ibocotype
             end if
             ibcinf(numseg,1)=ipts(n1,1)
@@ -2176,7 +2176,7 @@ c   Goto new History node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create Residual node
-      write(11,'('' Creating RSDMassRMS history node.'')')
+      write(901,'('' Creating RSDMassRMS history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('RSDMassRMS',RealDouble,1,ntt,rms,ier)
       else
@@ -2185,7 +2185,7 @@ c   Create Residual node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create Lift Coefficient node
-      write(11,'('' Creating CoefLift history node.'')')
+      write(901,'('' Creating CoefLift history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefLift',RealDouble,1,ntt,clw,ier)
       else
@@ -2194,7 +2194,7 @@ c   Create Lift Coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create Drag Coefficient node
-      write(11,'('' Creating CoefDrag history node.'')')
+      write(901,'('' Creating CoefDrag history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefDrag',RealDouble,1,ntt,cdw,ier)
       else
@@ -2203,7 +2203,7 @@ c   Create Drag Coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create Pressure Drag Coefficient node
-      write(11,'('' Creating CoefPressureDrag history node.'')')
+      write(901,'('' Creating CoefPressureDrag history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefPressureDrag',RealDouble,1,ntt,
      +       cdpw,ier)
@@ -2214,7 +2214,7 @@ c   Create Pressure Drag Coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create Viscous Drag Coefficient node
-      write(11,'('' Creating CoefViscousDrag history node.'')')
+      write(901,'('' Creating CoefViscousDrag history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefViscousDrag',RealDouble,1,ntt,
      +       cdvw,ier)
@@ -2225,7 +2225,7 @@ c   Create Viscous Drag Coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create x-direction force coefficient node
-      write(11,'('' Creating CoefForceX history node.'')')
+      write(901,'('' Creating CoefForceX history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefForceX',RealDouble,1,ntt,
      +       cxw,ier)
@@ -2236,7 +2236,7 @@ c   Create x-direction force coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create y-direction force coefficient node
-      write(11,'('' Creating CoefForceY history node.'')')
+      write(901,'('' Creating CoefForceY history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefForceY',RealDouble,1,ntt,
      +       cyw,ier)
@@ -2247,7 +2247,7 @@ c   Create y-direction force coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create z-direction force coefficient node
-      write(11,'('' Creating CoefForceZ history node.'')')
+      write(901,'('' Creating CoefForceZ history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefForceZ',RealDouble,1,ntt,
      +       czw,ier)
@@ -2258,7 +2258,7 @@ c   Create z-direction force coefficient node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create moment coefficient about x node
-      write(11,'('' Creating CoefMomentX history node.'')')
+      write(901,'('' Creating CoefMomentX history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefMomentX',RealDouble,1,ntt,
      +       cmxw,ier)
@@ -2269,7 +2269,7 @@ c   Create moment coefficient about x node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create moment coefficient about y node
-      write(11,'('' Creating CoefMomentY history node.'')')
+      write(901,'('' Creating CoefMomentY history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefMomentY',RealDouble,1,ntt,
      +       cmyw,ier)
@@ -2280,7 +2280,7 @@ c   Create moment coefficient about y node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create moment coefficient about z node
-      write(11,'('' Creating CoefMomentZ history node.'')')
+      write(901,'('' Creating CoefMomentZ history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('CoefMomentZ',RealDouble,1,ntt,
      +       cmzw,ier)
@@ -2291,7 +2291,7 @@ c   Create moment coefficient about z node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create mass-flow-thru-control-surface node
-      write(11,'('' Creating ControlSurfaceMassFlow history node.'')')
+      write(901,'('' Creating ControlSurfaceMassFlow history node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('ControlSurfaceMassFlow',
      +       RealDouble,1,ntt,fmdotw,ier)
@@ -2302,7 +2302,7 @@ c   Create mass-flow-thru-control-surface node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create momentum-force-on-control-surface node
-      write(11,'('' Creating ControlSurfaceMomentumForce history'',
+      write(901,'('' Creating ControlSurfaceMomentumForce history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('ControlSurfaceMomentumForce',
@@ -2314,7 +2314,7 @@ c   Create momentum-force-on-control-surface node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create pressure-force-on-control-surface node
-      write(11,'('' Creating ControlSurfacePressureForce history'',
+      write(901,'('' Creating ControlSurfacePressureForce history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('ControlSurfacePressureForce',
@@ -2326,7 +2326,7 @@ c   Create pressure-force-on-control-surface node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create viscous-force-on-control-surface node
-      write(11,'('' Creating ControlSurfaceViscousForce history'',
+      write(901,'('' Creating ControlSurfaceViscousForce history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('ControlSurfaceViscousForce',
@@ -2338,7 +2338,7 @@ c   Create viscous-force-on-control-surface node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create total-force-on-control-surface node
-      write(11,'('' Creating ControlSurfaceForce history'',
+      write(901,'('' Creating ControlSurfaceForce history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('ControlSurfaceForce',
@@ -2350,7 +2350,7 @@ c   Create total-force-on-control-surface node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create turb-equation-1-residual-history node
-      write(11,'('' Creating RSDTurbEqn1RMS history'',
+      write(901,'('' Creating RSDTurbEqn1RMS history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('RSDTurbEqn1RMS',
@@ -2362,7 +2362,7 @@ c   Create turb-equation-1-residual-history node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create turb-equation-2-residual-history node
-      write(11,'('' Creating RSDTurbEqn2RMS history'',
+      write(901,'('' Creating RSDTurbEqn2RMS history'',
      +  '' node.'')')
       if (idouble .eq. 1) then
         call cg_array_write_f('RSDTurbEqn2RMS',
@@ -2374,14 +2374,14 @@ c   Create turb-equation-2-residual-history node
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create turb-equation-1-bad-points-history node
-      write(11,'('' Creating BadPointsTurbEqn1 history'',
+      write(901,'('' Creating BadPointsTurbEqn1 history'',
      +  '' node.'')')
       call cg_array_write_f('BadPointsTurbEqn1',
      +       Integer,1,ntt,nneg1,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create turb-equation-2-bad-points-history node
-      write(11,'('' Creating BadPointsTurbEqn2 history'',
+      write(901,'('' Creating BadPointsTurbEqn2 history'',
      +  '' node.'')')
       call cg_array_write_f('BadPointsTurbEqn2',
      +       Integer,1,ntt,nneg2,ier)
@@ -2438,19 +2438,19 @@ c
 c   Read number of iterations of data in ConvergenceHistory node
       call cg_convergence_read_f(ntr,name2,ier)
       if (ier .ne. 0) then
-         write(11,'('' ConvergenceHistory node does not exist.'')')
-         write(11,'(''   setting ntr=0 and continuing'')')
+         write(901,'('' ConvergenceHistory node does not exist.'')')
+         write(901,'(''   setting ntr=0 and continuing'')')
          ntr=0
          return
       end if
-      write(11,'('' reading convergence history data... ntr='',i5)') ntr
+      write(901,'('' reading convergence history data... ntr='',i5)') ntr
       if (ntr .ge. ncycmax) then
-      write(11,1239)
+      write(901,1239)
  1239 format(/,1x,11hstopping...,
      .       40hprevious number of iterations computed >,
      .       1x,18h dimension ncycmax)
-      write(11,*)' ntr,ncycmax = ',ntr,ncycmax
-      write(11,*)' increase value of ncycmax to at LEAST ',
+      write(901,*)' ntr,ncycmax = ',ntr,ncycmax
+      write(901,*)' increase value of ncycmax to at LEAST ',
      .ntr+ncycmax
       stop
       end if
@@ -2461,8 +2461,8 @@ c   Get Information about what is under History node
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' WARNING.  Too many history arrays.'')')
-         write(11,'(''   setting ntr=0 and continuing'')')
+        write(901,'('' WARNING.  Too many history arrays.'')')
+         write(901,'(''   setting ntr=0 and continuing'')')
          ntr=0
          return
       end if
@@ -2474,8 +2474,8 @@ c   Get Residual
       do n=1,narrays
         if (name(n) .eq. 'RSDMassRMS') goto 101
       enddo
-      write(11,'('' WARNING. No RSDMassRMS node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No RSDMassRMS node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  101  continue
@@ -2490,8 +2490,8 @@ c   Get Lift Coefficient
       do n=1,narrays
         if (name(n) .eq. 'CoefLift') goto 102
       enddo
-      write(11,'('' WARNING. No CoefLift node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefLift node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  102  continue
@@ -2506,8 +2506,8 @@ c   Get Drag Coefficient
       do n=1,narrays
         if (name(n) .eq. 'CoefDrag') goto 103
       enddo
-      write(11,'('' WARNING. No CoefDrag node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefDrag node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  103  continue
@@ -2522,8 +2522,8 @@ c   Get Pressure Drag Coefficient
       do n=1,narrays
         if (name(n) .eq. 'CoefPressureDrag') goto 104
       enddo
-      write(11,'('' WARNING. No CoefPressureDrag node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefPressureDrag node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  104  continue
@@ -2538,8 +2538,8 @@ c   Get Viscous Drag Coefficient
       do n=1,narrays
         if (name(n) .eq. 'CoefViscousDrag') goto 105
       enddo
-      write(11,'('' WARNING. No CoefViscousDrag node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefViscousDrag node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  105  continue
@@ -2554,8 +2554,8 @@ c   Get Force coeff in x-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefForceX') goto 106
       enddo
-      write(11,'('' WARNING. No CoefForceX node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefForceX node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  106  continue
@@ -2570,8 +2570,8 @@ c   Get Force coeff in y-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefForceY') goto 107
       enddo
-      write(11,'('' WARNING. No CoefForceY node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefForceY node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  107  continue
@@ -2586,8 +2586,8 @@ c   Get Force coeff in z-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefForceZ') goto 108
       enddo
-      write(11,'('' WARNING. No CoefForceZ node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefForceZ node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  108  continue
@@ -2602,8 +2602,8 @@ c   Get Moment coeff in x-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefMomentX') goto 109
       enddo
-      write(11,'('' WARNING. No CoefMomentX node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefMomentX node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  109  continue
@@ -2618,8 +2618,8 @@ c   Get Moment coeff in y-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefMomentY') goto 110
       enddo
-      write(11,'('' WARNING. No CoefMomentY node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefMomentY node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  110  continue
@@ -2634,8 +2634,8 @@ c   Get Moment coeff in z-direction
       do n=1,narrays
         if (name(n) .eq. 'CoefMomentZ') goto 111
       enddo
-      write(11,'('' WARNING. No CoefMomentZ node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No CoefMomentZ node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  111  continue
@@ -2650,8 +2650,8 @@ c   Get Control surface mass flow
       do n=1,narrays
         if (name(n) .eq. 'ControlSurfaceMassFlow') goto 112
       enddo
-      write(11,'('' WARNING. No ControlSurfaceMassFlow node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No ControlSurfaceMassFlow node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  112  continue
@@ -2666,9 +2666,9 @@ c   Get Control surface momentum force
       do n=1,narrays
         if (name(n) .eq. 'ControlSurfaceMomentumForce') goto 113
       enddo
-      write(11,'('' WARNING. No ControlSurfaceMomentumForce node'',
+      write(901,'('' WARNING. No ControlSurfaceMomentumForce node'',
      +  '' exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  113  continue
@@ -2683,9 +2683,9 @@ c   Get Control surface pressure force
       do n=1,narrays
         if (name(n) .eq. 'ControlSurfacePressureForce') goto 114
       enddo
-      write(11,'('' WARNING. No ControlSurfacePressureForce node'',
+      write(901,'('' WARNING. No ControlSurfacePressureForce node'',
      +  '' exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  114  continue
@@ -2700,9 +2700,9 @@ c   Get Control surface viscous force
       do n=1,narrays
         if (name(n) .eq. 'ControlSurfaceViscousForce') goto 115
       enddo
-      write(11,'('' WARNING. No ControlSurfaceViscousForce node'',
+      write(901,'('' WARNING. No ControlSurfaceViscousForce node'',
      +  '' exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  115  continue
@@ -2717,9 +2717,9 @@ c   Get Control surface total force
       do n=1,narrays
         if (name(n) .eq. 'ControlSurfaceForce') goto 116
       enddo
-      write(11,'('' WARNING. No ControlSurfaceForce node'',
+      write(901,'('' WARNING. No ControlSurfaceForce node'',
      +  '' exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  116  continue
@@ -2734,8 +2734,8 @@ c   Get Residual of turb eqn 1
       do n=1,narrays
         if (name(n) .eq. 'RSDTurbEqn1RMS') goto 117
       enddo
-      write(11,'('' WARNING. No RSDTurbEqn1RMS node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No RSDTurbEqn1RMS node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  117  continue
@@ -2750,8 +2750,8 @@ c   Get Residual of turb eqn 2
       do n=1,narrays
         if (name(n) .eq. 'RSDTurbEqn2RMS') goto 118
       enddo
-      write(11,'('' WARNING. No RSDTurbEqn2RMS node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No RSDTurbEqn2RMS node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  118  continue
@@ -2766,8 +2766,8 @@ c   Get turb eqn 1 bad points
       do n=1,narrays
         if (name(n) .eq. 'BadPointsTurbEqn1') goto 119
       enddo
-      write(11,'('' WARNING. No BadPointsTurbEqn1 node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No BadPointsTurbEqn1 node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  119  continue
@@ -2778,8 +2778,8 @@ c   Get turb eqn 2 bad points
       do n=1,narrays
         if (name(n) .eq. 'BadPointsTurbEqn2') goto 120
       enddo
-      write(11,'('' WARNING. No BadPointsTurbEqn2 node exists'')')
-      write(11,'(''   setting ntr=0 and continuing'')')
+      write(901,'('' WARNING. No BadPointsTurbEqn2 node exists'')')
+      write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  120  continue
@@ -2790,7 +2790,7 @@ c
       end
 c
       subroutine writeeqn(iccg,ibase,igrid,iv1,iv2,iv3,ideg,gamma,
-     +   prandtl,prandtlt,suth)
+     +   prandtl,prandtlt,suth,i2d,ifullns,ides,isarc2d,ieasmcc2d)
 c***********************************************************************
 c     Purpose: Writes equation info to CGNS data base for zone number 
 c     "igrid". The CGNS file must be already opened in "MODE_MODIFY"
@@ -2809,6 +2809,11 @@ c      gamma............specific heat ratio (real)
 c      prandtl..........Prandtl number (real)
 c      prandtlt.........turbulent Prandtl number (real)
 c      suth.............Sutherland law constant (real)
+c      i2d..............0 if 3-D, 1 if 2-D (integer)
+c      ifullns..........0 if thin layer, 1 if full (integer)
+c      ides.............0 if DES off, 1 if on (integer)
+c      isarc2d..........0 if SARC curv correction off, 1 if on (integer)
+c      ieasmcc2d........0 if EASMCC curv correction off, 1 if on (integer)
 c   OUTPUTS:
 c      none
 c***********************************************************************
@@ -2859,6 +2864,15 @@ c   Create 'DiffusionModel' node under 'GoverningEquations'
       if(iv1 .gt. 0) idata(1)=1
       if(iv2 .gt. 0) idata(2)=1
       if(iv3 .gt. 0) idata(3)=1
+      if(ifullns .eq. 1) then
+        if(i2d .eq. 1) then
+          idata(5)=1
+        else
+          idata(4)=1
+          idata(5)=1
+          idata(6)=1
+        end if
+      end if
       call cg_diffusion_write_f(idata,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
@@ -2979,10 +2993,40 @@ c   (non-standard)
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   OneEquation_BaldwinBarth,ier)
-      else if(ivmx .eq. 5) then
+      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarc2d .ne. 1) then
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   OneEquation_SpalartAllmaras,ier)
+      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarc2d .ne. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'DetachedEddySimulation',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'SpalartAllmarasSARC',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'DetachedEddySimulationSARC',ier)
+        if (ier .ne. 0) call cg_error_exit_f
       else if(ivmx .eq. 6) then
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
@@ -2991,7 +3035,7 @@ c   (standard)
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   TwoEquation_MenterSST,ier)
-      else if(ivmx .eq. 8) then
+      else if(ivmx .eq. 8 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3001,7 +3045,17 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_EASM_KO_Lin',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 9) then
+      else if(ivmx .eq. 8 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_EASMCC_KO_Lin',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 9 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3010,6 +3064,16 @@ c   (non-standard)
         if (ier .ne. 0) call cg_error_exit_f
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_EASM_KE_Lin',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 9 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_EASMCC_KE_Lin',ier)
         if (ier .ne. 0) call cg_error_exit_f
       else if(ivmx .eq. 10) then
 c   (non-standard)
@@ -3021,7 +3085,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_Abid_KE',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 11) then
+      else if(ivmx .eq. 11 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3031,7 +3095,17 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_GS_EASM_KE',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 12) then
+      else if(ivmx .eq. 11 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_GS_EASMCC_KE',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 12 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3041,7 +3115,17 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_GS_EASM_KO',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 13) then
+      else if(ivmx .eq. 12 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_GS_EASMCC_KO',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 13 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3051,7 +3135,17 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_EASM_KE',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 14) then
+      else if(ivmx .eq. 13 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_EASMCC_KE',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 14 .and. ieasmcc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3060,6 +3154,16 @@ c   (non-standard)
         if (ier .ne. 0) call cg_error_exit_f
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_EASM_KO',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 14 .and. ieasmcc2d .eq. 1) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'TwoEquation_EASMCC_KO',ier)
         if (ier .ne. 0) call cg_error_exit_f
       else if(ivmx .eq. 15) then
 c   (non-standard)
@@ -3133,8 +3237,8 @@ c   Go to appropriate node
 c   Read 'FlowEquationSet' node
       call cg_equationset_read_f(id,ige,igm,ivm,itcm,itc,itm,ier)
       if (ier .gt. 0) then
-        write(11,'('' FlowEquationSet node does not exist.'')')
-        write(11,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
+        write(901,'('' FlowEquationSet node does not exist.'')')
+        write(901,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
      +   '' suth=198.6, and restart from Euler'')')
         iv1=0
         iv2=0
@@ -3155,12 +3259,12 @@ c   Read 'GoverningEquations' node
         if (itype .eq. Euler .or.
      +      itype .eq. NSLaminar .or.
      +      itype .eq. NSTurbulent) then
-          write(11,'('' cgns read solution of:  '',a32)') 
+          write(901,'('' cgns read solution of:  '',a32)') 
      +     GoverningEquationsTypeName(itype)
         else
-          write(11,'('' WARNING! GoverningEquations type not'',
+          write(901,'('' WARNING! GoverningEquations type not'',
      +     '' recognized:  '',a32)') GoverningEquationsTypeName(itype)
-          write(11,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
+          write(901,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
      +     '' suth=198.6, and restart from Euler'')')
           iv1=0
           iv2=0
@@ -3172,8 +3276,8 @@ c   Read 'GoverningEquations' node
           return
         end if
       else
-        write(11,'('' GoverningEquations node does not exist. '')')
-        write(11,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
+        write(901,'('' GoverningEquations node does not exist. '')')
+        write(901,'(''   assuming gamma=1.4, pr=0.72, prt=0.9,'',
      +   '' suth=198.6, and restart from Euler'')')
         iv1=0
         iv2=0
@@ -3188,25 +3292,25 @@ c   Get gamma
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +   'FlowEquationSet_t',1,'GasModel_t',1,'end')
       if (ier .ne. 0) then
-        write(11,'('' No GasModel exists'')')
-        write(11,'(''   Setting gamma=1.4 & continuing'')')
+        write(901,'('' No GasModel exists'')')
+        write(901,'(''   Setting gamma=1.4 & continuing'')')
         gamma=1.4
         goto 205
       end if
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 1) then
-        write(11,'('' Expecting only one array under GasModel'')')
-        write(11,'(''   Read '',i5)') narrays
-        write(11,'(''   Setting gamma=1.4 & continuing'')')
+        write(901,'('' Expecting only one array under GasModel'')')
+        write(901,'(''   Read '',i5)') narrays
+        write(901,'(''   Setting gamma=1.4 & continuing'')')
         gamma=1.4
         goto 205
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'SpecificHeatRatio') goto 105
-      write(11,'('' WARNING. No SpecificHeatRatio node exists'')')
-      write(11,'(''   setting to 1.4 & continuing'')')
+      write(901,'('' WARNING. No SpecificHeatRatio node exists'')')
+      write(901,'(''   setting to 1.4 & continuing'')')
       gamma=1.4
       goto 205
  105  continue
@@ -3221,26 +3325,26 @@ c   Get prandtl
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +   'FlowEquationSet_t',1,'ThermalConductivityModel_t',1,'end')
       if (ier .ne. 0) then
-        write(11,'('' No ThermalConductivityModel exists'')')
-        write(11,'(''   Setting prandtl=0.72 & continuing'')')
+        write(901,'('' No ThermalConductivityModel exists'')')
+        write(901,'(''   Setting prandtl=0.72 & continuing'')')
         prandtl=0.72
         goto 206
       end if
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 1) then
-        write(11,'('' Expecting only one array under '',
+        write(901,'('' Expecting only one array under '',
      +    ''ThermalConductivityModel'')')
-        write(11,'(''   Read '',i5)') narrays
-        write(11,'(''   Setting prandtl=0.72 & continuing'')')
+        write(901,'(''   Read '',i5)') narrays
+        write(901,'(''   Setting prandtl=0.72 & continuing'')')
         prandtl=0.72
         goto 206
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'Prandtl') goto 106
-      write(11,'('' WARNING. No Prandtl node exists'')')
-      write(11,'(''   setting to 0.72 & continuing'')')
+      write(901,'('' WARNING. No Prandtl node exists'')')
+      write(901,'(''   setting to 0.72 & continuing'')')
       prandtl=0.72
       goto 206
  106  continue
@@ -3255,26 +3359,26 @@ c   Get prandtlt
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +   'FlowEquationSet_t',1,'TurbulenceClosure_t',1,'end')
       if (ier .ne. 0) then
-        write(11,'('' No TurbulenceClosure exists'')')
-        write(11,'(''   Setting prandtlt=0.9 & continuing'')')
+        write(901,'('' No TurbulenceClosure exists'')')
+        write(901,'(''   Setting prandtlt=0.9 & continuing'')')
         prandtlt=0.9
         goto 207
       end if
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 1) then
-        write(11,'('' Expecting only one array under '',
+        write(901,'('' Expecting only one array under '',
      +    ''TurbulenceClosure'')')
-        write(11,'(''   Read '',i5)') narrays
-        write(11,'(''   Setting prandtlt=0.9 & continuing'')')
+        write(901,'(''   Read '',i5)') narrays
+        write(901,'(''   Setting prandtlt=0.9 & continuing'')')
         prandtlt=0.9
         goto 207
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'PrandtlTurbulent') goto 107
-      write(11,'('' WARNING. No PrandtlTurbulent node exists'')')
-      write(11,'(''   setting to 0.9 & continuing'')')
+      write(901,'('' WARNING. No PrandtlTurbulent node exists'')')
+      write(901,'(''   setting to 0.9 & continuing'')')
       prandtlt=0.9
       goto 207
  107  continue
@@ -3289,26 +3393,26 @@ c   Get suth
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +   'FlowEquationSet_t',1,'ViscosityModel_t',1,'end')
       if (ier .ne. 0) then
-        write(11,'('' No ViscosityModel exists'')')
-        write(11,'(''   Setting suth=198.6 & continuing'')')
+        write(901,'('' No ViscosityModel exists'')')
+        write(901,'(''   Setting suth=198.6 & continuing'')')
         suth=198.6
         goto 208
       end if
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 1) then
-        write(11,'('' Expecting only one array under '',
+        write(901,'('' Expecting only one array under '',
      +    ''ViscosityModel'')')
-        write(11,'(''   Read '',i5)') narrays
-        write(11,'(''   Setting suth=198.6 & continuing'')')
+        write(901,'(''   Read '',i5)') narrays
+        write(901,'(''   Setting suth=198.6 & continuing'')')
         suth=198.6
         goto 208
       end if
       call cg_array_info_f(1,name,ltype,idatadim,idimvec,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (name .eq. 'SutherlandLawConstant') goto 108
-      write(11,'('' WARNING. No SutherlandLawConstant node exists'')')
-      write(11,'(''   setting to 198.6 & continuing'')')
+      write(901,'('' WARNING. No SutherlandLawConstant node exists'')')
+      write(901,'(''   setting to 198.6 & continuing'')')
       suth=198.6
       goto 208
  108  continue
@@ -3326,8 +3430,8 @@ c   Read 'DiffusionModel' node
       if (ier .ne. 0) call cg_error_exit_f
       call cg_diffusion_read_f(idata,ier)
       if (ier .gt. 0) then
-        write(11,'('' DiffusionModel node does not exist.'')')
-        write(11,'(''   assuming restart from Euler'')')
+        write(901,'('' DiffusionModel node does not exist.'')')
+        write(901,'(''   assuming restart from Euler'')')
         iv1=0
         iv2=0
         iv3=0
@@ -3335,16 +3439,14 @@ c   Read 'DiffusionModel' node
       end if
       if (idata(4) .ne. 0 .or. idata(5) .ne. 0 .or.
      +    idata(6) .ne. 0) then
-        write(11,'('' WARNING:  restarting from FULL N-S'',
+        write(901,'('' Restarting from FULL N-S'',
      +  '' (X-derivatives included)'')')
-        write(11,'(''    This capability not available in'',
-     +  '' CFL3D'')')
       end if
       if (itype .eq. Euler .and. 
      + (idata(1).eq.1 .or. idata(2).eq.1 .or. idata(3).eq.1)) then
-        write(11,'('' Inconsistency in ADF file between'',
+        write(901,'('' Inconsistency in ADF file between'',
      +  '' GoverningEquations and DiffusionModel'')')
-        write(11,'(''    using DiffusionModel...'')')
+        write(901,'(''    using DiffusionModel...'')')
       end if
 c   Read 'TurbulenceModel' node, if appropriate
       if (itype .eq. Euler .or.
@@ -3431,20 +3533,65 @@ c   Read 'TurbulenceModel' node, if appropriate
           iv1=idata(1)*15
           iv2=idata(2)*15
           iv3=idata(3)*15
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'DetachedEddySimulation') then
+          iv1=idata(1)*5
+          iv2=idata(2)*5
+          iv3=idata(3)*5
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'SpalartAllmarasSARC') then
+          iv1=idata(1)*5
+          iv2=idata(2)*5
+          iv3=idata(3)*5
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'DetachedEddySimulationSARC') then
+          iv1=idata(1)*5
+          iv2=idata(2)*5
+          iv3=idata(3)*5
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_EASMCC_KO_Lin') then
+          iv1=idata(1)*8
+          iv2=idata(2)*8
+          iv3=idata(3)*8
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_EASMCC_KE_Lin') then
+          iv1=idata(1)*9
+          iv2=idata(2)*9
+          iv3=idata(3)*9
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_GS_EASMCC_KE') then
+          iv1=idata(1)*11
+          iv2=idata(2)*11
+          iv3=idata(3)*11
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_GS_EASMCC_KO') then
+          iv1=idata(1)*12
+          iv2=idata(2)*12
+          iv3=idata(3)*12
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_EASMCC_KE') then
+          iv1=idata(1)*13
+          iv2=idata(2)*13
+          iv3=idata(3)*13
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'TwoEquation_EASMCC_KO') then
+          iv1=idata(1)*14
+          iv2=idata(2)*14
+          iv3=idata(3)*14
         else
-          write(11,'('' Model name not recognized:'',a32)')
+          write(901,'('' Model name not recognized:'',a32)')
      +     ModelTypeName(itype)
-          write(11,'(''   assuming NSLaminar'')')
+          write(901,'(''   assuming NSLaminar'')')
           iv1=idata(1)
           iv2=idata(2)
           iv3=idata(3)
         end if
       else
-        write(11,'('' TurbulenceModel node does not exist. '')')
+        write(901,'('' TurbulenceModel node does not exist. '')')
         if (itype .eq. Euler) then
-          write(11,'(''   (restart is Euler)'')')
+          write(901,'(''   (restart is Euler)'')')
         else
-          write(11,'(''   (restart is NSLaminar)'')')
+          write(901,'(''   (restart is NSLaminar)'')')
         end if
         iv1=idata(1)
         iv2=idata(2)
@@ -3517,7 +3664,7 @@ c   Go to Base node, write CFL3DTimeStep array as UserDefinedData
       call cg_nuser_data_f(nuserdata, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .gt. numnames) then
-        write(11,'('' Error... numnames too small in writetime'')')
+        write(901,'('' Error... numnames too small in writetime'')')
         stop
       end if
       do n=1,nuserdata
@@ -3573,9 +3720,9 @@ c
 c   Read BaseIterativeData node
       call cg_biter_read_f(iccg,ibase,name,nsteps,ier)
       if (ier .gt. 0) then
-         write(11,'('' WARNING: BaseIterativeData node does not '',
+         write(901,'('' WARNING: BaseIterativeData node does not '',
      +    ''exist.'')')
-         write(11,'(''   Assuming time=0 and continuing'')')
+         write(901,'(''   Assuming time=0 and continuing'')')
          time=0.
          return
       end if
@@ -3586,9 +3733,9 @@ c   Go to BaseIterativeData node and get info
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-         write(11,'('' WARNING.  Too many BaseIterativeData'',
+         write(901,'('' WARNING.  Too many BaseIterativeData'',
      +    '' arrays.'')')
-         write(11,'(''   Setting time=0 and continuing'')')
+         write(901,'(''   Setting time=0 and continuing'')')
          time=0.
          return
       end if
@@ -3601,8 +3748,8 @@ c   Get TimeValues
       do n=1,narrays
         if (name(n) .eq. 'TimeValues') goto 101
       enddo
-      write(11,'('' WARNING. No TimeValues node exists'')')
-      write(11,'(''   setting time=0 & continuing'')')
+      write(901,'('' WARNING. No TimeValues node exists'')')
+      write(901,'(''   setting time=0 & continuing'')')
       time=0.
       goto 201
  101  continue
@@ -4036,15 +4183,15 @@ c
 c   Read DataClass node
       call cg_dataclass_read_f(itype,ier)
       if (ier .gt. 0) then
-         write(11,'('' WARNING: DataClass node does not exist.'')')
-         write(11,'(''   Assuming NormalizedByUnknownDimensional'')')
-         write(11,'(''   and continuing'')')
+         write(901,'('' WARNING: DataClass node does not exist.'')')
+         write(901,'(''   Assuming NormalizedByUnknownDimensional'')')
+         write(901,'(''   and continuing'')')
          ntr=0
       else
          if(itype .ne. NormalizedByUnknownDimensional) then
-           write(11,'('' Error:  Restart file must have data that'',
+           write(901,'('' Error:  Restart file must have data that'',
      +       '' is NormalizedByUnknownDimensional'')')
-           write(11,'('' Actual classname is: '',a32)') 
+           write(901,'('' Actual classname is: '',a32)') 
      +      DataClassName(itype)
            stop
          end if
@@ -4053,10 +4200,10 @@ c
 c   Read ReferenceState node
       call cg_state_read_f(namea,ier)
       if (ier .gt. 0) then
-         write(11,'('' WARNING: ReferenceState node does not exist.'')')
-         write(11,'(''   Assuming CFL3D <<standard>> for'')')
-         write(11,'(''   nondim quantities, and assuming M=0.5,'')')
-         write(11,'(''   Re=1.e6, Tinf=520R, alp=0 and continuing'')')
+         write(901,'('' WARNING: ReferenceState node does not exist'')')
+         write(901,'(''   Assuming CFL3D <<standard>> for'')')
+         write(901,'(''   nondim quantities, and assuming M=0.5,'')')
+         write(901,'(''   Re=1.e6, Tinf=520R, alp=0 and continuing'')')
          rho0=1.
          c0=1.
          vk0=1.
@@ -4074,10 +4221,10 @@ c   Go to ReferenceState node and get info
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-         write(11,'('' WARNING.  To many ReferenceState arrays.'')')
-         write(11,'(''   Assuming CFL3D <<standard>> for'')')
-         write(11,'(''   nondim quantities, and assuming M=0.5,'')')
-         write(11,'(''   Re=1.e6, Tinf=520R, alph=0 and continuing'')')
+         write(901,'('' WARNING.  To many ReferenceState arrays.'')')
+         write(901,'(''   Assuming CFL3D <<standard>> for'')')
+         write(901,'(''   nondim quantities, and assuming M=0.5,'')')
+         write(901,'(''   Re=1.e6, Tinf=520R, alph=0 and continuing'')')
          rho0=1.
          c0=1.
          vk0=1.
@@ -4097,8 +4244,8 @@ c   Get Mach
       do n=1,narrays
         if (name(n) .eq. 'Mach') goto 101
       enddo
-      write(11,'('' WARNING. No Mach node exists'')')
-      write(11,'(''   setting arbitrarily to 0.5 & continuing'')')
+      write(901,'('' WARNING. No Mach node exists'')')
+      write(901,'(''   setting arbitrarily to 0.5 & continuing'')')
       xmach=0.5
       goto 201
  101  continue
@@ -4114,8 +4261,8 @@ c   Get Reynolds number
       do n=1,narrays
         if (name(n) .eq. 'Reynolds') goto 102
       enddo
-      write(11,'('' WARNING. No Reynolds node exists'')')
-      write(11,'(''   setting arbitrarily to 1.e6 & continuing'')')
+      write(901,'('' WARNING. No Reynolds node exists'')')
+      write(901,'(''   setting arbitrarily to 1.e6 & continuing'')')
       reue=1.e6
       goto 202
  102  continue
@@ -4131,8 +4278,8 @@ c   Get reference density
       do n=1,narrays
         if (name(n) .eq. 'Density') goto 105
       enddo
-      write(11,'('' WARNING. No Density node exists'')')
-      write(11,'(''   setting to 1.0 & continuing'')')
+      write(901,'('' WARNING. No Density node exists'')')
+      write(901,'(''   setting to 1.0 & continuing'')')
       rho0=1.0
       goto 205
  105  continue
@@ -4148,8 +4295,8 @@ c   Get reference speed of sound
       do n=1,narrays
         if (name(n) .eq. 'VelocitySound') goto 106
       enddo
-      write(11,'('' WARNING. No VelocitySound node exists'')')
-      write(11,'(''   setting to 1.0 & continuing'')')
+      write(901,'('' WARNING. No VelocitySound node exists'')')
+      write(901,'(''   setting to 1.0 & continuing'')')
       c0=1.0
       goto 206
  106  continue
@@ -4176,7 +4323,7 @@ c   try to read CFL3D-normalization first (not SIDS standard)
         end if
       enddo
       if (iflag1.eq.1) then
-        write(11,'('' Reading ViscosityMolecular'',
+        write(901,'('' Reading ViscosityMolecular'',
      +   '' (CFL3D-normalization)'')')
         if (idouble .eq. 1) then
           call cg_array_read_as_f(nsav1,RealDouble,vk0,ier)
@@ -4185,7 +4332,7 @@ c   try to read CFL3D-normalization first (not SIDS standard)
         end if
         if (ier .ne. 0) call cg_error_exit_f
       else if (iflag2.eq.1) then
-        write(11,'('' Reading ViscosityMolecular'')')
+        write(901,'('' Reading ViscosityMolecular'')')
         if (idouble .eq. 1) then
           call cg_array_read_as_f(nsav2,RealDouble,vk0n,ier)
         else
@@ -4195,8 +4342,8 @@ c   try to read CFL3D-normalization first (not SIDS standard)
 c   put vk0 back into CFL3D normalization
         vk0=vk0n*reue/xmach
       else
-        write(11,'('' WARNING. No ViscosityMolecular nodes exist'')')
-        write(11,'(''   setting to 1.0 & continuing'')')
+        write(901,'('' WARNING. No ViscosityMolecular nodes exist'')')
+        write(901,'(''   setting to 1.0 & continuing'')')
         vk0=1.0
       end if
 c
@@ -4204,8 +4351,8 @@ c   Get reference length
       do n=1,narrays
         if (name(n) .eq. 'LengthReference') goto 108
       enddo
-      write(11,'('' WARNING. No LengthReference node exists'')')
-      write(11,'(''   setting to 1.0 & continuing'')')
+      write(901,'('' WARNING. No LengthReference node exists'')')
+      write(901,'(''   setting to 1.0 & continuing'')')
       xlength0=1.0
       goto 208
  108  continue
@@ -4221,8 +4368,8 @@ c   Get reference temperature
       do n=1,narrays
         if (name(n) .eq. 'Temperature') goto 110
       enddo
-      write(11,'('' WARNING. No Temperature node exists'')')
-      write(11,'(''   setting arbitrarily to 520R & continuing'')')
+      write(901,'('' WARNING. No Temperature node exists'')')
+      write(901,'(''   setting arbitrarily to 520R & continuing'')')
       tinf=520.0
       goto 210
  110  continue
@@ -4238,20 +4385,20 @@ c   Get reference temperature
       call cg_dataclass_read_f(itype,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (itype .ne. Dimensional) then
-         write(11,'('' WARNING: Restart file must have Temp data '',
+         write(901,'('' WARNING: Restart file must have Temp data '',
      +    ''that is Dimensional'')')
-         write(11,'(''   Actual classname is: '',a32)') 
+         write(901,'(''   Actual classname is: '',a32)') 
      +    DataClassName(itype)
-         write(11,'(''   Ignoring this, and continuing.'')')
+         write(901,'(''   Ignoring this, and continuing.'')')
       end if
       call cg_units_read_f(im,il,it,ite,ia,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (ite .ne. Rankine) then
-         write(11,'('' WARNING: Temp DimensionalUnits should be'',
+         write(901,'('' WARNING: Temp DimensionalUnits should be'',
      +    '' Rankine.'')')
-         write(11,'(''   Instead, they are:'',a32)') 
+         write(901,'(''   Instead, they are:'',a32)') 
      +    TemperatureUnitsName(ite)
-         write(11,'(''   Resetting to 520R and continuing.'')')
+         write(901,'(''   Resetting to 520R and continuing.'')')
          tinf=520.
       end if
  210  continue
@@ -4262,8 +4409,8 @@ c   Get angle of attack
       do n=1,narrays
         if (name(n) .eq. 'AngleofAttack') goto 410
       enddo
-      write(11,'('' WARNING. No AngleofAttack node exists'')')
-      write(11,'(''   setting arbitrarily to 0 & continuing'')')
+      write(901,'('' WARNING. No AngleofAttack node exists'')')
+      write(901,'(''   setting arbitrarily to 0 & continuing'')')
       alphw=0.
       goto 510
  410  continue
@@ -4279,20 +4426,20 @@ c   Get angle of attack
       call cg_dataclass_read_f(itype,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (itype .ne. Dimensional) then
-         write(11,'('' WARNING: Restart file must have alpha data '',
+         write(901,'('' WARNING: Restart file must have alpha data '',
      +    ''that is Dimensional'')')
-         write(11,'(''   Actual classname is: '',a32)')
+         write(901,'(''   Actual classname is: '',a32)')
      +    DataClassName(itype)
-         write(11,'(''   Ignoring this, and continuing.'')')
+         write(901,'(''   Ignoring this, and continuing.'')')
       end if
       call cg_units_read_f(im,il,it,ite,ia,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (ia .ne. Degree) then
-         write(11,'('' WARNING: alpha DimensionalUnits should be'',
+         write(901,'('' WARNING: alpha DimensionalUnits should be'',
      +    '' Degree.'')')
-         write(11,'(''   Instead, they are:'',a32)')
+         write(901,'(''   Instead, they are:'',a32)')
      +    AngleUnitsName(ia)
-         write(11,'(''   Resetting to 0 and continuing.'')')
+         write(901,'(''   Resetting to 0 and continuing.'')')
          alphw=0.
       end if
  510  continue
@@ -4557,7 +4704,7 @@ c   Re-read input file
           read(iunit5,'(a1)') dum1
           if (dum1 .eq. '<') goto 1102
         enddo
-        write(11,'('' CaseTitle in cgns file incorrect because'',
+        write(901,'('' CaseTitle in cgns file incorrect because'',
      .    '' more than 500 lines of keyword input'')')
 1102    continue
       else
@@ -4796,7 +4943,7 @@ c   First, get "factor" in case want to write every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
@@ -4964,7 +5111,7 @@ c   Find out how many fields there are and their names:
       call cg_nfields_f(iccg, ibase, igrid, nsoluse, nfields, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nfields .gt. numfield) then
-        write(11,'('' Need to increase numfield parameter'',
+        write(901,'('' Need to increase numfield parameter'',
      +    '' in rsecord'')')
         stop
       end if
@@ -4990,7 +5137,7 @@ c   Check to make sure the field names needed exist:
           end if
         enddo
         if (ido .eq. 0) then
-          write(11,'('' Cannot find solution of name '',a32)')
+          write(901,'('' Cannot find solution of name '',a32)')
      +      fndesired(n)
           ibad=1
         end if
@@ -5011,7 +5158,7 @@ c   First, get "factor" in case want to read every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level of soln not'',
+        write(901,'('' Error.  Desired grid level of soln not'',
      +   '' supported'')')
         stop
       end if
@@ -5064,9 +5211,9 @@ c   is reading an older file, or if last run was not turbulent)
           end if
         enddo
         if (ido .eq. 0) then
-          write(11,'('' Cannot find solution of name '',a32)')
+          write(901,'('' Cannot find solution of name '',a32)')
      +      fndesired(n)
-          write(11,'('' ...leaving old turbs as 0 and continuing'')')
+          write(901,'('' ...leaving old turbs as 0 and continuing'')')
           ibad=1
         end if
       enddo
@@ -5096,11 +5243,11 @@ c   Go to Base node, read CFL3DTimeStep array from UserDefinedData
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .eq. 0) then
-        write(11,'('' no user data exists in base, so'',
+        write(901,'('' no user data exists in base, so'',
      +    '' no old time step is available: set to current'')')
         dtold=dt
       else if (nuserdata .gt. numfield) then
-        write(11,'('' Error... numfield too small in rsecord'')')
+        write(901,'('' Error... numfield too small in rsecord'')')
         stop
       else
         do n=1,nuserdata
@@ -5110,8 +5257,8 @@ c   Go to Base node, read CFL3DTimeStep array from UserDefinedData
         do n=1,nuserdata
           if(fieldname(n) .eq. 'CFL3DTimeStep') goto 101
         enddo
-        write(11,'('' WARNING. No CFL3DTimeStep node exists'')')
-        write(11,'(''   setting dtold=dt and continuing'')')
+        write(901,'('' WARNING. No CFL3DTimeStep node exists'')')
+        write(901,'(''   setting dtold=dt and continuing'')')
         dtold=dt
         goto 201
  101    continue
@@ -5475,7 +5622,7 @@ c   Check over all zones
       call cg_nfields_f(iccg, ibase, igrid, nsoluse, nfields, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nfields .gt. numfield) then
-        write(11,'('' Need to increase numfield parameter'',
+        write(901,'('' Need to increase numfield parameter'',
      +    '' in getiflagg'')')
         stop
       end if
@@ -5500,7 +5647,7 @@ c   needs to be read)
       if (nmotions .eq. 0) then
         continue
       else if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
+        write(901,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       else
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -5510,8 +5657,8 @@ c         Find out how many arrays
           call cg_narrays_f(narrays,ier)
           if (ier .ne. 0) call cg_error_exit_f
           if (narrays .gt. numfield) then
-            write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
-            write(11,'(''   increase numfield in getiflagg'')')
+            write(901,'('' Error.  Too many RigidGridMotion arrays.'')')
+            write(901,'(''   increase numfield in getiflagg'')')
             stop
           end if
           do n=1,narrays
@@ -5523,7 +5670,7 @@ c         Find out how many arrays
           do n=1,narrays
             if (fieldname(n) .eq. 'RigidGridMotionPointers') goto 101
           enddo
-          write(11,'('' No RigidGridMotionPointers exists... assume'',
+          write(901,'('' No RigidGridMotionPointers exists... assume'',
      +      '' restart from non-moving grid case'')')
           imov=0
  101      continue
@@ -5624,7 +5771,7 @@ c   Go to Zone node and create a user-defined node
       call cg_nuser_data_f(nuserdata, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .gt. numnames) then
-        write(11,'('' Error... numnames too small in writebcs'')')
+        write(901,'('' Error... numnames too small in writebcs'')')
         stop
       end if
       do n=1,nuserdata
@@ -5817,8 +5964,8 @@ c   Go to Zone and look for UserDefinedData
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .gt. numnames) then
-        write(11,'('' WARNING... numnames too small in readbcs'')')
-        write(11,'(''   not changing default BCs... continuing'')')
+        write(901,'('' WARNING... numnames too small in readbcs'')')
+        write(901,'(''   not changing default BCs... continuing'')')
         return
       end if
       if (nuserdata .ne. 0) then
@@ -5830,26 +5977,26 @@ c   Go to Zone and look for UserDefinedData
           if(name(n) .eq. 'CFL3DBoundaryValues') goto 1001
         enddo
 c   No CFL3DBoundaryValues... Try reading BCs from old location
-        write(11,'('' no BC data exists in UserDefinedData nodes'')')
+        write(901,'('' no BC data exists in UserDefinedData nodes'')')
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      .    'ZoneIterativeData_t',1,'end')
         if (ier .ne. 0) then
-          write(11,'('' WARNING... BCs not in ZoneIterativeData or'',
+          write(901,'('' WARNING... BCs not in ZoneIterativeData or'',
      +      '' a UserDefinedData array'')')
-          write(11,'(''   not changing default BCs... continuing'')')
+          write(901,'(''   not changing default BCs... continuing'')')
           return
         end if
         call cg_narrays_f(narrays,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (narrays .gt. numnames) then
-          write(11,'('' WARNING.  Too many ZoneIterativeData'',
+          write(901,'('' WARNING.  Too many ZoneIterativeData'',
      +     '' arrays.'')')
-          write(11,'(''   not changing default BCs... continuing'')')
+          write(901,'(''   not changing default BCs... continuing'')')
           return
         end if
-        write(11,'('' Reading BC info from ZoneIterativeData (old'',
+        write(901,'('' Reading BC info from ZoneIterativeData (old'',
      +    '' method)'')')
-        write(11,'(''  ... it will be moved to new location of'',
+        write(901,'(''  ... it will be moved to new location of'',
      +    '' UserDefinedData node CFL3DBoundaryValues when written'')')
         do n=1,narrays
           call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
@@ -5858,16 +6005,16 @@ c   No CFL3DBoundaryValues... Try reading BCs from old location
         goto 1002
 c   Read BCs from new location
  1001   continue
-        write(11,'('' Reading BC info from UserDefinedData'')')
+        write(901,'('' Reading BC info from UserDefinedData'')')
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      +    'UserDefinedData_t',n,'end')
         if (ier .ne. 0) call cg_error_exit_f
         call cg_narrays_f(narrays,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (narrays .gt. numnames) then
-          write(11,'('' WARNING.  Too many arrays in'',
+          write(901,'('' WARNING.  Too many arrays in'',
      +      '' CFL3DBoundaryValues...'')')
-          write(11,'(''   not changing default BCs... continuing'')')
+          write(901,'(''   not changing default BCs... continuing'')')
           return
         end if
         do n=1,narrays
@@ -5877,26 +6024,26 @@ c   Read BCs from new location
  1002   continue
       else
 c   Try reading BCs from old location
-        write(11,'('' no BC data exists in UserDefinedData nodes'')')
+        write(901,'('' no BC data exists in UserDefinedData nodes'')')
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
      .    'ZoneIterativeData_t',1,'end')
         if (ier .ne. 0) then
-          write(11,'('' WARNING... BCs not in ZoneIterativeData or'',
+          write(901,'('' WARNING... BCs not in ZoneIterativeData or'',
      +      '' a UserDefinedData array'')')
-          write(11,'(''   not changing default BCs... continuing'')')
+          write(901,'(''   not changing default BCs... continuing'')')
           return
         end if
         call cg_narrays_f(narrays,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (narrays .gt. numnames) then
-          write(11,'('' WARNING.  Too many ZoneIterativeData'',
+          write(901,'('' WARNING.  Too many ZoneIterativeData'',
      +      '' arrays.'')')
-          write(11,'(''   not changing default BCs... continuing'')')
+          write(901,'(''   not changing default BCs... continuing'')')
           return
         end if
-        write(11,'('' Reading BC info from ZoneIterativeData (old'',
+        write(901,'('' Reading BC info from ZoneIterativeData (old'',
      +    '' method)'')')
-        write(11,'(''  ... it will be moved to new location of'',
+        write(901,'(''  ... it will be moved to new location of'',
      +    '' UserDefinedData node CFL3DBoundaryValues when written'')')
         do n=1,narrays
           call cg_array_info_f(n,name(n),itype,idatadim,idimvec,ier)
@@ -5909,8 +6056,8 @@ c   Get BC qi0
       do n=1,narrays
         if (name(n) .eq. 'Qi0_CFL3D') goto 101
       enddo
-      write(11,'('' WARNING. No Qi0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Qi0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 201
  101  continue
       if (idouble .eq. 1) then
@@ -5926,8 +6073,8 @@ c   Get BC qj0
       do n=1,narrays
         if (name(n) .eq. 'Qj0_CFL3D') goto 102
       enddo
-      write(11,'('' WARNING. No Qj0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Qj0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 202
  102  continue
       if (idouble .eq. 1) then
@@ -5942,8 +6089,8 @@ c   Get BC qk0
       do n=1,narrays
         if (name(n) .eq. 'Qk0_CFL3D') goto 103
       enddo
-      write(11,'('' WARNING. No Qk0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Qk0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 203
  103  continue
       if (idouble .eq. 1) then
@@ -5959,8 +6106,8 @@ c   Get BC vi0
       do n=1,narrays
         if (name(n) .eq. 'Vi0_CFL3D') goto 104
       enddo
-      write(11,'('' WARNING. No Vi0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Vi0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 204
  104  continue
       if (idouble .eq. 1) then
@@ -5976,8 +6123,8 @@ c   Get BC vj0
       do n=1,narrays
         if (name(n) .eq. 'Vj0_CFL3D') goto 105
       enddo
-      write(11,'('' WARNING. No Vj0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Vj0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 205
  105  continue
       if (idouble .eq. 1) then
@@ -5992,8 +6139,8 @@ c   Get BC vk0
       do n=1,narrays
         if (name(n) .eq. 'Vk0_CFL3D') goto 106
       enddo
-      write(11,'('' WARNING. No Vk0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Vk0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 206
  106  continue
       if (idouble .eq. 1) then
@@ -6009,8 +6156,8 @@ c   Get BC ti0
       do n=1,narrays
         if (name(n) .eq. 'Ti0_CFL3D') goto 107
       enddo
-      write(11,'('' WARNING. No Ti0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Ti0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 207
  107  continue
       if (idouble .eq. 1) then
@@ -6026,8 +6173,8 @@ c   Get BC tj0
       do n=1,narrays
         if (name(n) .eq. 'Tj0_CFL3D') goto 108
       enddo
-      write(11,'('' WARNING. No Tj0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Tj0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 208
  108  continue
       if (idouble .eq. 1) then
@@ -6042,8 +6189,8 @@ c   Get BC tk0
       do n=1,narrays
         if (name(n) .eq. 'Tk0_CFL3D') goto 109
       enddo
-      write(11,'('' WARNING. No Tk0_CFL3D node exists'')')
-      write(11,'(''   keeping default and continuing'')')
+      write(901,'('' WARNING. No Tk0_CFL3D node exists'')')
+      write(901,'(''   keeping default and continuing'')')
       goto 209
  109  continue
       if (idouble .eq. 1) then
@@ -6466,7 +6613,7 @@ c   Find out how many RigidGridMotion_t nodes there are
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) return
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
+        write(901,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       end if
 c   Go to RigidGridMotion_t node
@@ -6477,8 +6624,8 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
-        write(11,'(''   increase numnames in rgrdmov'')')
+        write(901,'('' Error.  Too many RigidGridMotion arrays.'')')
+        write(901,'(''   increase numnames in rgrdmov'')')
         stop
       end if
       do n=1,narrays
@@ -6489,7 +6636,7 @@ c   Get Origin
       do n=1,narrays
         if (name(n) .eq. 'OriginLocation') goto 101
       enddo
-      write(11,'('' Error. No OriginLocation node exists'')')
+      write(901,'('' Error. No OriginLocation node exists'')')
       stop
  101  continue
       if (idouble .eq. 1) then
@@ -6518,7 +6665,7 @@ c   Get Thetas
       do n=1,narrays
         if (name(n) .eq. 'RigidRotationAngle') goto 102
       enddo
-      write(11,'('' Error. No RigidRotationAngle node exists'')')
+      write(901,'('' Error. No RigidRotationAngle node exists'')')
       stop
  102  continue
       if (idouble .eq. 1) then
@@ -6540,14 +6687,14 @@ c
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .ne. 1) then
-        write(11,'('' Error... should be 1 user data node in'', 
+        write(901,'('' Error... should be 1 user data node in'', 
      +    '' RigidGridMotion'')')
         stop
       else
         call cg_user_data_read_f(1,name(1),ier)
         if (ier .ne. 0) call cg_error_exit_f
         if(name(1) .eq. 'CFL3DParameters') goto 1004
-        write(11,'('' Error. No CFL3DParameters node exists'')')
+        write(901,'('' Error. No CFL3DParameters node exists'')')
         stop
  1004   continue
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -6559,8 +6706,8 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
-        write(11,'(''   increase numnames in rgrdmov'')')
+        write(901,'('' Error.  Too many RigidGridMotion arrays.'')')
+        write(901,'(''   increase numnames in rgrdmov'')')
         stop
       end if
       do n=1,narrays
@@ -6572,7 +6719,7 @@ c   Get Rfreqt
       do n=1,narrays
         if (name(n) .eq. 'Rfreqt') goto 103
       enddo
-      write(11,'('' Error. No Rfreqt node exists'')')
+      write(901,'('' Error. No Rfreqt node exists'')')
       stop
  103  continue
       if (idouble .eq. 1) then
@@ -6586,7 +6733,7 @@ c   Get Veltrans
       do n=1,narrays
         if (name(n) .eq. 'Veltrans') goto 104
       enddo
-      write(11,'('' Error. No Veltrans node exists'')')
+      write(901,'('' Error. No Veltrans node exists'')')
       stop
  104  continue
       if (idouble .eq. 1) then
@@ -6603,7 +6750,7 @@ c   Get Dmx
       do n=1,narrays
         if (name(n) .eq. 'Dmx') goto 105
       enddo
-      write(11,'('' Error. No Dmx node exists'')')
+      write(901,'('' Error. No Dmx node exists'')')
       stop
  105  continue
       if (idouble .eq. 1) then
@@ -6620,7 +6767,7 @@ c   Get Rfreqtmc
       do n=1,narrays
         if (name(n) .eq. 'Rfreqtmc') goto 106
       enddo
-      write(11,'('' Error. No Rfreqtmc node exists'')')
+      write(901,'('' Error. No Rfreqtmc node exists'')')
       stop
  106  continue
       if (idouble .eq. 1) then
@@ -6634,7 +6781,7 @@ c   Get Origmc
       do n=1,narrays
         if (name(n) .eq. 'Origmc') goto 107
       enddo
-      write(11,'('' Error. No Origmc node exists'')')
+      write(901,'('' Error. No Origmc node exists'')')
       stop
  107  continue
       if (idouble .eq. 1) then
@@ -6651,7 +6798,7 @@ c   Get Orig0mc
       do n=1,narrays
         if (name(n) .eq. 'Orig0mc') goto 108
       enddo
-      write(11,'('' Error. No Orig0mc node exists'')')
+      write(901,'('' Error. No Orig0mc node exists'')')
       stop
  108  continue
       if (idouble .eq. 1) then
@@ -6668,7 +6815,7 @@ c   Get Veltransmc
       do n=1,narrays
         if (name(n) .eq. 'Veltransmc') goto 109
       enddo
-      write(11,'('' Error. No Veltransmc node exists'')')
+      write(901,'('' Error. No Veltransmc node exists'')')
       stop
  109  continue
       if (idouble .eq. 1) then
@@ -6685,7 +6832,7 @@ c   Get Mc
       do n=1,narrays
         if (name(n) .eq. 'Mc') goto 110
       enddo
-      write(11,'('' Error. No Mc node exists'')')
+      write(901,'('' Error. No Mc node exists'')')
       stop
  110  continue
       if (idouble .eq. 1) then
@@ -6702,7 +6849,7 @@ c   Get Dmxmc
       do n=1,narrays
         if (name(n) .eq. 'Dmxmc') goto 111
       enddo
-      write(11,'('' Error. No Dmxmc node exists'')')
+      write(901,'('' Error. No Dmxmc node exists'')')
       stop
  111  continue
       if (idouble .eq. 1) then
@@ -6719,7 +6866,7 @@ c   Get Rfreqr
       do n=1,narrays
         if (name(n) .eq. 'Rfreqr') goto 112
       enddo
-      write(11,'('' Error. No Rfreqr node exists'')')
+      write(901,'('' Error. No Rfreqr node exists'')')
       stop
  112  continue
       if (idouble .eq. 1) then
@@ -6733,7 +6880,7 @@ c   Get Omega
       do n=1,narrays
         if (name(n) .eq. 'Omega') goto 113
       enddo
-      write(11,'('' Error. No Omega node exists'')')
+      write(901,'('' Error. No Omega node exists'')')
       stop
  113  continue
       if (idouble .eq. 1) then
@@ -6750,7 +6897,7 @@ c   Get Dthmx
       do n=1,narrays
         if (name(n) .eq. 'Dthmx') goto 114
       enddo
-      write(11,'('' Error. No Dthmx node exists'')')
+      write(901,'('' Error. No Dthmx node exists'')')
       stop
  114  continue
       if (idouble .eq. 1) then
@@ -6767,7 +6914,7 @@ c   Get Rfreqrmc
       do n=1,narrays
         if (name(n) .eq. 'Rfreqrmc') goto 115
       enddo
-      write(11,'('' Error. No Rfreqrmc node exists'')')
+      write(901,'('' Error. No Rfreqrmc node exists'')')
       stop
  115  continue
       if (idouble .eq. 1) then
@@ -6781,7 +6928,7 @@ c   Get Thetamc
       do n=1,narrays
         if (name(n) .eq. 'Thetamc') goto 116
       enddo
-      write(11,'('' Error. No Thetamc node exists'')')
+      write(901,'('' Error. No Thetamc node exists'')')
       stop
  116  continue
       if (idouble .eq. 1) then
@@ -6798,7 +6945,7 @@ c   Get Omegamc
       do n=1,narrays
         if (name(n) .eq. 'Omegamc') goto 117
       enddo
-      write(11,'('' Error. No Omegamc node exists'')')
+      write(901,'('' Error. No Omegamc node exists'')')
       stop
  117  continue
       if (idouble .eq. 1) then
@@ -6815,7 +6962,7 @@ c   Get Dthmxmc
       do n=1,narrays
         if (name(n) .eq. 'Dthmxmc') goto 118
       enddo
-      write(11,'('' Error. No Dthmxmc node exists'')')
+      write(901,'('' Error. No Dthmxmc node exists'')')
       stop
  118  continue
       if (idouble .eq. 1) then
@@ -6832,7 +6979,7 @@ c   Get Time2
       do n=1,narrays
         if (name(n) .eq. 'Time2') goto 119
       enddo
-      write(11,'('' Error. No Time2 node exists'')')
+      write(901,'('' Error. No Time2 node exists'')')
       stop
  119  continue
       if (idouble .eq. 1) then
@@ -6846,7 +6993,7 @@ c   Get Time2mc
       do n=1,narrays
         if (name(n) .eq. 'Time2mc') goto 120
       enddo
-      write(11,'('' Error. No Time2mc node exists'')')
+      write(901,'('' Error. No Time2mc node exists'')')
       stop
  120  continue
       if (idouble .eq. 1) then
@@ -6860,7 +7007,7 @@ c   Get Dtvar
       do n=1,narrays
         if (name(n) .eq. 'Dtvar') goto 121
       enddo
-      write(11,'('' Error. No Dtvar node exists'')')
+      write(901,'('' Error. No Dtvar node exists'')')
       stop
  121  continue
       if (idouble .eq. 1) then
@@ -6874,7 +7021,7 @@ c   Get Itrans
       do n=1,narrays
         if (name(n) .eq. 'Itrans') goto 122
       enddo
-      write(11,'('' Error. No Itrans node exists'')')
+      write(901,'('' Error. No Itrans node exists'')')
       stop
  122  continue
       call cg_array_read_as_f(n,Integer,itrans,ier)
@@ -6884,7 +7031,7 @@ c   Get Itransmc
       do n=1,narrays
         if (name(n) .eq. 'Itransmc') goto 123
       enddo
-      write(11,'('' Error. No Itransmc node exists'')')
+      write(901,'('' Error. No Itransmc node exists'')')
       stop
  123  continue
       call cg_array_read_as_f(n,Integer,itransmc,ier)
@@ -6894,7 +7041,7 @@ c   Get Irotat
       do n=1,narrays
         if (name(n) .eq. 'Irotat') goto 124
       enddo
-      write(11,'('' Error. No Irotat node exists'')')
+      write(901,'('' Error. No Irotat node exists'')')
       stop
  124  continue
       call cg_array_read_as_f(n,Integer,irotat,ier)
@@ -6904,7 +7051,7 @@ c   Get Irotatmc
       do n=1,narrays
         if (name(n) .eq. 'Irotatmc') goto 125
       enddo
-      write(11,'('' Error. No Irotatmc node exists'')')
+      write(901,'('' Error. No Irotatmc node exists'')')
       stop
  125  continue
       call cg_array_read_as_f(n,Integer,irotatmc,ier)
@@ -6940,13 +7087,13 @@ c   Find out how many RigidGridMotion_t nodes there are
       call cg_n_rigid_motions_f(iccg,ibase,igrid,nmotions,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
-        write(11,'('' No RigidGridMotion nodes, igrid='',i5)') igrid
-        write(11,'(''   setting iuns=0 and continuing'')')
+        write(901,'('' No RigidGridMotion nodes, igrid='',i5)') igrid
+        write(901,'(''   setting iuns=0 and continuing'')')
         iuns=0
         return
       end if
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
+        write(901,'('' Error, more than 1 RigidGridMotion_t nodes!'')')
         stop
       end if
 c   Go to RigidGridMotion_t node
@@ -6957,14 +7104,14 @@ c   Find out how many UserDefinedData_t nodes there are
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .ne. 1) then
-        write(11,'('' Error... should be 1 user data node in'',
+        write(901,'('' Error... should be 1 user data node in'',
      +    '' RigidGridMotion'')')
         stop
       else
         call cg_user_data_read_f(1,name(1),ier)
         if (ier .ne. 0) call cg_error_exit_f
         if(name(1) .eq. 'CFL3DParameters') goto 1004
-        write(11,'('' Error. No CFL3DParameters node exists'')')
+        write(901,'('' Error. No CFL3DParameters node exists'')')
         stop
  1004   continue
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -6975,8 +7122,8 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many RigidGridMotion arrays.'')')
-        write(11,'(''   increase numnames in readiuns'')')
+        write(901,'('' Error.  Too many RigidGridMotion arrays.'')')
+        write(901,'(''   increase numnames in readiuns'')')
         stop
       end if
       do n=1,narrays
@@ -6987,7 +7134,7 @@ c   Get Iuns
       do n=1,narrays
         if (name(n) .eq. 'Iuns') goto 101
       enddo
-      write(11,'('' Error. No Iuns node exists'')')
+      write(901,'('' Error. No Iuns node exists'')')
       stop
  101  continue
       call cg_array_read_as_f(n,Integer,iuns,ier)
@@ -7284,7 +7431,7 @@ c   First, get "factor" in case want to write every other point, etc
         nfac=16
         string1='Every-16th-gridpoint written (4 levels down)'
       else
-        write(11,'('' Error.  Desired grid level not supported'')')
+        write(901,'('' Error.  Desired grid level not supported'')')
         stop
       end if
       if(i2d .eq. 1) then
@@ -7530,13 +7677,13 @@ c   Find out how many ArbitraryGridMotion_t nodes there are
       call cg_n_arbitrary_motions_f(iccg,ibase,igrid,nmotions,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
-        write(11,'('' Error.  No ArbitraryGridMotion nodes,'',
+        write(901,'('' Error.  No ArbitraryGridMotion nodes,'',
      +   '' igrid='',i5)') igrid
-        write(11,'(''   cannot get nsegdfrm'')')
+        write(901,'(''   cannot get nsegdfrm'')')
         stop
       end if
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 ArbitraryGridMotion_t'',
+        write(901,'('' Error, more than 1 ArbitraryGridMotion_t'',
      +   '' nodes!'')')
         stop
       end if
@@ -7548,14 +7695,14 @@ c   Find out how many UserDefinedData_t nodes there are
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .ne. 1) then
-        write(11,'('' Error... should be 1 user data node in'',
+        write(901,'('' Error... should be 1 user data node in'',
      +    '' ArbitraryGridMotion'')')
         stop
       else
         call cg_user_data_read_f(1,name(1),ier)
         if (ier .ne. 0) call cg_error_exit_f
         if(name(1) .eq. 'CFL3DParameters') goto 1004
-        write(11,'('' Error. No CFL3DParameters node exists'')')
+        write(901,'('' Error. No CFL3DParameters node exists'')')
         stop
  1004   continue
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -7566,8 +7713,8 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
-        write(11,'(''   increase numnames in readiuns'')')
+        write(901,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
+        write(901,'(''   increase numnames in readiuns'')')
         stop
       end if
       do n=1,narrays
@@ -7579,7 +7726,7 @@ c   Get Nsegdfrm
       do n=1,narrays
         if (name(n) .eq. 'Nsegdfrm') goto 101
       enddo
-      write(11,'('' Error. No Nsegdfrm node exists'')')
+      write(901,'('' Error. No Nsegdfrm node exists'')')
       stop
  101  continue
       call cg_array_read_as_f(n,Integer,nsegdfrm,ier)
@@ -7686,13 +7833,13 @@ c   Find out how many ArbitraryGridMotion_t nodes there are
       call cg_n_arbitrary_motions_f(iccg,ibase,igrid,nmotions,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nmotions .eq. 0) then
-        write(11,'('' Error.  No ArbitraryGridMotion nodes,'',
+        write(901,'('' Error.  No ArbitraryGridMotion nodes,'',
      +   '' igrid='',i5)') igrid
-        write(11,'(''   cannot get nsegdfrm'')')
+        write(901,'(''   cannot get nsegdfrm'')')
         stop
       end if
       if (nmotions .gt. 1) then
-        write(11,'('' Error, more than 1 ArbitraryGridMotion_t'',
+        write(901,'('' Error, more than 1 ArbitraryGridMotion_t'',
      +   '' nodes!'')')
         stop
       end if
@@ -7704,14 +7851,14 @@ c   Find out how many UserDefinedData_t nodes there are
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .ne. 1) then
-        write(11,'('' Error... should be 1 user data node in'',
+        write(901,'('' Error... should be 1 user data node in'',
      +    '' ArbitraryGridMotion'')')
         stop
       else
         call cg_user_data_read_f(1,name(1),ier)
         if (ier .ne. 0) call cg_error_exit_f
         if(name(1) .eq. 'CFL3DParameters') goto 1004
-        write(11,'('' Error. No CFL3DParameters node exists'')')
+        write(901,'('' Error. No CFL3DParameters node exists'')')
         stop
  1004   continue
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -7722,8 +7869,8 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
-        write(11,'(''   increase numnames in rdeform'')')
+        write(901,'('' Error.  Too many ArbitraryGridMotion arrays.'')')
+        write(901,'(''   increase numnames in rdeform'')')
         stop
       end if
       do n=1,narrays
@@ -7735,7 +7882,7 @@ c   Get Idefrm
       do n=1,narrays
         if (name(n) .eq. 'Idefrm') goto 101
       enddo
-      write(11,'('' Error. No Idefrm node exists'')')
+      write(901,'('' Error. No Idefrm node exists'')')
       stop
  101  continue
       call cg_array_read_as_f(n,Integer,idefrm,ier)
@@ -7745,7 +7892,7 @@ c   Get Utrnsae
       do n=1,narrays
         if (name(n) .eq. 'Utrnsae') goto 102
       enddo
-      write(11,'('' Error. No Utrnsae node exists'')')
+      write(901,'('' Error. No Utrnsae node exists'')')
       stop
  102  continue
       if (idouble .eq. 1) then
@@ -7759,7 +7906,7 @@ c   Get Vtrnsae
       do n=1,narrays
         if (name(n) .eq. 'Vtrnsae') goto 103
       enddo
-      write(11,'('' Error. No Vtrnsae node exists'')')
+      write(901,'('' Error. No Vtrnsae node exists'')')
       stop
  103  continue
       if (idouble .eq. 1) then
@@ -7773,7 +7920,7 @@ c   Get Wtrnsae
       do n=1,narrays
         if (name(n) .eq. 'Wtrnsae') goto 104
       enddo
-      write(11,'('' Error. No Wtrnsae node exists'')')
+      write(901,'('' Error. No Wtrnsae node exists'')')
       stop
  104  continue
       if (idouble .eq. 1) then
@@ -7787,7 +7934,7 @@ c   Get Omgxae
       do n=1,narrays
         if (name(n) .eq. 'Omgxae') goto 105
       enddo
-      write(11,'('' Error. No Omgxae node exists'')')
+      write(901,'('' Error. No Omgxae node exists'')')
       stop
  105  continue
       if (idouble .eq. 1) then
@@ -7801,7 +7948,7 @@ c   Get Omgyae
       do n=1,narrays
         if (name(n) .eq. 'Omgyae') goto 106
       enddo
-      write(11,'('' Error. No Omgyae node exists'')')
+      write(901,'('' Error. No Omgyae node exists'')')
       stop
  106  continue
       if (idouble .eq. 1) then
@@ -7815,7 +7962,7 @@ c   Get Omgzae
       do n=1,narrays
         if (name(n) .eq. 'Omgzae') goto 107
       enddo
-      write(11,'('' Error. No Omgzae node exists'')')
+      write(901,'('' Error. No Omgzae node exists'')')
       stop
  107  continue
       if (idouble .eq. 1) then
@@ -7829,7 +7976,7 @@ c   Get Xorgae
       do n=1,narrays
         if (name(n) .eq. 'Xorgae') goto 108
       enddo
-      write(11,'('' Error. No Xorgae node exists'')')
+      write(901,'('' Error. No Xorgae node exists'')')
       stop
  108  continue
       if (idouble .eq. 1) then
@@ -7843,7 +7990,7 @@ c   Get Yorgae
       do n=1,narrays
         if (name(n) .eq. 'Yorgae') goto 109
       enddo
-      write(11,'('' Error. No Yorgae node exists'')')
+      write(901,'('' Error. No Yorgae node exists'')')
       stop
  109  continue
       if (idouble .eq. 1) then
@@ -7857,7 +8004,7 @@ c   Get Zorgae
       do n=1,narrays
         if (name(n) .eq. 'Zorgae') goto 110
       enddo
-      write(11,'('' Error. No Zorgae node exists'')')
+      write(901,'('' Error. No Zorgae node exists'')')
       stop
  110  continue
       if (idouble .eq. 1) then
@@ -7871,7 +8018,7 @@ c   Get Thtxae
       do n=1,narrays
         if (name(n) .eq. 'Thtxae') goto 111
       enddo
-      write(11,'('' Error. No Thtxae node exists'')')
+      write(901,'('' Error. No Thtxae node exists'')')
       stop
  111  continue
       if (idouble .eq. 1) then
@@ -7885,7 +8032,7 @@ c   Get Thtyae
       do n=1,narrays
         if (name(n) .eq. 'Thtyae') goto 112
       enddo
-      write(11,'('' Error. No Thtyae node exists'')')
+      write(901,'('' Error. No Thtyae node exists'')')
       stop
  112  continue
       if (idouble .eq. 1) then
@@ -7899,7 +8046,7 @@ c   Get Thtzae
       do n=1,narrays
         if (name(n) .eq. 'Thtzae') goto 113
       enddo
-      write(11,'('' Error. No Thtzae node exists'')')
+      write(901,'('' Error. No Thtzae node exists'')')
       stop
  113  continue
       if (idouble .eq. 1) then
@@ -7913,7 +8060,7 @@ c   Get Rfrqtae
       do n=1,narrays
         if (name(n) .eq. 'Rfrqtae') goto 114
       enddo
-      write(11,'('' Error. No Rfrqtae node exists'')')
+      write(901,'('' Error. No Rfrqtae node exists'')')
       stop
  114  continue
       if (idouble .eq. 1) then
@@ -7927,7 +8074,7 @@ c   Get Rfrqrae
       do n=1,narrays
         if (name(n) .eq. 'Rfrqrae') goto 115
       enddo
-      write(11,'('' Error. No Rfrqrae node exists'')')
+      write(901,'('' Error. No Rfrqrae node exists'')')
       stop
  115  continue
       if (idouble .eq. 1) then
@@ -7941,7 +8088,7 @@ c   Get Icsi
       do n=1,narrays
         if (name(n) .eq. 'Icsi') goto 116
       enddo
-      write(11,'('' Error. No Icsi node exists'')')
+      write(901,'('' Error. No Icsi node exists'')')
       stop
  116  continue
       call cg_array_read_as_f(n,Integer,icsi,ier)
@@ -7951,7 +8098,7 @@ c   Get Icsf
       do n=1,narrays
         if (name(n) .eq. 'Icsf') goto 117
       enddo
-      write(11,'('' Error. No Icsf node exists'')')
+      write(901,'('' Error. No Icsf node exists'')')
       stop
  117  continue
       call cg_array_read_as_f(n,Integer,icsf,ier)
@@ -7961,7 +8108,7 @@ c   Get Jcsi
       do n=1,narrays
         if (name(n) .eq. 'Jcsi') goto 118
       enddo
-      write(11,'('' Error. No Jcsi node exists'')')
+      write(901,'('' Error. No Jcsi node exists'')')
       stop
  118  continue
       call cg_array_read_as_f(n,Integer,jcsi,ier)
@@ -7971,7 +8118,7 @@ c   Get Jcsf
       do n=1,narrays
         if (name(n) .eq. 'Jcsf') goto 119
       enddo
-      write(11,'('' Error. No Jcsf node exists'')')
+      write(901,'('' Error. No Jcsf node exists'')')
       stop
  119  continue
       call cg_array_read_as_f(n,Integer,jcsf,ier)
@@ -7981,7 +8128,7 @@ c   Get Kcsi
       do n=1,narrays
         if (name(n) .eq. 'Kcsi') goto 120
       enddo
-      write(11,'('' Error. No Kcsi node exists'')')
+      write(901,'('' Error. No Kcsi node exists'')')
       stop
  120  continue
       call cg_array_read_as_f(n,Integer,kcsi,ier)
@@ -7991,7 +8138,7 @@ c   Get Kcsf
       do n=1,narrays
         if (name(n) .eq. 'Kcsf') goto 121
       enddo
-      write(11,'('' Error. No Kcsf node exists'')')
+      write(901,'('' Error. No Kcsf node exists'')')
       stop
  121  continue
       call cg_array_read_as_f(n,Integer,kcsf,ier)
@@ -8009,7 +8156,7 @@ c   First, get "factor" in case want to read every other point, etc
       else if(jdim.eq.(jdima+15)/16 .and. kdim.eq.(kdima+15)/16) then
         nfac=16
       else
-        write(11,'('' Error.  Desired grid level not supported'')')
+        write(901,'('' Error.  Desired grid level not supported'')')
         stop
       end if
       if(i2d .eq. 1) then
@@ -8022,7 +8169,7 @@ c   Find out how many grids there are
       call cg_ngrids_f(iccg,ibase,igrid,ngrids,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (ngrids .ne. 3) then
-        write(11,'('' Error.  Expecting 3 grids for deforming'',
+        write(901,'('' Error.  Expecting 3 grids for deforming'',
      +   '' info'')')
         stop
       end if
@@ -8035,7 +8182,7 @@ c   Get MovedGrid info
       do n=1,ngrids
         if (nameg(n) .eq. 'MovedGrid') goto 122
       enddo
-      write(11,'('' Error. No MovedGrid node exists'')')
+      write(901,'('' Error. No MovedGrid node exists'')')
       stop
  122  continue
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -8046,7 +8193,7 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 3) then
-        write(11,'('' Error.  Expecting exactly 3 arrays under'',
+        write(901,'('' Error.  Expecting exactly 3 arrays under'',
      +   '' MovedGrid.'')')
         stop
       end if
@@ -8058,7 +8205,7 @@ c   Get X
       do n=1,narrays
         if (name(n) .eq. 'CoordinateX') goto 123
       enddo
-      write(11,'('' Error. No CoordinateX node exists'',
+      write(901,'('' Error. No CoordinateX node exists'',
      +  '' under MovedGrid'')')
       stop
  123  continue
@@ -8074,7 +8221,7 @@ c   Get Y
       do n=1,narrays
         if (name(n) .eq. 'CoordinateY') goto 124
       enddo
-      write(11,'('' Error. No CoordinateY node exists'',
+      write(901,'('' Error. No CoordinateY node exists'',
      +  '' under MovedGrid'')')
       stop
  124  continue
@@ -8095,7 +8242,7 @@ c   Get Z
       do n=1,narrays
         if (name(n) .eq. 'CoordinateZ') goto 125
       enddo
-      write(11,'('' Error. No CoordinateZ node exists'',
+      write(901,'('' Error. No CoordinateZ node exists'',
      +  '' under MovedGrid'')')
       stop
  125  continue
@@ -8117,7 +8264,7 @@ c   Get MovedGridLastDT info
       do n=1,ngrids
         if (nameg(n) .eq. 'MovedGridLastDT') goto 126
       enddo
-      write(11,'('' Error. No MovedGridLastDT node exists'')')
+      write(901,'('' Error. No MovedGridLastDT node exists'')')
       stop
  126  continue
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -8127,7 +8274,7 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .ne. 3) then
-        write(11,'('' Error.  Expecting exactly 3 arrays under'',
+        write(901,'('' Error.  Expecting exactly 3 arrays under'',
      +   '' MovedGridLastDT.'')')
         stop
       end if
@@ -8139,7 +8286,7 @@ c   Get X
       do n=1,narrays
         if (name(n) .eq. 'CoordinateX') goto 127
       enddo
-      write(11,'('' Error. No CoordinateX node exists'',
+      write(901,'('' Error. No CoordinateX node exists'',
      +  '' under MovedGrid'')')
       stop
  127  continue
@@ -8155,7 +8302,7 @@ c   Get Y
       do n=1,narrays
         if (name(n) .eq. 'CoordinateY') goto 128
       enddo
-      write(11,'('' Error. No CoordinateY node exists'',
+      write(901,'('' Error. No CoordinateY node exists'',
      +  '' under MovedGrid'')')
       stop
  128  continue
@@ -8176,7 +8323,7 @@ c   Get Z
       do n=1,narrays
         if (name(n) .eq. 'CoordinateZ') goto 129
       enddo
-      write(11,'('' Error. No CoordinateZ node exists'',
+      write(901,'('' Error. No CoordinateZ node exists'',
      +  '' under MovedGrid'')')
       stop
  129  continue
@@ -8247,7 +8394,7 @@ c   Go to Base node, write CFL3DAeroModeData array as UserDefinedData
       call cg_nuser_data_f(nuserdata, ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .gt. numnames) then
-        write(11,'('' Error... numnames too small in waeromode'')')
+        write(901,'('' Error... numnames too small in waeromode'')')
         stop
       end if
       do n=1,nuserdata
@@ -8379,9 +8526,9 @@ c   Find out how many UserDefinedData_t nodes there are
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .gt. numnames) then
-        write(11,'('' Error... numnames not big enough'',
+        write(901,'('' Error... numnames not big enough'',
      +    '' in raeromode'')')
-        write(11,'(''   increase numnames in raeromode'')')
+        write(901,'(''   increase numnames in raeromode'')')
         stop
       else
         do n=1,nuserdata
@@ -8389,7 +8536,7 @@ c   Find out how many UserDefinedData_t nodes there are
           if (ier .ne. 0) call cg_error_exit_f
           if(name(n) .eq. 'CFL3DAeroModeData') goto 100
         enddo
-        write(11,'('' Error. No CFL3DAeroModeData node exists'')')
+        write(901,'('' Error. No CFL3DAeroModeData node exists'')')
         stop
  100    continue
         call cg_goto_f(iccg,ibase,ier,'UserDefinedData_t',n,'end')
@@ -8399,9 +8546,9 @@ c   Find out how many arrays
       call cg_narrays_f(narrays,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (narrays .gt. numnames) then
-        write(11,'('' Error.  Too many arrays under'',
+        write(901,'('' Error.  Too many arrays under'',
      +    '' CFL3DAeroModeData'')')
-        write(11,'(''   increase numnames in raeromode'')')
+        write(901,'(''   increase numnames in raeromode'')')
         stop
       end if
       do n=1,narrays
@@ -8413,11 +8560,11 @@ c   Get Timekeep
       do n=1,narrays
         if (name(n) .eq. 'Timekeep') goto 101
       enddo
-      write(11,'('' Error. No Timekeep node exists'')')
+      write(901,'('' Error. No Timekeep node exists'')')
       stop
  101  continue
       if (idimvec(n) .ne. ntt) then
-        write(11,'('' Error, Timekeep is wrong size'')')
+        write(901,'('' Error, Timekeep is wrong size'')')
         stop
       end if
       if (idouble .eq. 1) then
@@ -8431,11 +8578,11 @@ c   Get Xxn
       do n=1,narrays
         if (name(n) .eq. 'Xxn') goto 201
       enddo
-      write(11,'('' Error. No Xxn node exists'')')
+      write(901,'('' Error. No Xxn node exists'')')
       stop
  201  continue
       if (idimvec(n) .ne. maxnum) then
-        write(11,'('' Error, Xxn is wrong size'')')
+        write(901,'('' Error, Xxn is wrong size'')')
         stop
       end if
       if (idouble .eq. 1) then
@@ -8456,11 +8603,11 @@ c   Get Gforcn
       do n=1,narrays
         if (name(n) .eq. 'Gforcn') goto 301
       enddo
-      write(11,'('' Error. No Gforcn node exists'')')
+      write(901,'('' Error. No Gforcn node exists'')')
       stop
  301  continue
       if (idimvec(n) .ne. maxnum) then
-        write(11,'('' Error, Gforcn is wrong size'')')
+        write(901,'('' Error, Gforcn is wrong size'')')
         stop
       end if
       if (idouble .eq. 1) then
@@ -8481,11 +8628,11 @@ c   Get Gforcnm
       do n=1,narrays
         if (name(n) .eq. 'Gforcnm') goto 401
       enddo
-      write(11,'('' Error. No Gforcnm node exists'')')
+      write(901,'('' Error. No Gforcnm node exists'')')
       stop
  401  continue
       if (idimvec(n) .ne. maxnum) then
-        write(11,'('' Error, Gforcnm is wrong size'')')
+        write(901,'('' Error, Gforcnm is wrong size'')')
         stop
       end if
       if (idouble .eq. 1) then
@@ -8506,11 +8653,11 @@ c   Get Aehist
       do n=1,narrays
         if (name(n) .eq. 'Aehist') goto 501
       enddo
-      write(11,'('' Error. No Aehist node exists'')')
+      write(901,'('' Error. No Aehist node exists'')')
       stop
  501  continue
       if (idimvec(n) .ne. maxnum2) then
-        write(11,'('' Error, Aehist is wrong size'')')
+        write(901,'('' Error, Aehist is wrong size'')')
         stop
       end if
       if (idouble .eq. 1) then

@@ -178,7 +178,7 @@ c                  time-accurate restart files, which was missing this info)
          end if
       else
 #if defined CGNS
-         write(11,'('' reading 2nd order time data from cgns'',
+         write(901,'('' reading 2nd order time data from cgns'',
      +    '' file for block '',i4)') nbl
          call rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
@@ -373,7 +373,7 @@ c
      .            dthzmxmc1,time21,time2mc1,dt1
             else
 #if defined CGNS
-            write(11,'('' reading dynamic mesh data from cgns file'',
+            write(901,'('' reading dynamic mesh data from cgns file'',
      +        '' for block'',i4)') nbl
             call rgrdmov(iccg,ibase,igrid,ialph,
      .            itrans1,rfreqt1,xorig1,yorig1,zorig1,xorig01,yorig01,
@@ -586,7 +586,7 @@ c
      .                    (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
                   else
 #if defined CGNS
-                  write(11,'('' reading deforming grid info from'',
+                  write(901,'('' reading deforming grid info from'',
      .             '' cgns file for block '',i4)') nbl
                   call getnsegdfrm(iccg,ibase,igrid,nsegdfrm(nbl))
                   if (abs(ita) .gt. 1) then

@@ -156,6 +156,7 @@ c           66......precfl3d.out
 c           96......cfl3d_avgg.p3d
 c           97......cfl3d_avgq.p3d
 c           99......precfl3d.error / cfl3d.error
+c           901.....cgnsinfo.out
 c
 c           Unit 26 is reserved for reading in bc data via the
 c           2000 series of boundary conditions.
@@ -296,7 +297,6 @@ c
       character*80 inpstring
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
-      character*32 basedesired
       character*80 sysfile
 c
       dimension itrnsfr(27),titlw(20),nou(nbuf)
@@ -312,6 +312,10 @@ c
       common /key/ nkey
       common /zero/ iexp
       common /wrestq/ irest,irest2
+#   ifdef FASTIO
+      common/rjbdbgi/lunfio0
+      lunfio0=8000
+#   endif
 c
 #if defined DIST_MPI
 c***********************************************************************
@@ -516,6 +520,10 @@ c
       open(unit=96,file=avgg,form='unformatted',status='unknown')
       open(unit=97,file=avgq,form='unformatted',status='unknown')
       open(unit=99,file=errfile,form='formatted',status='unknown')
+#   ifdef CGNS
+      open(unit=901,file='cgnsinfo.out',form='formatted',
+     .  status='unknown')
+#   endif
 c
       rewind( 1)
       rewind( 2)
@@ -672,20 +680,15 @@ c
      .           maxxe,mxbli,nsub1,lbcprd,lbcemb,lbcrad,maxbl,
      .           maxgr,maxseg,maxcs,ncycmax,intmx,mxxe,mptch,
      .           msub1,ibufdim,nbuf,mxbcfil,istat_size,ntr,
-     .           nmds,maxaes,nslave,maxsegdg,nmaster,bcfiles,bou,nou)
+     .           nmds,maxaes,nslave,maxsegdg,nmaster,bcfiles,bou,nou,
+     .           grid)
 c
 c***********************************************************************
 c     normal program termnination
 c***********************************************************************
-c   Write input file used to CGNS file
 #if defined CGNS
-      if (icgns .eq. 1 .and. myid .eq. myhost) then
-        basedesired='Base'
-        idimdesired=3
-        call wopencgns(grid,basedesired,idimdesired,iccg,
-     .              ibase,nzones)
-        call writeinput(iccg,ibase,iunit5,irest)
 c   Close data base
+      if (icgns .eq. 1 .and. myid .eq. myhost) then
         call cg_close_f(iccg, ier)
         if (ier .ne. 0) then
           call cg_error_print_f
