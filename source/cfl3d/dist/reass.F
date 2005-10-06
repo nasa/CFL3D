@@ -116,8 +116,8 @@ c
       enddo
       ngridd=ngridt-match
 c
-      open(lunfio0,file=output,form='formatted',iostat=ios)
-      open(10,file='cfl3d.out',form='formatted',iostat=ios)
+      open(lunfio0,file='cfl3d.out.reass',form='formatted',iostat=ios)
+      open(10,file=output,form='formatted',iostat=ios)
 c     write(lunfio0,'(" reassembling for ",i6," distinct grids ")')ngridd
       nr=0
       nw=0
