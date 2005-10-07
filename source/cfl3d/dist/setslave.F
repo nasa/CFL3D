@@ -1140,10 +1140,10 @@ c
       end if
       if(myid.eq.myhost) then
         if(isktyp.gt.0.and.meshdef.eq.1) then
-          write(197+myid,31029)
+          write(1000+myid,31029)
 31029     format(' Iteration   Total Resid   N@Maxres  Max Resid')
         else if(isktyp.gt.0.and.meshdef.eq.0) then
-          write(197+myid,31028)
+          write(1000+myid,31028)
 31028     format(' Iterations  Total Resid')
         end if
       end if
