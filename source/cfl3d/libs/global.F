@@ -5189,6 +5189,11 @@ c        Set default skip type so that standard skip values are read:
 c
          isktyp = 1
 c
+c        Set counter for number of control point updates to ensure
+c        1-1 blocking interface continuity:
+c
+         itcpadd = 0
+c
 c        If isktyp = 2 then an array of points in the i,j,k directions
 c        are read in.  These points are the control points rather than
 c        those computed using standard skip values
@@ -5839,7 +5844,6 @@ c
                enddo
              enddo
             end if
-            itcpadd = 0
             do iter = 1,ngrid
               nskpsmo = 0
               nskpsmn = 0
