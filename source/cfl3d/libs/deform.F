@@ -422,13 +422,13 @@ c
         err = sqrt(sum)
         nresmx = 1+(nresmx-1)/3
         if(meshdef.eq.1.and.myid.eq.myhost) 
-     .               write(197+myid,31029) it,err,nresmx,resid   
+     .               write(1000+myid,31029) it,err,nresmx,resid   
 31029   format(i8,e16.8,i8,e16.8)
         if(err.lt.tol) goto 2000 
         if(errold.lt.err) then
           it1 = it1 + 1
           if(it1.gt.itmx1) then
-             write(197,21022) 
+             write(1000,21022) 
              stop
           end if
 21022     format(' Stopping, Gauss-Seidel scheme not converging: '
@@ -438,7 +438,7 @@ c
         end if
       enddo
 2000  continue 
-      if(myid.eq.myhost) write(197+myid,31029) it,err   
+      if(myid.eq.myhost) write(1000+myid,31029) it,err   
  
       return
       end
@@ -476,7 +476,7 @@ CU    USES atimes,asolve,snrm
         call asolve(n,nc,r,z,sa,0)
         znrm=snrm(n,z,itol) 
       else 
-        write(197+myid,31922)
+        write(1000+myid,31922)
 31922   format('illegal itol in linbcg') 
         stop
       endif 
@@ -529,14 +529,14 @@ c
           else
             err = 0.
           end if
-             write(197+myid,5040) iter,log10(err),znrm  
+             write(1000+myid,5040) iter,log10(err),znrm  
         else if(itol.eq.2) then 
           if(bnrm.gt.EPS) then
             err=snrm(n,z,itol)/bnrm 
           else
             err = 0.
           end if
-             write(197+myid,5040) iter,log10(err),znrm  
+             write(1000+myid,5040) iter,log10(err),znrm  
         else if(itol.eq.3.or.itol.eq.4)then 
           zm1nrm=znrm 
           znrm=snrm(n,z,itol)  
@@ -555,7 +555,7 @@ c
               err = 0.
               znrm= 0. 
             end if
-c            write(197+myid,5042) iter,log10(err),znrm  
+c            write(1000+myid,5042) iter,log10(err),znrm  
             goto 100 
           endif 
           xnrm=snrm(n,x,itol) 
@@ -566,7 +566,7 @@ c
               else
                 err = 0.
               end if
-             write(197+myid,5043) iter,log10(err),znrm  
+             write(1000+myid,5043) iter,log10(err),znrm  
           else 
             if(bnrm.gt.EPS) then
               err=znrm/bnrm 
@@ -574,7 +574,7 @@ c
               err = 0.
               znrm= 0. 
             end if
-c            write(197+myid,5044) iter,log10(err),znrm  
+c            write(1000+myid,5044) iter,log10(err),znrm  
             goto 100 
           endif 
         endif 
@@ -614,7 +614,7 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
       dimension b(n),sa(nc),x(n)
       INTEGER i,j,k
       if (ija(1).ne.n+2) then
-        write(197+myid,3111) ija(1),n+2,nc 
+        write(1000+myid,3111) ija(1),n+2,nc 
 3111    format('mismatched vector and matrix in sprstx',3i8) 
         stop
       end if 
@@ -638,7 +638,7 @@ c
       dimension sa(nc),b(n) 
       INTEGER i,k
       if (ija(1).ne.n+2) then
-        write(197+myid,3111) ija(1),n+2,nc 
+        write(1000+myid,3111) ija(1),n+2,nc 
 3111    format('mismatched vector and matrix in sprsax',3i8) 
         stop
       end if 
@@ -658,7 +658,7 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
       dimension b(n),sa(nc),x(n)
       INTEGER i,k
       if (ija(1).ne.n+2) then
-        write(197+myid,3111) ija(1),n+2,nc 
+        write(1000+myid,3111) ija(1),n+2,nc 
 3111    format('mismatched vector and matrix in sprsax',3i8) 
         stop
       end if 
@@ -1399,7 +1399,7 @@ c
           if(real(inc1).eq.rinc1) inc = nt
         end if
         if(nt.eq.inc) then
-          write(398+myid,81621) jskmax(nbl),kskmax(nbl),iskmax(nbl),nbl
+          write(4000+myid,81621) jskmax(nbl),kskmax(nbl),iskmax(nbl),nbl
      .                        ,nt
 81621 format('ZONE I = ',i8,'  J = ',i8,' K = ',i8,
      .               ' T="Block ',i5,' Time Step = ',i6,'"')
@@ -1409,7 +1409,7 @@ c
             ll  = islavept(n,1,iseq)
             n2  = islavept(n,21,iseq)
             if(nbl1.eq.nbl) then
-              write(398+myid,31920) x(ll+1)+u(3*(n-1)+1)
+              write(4000+myid,31920) x(ll+1)+u(3*(n-1)+1)
      .                             ,y(ll+1)+u(3*(n-1)+2)
      .                             ,z(ll+1)+u(3*(n-1)+3)
      .                             ,u(3*(n-1)+1)

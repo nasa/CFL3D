@@ -5425,7 +5425,8 @@ c                skip value must divide evenly into dim-1 value
                  kskipt(nbl,jj) = kskip(nbl,jj)
                enddo
              enddo
-            else
+            end if
+            if(nskip.eq.0) then 
              do ng = 1,ngrid    
                nbl          = nblg(ng)
                ncg          = ncgg(ng)
@@ -5837,106 +5838,108 @@ c
      .                        ,jskip,maxbl) 
                enddo
              enddo
-             do iter = 1,ngrid
-               nskpsmo = 0
-               nskpsmn = 0
-               do n = 1,ngrid
-                 nskpsmo = nskpsmo+nskpi1(n)+nskpj1(n)+nskpk1(n) 
-               enddo
-	       do n = 1,abs(nbli)
-                nbl1   = nblg(nblk(1,n))
-                jdim1  = jdimg(nbl1)
-                kdim1  = kdimg(nbl1)
-                idim1  = idimg(nbl1)
-                nbl2   = nblg(nblk(2,n))
-                jdim2  = jdimg(nbl2)
-                kdim2  = kdimg(nbl2)
-                idim2  = idimg(nbl2) 
-                do jj = 1,2    
-                 if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.1) then 
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,1,n),
-     .                        limblk(2,4,n),nskpi1(nblk(1,n)),
-     .                        iskip(nbl1,1:500),nskpi1(nblk(2,n)), 
-     .                        iskip(nbl2,1:500),maxbl,idim1,idim2,1,1)
-                 else          
-     .           if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.2) then 
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,2,n),
-     .                        limblk(2,5,n),nskpi1(nblk(1,n)),
-     .                        iskip(nbl1,1:500),nskpj1(nblk(2,n)), 
-     .                        jskip(nbl2,1:500),maxbl,idim1,jdim2,1,2)
-                 else          
-     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.1) then 
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,1,n),
-     .                        limblk(2,4,n),nskpj1(nblk(1,n)),
-     .                        jskip(nbl1,1:500),nskpi1(nblk(2,n)),
-     .                        iskip(nbl2,1:500),maxbl,jdim1,idim2,2,1)
-                 else
-     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.2) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,2,n),
-     .                        limblk(2,5,n),nskpj1(nblk(1,n)),
-     .                        jskip(nbl1,1:500),nskpj1(nblk(2,n)),
-     .                        jskip(nbl2,1:500),maxbl,jdim1,jdim2,2,2)
-                 else
-     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.2) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,2,n),
-     .                        limblk(2,5,n),nskpk1(nblk(1,n)),
-     .                        kskip(nbl1,1:500),nskpj1(nblk(2,n)),
-     .                        jskip(nbl2,1:500),maxbl,kdim1,jdim2,3,2)
-                 else
-     .           if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.3) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,2,n),limblk(1,5,n),limblk(2,3,n),
-     .                        limblk(2,6,n),nskpj1(nblk(1,n)),
-     .                        jskip(nbl1,1:500),nskpk1(nblk(2,n)),
-     .                        kskip(nbl2,1:500),maxbl,jdim1,kdim2,2,3)
-                 else
-     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.3) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,3,n),
-     .                        limblk(2,6,n),nskpk1(nblk(1,n)),
-     .                        kskip(nbl1,1:500),nskpk1(nblk(2,n)),
-     .                        kskip(nbl2,1:500),maxbl,kdim1,kdim2,3,3)
-                 else
-     .           if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.1) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,3,n),limblk(1,6,n),limblk(2,1,n),
-     .                        limblk(2,4,n),nskpk1(nblk(1,n)),
-     .                        kskip(nbl1,1:500),nskpi1(nblk(2,n)),
-     .                        iskip(nbl2,1:500),maxbl,kdim1,idim2,3,1)
-                 else
-     .           if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.3) then
-                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
-     .                        limblk(1,1,n),limblk(1,4,n),limblk(2,3,n),
-     .                        limblk(2,6,n),nskpi1(nblk(1,n)),
-     .                        iskip(nbl1,1:500),nskpk1(nblk(2,n)),
-     .                        kskip(nbl2,1:500),maxbl,idim1,kdim2,1,3)
-                 end if
-                enddo
-               enddo
-               do n = 1,ngrid
-                 nskpsmn = nskpsmn+nskpi1(n)+nskpj1(n)+nskpk1(n) 
-               enddo
-               if(nskpsmn.eq.nskpsmo) goto 378
-             enddo
-378          continue 
-             do n = 1,ngrid    
-               nbl   = nblg(n)
-               do jj = 1,nskpi1(n)
-                 iskipt(nbl,jj) = iskip(nbl,jj)
-               enddo
-               do jj = 1,nskpj1(n)
-                 jskipt(nbl,jj) = jskip(nbl,jj)
-               enddo
-               do jj = 1,nskpk1(n)
-                 kskipt(nbl,jj) = kskip(nbl,jj)
-               enddo
-             enddo
             end if
+            itcpadd = 0
+            do iter = 1,ngrid
+              nskpsmo = 0
+              nskpsmn = 0
+              itcpadd = itcpadd + 1
+              do n = 1,ngrid
+                nskpsmo = nskpsmo+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+              enddo
+              do n = 1,abs(nbli)
+               nbl1   = nblg(nblk(1,n))
+               jdim1  = jdimg(nbl1)
+               kdim1  = kdimg(nbl1)
+               idim1  = idimg(nbl1)
+               nbl2   = nblg(nblk(2,n))
+               jdim2  = jdimg(nbl2)
+               kdim2  = kdimg(nbl2)
+               idim2  = idimg(nbl2) 
+               do jj = 1,2    
+                if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.1) then 
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,1,n),limblk(1,4,n),limblk(2,1,n),
+     .                       limblk(2,4,n),nskpi1(nblk(1,n)),
+     .                       iskip(nbl1,1:500),nskpi1(nblk(2,n)), 
+     .                       iskip(nbl2,1:500),maxbl,idim1,idim2,1,1)
+                else          
+     .          if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.2) then 
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,1,n),limblk(1,4,n),limblk(2,2,n),
+     .                       limblk(2,5,n),nskpi1(nblk(1,n)),
+     .                       iskip(nbl1,1:500),nskpj1(nblk(2,n)), 
+     .                       jskip(nbl2,1:500),maxbl,idim1,jdim2,1,2)
+                else          
+     .          if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.1) then 
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,2,n),limblk(1,5,n),limblk(2,1,n),
+     .                       limblk(2,4,n),nskpj1(nblk(1,n)),
+     .                       jskip(nbl1,1:500),nskpi1(nblk(2,n)),
+     .                       iskip(nbl2,1:500),maxbl,jdim1,idim2,2,1)
+                else
+     .          if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.2) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,2,n),limblk(1,5,n),limblk(2,2,n),
+     .                       limblk(2,5,n),nskpj1(nblk(1,n)),
+     .                       jskip(nbl1,1:500),nskpj1(nblk(2,n)),
+     .                       jskip(nbl2,1:500),maxbl,jdim1,jdim2,2,2)
+                else
+     .          if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.2) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,3,n),limblk(1,6,n),limblk(2,2,n),
+     .                       limblk(2,5,n),nskpk1(nblk(1,n)),
+     .                       kskip(nbl1,1:500),nskpj1(nblk(2,n)),
+     .                       jskip(nbl2,1:500),maxbl,kdim1,jdim2,3,2)
+                else
+     .          if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.3) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,2,n),limblk(1,5,n),limblk(2,3,n),
+     .                       limblk(2,6,n),nskpj1(nblk(1,n)),
+     .                       jskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                       kskip(nbl2,1:500),maxbl,jdim1,kdim2,2,3)
+                else
+     .          if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.3) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,3,n),limblk(1,6,n),limblk(2,3,n),
+     .                       limblk(2,6,n),nskpk1(nblk(1,n)),
+     .                       kskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                       kskip(nbl2,1:500),maxbl,kdim1,kdim2,3,3)
+                else
+     .          if(isva(1,jj,n).eq.3.and.isva(2,jj,n).eq.1) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,3,n),limblk(1,6,n),limblk(2,1,n),
+     .                       limblk(2,4,n),nskpk1(nblk(1,n)),
+     .                       kskip(nbl1,1:500),nskpi1(nblk(2,n)),
+     .                       iskip(nbl2,1:500),maxbl,kdim1,idim2,3,1)
+                else
+     .          if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.3) then
+                  call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
+     .                       limblk(1,1,n),limblk(1,4,n),limblk(2,3,n),
+     .                       limblk(2,6,n),nskpi1(nblk(1,n)),
+     .                       iskip(nbl1,1:500),nskpk1(nblk(2,n)),
+     .                       kskip(nbl2,1:500),maxbl,idim1,kdim2,1,3)
+                end if
+               enddo
+              enddo
+              do n = 1,ngrid
+                nskpsmn = nskpsmn+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+              enddo
+              if(nskpsmn.eq.nskpsmo) goto 378
+            enddo
+378         continue 
+            do n = 1,ngrid    
+              nbl   = nblg(n)
+              do jj = 1,nskpi1(n)
+                iskipt(nbl,jj) = iskip(nbl,jj)
+              enddo
+              do jj = 1,nskpj1(n)
+                jskipt(nbl,jj) = jskip(nbl,jj)
+              enddo
+              do jj = 1,nskpk1(n)
+                kskipt(nbl,jj) = kskip(nbl,jj)
+              enddo
+            enddo
          end if
 c
          if(abs(isktyp).eq.1) then
@@ -6023,7 +6026,8 @@ c
               end if
            enddo
          end if
-         if(abs(isktyp).eq.1.or.(abs(isktyp).eq.2.and.nskip.eq.0)) then
+         if(abs(isktyp).eq.1.or.(abs(isktyp).eq.2.and.nskip.eq.0)
+     .     .or.(itcpadd.gt.1)) then
           if(meshdef.eq.1.and.myid.eq.myhost) then
            open(196,file='meshdef.inp',status='unknown',form=
      .             'formatted')
