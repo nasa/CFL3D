@@ -17,7 +17,7 @@ c     appropriate) and determines the array sizes required for the
 c     particular problem in the cfl3d input file.
 c
 c     for parallel mode, memory is allocated identically on all
-c     processors, based on the maximum requirement on any of the noodes.
+c     processors, based on the maximum requirement on any of the nodes.
 c
 c     imode governs whether the routine is being used a a stand-alone
 c     preprocessor, or as part of the dynamic memory allocation in 

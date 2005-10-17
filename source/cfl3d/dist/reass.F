@@ -77,13 +77,14 @@ cRJB...the same as the corresponding MPI cfl3d output.
       integer nm(nproc)
       integer irdrea(maxgr)
       common/rjbdbgi/lunfio0
-      common /rjb/idbug,ngridd,ngridt,ncard(nproc),nlunitc,
+      common /rjb/idbug,ierror,ngridd,ngridt,ncard(nproc),nlunitc,
      .  lunitc(nproc),nr,nww,nrec(nproc),igo23,igo27,nblockp,nstopr
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
 c
+      ierror=0
       igo23=0
       igo27=0
       igop=-1
@@ -119,6 +120,7 @@ c
       open(lunfio0,file='cfl3d.out.reass',form='formatted',iostat=ios)
       open(10,file=output,form='formatted',iostat=ios)
 c     write(lunfio0,'(" reassembling for ",i6," distinct grids ")')ngridd
+      if(ngridd.le.0)stop 'ngridd.le.0'
       nr=0
       nw=0
     2 continue
@@ -143,6 +145,7 @@ cRJB... prolongation produces a series of 11's so igo=igop can allow process
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
          elseif(igo.eq.23)then
           go to 2
          else ! igo.eq.11
@@ -150,6 +153,7 @@ cRJB...we have seen ppflag 26 written 3 times so we really have to call process
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          endif ! igo.eq.11
         else ! igo.eq.igop
@@ -157,82 +161,98 @@ cRJB...we have seen ppflag 26 written 3 times so we really have to call process
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.1)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.2)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.3)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.4)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
 cRJB...021005 for ivmx=2 ppflag 5 appears on 10-lets try first with 0 output on 14
          elseif(igop.eq.5)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.6)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.11)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.15)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.16)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.17)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.18)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.19)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.20)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.21)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.22)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.23)then
 cRJB...when we see 23, we have already written first block info 
@@ -241,52 +261,62 @@ cRJB...            or  we have already written  last block info
             nr=nr-1
             if(igo23.le.0)then
              call process(igo)
+             if(ierror.gt.0)return
             igop=igo
             endif
          elseif(igop.eq.24)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.25)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.26)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.27)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.28)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.29)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.30)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.31)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.32)then
           backspace (10)
           nr=nr-1
           call process(igo)
+          if(ierror.gt.0)return
           igop=igo
          else
           backspace (10)
@@ -335,10 +365,11 @@ C
       character*3 cigop95
       character*6 cnous95
       common/rjbdbgi/lunfio0
-      common /rjb/idbug,ngridd,ngridt,ncard(nproc),nlunitc,
+      common /rjb/idbug,ierror,ngridd,ngridt,ncard(nproc),nlunitc,
      .  lunitc(nproc),nr,nww,nrec(nproc),igo23,igo27,nblockp,nstopr
 c
       igop=0
+      igop95=0
       l27done=0
       if(igo.eq.1)then
 cRJB...MEMORY-lets read ONE line
@@ -574,6 +605,7 @@ cRJB...we have found a ppflag on lunitm so we will move fort.10
                   write(lunfio0,'(" nous39mismatch-stop ",9i6)')igo,igop
      .             ,lunit,nrec(lunitm),10,nr
                   write(6,'(" process:nous39mismatch-stop ")')
+                  ierror=1
                   return
                  endif
                 else
@@ -581,6 +613,7 @@ cRJB...a ppflag mismatch backspaces if we have output data to write
                  write(lunfio0,'(" ppflag39mismatch-stop ",9i6)')igo,
      .            igop,lunit,nrec(lunitm),10,nr
                  write(6,'(" process:ppflag39mismatch-stop ")')
+                 ierror=1
                  return
                 endif
 
@@ -666,6 +699,7 @@ cRJB...a ppflag mismatch backspaces if we have output data to write
                  write(lunfio0,'(" ppflag27mismatch-stop ",9i6)')igo,
      .            igop,lunit,nrec(lunitm),10,nr
                  write(6,'(" process:ppflag27mismatch-stop ")')
+                 ierror=1
                  return
                 endif ! j27.gt.0
                 endif ! l27done.le.0
@@ -874,6 +908,7 @@ cRJB...surely nous=0 in this sequence is in error
                 write(lunfio0,'(" nous489 error-stop ",9i6)')igo,igop,
      .           nous,lunit,nrec(lunitm),10,nr
                 write(6,'(" process:nous489error-stop ")')
+                ierror=1
                 return
                endif
               else
@@ -881,6 +916,7 @@ cRJB...a ppflag mismatch backspaces if we have output data to write
                write(lunfio0,'(" ppflag489mismatch-stop ",9i6)')igo,
      .          igop,lunit,nrec(lunitm),10,nr
                write(6,'(" process:ppflag489mismatch-stop ")')
+               ierror=1
                return
               endif ! j489.gt.0
              else
@@ -902,6 +938,7 @@ cRJB...otherwise cfl3d entered writ_buf w/ no data to write
             write(lunfio0,'(" ppflag3mismatch-stop ",9i6)')igo,igop,
      .       lunit,nrec(lunitm),10,nr
             write(6,'(" process:ppflag3mismatch-stop ")')
+            ierror=1
             return
            endif ! j3.le.0
           endif ! l27done.le.0
@@ -1012,6 +1049,7 @@ cRJB...5star test fails-print bc
       write(lunfio0,'(" process:error at nr =",9i6)')igo,igop,lunit,
      .   nrec(lunitm),10,nr
       write(6,'(" process:error ")')
+      ierror=1
       return
   999 continue
       write(lunfio0,'(" process:  end at nr =",9i6)')igo,igop,lunit,

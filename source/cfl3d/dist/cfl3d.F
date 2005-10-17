@@ -1427,6 +1427,7 @@ c   Close unit 11
        call reass(maxgr,irdrea)
       end if
 #   endif
+      deallocate(irdrea)
 c
       return
       end
