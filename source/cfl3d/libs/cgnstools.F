@@ -1866,7 +1866,7 @@ c
 c
       character*32 connectname,donorname,boconame
       dimension irange(6),idrange(6),itransform(3),ipts(3,2)
-      dimension numseg(6)
+      dimension numseg(6),normalindex(3)
 c
 c   First, need to get all connectivity info so can specify those segments
       call cg_n1to1_f(iccg,ibase,izone,n1to1,ier)
@@ -1968,7 +1968,7 @@ c
       character*7 nameseg
       dimension irange(6),idrange(6),itransform(3),ipts(3,2)
       dimension ibcinf(maxseg,4),bcval(maxseg,5),iforc(maxseg)
-      dimension ibctyp(maxseg),numdata(maxseg)
+      dimension ibctyp(maxseg),numdata(maxseg),normalindex(3)
 c
 c   Determine appropriate indices for faces:
       if (    ifacedesired .eq. 1 .or. ifacedesired .eq. 4) then
