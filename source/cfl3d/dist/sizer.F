@@ -1452,8 +1452,16 @@ c        additional integer work space
          end if
 c
          nv = 35
-         if (idefrm(nbl) .gt. 0) nv=41
          maxmem = max(jdim*kdim*nv,jdim*idim*nv)
+         if (idefrm(nbl) .gt. 0) then
+           nv=41
+           maxmem = max(jdim*kdim*nv,jdim*idim*nv)
+           mem_updatedg =     16*idim*jdim*kdim +
+     .                             30*jdim*kdim +
+     .                             24*jdim*idim +
+     .                             24*kdim*idim
+           maxmem = maxmem+mem_updatedg 
+         end if
          itemp  = maxmem + ltot(nbl)
          itempt = itempt + ltot(nbl)
          itemp  = max(itemp,itempt)
