@@ -113,6 +113,7 @@ c
      .          perturb(nmds,maxaes,4)
       dimension aesrfdat(5,maxaes),iskip(maxbl,500),jskip(maxbl,500),
      .          kskip(maxbl,500)
+      dimension riskp(maxbl,500),rjskp(maxbl,500),rkskp(maxbl,500)
       dimension iskipt(maxbl,500),jskipt(maxbl,500),kskipt(maxbl,500)
       dimension nskpi1(maxbl),nskpj1(maxbl),nskpk1(maxbl)
       dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg),
@@ -5999,33 +6000,76 @@ c
              enddo
            enddo
          else
-           do ng=1,nskip
+           do ng=1,ngrid
               nbl = nblg(ng)
               ncg = ncgg(ng)
               if (ncg.gt.0) then
+                nbl = nblg(ng)
                 do ii = 1,nskpi1(ng)
-                 nbl = nblg(ng)
-                 iskipt(nbl,ii)= iskip(nbl,ii)
-                 do n=1,ncg
-                    nbl = nbl + 1
+                  iskipt(nbl,ii)= iskip(nbl,ii)
+                enddo
+                do n=1,ncg
+                  nbl = nbl + 1
+                  do ii = 1,nskpi1(ng)
                     iskip(nbl,ii) = (iskip(nbl-1,ii)-1)/2 + 1
-                 end do
+                    iskipt(nbl,ii)= iskip(nbl,ii)
+                    riskp(nbl,ii) = .5*real(iskip(nbl-1,ii)-1) + 1.0  
+                  end do
+                  do ii = 2,nskpi1(ng)-1  
+                    if(iskip(nbl,ii).ge.iskip(nbl,ii+1).and.
+     .                 real(iskip(nbl,ii)).ne.riskp(nbl,ii)) 
+     .                  iskip(nbl,ii) = iskip(nbl,ii)-1
+                    if(iskip(nbl,ii).le.iskip(nbl,ii-1).and.
+     .                 real(iskip(nbl,ii)).ne.riskp(nbl,ii))  
+     .                  iskip(nbl,ii) = iskip(nbl,ii)+1
+                  enddo
+                  do ii = 1,nskpi1(ng)
+                    iskipt(nbl,ii)= iskip(nbl,ii)
+                  enddo
                 enddo
+                nbl = nblg(ng)
                 do ii = 1,nskpj1(ng)
-                 nbl = nblg(ng)
-                 jskipt(nbl,ii)= jskip(nbl,ii)
-                 do n=1,ncg
-                    nbl = nbl + 1
-                    jskip(nbl,ii) = (jskip(nbl-1,ii)-1)/2 + 1
-                 end do
+                  jskipt(nbl,ii)= jskip(nbl,ii)
                 enddo
+                do n=1,ncg
+                  nbl = nbl + 1
+                  do ii = 1,nskpj1(ng)
+                    jskip(nbl,ii) = (jskip(nbl-1,ii)-1)/2 + 1
+                    rjskp(nbl,ii) = .5*real(jskip(nbl-1,ii)-1) + 1.0
+                  end do
+                  do ii = 2,nskpj1(ng)-1
+                    if(jskip(nbl,ii).ge.jskip(nbl,ii+1).and.
+     .                 real(jskip(nbl,ii)).ne.rjskp(nbl,ii))
+     .                  jskip(nbl,ii) = jskip(nbl,ii)-1
+                    if(jskip(nbl,ii).le.jskip(nbl,ii-1).and.
+     .                 real(jskip(nbl,ii)).ne.rjskp(nbl,ii))
+     .                  jskip(nbl,ii) = jskip(nbl,ii)+1
+                  enddo
+                  do ii = 1,nskpj1(ng)
+                    jskipt(nbl,ii)= jskip(nbl,ii)
+                  enddo
+                enddo
+                nbl = nblg(ng)
                 do ii = 1,nskpk1(ng)
-                 nbl = nblg(ng)
-                 jskipt(nbl,ii)= jskip(nbl,ii)
-                 do n=1,ncg
-                    nbl = nbl + 1
+                  kskipt(nbl,ii)= kskip(nbl,ii)
+                enddo
+                do n=1,ncg
+                  nbl = nbl + 1
+                  do ii = 1,nskpk1(ng)
                     kskip(nbl,ii) = (kskip(nbl-1,ii)-1)/2 + 1
-                 end do
+                    rkskp(nbl,ii) = .5*real(kskip(nbl-1,ii)-1) + 1.0
+                  end do
+                  do ii = 2,nskpk1(ng)-1
+                    if(kskip(nbl,ii).ge.kskip(nbl,ii+1).and.
+     .                 real(kskip(nbl,ii)).ne.rkskp(nbl,ii))
+     .                  kskip(nbl,ii) = kskip(nbl,ii)-1
+                    if(kskip(nbl,ii).le.kskip(nbl,ii-1).and.
+     .                 real(kskip(nbl,ii)).ne.rkskp(nbl,ii))
+     .                  kskip(nbl,ii) = kskip(nbl,ii)+1
+                  enddo
+                  do ii = 1,nskpk1(ng)
+                    kskipt(nbl,ii)= kskip(nbl,ii)
+                  enddo
                 enddo
               end if
            enddo
@@ -6089,29 +6133,6 @@ c
             nbl = nblg(ng)
             ncg = ncgg(ng)
             ncgt = ncg
-            if (ncg.gt.0) then
-              do ii = 1,nskpi1(ng)
-               nbl = nblg(ng)
-               do n=1,ncg
-                  nbl = nbl + 1
-                  iskipt(nbl,ii)= (iskipt(nbl-1,ii)-1)/2 + 1
-               end do
-              enddo
-              do ii = 1,nskpj1(ng)
-               nbl = nblg(ng)
-               do n=1,ncg
-                  nbl = nbl + 1
-                  jskipt(nbl,ii)= (jskipt(nbl-1,ii)-1)/2 + 1
-               end do
-              enddo
-              do ii = 1,nskpk1(ng)
-               nbl = nblg(ng)
-               do n=1,ncg
-                  nbl = nbl + 1
-                  kskipt(nbl,ii)= (kskipt(nbl-1,ii)-1)/2 + 1
-               end do
-              enddo
-            end if
             write(iunit11,
      .      '(''      ng     nipt     njpt     nkpt  '')')
             write(iunit11,'(i8,4i9)') ng,nskpi1(ng),nskpj1(ng)
