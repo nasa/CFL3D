@@ -229,10 +229,13 @@ c
             if (nwork.lt.lwk4) then
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),444)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),443) lwk4 - nwork
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
   444       format(38h not enough work space for subroutines,
      .             23h trnsurf/rotsurf/aesurf)
+  443       format(' Increase keyword memadd allocation by ',i8)
 c
 c           wk(lwk1-lwk4) contain a flag that prevents points common
 c           to multiple segments from being updated more than once
@@ -504,6 +507,8 @@ c
                if (nwork.lt.mdim) then
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),445)
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),446) mdim - nwork
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
 c
@@ -684,10 +689,13 @@ c
                if (nwork.lt.mdim) then
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),445)
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),446) mdim - nwork
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
   445          format(37h not enough work space for subroutine,
      .                 7h deform)
+  446       format(' Increase keyword memadd allocation by ',i8)
 c
                if (isklton.eq.1)then
                   nou(1) = min(nou(1)+1,ibufdim)
@@ -731,9 +739,12 @@ c
                if (nroom.lt.mdim) then
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),425)
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),426) mdim - nroom
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
   425          format(45h not enough work space for metric subroutines)
+  426          format(' Increase keyword memadd allocation by ',i8)
 c
 c              calculate spatial metrics for updated grid
 c
@@ -758,9 +769,12 @@ c
                if (nroom.lt.mdim) then
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),430)
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),431) mdim - nroom 
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
   430          format(45h not enough work space for subroutine cellvol)
+  431       format(' Increase keyword memadd allocation by ',i8)
 c
                call cellvol(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
      .                      w(lsk),w(lsi),w(lvol),wk(lt4wk),nou,bou,
