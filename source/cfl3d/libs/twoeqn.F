@@ -3394,17 +3394,17 @@ c    Update TURRE
             do j=1,jdim-1
               sumno=sumno+rhside(j,k,i,1)**2
               if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le. 
-     +          tur1cutlev) then
+     +          real(tur1cutlev)) then
                 negno=negno+1
-                if (tur1cut.gt.0.) turre(j,k,i,1)=tur1cut
+                if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
               else
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
               if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
-     +          tur2cutlev) then
+     +          real(tur2cutlev)) then
                 negnk=negnk+1
-                if (tur2cut.gt.0.) turre(j,k,i,2)=tur2cut
+                if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
               else
                 turre(j,k,i,2)=turre(j,k,i,2)+rhside(j,k,i,2)
               end if
