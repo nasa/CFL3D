@@ -5957,9 +5957,9 @@ c
              if (ncg.gt.0) then
                 do n=1,ncg
                    nbl = nbl + 1
-                   iskip(nbl,1) = (iskip(nbl-1,1)-1)/2 + 1
-                   jskip(nbl,1) = (jskip(nbl-1,1)-1)/2 + 1
-                   kskip(nbl,1) = (kskip(nbl-1,1)-1)/2 + 1
+                   iskip(nbl,1) = iskip(nbl-1,1)/2
+                   jskip(nbl,1) = jskip(nbl-1,1)/2
+                   kskip(nbl,1) = kskip(nbl-1,1)/2
                 end do
                 nbl = nblg(ng)
              end if
@@ -6129,7 +6129,8 @@ c
            close(196)
           end if
          end if
-         do ng=1,ngrid
+         if(abs(isktyp).eq.2) then
+          do ng=1,ngrid
             nbl = nblg(ng)
             ncg = ncgg(ng)
             ncgt = ncg
@@ -6158,7 +6159,8 @@ c
             do i = 1,nskpk1(ng)
               write(iunit11,'(i8,5i9)') (kskipt(nbl+ii-1,i),ii=1,ncgt+1)
             enddo
-         enddo
+          enddo
+         end if
 c
 c        for all blocks that have not yet been identified as 
 c        deforming, set idefrm flag to 999...indicating the mesh 
