@@ -180,7 +180,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
@@ -426,7 +426,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
@@ -672,7 +672,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
@@ -918,7 +918,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
@@ -1164,7 +1164,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
@@ -1410,7 +1410,7 @@ c
 
 c     compute ramped-to-terminal-value mass flow
 
-      if (rfreq.lt.0.0) then
+      if (real(rfreq).lt.0.0) then
         tcqt = cqu*time
         if (abs(tcqt).lt.abs(cq)) then
           cqt = tcqt
