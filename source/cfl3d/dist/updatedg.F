@@ -548,12 +548,12 @@ c
           nend  = 3*(n2-1) + 1  
           ndata = nend - nstrt
           if (myid .eq. mblk2nd(nbl)) then 
-            mytag   = mblk2nd(nbl)
+            mytag   = n1 
             nd_dest = myhost
             call MPI_Send (ue(nstrt),ndata,MY_MPI_REAL,
      .                     nd_dest,mytag,mycomm,ierr)
           else if (myid .eq. myhost) then 
-            mytag   = mblk2nd(nbl)
+            mytag   = n1 
             nd_srce = mblk2nd(nbl)
             call MPI_Recv (ue(nstrt),ndata,MY_MPI_REAL,
      .                     nd_srce,mytag,mycomm,istat,ierr)
@@ -589,13 +589,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_dest = myhost
                    call MPI_Send (xst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (xst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -610,13 +610,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_dest = myhost
                    call MPI_Send (yst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (yst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -631,13 +631,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_dest = myhost
                    call MPI_Send (zst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = mblk2nd(nbl)
+                   mytag   = nstrt  
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (zst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -1090,7 +1090,7 @@ c
        term5 = xiz(n)  *xiz(n)  +etaz(n) *etaz(n) +zetaz(n)*zetaz(n)
        term6 = etaz(n) *xiz(n)  +zetaz(n)*xiz(n)  +zetaz(n)* etaz(n)
        term7 = xix(n)  *xiy(n)  +etay(n) *etax(n) +zetay(n)*zetax(n)
-       term8 = xix(n)  *etay(n) +xix(n)  *zetay(n)+xiy(n)  *etax(n)
+       merm8 = xix(n)  *etay(n) +xix(n)  *zetay(n)+xiy(n)  *etax(n)
      .        +zetay(n)*etax(n) +xiy(n)  *zetax(n)+etay(n) *zetax(n)
        term9 = xiz(n)  *xix(n)  +etaz(n) *etax(n) +zetaz(n)*zetax(n)
        term10= xix(n)  *etaz(n) +xix(n)  *zetaz(n)+xiz(n)  *etax(n)
