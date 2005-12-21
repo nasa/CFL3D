@@ -47,7 +47,7 @@ FSRC_DIST = \
 	updateg.f      compg2n.f      resetg.f       bc_period.f \
 	yplusout.f     sizer.f        cfl3d.f        trnsfr_vals.f \
 	updatedg.f     ae_corr.f      mgbl.f         setslave.f \
-	umalloc.f
+        umalloc.f      reass.f
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others
