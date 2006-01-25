@@ -3396,7 +3396,7 @@ c
          iptyp = im(2)
          if ((iptyp-0)*(iptyp-1)*(iptyp-1)*(iptyp-3)*
      .       (iptyp-4)*(iptyp-5)*(iptyp+5)*(iptyp-6)*
-     .       (iptyp+6)*(iptyp-2) .ne. 0) then
+     .       (iptyp+6)*(iptyp-2)*(iptyp+7) .ne. 0) then
              write(iunit11,*)'stopping...inappropriate value',
      .       ' for iptyp for plot3d data'
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)

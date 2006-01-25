@@ -68,6 +68,7 @@ c
      .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
+      allocatable :: xvist3d(:,:,:)
 c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -776,6 +777,19 @@ c
             end if
 #           endif
          end if
+         if (ifunc.eq.-7) then
+            write(11,'(''   plot3dg file is an xyz file'',
+     .      '' at grid points'')')
+            write(11,'(''   plot3dq file is a function'',
+     .      '' file of amut at grid points'')')
+#           ifdef CMPLX
+            if (ip3dgrad .ne. 0) then
+               write(11,'(''   NOTE: contains d(amut)/d(), rather'',
+     .                    '' than amut'')')
+               call gradinfo(delh,11)
+            end if
+#           endif
+         end if
          if (i2d .eq. 1) then
             if (iblnk .eq. 0) then
                write(11,2041)
@@ -928,9 +942,6 @@ c
       idw = (i2-i1)/i3 + 1
       ldw = 5
 c
-      call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
-     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw) 
-c
 c     ifunc...flag to determine whether a plot3d q file or plot3d function
 c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST
@@ -938,6 +949,17 @@ c           = 0 plot3d q file is written at grid points
 c           < 0 function file is written
 c            -5 pressure coefficient (cp) at grid points
 c            -6 p/pinf at grid points
+c            -7 vist3d at grid points
+c
+      if (ifunc .eq. -7) then
+        allocate(xvist3d(jdim,kdim,idim))
+        call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,vist3d,
+     .              vi0,vj0,vk0,jdw,kdw,idw,xvist3d,1)
+      else
+        call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+      end if
+
 c
       jw = (j2-j1)/j3 + 1
       kw = (k2-k1)/k3 + 1
@@ -983,6 +1005,16 @@ c
             do 4032 j=1,jw
             xv(j,k,i,1) = xv(j,k,i,5)/p0
  4032       continue
+         end if
+c
+         if (ifunc.eq.-7) then
+            do i=1,iw
+              do k=1,kw
+                do j=1,jw
+                  xv(j,k,i,1) = xvist3d(j,k,i)
+                end do
+              end do
+            end do
          end if
 c
       end if
