@@ -777,7 +777,7 @@ c
             end if
 #           endif
          end if
-         if (ifunc.eq.-7) then
+         if (ifunc.eq.-4) then
             write(11,'(''   plot3dg file is an xyz file'',
      .      '' at grid points'')')
             write(11,'(''   plot3dq file is a function'',
@@ -947,11 +947,11 @@ c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST
 c           = 0 plot3d q file is written at grid points
 c           < 0 function file is written
+c            -4 vist3d at grid points
 c            -5 pressure coefficient (cp) at grid points
 c            -6 p/pinf at grid points
-c            -7 vist3d at grid points
 c
-      if (ifunc .eq. -7) then
+      if (ifunc .eq. -4) then
         allocate(xvist3d(jdim,kdim,idim))
         call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,vist3d,
      .              vi0,vj0,vk0,jdw,kdw,idw,xvist3d,1)
@@ -1007,7 +1007,7 @@ c
  4032       continue
          end if
 c
-         if (ifunc.eq.-7) then
+         if (ifunc.eq.-4) then
             do i=1,iw
               do k=1,kw
                 do j=1,jw
