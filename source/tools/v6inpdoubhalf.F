@@ -114,7 +114,7 @@ c
       read(2,'(a80)') name
       write(3,'(a80)') name
       read(2,*) dt,ir,if,fm,iu,cf
-      write(3,'(f10.4,2i10,f10.4,i10,f10.4)') dt,ir,if,fm,iu,cf
+      write(3,'(e10.4,2i10,f10.4,i10,f10.4)') dt,ir,if,fm,iu,cf
       read(2,'(a80)') name
       write(3,'(a80)') name
       read(2,*) ngrid,nplot3d,nprint,nw,icc,i2d,nt,it
