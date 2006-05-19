@@ -159,7 +159,7 @@ c
       i2   = 2
       if (i2d.eq.1) i2 = 1
       id2  = idim-2
-      if (i2d.eq.1) id2 = idim-1
+      if (i2d.eq.1 .or. idim.eq.2) id2 = idim-1
 c
       if (m.eq.1) then
 c
