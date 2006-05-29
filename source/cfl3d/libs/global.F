@@ -5964,7 +5964,7 @@ c
                 nbl = nblg(ng)
              end if
              ncgt = ncg
-             if(i2d.ne.0) then
+             if(idim.eq.2) then
                nskpi1(ng) = 2
              else
                nskpi1(ng) = (idimg(nbl)-1)/iskip(nbl,1) + 1
@@ -6008,25 +6008,37 @@ c
                 do ii = 1,nskpi1(ng)
                   iskipt(nbl,ii)= iskip(nbl,ii)
                 enddo
-                do n=1,ncg
-                  nbl = nbl + 1
-                  do ii = 1,nskpi1(ng)
-                    iskip(nbl,ii) = (iskip(nbl-1,ii)-1)/2 + 1
-                    iskipt(nbl,ii)= iskip(nbl,ii)
-                    riskp(nbl,ii) = .5*real(iskip(nbl-1,ii)-1) + 1.0  
-                  end do
-                  do ii = 2,nskpi1(ng)-1  
-                    if(iskip(nbl,ii).ge.iskip(nbl,ii+1).and.
-     .                 real(iskip(nbl,ii)).ne.riskp(nbl,ii)) 
-     .                  iskip(nbl,ii) = iskip(nbl,ii)-1
-                    if(iskip(nbl,ii).le.iskip(nbl,ii-1).and.
-     .                 real(iskip(nbl,ii)).ne.riskp(nbl,ii))  
-     .                  iskip(nbl,ii) = iskip(nbl,ii)+1
+                if(idim.eq.2) then
+                  do n=1,ncg
+                    nbl = nbl + 1
+                    do ii = 1,nskpi1(ng)
+                      iskip(nbl,ii) = (iskip(nbl-1,ii)-1)/2 + 1
+                      iskipt(nbl,ii)= iskip(nbl,ii)
+                      riskp(nbl,ii) = .5*real(iskip(nbl-1,ii)-1) + 1.0  
+                    end do
+                    do ii = 2,nskpi1(ng)-1  
+                      if(iskip(nbl,ii).ge.iskip(nbl,ii+1).and.
+     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii)) 
+     .                    iskip(nbl,ii) = iskip(nbl,ii)-1
+                      if(iskip(nbl,ii).le.iskip(nbl,ii-1).and.
+     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii))  
+     .                    iskip(nbl,ii) = iskip(nbl,ii)+1
+                    enddo
+                    do ii = 1,nskpi1(ng)
+                      iskipt(nbl,ii)= iskip(nbl,ii)
+                    enddo
                   enddo
-                  do ii = 1,nskpi1(ng)
-                    iskipt(nbl,ii)= iskip(nbl,ii)
+                else
+                  do n=1,ncg
+                    nbl = nbl + 1
+                    do ii = 1,nskpi1(ng)
+                      iskip(nbl,ii) = iskip(nbl-1,ii)
+                    end do
+                    do ii = 1,nskpi1(ng)
+                      iskipt(nbl,ii)= iskip(nbl,ii)
+                    enddo
                   enddo
-                enddo
+                end if 
                 nbl = nblg(ng)
                 do ii = 1,nskpj1(ng)
                   jskipt(nbl,ii)= jskip(nbl,ii)
