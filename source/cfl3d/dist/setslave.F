@@ -335,60 +335,27 @@ c           if (myid.eq.mblk2nd(nbl)) then
                    end do
                  end do
                else
-                 do n = 1,500
+                 do n = 2,500
                    if(iskip(nbl,n).eq.0) then
                       iskmax(nbl) = n - 1
                       goto 10
                    end if
                  enddo
 10               continue
-                 do n = 1,500
+                 do n = 2,500
                    if(jskip(nbl,n).eq.0) then
                       jskmax(nbl) = n - 1
                       goto 20
                    end if
                  enddo
 20               continue
-                 do n = 1,500
+                 do n = 2,500
                    if(kskip(nbl,n).eq.0) then
                       kskmax(nbl) = n - 1
                       goto 30
                    end if
                  enddo
 30               continue
-                 iskmxt = iskmax(nbl)
-                 jskmxt = jskmax(nbl)
-                 kskmxt = kskmax(nbl)
-                 do n = 2,iskmax(nbl)
-                   if(iskip(nbl,n).eq.iskip(nbl,n-1).and.
-     .                iskip(nbl,n).gt.0) then
-                     do ii = n,iskmxt
-                       iskip(nbl,ii) = iskip(nbl,ii+1)
-                     enddo
-                     iskmxt = iskmxt - 1
-                   end if
-                 enddo
-                 iskmax(nbl) = iskmxt
-                 do n = 2,jskmax(nbl)
-                   if(jskip(nbl,n).eq.jskip(nbl,n-1).and.
-     .                jskip(nbl,n).gt.0) then
-                     do ii = n,jskmxt
-                       jskip(nbl,ii) = jskip(nbl,ii+1)
-                     enddo
-                     jskmxt = jskmxt - 1
-                   end if
-                 enddo
-                 jskmax(nbl) = jskmxt
-                 do n = 2,kskmax(nbl)
-                   if(kskip(nbl,n).eq.kskip(nbl,n-1).and.
-     .                kskip(nbl,n).gt.0) then
-                     do ii = n,kskmxt
-                       kskip(nbl,ii) = kskip(nbl,ii+1)
-                     enddo
-                     kskmxt = kskmxt - 1
-                   end if
-                 enddo
-                 kskmax(nbl) = kskmxt
                  itot = iskmax(nbl) 
                  jtot = jskmax(nbl) 
                  ktot = kskmax(nbl) 
