@@ -5957,7 +5957,11 @@ c
              if (ncg.gt.0) then
                 do n=1,ncg
                    nbl = nbl + 1
-                   iskip(nbl,1) = iskip(nbl-1,1)/2
+                   if(idim.gt.2) then
+                     iskip(nbl,1) = iskip(nbl-1,1)/2
+                   else
+                     iskip(nbl,1) = iskip(nbl-1,1)
+                   end if
                    jskip(nbl,1) = jskip(nbl-1,1)/2
                    kskip(nbl,1) = kskip(nbl-1,1)/2
                 end do
@@ -6008,7 +6012,7 @@ c
                 do ii = 1,nskpi1(ng)
                   iskipt(nbl,ii)= iskip(nbl,ii)
                 enddo
-                if(idim.eq.2) then
+                if(idim.gt.2) then
                   do n=1,ncg
                     nbl = nbl + 1
                     do ii = 1,nskpi1(ng)
