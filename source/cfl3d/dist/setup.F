@@ -1647,7 +1647,8 @@ c*******************************************************
 c     initialize rigid body dynamics arrays/data
 c*******************************************************
 c
-      if (irigb.gt.0) then
+      irbtrim = 0
+      if (irigb.gt.0.or.irbtrim.gt.0) then
             call init_rb
       end if
       call init_trim

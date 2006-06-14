@@ -82,7 +82,7 @@ c
       common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
-     .              tp(4,4)
+     .              tp(4,4),zlfct,epstr,relax,ittrst 
 c
       if (isklton.eq.1) then
 #if defined DIST_MPI
@@ -227,7 +227,7 @@ c
                thetayl(nbl) = thetay(nbl)
                thetazl(nbl) = thetaz(nbl)
                thetay(nbl)  = alf1
-               omegay(nbl)  = (alf1-alf0)/dt
+               omegay(nbl)  = epstr*(thetay(nbl)-thetayl(nbl))
                call rotate(jdim,kdim,idim,wk(lvel),wk(lacci),wk(laccj),
      .                     wk(lacck),wk(lt1wk),w(lx),w(ly),w(lz),nbl,
      .                     99,rfreqr(nbl),omegax(nbl),
@@ -240,7 +240,8 @@ c
 c
 c           translation 
 c
-            if (itrans(nbl) .gt. 0) then
+            if (itrans(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
+     .          irigb .eq. 0) then
 c
                if (isklton.eq.1) then
                   nou(1) = min(nou(1)+1,ibufdim)
@@ -269,7 +270,8 @@ c
 c
 c           rotation 
 c
-            if (irotat(nbl) .gt. 0) then
+            if (irotat(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
+     .          irigb .eq. 0) then
 c
                if(isklton.eq.1)then
                   nou(1) = min(nou(1)+1,ibufdim)
