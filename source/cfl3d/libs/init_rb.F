@@ -37,10 +37,10 @@ c
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
 c
       greflrb  =  1.
-      uinfrb   =  380.
-      qinfrb   =  290.
-      yinert   =  1000.000
-      tmass    =  10.
+      uinfrb   =  1.
+      qinfrb   =  1.  
+      yinert   =  1.
+      tmass    =  1.
       gaccel   =  32.2
       xcg      = -.40
 c

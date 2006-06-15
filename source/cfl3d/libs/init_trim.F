@@ -28,10 +28,12 @@ c
       dmtrmnm =  0.
       dlcln   =  0.
       dlclnm  =  0.
-      ddtmx   =  0.02
-      dalfmx  =  0.02
-      trtol   =  0.0002
+      ddtmx   =  0.01
+      dalfmx  =  0.01
+      trtol   =  0.0000002
       itrmt   =  0
+      epstr   =  1.e-7
+      relax   = .5
 c
       tp(1,1) = dclda
       tp(1,2) = dcldd
