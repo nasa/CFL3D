@@ -824,10 +824,10 @@ c
           do n = 1,nslave
             rave =  r(n)
             if(rave.gt.rmax) rmax = rave   
-            if(rave.lt.rmin.and.rave.gt.0.) rmin = rave  
+            if(rave.lt.rmin.and.rave.gt.eps) rmin = rave  
           enddo
         end if
-        eps = rmin/10000.
+        eps1 = rmin/10000.
         do n = 1,nslave
           nsf(1)  = islavept(n,8,iseqr)
           if(nsf(1).ne.0) then
@@ -844,7 +844,7 @@ c
                 ripm(ii,n)=(xst(n)-xst(nipm(ii)))*(xst(n)-xst(nipm(ii)))
      .                    +(yst(n)-yst(nipm(ii)))*(yst(n)-yst(nipm(ii)))
      .                    +(zst(n)-zst(nipm(ii)))*(zst(n)-zst(nipm(ii)))
-     .                     +eps 
+     .                     +eps1 
                 ripm(ii,n) = sqrt(ripm(ii,n))
               else
                 ripm(ii,n) = 1.e+30
@@ -955,12 +955,11 @@ c    Do this at every time step because the closest surface
 c    point to a control point will potentially change as a
 c    surface moves.
 c
-c       if(nt.eq.1) then
-          rmax = 0. 
-          rmin = 1.e+30  
-c       end if  
+        rmax = 0. 
+        rmin = 1.e+30  
         do n1 = 1,nslave
           r(n1) = 1.e6 
+          islavept(n1,21,iseqr) = 0
           ni0(0)    = n1
           ni0(1)    = islavept(n1    ,3,iseqr)
           ni0(2)    = islavept(n1    ,5,iseqr)
@@ -1047,19 +1046,21 @@ c       end if
                     islavept(n1,21,iseqr) = n2
                  end if
               end if
-          
             end if
            enddo
-c          if(nt.eq.1) then
-             n2    = islavept(n1,21,iseqr)
-             if(r(n1).gt.rmax) rmax = r(n1)    
-             if(r(n1).lt.rmin.and.r(n1).gt.0.) rmin = r(n1)   
-c          end if
           end if 
+          if(islavept(n1,21,iseqr).eq.0) then
+            r(n1) = 0.
+            islavept(n1,21,iseqr) = n1
+          end if
         enddo
-
-         
- 
+        rmax = 0.
+        rmin = 1.e+30
+        do n1 = 1,nslave
+          n2    = islavept(n1,21,iseqr)
+          if(r(n1).gt.rmax) rmax = r(n1)
+          if(r(n1).lt.rmin.and.r(n1).gt.eps) rmin = r(n1)
+        enddo
       e0 = 500000.
       r0 = (rmax*alog(1.-eini/e0)+beta1*rmin)/
      .     (     alog(1.-eini/e0)+beta1     ) 
@@ -1071,7 +1072,9 @@ c          end if
         ni0(4)    = islavept(n     ,7,iseqr)
         if(ni0(1).ne.n.and.ni0(2).ne.n.and.ni0(4).ne.n) then
           rave = r(n)
-          fact     = 1./(1.-exp(-beta1*(rave-r0)/(rmax-r0))) 
+          denom    = (1.-exp(-beta1*(rave-r0)/(rmax-r0))) 
+          if(denom.lt.eps) denom = eps
+          fact  = 1./denom
           ej(n) = eini*fact
           ek(n) = eini*fact
           ei(n) = eini*fact
