@@ -124,7 +124,7 @@ c                 crefrb was set equal to cref in init_rb
                   cnw     = cnwt
                   dlclnm  = dlcln
                   dlcln   = cnw - ((tmass*gaccel)/
-     .                        (2.*qinfrb*areat*greflrb*greflrb))
+     .                        (qinfrb*areat*greflrb*greflrb))
                   if ((abs(real(dlcln)).lt.real(trtol)) .and.
      .                    (abs(real(dmtrmn)).lt.real(trtol))) return
 
