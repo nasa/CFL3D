@@ -705,7 +705,7 @@ c     aeroelastic predictor step
 c
       if (iunst.gt.1 .and. naesrf.gt.0) then
 #if defined DIST_MPI
-         if (irigb .eq. 1) then
+         if (irigb .eq. 1 .or. irbtrim .eq. 1) then
             call MPI_Bcast(clw(ntt),1,MY_MPI_REAL,myhost,
      .                     mycomm,ierr)
             call MPI_Bcast(cmyw(ntt),1,MY_MPI_REAL,myhost,
