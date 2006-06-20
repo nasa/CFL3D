@@ -187,6 +187,8 @@ c
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
       common /rigidbody/ irigb,irbtrim
+      common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
+     .                 xtmref,areat
 #if defined DIST_MPI
 c
 c***********************
@@ -428,6 +430,9 @@ c
          work(nlast+69) = sarccr3
          work(nlast+70) = ieasmcc2d
          work(nlast+71) = irbtrim
+         work(nlast+72) = tmass
+         work(nlast+73) = yinert
+         work(nlast+74) = gaccel
          nlast = nlast+nkey
       end if
 c
@@ -679,6 +684,9 @@ c
          sarccr3   = work(nlast+69)
          ieasmcc2d = int(work(nlast+70))
          irbtrim   = int(work(nlast+71))
+         tmass     = work(nlast+72)
+         yinert    = work(nlast+73)
+         gaccel    = work(nlast+74)
       end if
 c
 c**************************
