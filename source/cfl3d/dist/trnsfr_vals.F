@@ -186,6 +186,7 @@ c
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /rigidbody/ irigb,irbtrim
 #if defined DIST_MPI
 c
 c***********************
@@ -426,6 +427,7 @@ c
          work(nlast+68) = isarc2d
          work(nlast+69) = sarccr3
          work(nlast+70) = ieasmcc2d
+         work(nlast+71) = irbtrim
          nlast = nlast+nkey
       end if
 c
@@ -676,6 +678,7 @@ c
          isarc2d   = int(work(nlast+68))
          sarccr3   = work(nlast+69)
          ieasmcc2d = int(work(nlast+70))
+         irbtrim   = int(work(nlast+71))
       end if
 c
 c**************************
