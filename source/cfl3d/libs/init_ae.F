@@ -37,13 +37,18 @@ c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+      common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
+     .                 xtmref,areat
 c
       do iaes=1,naesrf
 c
          iskyhk = aesrfdat(1,iaes)
          grefl  = aesrfdat(2,iaes)
+         greflrb= grefl
          uinf   = aesrfdat(3,iaes)
+         uinfrb = uinf
          qinf   = aesrfdat(4,iaes)
+         qinfrb = qinf
          nmodes = aesrfdat(5,iaes)
          ainf   = uinf/xmach
          rgrefl = 1./grefl

@@ -36,14 +36,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
 c
-      greflrb  =  1.
-      uinfrb   =  1.
-      qinfrb   =  1.  
-      yinert   =  1.
-      tmass    =  1.
-      gaccel   =  32.2
-      xcg      = -.40
-c
+      xcg      = xmc
       crefrb   = cref
       xtmref   = xcg - xmc
       areat    = sref

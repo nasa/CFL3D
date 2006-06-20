@@ -61,6 +61,8 @@ c
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
       common /rigidbody/ irigb,irbtrim
+      common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
+     .                 xtmref,areat
 c
       ititr = 0
       nkey  = 0
@@ -451,6 +453,19 @@ c     EASMCC - EASM curvature correction in 2D sense only
 c
 c     parameter to perform trim (1) or not to perform trim (0)
       irbtrim = 0
+      nkey     = nkey + 1
+c
+c     Total aircraft mass for trim and rigid body motion
+      tmass = 1.
+      nkey     = nkey + 1
+c
+c     Total aircraft y-mass moment of inertia for
+c     rigid body motion
+      yinert = 1.
+      nkey     = nkey + 1
+c
+c     Acceleration of gravity for rigid/flex trim and motion
+      gaccel = 1.
       nkey     = nkey + 1
 c
 c*********************************************
@@ -871,6 +886,18 @@ c
       else if (inpstr(lc1:lc2).eq.'irbtrim') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) irbtrim
+c
+      else if (inpstr(lc1:lc2).eq.'tmass') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) tmass
+c
+      else if (inpstr(lc1:lc2).eq.'yinert') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) yinert
+c
+      else if (inpstr(lc1:lc2).eq.'gaccel') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) gaccel
 c
       else
 c
