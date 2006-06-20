@@ -60,6 +60,7 @@ c
       common /fullns/ ifullns
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /rigidbody/ irigb,irbtrim
 c
       ititr = 0
       nkey  = 0
@@ -446,6 +447,10 @@ c     parameter cr3 in SARC model
 c
 c     EASMCC - EASM curvature correction in 2D sense only
       ieasmcc2d = 0
+      nkey     = nkey + 1
+c
+c     parameter to perform trim (1) or not to perform trim (0)
+      irbtrim = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -862,6 +867,10 @@ c
       else if (inpstr(lc1:lc2).eq.'ieasmcc2d') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ieasmcc2d
+c
+      else if (inpstr(lc1:lc2).eq.'irbtrim') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) irbtrim
 c
       else
 c
