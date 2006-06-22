@@ -1,6 +1,6 @@
       subroutine ae_pred(aesrfdat,stm,stmi,gforcn,gforcnm,xs,xxn,
      .                x0,perturb,cmyt,cnwt,xorig,yorig,
-     .                zorig,nmds,maxaes,irbtrim,maxbl)
+     .                zorig,nmds,maxaes,irbtrim,maxbl,myid)
 c
 c     $Id$
 c
@@ -52,7 +52,7 @@ c
 c     modal displacement and velocity as specified functions of time
 c
       call moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
-     .             zorig,maxaes,nmds,irbtrim,maxbl)
+     .             zorig,maxaes,nmds,irbtrim,maxbl,myid)
 c
       return
       end

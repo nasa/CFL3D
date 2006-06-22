@@ -17,11 +17,6 @@ c
 c
 c     The following relaxation coefficients and limits are hardwired:
 c
-      itrminc = 5
-      dclda   = 6.
-      dcldd   = 1.4
-      dcmda   =-.2
-      dcmdd   =-.88
       dtrmsmx =  0.50
       dtrmsmn = -0.50
       dmtrmn  =  0.
@@ -33,12 +28,7 @@ c
       trtol   =  0.0000002
       itrmt   =  0
       epstr   =  1.e-7
-      relax   = .5
 c
-      tp(1,1) = dclda
-      tp(1,2) = dcldd
-      tp(2,1) = dcmda
-      tp(2,2) = dcmdd
       dtr     = tp(1,1)*tp(2,2)-tp(1,2)*tp(2,1)
       fp(1,1) = tp(2,2)/dtr
       fp(1,2) =-tp(1,2)/dtr

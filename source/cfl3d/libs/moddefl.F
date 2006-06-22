@@ -1,5 +1,5 @@
       subroutine moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
-     .                   zorig,maxaes,nmds,irbtrim,maxbl)
+     .                   zorig,maxaes,nmds,irbtrim,maxbl,myid)
 c
 c     $Id$
 c
@@ -43,6 +43,7 @@ c
          nmodes = aesrfdat(5,iaes)
          grefl  = aesrfdat(2,iaes)
          uinf   = aesrfdat(3,iaes)
+         qinf   = aesrfdat(4,iaes)
          ainf   = uinf/xmach
          times  = time*grefl/ainf
          dts    = dt*grefl/ainf
@@ -116,6 +117,8 @@ c
 c                 Level 1 g flight
 c
                   dmtrmnm = dmtrmn
+                  greflrb = grefl
+                  qinfrb  = qinf
 c
 c                 assumes ialph = 0
 c                 crefrb was set equal to cref in init_rb
@@ -130,7 +133,6 @@ c                 crefrb was set equal to cref in init_rb
 
                   ddtrm0 = xs(2*nm-1,iaes)
                   alf0   = alf1
-                  relax  = .75
                   alf1   =alf0  +relax*(-fp(1,1)*dlcln-fp(1,2)*dmtrmn)
                   ddtrm1 =ddtrm0+relax*(-fp(2,1)*dlcln-fp(2,2)*dmtrmn)
                   if(real(ddtrm1).gt.real(dtrmsmx)) ddtrm1 = dtrmsmx
@@ -143,11 +145,12 @@ c                 crefrb was set equal to cref in init_rb
                   if (abs(real(alf1-alf0)).gt.real(dalfmx)) then
                         alf1 = alf0+dalfmx*(alf1-alf0)/ccabs(alf1-alf0)
                   end if
-                  write(79,21928) itrmt,ntt,cmyt,cmy,cnwt,dlcln
+                  if(myid.eq.0) then
+                    write(79,21928) itrmt,ntt,cmyt,cmy,cnwt,dlcln
      .                            ,ddtrm1*180./3.14159,alf1*180./3.14159
-21928             format(2i8,6(1x,f16.9))
+21928               format(2i8,6(1x,f16.9))
+                  end if
                   itrmt = itrmt + 1
-                  irbtrim = 1
                end if
             end if
 c

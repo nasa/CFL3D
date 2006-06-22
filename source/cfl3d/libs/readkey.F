@@ -63,6 +63,10 @@ c
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
+      common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
+     .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
+     .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
+     .              tp(4,4),zlfct,epstr,relax,ittrst
 c
       ititr = 0
       nkey  = 0
@@ -466,6 +470,30 @@ c     rigid body motion
 c
 c     Acceleration of gravity for rigid/flex trim and motion
       gaccel = 1.
+      nkey     = nkey + 1
+c
+c     Relaxation parameter for the trim algorithm
+      relax = 0.5
+      nkey     = nkey + 1
+c
+c     Iteration increment to update trim equations
+      itrminc = 5
+      nkey     = nkey + 1
+c
+c     dclda to be used for trim
+      dclda    = 6.
+      nkey     = nkey + 1
+c
+c     dcldd to be used for trim
+      dcldd    = 1.4
+      nkey     = nkey + 1
+c
+c     dcmda to be used for trim
+      dcmda    =-0.2
+      nkey     = nkey + 1
+c
+c     dcmdd to be used for trim
+      dcmdd    =-0.88
       nkey     = nkey + 1
 c
 c*********************************************
@@ -899,6 +927,30 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) gaccel
 c
+      else if (inpstr(lc1:lc2).eq.'relax') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) relax
+c
+      else if (inpstr(lc1:lc2).eq.'itrminc') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) itrminc
+c
+      else if (inpstr(lc1:lc2).eq.'dclda') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) dclda
+c
+      else if (inpstr(lc1:lc2).eq.'dcldd') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) dcldd
+c
+      else if (inpstr(lc1:lc2).eq.'dcmda') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) dcmda
+c
+      else if (inpstr(lc1:lc2).eq.'dcmdd') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) dcmdd
+c
       else
 c
          if (iunit11.gt.0) then
@@ -907,6 +959,12 @@ c
          end if
 c
       end if
+c
+c     Set trim data
+      tp(1,1) = dclda
+      tp(1,2) = dcldd
+      tp(2,1) = dcmda
+      tp(2,2) = dcmdd
 c
       go to 1100
 c
