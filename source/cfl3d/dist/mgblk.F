@@ -712,9 +712,15 @@ c
      .                     mycomm,ierr)
          end if
 #endif
+c
+c    nblstat is the first block at the top level (levelt) on a
+c    particular processor; all blocks at this level
+c    are assumed to have the same value of thetay.
+c
+         thetay1 = thetay(nblstag)
          call ae_pred(aesrfdat,stm,stmi,gforcn,gforcnm,xs,xxn,
      .                x0,perturb,cmyw(ntt),clw(ntt),xorig,yorig,
-     .                zorig,nmds,maxaes,irbtrim,maxbl,myid)
+     .                zorig,thetay1,nmds,maxaes,irbtrim,maxbl,myid)
       end if
 c
 c     update grid position, speed, and dynamic patch interpolation
