@@ -110,8 +110,9 @@ c
             if (moddfl.eq.4) then
 c
                if (ntt/itrminc*itrminc .eq. ntt) then
-                if ((abs(real(dlcln)).lt.real(trtol)) .and.
-     .                   (abs(real(dmtrmn)).lt.real(trtol))) return
+                if ((abs(real(dlcln)) .lt.real(trtol)) .and.
+     .              (abs(real(dmtrmn)).lt.real(trtol)) .and.
+     .              (itrmt .gt. 0)) return
                   itrmt = itrmt + 1
                   call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
      .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
