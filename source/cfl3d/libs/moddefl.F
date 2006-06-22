@@ -155,7 +155,6 @@ c
      .                            ,ddtrm1*180./3.14159,alf1*180./3.14159
 21928               format(2i8,6(1x,f16.9))
                   end if
-                end if
                end if
             end if
 c
