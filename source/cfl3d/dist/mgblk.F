@@ -714,7 +714,7 @@ c
 #endif
          call ae_pred(aesrfdat,stm,stmi,gforcn,gforcnm,xs,xxn,
      .                x0,perturb,cmyw(ntt),clw(ntt),xorig,yorig,
-     .                zorig,nmds,maxaes,irbtrim,maxbl)
+     .                zorig,nmds,maxaes,irbtrim,maxbl,myid)
       end if
 c
 c     update grid position, speed, and dynamic patch interpolation

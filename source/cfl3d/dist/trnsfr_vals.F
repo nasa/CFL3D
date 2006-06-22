@@ -189,6 +189,10 @@ c
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
+      common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
+     .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
+     .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
+     .              tp(4,4),zlfct,epstr,relax,ittrst
 #if defined DIST_MPI
 c
 c***********************
@@ -433,6 +437,12 @@ c
          work(nlast+72) = tmass
          work(nlast+73) = yinert
          work(nlast+74) = gaccel
+         work(nlast+75) = relax
+         work(nlast+76) = itrminc
+         work(nlast+77) = tp(1,1)
+         work(nlast+78) = tp(2,1)
+         work(nlast+79) = tp(1,2)
+         work(nlast+80) = tp(2,2)
          nlast = nlast+nkey
       end if
 c
@@ -687,6 +697,12 @@ c
          tmass     = work(nlast+72)
          yinert    = work(nlast+73)
          gaccel    = work(nlast+74)
+         relax     = work(nlast+75)
+         itrminc   = int(work(nlast+76))
+         tp(1,1)   = work(nlast+77)
+         tp(2,1)   = work(nlast+78)
+         tp(1,2)   = work(nlast+79)
+         tp(2,2)   = work(nlast+80)
       end if
 c
 c**************************
