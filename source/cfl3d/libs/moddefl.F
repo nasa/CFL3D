@@ -1,5 +1,5 @@
       subroutine moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
-     .                   zorig,maxaes,nmds,irbtrim,maxbl,myid)
+     .                   zorig,thetay,maxaes,nmds,irbtrim,maxbl,myid)
 c
 c     $Id$
 c
@@ -114,9 +114,12 @@ c
      .              (abs(real(dmtrmn)).lt.real(trtol)) .and.
      .              (itrmt .gt. 0)) return
                   itrmt = itrmt + 1
+                  alf0  = thetay
+                  ddtrm0 = xs(2*nm-1,iaes)
                   call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
      .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
-     .                         ,r11,r22,r33,r44) 
+     .                         ,r11,r22,r33,r44,alf1,alf0,ddtrm1
+     .                         ,ddtrm0) 
 c
 c                 Level 1 g flight
 c
@@ -136,8 +139,6 @@ c
                   if ((abs(real(dlcln)).lt.real(trtol)) .and.
      .                    (abs(real(dmtrmn)).lt.real(trtol))) return
 
-                  ddtrm0 = xs(2*nm-1,iaes)
-                  alf0   = alf1
                   alf1   =alf0  +relax*(-fp(1,1)*dlcln-fp(1,2)*dmtrmn)
                   ddtrm1 =ddtrm0+relax*(-fp(2,1)*dlcln-fp(2,2)*dmtrmn)
                   if(real(ddtrm1).gt.real(dtrmsmx)) ddtrm1 = dtrmsmx
@@ -165,12 +166,18 @@ c
       end
       subroutine sqrtcumm(ittr,dcl,dcm,ddclda,ddcmda,da,dd
      .                    ,dlcln,dmtrmn,tp,fp,a11,a12,a22
-     .                    ,r11,r22,r33,r44) 
+     .                    ,r11,r22,r33,r44,alf1,alf0,ddtrm1
+     .                    ,ddtrm0) 
       dimension dcl(5000),ddclda(5000),ddcmda(5000)
      .         ,dcm(5000),dd(5000),da(5000),tp(4,4),fp(4,4)
       dcl(ittr) = dlcln 
       dcm(ittr) = dmtrmn
-      if(ittr.gt.1) then
+      if(ittr.eq.1) then
+        da(ittr) = 0.
+        dd(ittr) = 0.
+      else 
+        da(ittr) = alf1-alf0
+        dd(ittr) = ddtrm1-ddtrm0
         ddclda(ittr) = (dcl(ittr)-dcl(ittr-1))
         ddcmda(ittr) = (dcm(ittr)-dcm(ittr-1))
         a1  = da(ittr-1)*da(ittr-1) 
