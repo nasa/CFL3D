@@ -29,6 +29,8 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst 
+      common /trim1/ dcl(5000),ddclda(5000),ddcmda(5000),r33,r44,ittr
+     .              ,dcm(5000),dd(5000),da(5000),a11,a12,a22,r11,r22
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
      .                  omegaxmc,omegaymc,omegazmc,xorigmc,yorigmc,
      .                  zorigmc,xorig0mc,yorig0mc,zorig0mc,thetaxmc,
@@ -108,11 +110,12 @@ c
             if (moddfl.eq.4) then
 c
                if (ntt/itrminc*itrminc .eq. ntt) then
-c
-c                 Update the angle of attack and control surface trim
-c                 angle to reach the trim lift coefficient
-c                 (tmass*g/(qinf*areat*gfrefl*gfrefl))
-c                 and zero moment coefficient.
+                if ((abs(real(dlcln)).lt.real(trtol)) .and.
+     .                   (abs(real(dmtrmn)).lt.real(trtol))) return
+                  itrmt = itrmt + 1
+                  call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
+     .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
+     .                         ,r11,r22,r33,r44) 
 c
 c                 Level 1 g flight
 c
@@ -122,6 +125,7 @@ c
 c
 c                 assumes ialph = 0
 c                 crefrb was set equal to cref in init_rb
+c
                   cmy     = cmyt + cnwt*(xorig(1)-xmc0)/crefrb
                   dmtrmn  = cmy
                   cnw     = cnwt
@@ -150,12 +154,55 @@ c                 crefrb was set equal to cref in init_rb
      .                            ,ddtrm1*180./3.14159,alf1*180./3.14159
 21928               format(2i8,6(1x,f16.9))
                   end if
-                  itrmt = itrmt + 1
+                end if
                end if
             end if
 c
          end do
       end do
 c
+      return
+      end
+      subroutine sqrtcumm(ittr,dcl,dcm,ddclda,ddcmda,da,dd
+     .                    ,dlcln,dmtrmn,tp,fp,a11,a12,a22
+     .                    ,r11,r22,r33,r44) 
+      dimension dcl(5000),ddclda(5000),ddcmda(5000)
+     .         ,dcm(5000),dd(5000),da(5000),tp(4,4),fp(4,4)
+      dcl(ittr) = dlcln 
+      dcm(ittr) = dmtrmn
+      if(ittr.gt.1) then
+        ddclda(ittr) = (dcl(ittr)-dcl(ittr-1))
+        ddcmda(ittr) = (dcm(ittr)-dcm(ittr-1))
+        a1  = da(ittr-1)*da(ittr-1) 
+        a2  = da(ittr-1)*dd(ittr-1)
+        a3  = dd(ittr-1)*dd(ittr-1)
+        r1  = ddclda(ittr)*da(ittr-1)
+        r2  = ddclda(ittr)*dd(ittr-1)
+        r3  = ddcmda(ittr)*da(ittr-1)
+        r4  = ddcmda(ittr)*dd(ittr-1)
+        a11 =a11+a1
+        a12 =a12+a2
+        a22 =a22+a3
+        r11 = r11 + r1
+        r22 = r22 + r2
+        r33 = r33 + r3
+        r44 = r44 + r4
+        dtrm = a11*a22-a12*a12
+        if(ittr.gt.2) then
+          if(dtrm.ne.0.) then
+            tp(1,1) =( a22*r11 - a12*r22)/dtrm
+            tp(1,2) =(-a12*r11 + a11*r22)/dtrm
+            tp(2,1) =( a22*r33 - a12*r44)/dtrm
+            tp(2,2) =(-a12*r33 + a11*r44)/dtrm
+          end if
+          dtr     = tp(1,1)*tp(2,2)-tp(1,2)*tp(2,1)
+          if(dtr.ne.0.) then
+            fp(1,1) = tp(2,2)/dtr
+            fp(1,2) =-tp(1,2)/dtr
+            fp(2,1) =-tp(2,1)/dtr
+            fp(2,2) = tp(1,1)/dtr
+          end if
+        end if
+      end if
       return
       end
