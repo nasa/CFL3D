@@ -1,5 +1,5 @@
       subroutine moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
-     .                   zorig,thetay,maxaes,nmds,irbtrim,maxbl,myid)
+     .                   zorig,maxaes,nmds,irbtrim,maxbl,myid)
 c
 c     $Id$
 c
@@ -113,19 +113,13 @@ c
                 if ((abs(real(dlcln)) .lt.real(trtol)) .and.
      .              (abs(real(dmtrmn)).lt.real(trtol)) .and.
      .              (itrmt .gt. 0)) return
-                  itrmt = itrmt + 1
-                  alf0  = thetay
-                  ddtrm0 = xs(2*nm-1,iaes)
-                  call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
-     .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
-     .                         ,r11,r22,r33,r44,alf1,alf0,ddtrm1
-     .                         ,ddtrm0) 
 c
 c                 Level 1 g flight
 c
                   dmtrmnm = dmtrmn
                   greflrb = grefl
                   qinfrb  = qinf
+                  itrmt = itrmt + 1
 c
 c                 assumes ialph = 0
 c                 crefrb was set equal to cref in init_rb
@@ -136,9 +130,12 @@ c
                   dlclnm  = dlcln
                   dlcln   = cnw - ((tmass*gaccel)/
      .                        (qinfrb*areat*greflrb*greflrb))
-                  if ((abs(real(dlcln)).lt.real(trtol)) .and.
-     .                    (abs(real(dmtrmn)).lt.real(trtol))) return
-
+                  call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
+     .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
+     .                         ,r11,r22,r33,r44,alf1,alf0,ddtrm1
+     .                         ,ddtrm0) 
+                  alf0  = alf1
+                  ddtrm0 = xs(2*nm-1,iaes)
                   alf1   =alf0  +relax*(-fp(1,1)*dlcln-fp(1,2)*dmtrmn)
                   ddtrm1 =ddtrm0+relax*(-fp(2,1)*dlcln-fp(2,2)*dmtrmn)
                   if(real(ddtrm1).gt.real(dtrmsmx)) ddtrm1 = dtrmsmx
@@ -156,6 +153,8 @@ c
      .                            ,ddtrm1*180./3.14159,alf1*180./3.14159
 21928               format(2i8,6(1x,f16.9))
                   end if
+                  da(itrmt) = alf1-alf0
+                  dd(itrmt) = ddtrm1-ddtrm0
                end if
             end if
 c
@@ -172,12 +171,7 @@ c
      .         ,dcm(5000),dd(5000),da(5000),tp(4,4),fp(4,4)
       dcl(ittr) = dlcln 
       dcm(ittr) = dmtrmn
-      if(ittr.eq.1) then
-        da(ittr) = 0.
-        dd(ittr) = 0.
-      else 
-        da(ittr) = alf1-alf0
-        dd(ittr) = ddtrm1-ddtrm0
+      if(ittr.gt.1) then
         ddclda(ittr) = (dcl(ittr)-dcl(ittr-1))
         ddcmda(ittr) = (dcm(ittr)-dcm(ittr-1))
         a1  = da(ittr-1)*da(ittr-1) 

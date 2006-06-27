@@ -25,10 +25,11 @@ c
       dmtrmnm =  0.
       dlcln   =  0.
       dlclnm  =  0.
-      ddtmx   =  0.01
-      dalfmx  =  0.01
+      ddtmx   =  0.05
+      dalfmx  =  0.05
       trtol   =  0.0000002
       itrmt   =  0
+      alf1    =  0.
       epstr   =  1.e-7
       a11     = 0.
       a12     = 0.
