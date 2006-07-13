@@ -968,9 +968,8 @@ c     Also writes rind cell information for vist3d and tursav:  all
 c     FACES of an IxJxK grid are accurate, but all edges and corners
 c     have no value...currently we use nearby-cell information (somewhat
 c     arbitrary). No B.C info exists for other output quantities (like
-c     smin, xjb, etc). Currently we output -999 for these o indicate 
-c     are not applicable. For 2-D solutions, rind cells are not written
-c     in the i-direction
+c     smin, xjb, etc). Currently we output nearby values for these.
+c     For 2-D solutions, rind cells are not written in the i-direction.
 c     Note: turb quantities need to be renormalized to be put into SIDS-
 c     standard "consistent" normalization
 c
@@ -4880,7 +4879,7 @@ c        (idim,jdim,kdim) <- necessary for CGNS!,
 c
 c     even though they are stored in CFL3D in the order: jdim,kdim,idim
 c     Also writes rind cell information: No B.C info exists for these.
-c     Currently we output -999 to indicate they are not applicable.
+c     Currently we output nearby values for these.
 c     For 2-D solutions, rind cells are not written in the i-direction.
 c
 c   INPUTS:
@@ -5408,7 +5407,7 @@ c                       (integer)
 c      iflag............=0 means std BCs used (keys off of bci,bcj,bck)
 c                       =1 means BC is at ghost cell
 c                       =2 means no BC exists for rind cell (fills with 
-c                        -999)
+c                        nearby values)
 c   OUTPUTS:
 c      wk...............solution array in i,j,k-ordering, as stored
 c                       in CGNS file (real)
@@ -5420,30 +5419,6 @@ c
      +          qk0(jdim,idim-1,ldim,4),bci(jdim,kdim,2),
      +          bcj(kdim,idim-1,2),bck(jdim,idim-1,2)
 c
-c   Load dummy value (-999) for rind cells if iflag=2
-      if(iflag .eq. 2) then
-        do i=i2d,idima-i2d,idima-i2d
-        do j=0,jdima
-        do k=0,kdima
-          wk(i,j,k)=-999.
-        enddo
-        enddo
-        enddo
-        do j=0,jdima,jdima
-        do i=i2d,idima-i2d
-        do k=0,kdima
-          wk(i,j,k)=-999.
-        enddo
-        enddo
-        enddo
-        do k=0,kdima,kdima
-        do i=i2d,idima-i2d
-        do j=0,jdima
-          wk(i,j,k)=-999.
-        enddo
-        enddo
-        enddo
-      end if
 c   Set up nfaci parameter
       if(i2d .eq. 1) then
         nfaci=1
@@ -5472,8 +5447,130 @@ c   (data is repeated as if it is on a coarser grid)
           enddo
         enddo
       enddo
+c   Load nearby values for rind cells if iflag=2
+      if(iflag .eq. 2) then
+        if (i2d .ne. 1) then
+        i=0
+        do j=1,jdima-1
+        do k=1,kdima-1
+          wk(i,j,k)=wk(i+1,j,k)
+        enddo
+        enddo
+        do j=1,jdima-1
+          wk(i,j,0)=wk(i+1,j,1)
+          wk(i,j,kdima)=wk(i+1,j,kdima-1)
+        enddo
+        do k=1,kdima-1
+          wk(i,0,k)=wk(i+1,1,k)
+          wk(i,jdima,k)=wk(i+1,jdima-1,k)
+        enddo
+        wk(i,0,0)=wk(i+1,1,1)
+        wk(i,jdima,0)=wk(i+1,jdima-1,1)
+        wk(i,0,kdima)=wk(i+1,1,kdima-1)
+        wk(i,jdima,kdima)=wk(i+1,jdima-1,kdima-1)
+        i=idima
+        do j=1,jdima-1
+        do k=1,kdima-1
+          wk(i,j,k)=wk(i-1,j,k)
+        enddo
+        enddo
+        do k=1,kdima-1
+          wk(i,0,k)=wk(i-1,1,k)
+          wk(i,jdima,k)=wk(i-1,jdima-1,k)
+        enddo
+        do j=1,jdima-1
+          wk(i,j,0)=wk(i-1,j,1)
+          wk(i,j,kdima)=wk(i-1,j,kdima-1)
+        enddo
+        wk(i,0,0)=wk(i-1,1,1)
+        wk(i,jdima,0)=wk(i-1,jdima-1,1)
+        wk(i,0,kdima)=wk(i-1,1,kdima-1)
+        wk(i,jdima,kdima)=wk(i-1,jdima-1,kdima-1)
+        end if
 c
-      if(iflag .eq. 2) return
+        j=0
+        do i=1,idima-1
+        do k=1,kdima-1
+          wk(i,j,k)=wk(i,j+1,k)
+        enddo
+        enddo
+        do i=1,idima-1
+          wk(i,j,0)=wk(i,j+1,1)
+          wk(i,j,kdima)=wk(i,j+1,kdima-1)
+        enddo
+        if (i2d .ne. 1) then
+          do k=1,kdima-1
+            wk(0,j,k)=wk(1,j+1,k)
+            wk(idima,j,k)=wk(idima-1,j+1,k)
+          enddo
+          wk(0,j,0)=wk(1,j+1,1)
+          wk(idima,j,0)=wk(idima-1,j+1,1)
+          wk(0,j,kdima)=wk(1,j+1,kdima-1)
+          wk(idima,j,kdima)=wk(idima-1,j+1,kdima-1)
+        end if
+        j=jdima
+        do i=1,idima-1
+        do k=1,kdima-1
+          wk(i,j,k)=wk(i,j-1,k)
+        enddo
+        enddo
+        do i=1,idima-1
+          wk(i,j,0)=wk(i,j-1,1)
+          wk(i,j,kdima)=wk(i,j-1,kdima-1)
+        enddo
+        if (i2d .ne. 1) then
+          do k=1,kdima-1
+            wk(0,j,k)=wk(1,j-1,k)
+            wk(idima,j,k)=wk(idima-1,j-1,k)
+          enddo
+          wk(0,j,0)=wk(1,j-1,1)
+          wk(idima,j,0)=wk(idima-1,j-1,1)
+          wk(0,j,kdima)=wk(1,j-1,kdima-1)
+          wk(idima,j,kdima)=wk(idima-1,j-1,kdima-1)
+        end if
+c
+        k=0
+        do i=1,idima-1
+        do j=1,jdima-1
+          wk(i,j,k)=wk(i,j,k+1)
+        enddo
+        enddo
+        do i=1,idima-1
+          wk(i,0,k)=wk(i,1,k+1)
+          wk(i,jdima,k)=wk(i,jdima-1,k+1)
+        enddo
+        if (i2d .ne. 1) then
+          do j=1,jdima-1
+            wk(0,j,k)=wk(1,j,k+1)
+            wk(idima,j,k)=wk(idima-1,j,k+1)
+          enddo
+          wk(0,0,k)=wk(1,1,k+1)
+          wk(idima,0,k)=wk(idima-1,1,k+1)
+          wk(0,jdima,k)=wk(1,jdima-1,k+1)
+          wk(idima,jdima,k)=wk(idima-1,jdima-1,k+1)
+        end if
+        k=kdima
+        do i=1,idima-1
+        do j=1,jdima-1
+          wk(i,j,k)=wk(i,j,k-1)
+        enddo
+        enddo
+        do i=1,idima-1
+          wk(i,0,k)=wk(i,1,k-1)
+          wk(i,jdima,k)=wk(i,jdima-1,k-1)
+        enddo
+        if (i2d .ne. 1) then
+          do j=1,jdima-1
+            wk(0,j,k)=wk(1,j,k-1)
+            wk(idima,j,k)=wk(idima-1,j,k-1)
+          enddo
+          wk(0,0,k)=wk(1,1,k-1)
+          wk(idima,0,k)=wk(idima-1,1,k-1)
+          wk(0,jdima,k)=wk(1,jdima-1,k-1)
+          wk(idima,jdima,k)=wk(idima-1,jdima-1,k-1)
+        end if
+        return
+      end if
 c
 c   Load BCs into "Rind" regions
 c    i0 and idim faces:
