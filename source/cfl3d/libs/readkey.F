@@ -917,19 +917,23 @@ c
 c
       else if (inpstr(lc1:lc2).eq.'tmass') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) tmass
+         read(inpstr(lc2:lcl),*) realval(1)
+         tmass = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'yinert') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) yinert
+         read(inpstr(lc2:lcl),*) realval(1)
+         yinert = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'gaccel') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) gaccel
+         read(inpstr(lc2:lcl),*) realval(1)
+         gaccel = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'relax') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) relax
+         read(inpstr(lc2:lcl),*) realval(1)
+         relax = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'itrminc') then
          lc2 = lc2 +1
@@ -937,19 +941,23 @@ c
 c
       else if (inpstr(lc1:lc2).eq.'dclda') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) dclda
+         read(inpstr(lc2:lcl),*) realval(1)
+         dclda = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'dcldd') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) dcldd
+         read(inpstr(lc2:lcl),*) realval(1)
+         dcldd = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'dcmda') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) dcmda
+         read(inpstr(lc2:lcl),*) realval(1)
+         dcmda = realval(1) 
 c
       else if (inpstr(lc1:lc2).eq.'dcmdd') then
          lc2 = lc2 +1
-         read(inpstr(lc2:lcl),*) dcmdd
+         read(inpstr(lc2:lcl),*) realval(1)
+         dcmdd = realval(1) 
 c
       else
 c
