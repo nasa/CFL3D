@@ -76,7 +76,7 @@ c
 c
       do 100 ns = 1,nseg
 c
-      lbc = abs(jbcinfo(nbl,ns,1,m))
+      lbc = iabs(jbcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -145,7 +145,7 @@ c
 c
       do 200 ns = 1,nseg
 c
-      lbc = abs(kbcinfo(nbl,ns,1,m))
+      lbc = iabs(kbcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
@@ -214,7 +214,7 @@ c
 c
       do 300 ns = 1,nseg
 c
-      lbc = abs(ibcinfo(nbl,ns,1,m))
+      lbc = iabs(ibcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
      .        (lbc-2016)
