@@ -458,12 +458,12 @@ CU    USES atimes,asolve,snrm
         if(test.lt.abs(b(j))) test = abs(b(j))
 5     continue
       if(test.le.eps) return
-      call atimes(n,nc,x,r,sa,ija,0) 
+      call atimes(n,nc,x,r,sa,ija,0,myid) 
       do 11 j=1,n 
         r(j)=b(j)-r(j) 
         rr(j)=r(j) 
 11    continue 
-      call atimes(n,nc,r,rr,sa,ija,0) 
+      call atimes(n,nc,r,rr,sa,ija,0,myid) 
       znrm=1.d0 
       if(itol.eq.1) then 
         bnrm=snrm(n,b,itol) 
@@ -506,13 +506,13 @@ CU    USES atimes,asolve,snrm
 14        continue 
         endif 
         bkden=bknum 
-        call atimes(n,nc,p,z,sa,ija,0) 
+        call atimes(n,nc,p,z,sa,ija,0,myid) 
         akden=0.d0 
         do 15 j=1,n 
           akden=akden+z(j)*pp(j) 
 15      continue 
         ak=bknum/akden 
-        call atimes(n,nc,pp,zz,sa,ija,1) 
+        call atimes(n,nc,pp,zz,sa,ija,1,myid) 
 c
 c
         do 16 j=1,n 
@@ -595,21 +595,21 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
 
 
-      SUBROUTINE atimes(n,nc,x,r,sa,ija,itrnsp) 
+      SUBROUTINE atimes(n,nc,x,r,sa,ija,itrnsp,myid) 
       INTEGER n,itrnsp
       dimension ija(nc)
       dimension x(n),r(n),sa(nc) 
 CU    USES dsprsax,dsprstx 
       if (itrnsp.eq.0) then 
-        call dsprsax(sa,ija,x,r,n,nc) 
+        call dsprsax(sa,ija,x,r,n,nc,myid) 
       else 
-        call dsprstx(sa,ija,x,r,n,nc) 
+        call dsprstx(sa,ija,x,r,n,nc,myid) 
       endif 
       return 
       END 
 C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
-      SUBROUTINE dsprstx(sa,ija,x,b,n,nc)
+      SUBROUTINE dsprstx(sa,ija,x,b,n,nc,myid)
       INTEGER n,ija(nc)
       dimension b(n),sa(nc),x(n)
       INTEGER i,j,k
@@ -653,7 +653,7 @@ c
       END
 C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
-      SUBROUTINE dsprsax(sa,ija,x,b,n,nc)
+      SUBROUTINE dsprsax(sa,ija,x,b,n,nc,myid)
       INTEGER n,ija(nc)
       dimension b(n),sa(nc),x(n)
       INTEGER i,k

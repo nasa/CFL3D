@@ -6092,7 +6092,7 @@ c
          end if
          if(abs(isktyp).eq.1.or.(abs(isktyp).eq.2.and.nskip.eq.0)
      .     .or.(itcpadd.gt.1)) then
-          if(meshdef.eq.1.and.myid.eq.myhost) then
+          if(meshdef.eq.1) then
            open(196,file='meshdef.inp',status='unknown',form=
      .             'formatted')
            do ng=1,ngrid
