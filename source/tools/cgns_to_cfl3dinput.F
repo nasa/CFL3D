@@ -280,6 +280,7 @@ c    +         '' PointRange'')')
      +          ibocotype .ne. BCInflowSupersonic .and.
      +          ibocotype .ne. BCTunnelInflow .and.
      +          ibocotype .ne. BCSymmetryPolar .and.
+     +          ibocotype .ne. BCWall .and.
      +          ibocotype .ne. BCDegenerateLine) then
               goto 333
             end if
@@ -795,7 +796,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
@@ -909,7 +911,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
@@ -1023,7 +1026,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
@@ -1137,7 +1141,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
@@ -1251,7 +1256,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
@@ -1365,7 +1371,8 @@ c       search thru all the 1-to-1 connections
                 write(7,'(''              TWTYPE        CQ'')')
                 write(7,'(''                 -1.        0.'')')
               else if (ibctype(n,nn) .eq. BCWallViscous .or.
-     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux) then
+     +         ibctype(n,nn) .eq. BCWallViscousHeatFlux .or.
+     +         ibctype(n,nn) .eq. BCWall) then
                 ibctyp=2004
                 ndata=2
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
