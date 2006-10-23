@@ -29,9 +29,10 @@ c
 c
 c  read the CFL3D input file to determine parameter requirements
 c
-      write(6,'('' Note:  currently, you must be linked to CGNS V2.2'',
+      write(6,'('' Note:  currently, you must be linked to CGNS V2.4'',
      +  '' or later'',/)')
       write(6,'('' What is the CFL3D input file name?'')')
+      write(6,'(''   (be sure that IREST=0 in this file!!!)'')')
       read(5,'(a80)') file2
       open(3,file=file2,form='formatted',status='old')
       write(6,'('' Does this case use a patch file (e.g., '',
@@ -592,7 +593,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' i0:   1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -734,7 +738,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' imax: 1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -876,7 +883,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' j0:   1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -1018,7 +1028,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' jmax: 1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -1160,7 +1173,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' k0:   1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -1302,7 +1318,10 @@ c XXX
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousIsothermal,PointRange,2,ipnts,ibc,ier)
           else if(ib .eq. 0) then
-            continue
+            write(6,'('' kmax: 1-1, patch, or overset BC at '',
+     +       ''zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)') n,
+     +       ipnts(1,1),ipnts(1,2),ipnts(2,1),ipnts(2,2),
+     +       ipnts(3,1),ipnts(3,2)
           else
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        UserDefined,PointRange,2,ipnts,ibc,ier)
@@ -1476,6 +1495,11 @@ c  get point ranges (donor zone)
           iranged(3,2)=khi2(n)
 c         write(6,'('' iranged='',6i4)') iranged(1,1),iranged(2,1),
 c    +      iranged(3,1),iranged(1,2),iranged(2,2),iranged(3,2)
+          write(6,'(''    Pair:'')')
+          write(6,'(''    zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)')
+     +     iblk1(n),ilo1(n),ihi1(n),jlo1(n),jhi1(n),klo1(n),khi1(n) 
+          write(6,'(''    zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)')
+     +     iblk2(n),ilo2(n),ihi2(n),jlo2(n),jhi2(n),klo2(n),khi2(n) 
 c   call routine to get transform matrix
           call transget(ilo1(n),jlo1(n),klo1(n),ihi1(n),jhi1(n),
      +      khi1(n),isva1(n),isvb1(n),ilo2(n),jlo2(n),klo2(n),ihi2(n),
@@ -1528,6 +1552,178 @@ c  write info
      +       irange,iranged,itransform,iindex,ier)
           if (ier .ne. 0) call cg_error_exit_f
         enddo
+c
+c  if there are patched or overset connectivities:
+c
+      if (ninter .lt. 0 .or. iovmx .ne. 0) then
+        write(6,'(/,'' There appear to be patched and/or overset'',
+     +   '' boundaries'')')
+        write(6,'('' There are currently Information Descriptor'',
+     +   '' nodes written to the CGNS file'')')
+        write(6,'('' If you also want GridConnectivity_t node(s)'',
+     +   '' written, you must supply info here:'')')
+c  Patched:
+        write(6,'(''   Input number of patched faces'',
+     +   '' (typically 2 for each interface)'')')
+        write(6,'(''   (type 0 if there are none, or if you'',
+     +   '' want to leave out this info):'')')
+        read(5,*) ipatch
+        if (ipatch .gt. 0) then
+          do i=1,ipatch
+            write(6,'('' Input to-zone index information:'')')
+            write(6,'('' Input zone #,ilo,ihi,jlo,jhi,klo,khi:'')')
+            read(5,*) izto,iloto,ihito,jloto,jhito,kloto,khito
+            irange(1,1)=iloto
+            irange(2,1)=jloto
+            irange(3,1)=kloto
+            irange(1,2)=ihito
+            irange(2,2)=jhito
+            irange(3,2)=khito
+            iok=0
+            if (iloto .eq. ihito .or. jloto .eq. jhito .or.
+     +          kloto .eq. khito) then
+              iok=1
+            end if
+            if (iok .eq. 0) then
+              write(6,'('' Error... one index must be identical.'',
+     +         ''  Stopping.'')')
+              stop
+            end if
+c  get donor zone name
+            write(6,'('' Input primary number of zone donor for this'',
+     +       '' patch:'')')
+            read(5,*) izfr
+            donorname=zonename(izfr)
+c  get interface name
+            if(i .lt. 10000) then
+              write(filecon,102) i
+            else
+              write(6,'('' too many zones - limited to 9999'')')
+              write(6,'('' Aborting.  The ADF file is no good.'')')
+              stop
+            end if
+c  get connect name
+            connectname = 'PatchInterfaceA' // filecon
+            call cg_conn_write_short_f(iccg,ibase,iz(izto),connectname,
+     +        Vertex,Abutting,PointRange,2,irange,donorname,
+     +        iindexto,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            call cg_conn_write_short_f(iccgr,ibase,iz(izto),connectname,
+     +        Vertex,Abutting,PointRange,2,irange,donorname,
+     +        iindexto,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+c  write descriptors to go along with patching
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',izto,
+     +       'ZoneGridConnectivity_t',1,'GridConnectivity_t',
+     +       iindexto,'end')
+            textf='Patching connectivity InterpolantsDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('InterpolantsDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            textf='Patching connectivity CellListDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('CellListDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+c
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',izto,
+     +       'ZoneGridConnectivity_t',1,'GridConnectivity_t',
+     +       iindexto,'end')
+            textf='Patching connectivity InterpolantsDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('InterpolantsDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            textf='Patching connectivity CellListDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('CellListDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+          enddo
+        end if
+c  Overset:
+        write(6,'(''   Input number of overset faces'',
+     +   '' (typically 2 for each interface)'')')
+        write(6,'(''   (type 0 if there are none, or if you'',
+     +   '' want to leave out this info):'')')
+        read(5,*) iover
+        if (iover .gt. 0) then
+          do i=1,iover
+            write(6,'('' Input to-zone index information:'')')
+            write(6,'('' Input zone #,ilo,ihi,jlo,jhi,klo,khi:'')')
+            read(5,*) izto,iloto,ihito,jloto,jhito,kloto,khito
+            irange(1,1)=iloto
+            irange(2,1)=jloto
+            irange(3,1)=kloto
+            irange(1,2)=ihito
+            irange(2,2)=jhito
+            irange(3,2)=khito
+            iok=0
+            if (iloto .eq. ihito .or. jloto .eq. jhito .or.
+     +          kloto .eq. khito) then
+              iok=1
+            end if
+            if (iok .eq. 0) then
+              write(6,'('' Error... one index must be identical.'',
+     +         ''  Stopping.'')')
+              stop
+            end if
+c  get donor zone name
+            write(6,'('' Input primary number of zone donor for this'',
+     +       '' patch:'')')
+            read(5,*) izfr
+            donorname=zonename(izfr)
+c  get interface name
+            if(i .lt. 10000) then
+              write(filecon,102) i
+            else
+              write(6,'('' too many zones - limited to 9999'')')
+              write(6,'('' Aborting.  The ADF file is no good.'')')
+              stop
+            end if
+c  get connect name
+            connectname = 'OversetInterfaceA' // filecon
+            call cg_conn_write_short_f(iccg,ibase,iz(izto),connectname,
+     +        Vertex,Overset,PointRange,2,irange,donorname,
+     +        iindexto,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            call cg_conn_write_short_f(iccgr,ibase,iz(izto),connectname,
+     +        Vertex,Overset,PointRange,2,irange,donorname,
+     +        iindexto,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+c  write descriptors to go along with overset
+            call cg_goto_f(iccg,ibase,ier,'Zone_t',izto,
+     +       'ZoneGridConnectivity_t',1,'GridConnectivity_t',
+     +       iindexto,'end')
+            textf='Overset connectivity InterpolantsDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('InterpolantsDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            textf='Overset connectivity CellListDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('CellListDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+c
+            call cg_goto_f(iccgr,ibase,ier,'Zone_t',izto,
+     +       'ZoneGridConnectivity_t',1,'GridConnectivity_t',
+     +       iindexto,'end')
+            textf='Overset connectivity InterpolantsDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('InterpolantsDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+            textf='Overset connectivity CellListDonor info is'//
+     +       ' NOT included in this file'
+            call cg_descriptor_write_f('CellListDonorInfo',
+     +       textf,ier)
+            if (ier .ne. 0) call cg_error_exit_f
+          enddo
+        end if
+c
+      end if
 c  close adf file
       call cg_close_f(iccg,ier)
       if (ier .ne. 0) call cg_error_exit_f
