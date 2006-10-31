@@ -77,7 +77,14 @@ c       set ialph=1 to be same as in old ronnie
 c
         ialph = 1
 c
-        call rp3d(w(lx),w(ly),w(lz),jdim,kdim,idim,igrid,ialph,1)
+        call rp3d(w(lx),w(ly),w(lz),jdim,kdim,idim,igrid,ialph,1,irr)
+        if (irr .ne. 0) then
+          write(11,*) ' Stopping... error reading grid...'
+          write(11,*) ' (Common error:  grid not written in same',
+     .    ' precision that RONNIE was compiled)'
+          stop
+        end if
+c
       end if
 c
 c      coarser global grids
