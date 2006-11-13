@@ -1,5 +1,6 @@
       subroutine cellvol(jdim,kdim,idim,x,y,z,sj,sk,si,vol,t,nou,bou,
-     .                   nbuf,ibufdim,myid,mblk2nd,maxbl,nbl)
+     .                   nbuf,ibufdim,myid,mblk2nd,maxbl,nbl,iflagv1,
+     .                   iflagv,imin,imax,jmin,jmax,kmin,kmax)
 c
 c     $Id$
 c
@@ -21,8 +22,10 @@ c
      .          si(jdim*kdim,idim,5)
 c
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
+      common /zero/ iexp
 c
+      eps  =  10.**(-iexp+1)
       jdim1 = jdim-1
       kdim1 = kdim-1
       idim1 = idim-1
@@ -171,16 +174,44 @@ c
    82    format(39h stopping ... negative volume at i,j,k=,3i5,
      .           6h block,i5)
       else
+         imin = 100000000
+         imax = 0
+         jmin = 100000000
+         jmax = 0
+         kmin = 100000000
+         kmax = 0
          do 65 i=1,idim1
          do 65 k=1,kdim
          do 65 j=1,jdim
-         if (real(vol(j,k,i)).gt.0.0) go to 65
-         vol(j,k,i) = ccabs(vol(j,k,i))
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),83) i,j,k,nbl
+           if (real(vol(j,k,i)).lt.eps) then 
+             if(i.lt.imin) imin = i
+             if(i.gt.imax) imax = i
+             if(j.lt.jmin) jmin = j
+             if(j.gt.jmax) jmax = j
+             if(k.lt.kmin) kmin = k
+             if(k.gt.kmax) kmax = k
+             iflagv = 1
+             vol(j,k,i) = ccabs(vol(j,k,i))
+             if(iflagv1.eq.1) then
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),83) i,j,k,nbl
+             end if
+           end if
    65    continue
    83    format(39h WARNING  ... negative volume at i,j,k=,3i5,
      .             6h block,i5,14h not stopping!)
+         imin = imin - 10
+         jmin = jmin - 10
+         kmin = kmin - 10
+         imax = imax + 10
+         jmax = jmax + 10
+         kmax = kmax + 10
+         if(imin.lt.1   ) imin=1
+         if(jmin.lt.1   ) jmin=1
+         if(kmin.lt.1   ) kmin=1
+         if(imax.gt.idim) imax=idim
+         if(jmax.gt.jdim) jmax=jdim
+         if(kmax.gt.kdim) kmax=kdim
       end if
 c
       return

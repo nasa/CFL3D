@@ -48,7 +48,7 @@ c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /memory/ memadd,memaddi
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
       common /ghost/ irghost,iwghost
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
@@ -459,6 +459,15 @@ c     parameter to perform trim (1) or not to perform trim (0)
       irbtrim = 0
       nkey     = nkey + 1
 c
+c     parameter to perform rigid body sim (1) or not to perform (0)
+      irigb    = 0
+      nkey     = nkey + 1
+c
+c     Conversion factor from rigid body dynamics length scale
+c     to CFD grid length scale.
+      greflrb  = 1.
+      nkey     = nkey + 1
+c
 c     Total aircraft mass for trim and rigid body motion
       tmass = 1.
       nkey     = nkey + 1
@@ -494,6 +503,14 @@ c     dcmda to be used for trim
 c
 c     dcmdd to be used for trim
       dcmdd    =-0.88
+      nkey     = nkey + 1
+c
+c     Parameter controling dynamic grid input
+      ndgrd    = 0
+      nkey     = nkey + 1
+c
+c     Parameter controling dynamic grid output
+      ndwrt    = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -915,6 +932,15 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) irbtrim
 c
+      else if (inpstr(lc1:lc2).eq.'irigb') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) irigb
+c
+      else if (inpstr(lc1:lc2).eq.'greflrb') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         greflrb = realval(1)
+c
       else if (inpstr(lc1:lc2).eq.'tmass') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
@@ -958,6 +984,14 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          dcmdd = realval(1) 
+c
+      else if (inpstr(lc1:lc2).eq.'ndgrd') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ndgrd
+c
+      else if (inpstr(lc1:lc2).eq.'ndwrt') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ndwrt
 c
       else
 c

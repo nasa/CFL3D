@@ -1,4 +1,4 @@
-      subroutine init_rb
+      subroutine init_rb(maxaes,maxbl,zorig,aesrfdat) 
 c
 c     $Id$
 c
@@ -25,12 +25,17 @@ c
 #   endif
 c
       dimension temp(4,4)
+      dimension aesrfdat(5,maxaes),zorig(maxbl)
 c
       common /rbstmt1/ bmatrb(4,4),gforcnrb(4),gforcnmrb(4),gforcsrb(4),
      .                 stmrb(4,4),stmirb(4,4),xsrb(4),xxnrb(4),xnmrb(4),
      .                 x0rb(4)
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat 
+      common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
+     .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
+     .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
+     .              tp(4,4),zlfct,epstr,relax,ittrst
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -40,9 +45,13 @@ c
       crefrb   = cref
       xtmref   = xcg - xmc
       areat    = sref
+      grefl    = aesrfdat(2,1)
+      uinfrb   = aesrfdat(3,1)
+      qinfrb   = aesrfdat(4,1)
       ainf     = uinfrb/xmach
-      rgrefl   = 1./greflrb
-      timesc   = greflrb/ainf
+      timesc   = grefl/ainf
+      dts      = dt*timesc
+      zrg0     = zorig(1)
 c
       do m=1,4
          do n = 1,4
@@ -60,17 +69,17 @@ c
 c
       do i = 1,4
          stmrb(i,i)  = 1.
-         stmirb(i,i) = dt*timesc
+         stmirb(i,i) = dts
       enddo
 c
-      stmrb(1,2)   = dt*timesc
-      stmrb(1,4)   = 0.5*dt*dt*timesc*timesc*uinfrb 
-      stmrb(3,4)   = dt*timesc
-      stmrb(2,4)   = dt*timesc*uinfrb 
-      stmirb(1,2)  = 0.5*dt*dt*timesc*timesc
-      stmirb(1,4)  = dt*dt*dt*timesc*timesc*uinfrb/6.0 
-      stmirb(2,4)  = 0.5*dt*timesc*dt*timesc*uinfrb 
-      stmirb(3,4)  = 0.5*dt*timesc*dt*timesc
+      stmrb(1,2)   = dts
+      stmrb(1,4)   = 0.
+      stmrb(3,4)   = dts
+      stmrb(2,4)   = 0.
+      stmirb(1,2)  = 0.5*dts*dts
+      stmirb(1,4)  = 0.
+      stmirb(2,4)  = 0.
+      stmirb(3,4)  = 0.5*dts*dts
       bmatrb(2,2)  = 1./tmass
       bmatrb(4,4)  = 1./yinert
 c

@@ -55,7 +55,7 @@ c
       common /zero/ iexp
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
 
 c
       memuse = 0
@@ -396,7 +396,7 @@ c
       dimension ija(nc)
       dimension sa(nc)
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt
 
       it1 = 0
       itmx1 =200
@@ -789,7 +789,7 @@ c
       dimension arg(7),coef(8),rsn(7)
       dimension nipm(7),nsf(7),n3(7)
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt
       common /sgminmax/ rmin,rmax
 
       relax = 1.0
@@ -948,7 +948,7 @@ c         enddo
       dimension mblk2nd(maxbl)
       common /sgminmax/ rmin,rmax
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt
 
 c
 c    Do this at every time step because the closest surface
@@ -1308,7 +1308,7 @@ c
 
       common /twod/ i2d
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /moov/movie,nframes,icall1,lhdr
 c

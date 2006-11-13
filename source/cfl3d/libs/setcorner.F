@@ -31,7 +31,7 @@ c
 c
       common /zero/ iexp
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
 c
 c

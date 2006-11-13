@@ -1,4 +1,4 @@
-      subroutine moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
+      subroutine moddefl(xs,xxn,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
      .                   zorig,maxaes,nmds,irbtrim,maxbl,myid)
 c
 c     $Id$
@@ -14,8 +14,7 @@ c
 #   endif
 c
       dimension aesrfdat(5,maxaes),perturb(nmds,maxaes,4),
-     .          xs(2*nmds,maxaes)
-      dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
+     .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes) 
 c
       common /elastic/ ndefrm,naesrf
       common /zero/ iexp
@@ -113,29 +112,31 @@ c
                 if ((abs(real(dlcln)) .lt.real(trtol)) .and.
      .              (abs(real(dmtrmn)).lt.real(trtol)) .and.
      .              (itrmt .gt. 0)) return
+                  itrmt = itrmt + 1
+                  alf0  = alf1
+                  ddtrm0 = xs(2*nm-1,iaes)
+c                 call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
+c    .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
+c    .                         ,r11,r22,r33,r44,alf1,alf0,ddtrm1
+c    .                         ,ddtrm0)
 c
 c                 Level 1 g flight
 c
                   dmtrmnm = dmtrmn
-                  greflrb = grefl
                   qinfrb  = qinf
-                  itrmt = itrmt + 1
 c
 c                 assumes ialph = 0
 c                 crefrb was set equal to cref in init_rb
 c
-                  cmy     = cmyt + cnwt*(xorig(1)-xmc0)/crefrb
+                  cmy     = cmyt + cnwt*(xorig-xmc0)/crefrb
                   dmtrmn  = cmy
                   cnw     = cnwt
                   dlclnm  = dlcln
                   dlcln   = cnw - ((tmass*gaccel)/
-     .                        (qinfrb*areat*greflrb*greflrb))
-                  call sqrtcumm(itrmt,dcl,dcm,ddclda,ddcmda,da,dd
-     .                         ,dlcln,dmtrmn,tp,fp,a11,a12,a22
-     .                         ,r11,r22,r33,r44,alf1,alf0,ddtrm1
-     .                         ,ddtrm0) 
-                  alf0  = alf1
-                  ddtrm0 = xs(2*nm-1,iaes)
+     .                        (qinfrb*areat*grefl*grefl))
+                  if ((abs(real(dlcln)).lt.real(trtol)) .and.
+     .                    (abs(real(dmtrmn)).lt.real(trtol))) return
+ 
                   alf1   =alf0  +relax*(-fp(1,1)*dlcln-fp(1,2)*dmtrmn)
                   ddtrm1 =ddtrm0+relax*(-fp(2,1)*dlcln-fp(2,2)*dmtrmn)
                   if(real(ddtrm1).gt.real(dtrmsmx)) ddtrm1 = dtrmsmx
@@ -149,12 +150,13 @@ c
                         alf1 = alf0+dalfmx*(alf1-alf0)/ccabs(alf1-alf0)
                   end if
                   if(myid.eq.0) then
-                    write(79,21928) itrmt,ntt,cmyt,cmy,cnwt,dlcln
+                    write(79+myid,21928) itrmt,ntt,cmyt,cmy,cnwt,dlcln
      .                            ,ddtrm1*180./3.14159,alf1*180./3.14159
-21928               format(2i8,6(1x,f16.9))
+     .                          ,xorig,xmc0,crefrb
+21928               format(2i8,9(1x,f16.9))
                   end if
-                  da(itrmt) = alf1-alf0
-                  dd(itrmt) = ddtrm1-ddtrm0
+                else
+                  xs(2*nm-1,iaes) = xxn(2*nm-1,iaes)
                end if
             end if
 c
@@ -171,7 +173,12 @@ c
      .         ,dcm(5000),dd(5000),da(5000),tp(4,4),fp(4,4)
       dcl(ittr) = dlcln 
       dcm(ittr) = dmtrmn
-      if(ittr.gt.1) then
+      if(ittr.eq.1) then
+        da(ittr) = 0.
+        dd(ittr) = 0.
+      else
+        da(ittr) = alf1-alf0
+        dd(ittr) = ddtrm1-ddtrm0
         ddclda(ittr) = (dcl(ittr)-dcl(ittr-1))
         ddcmda(ittr) = (dcm(ittr)-dcm(ittr-1))
         a1  = da(ittr-1)*da(ittr-1) 

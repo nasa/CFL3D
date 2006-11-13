@@ -1,4 +1,4 @@
-      subroutine rb_corr(cn,cm)
+      subroutine rb_corr(aesrfdat,cnt,cmt,maxaes)
 c
 c     $Id$
 c
@@ -22,15 +22,23 @@ c
      .                 x0rb(4)
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat 
+      common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
+     .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
+     .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
+     .              tp(4,4),zlfct,epstr,relax,ittrst
+      dimension aesrfdat(5,maxaes)
 c
 c     rigid body displacement and velocity prediction via rigid body
 c     equations of motion
 c
+         grefl  = aesrfdat(2,1)
+         cnw = cnt
+         cmy = cmt
          gforcsrb(1) = 0.
-         gforcsrb(2) = tmass*gaccel-qinfrb*areat*greflrb*greflrb*cn 
+         gforcsrb(2) = tmass*gaccel-qinfrb*areat*grefl*grefl*cnt 
          gforcsrb(3) = 0.
-         gforcsrb(4) = qinfrb*areat*greflrb*greflrb*greflrb*(crefrb*cm
-     .               + xtmref*cn) 
+         gforcsrb(4) = qinfrb*areat*grefl*grefl*greflrb*(crefrb*cmt 
+     .               + xtmref*cnt) 
 c
       do n=1,4
         xnmrb(n) = xsrb(n)

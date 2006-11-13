@@ -25,7 +25,6 @@ c
      .          stm(2*nmds,2*nmds,maxaes),stmi(2*nmds,2*nmds,maxaes),
      .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes),x0(2*nmds,maxaes),
      .          aesrfdat(5,maxaes),perturb(nmds,maxaes,4)
-      dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
 c
       common /elastic/ ndefrm,naesrf
 c
@@ -51,7 +50,7 @@ c           don't update if the modal time variation is specified
 c
 c     modal displacement and velocity as specified functions of time
 c
-      call moddefl(xs,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
+      call moddefl(xs,xxn,aesrfdat,perturb,cmyt,cnwt,xorig,yorig,
      .             zorig,maxaes,nmds,irbtrim,maxbl,myid)
 c
       return
