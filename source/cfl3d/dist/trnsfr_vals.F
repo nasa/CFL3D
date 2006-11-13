@@ -134,7 +134,7 @@ c
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /chk/ ichk
@@ -434,15 +434,19 @@ c
          work(nlast+69) = sarccr3
          work(nlast+70) = ieasmcc2d
          work(nlast+71) = irbtrim
-         work(nlast+72) = tmass
-         work(nlast+73) = yinert
-         work(nlast+74) = gaccel
-         work(nlast+75) = relax
-         work(nlast+76) = itrminc
-         work(nlast+77) = tp(1,1)
-         work(nlast+78) = tp(2,1)
-         work(nlast+79) = tp(1,2)
-         work(nlast+80) = tp(2,2)
+         work(nlast+72) = irigb
+         work(nlast+73) = greflrb
+         work(nlast+74) = tmass
+         work(nlast+75) = yinert
+         work(nlast+76) = gaccel
+         work(nlast+77) = relax
+         work(nlast+78) = itrminc
+         work(nlast+79) = tp(1,1)
+         work(nlast+80) = tp(2,1)
+         work(nlast+81) = tp(1,2)
+         work(nlast+82) = tp(2,2)
+         work(nlast+83) = ndgrd
+         work(nlast+84) = ndwrt
          nlast = nlast+nkey
       end if
 c
@@ -694,15 +698,19 @@ c
          sarccr3   = work(nlast+69)
          ieasmcc2d = int(work(nlast+70))
          irbtrim   = int(work(nlast+71))
-         tmass     = work(nlast+72)
-         yinert    = work(nlast+73)
-         gaccel    = work(nlast+74)
-         relax     = work(nlast+75)
-         itrminc   = int(work(nlast+76))
-         tp(1,1)   = work(nlast+77)
-         tp(2,1)   = work(nlast+78)
-         tp(1,2)   = work(nlast+79)
-         tp(2,2)   = work(nlast+80)
+         irigb     = int(work(nlast+72))
+         greflrb   = work(nlast+73)
+         tmass     = work(nlast+74)
+         yinert    = work(nlast+75)
+         gaccel    = work(nlast+76)
+         relax     = work(nlast+77)
+         itrminc   = int(work(nlast+78))
+         tp(1,1)   = work(nlast+79)
+         tp(2,1)   = work(nlast+80)
+         tp(1,2)   = work(nlast+81)
+         tp(2,2)   = work(nlast+82)
+         ndgrd     = int(work(nlast+83))
+         ndwrt     = int(work(nlast+84))
       end if
 c
 c**************************

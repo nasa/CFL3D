@@ -60,6 +60,8 @@ c
 #endif
 c
       character*120 bou(ibufdim,nbuf)
+      character*35 cmd1,cmd2
+      character*3 char1
 c
       dimension nou(nbuf)
       dimension w(mgwk),lw(65,maxbl),lw2(43,maxbl),wk(nwork),iwk(maxbl)
@@ -548,12 +550,12 @@ c
           nend  = 3*(n2-1) + 1  
           ndata = nend - nstrt
           if (myid .eq. mblk2nd(nbl)) then 
-            mytag   = n1 
+            mytag   = mblk2nd(nbl)
             nd_dest = myhost
             call MPI_Send (ue(nstrt),ndata,MY_MPI_REAL,
      .                     nd_dest,mytag,mycomm,ierr)
           else if (myid .eq. myhost) then 
-            mytag   = n1 
+            mytag   = mblk2nd(nbl)
             nd_srce = mblk2nd(nbl)
             call MPI_Recv (ue(nstrt),ndata,MY_MPI_REAL,
      .                     nd_srce,mytag,mycomm,istat,ierr)
@@ -589,13 +591,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_dest = myhost
                    call MPI_Send (xst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (xst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -610,13 +612,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_dest = myhost
                    call MPI_Send (yst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (yst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -631,13 +633,13 @@ c
                nend  = nblelst(nn+1,2) 
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_dest = myhost
                    call MPI_Send (zst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_dest,
      .                            mytag,mycomm,ierr)
                else if (myid .eq. myhost) then
-                   mytag   = nstrt  
+                   mytag   = mblk2nd(nbl)
                    nd_srce = mblk2nd(nbl)
                    call MPI_Recv (zst(nstrt),ndata,
      .                            MY_MPI_REAL,nd_srce,mytag,
@@ -776,9 +778,65 @@ c
   430          format(45h not enough work space for subroutine cellvol)
   431       format(' Increase keyword memadd allocation by ',i8)
 c
+               iflagv = 0
                call cellvol(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
      .                      w(lsk),w(lsi),w(lvol),wk(lt4wk),nou,bou,
-     .                      nbuf,ibufdim,myid,mblk2nd,maxbl,nbl)
+     .                      nbuf,ibufdim,myid,mblk2nd,maxbl,nbl,
+     .                      1,iflagv,imin,imax,jmin,jmax,kmin,kmax)
+c    .                      0,iflagv,imin,imax,jmin,jmax,kmin,kmax)
+               iflagv = 0
+               if(iflagv.eq.1) then
+                 idim1=imax-imin+1
+                 jdim1=jmax-jmin+1
+                 kdim1=kmax-kmin+1
+                 call s_gwrite(nbl,idim,jdim,kdim,imin,imax,jmin,jmax,
+     .                         kmin,kmax,idim1,jdim1,kdim1,w(lx),w(ly),
+     .                         w(lz))
+                 call gridgen_glyf1(nbl)
+                 call gridgen_glyf2(nbl)
+                 cmd1='gridgen -b dgplot3d_gridgen0001.glf'
+                 cmd2='gridgen -b dgplot3d_gridgen0002.glf'
+                 if(nbl.lt.10) then
+                   write(char1,'(i1)') nbl
+                   cmd1(30:30) = char1(1:1)
+                   cmd2(30:30) = char1(1:1)
+                 else if(nbl.lt.100) then
+                   write(char1,'(i2)') nbl
+                   cmd1(29:30) = char1(1:2)
+                   cmd2(29:30) = char1(1:2)
+                 else
+                   write(char1,'(i3)') nbl
+                   cmd1(28:30) = char1(1:3)
+                   cmd2(28:30) = char1(1:3)
+                 end if
+                 Isys=system(cmd1)
+                 Isys=system(cmd2)
+                 call s_gread(nbl,idim,jdim,kdim,imin,imax,jmin,jmax,
+     .                        kmin,kmax,idim1,jdim1,kdim1,w(lx),w(ly),
+     .                        w(lz))
+c
+                 iflag = -1
+                 call metric(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
+     .                       w(lsk),w(lsi),wk(lt2wk),wk(lt3wk),nbl,
+     .                       iflag,icnt,nbci0,nbcj0,nbck0,nbcidim,
+     .                       nbcjdim,nbckdim,ibcinfo,jbcinfo,kbcinfo,
+     .                       maxbl,maxseg,nou,bou,nbuf,ibufdim,myid,
+     .                       mblk2nd)
+c
+c                calculate temporal metrics for updated grid
+c
+                 call tmetric(jdim,kdim,idim,w(lsj),w(lsk),w(lsi),
+     .                        w(lx),w(ly),w(lz),wk(lvel),wk(lt1wk),
+     .                        wk(lt2wk),wk(lt3wk),nbl)
+c
+c                calculate volumes for updated grid
+c
+                 iflagv = 0
+                 call cellvol(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
+     .                        w(lsk),w(lsi),w(lvol),wk(lt4wk),nou,bou,
+     .                        nbuf,ibufdim,myid,mblk2nd,maxbl,nbl,
+     .                        1,iflagv,imin,imax,jmin,jmax,kmin,kmax)
+               end if 
 c
 c              coarser levels
 c
@@ -1090,7 +1148,7 @@ c
        term5 = xiz(n)  *xiz(n)  +etaz(n) *etaz(n) +zetaz(n)*zetaz(n)
        term6 = etaz(n) *xiz(n)  +zetaz(n)*xiz(n)  +zetaz(n)* etaz(n)
        term7 = xix(n)  *xiy(n)  +etay(n) *etax(n) +zetay(n)*zetax(n)
-       merm8 = xix(n)  *etay(n) +xix(n)  *zetay(n)+xiy(n)  *etax(n)
+       term8 = xix(n)  *etay(n) +xix(n)  *zetay(n)+xiy(n)  *etax(n)
      .        +zetay(n)*etax(n) +xiy(n)  *zetax(n)+etay(n) *zetax(n)
        term9 = xiz(n)  *xix(n)  +etaz(n) *etax(n) +zetaz(n)*zetax(n)
        term10= xix(n)  *etaz(n) +xix(n)  *zetaz(n)+xiz(n)  *etax(n)
@@ -3271,3 +3329,166 @@ c
  
        return
        end
+       subroutine s_gwrite(nbl,idim,jdim,kdim,ista,iend,jsta,jend,ksta,
+     .                     kend,idim1,jdim1,kdim1,x,y,z)
+       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
+c
+      open(5000+nbl,status='unknown',form='formatted')
+      write(5000+nbl,'(i8)') 1
+      write(5000+nbl,'(3i8)')idim1,jdim1,kdim1
+      write(5000+nbl,'(5e21.12)') (((x(j,k,i),i=ista,iend),j=jsta,jend),
+     .                               k=ksta,kend)
+      write(5000+nbl,'(5e21.12)') (((y(j,k,i),i=ista,iend),j=jsta,jend),
+     .                               k=ksta,kend)
+      write(5000+nbl,'(5e21.12)') (((z(j,k,i),i=ista,iend),j=jsta,jend),
+     .                               k=ksta,kend)
+       close(5000+nbl)
+ 
+       return
+       end
+      subroutine s_gread(nbl,idim,jdim,kdim,ista,iend,jsta,jend,ksta,
+     .                   kend,idim1,jdim1,kdim1,x,y,z)
+      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
+c
+      open(5000+nbl,status='old',form='formatted')
+      read(5000+nbl,*) nblocks
+      read(5000+nbl,*)idim1,jdim1,kdim1
+      read(5000+nbl,*)
+     .          (((x(j,k,i),i=ista,iend),j=jsta,jend),k=ksta,kend)
+     .         ,(((y(j,k,i),i=ista,iend),j=jsta,jend),k=ksta,kend)
+     .         ,(((z(j,k,i),i=ista,iend),j=jsta,jend),k=ksta,kend)
+      close(5000+nbl)
+      return
+      end
+      subroutine gridgen_glyf1(nbl)
+      character*8 bgcontrl,fgcontl
+      character*5 filnm
+      character*3 char1
+      character*24 filnm2
+c
+      open(9700,file='gridgen.options1',status='old',
+     .    form='formatted')
+      read(9700,12030) bgcontrl,fgcontrl
+12030 format(2a8)
+      read(9700,*) xmgrlx,xmgprlng,iter
+      close(9700)
+      filnm2 = 'dgplot3d_gridgen0001.glf'
+      if(nbl.lt.10) then
+        write(char1,'(i1)') nbl
+        filnm2(19:19) = char1(1:1)
+      else if(nbl.lt.100) then
+        write(char1,'(i2)') nbl
+        filnm2(18:19) = char1(1:2)
+      else
+        write(char1,'(i3)') nbl
+        filnm2(17:19) = char1(1:3)
+      end if
+      open(9900,file=filnm2,status='unknown',form='formatted')
+      filnm(1:5) = 'fort.'
+      iflnum = 5000+nbl
+      write(9900,11021) filnm,iflnum
+      write(9900,11022) 1,1,0
+      write(9900,11025)
+      write(9900,11026)  1
+      write(9900,11039) bgcontrl,fgcontrl,xmgrlx,xmgprlng,iter
+     .                 ,filnm,iflnum
+11021 format('# Gridgen Journal File V1 (Gridgen 15.09 REL 3)',
+     .   /,'# Created Sun Aug 13 14:47:02 2006',/,
+     .     '#',/,'package require PWI_Glyph 1.6.9',/,/,
+     .     '# Delete any existing grids and database entities.  ',
+     .     'Reset AS/W, defaults, and',/,'# tolerances.',/,
+     .     'gg::memClear',/,'gg::aswDeleteBC -glob "*"',/,
+     .     'gg::aswDeleteVC -glob "*"',/,
+     .     'gg::aswSet GENERIC -dim 3',/,'gg::defReset',/,
+     .     'gg::tolReset',/,'# Check for user input after ',
+     .     'each function, but delay screen updates until',/,
+     .     '# script is finished.',/,'gg::updatePolicy INPUT_ONLY',/,/,
+     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \',/,
+     .     '   -style PLOT3D -form ASCII -precision DOUBLE]')
+11022 format('set _BL(',i1,') [lindex $_ggTemp_(',i1,') ',i1,']')
+11025 format('unset _ggTemp_(1)')
+11026 format('set _ggTemp_(2) [list',' $_BL(',i1,')]')
+11039 format('gg::blkEllSolverBegin $_ggTemp_(2)',/,
+     .'# gg::blkTFISolverRun $_ggTemp_(2)',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -bg_control ',a8,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -fg_control ',a8,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -spacing_calc INTERPOLATE',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -angle_calc INTERPOLATE',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -spacing_blend 2',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -angle_blend 2',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_relax ',f3.2,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_prolongation ',f3.2,/,
+     .'  gg::blkEllSolverStep -iterations ',i5,' -nodisplay',/,
+     .'gg::blkEllSolverEnd',/,'unset _ggTemp_(2)',/,
+     .'gg::blkExport ALL "',a5,i4,'" \',/,
+     .'   -style PLOT3D -form ASCII -precision DOUBLE',/,
+     .'gg::terminate')
+       close(9900)
+      return
+      end
+      subroutine gridgen_glyf2(nbl)
+      character*8 bgcontrl,fgcontl
+      character*5 filnm
+      character*3 char1
+      character*24 filnm2
+c
+      open(9700,file='gridgen.options2',status='old',
+     .    form='formatted')
+      read(9700,12030) bgcontrl,fgcontrl
+12030 format(2a8)
+      read(9700,*) xmgrlx,xmgprlng,iter
+      close(9700)
+      filnm2 = 'dgplot3d_gridgen0002.glf'
+      if(nbl.lt.10) then
+        write(char1,'(i1)') nbl
+        filnm2(19:19) = char1(1:1)
+      else if(nbl.lt.100) then
+        write(char1,'(i2)') nbl
+        filnm2(18:19) = char1(1:2)
+      else
+        write(char1,'(i3)') nbl
+        filnm2(17:19) = char1(1:3)
+      end if
+      open(9900,file=filnm2,status='unknown',form='formatted')
+      filnm(1:5) = 'fort.'
+      iflnum = 5000+nbl
+      write(9900,11021) filnm,iflnum
+      write(9900,11022) 1,1,0
+      write(9900,11025)
+      write(9900,11026)  1
+      write(9900,11039) bgcontrl,fgcontrl,xmgrlx,xmgprlng,iter
+     .                 ,filnm,iflnum
+11021 format('# Gridgen Journal File V1 (Gridgen 15.09 REL 3)',
+     .   /,'# Created Sun Aug 13 14:47:02 2006',/,
+     .     '#',/,'package require PWI_Glyph 1.6.9',/,/,
+     .     '# Delete any existing grids and database entities.  ',
+     .     'Reset AS/W, defaults, and',/,'# tolerances.',/,
+     .     'gg::memClear',/,'gg::aswDeleteBC -glob "*"',/,
+     .     'gg::aswDeleteVC -glob "*"',/,
+     .     'gg::aswSet GENERIC -dim 3',/,'gg::defReset',/,
+     .     'gg::tolReset',/,'# Check for user input after ',
+     .     'each function, but delay screen updates until',/,
+     .     '# script is finished.',/,'gg::updatePolicy INPUT_ONLY',/,/,
+     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \',/,
+     .     '   -style PLOT3D -form ASCII -precision DOUBLE]')
+11022 format('set _BL(',i1,') [lindex $_ggTemp_(',i1,') ',i1,']')
+11025 format('unset _ggTemp_(1)')
+11026 format('set _ggTemp_(2) [list',' $_BL(',i1,')]')
+11039 format('gg::blkEllSolverBegin $_ggTemp_(2)',/,
+     .'# gg::blkTFISolverRun $_ggTemp_(2)',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -bg_control ',a8,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -fg_control ',a8,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -spacing_calc INTERPOLATE',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -angle_calc INTERPOLATE',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -spacing_blend 2',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -angle_blend 2',/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_relax ',f3.2,/,
+     .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_prolongation ',f3.2,/,
+     .'  gg::blkEllSolverStep -iterations ',i5,' -nodisplay',/,
+     .'gg::blkEllSolverEnd',/,'unset _ggTemp_(2)',/,
+     .'gg::blkExport ALL "',a5,i4,'" \',/,
+     .'   -style PLOT3D -form ASCII -precision DOUBLE',/,
+     .'gg::terminate')
+       close(9900)
+      return
+      end

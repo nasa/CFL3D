@@ -237,7 +237,6 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /maxiv/ ivmx
-      common /key/ nkey
       common /sklton/ isklton
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /moov/ movie,nframes,icall1,lhdr
@@ -258,7 +257,8 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
+      common /key/ nkey
 c
 c***********************************************************************
 c     initialization

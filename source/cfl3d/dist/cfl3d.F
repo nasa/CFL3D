@@ -365,7 +365,7 @@ c
 c
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /unit5/ iunit5
       common /wrestq/ irest,irest2

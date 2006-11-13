@@ -171,7 +171,7 @@ c
       common /elastic/ ndefrm,naesrf
       common /elastic_ss/ idef_ss 
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
       common /ghost/ irghost,iwghost
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
@@ -832,7 +832,8 @@ c
      .           7h  (grid,i4,1h))
          call cellvol(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
      .                w(lsk),w(lsi),w(lvol),wk,nou,bou,nbuf,ibufdim,
-     .                myid,mblk2nd,maxbl,nbl)
+     .                myid,mblk2nd,maxbl,nbl,0,iflagv,imin,imax,jmin,
+     .                jmax,kmin,kmax)
       end if
 c
 c     collocate cell volumes on coarser levels
@@ -1648,7 +1649,7 @@ c     initialize rigid body dynamics arrays/data
 c*******************************************************
 c
       if (irigb.gt.0.or.irbtrim.gt.0) then
-            call init_rb
+            call init_rb(maxaes,maxbl,zorig,aesrfdat) 
       end if
       call init_trim
 c
@@ -2147,6 +2148,14 @@ c
 c
          if (real(dt).gt.0. .and. iunst .gt. 0) then
             if (iflagg .eq. 2 .or. iflagg .eq. 3) then
+               if (ndgrd .ne. 0 .and. iunst .gt. 1) then
+                 if(myid.eq.myhost) then
+                   open(98,file='dgplot3d.bin',form='formatted'
+     .                 ,status='old')
+                   read(98,*) ngridt
+                   read(98,*) ((idimt,jdimt,kdimt),igrid=1,ngrid)
+                 end if
+               end if
                do 1800 igrid=1,ngrid
                iem    = iemg(igrid)
                nbl    = nblg(igrid)
@@ -2334,6 +2343,9 @@ c
          if (myid.eq.myhost) then
       if (icgns .ne. 1) then
             close (2)
+            if(ndgrd .ne. 0 .and. iunst .gt. 1) then
+              close (98)
+            end if
       else
 #if defined CGNS
 c   Close data base

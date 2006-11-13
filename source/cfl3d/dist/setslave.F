@@ -81,7 +81,7 @@ c
       common /elastic_ss/ idef_ss
       common /twod/ i2d
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
 c
 c
 c
@@ -1020,6 +1020,7 @@ c
            if(islavept(n,11,iseq).gt.0) then
               iimx1(n) = iimax(n)
               do n2 = 1,nslave
+c               if(n2.ne.n.and.iimax(n2).gt.1) then
                 if(n2.ne.n) then
                  do ii3 = 1,iimax(n) 
                    do ii4 = 1,iimax(n2)-1 

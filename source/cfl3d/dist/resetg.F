@@ -463,7 +463,7 @@ c
      .                yorig0,zorig0,time2,thetaxl,thetayl,thetazl,
      .                itrans,irotat,idefrm,ncgg,iadvance,
      .                nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
-     .                mblk2nd,irigb0,irbtrim0)
+     .                mblk2nd,irigb0,irbtrim0,nt)
       end if
 c
    99 format(15h WARNING: block,i4,20h will not be reset -,

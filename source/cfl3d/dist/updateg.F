@@ -7,7 +7,7 @@
      .                   yorig0,zorig0,time2,thetaxl,thetayl,thetazl,
      .                   itrans,irotat,idefrm,ncgg,iadvance,
      .                   nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
-     .                   mblk2nd,irigb,irbtrim)
+     .                   mblk2nd,irigb,irbtrim,nt)
 c
 c     $Id$
 c
@@ -144,7 +144,7 @@ c
 c           translation/rotation corresponding to rigid-body modes
 c           (currently restricted to z-translation and y-rotation only)
 c
-            if (irigb .gt. 0) then
+            if (irigb .gt. 0 .and. nt .gt. 0) then
 c
                if (isklton.eq.1) then
                   nou(1) = min(nou(1)+1,ibufdim)
@@ -159,11 +159,17 @@ c
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
 c
-               zorig(nbl) = zrg1
-               wtrans(nbl)= dzdt
                xold = xorig(nbl)
                yold = yorig(nbl)
                zold = zorig(nbl)
+c
+c     This formulation assumes small pitch angles.  sin(thetay)=0,
+c     cos(thetay) = 1.
+c
+               zorig(nbl) = zrg1
+               utrans(nbl)= 0.
+               vtrans(nbl)= 0.
+               wtrans(nbl)= (zorig(nbl) - zold)/dt
                call trans(jdim,kdim,idim,wk(lvel),wk(lacci),wk(laccj),
      .                    wk(lacck),w(lx),w(ly),w(lz),99,
      .                    rfreqt(nbl),utrans(nbl),vtrans(nbl),
@@ -189,11 +195,6 @@ c
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
 c
-               thetaxl(nbl) = thetax(nbl)
-               thetayl(nbl) = thetay(nbl)
-               thetazl(nbl) = thetaz(nbl)
-               thetay(nbl)  = alf1
-               omegay(nbl)  = thtd1
                call rotate(jdim,kdim,idim,wk(lvel),wk(lacci),wk(laccj),
      .                     wk(lacck),wk(lt1wk),w(lx),w(ly),w(lz),nbl,
      .                     99,rfreqr(nbl),omegax(nbl),
@@ -207,7 +208,7 @@ c
 c           trim step for rigid-body modes
 c           (trim currently restricted to y-rotation only)
 c
-            if (irbtrim .gt. 0) then
+            if (irbtrim .gt. 0 .and. nt .gt. 0) then
 c
                if(isklton.eq.1)then
                   nou(1) = min(nou(1)+1,ibufdim)
@@ -223,10 +224,6 @@ c
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
 c
-               thetaxl(nbl) = thetax(nbl)
-               thetayl(nbl) = thetay(nbl)
-               thetazl(nbl) = thetaz(nbl)
-               thetay(nbl)  = alf1
                omegay(nbl)  = epstr*(thetay(nbl)-thetayl(nbl))
                call rotate(jdim,kdim,idim,wk(lvel),wk(lacci),wk(laccj),
      .                     wk(lacck),wk(lt1wk),w(lx),w(ly),w(lz),nbl,
@@ -241,7 +238,7 @@ c
 c           translation 
 c
             if (itrans(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
-     .          irigb .eq. 0) then
+     .          irigb .eq. 0 .and. nt .gt. 0) then
 c
                if (isklton.eq.1) then
                   nou(1) = min(nou(1)+1,ibufdim)
@@ -271,7 +268,7 @@ c
 c           rotation 
 c
             if (irotat(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
-     .          irigb .eq. 0) then
+     .          irigb .eq. 0 .and. nt .gt. 0) then
 c
                if(isklton.eq.1)then
                   nou(1) = min(nou(1)+1,ibufdim)

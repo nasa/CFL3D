@@ -229,6 +229,7 @@ c
       dimension iskmax(maxbl)
       dimension jskmax(maxbl)
       dimension kskmax(maxbl)
+      dimension idimt(maxbl),jdimt(maxbl),kdimt(maxbl)
 c
       common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
@@ -278,7 +279,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
 c
 c      time step cycle:
 c
@@ -506,7 +507,7 @@ c
      .                   yorig0,zorig0,time2,thetaxl,thetayl,thetazl,
      .                   itrans,irotat,idefrm,ncgg,iadvance,nou,
      .                   bou,nbuf,ibufdim,myid,myhost,mycomm,mblk2nd,
-     .                   irigb0,irbtrim0)
+     .                   irigb0,irbtrim0,nt)
             do 109 nbl=1,nblock
             time2(nbl) = timesave(nbl)
  109        continue
@@ -706,15 +707,38 @@ c
       if (iunst.gt.1 .and. naesrf.gt.0) then
 #if defined DIST_MPI
          if (irigb .eq. 1 .or. irbtrim .eq. 1) then
+            alf1   = thetay(nblstag)
+            xorgrb = xorig(nblstag)
+            yorgrb = yorig(nblstag)
+            zorgrb = zorig(nblstag)
             call MPI_Bcast(clw(ntt),1,MY_MPI_REAL,myhost,
      .                     mycomm,ierr)
             call MPI_Bcast(cmyw(ntt),1,MY_MPI_REAL,myhost,
      .                     mycomm,ierr)
          end if
 #endif
+c
+c    nblstat is the first block at the top level (levelt) on a
+c    particular processor; all blocks at this level
+c    are assumed to have the same value of thetay.
+c
          call ae_pred(aesrfdat,stm,stmi,gforcn,gforcnm,xs,xxn,
-     .                x0,perturb,cmyw(ntt),clw(ntt),xorig,yorig,
-     .                zorig,nmds,maxaes,irbtrim,maxbl,myid)
+     .                x0,perturb,cmyw(ntt),clw(ntt),xorgrb,yorgrb,
+     .                zorgrb,nmds,maxaes,irbtrim,maxbl,myid)
+c
+c        rigid body trim predictor step
+c
+         if (irbtrim.gt.0) irigb = 0
+         if (irigb.gt.0) then
+            call rb_pred(nt)
+         end if
+         if (irigb .eq. 1 .or. irbtrim .eq. 1) then
+            do nbl = 1,nblock
+              thetayl(nbl)= thetay(nbl)
+              thetay(nbl) = alf1
+              omegay(nbl) = (thetay(nbl)-thetayl(nbl))/dt
+            enddo
+         end if
       end if
 c
 c     update grid position, speed, and dynamic patch interpolation
@@ -751,13 +775,6 @@ c
             end if
          end do
 c
-c        rigid body trim predictor step
-c
-         if (irbtrim.gt.0) irigb = 0
-         if (irigb.gt.0) then
-            call rb_pred(zrg1,zrg0,alf1,alf0,thtd1,thtd0,dzdt)
-         end if
-c
          iupdat = 1
          call updateg(lw,lw2,w,mgwk,wk,nwork,iupdat,iseq,maxbl,
      .                maxgr,maxseg,nbci0,nbcj0,nbck0,nbcidim,
@@ -768,7 +785,7 @@ c
      .                yorig0,zorig0,time2,thetaxl,thetayl,thetazl,
      .                itrans,irotat,idefrm,ncgg,iadvance,nou,
      .                bou,nbuf,ibufdim,myid,myhost,mycomm,mblk2nd,
-     .                irigb,irbtrim)
+     .                irigb,irbtrim,nt)
 c
 c        reset grid position if grid has been translated/rotated
 c        past limits
@@ -2566,7 +2583,7 @@ c
          call MPI_Bcast(cmyw(ntt),1,MY_MPI_REAL,myhost,
      .                  mycomm,ierr)
 #endif
-         call rb_corr(clw(ntt),cmyw(ntt))
+         call rb_corr(aesrfdat,clw(ntt),cmyw(ntt),maxaes)
       end if
 c
 c
@@ -2590,6 +2607,29 @@ c                 initialize eddy viscosity limit flag
                   open(unit=2,file=restrt,form='unformatted',
      .            status='unknown')
                   rewind 2
+                  if (ndwrt .ne. 0 .and. iunst .gt. 1) then
+                    if(mseq .gt. 1) then
+                      nou(1) = min(nou(1)+1,ibufdim)
+                      write(bou(nou(1),1)
+     .                   ,'(''stopping...cannot write dynamic '',
+     .                       ''grid file when mseq > 1'')')
+                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                    end if
+                    open(98,file='dgplot3d.bin',form='formatted'
+     .                  ,status='unknown')
+                    write(98,'(i8)') ngrid
+                    do igrid=1,ngrid
+                      nbl = nblg(igrid)
+                      iem = iemg(igrid)
+                      if (iem.eq.0) nbl = nbl + (mseq-iseq)
+                      call lead(nbl,lw,lw2,maxbl)
+                      idimt(igrid) = idim
+                      jdimt(igrid) = jdim
+                      kdimt(igrid) = kdim
+                    enddo
+                    write(98,'(3i8)') ((idimt(igrid),jdimt(igrid),
+     .                           kdimt(igrid)),igrid=1,ngrid)
+                  end if
                else
 #if defined CGNS
 c   Open database
@@ -2825,6 +2865,9 @@ c       need to delete CFL3DAeroModeData node if it exists
                    end if
                if (icgns .ne. 1) then
                    close(2)
+                   if (ndwrt .ne. 0) then
+                      close(98)
+                   end if
                else
 #if defined CGNS
 c   Close data base

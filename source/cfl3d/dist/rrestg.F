@@ -114,6 +114,8 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
+     .                 nsprgit,ndgrd,ndwrt
 c
 #if defined DIST_MPI
       nd_dest = mblk2nd(nbl)
@@ -584,6 +586,11 @@ c
                   read(2) (((x(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((y(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
+                  if(ndgrd.ne.0.and.iunst.gt.1) then
+                   read(98,*)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     .                       (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     .                       (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
+                  end if
                   else
 #if defined CGNS
                   write(901,'('' reading deforming grid info from'',
