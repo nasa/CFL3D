@@ -2578,12 +2578,12 @@ c
       if (irbtrim.ne.0) irigb = 0
       if (irigb.eq.1) then
 #if defined DIST_MPI
-         call MPI_Bcast(czw(ntt),1,MY_MPI_REAL,myhost,
+         call MPI_Bcast(clw(ntt),1,MY_MPI_REAL,myhost,
      .                  mycomm,ierr)
          call MPI_Bcast(cmyw(ntt),1,MY_MPI_REAL,myhost,
      .                  mycomm,ierr)
 #endif
-         call rb_corr(aesrfdat,czw(ntt),cmyw(ntt),maxaes)
+         call rb_corr(aesrfdat,clw(ntt),cmyw(ntt),maxaes)
       end if
 c
 c
