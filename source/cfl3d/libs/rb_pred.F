@@ -54,7 +54,7 @@ c
       dzdt = - xsrb(2)/greflrb
       alf1 =  xsrb(3)
       thtd1=  xsrb(4)
-      write(299,31029) dt*real(nt),zrg0-xsrb(1),xsrb(3),gforcnrb(2),
+      write(299,31029) dt*real(nt),zrg1,xsrb(3),gforcnrb(2),
      .                 gforcnrb(4)
 31029 format(5(1x,e16.8))
 c
