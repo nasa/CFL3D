@@ -629,7 +629,7 @@ c
      .           maxsegdg,nmaster,aehist,timekeep,inpl3d,nplots,
      .           nplot3d,levelg,iadvance,xs,gforcs,xorgae0,yorgae0,
      .           zorgae0,icouple,lfgm,nblk,limblk,isva,nblelst,iskmax,
-     .           jskmax,kskmax,ue,irdrea)
+     .           jskmax,kskmax,ue,irdrea,nbli)
 c
       do iii = 1,mworki
          iwork(iii) = 0

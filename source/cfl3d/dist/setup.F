@@ -27,7 +27,7 @@
      .                 aehist,timekeep,inpl3d,nplots,nplot3d,levelg,
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
      .                 icouple,lfgm,nblk,limblk,isva,nblelst,
-     .                 iskmax,jskmax,kskmax,ue,irdrea)
+     .                 iskmax,jskmax,kskmax,ue,irdrea,nbli)
 c
 c     $Id$
 c
@@ -548,7 +548,7 @@ c
      .                 kcsf,islavept,nslave,nsegdfrm,idfrmseg,
      .                 maxsegdg,iwk,iwork,nmaster,ngrid,jskip,kskip,
      .                 iskip,nblg,levelg,lfgm,nblk,limblk,isva,nblelst,
-     .                 nnodes,iskmax,jskmax,kskmax)
+     .                 nnodes,iskmax,jskmax,kskmax,nbli)
       end if
 c
       if (idef_ss .gt. 0) then

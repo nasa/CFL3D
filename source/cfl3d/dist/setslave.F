@@ -7,7 +7,7 @@
      .                    idfrmseg,maxsegdg,iwk,iwork,nmaster,ngrid,
      .                    jskip,kskip,iskip,nblg,levelg,lfgm,nblk,
      .                    limblk,isva,nblelst,nnodes,iskmax,jskmax,
-     .                    kskmax) 
+     .                    kskmax,nbli) 
 c
 c     $Id$
 c
@@ -590,7 +590,7 @@ c           end if
           nsgst(nbl,1) = nsgst(nbl-1,1)
          enddo
          ivert = 0
-         do m = 1,mxbli
+         do m = 1,nbli
           nbl1 = nblk(1,m)
           if ((levelg(nbl1).ge.lglobal .and.
      .         levelg(nbl1).le.levelt(iseq))) then
