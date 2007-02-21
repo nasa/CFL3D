@@ -113,14 +113,16 @@ c
      .          perturb(nmds,maxaes,4)
       dimension aesrfdat(5,maxaes),iskip(maxbl,500),jskip(maxbl,500),
      .          kskip(maxbl,500)
-      dimension riskp(maxbl,500),rjskp(maxbl,500),rkskp(maxbl,500)
-      dimension iskipt(maxbl,500),jskipt(maxbl,500),kskipt(maxbl,500)
       dimension nskpi1(maxbl),nskpj1(maxbl),nskpk1(maxbl)
       dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg),
      .          iaesurf(maxbl,maxsegdg)
       dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr),
      .          inewgg(maxgr)
       dimension iadvance(maxbl),iforce(maxbl),icsinfo(maxcs,9)
+c
+      integer stats
+      real, dimension(:,:), allocatable :: riskp,rjskp,rkskp
+      real, dimension(:,:), allocatable :: iskipt,jskipt,kskipt
 c
       common /avgdata/ xnumavg,iteravg
       common /cfl/ dt0,dtold
@@ -4476,6 +4478,12 @@ c
 c     deforming mesh data
 c
       if (iunst.gt.1 .or. idef_ss.gt.0) then
+         allocate( riskp(maxbl,500), stat=stats )
+         allocate( rjskp(maxbl,500), stat=stats )
+         allocate( rkskp(maxbl,500), stat=stats )
+         allocate( iskipt(maxbl,500), stat=stats )
+         allocate( jskipt(maxbl,500), stat=stats )
+         allocate( kskipt(maxbl,500), stat=stats )
 c
 c        set default skip values for block
 c
@@ -6308,6 +6316,8 @@ c
      .      ''   zorig'')')
          end if
 c
+         deallocate(riskp,rjskp,rkskp)
+         deallocate(iskipt,jskipt,kskipt)
       end if
 c
       do nbl=1,nblock
