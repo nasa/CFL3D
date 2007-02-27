@@ -765,10 +765,10 @@ case $FARCH in LINUX)
 # Default to INTEL settings:
 
   CFLAG="-r8"
-  FFLAG="-O2 -w -ip"
+  FFLAG="-O3 -w -ip -xP"
   FFLAG_SPEC="$FFLAG"
-  LFLAG="-static"                                                               
-  LLIB="-lsvml -lPEPCF90"
+  LFLAG="-z muldefs -static"                                  
+  LLIB=""
   LLIB_SEQ=$LLIB
   LLIBDIR=""
   MPI_LLIBDIR=""
