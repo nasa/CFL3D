@@ -765,7 +765,7 @@ case $FARCH in LINUX)
 # Default to INTEL settings:
 
   CFLAG="-r8"
-  FFLAG="-O3 -w -ip -xP"
+  FFLAG="-O3 -w -ip -fno-alias -xP"
   FFLAG_SPEC="$FFLAG"
   LFLAG="-z muldefs -static"                                  
   LLIB=""
