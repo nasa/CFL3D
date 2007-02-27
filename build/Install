@@ -764,7 +764,7 @@ case $FARCH in LINUX)
 
 # Default to INTEL settings:
 
-  CFLAG="-r8"
+  CFLAG=""
   FFLAG="-O2 -w -ip"
   FFLAG_SPEC="$FFLAG"
   LFLAG="-z muldefs -static"                                  
@@ -805,7 +805,7 @@ case $FARCH in LINUX)
 # Intel Compiler
 
   if [ $linux_compiler_flags = Intel ]; then
-     CFLAG="-r8"
+     CFLAG=""
      FFLAG="-O3 -w -ip -fno-alias -xP"
      FFLAG_SPEC="$FFLAG"
      LFLAG="-z muldefs -static -xP"
