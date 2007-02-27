@@ -5,7 +5,8 @@
      .                negn1,negn2,rmst,xtbj,xtbk,xtbi,qc0,dqc0,iseq,
      .                qj0,qk0,qi0,maxbl,maxgr,maxseg,rms,rmsb,
      .                rmstb1,rmstb2,clw,cdw,cdpw,cdvw,cxw,cyw,
-     .                czw,cmxw,cmyw,cmzw,chdw,swetw,fmdotw,
+     .                czw,cmxw,cmyw,cmzw,n_clcd,clcd,nblocks_clcd,
+     .                blocks_clcd,hdw,swetw,fmdotw,
      .                cfttotw,cftmomw,cftpw,cftvw,rmstr1,rmstr2,
      .                nneg1,nneg2,ihstry,ngrid,nblg,iemg,levelg,
      .                iviscg,itrans,irotat,iforce,swett,clt,cdt,
@@ -19,7 +20,7 @@
      .                cfxtot,cfytot,cfztot,cfdtot,cfltot,cfttot,
      .                ncs,icsinfo,myid,myhost,mycomm,mblk2nd,nou,
      .                bou,nbuf,ibufdim,ncycmax,maxcs,thetay,iadvance,
-     .                idefrm)
+     .                idefrm,igridg)
 c
 c     $Id$
 c
@@ -68,10 +69,12 @@ c
      .          xtbi(jdim,kdim,3,2)
       dimension qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),
      .          qi0(jdim,kdim,5,4)
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),
      .          cdw(ncycmax),cdpw(ncycmax),cdvw(ncycmax),
      .          cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
@@ -101,13 +104,17 @@ c
      .          cfdtot(maxcs),cfltot(maxcs),cfttot(maxcs),
      .          icsinfo(maxcs,9)
 c 
+      dimension igridg(maxbl)
+      common /twod/ i2d
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /account/ iaccnt,ioutsub
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrbl/ nwrest
       common /drag/ cdv,cdp
       common /conversion/ radtodeg
@@ -147,7 +154,7 @@ c
          iflag = 1
          resd = 0.
          if (myid.eq.mblk2nd(nbl) .and. iadvance(nbl).ge.0) then
-            call l2norm(nbl,icyc,resd,0,jdim,kdim,idim,res,vol)
+            call l2norm(nbl,icyc,resd,0,jdim,kdim,idim,res,vol) 
             if ((real(resd+resd) .eq. real(resd) .and. 
      .         abs(real(resd)) .gt. 1.e-20) .or. 
      .         .not.(real(resd).lt.abs(real(resd)) .or.
@@ -356,18 +363,28 @@ c           sum contributions of blocks on global level
 c
             if (myid.eq.myhost) then
                if (level.eq.lglobal) then
-                  chdw(nres)  = chdw(nres)  + chd
+                  chdw(nres)  = chdw(nres)  + chd       
                   swetw(nres) = swetw(nres) + swett(nbl)
                   clw(nres)   = clw(nres)   + clt(nbl)
-                  cmyw(nres)  = cmyw(nres)  + cmyt(nbl)
+                  cmyw(nres)  = cmyw(nres)  + cmyt(nbl) 
                   cdw(nres)   = cdw(nres)   + cdt(nbl)
-                  cmxw(nres)  = cmxw(nres)  + cmxt(nbl)
-                  cmzw(nres)  = cmzw(nres)  + cmzt(nbl)
-                  czw(nres)   = czw(nres)   + czt(nbl)
+                  cmxw(nres)  = cmxw(nres)  + cmxt(nbl) 
+                  cmzw(nres)  = cmzw(nres)  + cmzt(nbl) 
+                  czw(nres)   = czw(nres)   + czt(nbl)  
                   cyw(nres)   = cyw(nres)   + cyt(nbl)
                   cxw(nres)   = cxw(nres)   + cxt(nbl)
                   cdpw(nres)  = cdpw(nres)  + cdpt(nbl)
                   cdvw(nres)  = cdvw(nres)  + cdvt(nbl)
+
+                  if (iclcd .eq. 1 .or. iclcd .eq. 2) then
+                     do nb = 1, nblocks_clcd
+                        if (igridg(nbl) .eq. blocks_clcd(2,nb)) then
+                           nn = blocks_clcd(1,nb)
+                           clcd(1,nn,nres) = clcd(1,nn,nres) + clt(nbl)
+                           clcd(2,nn,nres) = clcd(2,nn,nres) + cdt(nbl)
+                        end if
+                     end do
+                  end if
                end if
             end if
          end if
@@ -1172,6 +1189,7 @@ c
             end do
 c
          end if
+c
 c
 c        output subiteration convergence if iwrit3 > 0
 c        iwrit3 > 0...density residual and forces (or cont. surf. data) only

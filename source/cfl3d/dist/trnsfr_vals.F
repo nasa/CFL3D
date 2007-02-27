@@ -126,7 +126,7 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /des/ cdes,ides
       common /cfl/ dt0,dtold
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -152,8 +152,9 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sminn/ isminc
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
-      common /moov/movie,nframes,icall1,lhdr
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3) 
       common /wrbl/ nwrest
       common /wrestq/ irest,irest2
       common /igrdtyp/ ip3dgrd,ialph
@@ -433,20 +434,28 @@ c
          work(nlast+68) = isarc2d
          work(nlast+69) = sarccr3
          work(nlast+70) = ieasmcc2d
-         work(nlast+71) = irbtrim
-         work(nlast+72) = irigb
-         work(nlast+73) = greflrb
-         work(nlast+74) = tmass
-         work(nlast+75) = yinert
-         work(nlast+76) = gaccel
-         work(nlast+77) = relax
-         work(nlast+78) = itrminc
-         work(nlast+79) = tp(1,1)
-         work(nlast+80) = tp(2,1)
-         work(nlast+81) = tp(1,2)
-         work(nlast+82) = tp(2,2)
-         work(nlast+83) = ndgrd
-         work(nlast+84) = ndwrt
+         work(nlast+71) = ipertavg
+         work(nlast+72) = icoarsemovie
+         work(nlast+73) = i2dmovie
+         work(nlast+74) = iclcd
+         iskip_blocks = max(1,iskip_blocks)
+         work(nlast+75) = iskip_blocks
+         work(nlast+76) = cfltauMax
+         work(nlast+77) = cfltau0
+         work(nlast+78) = irbtrim
+         work(nlast+79) = irigb
+         work(nlast+80) = greflrb
+         work(nlast+81) = tmass
+         work(nlast+82) = yinert
+         work(nlast+83) = gaccel
+         work(nlast+84) = relax
+         work(nlast+85) = itrminc
+         work(nlast+86) = tp(1,1)
+         work(nlast+87) = tp(2,1)
+         work(nlast+88) = tp(1,2)
+         work(nlast+89) = tp(2,2)
+         work(nlast+90) = ndgrd
+         work(nlast+91) = ndwrt
          nlast = nlast+nkey
       end if
 c
@@ -697,20 +706,27 @@ c
          isarc2d   = int(work(nlast+68))
          sarccr3   = work(nlast+69)
          ieasmcc2d = int(work(nlast+70))
-         irbtrim   = int(work(nlast+71))
-         irigb     = int(work(nlast+72))
-         greflrb   = work(nlast+73)
-         tmass     = work(nlast+74)
-         yinert    = work(nlast+75)
-         gaccel    = work(nlast+76)
-         relax     = work(nlast+77)
-         itrminc   = int(work(nlast+78))
-         tp(1,1)   = work(nlast+79)
-         tp(2,1)   = work(nlast+80)
-         tp(1,2)   = work(nlast+81)
-         tp(2,2)   = work(nlast+82)
-         ndgrd     = int(work(nlast+83))
-         ndwrt     = int(work(nlast+84))
+         ipertavg  = int(work(nlast+71))
+         icoarsemovie = int(work(nlast+72))
+         i2dmovie = int(work(nlast+73))
+         iclcd     = int(work(nlast+74))
+         iskip_blocks = int(work(nlast+75))
+         cfltauMax = work(nlast+76)
+         cfltau0 = work(nlast+77)
+         irbtrim   = int(work(nlast+78))
+         irigb     = int(work(nlast+79))
+         greflrb   = work(nlast+80)
+         tmass     = work(nlast+81)
+         yinert    = work(nlast+82)
+         gaccel    = work(nlast+83)
+         relax     = work(nlast+84)
+         itrminc   = int(work(nlast+85))
+         tp(1,1)   = work(nlast+86)
+         tp(2,1)   = work(nlast+87)
+         tp(1,2)   = work(nlast+88)
+         tp(2,2)   = work(nlast+89)
+         ndgrd     = int(work(nlast+90))
+         ndwrt     = int(work(nlast+91))
       end if
 c
 c**************************

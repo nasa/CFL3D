@@ -11,7 +11,8 @@
      .                 nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,bcfilei,
      .                 bcfilej,bcfilek,ngrid,ncgg,nblg,iemg,inewgg,
      .                 rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,
-     .                 cmzw,chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
+     .                 cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     .                 chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
      .                 cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,windex,
      .                 ninter,iindex,nblkpt,dthetxx,dthetyy,dthetzz,
      .                 iibg,kkbg,jjbg,ibcg,dxintg,dyintg,dzintg,iiig,
@@ -62,6 +63,7 @@ c
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
      .             aeinp,aeout,sdhist,avgg,avgq
+      character*241 avgq2,avgq2pert,clcds,clcdp,output_dir
       character*80 filname
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
@@ -97,9 +99,11 @@ c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
       dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr),inewgg(maxgr)
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .          cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),chdw(ncycmax),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          swetw(ncycmax),fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
      .          rmstr1(ncycmax),rmstr2(ncycmax),nneg1(ncycmax),
@@ -152,6 +156,7 @@ c
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -160,12 +165,13 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /sminn/ isminc
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrestq/ irest,irest2
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
+      common /filenam2/ avgq2,avgq2pert,clcds,clcdp,output_dir
       common /igrdtyp/ ip3dgrd,ialph
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /elastic/ ndefrm,naesrf
@@ -176,14 +182,19 @@ c
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /gridtrans/ roll_angle
 c
       if (myid.eq.myhost) then
       if (icgns .ne. 1) then
          nzones = ngrid
          open(unit=2,file=restrt,form='unformatted',status='unknown')
-         rewind 2
+         rewind( 2)
+         if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
+            open(unit=102,file=clcds,form='unformatted',
+     $           status='unknown')
+            rewind(102)
+         end if
       else
 #if defined CGNS
 c   Open database
@@ -201,6 +212,7 @@ c
       time    = 0.
       time2mc = 0.
       xnumavg  = 0.
+      xnumavg2  = 0.
       do 800 nbl=1,nblock
       time2(nbl) = 0.
   800 continue
@@ -1907,12 +1919,34 @@ c
            if (ngx .ne. ngrid) goto 1011
            read(97,end=1011,err=1011) (itest(igrid),jtest(igrid),
      .       ktest(igrid),igrid=1,ngx)
-           do igrid=1,ngrid
-             if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1)-1 .or. 
-     .           jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1)-1 .or.
-     .           ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)-1) 
-     .           goto 1011
-           enddo
+
+           if (ipertavg .ne. 0) then
+
+              do igrid=1,ngrid
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or. 
+     .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1) .or.
+     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1))
+     .                goto 1011
+              enddo
+              read(98,end=1011,err=1011) ngx 
+              if (ngx .ne. ngrid) goto 1011 
+              read(98,end=1011,err=1011) (itest(igrid),jtest(igrid), 
+     .             ktest(igrid),igrid=1,ngx) 
+              do igrid=1,ngrid  
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or. 
+     .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1) .or. 
+     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)) 
+     .                goto 1011 
+c     
+              enddo
+           else
+              do igrid=1,ngrid
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1)-1 .or. 
+     .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1)-1 .or.
+     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)-1) 
+     .                goto 1011
+              enddo
+           end if
            goto 1012
  1011      continue
            write(11,'(/,'' stopping... flag iteravg=2, but cannot'',
@@ -1977,13 +2011,15 @@ c
          if (mblk2nd(nbl).eq.myid .or. myid.eq.myhost) then
             call rrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .                 ncycmax,ntr,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
-     .                 cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
+     .                 cmxw,cmyw,cmzw,
+     .                 n_clcd, clcd, nblocks_clcd, blocks_clcd,
+     $                 fmdotw,cftmomw,cftpw,cftvw,
      .                 cfttotw,rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),
      .                 w(lxib),w(lsnk0),w(lsni0),w(lxkb),w(lnbl),
      .                 w(lcmuv),maxbl,mblk2nd,myid,myhost,mycomm,
      .                 nou,bou,nbuf,ibufdim,igrid,
      .                 wk,idima,jdima,kdima,w(lvj0),w(lvk0),w(lvi0),
-     .                 w(ltj0),w(ltk0),w(lti0),w(lqavg))
+     .                 w(ltj0),w(ltk0),w(lti0),w(lqavg),w(lq2avg)) 
             ntq     = ntt
             ncycchk = ncyctot+ntt
 c
@@ -1997,7 +2033,7 @@ c
      .                    ' prior convergence history AND current',
      .                    ' history '
                   write(11,*)' increase value of ncycmax to at LEAST ',
-     .            ncycchk
+     .            ncycchk, ncyctot, ncycchk, ntt
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
             end if
@@ -2340,9 +2376,10 @@ c
      .                   mycomm, ierr)
 #endif
 c
-         if (myid.eq.myhost) then
+      if (myid.eq.myhost) then
       if (icgns .ne. 1) then
             close (2)
+            close (102)
             if(ndgrd .ne. 0 .and. iunst .gt. 1) then
               close (98)
             end if

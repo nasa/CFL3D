@@ -24,7 +24,7 @@ c
 c
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
 c
 c     k-implicit j-sweep line inversions af
 c

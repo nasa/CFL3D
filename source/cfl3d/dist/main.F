@@ -153,9 +153,18 @@ c           34......genforce.dat
 c           35......cfl3d.sd_res
 c           39......newsurf.p3d
 c           66......precfl3d.out
+c           101.....movie_coarse.g                     
+c           92......movie_coarse.q                      
+c           93......movie_2d.g                          
+c           94......movie_2d.q                          
+c           95......cfl3d_avg_ruvwp2_pert.p3d                
 c           96......cfl3d_avgg.p3d
 c           97......cfl3d_avgq.p3d
+c           96......cfl3d_avgg_ruvwp.p3d                      
+c           97......cfl3d_avg_ruvwp.p3d                      
+c           98......cfl3d_avg_ruvwp2.p3d                     
 c           99......precfl3d.error / cfl3d.error
+c           102.....clcd.bin
 c           901.....cgnsinfo.out
 c
 c           Unit 26 is reserved for reading in bc data via the
@@ -290,22 +299,32 @@ c
 c
       external usrint
 c
+      character*241 string
+      integer outdir_index
       character*80 grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
      .             aeinp,aeout,sdhist,avgg,avgq
+      character*241 avgq2,avgq2pert,movcrsg,movcrsq,mov2dg,mov2dq,
+     $     clcds,clcdp,output_dir
       character*80 inpstring
       character*80 bcfiles(mxbcfil)
       character*120 bou(ibufdim,nbuf)
       character*80 sysfile
+      integer n_clcd, nblocks_clcd
+      integer, allocatable, dimension(:,:) :: blocks_clcd
 c
-      dimension itrnsfr(27),titlw(20),nou(nbuf)
+      dimension itrnsfr(29),titlw(20),nou(nbuf)
 c
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
+      common /filenam2/ avgq2,avgq2pert,clcds,clcdp,output_dir
       common /proces/ numprocs
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /unit5/ iunit5
@@ -446,7 +465,13 @@ c
       rewind(iunit5)
 # endif
 c
-      read(iunit5,*)
+      read(iunit5,'(a240)') string
+      outdir_index = index(string, '!/', .false.) + 1
+      if( outdir_index > 1 ) then
+         output_dir = string(outdir_index:len_trim(string))
+      else
+         output_dir = '.'
+      end if
       read(iunit5,'(a60)')grid
       read(iunit5,'(a60)')plt3dg
       read(iunit5,'(a60)')plt3dq
@@ -473,79 +498,25 @@ c
       call asnfile(plt3dq, '-F f77 -N ieee', IER)
 #endif
 c
+      open(unit=11,file=output,form='formatted',status='unknown')
+      open(unit=15,file=output2,form='formatted',status='unknown')
+      preout    = 'precfl3d.out'
+      errfile   = 'precfl3d.error'
+      open(unit=66,file=preout,form='formatted',status='unknown')
+      open(unit=99,file=errfile,form='formatted',status='unknown')
+      rewind(11)
+      rewind(15)
+      rewind(66)
+      rewind(99)
+
       if (icgns .ne. 1) then
       open(unit=1,file=grid,form='unformatted',status='old')
       open(unit=2,file=restrt,form='unformatted',status='unknown')
-      else
-      write(iunit5,'(/,'' icgns=1.  Therefore, restart filename:'',/,
-     . 6x,a60,/,'' is not used.  All restart info is written to cgns'',
-     . '' file:'',/,6x,a60,/,'' (where grid is also located)'')') 
-     . restrt,grid
       end if
-      open(unit=11,file=output,form='formatted',status='unknown')
-      open(unit=12,file=residual,form='formatted',status='unknown')
-      open(unit=13,file=turbres,form='formatted',status='unknown')
-      open(unit=14,file=blomx,form='formatted',status='unknown')
-      open(unit=15,file=output2,form='formatted',status='unknown')
       open(unit=20,file=pplunge,form='formatted',status='unknown')
       open(unit=21,file=ovrlap,form='unformatted',status='unknown')
       open(unit=22,file=patch,form='unformatted',status='unknown')
-c
-c     the following file names are not set from the input deck
-c     NOTE: unit 26 is reserved for boundary condition data files, 
-c     the name(s) of which are read in via the input deck
-c
-      subres    = 'cfl3d.subit_res'
-      subtur    = 'cfl3d.subit_turres'
-      grdmov    = 'cfl3d.dynamic_patch'
-      alphahist = 'cfl3d.alpha'
-      preout    = 'precfl3d.out'
-      errfile   = 'precfl3d.error'
-      aeinp     = 'aesurf.dat'
-      aeout     = 'genforce.dat'
-      sdhist    = 'cfl3d.sd_res'
-      avgg      = 'cfl3d_avgg.p3d'
-      avgq      = 'cfl3d_avgq.p3d'
-c
-      open(unit=23,file=subres,form='formatted',status='unknown')
-      open(unit=24,file=subtur,form='formatted',status='unknown')
-      open(unit=25,file=grdmov,form='formatted',status='unknown')
-      open(unit=27,file=alphahist,form='formatted',status='unknown')
-      open(unit=33,file=aeinp,form='formatted',status='unknown')
-      open(unit=34,file=aeout,form='formatted',status='unknown')
-#   ifdef CMPLX
-      open(unit=35,file=sdhist,form='formatted',status='unknown')
-#   endif
-      open(unit=66,file=preout,form='formatted',status='unknown')
-      open(unit=96,file=avgg,form='unformatted',status='unknown')
-      open(unit=97,file=avgq,form='unformatted',status='unknown')
-      open(unit=99,file=errfile,form='formatted',status='unknown')
-#   ifdef CGNS
-      open(unit=901,file='cgnsinfo.out',form='formatted',
-     .  status='unknown')
-#   endif
-c
-      rewind( 1)
-      rewind( 2)
-      rewind( 3)
-      rewind( 4)
-      rewind(11)
-      rewind(12)
-      rewind(13)
-      rewind(14)
-      rewind(15)
-      rewind(17)
-      rewind(20)
-      rewind(21)
-      rewind(22)
-      rewind(23)
-      rewind(24)
-      rewind(25)
-      rewind(27)
-      rewind(33)
-      rewind(34)
-      rewind(66)
-      rewind(99)
+
 c
 c     remove the stop file if there is one 
 c
@@ -592,6 +563,173 @@ c
      .           mptch0,msub10,ibufdim0,nbuf0,mxbcfil0,nmds0,
      .           maxaes0,maxsegdg0,imode,ntr,bcfiles,bou,nou)
 c
+c
+c
+
+      open(unit=12,file=residual,form='formatted',status='unknown')
+      open(unit=13,file=turbres,form='formatted',status='unknown')
+      open(unit=14,file=blomx,form='formatted',status='unknown')
+c
+c     the following file names are not set from the input deck
+c     NOTE: unit 26 is reserved for boundary condition data files, 
+c     the name(s) of which are read in via the input deck
+c
+      subres    = 'cfl3d.subit_res'
+      subtur    = 'cfl3d.subit_turres'
+      grdmov    = 'cfl3d.dynamic_patch'
+      alphahist = 'cfl3d.alpha'
+      aeinp     = 'aesurf.dat'
+      aeout     = 'genforce.dat'
+      sdhist    = 'cfl3d.sd_res'
+
+      if (ipertavg == 0) then
+         avgg      = 'cfl3d_avgg.p3d'
+         avgq      = 'cfl3d_avgq.p3d'
+      else
+         avgg      = 'cfl3d_avgg_ruvwp.p3d' 
+         avgq      = 'cfl3d_avg_ruvwp.p3d' 
+      end if
+
+      avgq2     = 'cfl3d_avg_ruvwp2.p3d'                             
+      avgq2pert = 'cfl3d_avg_ruvwp2_pert.p3d'                        
+      movcrsg   = 'movie_coarse.g'                              
+      movcrsq   = 'movie_coarse.q'                              
+      mov2dg    = 'movie_2d.g'                                  
+      mov2dq    = 'movie_2d.q'                                  
+      clcds     = 'clcd.bin'                                  
+      clcdp     = 'ClCd_'
+c
+      subres =
+     $     output_dir(1:len_trim(output_dir)) // "/" // subres
+      subtur =
+     $     output_dir(1:len_trim(output_dir)) // "/" // subtur
+
+      movcrsg =
+     $     output_dir(1:len_trim(output_dir)) // "/" // movcrsg
+      movcrsq =
+     $     output_dir(1:len_trim(output_dir)) // "/" // movcrsq
+
+      mov2dg =
+     $     output_dir(1:len_trim(output_dir)) // "/" // mov2dg
+      mov2dg =
+     $     output_dir(1:len_trim(output_dir)) // "/" // mov2dq
+
+      avgq2pert =
+     $     output_dir(1:len_trim(output_dir)) // "/" // avgq2pert
+      avgq2 =
+     $     output_dir(1:len_trim(output_dir)) // "/" // avgq2
+
+      clcds =
+     $     output_dir(1:len_trim(output_dir)) // "/" // clcds
+      clcdp =
+     $     output_dir(1:len_trim(output_dir)) // "/" // clcdp
+
+      avgg = 
+     $     output_dir(1:len_trim(output_dir)) // "/" // avgg
+      avgq =
+     $     output_dir(1:len_trim(output_dir)) // "/" // avgq
+
+      open(unit=23,file=subres,form='formatted',status='unknown')
+      open(unit=24,file=subtur,form='formatted',status='unknown')
+      open(unit=25,file=grdmov,form='formatted',status='unknown')
+      open(unit=27,file=alphahist,form='formatted',status='unknown')
+      open(unit=33,file=aeinp,form='formatted',status='unknown')
+      open(unit=34,file=aeout,form='formatted',status='unknown')
+#   ifdef CMPLX
+      open(unit=35,file=sdhist,form='formatted',status='unknown')
+#   endif
+
+      inc_2d(:) = 0
+      inc_coarse(:) = 0
+      if( icoarsemovie .ne. 0 .or. i2dmovie .ne. 0 ) then
+         open(unit=110,file="coarse_movie.inp", 
+     .        form='formatted',status='old')
+         read(110,*)            ! inc_2d ... kinc_2d
+         read(110,*) inc_2d
+         read(110,*) ! inc_coarse
+         read(110,*) inc_coarse
+         close(110)
+         if( icoarsemovie .ne. 0 ) then
+            open(unit=101,file=movcrsg,form='unformatted', 
+     .           status='unknown') 
+            open(unit=92,file=movcrsq,form='unformatted', 
+     .           status='unknown') 
+         end if
+         if( i2dmovie .ne. 0 ) then
+            open(unit=93,file=mov2dg,form='unformatted', 
+     .           status='unknown') 
+            open(unit=94,file=mov2dq,form='unformatted', 
+     .           status='unknown') 
+         end if
+      end if
+      if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
+         open(unit=95,file=avgq2pert,form='unformatted', 
+     .        status='unknown') 
+         open(unit=98,file=avgq2,form='unformatted',status='unknown')
+      end if
+      if( iteravg .eq. 1 .or. iteravg .eq. 2) then
+         open(unit=96,file=avgg,form='unformatted',status='unknown')
+         open(unit=97,file=avgq,form='unformatted',status='unknown')
+      end if
+
+      nblocks_clcd = 0
+      n_clcd = 0
+      if (iclcd .eq. 1 .or. iclcd .eq. 2) then
+         open(unit=110,file="clcd.inp",form='formatted',status='old')
+         read(110,*) ! Number of unique Cl calculations
+         read(110,*) n_clcd
+         nblocks_clcd = 0
+         allocate(blocks_clcd(2,1000))
+         blocks_clcd(:,:) = 0
+         read(110,*)            ! Cl calc #, block #
+ 998     read(110,'(I2,I4)',end=1999,err=1999) 
+     .        blocks_clcd(:,nblocks_clcd+1)
+         if( blocks_clcd(1,nblocks_clcd+1) > 0 .and.  
+     .        blocks_clcd(1,nblocks_clcd+1) <= n_clcd .and.  
+     .        blocks_clcd(2,nblocks_clcd+1) > 0 ) then
+            write(11,*) 'ClCd Calculation Data ',
+     $           blocks_clcd(:,nblocks_clcd+1)
+            nblocks_clcd = nblocks_clcd + 1
+         end if
+         if( nblocks_clcd .ge. 999 ) then
+            write(*,*) 'Too many entries in clcd.inp '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         goto 998
+
+ 1999    continue
+         close(110)
+
+         open(unit=102,file=clcds,form='unformatted',
+     .        status='unknown')
+         rewind(102)
+      end if
+
+
+#   ifdef CGNS
+      open(unit=901,file='cgnsinfo.out',form='formatted',
+     .  status='unknown')
+#   endif
+c
+      rewind( 1)
+      rewind( 2)
+      rewind( 3)
+      rewind( 4)
+      rewind(12)
+      rewind(13)
+      rewind(14)
+      rewind(17)
+      rewind(20)
+      rewind(21)
+      rewind(22)
+      rewind(23)
+      rewind(24)
+      rewind(25)
+      rewind(27)
+      rewind(33)
+      rewind(34)
+c
+c
 #if defined DIST_MPI
 c     send the array dimensions to all processors
 c
@@ -622,17 +760,19 @@ c
       itrnsfr(25) = maxsegdg
       itrnsfr(26) = nkey
       itrnsfr(27) = nmaster
+      itrnsfr(28) = n_clcd
+      itrnsfr(29) = nblocks_clcd
 c
       do inode = 1,nnodes
          itag = inode
-         call MPI_Send (itrnsfr, 27, MPI_INTEGER, inode,
+         call MPI_Send (itrnsfr, 29, MPI_INTEGER, inode,
      .                 itag, mycomm, ierr)
       end do
 c
       else
 c
       itag = myid
-      call MPI_Recv (itrnsfr, 27, MPI_INTEGER, myhost,
+      call MPI_Recv (itrnsfr, 29, MPI_INTEGER, myhost,
      .               itag, mycomm, istat, ierr)
 c
       mwork    = itrnsfr(1 )
@@ -662,10 +802,26 @@ c
       maxsegdg = itrnsfr(25)
       nkey     = itrnsfr(26)
       nmaster  = itrnsfr(27)
-c
+      n_clcd   = itrnsfr(28)
+      nblocks_clcd = itrnsfr(29)
       end if
+
+      call mpi_bcast(inc_2d, 3, MPI_INTEGER, myhost, mycomm, ierr)
+      call mpi_bcast(inc_coarse, 3, MPI_INTEGER, myhost, mycomm, ierr)
+
+      call mpi_bcast(iclcd, 1, MPI_INTEGER, myhost, mycomm, ierr)
+
+      if (iclcd .eq. 1 .or. iclcd .eq. 2) then
+         if (myid .ne. myhost) then
+            allocate(blocks_clcd(2,nblocks_clcd))
+            blocks_clcd(:,:) = 0
+         end if
+         call mpi_bcast(blocks_clcd, 2*nblocks_clcd, MPI_INTEGER,
+     $        myhost, mycomm, ierr)
+      end if
+
 #endif
-c
+
 c     close/delete precfl3d error file, and reopen as cfl3d error file
 c
       close(99,status='delete')
@@ -681,7 +837,7 @@ c
      .           maxgr,maxseg,maxcs,ncycmax,intmx,mxxe,mptch,
      .           msub1,ibufdim,nbuf,mxbcfil,istat_size,ntr,
      .           nmds,maxaes,nslave,maxsegdg,nmaster,bcfiles,bou,nou,
-     .           grid)
+     .           grid,n_clcd,nblocks_clcd,blocks_clcd)
 c
 c***********************************************************************
 c     normal program termnination
@@ -706,6 +862,10 @@ c
       end if
 #endif
 c
+      if (allocated(blocks_clcd)) then
+         deallocate(blocks_clcd)
+      end if
+
       call termn8(myid,0,ibufdim,nbuf,bou,nou)
 c
       stop

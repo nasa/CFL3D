@@ -52,8 +52,8 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /elastic/ ndefrm,naesrf
-      common /unst/ time,cfltau,ntstep,ita,iunst
-      common /avgdata/ xnumavg,iteravg
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
@@ -149,6 +149,7 @@ c      61  delti
 c      62  xnm1
 c      63  ynm1
 c      64  znm1
+c      65  q2avg
 c
 c
       if (myid.eq.myhost .and. mpihost.eq.1) then
@@ -697,11 +698,12 @@ c
          if((ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      .and. real(dt) .gt. 0.) ns=jmkmim*4
 c
-c........qavg(jdim-1,kdim-1,idim-1,5) iteration-averaged data
+c........qavg(jdim,kdim,idim,5) iteration-averaged data
 c
          lw(46,nbl) = lw(45,nbl) + ns
          ns = 0
-         if (iteravg.eq.1 .or. iteravg.eq.2) ns = jm1km1im1*5
+
+         if (iteravg.eq.1 .or. iteravg.eq.2) ns = jmkmim*5
 c
 c........ux(jdim-1,kdim-1,idim-1,9)    
 c        velocity gradients for EASM k-omega or k-epsilon turb models
@@ -834,7 +836,14 @@ c
          ns = 0
          if (idefrm(nbl).gt.0) ns = jmkmim
 c
-         nstart = lw(64,nbl) + ns
+c
+c........q2avg(jdim,kdim,idim,5) Average of the square of q
+c
+         lw(65,nbl) = lw(64,nbl) + ns
+         ns = 0
+         if (ipertavg.eq.1 .or. ipertavg.eq.2) ns = jmkmim*5
+c
+         nstart = lw(65,nbl) + ns
 c
          if (myid.eq.myhost .and. mpihost.eq.1) then
             if (nbl.lt.nblock) then
@@ -846,14 +855,14 @@ c        memblock is the memory need to store the w array for this
 c        block; it is used in precfl3d to determine the memory 
 c        requirement for each node
 c
-         memblock(nbl) = lw(64,nbl) + ns - lw(1,nbl) + 1
+         memblock(nbl) = lw(65,nbl) + ns - lw(1,nbl) + 1
 c
       else
 c
 c        if block is not local to this node, set pointers to previous
 c        blocks starting location
 c
-         do ii = 1,64
+         do ii = 1,65
             lw(ii,nbl) = nstart
          end do
          do ii = 1, maxseg
@@ -862,7 +871,7 @@ c
             end do
          end do
 c
-         nstart = lw(64,nbl)
+         nstart = lw(65,nbl)
 c
       end if
 c

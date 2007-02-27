@@ -262,7 +262,7 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
       common /maxiv/ ivmx
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /twod/ i2d
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
       common /is_perbc/ is_prd(5),ie_prd(5),nbcprd
@@ -274,7 +274,7 @@ c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /conversion/ radtodeg
       common /unit5/ iunit5
-      common /moov/ movie,nframes,icall1,lhdr
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /elastic_ss/ idef_ss
       common /memory/ memadd,memaddi
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
@@ -889,7 +889,7 @@ c
          i = idimg(nbl)
          write(66,223)
          write(66,4)igrid,nbl,j,k,i
-         do ii=1,64
+         do ii=1,65
             write(66,37)ii,nbl,lw(ii,nbl)
          end do
          do jj=1,6

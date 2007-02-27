@@ -45,7 +45,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /conversion/ radtodeg
 c
 #if defined DIST_MPI

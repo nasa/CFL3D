@@ -18,7 +18,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
 c
 c     imult: multi-plane vectorization flag

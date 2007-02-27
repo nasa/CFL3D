@@ -53,9 +53,9 @@ c
 c
       common /twod/ i2d
       common /zero/ iexp
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax 
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit
 
 c
       memuse = 0
@@ -1310,7 +1310,7 @@ c
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt
       common /unst/ time,cfltau,ntstep,ita,iunst
-      common /moov/movie,nframes,icall1,lhdr
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie 
 c
 c     allocate memory
 c

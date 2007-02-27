@@ -13,7 +13,8 @@
      .                 rfreqr,xorig0,yorig0,zorig0,time2,thetaxl,
      .                 thetayl,thetazl,itrans,irotat,idefrm,
      .                 rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,
-     .                 cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,cftmomw,
+     .                 cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     $                 chdw,swetw,fmdotw,cfttotw,cftmomw,
      .                 cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,
      .                 ihstry,iadvance,iforce,lfgm,resmx,imx,jmx,kmx,
      .                 vormax,ivmax,jvmax,kvmax,sx,sy,sz,stot,pav,
@@ -91,6 +92,7 @@ c
      .             output2,printout,pplunge,ovrlap,patch,restrt,
      .             subres,subtur,grdmov,alphahist,errfile,preout,
      .             aeinp,aeout,sdhist,avgg,avgq
+      character*241 avgq2,avgq2pert,clcds,clcdp,output_dir
       character*120 bou(ibufdim,nbuf)
       character*80  bcfiles(mxbcfil)
       character*32 basedesired
@@ -160,9 +162,11 @@ c
      .          stm(2*nmds,2*nmds,maxaes),stmi(2*nmds,2*nmds,maxaes),
      .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes)
       dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr)
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .          cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          chdw(ncycmax),swetw(ncycmax),fmdotw(ncycmax),
      .          cfttotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
      .          cftvw(ncycmax),rmstr1(ncycmax),rmstr2(ncycmax),
@@ -245,7 +249,8 @@ c
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
-      common /avgdata/ xnumavg,iteravg
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -253,13 +258,14 @@ c
       common /mgv/ epsssc(3),epsssr(3),issc,issr
       common /nfablk/ nfajki(3)
       common /sklton/ isklton
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrbl/ nwrest
-      common /moov/ movie,nframes,icall1,lhdr
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
+      common /filenam2/ avgq2,avgq2pert,clcds,clcdp,output_dir
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /precond/ cprec,uref,avn
       common /mydist2/ nnodes,myhost,myid,mycomm
@@ -1037,6 +1043,7 @@ c
             cmxw(ntt)   = 0.
             cmyw(ntt)   = 0.
             cmzw(ntt)   = 0.
+            clcd(:,:,ntt)= 0.
             cxw(ntt)    = 0.
             czw(ntt)    = 0.
             cdpw(ntt)   = 0.
@@ -1352,6 +1359,7 @@ c
           if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. and. 
      +        icyc .eq. ncyc)) then
             xnumavg=xnumavg+1.
+            xnumavg2=xnumavg2+1.
           end if
         end if
       end if
@@ -1631,7 +1639,9 @@ c              but not for the host
      .                 w(lxtbj),w(lxtbk),w(lxtbi),w(lqc0),w(ldqc0),
      .                 iseq,w(lqj0),w(lqk0),w(lqi0),maxbl,maxgr,
      .                 maxseg,rms,rmsb,rmstb1,rmstb2,clw,cdw,cdpw,cdvw,
-     .                 cxw,cyw,czw,cmxw,cmyw,cmzw,chdw,swetw,fmdotw,
+     .                 cxw,cyw,czw,cmxw,cmyw,cmzw,
+     $                 n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     $                 chdw,swetw,fmdotw,
      .                 cfttotw,cftmomw,cftpw,cftvw,rmstr1,rmstr2,
      .                 nneg1,nneg2,ihstry,ngrid,nblg,iemg,levelg,
      .                 iviscg,itrans,irotat,iforce,swett,clt,cdt,
@@ -1645,7 +1655,7 @@ c              but not for the host
      .                 cfxtot,cfytot,cfztot,cfdtot,cfltot,cfttot,
      .                 ncs,icsinfo,myid,myhost,mycomm,mblk2nd,nou,
      .                 bou,nbuf,ibufdim,ncycmax,maxcs,thetay,iadvance,
-     .                 idefrm)
+     .                 idefrm,igridg)
          end if
 c
 c        after last block on global level is accounted for, set
@@ -2436,8 +2446,36 @@ c                 initialize eddy viscosity limit flag
                   end if
                if (icgns .ne. 1) then
                   open(unit=2,file=restrt,form='unformatted',
-     .            status='unknown')
-                  rewind 2
+     .                 status='unknown')
+                  rewind( 2)
+                  if (ndwrt .ne. 0 .and. iunst .gt. 1) then
+                    if(mseq .gt. 1) then
+                      nou(1) = min(nou(1)+1,ibufdim)
+                      write(bou(nou(1),1)
+     .                   ,'(''stopping...cannot write dynamic '',
+     .                       ''grid file when mseq > 1'')')
+                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                    end if
+                    open(98,file='dgplot3d.bin',form='formatted'
+     .                  ,status='unknown')
+                    write(98,'(i8)') ngrid
+                    do igrid=1,ngrid
+                      nbl = nblg(igrid)
+                      iem = iemg(igrid)
+                      if (iem.eq.0) nbl = nbl + (mseq-iseq)
+                      call lead(nbl,lw,lw2,maxbl)
+                      idimt(igrid) = idim
+                      jdimt(igrid) = jdim
+                      kdimt(igrid) = kdim
+                    enddo
+                    write(98,'(3i8)') ((idimt(igrid),jdimt(igrid),
+     .                           kdimt(igrid)),igrid=1,ngrid)
+                  end if
+                  if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
+                     open(unit=102,file=clcds,form='unformatted',
+     .                    status='unknown')
+                     rewind(102)
+                  end if
                else
 #if defined CGNS
 c   Open database
@@ -2460,12 +2498,41 @@ c   Open database
                    rewind(97)
                    write(96) ngrid
                    write(97) ngrid
-                   write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
-     .               jdimg(nblg(igrid)+mseq-iseq)-1,
-     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
-                   write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
-     .               jdimg(nblg(igrid)+mseq-iseq)-1,
-     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+
+                   if (ipertavg .eq. 1 .or. ipertavg .eq. 2)then
+                      write(11,2225) avgq2 
+                      write(11,2225) avgq2pert 
+                      rewind(95) 
+                      rewind(98) 
+                      write(95) ngrid 
+                      write(98) ngrid 
+                      write(95) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(96) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(97) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(98) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                   else
+                      write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .                     jdimg(nblg(igrid)+mseq-iseq)-1,
+     .                     kdimg(nblg(igrid)+mseq-iseq)-1,
+     $                     igrid=1,ngrid)
+                      write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .                     jdimg(nblg(igrid)+mseq-iseq)-1,
+     .                     kdimg(nblg(igrid)+mseq-iseq)-1,
+     $                     igrid=1,ngrid)
+                   end if
+c
                  end if
                end if
                do 6040 igrid=1,ngrid
@@ -2497,19 +2564,22 @@ c   Open database
                end if
                   call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
-     .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
+     .            cmxw,cmyw,cmzw,
+     $            n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     $            fmdotw,cftmomw,cftpw,cftvw,cfttotw,
      .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
      .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
-     .            w(lqavg),w(lx),w(ly),w(lz))
+     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz))
                end if
  6040          continue
                if (myid.eq.myhost) then
                if (icgns .ne. 1) then
-               close(2)
+                  close(2)
+                  close(102)
                else
 #if defined CGNS
 c   Close data base
@@ -2605,30 +2675,12 @@ c                 initialize eddy viscosity limit flag
                   end if
                if (icgns .ne. 1) then
                   open(unit=2,file=restrt,form='unformatted',
-     .            status='unknown')
-                  rewind 2
-                  if (ndwrt .ne. 0 .and. iunst .gt. 1) then
-                    if(mseq .gt. 1) then
-                      nou(1) = min(nou(1)+1,ibufdim)
-                      write(bou(nou(1),1)
-     .                   ,'(''stopping...cannot write dynamic '',
-     .                       ''grid file when mseq > 1'')')
-                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-                    end if
-                    open(98,file='dgplot3d.bin',form='formatted'
-     .                  ,status='unknown')
-                    write(98,'(i8)') ngrid
-                    do igrid=1,ngrid
-                      nbl = nblg(igrid)
-                      iem = iemg(igrid)
-                      if (iem.eq.0) nbl = nbl + (mseq-iseq)
-                      call lead(nbl,lw,lw2,maxbl)
-                      idimt(igrid) = idim
-                      jdimt(igrid) = jdim
-                      kdimt(igrid) = kdim
-                    enddo
-                    write(98,'(3i8)') ((idimt(igrid),jdimt(igrid),
-     .                           kdimt(igrid)),igrid=1,ngrid)
+     .                 status='unknown')
+                  rewind( 2)
+                  if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
+                     open(unit=102,file=clcds,form='unformatted',
+     .                    status='unknown')
+                     rewind(102)
                   end if
                else
 #if defined CGNS
@@ -2651,12 +2703,40 @@ c   Open database
                    rewind(97)
                    write(96) ngrid
                    write(97) ngrid
-                   write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
-     .               jdimg(nblg(igrid)+mseq-iseq)-1,
-     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
-                   write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
-     .               jdimg(nblg(igrid)+mseq-iseq)-1,
-     .               kdimg(nblg(igrid)+mseq-iseq)-1,igrid=1,ngrid)
+
+                   if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
+                      write(11,2225) avgq2 
+                      write(11,2225) avgq2pert 
+                      rewind(95) 
+                      rewind(98) 
+                      write(95) ngrid 
+                      write(98) ngrid 
+                      write(95) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(96) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(97) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                      write(98) (idimg(nblg(igrid)+mseq-iseq), 
+     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     .                     kdimg(nblg(igrid)+mseq-iseq),
+     $                     igrid=1,ngrid) 
+                   else
+                      write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .                     jdimg(nblg(igrid)+mseq-iseq)-1,
+     .                     kdimg(nblg(igrid)+mseq-iseq)-1,
+     $                     igrid=1,ngrid)
+                      write(97) (idimg(nblg(igrid)+mseq-iseq)-1,
+     .                     jdimg(nblg(igrid)+mseq-iseq)-1,
+     .                     kdimg(nblg(igrid)+mseq-iseq)-1,
+     $                     igrid=1,ngrid)
+                   end if
                  end if
                end if
                do 6050 igrid=1,ngrid
@@ -2688,14 +2768,16 @@ c   Open database
                end if
                   call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
      .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
-     .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
+     .            cmxw,cmyw,cmzw,
+     $            n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     $            fmdotw,cftmomw,cftpw,cftvw,cfttotw,
      .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
      .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
-     .            w(lqavg),w(lx),w(ly),w(lz))
+     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz))
                end if
  6050          continue
 c
@@ -2887,51 +2969,237 @@ c
 c     output new plot3d file every movie time steps
 c
       movabs = abs(movie)
-      if (real(dt).gt.0. .and. movabs.gt.0) then
-         if (nt.eq.nt/movabs*movabs) then
-            lhdr   = 0
-            iwk1   = 1
-            iwk2   = iwk1  + 3*nplots
-            iwk3   = iwk2  + maxbl
-            iwork1 = iwork - iwk3 + 1
-            if (iwork1.le.0) then
-               nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),'(''stopping...not enough integer '',
-     .                          ''work space for subroutine qout'')')
-               call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      if (ipertavg .eq. 0) then
+         if (real(dt).gt.0. .and. movabs.gt.0) then
+            if ((movabs.gt.0 .and. (nt.eq.nt/movabs*movabs)) .or.
+     .           (iteravg.gt.0)) then 
+               if (nt.eq.nt/movabs*movabs) then
+                  lhdr   = 0
+                  iwk1   = 1
+                  iwk2   = iwk1  + 3*nplots
+                  iwk3   = iwk2  + maxbl
+                  iwork1 = iwork - iwk3 + 1
+                  if (iwork1.le.0) then
+                     nou(1) = min(nou(1)+1,ibufdim)
+                     write(bou(nou(1),1),'(''stopping...not '',
+     $                    ''enough integer '',
+     .                    ''work space for subroutine qout'')')
+                     call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                  end if
+                  do iii = 1,iwk3
+                     iwk(iii) = 0
+                  end do
+                  do iii = 1,nwork
+                     wk(iii) = 0.0
+                  end do
+                  call qout(iseq,lw,lw2,w,mgwk,wk,nwork,
+     .                 nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
+     .                 ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
+     .                 nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
+     .                 ibcinfo,bcfilei,bcfilej,bcfilek,itrans,
+     .                 irotat,idefrm,nblock,levelg,igridg,iviscg,jdimg,
+     .                 kdimg,idimg,nblg,clw,ncycmax,nplot3d,
+     .                 inpl3d,ip3dsurf,nprint,inpr,iadvance,mycomm,
+     .                 myid,myhost,mblk2nd,nou,bou,nbuf,ibufdim,maxbl,
+     .                 maxgr,maxseg,iitot,jsg,ksg,isg,jeg,keg,ieg,
+     .                 ninter,windex,iindex,nblkpt,intmax,nsub1,maxxe,
+     .                 nblk,nbli,limblk,isva,nblon,mxbli,thetay,
+     .                 iwk(iwk1),iwk(iwk2),iwk(iwk3),iwork1,xorig,yorig,
+     .                 zorig,period_miss,geom_miss,epsc0,epsrot,
+     .                 isav_blk,isav_pat,isav_pat_b,isav_emb,isav_prd,
+     .                 lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
+     .                 istat2_bl,istat2_pa,istat2_pe,istat2_em,
+     .                 istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .                 mxbcfil,iprnsurf)
+
+                  do iii = 1,iwk3
+                     iwk(iii) = 0
+                  end do
+                  do iii = 1,nwork
+                     wk(iii) = 0.0
+                  end do
+                  nframes = nframes + 1
+               end if
             end if
-            do iii = 1,iwk3
-               iwk(iii) = 0
-            end do
-            do iii = 1,nwork
-               wk(iii) = 0.0
-            end do
-            call qout(iseq,lw,lw2,w,mgwk,wk,nwork,
-     .                nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
-     .                ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
-     .                nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
-     .                ibcinfo,bcfilei,bcfilej,bcfilek,itrans,
-     .                irotat,idefrm,nblock,levelg,igridg,iviscg,jdimg,
-     .                kdimg,idimg,nblg,clw,ncycmax,nplot3d,
-     .                inpl3d,ip3dsurf,nprint,inpr,iadvance,mycomm,
-     .                myid,myhost,mblk2nd,nou,bou,nbuf,ibufdim,maxbl,
-     .                maxgr,maxseg,iitot,jsg,ksg,isg,jeg,keg,ieg,
-     .                ninter,windex,iindex,nblkpt,intmax,nsub1,maxxe,
-     .                nblk,nbli,limblk,isva,nblon,mxbli,thetay,
-     .                iwk(iwk1),iwk(iwk2),iwk(iwk3),iwork1,xorig,yorig,
-     .                zorig,period_miss,geom_miss,epsc0,epsrot,
-     .                isav_blk,isav_pat,isav_pat_b,isav_emb,isav_prd,
-     .                lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
-     .                istat2_bl,istat2_pa,istat2_pe,istat2_em,
-     .                istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
-     .                mxbcfil,iprnsurf)
-            do iii = 1,iwk3
-               iwk(iii) = 0
-            end do
-            do iii = 1,nwork
-               wk(iii) = 0.0
-            end do
-            nframes = nframes + 1
+         end if
+      end if
+      if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
+         if ((real(dt).gt.0. .and. movabs.gt.0).or.
+     $        (iteravg.gt.0)) then
+c     
+            if ((movabs.gt.0 .and. (nt.eq.nt/movabs*movabs)) .or.
+     .           (iteravg.gt.0)) then
+               lhdr   = 0
+               iwk1   = 1
+               iwk2   = iwk1  + 3*nplots
+               iwk3   = iwk2  + maxbl
+               iwork1 = iwork - iwk3 + 1
+               if (iwork1.le.0) then
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),
+     $                 '(''stopping...not enough integer '',
+     .                    ''work space for subroutine qoutavg'')')
+                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+c     
+               call qoutavg(iseq,lw,lw2,w,mgwk,wk,nwork, 
+     .              nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
+     .              ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
+     .              nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
+     .              ibcinfo,bcfilei,bcfilej,bcfilek,itrans,
+     .              irotat,idefrm,nblock,levelg,igridg,iviscg,jdimg,
+     .              kdimg,idimg,nblg,clw,ncycmax,nplot3d,
+     .              inpl3d,ip3dsurf,nprint,inpr,iadvance,mycomm,
+     .              myid,myhost,mblk2nd,nou,bou,nbuf,ibufdim,maxbl,
+     .              maxgr,maxseg,iitot,jsg,ksg,isg,jeg,keg,ieg,
+     .              ninter,windex,iindex,nblkpt,intmax,nsub1,maxxe,
+     .              nblk,nbli,limblk,isva,nblon,mxbli,thetay,
+     .              iwk(iwk1),iwk(iwk2),iwk(iwk3),iwork1,xorig,yorig,
+     .              zorig,period_miss,geom_miss,epsc0,epsrot,
+     .              isav_blk,isav_pat,isav_pat_b,isav_emb,isav_prd,
+     .              lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
+     .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
+     .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .              mxbcfil,iprnsurf,nt,movabs)
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+               nframes = nframes + 1
+            end if
+         end if
+      end if
+c     
+      if (icoarsemovie .ne. 0) then
+c     
+         iflag_coarse = icoarsemovie
+         mov_coarse = icoarsemovie
+         iinc_coarse = inc_coarse(1)
+         jinc_coarse = inc_coarse(2)
+         kinc_coarse = inc_coarse(3)
+         
+         if (real(dt).gt.0. .and. iflag_coarse.gt.0) then                  
+            if (ntt.eq.ntt/mov_coarse*mov_coarse) then                      
+               lhdr   = 0
+               iwk1   = 1
+               iwk2   = iwk1  + 3*nblocks/lglobal
+               iwk3   = iwk2  + maxbl
+               iwork1 = iwork - iwk3 + 1
+               if (iwork1.le.0) then
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),
+     $                 '(''stopping...not enough integer '',
+     .                 ''work space for subroutine qout_coarse'')')
+                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+               
+               if (nt.eq.1) then
+                  icallcrs=0
+                  icall2d=0
+               endif
+               call qout_coarse(iseq,lw,lw2,w,mgwk,wk,nwork,
+     .              nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
+     .              ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
+     .              nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
+     .              ibcinfo,bcfilei,bcfilej,bcfilek,itrans,
+     .              irotat,idefrm,nblock,levelg,igridg,iviscg,jdimg,
+     .              kdimg,idimg,nblg,clw,ncycmax,nplot3d,
+     .              inpl3d,ip3dsurf,nprint,inpr,iadvance,mycomm,
+     .              myid,myhost,mblk2nd,nou,bou,nbuf,ibufdim,maxbl,
+     .              maxgr,maxseg,iitot,jsg,ksg,isg,jeg,keg,ieg,
+     .              ninter,windex,iindex,nblkpt,intmax,nsub1,maxxe,
+     .              nblk,nbli,limblk,isva,nblon,mxbli,thetay,
+     .              iwk(iwk1),iwk(iwk2),iwk(iwk3),iwork1,xorig,yorig,
+     .              zorig,period_miss,geom_miss,epsc0,epsrot,
+     .              isav_blk,isav_pat,isav_pat_b,isav_emb,isav_prd,
+     .              lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
+     .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
+     .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .              mxbcfil,iprnsurf,nt,
+     .              mov_coarse,iinc_coarse,jinc_coarse,kinc_coarse)
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+            end if
+         end if
+c     
+      end if
+c     
+      if (i2dmovie .ne. 0) then
+c
+         iflag_2d = i2dmovie
+c     ! output snapshot every mov_2d time steps  
+         mov_2d = i2dmovie
+         
+         iinc_2d = inc_2d(1)
+         jinc_2d = inc_2d(2)
+         kinc_2d = inc_2d(3)
+         
+         if (real(dt).gt.0. .and. iflag_2d.gt.0) then                  
+            if (ntt.eq.ntt/mov_2d*mov_2d) then                        
+               lhdr   = 0
+               iwk1   = 1
+               iwk2   = iwk1  + 3*nblocks/lglobal                         
+               iwk3   = iwk2  + maxbl
+               iwork1 = iwork - iwk3 + 1
+               if (iwork1.le.0) then
+                  nou(1) = min(nou(1)+1,ibufdim)
+                  write(bou(nou(1),1),
+     $                 '(''stopping...not enough integer '',
+     .                 ''work space for subroutine qout_2d'')')
+                  call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+               call qout_2d(iseq,lw,lw2,w,mgwk,wk,nwork,              
+     .              nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
+     .              ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
+     .              nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
+     .              ibcinfo,bcfilei,bcfilej,bcfilek,itrans,
+     .              irotat,idefrm,nblock,levelg,igridg,iviscg,jdimg,
+     .              kdimg,idimg,nblg,clw,ncycmax,nplot3d,
+     .              inpl3d,ip3dsurf,nprint,inpr,iadvance,mycomm,
+     .              myid,myhost,mblk2nd,nou,bou,nbuf,ibufdim,maxbl,
+     .              maxgr,maxseg,iitot,jsg,ksg,isg,jeg,keg,ieg,
+     .              ninter,windex,iindex,nblkpt,intmax,nsub1,maxxe,
+     .              nblk,nbli,limblk,isva,nblon,mxbli,thetay,
+     .              iwk(iwk1),iwk(iwk2),iwk(iwk3),iwork1,xorig,yorig,
+     .              zorig,period_miss,geom_miss,epsc0,epsrot,
+     .              isav_blk,isav_pat,isav_pat_b,isav_emb,isav_prd,
+     .              lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
+     .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
+     .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .              mxbcfil,iprnsurf,nt,
+     .              mov_2d,iinc_2d,jinc_2d,kinc_2d)                 
+               
+               do iii = 1,iwk3
+                  iwk(iii) = 0
+               end do
+               do iii = 1,nwork
+                  wk(iii) = 0.0
+               end do
+            end if
          end if
       end if
 c

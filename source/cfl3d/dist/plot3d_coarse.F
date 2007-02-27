@@ -1,4 +1,5 @@
-      subroutine plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
+      subroutine plot3d_coarse(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,
+     .                  k1,k2,k3,q,
      .                  qi0,qj0,qk0,x,y,z,xw,blank2,blank,xg,iflag,
      .                  vist3d,iover,nblk,nmap,bcj,bck,bci,
      .                  vj0,vk0,vi0,ifunc,iplot,jdw,kdw,idw,
@@ -68,7 +69,6 @@ c
      .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
-      allocatable :: xvist3d(:,:,:)
 c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -82,6 +82,7 @@ c
       common /wallfun/ iwf(3)
       common /igrdtyp/ ip3dgrd,ialph
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
+      common /moovcrs2d/icallcrs,icall2d
       common /conversion/ radtodeg
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
@@ -777,19 +778,6 @@ c
             end if
 #           endif
          end if
-         if (ifunc.eq.-4) then
-            write(11,'(''   plot3dg file is an xyz file'',
-     .      '' at grid points'')')
-            write(11,'(''   plot3dq file is a function'',
-     .      '' file of amut at grid points'')')
-#           ifdef CMPLX
-            if (ip3dgrad .ne. 0) then
-               write(11,'(''   NOTE: contains d(amut)/d(), rather'',
-     .                    '' than amut'')')
-               call gradinfo(delh,11)
-            end if
-#           endif
-         end if
          if (i2d .eq. 1) then
             if (iblnk .eq. 0) then
                write(11,2041)
@@ -856,7 +844,7 @@ c
 c
 #endif
 c
-      if (myid.eq.myhost .and. icall1.eq.0) then
+      if (myid.eq.myhost .and. icallcrs.eq.0) then
 c
 c     ialph > 0 for a grid that was read in plot3d format with alpha measured
 c               in the xy plane (TLNS3D convention)
@@ -878,12 +866,14 @@ c
       if (ibin.eq.0) then
          if (i2d.eq.0) then
             if (iblnk.eq.0) then
-               write(3,'(5e14.6)')
+               !write(6,*)'write grid for iblnk=0'
+               write(101,'(5e14.6)')
      .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                   (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
      .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
             else
-                 write(3,'(5e14.6)')
+                 !write(6,*)'write grid for iblnk=1'
+                 write(101,'(5e14.6)')
      .                     (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                     (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
      .                     (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
@@ -891,11 +881,11 @@ c
             end if
          else
             if (iblnk.eq.0) then
-               write(3,'(5e14.6)')
+               write(101,'(5e14.6)')
      .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
             else
-               write(3,'(5e14.6)')
+               write(101,'(5e14.6)')
      .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
      .               (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
@@ -904,12 +894,12 @@ c
       else
          if (i2d.eq.0) then
             if (iblnk.eq.0) then
-               write(3)
+               write(101)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
             else
-               write(3)
+               write(101)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
@@ -917,11 +907,11 @@ c
             end if
          else
             if (iblnk.eq.0) then
-               write(3)
+               write(101)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw) 
             else
-               write(3)
+               write(101)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
      .             (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
@@ -942,24 +932,16 @@ c
       idw = (i2-i1)/i3 + 1
       ldw = 5
 c
+      call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
+     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw) 
+c
 c     ifunc...flag to determine whether a plot3d q file or plot3d function
 c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST
 c           = 0 plot3d q file is written at grid points
 c           < 0 function file is written
-c            -4 vist3d at grid points
 c            -5 pressure coefficient (cp) at grid points
 c            -6 p/pinf at grid points
-c
-      if (ifunc .eq. -4) then
-        allocate(xvist3d(jdim,kdim,idim))
-        call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,vist3d,
-     .              vi0,vj0,vk0,jdw,kdw,idw,xvist3d,1)
-      else
-        call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
-     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
-      end if
-
 c
       jw = (j2-j1)/j3 + 1
       kw = (k2-k1)/k3 + 1
@@ -1005,16 +987,6 @@ c
             do 4032 j=1,jw
             xv(j,k,i,1) = xv(j,k,i,5)/p0
  4032       continue
-         end if
-c
-         if (ifunc.eq.-4) then
-            do i=1,iw
-              do k=1,kw
-                do j=1,jw
-                  xv(j,k,i,1) = xvist3d(j,k,i)
-                end do
-              end do
-            end do
          end if
 c
       end if
@@ -1096,10 +1068,10 @@ c     output solution
 c
       if (ifunc .eq. 0) then
          if (ibin.eq.0) then
-            write(4,'(5e14.6)') xmachw,alphww,reuew,timew
+            write(92,'(5e14.6)') xmachw,alphww,reuew,timew
             if (i2d.eq.0) then
                if (ialph.eq.0) then
-                  write(4,'(5e14.6)')
+                  write(92,'(5e14.6)')
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,5)
                else
                   do i=1,iw
@@ -1109,22 +1081,22 @@ c
                         end do
                      end do
                   end do
-                  write(4,'(5e14.6)')
+                  write(92,'(5e14.6)')
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .             (((xw(j,k,i,4),i=1,iw),j=1,jw),k=1,kw),
      .             (((xw(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
      .             (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw) 
                end if
             else
-               write(4,'(5e14.6)')
+               write(92,'(5e14.6)')
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=4,5)
             end if
          else
-            write(4)  xmachw,alphww,reuew,timew
+            write(92)  xmachw,alphww,reuew,timew
             if (i2d.eq.0) then
                if (ialph.eq.0) then
-                  write(4)
+                  write(92)
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,5)
                else
                   do i=1,iw
@@ -1134,24 +1106,24 @@ c
                         end do
                      end do
                   end do
-                  write(4)
+                  write(92)
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .             (((xw(j,k,i,4),i=1,iw),j=1,jw),k=1,kw),
      .             (((xw(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
      .              (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw) 
                end if
             else
-               write(4)
+               write(92)
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=4,5)
             end if
          end if
       else
          if (ibin.eq.0) then
-            write(4,'(5e14.6)')
+            write(92,'(5e14.6)')
      .      (((xw(j,k,i,1),i=1,iw),j=1,jw),k=1,kw)
          else
-            write(4)
+            write(92)
      .      (((xw(j,k,i,1),i=1,iw),j=1,jw),k=1,kw)
          end if
       end if

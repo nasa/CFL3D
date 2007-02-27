@@ -3,7 +3,7 @@
      .                 maxgr,maxseg,maxcs,ncycmax,intmx,mxxe,mptch,
      .                 msub1,ibufdim,nbuf,mxbcfil,istat_size,ntr,
      .                 nmds,maxaes,nslave,maxsegdg,nmaster,bcfiles,
-     .                 bou,nou,grid)
+     .                 bou,nou,grid,n_clcd,nblocks_clcd,blocks_clcd)
 c
 c     $Id$
 c
@@ -97,6 +97,7 @@ c
       allocatable :: cmyw(:)
       allocatable :: cmzt(:)
       allocatable :: cmzw(:)
+      allocatable :: clcd(:,:,:)
       allocatable :: cxt(:)
       allocatable :: cxw(:)
       allocatable :: cyt(:)
@@ -363,9 +364,13 @@ c
       allocatable :: zte(:,:,:)
       allocatable :: irdrea(:)
 c
+      integer n_clcd, nblocks_clcd
+      integer, dimension(2,n_clcd) :: blocks_clcd
+
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /unit5/ iunit5
       common /wrestq/ irest,irest2
@@ -480,6 +485,9 @@ c
       call umalloc(maxbl,0,'cmzt',memuse,stats)
       allocate( cmzw(ncycmax),stat=stats )
       call umalloc(ncycmax,0,'cmzw',memuse,stats)
+      allocate( clcd(2,n_clcd,ncycmax),stat=stats )
+      call umalloc(2*n_clcd*ncycmax,0,'clcd',memuse,stats)
+      clcd(1,:,:) = 1.e100
       allocate( cxt(maxbl),stat=stats )
       call umalloc(maxbl,0,'cxt',memuse,stats)
       allocate( cxw(ncycmax),stat=stats )
@@ -1048,7 +1056,8 @@ c
      .          nbcidim,nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,
      .          jbcinfo,kbcinfo,ncgg,nblg,iemg,inewgg,
      .          inpl3d,inpr,iadvance,iforce,rms,clw,cdw,
-     .          cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,chdw,
+     .          cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,n_clcd,
+     .          clcd,nblocks_clcd,blocks_clcd,chdw,
      .          swetw,fmdotw,cfttotw,cftmomw,cftpw,cftvw,
      .          rmstr1,rmstr2,nneg1,nneg2,swett,clt,cdt,cxt,
      .          cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,sx,sy,sz,
@@ -1213,6 +1222,7 @@ c
          deallocate(cmxw)
          deallocate(cmyw)
          deallocate(cmzw)
+         deallocate(clcd)
          deallocate(chdw)
          deallocate(swetw)
          deallocate(fmdotw)

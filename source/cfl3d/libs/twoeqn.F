@@ -50,7 +50,7 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c

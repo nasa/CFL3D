@@ -23,7 +23,7 @@ c
       dimension f(npl*(jdim-1)/(imw+1),(kdim-1)*(imw+1),5)
 c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /precond/ cprec,uref,avn
 c
 c     k-implicit j-sweep line inversions af

@@ -26,7 +26,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /reyue/ reue,tinf,ivisc(3)
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /precond/ cprec,uref,avn
       common /entfix/ epsa_l,epsa_r
       common /zero/iexp

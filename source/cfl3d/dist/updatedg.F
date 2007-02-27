@@ -113,7 +113,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /sklton/ isklton
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /elastic_ss/ idef_ss
 c

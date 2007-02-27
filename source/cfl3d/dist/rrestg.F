@@ -107,7 +107,7 @@ c
      .                  thetaymc,thetazmc,dxmxmc,dymxmc,dzmxmc,
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /igrdtyp/ ip3dgrd,ialph
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d

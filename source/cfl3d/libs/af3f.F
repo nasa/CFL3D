@@ -39,7 +39,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
 c
       jdim1 = jdim-1
       kdim1 = kdim-1

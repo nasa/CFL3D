@@ -19,7 +19,7 @@ c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
 c
 c     l2 norm of (residual - terms due to qc0 - terms due to dqc0)

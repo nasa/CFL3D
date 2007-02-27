@@ -1,5 +1,7 @@
       subroutine histout(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
-     .                   cmxw,cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,
+     .                   cmxw,cmyw,cmzw,
+     .                   n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     .                   chdw,swetw,fmdotw,cfttotw,
      .                   cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,
      .                   ncycmax,aehist,aesrfdat,nmds,maxaes,timekeep)
 c
@@ -15,6 +17,9 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
+      character*80 filename, num
+      character*241 avgq2,avgq2pert,clcds,clcdp,output_dir
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),
      .          cdw(ncycmax),cdpw(ncycmax),cdvw(ncycmax),
      .          cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
@@ -24,17 +29,20 @@ c
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
      .          rmstr1(ncycmax),rmstr2(ncycmax),
      .          nneg1(ncycmax),nneg2(ncycmax),timekeep(ncycmax),
-     .          aehist(ncycmax,3,nmds,maxaes), aesrfdat(5,maxaes)
+     .          aehist(ncycmax,3,nmds,maxaes), aesrfdat(5,maxaes),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd)
 c
+      common /filenam2/ avgq2,avgq2pert,clcds,clcdp,output_dir
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /igrdtyp/ ip3dgrd,ialph
       common /conversion/ radtodeg
       common /maxiv/ ivmx
       common /elastic/ ndefrm,naesrf
       common /reyue/ reue,tinf,ivisc(3)
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
 c
       alphw = radtodeg*alpha
 c
@@ -68,8 +76,13 @@ c
             write(12,'(''# Final cl,cd,cy,cmy='',4e12.4)')
      .      real(clw(ntt)),real(cdw(ntt)),real(cyw(ntt)),
      .      real(cmyw(ntt))
-            write(12,'(''#'',i5,'' it    log(res)        cl'',
-     .      ''            cd            cy            cmy'')') ntt
+            if (iclcd .ne. 1 .and. iclcd .ne. 2) then
+               write(12,'(''#'',i5,'' it    log(res)        cl'',
+     .            ''            cd            cy            cmy'')') ntt
+            else
+               write(12,'(''variables = it    log(res)        cl'',
+     .            ''            cd            cz            cmz'')')
+            end if
             do 3000 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
 c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
@@ -80,8 +93,13 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
             write(12,'(''# Final cl,cd,cz,cmz='',4e12.4)')
      .      real(clw(ntt)),real(cdw(ntt)),real(czw(ntt)),
      .      real(cmzw(ntt))
-            write(12,'(''#'',i5,'' it    log(res)        cl'',
-     .      ''            cd            cz            cmz'')') ntt
+            if (iclcd .ne. 1 .and. iclcd .ne. 2) then
+               write(12,'(''#'',i5,'' it    log(res)        cl'',
+     .            ''            cd            cy            cmy'')') ntt
+            else
+               write(12,'(''variables = it    log(res)        cl'',
+     .            ''            cd            cz            cmz'')')
+            end if
             do 3001 n=1,ntt
             if(real(rms(n)) .le. 0.) rms(n)=1.
 c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
@@ -89,12 +107,38 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .      real(clw(n)),real(cdw(n)),real(czw(n)),real(cmzw(n))
  3001       continue
          end if
+
+            if (iclcd .eq. 1 .or. iclcd .eq. 2) then
+               do nn = 1, n_clcd
+                  write(num,'(I2)') nn
+                  num = adjustl(num)
+                  filename = clcdp(1:len_trim(clcdp)) //
+     $                 num(1:len_trim(num)) // ".dat"
+                  open(unit=151,file=filename,form="formatted",
+     .                 status="unknown") 
+                  write(151,'(''variables=it,Cl,Cd,Clt,Cdt,Cdp,Cdv'')')
+                  do n=1,ntt       
+                     if (clcd(1,nn,n) < 1e99) then
+                        write(151,'(3x,i6,6e15.7)') n, 
+     .                       real(clcd(1,nn,n)), real(clcd(2,nn,n)),
+     .                       real(clw(n)), real(cdw(n)),
+     .                       real(cdpw(n)), real(cdvw(n)) 
+                     end if
+                  enddo            
+                  close(151)
+               end do
+            end if
       else if (ihstry.eq.1) then
-         write(12,'(''# Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
+         write(12,'('' Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
      .   real(fmdotw(ntt)),real(cftpw(ntt)),real(cftvw(ntt)),
      .   real(cftmomw(ntt))
-         write(12,'(''#'',i5,'' it    log(res)      mass_flow'',
-     .   ''       cftp           cftv        cftmom '')') ntt
+         if (iclcd .ne. 1 .and. iclcd .ne. 2) then
+            write(12,'(''#'',i5,'' it    log(res)      mass_flow'',
+     .           ''       cftp           cftv        cftmom '')') ntt
+         else
+            write(12,'(i6,'' it    log(res)      mass_flow'',
+     .           ''       cftp           cftv        cftmom '')') ntt
+         end if
          do 3100 n=1,ntt
          if(real(rms(n)) .le. 0.) rms(n)=1.
 c        write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
@@ -102,14 +146,14 @@ c        write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .   real(fmdotw(n)),real(cftpw(n)),real(cftvw(n)),real(cftmomw(n))
  3100    continue
       else
-         write(12,'(''# Final cl,cd       ='',2e13.5)')
+         write(12,'('' Final cl,cd       ='',2e13.5)')
      .   real(clw(ntt)),real(cdw(ntt))
-         write(12,'(''# Final cx,cy,cz    ='',3e13.5)')
+         write(12,'('' Final cx,cy,cz    ='',3e13.5)')
      .   real(cxw(ntt)),real(cyw(ntt)),real(czw(ntt))
-         write(12,'(''# Final cmx,cmy,cmz ='',3e13.5)')
+         write(12,'('' Final cmx,cmy,cmz ='',3e13.5)')
      .   real(cmxw(ntt)),real(cmyw(ntt)),real(cmzw(ntt))
          write(12,*)
-         write(12,'(''#   it     log(res)           cl'',
+         write(12,'(''    it     log(res)           cl'',
      .   ''           cd           cx           cy'',
      .   ''           cz          cmx          cmy'',
      .   ''          cmz'')')
@@ -127,16 +171,21 @@ c
       if (ivmx.gt.2) then
 c
          write(13,2) (real(title(i)),i=1,20)
-         write(13,'('' Mach='',e12.4,'', alpha='',e12.4,
+         write(13,'(''# Mach='',e12.4,'', alpha='',e12.4,
      .    '', ReUe='',e12.4)') real(xmach),real(alphw),real(reue)
 c
-         write(13,'('' Final turres1='',e12.4)') real(rmstr1(ntt))
-         write(13,'('' Final turres2='',e12.4)') real(rmstr2(ntt))
+         write(13,'(''# Final turres1='',e12.4)') real(rmstr1(ntt))
+         write(13,'(''# Final turres2='',e12.4)') real(rmstr2(ntt))
          if (real(dt) .gt. 0) then
-           write(13,'('' Final time (for unsteady)='',f10.4)')real(time)
+         write(13,'(''# Final time (for unsteady)='',f10.4)')real(time)
          end if
-         write(13,'(i6,'' it  log(turres1)  log(turres2)'',
-     .         ''  nneg1  nneg2'')') ntt
+         if (iclcd .ne. 1 .and. iclcd .ne. 2) then
+            write(13,'(i6,'' it  log(turres1)  log(turres2)'',
+     .           ''  nneg1  nneg2'')') ntt
+         else
+            write(13,'(''variables= it  log(turres1)  log(turres2)'',
+     .           ''  nneg1  nneg2'')')
+         end if
          do 3200 n=1,ntt
          if(real(rmstr1(n)) .le. 0.) rmstr1(n)=1.
          if(real(rmstr2(n)) .le. 0.) rmstr2(n)=1.
@@ -173,3 +222,4 @@ c                  write(34,'(3x,i6,5e14.5)') n,real(timekeep(n)),
 c
       return
       end
+

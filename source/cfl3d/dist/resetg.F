@@ -69,7 +69,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /conversion/ radtodeg
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,

@@ -85,9 +85,9 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /maxiv/ ivmx
       common /reyue/ reue,tinf,ivisc(3)
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /igrdtyp/ ip3dgrd,ialph
-      common /moov/movie,nframes,icall1,lhdr
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,

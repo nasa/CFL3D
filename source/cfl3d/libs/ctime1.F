@@ -36,9 +36,10 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /reyue/ reue,tinf,ivisc(3)
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /precond/ cprec,uref,avn
       common /axisym/ iaxi2plane
+      common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
 c
       idim1 = idim-1
       jdim1 = jdim-1
@@ -50,7 +51,12 @@ c     set flags for contributions from pseudo- and physical- time steps
 c
       if (real(dt).gt.0.0) then
          if (ita.lt.0) then
-            dt=-cfltau
+            if( cfltauMax > cfltau .and. ncyc > 2 ) then
+               dt = -(cfltau +
+     $              (cfltauMax-cfltau)*((icyc-1.)/(ncyc-1.))**cfltau0)
+            else
+               dt=-cfltau
+            end if
             fact1 = 1.0
             fact2 = 1.0
          else

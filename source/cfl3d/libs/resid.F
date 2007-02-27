@@ -57,9 +57,9 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
      .          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
       dimension mblk2nd(maxbl),idefrm(maxbl),iadvance(maxbl)
-      dimension qavg(jdim-1,kdim-1,idim-1,5)
+      dimension qavg(jdim,kdim,idim,5)
 c
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /cfl/ dt0,dtold
       common /fvfds/ rkap0(3),ifds(3)
@@ -71,7 +71,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrbl/ nwrest
       common /account/ iaccnt,ioutsub
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
@@ -837,6 +837,10 @@ c
 c
  1447 format(50h blanking the rhs for the cells in the hole  block,i5)
 c
+      if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
+         return
+      end if
+
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
       if (level.ge.lglobal .and. ntime.eq.nit) then
         if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. .and. 

@@ -1,12 +1,13 @@
       subroutine wrest(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,ncycmax,rms,
      .                 clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,
+     .                 n_clcd, clcd, nblocks_clcd, blocks_clcd,
      .                 fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr1,
      .                 rmstr2,nneg1,nneg2,iskip,vist3d,tursav,
      .                 smin,xjb,xkb,blnum,cmuv,thetay,maxbl,
      .                 myid,myhost,mycomm,mblk2nd,igrid,wk,
      .                 idima,jdima,kdima,bcj,bck,bci,vj0,vk0,vi0,
      .                 tj0,tk0,ti0,blank,iwk,iwork,iover,
-     .                 nou,bou,nbuf,ibufdim,qavg,x,y,z)
+     .                 nou,bou,nbuf,ibufdim,qavg,q2avg,x,y,z)
 c
 c     $Id$
 c
@@ -43,9 +44,11 @@ c
       dimension nou(nbuf)
       dimension q(jdim,kdim,idim,5),qi0(jdim,kdim,5,4),
      .          qj0(kdim,idim-1,5,4), qk0(jdim,idim-1,5,4) 
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .          cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
      .          cftvw(ncycmax),cfttotw(ncycmax),
      .          rmstr1(ncycmax),rmstr2(ncycmax),nneg1(ncycmax),
@@ -55,7 +58,7 @@ c
      .          xkb(jdim-1,kdim-1,idim-1),blnum(jdim-1,kdim-1,idim-1),
      .          cmuv(jdim-1,kdim-1,idim-1)
       dimension thetay(maxbl),mblk2nd(maxbl)
-      dimension qavg(jdim-1,kdim-1,idim-1,5),x(jdim,kdim,idim),
+      dimension qavg(jdim,kdim,idim,5),x(jdim,kdim,idim),
      .          y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension bci(jdim,kdim,2),bcj(kdim,idim-1,2),bck(jdim,idim-1,2),
@@ -63,12 +66,13 @@ c
      .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
      .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
       dimension blank(jdim,kdim,idim),iwk(iwork)
+      dimension q2avg(jdim,kdim,idim,5)
 c
-c
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /reyue/ reue,tinf,ivisc(3)
       common /conversion/ radtodeg
       common /maxiv/ ivmx
@@ -84,7 +88,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /twod/ i2d
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fullns/ ifullns
       common /des/ cdes,ides
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
@@ -117,6 +121,7 @@ c
       itag_tj0   = itag_ti0   + ioffset
       itag_tk0   = itag_tj0   + ioffset
       itag_qavg  = itag_tk0   + ioffset
+      itag_qavg2  = itag_qavg   + ioffset
 c
       if (myid .eq. mblk2nd(nbl)) then
          mytag = nbl
@@ -699,6 +704,7 @@ c
      +   xmach,reue)
 #endif
       end if
+
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
 c
 #if defined DIST_MPI
@@ -735,74 +741,149 @@ c
 c
          if (myid .eq. mblk2nd(nbl)) then
             mytag = itag_qavg + nbl
-            call MPI_Send(qavg,jkim5,MY_MPI_REAL,
+            call MPI_Send(qavg,jki5,MY_MPI_REAL,
      .                    myhost,mytag,mycomm,ierr)
          else if (myid .eq. myhost) then
             mytag = itag_qavg + nbl
-            call MPI_Recv(qavg,jkim5,MY_MPI_REAL,
+            call MPI_Recv(qavg,jki5,MY_MPI_REAL,
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
+         if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
+            if (myid .eq. mblk2nd(nbl)) then                       
+               mytag = itag_q2avg + nbl                            
+               call MPI_Send(q2avg,jki5,MY_MPI_REAL,               
+     .              myhost,mytag,mycomm,ierr)             
+            else if (myid .eq. myhost) then                        
+               mytag = itag_q2avg + nbl                            
+               call MPI_Recv(q2avg,jki5,MY_MPI_REAL,               
+     .              nd_srce,mytag,mycomm,istat,ierr)      
+            end if
+         end if                                           
 c
 #endif
 c
-c   write cell-centered plot3d files of current grid and averaged q's
-        if (myid .eq. myhost) then
-        if (ialph .eq. 0) then
-        write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
-     +                        x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
-     +                        x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
-     +                        x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
-     +                        y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
-     +                        y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
-     +                        y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
-     +                        z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
-     +                        z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
-     +                        z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((int(blank(j,k,i)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
-        else
-        write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
-     +                        x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
-     +                        x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
-     +                        x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
-     +                        z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
-     +                        z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
-     +                        z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((-0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
-     +                        y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
-     +                        y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
-     +                        y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
-     +              (((int(blank(j,k,i)),
-     +                        i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
-        end if
-c   xnumavg is used to store the number of averaged iterations so far
-        write(97) xmach,alpha,reue,xnumavg
-        if (ialph .eq. 0) then
-        write(97) ((((qavg(j,k,i,m),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1),m=1,5) 
-        else
-        write(97) (((qavg(j,k,i,1),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1),
-     +            (((qavg(j,k,i,2),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1),
-     +            (((qavg(j,k,i,4),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1),
-     +            (((-qavg(j,k,i,3),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1),
-     +            (((qavg(j,k,i,5),i=1,idim-1),j=1,jdim-1),
-     +    k=1,kdim-1)
-        end if
-        end if
-      end if
+         if (ipertavg .eq. 0) then
+c     write cell-centered plot3d files of current grid and averaged q's
+            if (myid .eq. myhost) then
+               if (ialph .eq. 0) then
+                  write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
+     +                 x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
+     +                 x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
+     +                 x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
+     +                 y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
+     +                 y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
+     +                 y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
+     +                 z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
+     +                 z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
+     +                 z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((int(blank(j,k,i)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+               else
+                  write(96)   (((0.125*(x(j  ,k  ,i  )+x(j+1,k  ,i  )+
+     +                 x(j  ,k+1,i  )+x(j  ,k  ,i+1)+
+     +                 x(j+1,k+1,i  )+x(j+1,k  ,i+1)+
+     +                 x(j  ,k+1,i+1)+x(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((0.125*(z(j  ,k  ,i  )+z(j+1,k  ,i  )+
+     +                 z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
+     +                 z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
+     +                 z(j  ,k+1,i+1)+z(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((-0.125*(y(j  ,k  ,i  )+y(j+1,k  ,i  )+
+     +                 y(j  ,k+1,i  )+y(j  ,k  ,i+1)+
+     +                 y(j+1,k+1,i  )+y(j+1,k  ,i+1)+
+     +                 y(j  ,k+1,i+1)+y(j+1,k+1,i+1)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+     +                 (((int(blank(j,k,i)),
+     +                 i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+               end if
+c     xnumavg is used to store the number of averaged iterations so far
+               write(97) xmach,alpha,reue,xnumavg
+               if (ialph .eq. 0) then
+                  write(97) ((((qavg(j,k,i,m),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1),m=1,5) 
+               else
+                  write(97) (((qavg(j,k,i,1),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1),
+     +                 (((qavg(j,k,i,2),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1),
+     +                 (((qavg(j,k,i,4),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1),
+     +                 (((-qavg(j,k,i,3),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1),
+     +                 (((qavg(j,k,i,5),i=1,idim-1),j=1,jdim-1),
+     +                 k=1,kdim-1)
+               end if
+            end if
+         else
+            if (myid .eq. myhost) then
+               if (ialph .eq. 0) then
+                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
+     +                 (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
+     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim) 
+                  
+                  
+               else
+                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
+     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
+     +                 (((-y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim) 
+               end if
+               
+               write(97) xmach,alpha,reue,xnumavg
+               write(98) xmach,alpha,reue,xnumavg2 
+               write(95) xmach,alpha,reue,xnumavg2 
+               if(ialph .eq. 0)then
+                  write(97) ((((qavg(j,k,i,m),i=1,idim),j=1,jdim), 
+     +                 k=1,kdim),m=1,5) 
+c     
+                  write(98) ((((q2avg(j,k,i,m),i=1,idim),j=1,jdim), 
+     +                 k=1,kdim),m=1,5) 
+c     
+                  write(95) ((((q2avg(j,k,i,m)-qavg(j,k,i,m)**2,
+     +                 i=1,idim),j=1,jdim),k=1,kdim),m=1,5) 
+               else
+                  write(97) (((qavg(j,k,i,1),i=1,idim),j=1,jdim)
+     +                 ,k=1,kdim),
+     +                 (((qavg(j,k,i,2),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((qavg(j,k,i,4),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((-qavg(j,k,i,3),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((qavg(j,k,i,5),i=1,idim),j=1,jdim),k=1,kdim)
+                  write(98) (((q2avg(j,k,i,1),i=1,idim),j=1,jdim)
+     +                 ,k=1,kdim),
+     +                 (((q2avg(j,k,i,2),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,4),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,3),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,5),i=1,idim),j=1,jdim),k=1,kdim)
+                  write(95)(((q2avg(j,k,i,1)-qavg(j,k,i,1)**2,i=1,idim),
+     +                 j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,2)-qavg(j,k,i,2)**2,i=1,idim),
+     +                 j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,4)-qavg(j,k,i,4)**2,i=1,idim),
+     +                 j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,3)-qavg(j,k,i,3)**2,i=1,idim),
+     +                 j=1,jdim),k=1,kdim),
+     +                 (((q2avg(j,k,i,5)-qavg(j,k,i,5)**2,i=1,idim),
+     +                 j=1,jdim),k=1,kdim)
+               endif            !end of ialph=0/1
+c     
+            end if              !end of myid=host
+
+         end if                 !end of ipertavg=1/2 
+      end if                    !end of iteravg=1/2 
+      
+c clcd information
 c
+      if (myid .eq. myhost .and. iskip.gt.0) then
+         if (iclcd .eq. 1 .or. iclcd .eq. 2) then
+            write(102) n_clcd,nblocks_clcd,ntt
+            write(102) clcd(1:2,1:n_clcd,1:ntt)
+         end if
+      end if
+
       return
       end

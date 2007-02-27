@@ -20,7 +20,8 @@
      .                nbcidim,nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,
      .                jbcinfo,kbcinfo,ncgg,nblg,iemg,inewgg,
      .                inpl3d,inpr,iadvance,iforce,rms,clw,cdw,
-     .                cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,chdw,
+     .                cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,
+     .                n_clcd,clcd,nblocks_clcd,blocks_clcd,chdw,
      .                swetw,fmdotw,cfttotw,cftmomw,cftpw,cftvw,
      .                rmstr1,rmstr2,nneg1,nneg2,swett,clt,cdt,cxt,
      .                cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,sx,sy,sz,
@@ -162,10 +163,12 @@ c
       dimension ncgg(maxgr),nblg(maxgr),iemg(maxgr),inewgg(maxgr)
       dimension inpl3d(nplots,11),inpr(nplots,11)
       dimension iadvance(maxbl),iforce(maxbl)
+      integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),
      .          cdw(ncycmax),cdpw(ncycmax),cdvw(ncycmax),
      .          cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .          cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
+     .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
@@ -238,8 +241,8 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /maxiv/ ivmx
       common /sklton/ isklton
-      common /unst/ time,cfltau,ntstep,ita,iunst
-      common /moov/ movie,nframes,icall1,lhdr
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
@@ -257,8 +260,7 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
-      common /key/ nkey
+     .                 nsprgit
 c
 c***********************************************************************
 c     initialization
@@ -320,7 +322,7 @@ c
  9990    format(2(2h *),43h   VERSION 6.X :  Computational Fluids Lab,,
      .   15h Mail Stop 128,,4x,2(2h *),
      .   /2(2h *),18x,41hNASA Langley Research Center, Hampton, VA,
-     .   3x,2(2h *),/2(2h *),18x,33hRelease Date:       MMM DD, YYYY.,
+     .   3x,2(2h *),/2(2h *),18x,33hRelease Date:   MM, DD, 2007.,
      .   11x,2(2h *))
 #ifdef CMPLX
          write(11,87)
@@ -614,7 +616,8 @@ c
      .           nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,bcfilei,
      .           bcfilej,bcfilek,ngrid,ncgg,nblg,iemg,inewgg,
      .           rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,
-     .           cmzw,chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
+     .           cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     .           chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
      .           cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,windex,
      .           ninter,iindex,nblkpt,dthetxx,dthetyy,dthetzz,
      .           iibg,kkbg,jjbg,ibcg,dxintg,dyintg,dzintg,iiig,
@@ -629,7 +632,7 @@ c
      .           maxsegdg,nmaster,aehist,timekeep,inpl3d,nplots,
      .           nplot3d,levelg,iadvance,xs,gforcs,xorgae0,yorgae0,
      .           zorgae0,icouple,lfgm,nblk,limblk,isva,nblelst,iskmax,
-     .           jskmax,kskmax,ue,irdrea,nbli)
+     .           jskmax,kskmax,ue,irdrea)
 c
       do iii = 1,mworki
          iwork(iii) = 0
@@ -734,7 +737,8 @@ c
      .              rfreqr,xorig0,yorig0,zorig0,time2,thetaxl,
      .              thetayl,thetazl,itrans,irotat,idefrm,
      .              rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,
-     .              cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,cftmomw,
+     .              cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     .              chdw,swetw,fmdotw,cfttotw,cftmomw,
      .              cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,
      .              ihstry,iadvance,iforce,lfgm,resmx,imx,jmx,kmx,
      .              vormax,ivmax,jvmax,kvmax,sx,sy,sz,stot,pav,
@@ -964,7 +968,8 @@ c
       if(meshdef.eq.1) goto 8110
 c
       call histout(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
-     .             cmxw,cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,
+     .             cmxw,cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
+     .             chdw,swetw,fmdotw,cfttotw,
      .             cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,
      .             nneg2,ncycmax,aehist,aesrfdat,nmds,maxaes,
      .             timekeep)

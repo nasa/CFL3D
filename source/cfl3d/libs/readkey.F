@@ -17,13 +17,18 @@ c
 c
       character*210 inpstr
       character*120 bou(ibufdim,nbuf)
+      character*241 avgq2,avgq2pert,clcds,clcdp,output_dir,filename
+      logical isthere
 c
       real realval(20)
 c
       dimension nou(nbuf)
 c
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /des/ cdes,ides
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /unit5/ iunit5
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -63,6 +68,7 @@ c
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
+      common /filenam2/ avgq2,avgq2pert,clcds,clcdp,output_dir
       common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
@@ -455,6 +461,34 @@ c     EASMCC - EASM curvature correction in 2D sense only
       ieasmcc2d = 0
       nkey     = nkey + 1
 c
+c     ipertavg - Average r,u,v,w,p and second moments
+      ipertavg = 0 
+      nkey     = nkey + 1 
+
+c     icoarsemovie - write movie files of coarse planar and volume data
+      icoarsemovie = 0
+      nkey     = nkey + 1
+c
+c     i2dmovie - write movie files of coarse planar and volume data
+      i2dmovie = 0
+      nkey     = nkey + 1
+c
+c     iclcd - write cl and cd history for separate blocks using clcd.inp
+      iclcd    = 0
+      nkey     = nkey + 1
+c
+c     iskip_blocks - skip factor for 2d coarse movie
+      iskip_blocks    = 1
+      nkey     = nkey + 1
+c
+c     cfltauMax - Maximum value for the cfltau during subiterations
+      cfltauMax= -1.0
+      nkey     = nkey + 1
+c
+c     cfltau0 - Exponent for cfltau growth with subiteration
+      cfltau0= 1.0
+      nkey     = nkey + 1
+
 c     parameter to perform trim (1) or not to perform trim (0)
       irbtrim = 0
       nkey     = nkey + 1
@@ -550,6 +584,54 @@ c        do any order-dependent things here before exiting
          zrotrate = cmplx(real(zrotrate),real(zrotrate_img))
 #endif
 
+c     Check for the existence of the averaging files
+         if( iteravg .eq. 2 ) then
+            isthere = .false.
+            if (ipertavg .eq. 2 ) then
+               filename = output_dir(1:len_trim(output_dir)) //
+     $              "/" // "cfl3d_avg_ruvwp.p3d"
+            else
+               filename = output_dir(1:len_trim(output_dir)) //
+     $              "/" // "cfl3d_avgq.p3d"
+            end if
+            inquire (file=filename,exist=isthere)
+            if( isthere ) then
+               open(150, file=filename, form='unformatted',
+     $              status='old')
+               read(150,end=1011,err=1011) idummy
+               close(150)
+               goto 1013
+            else
+               goto 1012
+            end if
+         end if
+
+ 1011    close(150)
+ 1012    iteravg = 1
+         if( ipertavg .eq. 2 ) ipertavg = 1
+ 1013    continue
+         
+c     Check for the existence of the clcd.bin file
+         if( iclcd .eq. 2 ) then
+            isthere = .false.
+            filename = output_dir(1:len_trim(output_dir)) //
+     $           "/" // "clcd.bin"
+            inquire (file=filename,exist=isthere)
+            if( isthere ) then
+               open(unit=150,file=filename,form='unformatted',
+     $              status='old')
+               read(150,end=1014,err=1014) idummy1, idummy2, idummy3
+               close(150)
+               goto 1016
+            else
+               goto 1015
+            end if
+         end if
+
+ 1014    close(150)
+ 1015    iclcd = 1
+ 1016    continue
+         
          return
       end if
 c
@@ -928,6 +1010,35 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ieasmcc2d
 c
+      else if (inpstr(lc1:lc2).eq.'ipertavg') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ipertavg
+         if (ipertavg .ne. 0) iteravg = ipertavg
+c
+      else if (inpstr(lc1:lc2).eq.'icoarsemovie') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) icoarsemovie
+c
+      else if (inpstr(lc1:lc2).eq.'i2dmovie') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i2dmovie
+c
+      else if (inpstr(lc1:lc2).eq.'iclcd') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iclcd
+c
+      else if (inpstr(lc1:lc2).eq.'iskip_blocks') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iskip_blocks
+c
+      else if (inpstr(lc1:lc2).eq.'cfltauMax') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) cfltauMax
+c
+      else if (inpstr(lc1:lc2).eq.'cfltau0') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) cfltau0
+c
       else if (inpstr(lc1:lc2).eq.'irbtrim') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) irbtrim
@@ -1001,6 +1112,7 @@ c
          end if
 c
       end if
+c
 c
 c     Set trim data
       tp(1,1) = dclda

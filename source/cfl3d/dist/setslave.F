@@ -77,7 +77,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /sklton/ isklton
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /elastic_ss/ idef_ss
       common /twod/ i2d
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,

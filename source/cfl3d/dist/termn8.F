@@ -121,6 +121,7 @@ c
       call my_flush(66)
       call my_flush(96)
       call my_flush(97)
+      call my_flush(98)
       call my_flush(99)
 c
       if (myid .eq. myid_stop) then
@@ -138,7 +139,8 @@ c
          close(25)
          close(66)
          close(96)
-         close(97)
+         close(97)          
+         close(98)
          close(99)
       end if
 c

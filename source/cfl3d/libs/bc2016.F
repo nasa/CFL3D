@@ -95,7 +95,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /wallfun/ iwf(3)
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
 c  
 c..  data statement (for use with wall functions)
       data a0/2.354039, 0.1179840, -4.2899192e-04, 2.0404148e-06,

@@ -1,4 +1,4 @@
-      subroutine qout(iseq,lw,lw2,w,mgwk,wk,nwork,nplots,iovrlp,iibg,
+      subroutine qoutavg(iseq,lw,lw2,w,mgwk,wk,nwork,nplots,iovrlp,iibg,
      .                kkbg,jjbg,ibcg,lbg,ibpntsg,qb,lwdat,nbci0,
      .                nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,jbcinfo,
      .                kbcinfo,ibcinfo,bcfilei,bcfilej,bcfilek,
@@ -15,7 +15,8 @@
      .                lbcprd,lbcemb,
      .                dthetxx,dthetyy,dthetzz,nblcg,lfgm,istat2_bl,
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
-     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf)
+     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,    
+     .                nt,movabs)                                            
 c
 c     $Id$
 c
@@ -89,6 +90,7 @@ c
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -99,6 +101,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
 c
 c***********************************************************************
 c     write output file in PLOT3D format
@@ -115,7 +118,8 @@ c              6...p/pinf at cell centers
 c             -6...p/pinf at grid points 
 c***********************************************************************
 c
-      if (nplot3d.gt.0 .or. nprint.gt.0) then
+      !if (nplot3d.gt.0 .or. nprint.gt.0) then                          
+      if (nplot3d.gt.0 .or. nprint.gt.0 .or. iteravg.gt.0) then         
 c
 c        update all bc's for level lglobal (and above, if embeded),
 c        even if not all blocks at that level get output to plot3d or
@@ -346,6 +350,77 @@ c
          level = level_sav
 c
       end if
+c 
+c---- mod for averaging at grid points ------------------------------   
+      if(iteravg.gt.0)then                                              
+        !prepare to call plot3davg and then call it.....                
+        do 999 n = 1,nblock                                             
+         nbl=n                                                          
+c
+         if (level.ne.levelg(nbl)) go to 999  !skip block if not global 
+         if (mblk2nd(nbl).eq.myid .or. myid.eq.myhost) then             
+c
+            call lead(nbl,lw,lw2,maxbl)                                 
+c
+            i1 = 1                                                      
+            i2 = idim                                                   
+            i3 = 1                                                      
+            j1 = 1                                                      
+            j2 = jdim                                                   
+            j3 = 1                                                      
+            k1 = 1                                                      
+            k2 = kdim                                                   
+            k3 = 1                                                      
+c
+            jdw = (j2-j1)/j3 + 1                                        
+            kdw = (k2-k1)/k3 + 1                                        
+            idw = (i2-i1)/i3 + 1                                        
+c
+c           check storage availability                                  
+c
+            ixwk = 1                                                    
+            nset = 5                                                    
+            ibwk = ixwk + jdw*kdw*idw*nset                              
+            ixgk = ibwk + jdim*kdim*idim*2                              
+            ixvk = ixgk + jdw*kdw*idw*4                                 
+            nroom = nwork - (ixvk+jdw*kdw*idw*5-1)                      
+            if (nroom .lt. 0.) then                                     
+               if (myid.eq.myhost) then                                 
+                  write(11,'('' not enough memory for plot3d'')')       
+                  write(11,'('' have, need = '',2i12)') nwork,          
+     .            nwork-nroom                                           
+                  write(11,'('' not calling plot3davg '')')             
+               end if                                                   
+            else                                                        
+c
+               call plot3davg(jdim,kdim,idim,                           
+     .                     i1,i2,i3,j1,j2,j3,k1,k2,k3,                  
+     .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),
+     .                     w(ly),w(lz),wk(ixwk),wk(ibwk),
+     .                     w(lblk),wk(ixgk),iflag,w(lvis),iovrlp(nbl),
+     .                     nbl,nmap,w(lbcj),w(lbck),w(lbci),
+     .                     w(lvj0),w(lvk0),w(lvi0),ifunc,n,jdw,kdw,idw,
+     .                     nplots,jdimg,kdimg,idimg,nblcg,jsg,ksg,isg,
+     .                     jeg,keg,ieg,ninter,iindex,intmax,nsub1,
+     .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
+     .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
+     .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset,           
+     .                     w(lqavg),w(lq2avg),nt,movabs)                
+            end if                                                      
+c
+         end if   !end of blk2nd(nbl).eq.myid or myid.eq.myhost if loop 
+ 999    continue  !end of do loop over n=1,nblock                       
+      endif       !end of iteravg.gt.0 if loop                          
+c
+      if(movabs.eq.0)then                                               
+        return    !wouldn't have called qout here if not for averaging  
+      else if(nt.ne.nt/movabs*movabs) then                              
+        !no need to continue with qout for this time step               
+        return                                                          
+      endif                                                             
+c     End of changes to qout for averaging; remaining portion same as before 
+c---- End: mod for averaging at grid points -------------------------   
 c
       if (nplot3d.le.0) go to 231
 c
@@ -521,7 +596,7 @@ c
                   write(11,'('' not writing out plot3d files'')')
                end if
             else
-               call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
+               call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,  
      .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),
      .                     w(ly),w(lz),wk(ixwk),wk(ibwk),
      .                     w(lblk),wk(ixgk),iflag,w(lvis),iovrlp(nbl),
@@ -532,7 +607,7 @@ c
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
-     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)   
             end if
 c
          end if

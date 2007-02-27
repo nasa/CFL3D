@@ -73,9 +73,9 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /reyue/ reue,tinf,ivisc(3)
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /igrdtyp/ ip3dgrd,ialph
-      common /moov/movie,nframes,icall1,lhdr
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
