@@ -604,6 +604,8 @@ c     Check for the existence of the averaging files
             else
                goto 1012
             end if
+         else
+            goto 1013
          end if
 
  1011    close(150)
@@ -626,6 +628,8 @@ c     Check for the existence of the clcd.bin file
             else
                goto 1015
             end if
+         else
+            goto 1016
          end if
 
  1014    close(150)
