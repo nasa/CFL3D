@@ -12,6 +12,7 @@ link: lncode lnhead
 lncode:
 	@ echo "        linking source code"
 	ln -s $(TOOLSSRC)/*.F .
+	ln -s $(TOOLSSRC)/*.F90 .
 	ln -s $(CFLSRC_D)/umalloc_r.F .
 	ln -s $(CFLSRC_D)/umalloc_c.F .
 	ln -s $(CFLSRC_S)/readkey.F .
