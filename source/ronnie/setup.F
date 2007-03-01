@@ -77,6 +77,7 @@ c       set ialph=1 to be same as in old ronnie
 c
         ialph = 1
 c
+        irr=0
         call rp3d(w(lx),w(ly),w(lz),jdim,kdim,idim,igrid,ialph,0,irr)
         if (irr .ne. 0) then
           write(11,*) ' Stopping... error reading grid...'
