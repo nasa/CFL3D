@@ -51,7 +51,7 @@ c     set flags for contributions from pseudo- and physical- time steps
 c
       if (real(dt).gt.0.0) then
          if (ita.lt.0) then
-            if( cfltauMax > cfltau .and. ncyc > 2 ) then
+            if( real(cfltauMax) > real(cfltau) .and. ncyc > 2 ) then
                dt = -(cfltau +
      $              (cfltauMax-cfltau)*((icyc-1.)/(ncyc-1.))**cfltau0)
             else

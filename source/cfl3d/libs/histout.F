@@ -118,7 +118,7 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .                 status="unknown") 
                   write(151,'(''variables=it,Cl,Cd,Clt,Cdt,Cdp,Cdv'')')
                   do n=1,ntt       
-                     if (clcd(1,nn,n) < 1e99) then
+                     if (real(clcd(1,nn,n)) < 1e99) then
                         write(151,'(3x,i6,6e15.7)') n, 
      .                       real(clcd(1,nn,n)), real(clcd(2,nn,n)),
      .                       real(clw(n)), real(cdw(n)),

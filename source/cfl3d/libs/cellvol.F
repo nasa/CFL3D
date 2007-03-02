@@ -183,7 +183,7 @@ c
          do 65 i=1,idim1
          do 65 k=1,kdim
          do 65 j=1,jdim
-           if (real(vol(j,k,i)).lt.eps) then 
+           if (real(vol(j,k,i)).lt.real(eps)) then 
              if(i.lt.imin) imin = i
              if(i.gt.imax) imax = i
              if(j.lt.jmin) jmin = j
