@@ -2189,7 +2189,7 @@ c
                    open(98,file='dgplot3d.bin',form='formatted'
      .                 ,status='old')
                    read(98,*) ngridt
-                   read(98,*) ((idimt,jdimt,kdimt),igrid=1,ngrid)
+                   read(98,*) (idimt,jdimt,kdimt,igrid=1,ngrid)
                  end if
                end if
                do 1800 igrid=1,ngrid

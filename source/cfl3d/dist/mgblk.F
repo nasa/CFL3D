@@ -2468,8 +2468,8 @@ c                 initialize eddy viscosity limit flag
                       jdimt(igrid) = jdim
                       kdimt(igrid) = kdim
                     enddo
-                    write(98,'(3i8)') ((idimt(igrid),jdimt(igrid),
-     .                           kdimt(igrid)),igrid=1,ngrid)
+                    write(98,'(3i8)') (idimt(igrid),jdimt(igrid),
+     .                           kdimt(igrid),igrid=1,ngrid)
                   end if
                   if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
                      open(unit=102,file=clcds,form='unformatted',
