@@ -704,7 +704,8 @@ c
       gm1g     = gm1/gamma
       gp1g     = gp1/gamma
       ggm1     = gamma*gm1
-      radtodeg = 180.e0/3.1415927e0
+      pi       = 4.*atan(1.0)
+      radtodeg = 180.e0/pi
 c
 c     output banner
 c

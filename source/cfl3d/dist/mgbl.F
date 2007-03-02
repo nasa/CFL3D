@@ -248,7 +248,6 @@ c
      .                 subres,subtur,grdmov,alphahist,errfile,preout,
      .                 aeinp,aeout,sdhist,avgg,avgq
       common /unit5/ iunit5
-      common /conversion/ radtodeg
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /proces/ numprocs
       common /time1/ tim,tm
@@ -295,11 +294,6 @@ c
       do nf=1,mxbcfil
          bcfiles(nf) = 'null'
       end do
-c
-c     initialize some constants
-c
-      pi       = 4.*atan(1.0)
-      radtodeg = 180.e0/pi
 c
       if (myid.eq.myhost) then
 c
