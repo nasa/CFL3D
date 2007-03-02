@@ -818,7 +818,7 @@ c
      .               dxmx,dymx,dzmx,dthymx,dthzmx,dthxmx,
      .               iitot,iovrlp,lig,lbg,iipntsg,ibpntsg,
      .               qb,iibg,kkbg,jjbg,ibcg,nou,bou,nbuf,ibufdim,
-     .               myid,myhost,mycomm,mblk2nd,iwk)
+     .               myid,myhost,mycomm,mblk2nd,iwk,nt)
          if (iunst .gt. 1) then
             iwk1 = 2*maxbl
             iwork1 = iwork - iwk1

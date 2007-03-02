@@ -9,7 +9,7 @@
      .                  dxmx,dymx,dzmx,dthymx,dthzmx,dthxmx,
      .                  iitot,iovrlp,lig,lbg,iipntsg,ibpntsg,
      .                  qb,iibg,kkbg,jjbg,ibcg,nou,bou,nbuf,ibufdim,
-     .                  myid,myhost,mycomm,mblk2nd,iresetb)
+     .                  myid,myhost,mycomm,mblk2nd,iresetb,nt)
 c
 c     $Id$
 c
