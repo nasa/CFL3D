@@ -122,7 +122,7 @@ c
 c
       integer stats
       real, dimension(:,:), allocatable :: riskp,rjskp,rkskp
-      real, dimension(:,:), allocatable :: iskipt,jskipt,kskipt
+      integer, dimension(:,:), allocatable :: iskipt,jskipt,kskipt
 c
       common /avgdata/ xnumavg,iteravg
       common /cfl/ dt0,dtold
