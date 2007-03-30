@@ -57,7 +57,7 @@ c
                bmat(n,m,iaes)  = 0.
                gforcn(m,iaes)  = 0.
                gforcnm(m,iaes) = 0.
-c              xxn(m,iaes)     = x0(m,iaes)
+               xxn(m,iaes)     = x0(m,iaes)
             end do
          end do
 c
