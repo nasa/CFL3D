@@ -294,18 +294,18 @@ c
   626 format(1x,'forces computed on k=1 surface segment(s):')
   627 format(1x,'forces computed on k=kdim surface segment(s):')
   628 format(1x,'forces computed on k=1 and k=kdim surface segment(s):')
-  603 format(/6x,4hCL-b,9x,4hCD-b,9x,5hCDp-b,8x,5hCDv-b)
-  604 format(6x,4hCZ-b,9x,4hCY-b,9x,
-     .       4hCX-b,5x,11hwetted area)
-  605 format(6x,5hCMY-b,8x,5hCMX-b,8x,5hCMZ-b)
+  603 format(/9x,4hCL-b,14x,4hCD-b,14x,5hCDp-b,13x,5hCDv-b)
+  604 format(9x,4hCZ-b,14x,4hCY-b,14x,
+     .       4hCX-b,10x,11hwetted area)
+  605 format(9x,5hCMY-b,13x,5hCMX-b,13x,5hCMZ-b)
   777 format(/1x,49hSUMMARY OF FORCES AND MOMENTS - ALL GLOBAL BLOCKS)
-  703 format(/7x,2hCL,11x,2hCD,10x,3hCDp,10x,3hCDv)
-  704 format(7x,2hCZ,11x,2hCY,10x,2hCX,7x,11hwetted area)
-  705 format(7x,3hCMY,9x,3hCMX,10x,3hCMZ)
+  703 format(/10x,2hCL,16x,2hCD,15x,3hCDp,15x,3hCDv)
+  704 format(10x,2hCZ,16x,2hCY,15x,2hCX,12x,11hwetted area)
+  705 format(10x,3hCMY,14x,3hCMX,15x,3hCMZ)
   720 format(4x,'segment',i3,'  j=',i4,',',i4,'  k=',i4,',',i4)
   721 format(4x,'segment',i3,'  i=',i4,',',i4,'  k=',i4,',',i4)
   722 format(4x,'segment',i3,'  i=',i4,',',i4,'  j=',i4,',',i4)
-  653 format(1x,e12.5,4(1x,e12.5))
+  653 format(1x,e18.11,4(1x,e18.11))
 c
       return
       end

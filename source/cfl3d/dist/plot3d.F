@@ -1316,14 +1316,14 @@ c
 c
          if(icp .eq. 1) then
            write(17,77)
-   77      format(/3x,1hI,3x,1hJ,3x,1hK,7x,1hX,12x,1hY,12x,1hZ,
-     .     10x,6hU/Uinf,7x,6hV/Vinf,7x,6hW/Winf,7x,6hP/Pinf,
-     .     7x,6hT/Tinf,8x,4hMACH,8x,6h    cp,6x,9htur. vis.)
+   77      format(/3x,1hI,3x,1hJ,3x,1hK,9x,1hX,16x,1hY,16x,1hZ,
+     .     14x,6hU/Uinf,11x,6hV/Vinf,11x,6hW/Winf,11x,6hP/Pinf,
+     .     11x,6hT/Tinf,12x,4hMACH,10x,6h    cp,12x,9htur. vis.)
          else
            write(17,7)
-    7      format(/3x,1hI,3x,1hJ,3x,1hK,7x,1hX,12x,1hY,12x,1hZ,
-     .     10x,6hU/Uinf,7x,6hV/Vinf,7x,6hW/Winf,7x,6hP/Pinf,
-     .     7x,6hT/Tinf,8x,4hMACH,8x,6hpitotp,6x,9htur. vis.)
+    7      format(/3x,1hI,3x,1hJ,3x,1hK,9x,1hX,16x,1hY,16x,1hZ,
+     .     14x,6hU/Uinf,11x,6hV/Vinf,11x,6hW/Winf,11x,6hP/Pinf,
+     .     11x,6hT/Tinf,12x,4hMACH,10x,6hpitotp,12x,9htur. vis.)
          end if
 c
          term3 = 1./( (1.+0.5*gm1*xmach*xmach)**(gamma/gm1) )
@@ -1377,7 +1377,7 @@ c
          end if
  5000    continue
 c
-   29    format(3i4,11(1x,e12.5))
+   29    format(3i4,11(1x,e16.9))
 c
       end if
 c
@@ -1586,9 +1586,9 @@ c
          if (j.eq.1 .or. j.eq.jdim)  go to 6100
          isay = isay+1
          if (isay.eq.1) write(17,53)
-   53    format(/3x,1hI,3x,1hJ,3x,1hK,6x,1hX,12x,1hY,12x,1hZ,12x,
-     .   2hdn,9x,6hP/Pinf,7x,6hT/Tinf,9x,2hCf,11x,2hCh,9x,5hyplus,
-     .   9x,3hCfx,9x,3hCfy,9x,3hCfz)
+   53    format(/3x,1hI,3x,1hJ,3x,1hK,9x,1hX,16x,1hY,16x,1hZ,16x,
+     .   2hdn,12x,6hP/Pinf,11x,6hT/Tinf,13x,2hCf,15x,2hCh,13x,5hyplus,
+     .   13x,3hCfx,14x,3hCfy,14x,3hCfz)
          if (ialph.eq.0) then
             write(17,22)i,j,k,xg(jw,kw,iw,1),xg(jw,kw,iw,2),
      .                  xg(jw,kw,iw,3),xg(jw,kw,iw,4),
@@ -2068,7 +2068,7 @@ c
 c
       end if
 c
-   22 format(3i4,12(1x,e12.5))
+   22 format(3i4,12(1x,e16.9))
 c
       end if
 c
