@@ -469,7 +469,7 @@ c     icoarsemovie - write movie files of coarse planar and volume data
       icoarsemovie = 0
       nkey     = nkey + 1
 c
-c     i2dmovie - write movie files of coarse planar and volume data
+c     i2dmovie - write 2D movie files of coarse planar and volume data
       i2dmovie = 0
       nkey     = nkey + 1
 c
