@@ -1443,6 +1443,12 @@ c  Control surface:
       end if
 c  Mov grid stuff - trans:
       read(2,'(a80)',end=999) name
+      if (name .eq. '') then
+        write(6,'(/,'' WARNING:  input file has a blank line after'',
+     +   '' control surface info...'')')
+        write(6,'(''           any subsequent lines will be ignored'')')
+        goto 999
+      end if
       write(3,'(a80)') name
       read(2,'(a80)') name
       write(3,'(a80)') name
