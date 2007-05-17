@@ -51,7 +51,8 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
+     .        keepambient
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -201,7 +202,7 @@ c
      .         '' term'')')
            end if
         end if
-        if(ivmx .eq. 7) then
+        if(ivmx .eq. 7 .and. i_bsl .ne. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'')')
            if(ikoprod .eq. 1) then
@@ -219,6 +220,18 @@ c
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     S in denom of mut term'')')
+           end if
+        else if(ivmx .eq. 7 .and. i_bsl .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     k-omega BSL (Menter)'')')
+           if(ikoprod .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     +       '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
            end if
         end if
         if(ivmx .eq. 8) then
@@ -415,6 +428,12 @@ c
      .     '' WallFunctions to keep from blowing up!'')')
         end if
 c
+        if(keepambient .eq. 1 .and. ivmx .ne. 15) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     2-eqn ambient turbulence'',
+     .     '' levels not allowed to decay'')')
+        end if
+c
       end if
 c
 c   Note: (10.**(-iexp) is machine zero)
@@ -471,6 +490,8 @@ c
 c Set up constants
       vk =.41
       a1 =.31
+c The following will effectively override the SST denominator option:
+      if (i_bsl .eq. 1) a1 = 1.e8
 c Constants for Set 1:
 c  cmuc1 (normally 0.09):
       cmuc1=0.09
@@ -503,7 +524,8 @@ c  sigo1 (constant in omega, epsilon, or zeta diffusion term):
 c
 c  sigk1 (constant in k diffusion term):
       if(ivmx.eq.6)                                 sigk1=0.5
-      if(ivmx.eq.7)                                 sigk1=0.85
+      if(ivmx.eq.7 .and. i_bsl .ne. 1)              sigk1=0.85
+      if(ivmx.eq.7 .and. i_bsl .eq. 1)              sigk1=0.5
       if(ivmx.eq.12)                                sigk1=1./1.4
       if(ivmx.eq.10 .or. ivmx.eq.11 .or.ivmx.eq.9
      .              .or. ivmx.eq.13)                sigk1=1.00
@@ -1695,6 +1717,10 @@ c            Determine Sij values:
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               pk=ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*betax*tur10*tur10
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*cmuc*tur10*tur20
             enddo
           enddo
         enddo
@@ -1793,6 +1819,10 @@ c            Add to RHS:
               dk = re*turre(j,k,i,1)*turre(j,k,i,2)
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*beta1*tur10*tur10
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*tur10*tur20
             enddo
           enddo
         enddo
@@ -1842,6 +1872,10 @@ c            Determine Sij values:
               dk = re*turre(j,k,i,1)
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*beta1*tur10*tur10/tur20
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*tur10
             enddo
           enddo
         enddo
@@ -1955,6 +1989,10 @@ c            Add to RHS:
               dk = re*turre(j,k,i,1)
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*beta1*tur10*tur10/tur20
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*tur10
             enddo
           enddo
         enddo
@@ -2057,6 +2095,10 @@ c            Add to RHS:
               dk = re*turre(j,k,i,1)
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*beta1*tur10*tur10/tur20
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*tur10
             enddo
           enddo
         enddo
@@ -2153,6 +2195,10 @@ c            Find nonlinear tauij values:
               dk = damp1(j,k,i)*re*turre(j,k,i,1)*turre(j,k,i,2)
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*beta1*tur10*tur10
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*tur10*tur20
             enddo
           enddo
         enddo

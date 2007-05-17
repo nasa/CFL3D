@@ -175,6 +175,8 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
+     .        keepambient
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
@@ -783,6 +785,44 @@ c
      .  ivmx.ne.14)) then
         write(iunit11,'('' WARNING: ieasmcc2d not active'',
      .  '' unless EASM model (ivisc=8,9,11,12,13, or 14) used'')')
+      end if
+c
+      if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
+     .  ivmx.ne.10 .and. ivmx.ne.15)) then
+        write(iunit11,'('' WARNING: ikoprod not active'',
+     .  '' unless ivisc=6,7,10, or 15 used'')')
+      end if
+c
+      if (iturbprod .gt. 0 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.
+     .  ivmx.ne.13 .and. ivmx.ne.14)) then
+        write(iunit11,'('' WARNING: iturbprod not active'',
+     .  '' unless ivisc=8,9,13, or 14 used'')')
+      end if
+c
+      if (isstdenom .ne. 0 .and. ivmx .ne. 7) then
+        write(iunit11,'('' WARNING: isstdenom not active'',
+     .  '' unless ivisc=7 used'')')
+      else if (isstdenom .ne. 0 .and. i_bsl .ne. 0) then
+        write(iunit11,'('' WARNING: isstdenom not active'',
+     .  '' when i_bsl=1 (BSL option in effect)'')')
+      end if
+c
+      if (ibeta8kzeta .ne. 0 .and. ivmx .ne. 15) then
+        write(iunit11,'('' WARNING: ibeta8kzeta not active'',
+     .  '' unless ivisc=15 used'')')
+      end if
+c
+      if (i_bsl .ne. 0 .and. ivmx .ne. 7) then
+        write(iunit11,'('' WARNING: i_bsl not active'',
+     .  '' unless ivisc=7 used'')')
+      end if
+c
+      if (keepambient .ne. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
+     .  ivmx.ne.8 .and. ivmx.ne.9 .and. ivmx.ne.10 .and.
+     .  ivmx.ne.11 .and. ivmx.ne.12 .and. ivmx.ne.13 .and.
+     .  ivmx.ne.14)) then
+        write(iunit11,'('' WARNING: keepambient not active'',
+     .  '' unless ivisc=6,7,8,9,10,11,12,13, or 14 used'')')
       end if
 c
 c

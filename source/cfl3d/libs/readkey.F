@@ -60,7 +60,8 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10,tur20
       common /gridtrans/ roll_angle
-      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
+     .        keepambient
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -263,7 +264,7 @@ c
 c     eddy viscosity limiter for two eqn. turbulence models: limit
 c     eddy viscosity to edvislim times the laminar viscosity
 c
-      edvislim  = 100000.
+      edvislim  = 1.e10
       nkey      = nkey + 1
 c
 c     flag to set whether approximate production term (0) or full
@@ -545,6 +546,14 @@ c     Parameter controling dynamic grid input
 c
 c     Parameter controling dynamic grid output
       ndwrt    = 0
+      nkey     = nkey + 1
+c
+c     i_bsl used to turn on Menter's BSL model
+      i_bsl     = 0
+      nkey     = nkey + 1
+c
+c     keepambient used to maintain ambient turb levels for 2-eq models
+      keepambient = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1107,6 +1116,14 @@ c
       else if (inpstr(lc1:lc2).eq.'ndwrt') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ndwrt
+c
+      else if (inpstr(lc1:lc2).eq.'i_bsl') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_bsl
+c
+      else if (inpstr(lc1:lc2).eq.'keepambient') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) keepambient
 c
       else
 c

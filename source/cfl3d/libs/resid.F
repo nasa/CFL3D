@@ -76,7 +76,8 @@ c
       common /account/ iaccnt,ioutsub
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
-      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
+     .        keepambient
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
