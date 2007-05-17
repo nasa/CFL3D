@@ -180,7 +180,7 @@ c
          write(13,'(''# Final time (for unsteady)='',f10.4)')real(time)
          end if
          if (iclcd .ne. 1 .and. iclcd .ne. 2) then
-            write(13,'(i6,'' it  log(turres1)  log(turres2)'',
+            write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
      .           ''  nneg1  nneg2'')') ntt
          else
             write(13,'(''variables= it  log(turres1)  log(turres2)'',
