@@ -3403,7 +3403,7 @@ c
      .     'gg::tolReset',/,'# Check for user input after ',
      .     'each function, but delay screen updates until',/,
      .     '# script is finished.',/,'gg::updatePolicy INPUT_ONLY',/,/,
-     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \',/,
+     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \ ',/,
      .     '   -style PLOT3D -form ASCII -precision DOUBLE]')
 11022 format('set _BL(',i1,') [lindex $_ggTemp_(',i1,') ',i1,']')
 11025 format('unset _ggTemp_(1)')
@@ -3420,7 +3420,7 @@ c
      .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_prolongation ',f3.2,/,
      .'  gg::blkEllSolverStep -iterations ',i5,' -nodisplay',/,
      .'gg::blkEllSolverEnd',/,'unset _ggTemp_(2)',/,
-     .'gg::blkExport ALL "',a5,i4,'" \',/,
+     .'gg::blkExport ALL "',a5,i4,'" \ ',/,
      .'   -style PLOT3D -form ASCII -precision DOUBLE',/,
      .'gg::terminate')
        close(9900)
@@ -3469,7 +3469,7 @@ c
      .     'gg::tolReset',/,'# Check for user input after ',
      .     'each function, but delay screen updates until',/,
      .     '# script is finished.',/,'gg::updatePolicy INPUT_ONLY',/,/,
-     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \',/,
+     .     'set _ggTemp_(1) [gg::blkImport "',a5,i4,'" \ ',/,
      .     '   -style PLOT3D -form ASCII -precision DOUBLE]')
 11022 format('set _BL(',i1,') [lindex $_ggTemp_(',i1,') ',i1,']')
 11025 format('unset _ggTemp_(1)')
@@ -3486,7 +3486,7 @@ c
      .'  gg::blkEllSolverAtt $_ggTemp_(2) -mg_prolongation ',f3.2,/,
      .'  gg::blkEllSolverStep -iterations ',i5,' -nodisplay',/,
      .'gg::blkEllSolverEnd',/,'unset _ggTemp_(2)',/,
-     .'gg::blkExport ALL "',a5,i4,'" \',/,
+     .'gg::blkExport ALL "',a5,i4,'" \ ',/,
      .'   -style PLOT3D -form ASCII -precision DOUBLE',/,
      .'gg::terminate')
        close(9900)
