@@ -1,5 +1,5 @@
-      parameter(mdim=14,jdim=121,kdim=45,ldim=2,mhldim=2,
-     .          ibdim=2000,idim=8000,ndim=200,ipmax=28,
+      parameter(mdim=14,jdim=300,kdim=300,ldim=2,mhldim=10,
+     .          ibdim=2000,idim=8000,ndim=300,ipmax=28,
      .          iwrdim=idim+ibdim,mlen=jdim*kdim*ldim)
 c
 c     parameter definitions:
@@ -8,7 +8,7 @@ c     mdim................max number of input grids
 c
 c     jdim,kdim,ldim......max j, k, l dimensions of any grid 
 c
-c     mholdim.............max number of holes/outer boundaries (per grid)   
+c     mhldim..............max number of holes/outer boundaries (per grid)   
 c
 c     idim................max number of fringe points (total over all grids)
 c                         (also max number of boundary points)
