@@ -631,7 +631,14 @@ c   Z-momentum:
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,4,0,wk)
       else
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +  -q,bci,bcj,bck,-qi0,-qj0,-qk0,5,3,0,wk)
+     +  q,bci,bcj,bck,qi0,qj0,qk0,5,3,0,wk)
+      do i=i2d,idima-i2d
+        do j=0,jdima
+          do k=0,kdima
+            wk(i,j,k)=-wk(i,j,k)
+          enddo
+        enddo
+      enddo
       end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
@@ -882,8 +889,15 @@ c   read Q's:
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,q(1,1,1,4))
       else if (m .eq. 4 .and. ialph .ne. 0) then
+      do i=1,idima-2*irind+1
+        do j=1,jdima-2*jrind+1
+          do k=1,kdima-2*krind+1
+            wk(i,j,k)=-wk(i,j,k)
+          enddo
+        enddo
+      enddo
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
-     +    nfaci,-wk,irind,jrind,krind,q(1,1,1,3))
+     +    nfaci,wk,irind,jrind,krind,q(1,1,1,3))
       else
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,q(1,1,1,m))
@@ -4994,7 +5008,14 @@ c   W-velocity:
      +  qc0,wk,wk,wk,wk,wk,wk,5,4,2,wk)
       else
       call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim,kdim,
-     +  -qc0,wk,wk,wk,wk,wk,wk,5,3,2,wk)
+     +  qc0,wk,wk,wk,wk,wk,wk,5,3,2,wk)
+      do i=i2d,idima-i2d
+        do j=0,jdima
+          do k=0,kdima
+            wk(i,j,k)=-wk(i,j,k)
+          enddo
+        enddo
+      enddo
       end if
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
@@ -5187,8 +5208,15 @@ c   Read Q's:
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,4))
       else if (m .eq. 4 .and. ialph .ne. 0) then
+      do i=1,idima-2*irind+1
+        do j=1,jdima-2*jrind+1
+          do k=1,kdima-2*krind+1
+            wk(i,j,k)=-wk(i,j,k)
+          enddo
+        enddo
+      enddo
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
-     +    nfaci,-wk,irind,jrind,krind,qc0(1,1,1,3))
+     +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,3))
       else
       call reorderq(idima,jdima,kdima,idim-1,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,qc0(1,1,1,m))
