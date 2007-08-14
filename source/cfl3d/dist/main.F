@@ -611,7 +611,7 @@ c
 
       mov2dg =
      $     output_dir(1:len_trim(output_dir)) // "/" // mov2dg
-      mov2dg =
+      mov2dq =
      $     output_dir(1:len_trim(output_dir)) // "/" // mov2dq
 
       avgq2pert =
