@@ -24,7 +24,7 @@ c
       dimension xmide(jdim,kdim,nsub),ymide(jdim,kdim,nsub),
      .          zmide(jdim,kdim,nsub)
       dimension jimage(nsub,jdim,kdim),kimage(nsub,jdim,kdim)
-      dimension jjmax(nsub),kkmax(nsub),jfroz(100),kfroz(100)
+      dimension jjmax(nsub),kkmax(nsub),jfroz(itmax),kfroz(itmax)
       integer   lout(nsub),xif1(nsub),xif2(nsub),etf1(nsub),
      .          etf2(nsub)
 c
