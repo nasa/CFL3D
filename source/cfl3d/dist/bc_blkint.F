@@ -483,13 +483,13 @@ c
          end do
 c
          if (myid.ne.myhost) then
-            if (ireq.gt.mxbli*4) then
+            if (ireq.gt.mxbli*5) then
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),*)
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),999) ireq,mxbli*4
+               write(bou(nou(1),1),999) ireq,mxbli*5
  999           format(' problem in bc_blkint...ireq = ',i4,
-     .         ' but max allowable value = mxbli*4 = ',i4)
+     .         ' but max allowable value = mxbli*5 = ',i4)
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
         end if
