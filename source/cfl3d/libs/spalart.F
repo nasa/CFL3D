@@ -1022,6 +1022,13 @@ c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
               term1=cb1*(1.-ft2)*ss
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
               if (isarc2d .eq. 1) then
+c               For SARC, note that fr1 multiplies the production term
+c               cb1*Stilde*nuwiggle, as specified in AIAA J 38(5):784,2000,
+c               where Stilde=vort+nuwiggle*fv2/(kappa^2*d^2)
+c               (in Aerospace Science & Tech. 1(5):297,1997 it
+c               multiplies cb1*vort*nuwiggle).
+c               Ends up making very little difference.
+c
 c               Determine Sij and Wij values:
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
@@ -1043,6 +1050,7 @@ c               Determine Sij and Wij values:
                 fr1=4.*rstar/(1.+rstar)*(1.-sarccr3*
      +             ccatan(12.*rtilde))-1.
                 term1=cb1*(fr1-ft2)*ss
+                term2=cb1*((fr1-ft2)*fv2+ft2)/akarman**2-cw1*fw
               end if
               dist2i=1./(re*damp1(j,k,i)**2+1.e-20)
               tt=cutoff*term1*turre(j,k,i)+term2*turre(j,k,i)**2*dist2i
