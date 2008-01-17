@@ -260,7 +260,7 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit
+     .                 nsprgit,ndgrd,ndwrt 
 c
 c***********************************************************************
 c     initialization

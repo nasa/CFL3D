@@ -1739,7 +1739,9 @@ c
                end do
             end if
 c
-            do igrid = 1,ngrid
+            do nm = 1,nmodes
+             iunitw = 200+nm
+             do igrid = 1,ngrid
                nbl = nblg(igrid)
                ncg = ncgg(igrid)
                call lead(nbl,lw,lw2,maxbl)
@@ -1804,21 +1806,18 @@ c
                   jst = lxmdj
                   kst = lxmdk
                   ist = lxmdi
-                  do nm = 1,nmodes
-                     call modread(idim,jdim,kdim,nm,nbl,iunit,jbcinfo,
-     .                            kbcinfo,ibcinfo,nbcj0,nbcjdim,nbck0,
-     .                            nbckdim,nbci0,nbcidim,maxbl,maxseg,
-     .                            nmds,w(jst),w(kst),w(ist),iaes,maxaes)
-                     iunitw = 200+nm
-                     call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
-     .                            nsegdfrm,iaesurf,jbcinfo,kbcinfo,
-     .                            ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
-     .                            nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
-     .                            w(lx),w(ly),w(lz),w(jst),
-     .                            w(kst),w(ist),jdim,kdim,idim,
-     .                            maxaes,nmds,nbl,iunitw,1)
-c                    close(iunitw)
-                  end do
+                  call modread(idim,jdim,kdim,nm,nbl,iunit,jbcinfo,
+     .                         kbcinfo,ibcinfo,nbcj0,nbcjdim,nbck0,
+     .                         nbckdim,nbci0,nbcidim,maxbl,maxseg,
+     .                         nmds,w(jst),w(kst),w(ist),iaes,maxaes)
+                  call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
+     .                         nsegdfrm,iaesurf,jbcinfo,kbcinfo,
+     .                         ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
+     .                         nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
+     .                         w(lx),w(ly),w(lz),w(jst),
+     .                         w(kst),w(ist),jdim,kdim,idim,
+     .                         maxaes,nmds,nbl,iunitw,1)
+c                 close(iunitw)
                end if
 
 #if defined DIST_MPI
@@ -1872,15 +1871,13 @@ c
                         write(bou(nou(1),1),610) nbl
   610                   format(25h   creating modal surface,
      .                  18h for coarser block,i4)
-                        do nm = 1,nmodes
-                           jst = lxmdj
-                           kst = lxmdk
-                           ist = lxmdi
-                           call collmod(w(lxmdj),w(lxmdk),w(lxmdi),
-     .                                  w(lxmdjc),w(lxmdkc),w(lxmdic),
-     .                                  jdim,kdim,idim,jj2,kk2,ii2,
-     .                                  nm,nmds,iaes,maxaes)
-                        end do
+                        jst = lxmdj
+                        kst = lxmdk
+                        ist = lxmdi
+                        call collmod(w(lxmdj),w(lxmdk),w(lxmdi),
+     .                               w(lxmdjc),w(lxmdkc),w(lxmdic),
+     .                               jdim,kdim,idim,jj2,kk2,ii2,
+     .                               nm,nmds,iaes,maxaes)
                         call lead(nbl,lw,lw2,maxbl)
                      end if
                   end do
@@ -1895,6 +1892,7 @@ c
      .                       myid,mycomm,mblk2nd,maxbl)
 #   endif
 c
+             end do
             end do
             do nm=1,nmodes
                close(200+nm)
