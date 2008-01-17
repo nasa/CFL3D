@@ -39,24 +39,24 @@ c
       if (iaes.gt.9) then
          if (nm.gt.99) then
             len1 = 20
-            write (titlemode,'("aesurf",i2,"_mode",i3,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i2,"_mode",i3,".plt")') iaes,nm
          else if(nm.gt.9) then
             len1 = 19
-            write (titlemode,'("aesurf",i2,"_mode",i2,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i2,"_mode",i2,".plt")') iaes,nm
          else
             len1 = 18
-            write (titlemode,'("aesurf",i2,"_mode",i1,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i2,"_mode",i1,".plt")') iaes,nm
          end if
       else
          if (nm.gt.99) then
             len1 = 19
-            write (titlemode,'("aesurf",i1,"_mode",i3,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i1,"_mode",i3,".plt")') iaes,nm
          else if(nm.gt.9) then
             len1 = 18
-            write (titlemode,'("aesurf",i1,"_mode",i2,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i1,"_mode",i2,".plt")') iaes,nm
          else
             len1 = 17
-            write (titlemode,'("aesurf",i1,"_mode",i1,".p3d")') iaes,nm
+            write (titlemode,'("aesurf",i1,"_mode",i1,".plt")') iaes,nm
          end if
       end if
       do i = len1+1, 21
@@ -64,6 +64,10 @@ c
       end do
       open(iunitw,file=titlemode(1:len1),form='formatted',
      .     status='unknown')
+      write(iunitw,23110)
+23110             format(' title="tecplot modeshape file"',/,
+     .              ' variables="x","y","z","phix","phiy","phiz"')
+23111             format(' ZONE I = ',i5,' J = ',i5)
 c
       if (iflag.eq.0) then
 c
@@ -160,9 +164,6 @@ c
             end if
          end do
 c
-         write(iunitw,*) ngd
-         write(iunitw,*) (idm(nn),jdm(nn),kdm(nn),nn=1,ngd)
-c
       else if (iflag.gt.0) then
 c
 c        write out x,y,z of modal surface
@@ -188,16 +189,27 @@ c
                   ifn = jbcinfo(nbl1,ns,3,m)
                   kst = jbcinfo(nbl1,ns,4,m)
                   kfn = jbcinfo(nbl1,ns,5,m)
+                  write(iunitw,23111) ifn-ist+1,kfn-kst+1
                   if(ialph.eq.0) then
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdj(k,i,l+1,nm,iaes)),i=ist,ifn),k=kst,kfn),
-     .    ((y(j,k,i)+real(xmdj(k,i,l+2,nm,iaes)),i=ist,ifn),k=kst,kfn),
-     .    ((z(j,k,i)+real(xmdj(k,i,l+3,nm,iaes)),i=ist,ifn),k=kst,kfn)
+                    do k = kst,kfn 
+                      do i = ist,ifn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),y(j,k,i),z(j,k,i),
+     .                      real(xmdj(k,i,l+1,nm,iaes)),
+     .                      real(xmdj(k,i,l+2,nm,iaes)),
+     .                      real(xmdj(k,i,l+3,nm,iaes)) 
+                      enddo
+                    enddo
                   else
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdj(k,i,l+1,nm,iaes)),i=ist,ifn),k=kst,kfn),
-     .    ((z(j,k,i)+real(xmdj(k,i,l+3,nm,iaes)),i=ist,ifn),k=kst,kfn),
-     .    ((-y(j,k,i)-real(xmdj(k,i,l+2,nm,iaes)),i=ist,ifn),k=kst,kfn)
+                    do k = kst,kfn 
+                      do i = ist,ifn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),z(j,k,i),-y(j,k,i),
+     .                      real(xmdj(k,i,l+1,nm,iaes)),
+     .                      real(xmdj(k,i,l+3,nm,iaes)),
+     .                     -real(xmdj(k,i,l+2,nm,iaes)) 
+                      enddo
+                    enddo
                   end if
                end if
             end do
@@ -222,16 +234,27 @@ c
                   ifn = kbcinfo(nbl1,ns,3,m)
                   jst = kbcinfo(nbl1,ns,4,m)
                   jfn = kbcinfo(nbl1,ns,5,m)
+                  write(iunitw,23111) ifn-ist+1,jfn-jst+1
                   if(ialph.eq.0) then
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdk(j,i,l+1,nm,iaes)),i=ist,ifn),j=jst,jfn),
-     .    ((y(j,k,i)+real(xmdk(j,i,l+2,nm,iaes)),i=ist,ifn),j=jst,jfn),
-     .    ((z(j,k,i)+real(xmdk(j,i,l+3,nm,iaes)),i=ist,ifn),j=jst,jfn)
+                    do j = jst,jfn
+                      do i = ist,ifn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),y(j,k,i),z(j,k,i),
+     .                      real(xmdk(j,i,l+1,nm,iaes)),
+     .                      real(xmdk(j,i,l+2,nm,iaes)),
+     .                      real(xmdk(j,i,l+3,nm,iaes))
+                      enddo
+                    enddo
                   else
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdk(j,i,l+1,nm,iaes)),i=ist,ifn),j=jst,jfn),
-     .    ((z(j,k,i)+real(xmdk(j,i,l+3,nm,iaes)),i=ist,ifn),j=jst,jfn),
-     .    ((-y(j,k,i)-real(xmdk(j,i,l+2,nm,iaes)),i=ist,ifn),j=jst,jfn)
+                    do j = jst,jfn
+                      do i = ist,ifn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),z(j,k,i),-y(j,k,i),
+     .                      real(xmdk(j,i,l+1,nm,iaes)),
+     .                      real(xmdk(j,i,l+3,nm,iaes)),
+     .                     -real(xmdk(j,i,l+2,nm,iaes))
+                      enddo
+                    enddo
                   end if
               end if
            end do
@@ -256,16 +279,27 @@ c
                   jfn = ibcinfo(nbl1,ns,3,m)
                   kst = ibcinfo(nbl1,ns,4,m)
                   kfn = ibcinfo(nbl1,ns,5,m)
+                  write(iunitw,23111) jfn-jst+1,kfn-kst+1
                   if(ialph.eq.0) then
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdi(j,k,l+1,nm,iaes)),j=jst,jfn),k=kst,kfn),
-     .    ((y(j,k,i)+real(xmdi(j,k,l+2,nm,iaes)),j=jst,jfn),k=kst,kfn),
-     .    ((z(j,k,i)+real(xmdi(j,k,l+3,nm,iaes)),j=jst,jfn),k=kst,kfn)
+                    do k = kst,kfn
+                      do j = jst,jfn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),y(j,k,i),z(j,k,i),
+     .                      real(xmdi(j,k,l+1,nm,iaes)),
+     .                      real(xmdi(j,k,l+2,nm,iaes)),
+     .                      real(xmdi(j,k,l+3,nm,iaes))
+                      enddo
+                    enddo
                   else
-                    write(iunitw,*)
-     .    ((x(j,k,i)+real(xmdi(j,k,l+1,nm,iaes)),j=jst,jfn),k=kst,kfn),
-     .    ((z(j,k,i)+real(xmdi(j,k,l+3,nm,iaes)),j=jst,jfn),k=kst,kfn),
-     .    ((-y(j,k,i)-real(xmdi(j,k,l+2,nm,iaes)),j=jst,jfn),k=kst,kfn)
+                    do k = kst,kfn
+                      do j = jst,jfn
+                        write(iunitw,'(6(1x,e16.8))')
+     .                      x(j,k,i),z(j,k,i),-y(j,k,i),
+     .                      real(xmdi(j,k,l+1,nm,iaes)),
+     .                      real(xmdi(j,k,l+2,nm,iaes)),
+     .                     -real(xmdi(j,k,l+3,nm,iaes))
+                      enddo
+                    enddo
                   end if
               end if
            end do
