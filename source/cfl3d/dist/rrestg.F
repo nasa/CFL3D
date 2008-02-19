@@ -13,7 +13,7 @@
      .                  perturb,myhost,myid,mycomm,mblk2nd,maxbl,
      .                  ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
      .                  iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
-     .                  tursav2)
+     .                  tursav2,nummem)
 c
 c     $Id$
 c
@@ -62,7 +62,7 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4)
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,2*nummem)
       dimension deltj(kdim,idim,3,2),deltk(jdim,idim,3,2),
      .          delti(jdim,kdim,3,2)
       dimension utrans(maxbl),vtrans(maxbl),wtrans(maxbl),
@@ -99,7 +99,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /maxiv/ ivmx
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
      .                  omegaxmc,omegaymc,omegazmc,xorigmc,yorigmc,
@@ -177,6 +177,18 @@ c                  time-accurate restart files, which was missing this info)
          else
          read(2) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
          end if
+c   NOTE: for ivmx .ge. 30, currently you CANNOT restart to/from a
+c   different ivmx; if this is ever allowed, then the following may 
+c   read/write incorrectly!!!
+         if (ivmx .ge. 30) then
+          read(2) nummem_read
+          if (nummem_read .ne. nummem) then
+            write(11,'('' ERROR: nummem_read .ne. nummem in rrestg'')')
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+          end if
+          read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .               l=3,nummem_read)
+         end if
          end if
       else
 #if defined CGNS
@@ -184,7 +196,7 @@ c                  time-accurate restart files, which was missing this info)
      +    '' file for block '',i4)') nbl
          call rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +     jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +     ialph,qc0,tursav2,dtold,ivmx)
+     +     ialph,qc0,tursav2,dtold,ivmx,nummem)
 #endif
       end if
       if (dtold .ne. dt) then
@@ -216,17 +228,17 @@ c
          do i=1,idim
             k = kdim
             do j=1,jdim1
-               tursav2(j,k,i,1) = tur10
-               tursav2(j,k,i,2) = tur20
-               tursav2(j,k,i,3) = 0.
-               tursav2(j,k,i,4) = 0.
+              do l=1,nummem
+               tursav2(j,k,i,l) = tur10(l)
+               tursav2(j,k,i,nummem+l) = 0.
+              enddo
             end do
             j=jdim
             do k=1,kdim
-               tursav2(j,k,i,1) = tur10
-               tursav2(j,k,i,2) = tur20
-               tursav2(j,k,i,3) = 0.
-               tursav2(j,k,i,4) = 0.
+              do l=1,nummem
+               tursav2(j,k,i,l) = tur10(l)
+               tursav2(j,k,i,nummem+l) = 0.
+              end do
             end do
          end do
          end if
@@ -246,7 +258,7 @@ c
      .                 myhost,mytag,mycomm,istat,ierr)
       end if
       if (ivmx .ge. 4) then
-      jki4 = jdim*kdim*idim*4
+      jki4 = jdim*kdim*idim*2*nummem
       mytag = itag_tursav + nbl
       if (myid .eq. myhost) then
          call MPI_Send(tursav2,jki4,MY_MPI_REAL,

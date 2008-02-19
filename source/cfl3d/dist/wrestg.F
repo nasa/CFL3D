@@ -11,7 +11,7 @@
      .                  kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                  aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                  maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,
-     .                  wk,nwork,idima,jdima,kdima,igrid,tursav2)
+     .                  wk,nwork,idima,jdima,kdima,igrid,tursav2,nummem)
 c
 c     $Id$
 c
@@ -47,7 +47,7 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
       dimension xnm2(jdim,kdim,idim),ynm2(jdim,kdim,idim),
      .          znm2(jdim,kdim,idim)
-      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4)
+      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,2*nummem)
       dimension deltj(kdim,idim,3,2),deltk(jdim,idim,3,2),
      .          delti(jdim,kdim,3,2)
       dimension utrans(maxbl),vtrans(maxbl),wtrans(maxbl),
@@ -140,7 +140,7 @@ c
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
          if (ivmx .ge. 4) then
-         jki4 = jdim*kdim*idim*4
+         jki4 = jdim*kdim*idim*2*nummem
          mytag = itag_tursav + nbl
          if (myid .eq. mblk2nd(nbl)) then
             call MPI_Send(tursav2,jki4,MY_MPI_REAL,
@@ -171,13 +171,21 @@ c   (j,k,i,2), NOT the deltaQ's = (j,k,i,3) and (j,k,i,4):
             zero=0.
             write(2) ((((zero,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
             end if
+c   NOTE: for ivmx .ge. 30, currently you CANNOT restart to/from a
+c   different ivmx; if this is ever allowed, then the following may
+c   read/write incorrectly!!!
+            if (ivmx .ge. 30) then
+              write(2) nummem
+              write(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),
+     .               i=1,idim1),l=3,nummem)
+            end if
          else
 #if defined CGNS
          write(901,'('' writing 2nd order time data to cgns file,'',
      +     '' block='',i4)') nbl
          call wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
-     +                ivmx)
+     +                ivmx,nummem)
 #endif
          end if
          end if

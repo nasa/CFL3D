@@ -159,6 +159,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                            if(ibcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                        ibcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                        ibcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                        ibcinfo(nbl,nseg,1,1).eq.1002.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.1000.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -187,6 +190,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                            if(ibcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                        ibcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                        ibcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                        ibcinfo(nbl,nseg,1,2).eq.1002.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.1000.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.1003.or.
@@ -216,6 +222,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(jbcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                      jbcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                      jbcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                      jbcinfo(nbl,nseg,1,1).eq.1002.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.1000.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -246,6 +255,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(jbcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                      jbcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                      jbcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                      jbcinfo(nbl,nseg,1,2).eq.1002.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.1000.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.1003.or.
@@ -276,6 +288,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(kbcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                      kbcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                      kbcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                      kbcinfo(nbl,nseg,1,1).eq.1002.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.1000.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -306,6 +321,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(kbcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                      kbcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                      kbcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                      kbcinfo(nbl,nseg,1,2).eq.1002.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.1000.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.1003.or.
@@ -407,6 +425,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                            if(ibcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                        ibcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                        ibcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                        ibcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                        ibcinfo(nbl,nseg,1,1).eq.1002.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.1000.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -435,6 +456,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                            if(ibcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                        ibcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                        ibcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                        ibcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                        ibcinfo(nbl,nseg,1,2).eq.1002.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.1000.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.1003.or.
@@ -464,6 +488,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(jbcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                      jbcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                      jbcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                      jbcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                      jbcinfo(nbl,nseg,1,1).eq.1002.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.1000.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -494,6 +521,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(jbcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                      jbcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                      jbcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                      jbcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                      jbcinfo(nbl,nseg,1,2).eq.1002.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.1000.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.1003.or.
@@ -524,6 +554,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(kbcinfo(nbl,nseg,1,1).eq.1005.or. 
      .                      kbcinfo(nbl,nseg,1,1).eq.1006.or. 
      .                      kbcinfo(nbl,nseg,1,1).eq.2004.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2014.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2024.or.   
+     .                      kbcinfo(nbl,nseg,1,1).eq.2016.or.   
      .                      kbcinfo(nbl,nseg,1,1).eq.1002.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.1000.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.1003.or.
@@ -554,6 +587,9 @@ c           if (myid.eq.mblk2nd(nbl)) then
                          if(kbcinfo(nbl,nseg,1,2).eq.1005.or. 
      .                      kbcinfo(nbl,nseg,1,2).eq.1006.or. 
      .                      kbcinfo(nbl,nseg,1,2).eq.2004.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2014.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2024.or.   
+     .                      kbcinfo(nbl,nseg,1,2).eq.2016.or.   
      .                      kbcinfo(nbl,nseg,1,2).eq.1002.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.1000.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.1003.or.

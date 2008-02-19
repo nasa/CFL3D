@@ -252,7 +252,6 @@ c
      .        lsnk0,lsni0,lq1,lqr,lblk,lxib,lsig,lsqtq,lg,
      .        ltj0,ltk0,lti0,lxkb,lnbl,lvj0,lvk0,lvi0,lbcj,lbck,lbci,
      .        lqc0,ldqc0,lxtbi,lxtbj,lxtbk,latbi,latbj,latbk,
-c    .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0
      .        lbcdj,lbcdk,lbcdi,lxib2,lux,lcmuv,lvolj0,lvolk0,lvoli0,
      .        lxmdj,lxmdk,lxmdi,lvelg,ldeltj,ldeltk,ldelti,
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
@@ -1378,10 +1377,13 @@ c
          call cntsurf(ns2014,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
+         call cntsurf(ns2024,maxbl0,maxgr0,maxseg0,ngrid,nblg,
+     .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2024)
          call cntsurf(ns2016,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2016)
-         nsurf=ns2004+ns2014+ns2016
+         nsurf=ns2004+ns2014+ns2024+ns2016
          minbox=sqrt(float(nsurf))
          minbox=max(minbox,50)
          nbb = 3*nsurf/minbox
@@ -2370,6 +2372,9 @@ c     in setslave, to call setcorner
          call cntsurf(ns2014,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
+         call cntsurf(ns2024,maxbl0,maxgr0,maxseg0,ngrid,nblg,
+     .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2024)
          call cntsurf(ns1005,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,1005)
@@ -2379,7 +2384,7 @@ c     in setslave, to call setcorner
          call cntsurf(ns2016,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2016)
-         nsurf = ns2004 + ns2014 + ns1005 + ns1006 + ns2016
+         nsurf = ns2004 + ns2014 + ns2024 + ns1005 + ns1006 + ns2016
          itempi = nsurf + needi_set
          needi  = max(needi,itempi)
       end if
@@ -3105,11 +3110,13 @@ c
       do mseg=1,nbcj0(nbl)
         if (abs(jbcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
      .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2014 .or.
+     .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2024 .or.
      .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2016) ibcjmin=1 
       end do
       do mseg=1,nbcjdim(nbl)
         if (abs(jbcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
      .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2014 .or.
+     .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2024 .or.
      .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2016) ibcjmax=1 
       end do
 c
@@ -3118,11 +3125,13 @@ c
       do mseg=1,nbck0(nbl)
         if (abs(kbcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
      .      abs(kbcinfo(nbl,mseg,1,1)) .eq. 2014 .or.
+     .      abs(kbcinfo(nbl,mseg,1,1)) .eq. 2024 .or.
      .      abs(kbcinfo(nbl,mseg,1,1)) .eq. 2016) ibckmin=1
       end do
       do mseg=1,nbckdim(nbl)
         if (abs(kbcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
      .      abs(kbcinfo(nbl,mseg,1,2)) .eq. 2014 .or.
+     .      abs(kbcinfo(nbl,mseg,1,2)) .eq. 2024 .or.
      .      abs(kbcinfo(nbl,mseg,1,2)) .eq. 2016) ibckmax=1
       end do
 c
@@ -3131,11 +3140,13 @@ c
       do mseg=1,nbci0(nbl)
         if (abs(ibcinfo(nbl,mseg,1,1)) .eq. 2004 .or.
      .      abs(ibcinfo(nbl,mseg,1,1)) .eq. 2014 .or.
+     .      abs(ibcinfo(nbl,mseg,1,1)) .eq. 2024 .or.
      .      abs(ibcinfo(nbl,mseg,1,1)) .eq. 2016) ibcimin=1
       end do
       do mseg=1,nbcidim(nbl)
         if (abs(ibcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
      .      abs(ibcinfo(nbl,mseg,1,2)) .eq. 2014 .or.
+     .      abs(ibcinfo(nbl,mseg,1,2)) .eq. 2024 .or.
      .      abs(ibcinfo(nbl,mseg,1,2)) .eq. 2016) ibcimax=1
       end do
 c

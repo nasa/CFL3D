@@ -3,7 +3,7 @@
      .                    isav_emb,ireq_ar,ireq_snd,
      .                    index_ar,keep_trac,keep_trac2,myid,myhost,
      .                    mycomm,mblk2nd,nou,bou,nbuf,ibufdim,iviscg,
-     .                    istat2,istat_size)
+     .                    istat2,istat_size,nummem)
 c
 c     $Id$
 c
@@ -129,7 +129,7 @@ c                 interpolate turb. data
 c
                   if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                .or. iviscg(nblc,3).ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      call i2x(jdimc,kdimc,idimc,w(lqct),jdim,kdim,
      .                        idim,w(lqj0),w(lqk0),w(lqi0),
      .                        js,ks,is,je,ke,ie,nblc,ldim,
@@ -163,7 +163,7 @@ c                 interpolate turb. data
 c
                   if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                .or. iviscg(nblc,3).ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      call i2xs(jdimc,kdimc,idimc,w(lqct),jdim,kdim,
      .                         idim,w(lqj0),w(lqk0),w(lqi0),
      .                         js,ks,is,je,ke,ie,nblc,ldim,
@@ -271,7 +271,7 @@ c
 c                 receive turb. data
 c
                   if (ivmx.ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      np   = 3
                      kcheck = kqintl + maxdims*ldim*np
                      if (kcheck.gt.nwork) then
@@ -443,7 +443,7 @@ c                 to a work array and send to the appropriate processor
 c
                   if (ivmx.ge.4) then
                      lwst = lw(19,nblc)
-                     ldim = 2
+                     ldim = nummem
                      kcheck = ktl + maxdims*ldim*np
                      if (kcheck.gt.nwork) then
                         nou(1) = min(nou(1)+1,ibufdim)
@@ -553,7 +553,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                   .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xk_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                 jdim,kdim,idim,w(lqk0),js,ks,is,
@@ -597,7 +597,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                   .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xsk_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                  jdim,kdim,idim,w(lqk0),js,ks,is,
@@ -648,7 +648,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                  .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xj_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                 jdim,kdim,idim,w(lqj0),js,ks,is,
@@ -691,7 +691,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                  .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xsj_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                  jdim,kdim,idim,w(lqj0),js,ks,is,
@@ -742,7 +742,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                   .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xi_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                 jdim,kdim,idim,w(lqi0),js,ks,is,
@@ -785,7 +785,7 @@ c
                      if (iviscg(nblc,1).ge.4 .or. iviscg(nblc,2).ge.4
      .                  .or. iviscg(nblc,3).ge.4) then
                         if (index_ar(nnn) .eq. keep_trac(n,6)) then
-                           ldim = 2
+                           ldim = nummem
                            kqintlt = keep_trac(n,5)
                            call i2xsi_d(jdimc,kdimc,idimc,wk(kqintlt),
      .                                  jdim,kdim,idim,w(lqi0),js,ks,is,

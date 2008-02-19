@@ -5,7 +5,7 @@
      .                    ireq_ar,ireq_snd,index_ar,
      .                    keep_trac,keep_trac2,myid,myhost,mycomm,
      .                    mblk2nd,nou,bou,nbuf,ibufdim,istat2,
-     .                    istat_size)
+     .                    istat_size,nummem)
 c
 c     $Id$
 c
@@ -192,7 +192,7 @@ c
 c                 interpolate turb. data
 c
                   if (ivmx.ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      iq = 0
                      jkldim = ldim*jmax1*kmax1
 c
@@ -322,7 +322,7 @@ c
 c                    receive turb. data
 c
                      if (ivmx.ge.4) then
-                        ldim = 2
+                        ldim = nummem
                         jkldim = ldim*jmax1*kmax1
                         kcheck = kqintl + 2*jkldim
                         if (kcheck.gt.nwork) then
@@ -480,7 +480,7 @@ c                    to a work array and send to the appropriate processor
 c
                      if (ivmx.ge.4) then
                          lqintt = lw(19,nb_from)
-                         ldim = 2
+                         ldim = nummem
                          call get_bvals(jdim1, kdim1, idim1, jmax1, 
      .                                  kmax1, ldim, w(lqintt), wk(ktl),
      .                                  mtype, iint1)        
@@ -662,7 +662,7 @@ c                 interpolate turb. data
 c
                   if (ivmx.ge.4) then
                       if (index_ar(nnn) .eq. keep_trac(n,l,6)) then
-                         ldim = 2
+                         ldim = nummem
                          iq = 0
                          jkldim = ldim*jmax1*kmax1
                          kqintl = keep_trac(n,l,5)

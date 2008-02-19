@@ -23,7 +23,7 @@
      .                cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,
      .                n_clcd,clcd,nblocks_clcd,blocks_clcd,chdw,
      .                swetw,fmdotw,cfttotw,cftmomw,cftpw,cftvw,
-     .                rmstr1,rmstr2,nneg1,nneg2,swett,clt,cdt,cxt,
+     .                swett,clt,cdt,cxt,
      .                cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,sx,sy,sz,
      .                stot,pav,ptav,tav,ttav,xmav,fmdot,cfxp,cfyp,
      .                cfzp,cfdp,cflp,cftp,cfxv,cfyv,cfzv,cfdv,cflv,
@@ -95,7 +95,7 @@ c
 c
       integer lout,xif1,xif2,etf1,etf2
       integer bcfilei,bcfilej,bcfilek
-      integer irdrea(maxgr)
+      integer irdrea(maxgr),stats
 c
       dimension bcfilei(maxbl,maxseg,2),bcfilej(maxbl,maxseg,2),
      .          bcfilek(maxbl,maxseg,2)
@@ -172,8 +172,7 @@ c
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),
-     .          nneg1(ncycmax),nneg2(ncycmax),timekeep(ncycmax)
+     .          timekeep(ncycmax)
       dimension swett(maxbl),clt(maxbl),cdt(maxbl),cxt(maxbl),
      .          cyt(maxbl),czt(maxbl),cmxt(maxbl),cmyt(maxbl),
      .          cmzt(maxbl),cdpt(maxbl),cdvt(maxbl)
@@ -261,6 +260,9 @@ c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
+
+      allocatable :: rmstr(:,:)
+      allocatable :: nneg(:,:)
 c
 c***********************************************************************
 c     initialization
@@ -601,6 +603,14 @@ c
       gm1g = gm1/gamma
       gp1g = gp1/gamma
       ggm1 = gamma*gm1
+c     set nummem (usually 2 for 1 or 2 turbulence equations)
+c     need to also set memory appropriately in pointers
+      nummem=2
+      if (ivmx .eq. 30) nummem=3
+      allocate( rmstr(ncycmax,nummem),stat=stats )
+      call umalloc(ncycmax*nummem,0,'rmstr',memuse,stats)
+      allocate( nneg(ncycmax,nummem),stat=stats )
+      call umalloc(ncycmax*nummem,1,'nneg',memuse,stats)
 c
       call setup(lw,lw2,work,nstart,work(nstart+1),nwork,iwork(iwk5),
      .           mworki1,iwork(iwk1),iwork(iwk2),iwork(iwk3),
@@ -618,7 +628,7 @@ c
      .           rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,
      .           cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
      .           chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
-     .           cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,windex,
+     .           cftvw,rmstr,nneg,ntr,windex,
      .           ninter,iindex,nblkpt,dthetxx,dthetyy,dthetzz,
      .           iibg,kkbg,jjbg,ibcg,dxintg,dyintg,dzintg,iiig,
      .           jjig,kkig,ibpntsg,iipntsg,mblk2nd,nou,bou,nbuf,
@@ -632,7 +642,7 @@ c
      .           maxsegdg,nmaster,aehist,timekeep,inpl3d,nplots,
      .           nplot3d,levelg,iadvance,xs,gforcs,xorgae0,yorgae0,
      .           zorgae0,icouple,lfgm,nblk,limblk,isva,nblelst,iskmax,
-     .           jskmax,kskmax,ue,irdrea,nbli)
+     .           jskmax,kskmax,ue,irdrea,nbli,nummem)
 c
       do iii = 1,mworki
          iwork(iii) = 0
@@ -688,7 +698,8 @@ c
      .                  yorig,zorig,xorig0,yorig0,zorig0,thetax,thetay,
      .                  thetaz,time2,nou,bou,nbuf,ibufdim,myid,myhost,
      .                  mycomm,mblk2nd,nsegdfrm,idfrmseg,xorgae,
-     .                  yorgae,zorgae,thtxae,thtyae,thtzae,maxsegdg)
+     .                  yorgae,zorgae,thtxae,thtyae,thtzae,maxsegdg,
+     .                  nummem)
 c
             do iii = nstart+1,mwork
                work(iii) = 0.0
@@ -739,7 +750,7 @@ c
      .              rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,
      .              cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
      .              chdw,swetw,fmdotw,cfttotw,cftmomw,
-     .              cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,
+     .              cftpw,cftvw,rmstr,nneg,ntr,
      .              ihstry,iadvance,iforce,lfgm,resmx,imx,jmx,kmx,
      .              vormax,ivmax,jvmax,kvmax,sx,sy,sz,stot,pav,
      .              ptav,tav,ttav,xmav,fmdot,cfxp,cfyp,cfzp,cfdp,
@@ -773,7 +784,7 @@ c
      .              xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
      .              yorgae0,zorgae0,icouple,iprnsurf,nblelst,iskmax,
-     .              jskmax,kskmax,ue)
+     .              jskmax,kskmax,ue,nummem)
 c
          do iii = 1,mworki
             iwork(iii) = 0
@@ -871,7 +882,7 @@ c
      .                   lbcemb,dthetxx,dthetyy,dthetzz,nblcg,
      .                   lfgm,istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .                   istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
-     .                   mxbcfil,iprnsurf)
+     .                   mxbcfil,iprnsurf,nummem)
 c
                do iii = 1,mworki
                   iwork(iii) = 0
@@ -937,7 +948,7 @@ c
      .                    kbcinfo,iadvance,iovrlp,myid,myhost,
      .                    mycomm,mblk2nd,iwork(iwk1),iwork(iwk2),
      .                    iwork(iwk3),nou,bou,nbuf,ibufdim,bcfiles,
-     .                    mxbcfil)
+     .                    mxbcfil,nummem)
 c
             do iii = 1,mworki
                iwork(iii) = 0
@@ -970,18 +981,18 @@ c
       call histout(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .             cmxw,cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
      .             chdw,swetw,fmdotw,cfttotw,
-     .             cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,
-     .             nneg2,ncycmax,aehist,aesrfdat,nmds,maxaes,
-     .             timekeep)
+     .             cftmomw,cftpw,cftvw,rmstr,nneg,
+     .             ncycmax,aehist,aesrfdat,nmds,maxaes,
+     .             timekeep,nummem)
 #   ifdef CMPLX
 c
 c     derivative convergence history
 c
       call histout_img(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .                 cmxw,cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,
-     .                 cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,
-     .                 nneg2,ncycmax,aehist,aesrfdat,nmds,maxaes,
-     .                 timekeep)
+     .                 cftmomw,cftpw,cftvw,rmstr,nneg,
+     .                 ncycmax,aehist,aesrfdat,nmds,maxaes,
+     .                 timekeep,nummem)
 #   endif
 c
       if (abs(movie).gt.0) then
@@ -1022,5 +1033,7 @@ c
       string = '    timing for complete run - time in seconds     '
       call cputim(-1,nnodes,string,myhost,myid,mycomm,11)
 c
+      deallocate(rmstr)
+      deallocate(nneg)
       return
       end

@@ -55,7 +55,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient
+     .        keepambient,re_thetat0
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       if (icall .eq. 0) then
@@ -461,6 +461,9 @@ c
          ns = 0
          if(ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      ns = jmkmim*2
+c        extra memory needed for ivisc=30 (3-eqn model)
+         if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
+     .      ns = jmkmim*3
 c
 c........Johnson-King data no longer stored
 c
@@ -478,6 +481,9 @@ c
          ns = 0
          if(ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      ns = kmim1*2*4
+c        extra memory needed for ivisc=30 (3-eqn model)
+         if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
+     .      ns = kmim1*3*4
 c
 c........tk0(jdim,idim-1,2,4)
 c        turbulence model variable at k-boundary
@@ -486,6 +492,9 @@ c
          ns = 0
          if(ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      ns = jmim1*2*4
+c        extra memory needed for ivisc=30 (3-eqn model)
+         if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
+     .      ns = jmim1*3*4
 c
 c........ti0(jdim,jdim,2,4)
 c        turbulence model variable at i-boundary
@@ -494,6 +503,9 @@ c
          ns = 0
          if(ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      ns = jmkm*2*4
+c        extra memory needed for ivisc=30 (3-eqn model)
+         if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
+     .      ns = jmkm*3*4
 c
 c........xkb(jdim-1,kdim-1,idim-1)
 c        k-index of nearest surface point (B-B turb model)
@@ -698,6 +710,9 @@ c
          ns = 0
          if((ivisc(3) .ge. 4 .or. ivisc(2) .ge. 4 .or. ivisc(1) .ge. 4)
      .      .and. real(dt) .gt. 0.) ns=jmkmim*4
+c        extra memory needed for ivisc=30 (3-eqn model)
+         if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
+     .      ns = jmkmim*6
 c
 c........qavg(jdim,kdim,idim,5) iteration-averaged data
 c

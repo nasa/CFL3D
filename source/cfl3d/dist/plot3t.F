@@ -7,7 +7,7 @@
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,volj0,volk0,voli0,
-     .                  vormax,ivmax,jvmax,kvmax)
+     .                  vormax,ivmax,jvmax,kvmax,nummem)
 c
 c     $Id$
 c
@@ -61,7 +61,7 @@ c
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension qj0(kdim,idim-1,5,4),
      .          qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
-      dimension wt(jdim,kdim,9),turre(jdim,kdim,idim,2)
+      dimension wt(jdim,kdim,9),turre(jdim,kdim,idim,nummem)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension nmap(maxbl),jdimg(maxbl),kdimg(maxbl),idimg(maxbl),
      .          nblcg(maxbl),jsg(maxbl),ksg(maxbl),isg(maxbl),
@@ -78,7 +78,7 @@ c
       common /fluid2/ pr,prt,cbar
       common /twod/ i2d
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,

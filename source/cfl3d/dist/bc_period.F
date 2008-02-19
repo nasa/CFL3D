@@ -5,7 +5,7 @@
      .                     period_miss,epsrot,ireq_ar,index_ar,
      .                     ireq_snd,keep_trac,keep_trac2,myid,myhost,
      .                     mycomm,mblk2nd,nou,bou,nbuf,ibufdim,istat2,
-     .                     istat_size,bcfiles,mxbcfil)
+     .                     istat_size,bcfiles,mxbcfil,nummem)
 c
 c     $Id$
 c
@@ -180,7 +180,7 @@ c
      .                           wk(iwk_indx),wk(iwk_indx+maxdims*10),
      .                           wk(iwk_indx+maxdims*20),nbll,nblp,
      .                           nou,bou,nbuf,ibufdim,myid,mblk2nd,
-     .                           maxbl)
+     .                           maxbl,nummem)
                      isklton = iskltsav
                   end if
 c
@@ -228,7 +228,7 @@ c
      .                           wk(iwk_indx),wk(iwk_indx+maxdims*10),
      .                           wk(iwk_indx+maxdims*20),nbll,nblp,
      .                           nou,bou,nbuf,ibufdim,myid,mblk2nd,
-     .                           maxbl)
+     .                           maxbl,nummem)
                      isklton = iskltsav
                   end if
 c
@@ -276,7 +276,7 @@ c
      .                           wk(iwk_indx),wk(iwk_indx+maxdims*10),
      .                           wk(iwk_indx+maxdims*20),nbll,nblp,
      .                           nou,bou,nbuf,ibufdim,myid,mblk2nd,
-     .                           maxbl)
+     .                           maxbl,nummem)
                      isklton = iskltsav
                   end if
 c
@@ -406,7 +406,7 @@ c
 c                 receive turb. data 
 c
                   if (ivmx.ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      np   = 2
                      kcheck = kqintl + maxdims*ldim*np
                      if (kcheck.gt.nwork) then
@@ -630,7 +630,7 @@ c                 to a work array and send to the appropriate processor
 c
                   if (ivmx.ge.4) then
                      lwst = lw(19,nblp)
-                     ldim = 2
+                     ldim = nummem
                      kcheck = ktl + maxdims*ldim*np
                      if (kcheck.gt.nwork) then
                         nou(1) = min(nou(1)+1,ibufdim)
@@ -771,7 +771,7 @@ c                 set turb. data
 c
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         kqintl = keep_trac(n,7)
                         call bc2005k_d(jdim,kdim,idim,w(ltk0),
      .                                 ista,iend,jsta,jend,ksta,kend,
@@ -836,7 +836,7 @@ c                 set turb. data
 c
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         kqintl = keep_trac(n,7)
                         call bc2005j_d(jdim,kdim,idim,w(ltj0),
      .                                 ista,iend,jsta,jend,ksta,kend,
@@ -901,7 +901,7 @@ c                 set turb. data
 c
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         kqintl = keep_trac(n,7)
                         call bc2005i_d(jdim,kdim,idim,w(lti0),
      .                                 ista,iend,jsta,jend,ksta,kend,

@@ -4,7 +4,7 @@
      .                     mblk2nd,isav_blk,ireq_ar,
      .                     index_ar,ireq_snd,keep_trac,keep_trac2,
      .                     nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
-     .                     istat2,istat_size)
+     .                     istat2,istat_size,nummem)
 c
 c     $Id$
 c
@@ -171,11 +171,11 @@ c
      .                              w(lbck),iedge,0)
                      end if
                      if (ivmx.ge.4) then
-                        ldim = 2
+                        ldim = nummem
                         lwst = lw(19,in_blk)    
                         lwtt = lw(24,ic_blk)    
                         if (limblk(it,3,n).ne.1) then
-                           lwtt   = lwtt + jdimc*(idimc-1)*2*2
+                           lwtt   = lwtt + jdimc*(idimc-1)*2*nummem
                         end if
                         call blockk (w(lwst),w(lwtt),idimn,jdimn,
      .                               kdimn,idimc,jdimc,limblk(1,1,n),
@@ -235,11 +235,11 @@ c
      .                              w(lbcj),iedge,0)
                      end if
                      if (ivmx.ge.4) then
-                        ldim = 2
+                        ldim = nummem
                         lwst = lw(19,in_blk)    
                         lwtt = lw(23,ic_blk)     
                         if (limblk(it,2,n).ne.1) then
-                           lwtt   = lwtt + kdimc*(idimc-1)*2*2
+                           lwtt   = lwtt + kdimc*(idimc-1)*2*nummem
                         end if
                         call blockj (w(lwst),w(lwtt),idimn,jdimn,
      .                               kdimn,idimc,kdimc,limblk(1,1,n),
@@ -299,11 +299,11 @@ c
      .                               w(lbci),iedge,0)
                      end if
                      if (ivmx.ge.4) then
-                        ldim = 2
+                        ldim = nummem
                         lwst = lw(19,in_blk)    
                         lwtt = lw(25,ic_blk)     
                         if (limblk(it,1,n).ne.1) then
-                           lwtt   = lwtt + jdimc*kdimc*2*2
+                           lwtt   = lwtt + jdimc*kdimc*2*nummem
                         end if
                         call blocki (w(lwst),w(lwtt),idimn,jdimn,
      .                               kdimn,jdimc,kdimc,limblk(1,1,n),
@@ -438,7 +438,7 @@ c
                      kqintl = kcheck
                   end if
                   if (ivmx.ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      kcheck = kqintl + maxdims*ldim*2
                      if (kcheck.gt.nwork) then
                         nou(1) = min(nou(1)+1,ibufdim)
@@ -638,7 +638,7 @@ c
                   end if
                   if (ivmx.ge.4) then
                      lwst = lw(19,in_blk)
-                     ldim = 2
+                     ldim = nummem
                      kcheck = ktl + maxdims*ldim*2
                      if (kcheck.gt.nwork) then
                         nou(1) = min(nou(1)+1,ibufdim)
@@ -831,10 +831,10 @@ c
                   end if
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         lwtt = lw(24,ic_blk)
                         if (limblk(it,3,n).ne.1) then
-                           lwtt   = lwtt + jdimc*(idimc-1)*2*2
+                           lwtt   = lwtt + jdimc*(idimc-1)*2*nummem
                         end if
                         kqintl = keep_trac(n,7)
                         call blockk_d (wk(kqintl),w(lwtt),idimn,jdimn,
@@ -907,10 +907,10 @@ c
                   end if
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         lwtt = lw(23,ic_blk)
                         if (limblk(it,2,n).ne.1) then
-                           lwtt   = lwtt + kdimc*(idimc-1)*2*2
+                           lwtt   = lwtt + kdimc*(idimc-1)*2*nummem
                         end if
                         kqintl = keep_trac(n,7)
                         call blockj_d (wk(kqintl),w(lwtt),idimn,jdimn,
@@ -983,10 +983,10 @@ c
                   end if
                   if (ivmx.ge.4) then
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
-                        ldim = 2
+                        ldim = nummem
                         lwtt = lw(25,ic_blk)
                         if (limblk(it,1,n).ne.1) then
-                           lwtt   = lwtt + jdimc*kdimc*2*2
+                           lwtt   = lwtt + jdimc*kdimc*2*nummem
                         end if
                         kqintl = keep_trac(n,7)
                         call blocki_d (wk(kqintl),w(lwtt),idimn,jdimn,

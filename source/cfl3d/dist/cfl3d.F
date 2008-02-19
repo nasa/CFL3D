@@ -263,8 +263,6 @@ c
       allocatable :: nblon(:)
       allocatable :: ncgg(:)
       allocatable :: ncheck(:)
-      allocatable :: nneg1(:)
-      allocatable :: nneg2(:)
       allocatable :: nsegdfrm(:)
       allocatable :: omegax(:)
       allocatable :: omegay(:)
@@ -284,8 +282,6 @@ c
       allocatable :: rfrqtae(:,:)
       allocatable :: rkap0g(:,:)
       allocatable :: rms(:)
-      allocatable :: rmstr1(:)
-      allocatable :: rmstr2(:)
       allocatable :: seta(:,:,:)
       allocatable :: seta2(:,:)
       allocatable :: islavept(:,:,:)
@@ -818,10 +814,6 @@ c
       call umalloc(maxgr,1,'ncgg',memuse,stats)
       allocate( ncheck(maxbl),stat=stats )
       call umalloc(maxbl,1,'ncheck',memuse,stats)
-      allocate( nneg1(ncycmax),stat=stats )
-      call umalloc(ncycmax,1,'nneg1',memuse,stats)
-      allocate( nneg2(ncycmax),stat=stats )
-      call umalloc(ncycmax,1,'nneg2',memuse,stats)
       allocate( nsegdfrm(maxbl),stat=stats )
       call umalloc(maxbl,1,'nsegdfrm',memuse,stats)
       allocate( omegax(maxbl),stat=stats )
@@ -860,10 +852,6 @@ c
       call umalloc(maxbl*3,0,'rkap0g',memuse,stats)
       allocate( rms(ncycmax),stat=stats )
       call umalloc(ncycmax,0,'rms',memuse,stats)
-      allocate( rmstr1(ncycmax),stat=stats )
-      call umalloc(ncycmax,0,'rmstr1',memuse,stats)
-      allocate( rmstr2(ncycmax),stat=stats )
-      call umalloc(ncycmax,0,'rmstr2',memuse,stats)
       allocate( seta(mptch+2,mptch+2,msub1),stat=stats )
       call umalloc((mptch+2)*(mptch+2)*msub1,0,'seta',memuse,stats)
       allocate( seta2(mptch+2,mptch+2),stat=stats )
@@ -1059,7 +1047,7 @@ c
      .          cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,n_clcd,
      .          clcd,nblocks_clcd,blocks_clcd,chdw,
      .          swetw,fmdotw,cfttotw,cftmomw,cftpw,cftvw,
-     .          rmstr1,rmstr2,nneg1,nneg2,swett,clt,cdt,cxt,
+     .          swett,clt,cdt,cxt,
      .          cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,sx,sy,sz,
      .          stot,pav,ptav,tav,ttav,xmav,fmdot,cfxp,cfyp,
      .          cfzp,cfdp,cflp,cftp,cfxv,cfyv,cfzv,cfdv,cflv,
@@ -1230,10 +1218,6 @@ c
          deallocate(cftmomw)
          deallocate(cftpw)
          deallocate(cftvw)
-         deallocate(rmstr1)
-         deallocate(rmstr2)
-         deallocate(nneg1)
-         deallocate(nneg2)
          deallocate(swett)
          deallocate(clt)
          deallocate(cdt)

@@ -85,7 +85,7 @@ c
       common /moovcrs2d/icallcrs,icall2d
       common /conversion/ radtodeg
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
 c
 #if defined DIST_MPI
 c     set baseline tag values

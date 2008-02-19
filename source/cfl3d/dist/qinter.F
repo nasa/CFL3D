@@ -4,7 +4,8 @@
      .                  yorig,zorig,xorig0,yorig0,zorig0,thetax,thetay,
      .                  thetaz,time2,nou,bou,nbuf,ibufdim,myid,myhost,
      .                  mycomm,mblk2nd,nsegdfrm,idfrmseg,xorgae,
-     .                  yorgae,zorgae,thtxae,thtyae,thtzae,maxsegdg)
+     .                  yorgae,zorgae,thtxae,thtyae,thtzae,maxsegdg,
+     .                  nummem)
 c
 c     $Id$
 c
@@ -132,7 +133,7 @@ c
            write(bou(nou(1),1),260)
            call addx(w(lxib),w(lturc),jdim,kdim,idim,jj2,kk2,ii2,
      .             w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
-     .             nou,bou,nbuf,ibufdim,2,myid)
+     .             nou,bou,nbuf,ibufdim,nummem,myid)
            call addx(w(lvis),w(lvisc),jdim,kdim,idim,jj2,kk2,ii2,
      .             w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
      .             nou,bou,nbuf,ibufdim,1,myid)
@@ -264,7 +265,7 @@ c
 c        embedded and coarser block reside on different processors
 c
          jki   = jj2*kk2*ii2
-         jki2  = jj2*kk2*ii2*2
+         jki2  = jj2*kk2*ii2*nummem
          jki5  = jj2*kk2*ii2*5
 c
          mytag   = itag_q + nbl
@@ -335,7 +336,7 @@ c
                call add2x(w(lxib),wk(iwk7),jdim,kdim,idim,jj2,kk2,ii2,
      .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
      .                 js,ks,is,je,ke,ie,ipass,nbl,nblc,
-     .                 nou,bou,nbuf,ibufdim,2,myid)
+     .                 nou,bou,nbuf,ibufdim,nummem,myid)
                call add2x(w(lvis),wk(iwk6),jdim,kdim,idim,jj2,kk2,ii2,
      .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
      .                 js,ks,is,je,ke,ie,ipass,nbl,nblc,
@@ -367,7 +368,7 @@ c
             call add2x(w(lxib),w(lturc),jdim,kdim,idim,jj2,kk2,ii2,
      .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
      .              js,ks,is,je,ke,ie,ipass,nbl,nblc,
-     .              nou,bou,nbuf,ibufdim,2,myid)
+     .              nou,bou,nbuf,ibufdim,nummem,myid)
             call add2x(w(lvis),w(lvisc),jdim,kdim,idim,jj2,kk2,ii2,
      .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
      .              js,ks,is,je,ke,ie,ipass,nbl,nblc,

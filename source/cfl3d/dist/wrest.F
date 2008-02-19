@@ -1,13 +1,13 @@
       subroutine wrest(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,ncycmax,rms,
      .                 clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,
      .                 n_clcd, clcd, nblocks_clcd, blocks_clcd,
-     .                 fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr1,
-     .                 rmstr2,nneg1,nneg2,iskip,vist3d,tursav,
+     .                 fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr,
+     .                 nneg,iskip,vist3d,tursav,
      .                 smin,xjb,xkb,blnum,cmuv,thetay,maxbl,
      .                 myid,myhost,mycomm,mblk2nd,igrid,wk,
      .                 idima,jdima,kdima,bcj,bck,bci,vj0,vk0,vi0,
      .                 tj0,tk0,ti0,blank,iwk,iwork,iover,
-     .                 nou,bou,nbuf,ibufdim,qavg,q2avg,x,y,z)
+     .                 nou,bou,nbuf,ibufdim,qavg,q2avg,x,y,z,nummem)
 c
 c     $Id$
 c
@@ -51,9 +51,8 @@ c
      .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
      .          cftvw(ncycmax),cfttotw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),nneg1(ncycmax),
-     .          nneg2(ncycmax)
-      dimension tursav(jdim,kdim,idim,2),vist3d(jdim,kdim,idim),
+     .          rmstr(ncycmax,nummem),nneg(ncycmax,nummem)
+      dimension tursav(jdim,kdim,idim,nummem),vist3d(jdim,kdim,idim),
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
      .          xkb(jdim-1,kdim-1,idim-1),blnum(jdim-1,kdim-1,idim-1),
      .          cmuv(jdim-1,kdim-1,idim-1)
@@ -63,8 +62,8 @@ c
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension bci(jdim,kdim,2),bcj(kdim,idim-1,2),bck(jdim,idim-1,2),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
-     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       dimension blank(jdim,kdim,idim),iwk(iwork)
       dimension q2avg(jdim,kdim,idim,5)
 c
@@ -86,7 +85,7 @@ c
       common /fluid2/ pr,prt,cbar
       common /igrdtyp/ ip3dgrd,ialph
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /twod/ i2d
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fullns/ ifullns
@@ -156,6 +155,12 @@ c
       jk8   = jdim*kdim*8
       ki8   = kdim*idim1*8
       ji8   = jdim*idim1*8
+      if (ivisc(1).eq.30.or.ivisc(2).eq.30.or.ivisc(3).eq.30) then
+        jki2=3*jki
+        jk8   = jdim*kdim*12
+        ki8   = kdim*idim1*12
+        ji8   = jdim*idim1*12
+      end if
 c
       if (myid.eq.myhost) then
       if (iskip.gt.0) then 
@@ -167,8 +172,9 @@ c
     7 format(1x,30hwriting restart file for block,i5)
       if (iskip.gt.0) then
         do n=1,ntt
-          if(real(rmstr1(n)) .le. 0.) rmstr1(n)=1.
-          if(real(rmstr2(n)) .le. 0.) rmstr2(n)=1.
+          do l=1,nummem
+          if(real(rmstr(n,l)) .le. 0.) rmstr(n,l)=1.
+          enddo
         enddo
       end if
       if (icgns .ne. 1) then
@@ -296,7 +302,7 @@ c
       if (iwghost .ne. 0) then
         write(901,'('' cgns writing specific BC values (primitive)'')')
         call writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
-     +    vj0,vk0,vi0,tj0,tk0,ti0,i2d)
+     +    vj0,vk0,vi0,tj0,tk0,ti0,i2d,nummem)
       else
 c       need to delete CFL3DBoundaryValues node if it exists
         call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
@@ -411,9 +417,27 @@ c     first, find out how many holes
       end if
       call writeziter(iccg,ibase,igrid)
       if (iskip .gt. 0) then
+c       writehist called with all 7 turb histories, but dummy
+c       variables inserted for those not used
+        if (nummem .eq. 2) then
         call writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
      +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
-     +   cfttotw,rmstr1,rmstr2,nneg1,nneg2)
+     +   cfttotw,rmstr(1,1),rmstr(1,2),rmstr(1,1),rmstr(1,1),
+     +   rmstr(1,1),rmstr(1,1),rmstr(1,1),nneg(1,1),nneg(1,2),
+     +   nneg(1,1),nneg(1,1),nneg(1,1),nneg(1,1),nneg(1,1),nummem)
+        else if (nummem .eq. 3) then
+        call writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
+     +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
+     +   cfttotw,rmstr(1,1),rmstr(1,2),rmstr(1,3),rmstr(1,1),
+     +   rmstr(1,1),rmstr(1,1),rmstr(1,1),nneg(1,1),nneg(1,2),
+     +   nneg(1,3),nneg(1,1),nneg(1,1),nneg(1,1),nneg(1,1),nummem)
+        else
+        call writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
+     +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
+     +   cfttotw,rmstr(1,1),rmstr(1,2),rmstr(1,3),rmstr(1,4),
+     +   rmstr(1,5),rmstr(1,6),rmstr(1,7),nneg(1,1),nneg(1,2),
+     +   nneg(1,3),nneg(1,4),nneg(1,5),nneg(1,6),nneg(1,7),nummem)
+        end if
         vkk0=1.
         xlength0=1.
         call writeref(iccg,ibase,xmach,reue,
@@ -430,8 +454,15 @@ c
       write(2) ivisc(1),ivisc(2),ivisc(3)
 c
       if (iskip.gt.0) then
-          write(2) (rmstr1(n),n=1,ntt),(rmstr2(n),n=1,ntt),
-     .             (nneg1(n), n=1,ntt),(nneg2(n), n=1,ntt)
+          write(2) (rmstr(n,1),n=1,ntt),(rmstr(n,2),n=1,ntt),
+     .             (nneg(n,1), n=1,ntt),(nneg(n,2), n=1,ntt)
+          if (ivisc(1).ge.30 .or. ivisc(2).ge.30 .or. 
+     .        ivisc(3).ge.30) then
+            write(2) nummem
+            do l=3,nummem
+              write(2) (rmstr(n,l),n=1,ntt),(nneg(n,l),n=1,ntt)
+            enddo
+          end if
       end if
       end if
       end if
@@ -566,10 +597,24 @@ c
          if (icgns .ne. 1) then
          write(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .            m=1,2)
-         if (iwghost .ne. 0)
-     .   write(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,2),m=1,4),
+         if (ivisc(1).ge.30.or.ivisc(2).ge.30.or.ivisc(3).ge.30) then
+         write(2) nummem
+         write(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .            m=3,nummem)
+         end if
+         if (iwghost .ne. 0) then
+         write(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,2),m=1,4),
      .            ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,2),m=1,4),
      .            ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,2),m=1,4)
+         if (ivisc(1).ge.30.or.ivisc(2).ge.30.or.ivisc(3).ge.30) then
+         write(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),l=3,nummem),
+     .            m=1,4),
+     .            ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),l=3,nummem),
+     .            m=1,4),
+     .            ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),l=3,nummem),
+     .            m=1,4)
+         end if
+         end if
          end if
          end if
 c
@@ -701,7 +746,7 @@ c
         call writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
      +   tursav(1,1,1,2),blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,
-     +   xmach,reue)
+     +   xmach,reue,nummem)
 #endif
       end if
 

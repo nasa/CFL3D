@@ -44,7 +44,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /conversion/ radtodeg
 c
@@ -72,6 +72,7 @@ c
      .       abs(ibcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2004 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(ibcinfo(nbl,ns,1,1)).eq.2024 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 jst  = ibcinfo(nbl,ns,2,1)
@@ -140,6 +141,7 @@ c
      .       abs(ibcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2004 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(ibcinfo(nbl,ns,1,2)).eq.2024 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 jst  = ibcinfo(nbl,ns,2,2)
@@ -208,6 +210,7 @@ c
      .       abs(jbcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(jbcinfo(nbl,ns,1,1)).eq.2004 .or.
      .       abs(jbcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(jbcinfo(nbl,ns,1,1)).eq.2024 .or.
      .       abs(jbcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = jbcinfo(nbl,ns,2,1)
@@ -276,6 +279,7 @@ c
      .       abs(jbcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(jbcinfo(nbl,ns,1,2)).eq.2004 .or.
      .       abs(jbcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(jbcinfo(nbl,ns,1,2)).eq.2024 .or.
      .       abs(jbcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = jbcinfo(nbl,ns,2,2)
@@ -344,6 +348,7 @@ c
      .       abs(kbcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(kbcinfo(nbl,ns,1,1)).eq.2004 .or.
      .       abs(kbcinfo(nbl,ns,1,1)).eq.2014 .or.
+     .       abs(kbcinfo(nbl,ns,1,1)).eq.2024 .or.
      .       abs(kbcinfo(nbl,ns,1,1)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = kbcinfo(nbl,ns,2,1)
@@ -412,6 +417,7 @@ c
      .       abs(kbcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(kbcinfo(nbl,ns,1,2)).eq.2004 .or.
      .       abs(kbcinfo(nbl,ns,1,2)).eq.2014 .or.
+     .       abs(kbcinfo(nbl,ns,1,2)).eq.2024 .or.
      .       abs(kbcinfo(nbl,ns,1,2)).eq.2016) then
              if (myid.eq.mblk2nd(nbl)) then
                 ist  = kbcinfo(nbl,ns,2,2)

@@ -1,14 +1,14 @@
       subroutine resp(nbl,ntime,ntt0,jdim,kdim,idim,q,sj,sk,si,vol,
      .                x,y,z,res,wk0,vmuk,vmuj,vmui,wk,nwork,nblstag,
-     .                nblendg,nblstat,nblendt,nptsr,nptsrb,nnegb1,
-     .                nnegb2,bcj,bck,bci,blank,nt,sumn1,sumn2,
-     .                negn1,negn2,rmst,xtbj,xtbk,xtbi,qc0,dqc0,iseq,
+     .                nblendg,nblstat,nblendt,nptsr,nptsrb,nnegb,
+     .                bcj,bck,bci,blank,nt,sumn,
+     .                negn,rmst,xtbj,xtbk,xtbi,qc0,dqc0,iseq,
      .                qj0,qk0,qi0,maxbl,maxgr,maxseg,rms,rmsb,
-     .                rmstb1,rmstb2,clw,cdw,cdpw,cdvw,cxw,cyw,
+     .                rmstb,clw,cdw,cdpw,cdvw,cxw,cyw,
      .                czw,cmxw,cmyw,cmzw,n_clcd,clcd,nblocks_clcd,
      .                blocks_clcd,hdw,swetw,fmdotw,
-     .                cfttotw,cftmomw,cftpw,cftvw,rmstr1,rmstr2,
-     .                nneg1,nneg2,ihstry,ngrid,nblg,iemg,levelg,
+     .                cfttotw,cftmomw,cftpw,cftvw,rmstr,
+     .                nneg,ihstry,ngrid,nblg,iemg,levelg,
      .                iviscg,itrans,irotat,iforce,swett,clt,cdt,
      .                cxt,cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,nbci0,
      .                nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
@@ -20,7 +20,7 @@
      .                cfxtot,cfytot,cfztot,cfdtot,cfltot,cfttot,
      .                ncs,icsinfo,myid,myhost,mycomm,mblk2nd,nou,
      .                bou,nbuf,ibufdim,ncycmax,maxcs,thetay,iadvance,
-     .                idefrm,igridg)
+     .                idefrm,igridg,nummem)
 c
 c     $Id$
 c
@@ -78,8 +78,7 @@ c
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),
-     .          nneg1(ncycmax),nneg2(ncycmax)
+     .          rmstr(ncycmax,nummem),nneg(ncycmax,nummem)
       dimension nblg(maxgr),iemg(maxgr),levelg(maxbl),iviscg(maxbl,3),
      .          itrans(maxbl),irotat(maxbl),idefrm(maxbl),iforce(maxbl),
      .          thetay(maxbl)
@@ -103,6 +102,7 @@ c
      .          cfxtot(maxcs),cfytot(maxcs),cfztot(maxcs),
      .          cfdtot(maxcs),cfltot(maxcs),cfttot(maxcs),
      .          icsinfo(maxcs,9)
+      dimension nnegb(nummem),rmstb(nummem),sumn(nummem),negn(nummem)
 c 
       dimension igridg(maxbl)
       common /twod/ i2d
@@ -241,40 +241,33 @@ c
             mytag = itag_fcoef + nbl
 c
             if (myid.eq.mblk2nd(nbl)) then
-               fcoef(1) = sumn1
-               fcoef(2) = sumn2
-               fcoef(3) = float(negn1) 
-               fcoef(4) = float(negn2)
-               call MPI_Send (fcoef, 4, MY_MPI_REAL,
+               call MPI_Send (sumn, nummem, MY_MPI_REAL,
+     .                        myhost, mytag, mycomm, ierr)
+               call MPI_Send (negn, nummem, MPI_INTEGER,
      .                        myhost, mytag, mycomm, ierr)
             end if
+
             if (myid.eq.myhost) then
-               call MPI_Recv (fcoef, 4, MY_MPI_REAL,
+               call MPI_Recv (sumn, nummem, MY_MPI_REAL,
      .                        nd_srce, mytag, mycomm, istat, ierr)
-               sumn1 = fcoef(1)
-               sumn2 = fcoef(2)
-               negn1 = int(fcoef(3)) 
-               negn2 = int(fcoef(4))
+               call MPI_Recv (negn, nummem, MPI_INTEGER,
+     .                        nd_srce, mytag, mycomm, istat, ierr)
             end if
 c
 #endif
             if (myid.eq.myhost) then
-               rmst1     = 0.
-               rmst2     = 0.
+              do l=1,nummem
+               rmstx  = 0.
                if (nptsr.gt.0) then
                   nptsr = nptsr - jdim1*kdim1*idim1
-                  rmst1 = rmstr1(nres)*rmstr1(nres)*float(nptsr)
-                  rmst2 = rmstr2(nres)*rmstr2(nres)*float(nptsr)
+                  rmstx = rmstr(nres,l)*rmstr(nres,l)*float(nptsr)
                end if
                nptsr        = nptsr + jdim1*kdim1*idim1
-               rmst1        = rmst1 
-     .                      + sumn1*sumn1*float(jdim1*kdim1*idim1)
-               rmst2        = rmst2 
-     .                      + sumn2*sumn2*float(jdim1*kdim1*idim1)
-               rmstr1(nres) = sqrt(  rmst1 / float( nptsr) )
-               rmstr2(nres) = sqrt(  rmst2 / float( nptsr) )
-               nneg1(nres)  = nneg1(nres) + negn1
-               nneg2(nres)  = nneg2(nres) + negn2
+               rmstx        = rmstx 
+     .                      + sumn(l)*sumn(l)*float(jdim1*kdim1*idim1)
+               rmstr(nres,l) = sqrt(  rmstx / float( nptsr) )
+               nneg(nres,l)  = nneg(nres,l) + negn(l)
+              enddo
             end if
          end if
 c
@@ -868,7 +861,7 @@ c
             rmssum = 0.
             if (nptsrb.gt.0) rmssum = rmsb*rmsb*float(nptsrb)
             t1     = float(1*jdim1*kdim1*idim1)
-            rmstb  = sqrt(resd/t1)
+c           rmstb  = sqrt(resd/t1)
             nptsrb = nptsrb + jdim1*kdim1*idim1
             rmssum = rmssum + resd
             rmsb   = sqrt(  rmssum / float( nptsrb) )
@@ -884,42 +877,34 @@ c
             mytag = itag_fcoef + nbl
 c
             if (myid.eq.mblk2nd(nbl)) then
-               fcoef(1) = sumn1
-               fcoef(2) = sumn2
-               fcoef(3) = float(negn1)
-               fcoef(4) = float(negn2)
-               call MPI_Send (fcoef, 4, MY_MPI_REAL,
+               call MPI_Send (sumn, nummem, MY_MPI_REAL,
+     .                        myhost, mytag, mycomm, ierr)
+               call MPI_Send (negn, nummem, MPI_INTEGER,
      .                        myhost, mytag, mycomm, ierr)
             end if
 
             if (myid.eq.myhost) then
-               call MPI_Recv (fcoef, 4, MY_MPI_REAL,
+               call MPI_Recv (sumn, nummem, MY_MPI_REAL,
      .                        nd_srce, mytag, mycomm, istat, ierr)
-               sumn1 = fcoef(1)
-               sumn2 = fcoef(2)
-               negn1 = int(fcoef(3))
-               negn2 = int(fcoef(4))
+               call MPI_Recv (negn, nummem, MPI_INTEGER,
+     .                        nd_srce, mytag, mycomm, istat, ierr)
             end if
 #endif
             if (myid.eq.myhost) then
+              do l=1,nummem
                rmsts1 = 0.
-               rmsts2 = 0.
                if (nptsrb.gt.0) then
                   nptsrb = nptsrb - jdim1*kdim1*idim1
 c                 if (nptsrb.gt.0) then
-                     rmsts1 = rmstb1*rmstb1*float(nptsrb)
-                     rmsts2 = rmstb2*rmstb2*float(nptsrb)
+                     rmsts1 = rmstb(l)*rmstb(l)*float(nptsrb)
 c                 end if
                end if
                nptsrb = nptsrb + jdim1*kdim1*idim1
                rmsts1 = rmsts1 
-     .                + sumn1*sumn1*float(jdim1*kdim1*idim1)
-               rmsts2 = rmsts2 
-     .                + sumn2*sumn2*float(jdim1*kdim1*idim1)
-               rmstb1 = sqrt(  rmsts1 / float( nptsrb) )
-               rmstb2 = sqrt(  rmsts2 / float( nptsrb) )
-               nnegb1 = nnegb1 + negn1
-               nnegb2 = nnegb2 + negn2
+     .                + sumn(l)*sumn(l)*float(jdim1*kdim1*idim1)
+               rmstb(l) = sqrt(  rmsts1 / float( nptsrb) )
+               nnegb(l) = nnegb(l) + negn(l)
+              enddo
             end if
          end if
 c
@@ -1228,9 +1213,24 @@ c
                if (iwrit3.gt.1) then
                   if (iviscg(nbl,1).gt.2 .or. iviscg(nbl,2).gt.2
      .            .or. iviscg(nbl,3).gt.2) then
-                     if (nout.eq.1) write(24,1040)
-                     write(24,1060) nout,log10(real(rmstb1)),
-     .               log10(real(rmstb2)),nnegb1,nnegb2
+                     if (nummem .eq. 2) then
+                       if (nout.eq.1) write(24,1040)
+                       write(24,1060) nout,log10(real(rmstb(1))),
+     .                 log10(real(rmstb(2))),nnegb(1),nnegb(2)
+                     else if (nummem .eq. 3) then
+                       if (nout.eq.1) write(24,1041)
+                       write(24,1061) nout,log10(real(rmstb(1))),
+     .                 log10(real(rmstb(2))),log10(real(rmstb(3))),
+     .                 nnegb(1),nnegb(2),nnegb(3)
+                     else
+                       if (nout.eq.1) write(24,1042)
+                       write(24,1062) nout,log10(real(rmstb(1))),
+     .                 log10(real(rmstb(2))),log10(real(rmstb(3))),
+     .                 log10(real(rmstb(4))),log10(real(rmstb(5))),
+     .                 log10(real(rmstb(6))),log10(real(rmstb(7))),
+     .                 nnegb(1),nnegb(2),nnegb(3),nnegb(4),
+     .                 nnegb(5),nnegb(6),nnegb(7)
+                     end if
                   end if
                end if
             end if
@@ -1249,7 +1249,16 @@ c
  1020 format(3x,i6,9e14.5)
  1040 format(4x,5hsubit,2x,12hlog(turres1),2x,12hlog(turres2),
      .       2x,5hnneg1,2x,5hnneg2)
+ 1041 format(4x,5hsubit,2x,12hlog(turres1),2x,12hlog(turres2),
+     .       2x,12hlog(turres3),2x,5hnneg1,2x,5hnneg2,2x,5hnneg3)
+ 1042 format(4x,5hsubit,2x,12hlog(turres1),2x,12hlog(turres2),
+     .       2x,12hlog(turres3),2x,12hlog(turres4),2x,12hlog(turres5),
+     .       2x,12hlog(turres6),2x,12hlog(turres7),2x,5hnneg1,
+     .       2x,5hnneg2,2x,5hnneg3,2x,5hnneg4,2x,5hnneg5,2x,5hnneg6,
+     .       2x,5hnneg7)
  1060 format(3x,i6,2e14.5,1x,i6,1x,i6)
+ 1061 format(3x,i6,3e14.5,1x,i6,1x,i6,1x,i6)
+ 1062 format(3x,i6,7e14.5,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6)
  1080 format(/1x,5hlevel,1x,3hblk,3x,4hiter,3x,8hresidual,3x,
      .       10htotal res.,5x,4hlift,8x,4hdrag,5x,10hside force)
  2000 format(' ',4x,i1,1x,i3,1x,i6,7(1x,e11.4))

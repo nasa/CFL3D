@@ -13,7 +13,7 @@
      .                 rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,
      .                 cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
      .                 chdw,swetw,fmdotw,cfttotw,cftmomw,cftpw,
-     .                 cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,windex,
+     .                 cftvw,rmstr,nneg,ntr,windex,
      .                 ninter,iindex,nblkpt,dthetxx,dthetyy,dthetzz,
      .                 iibg,kkbg,jjbg,ibcg,dxintg,dyintg,dzintg,iiig,
      .                 jjig,kkig,ibpntsg,iipntsg,mblk2nd,nou,bou,nbuf,
@@ -28,7 +28,7 @@
      .                 aehist,timekeep,inpl3d,nplots,nplot3d,levelg,
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
      .                 icouple,lfgm,nblk,limblk,isva,nblelst,
-     .                 iskmax,jskmax,kskmax,ue,irdrea,nbli)
+     .                 iskmax,jskmax,kskmax,ue,irdrea,nbli,nummem)
 c
 c     $Id$
 c
@@ -106,8 +106,8 @@ c
      .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          swetw(ncycmax),fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),nneg1(ncycmax),
-     .          nneg2(ncycmax),timekeep(ncycmax)
+     .          rmstr(ncycmax,nummem),nneg(ncycmax,nummem),
+     .          timekeep(ncycmax)
       dimension windex(maxxe,2),iindex(intmax,6*nsub1+9),nblkpt(maxxe),
      .          dthetxx(intmax,nsub1),dthetyy(intmax,nsub1),
      .          dthetzz(intmax,nsub1)
@@ -1594,11 +1594,11 @@ c        then must call init again to make sure everything ends up
 c        with freestream data
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0))
+     .             w(lvolk0),w(lvoli0),nummem)
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
-     .                    w(lqi0),w(ltj0),w(ltk0),w(lti0),w(lvol),
+     .                    w(lqi0),w(lvol),
      .                    w(lvolj0),w(lvolk0),w(lvoli0),
      .                    w(lx),w(ly),w(lz))
          end if
@@ -1607,7 +1607,7 @@ c        call the noninertial initization to speed convergence
      .           irotat,idefrm,igridg,nblg,nbci0,nbcj0,nbck0,
      .           nbcidim,nbcjdim,nbckdim,ibcinfo,jbcinfo,
      .           kbcinfo,bcfilei,bcfilej,bcfilek,lwdat,myid,
-     .           idimg,jdimg,kdimg,bcfiles,mxbcfil)
+     .           idimg,jdimg,kdimg,bcfiles,mxbcfil,nummem)
          isklton=isksav
          if (n.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
@@ -1634,11 +1634,11 @@ c        call the noninertial initization to speed convergence
          end if
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0))
+     .             w(lvolk0),w(lvoli0),nummem)
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
-     .                    w(lqi0),w(ltj0),w(ltk0),w(lti0),w(lvol),
+     .                    w(lqi0),w(lvol),
      .                    w(lvolj0),w(lvolk0),w(lvoli0),
      .                    w(lx),w(ly),w(lz))
          endif
@@ -2012,12 +2012,13 @@ c
      .                 cmxw,cmyw,cmzw,
      .                 n_clcd, clcd, nblocks_clcd, blocks_clcd,
      $                 fmdotw,cftmomw,cftpw,cftvw,
-     .                 cfttotw,rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),
+     .                 cfttotw,rmstr,nneg,iskipz,w(lvis),
      .                 w(lxib),w(lsnk0),w(lsni0),w(lxkb),w(lnbl),
      .                 w(lcmuv),maxbl,mblk2nd,myid,myhost,mycomm,
      .                 nou,bou,nbuf,ibufdim,igrid,
      .                 wk,idima,jdima,kdima,w(lvj0),w(lvk0),w(lvi0),
-     .                 w(ltj0),w(ltk0),w(lti0),w(lqavg),w(lq2avg)) 
+     .                 w(ltj0),w(ltk0),w(lti0),w(lqavg),w(lq2avg),
+     .                 nummem) 
             ntq     = ntt
             ncycchk = ncyctot+ntt
 c
@@ -2147,7 +2148,7 @@ c
      .              aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .              maxbl,ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
      .              iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
-     .              w(lxib2))
+     .              w(lxib2),nummem)
             end if
  1811       continue
  1810       continue
@@ -2235,7 +2236,7 @@ c
      .                 aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                 maxbl,ibufdim,nbuf,bou,nou,nsegdfrm,idfrmseg,
      .                 iaesurf,maxsegdg,wk,nwork,idima,jdima,kdima,
-     .                 w(lxib2))
+     .                 w(lxib2),nummem)
                   if (myid.eq.myhost) then
                      if (iuns .ne. iunsn) then
                         write(11,'('' Stopping: cannot alter type'',
@@ -2529,31 +2530,37 @@ c  If no walls at all, don't do min distance calculation
             do iset=1,nbci0(nbl)
               if (abs(ibcinfo(nbl,iset,1,1)) .eq. 2004 .or.
      .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2024 .or.
      .            abs(ibcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcidim(nbl)
               if (abs(ibcinfo(nbl,iset,1,2)) .eq. 2004 .or.
      .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2024 .or.
      .            abs(ibcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcj0(nbl)
               if (abs(jbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
      .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2024 .or.
      .            abs(jbcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbcjdim(nbl)
               if (abs(jbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
      .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2024 .or.
      .            abs(jbcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbck0(nbl)
               if (abs(kbcinfo(nbl,iset,1,1)) .eq. 2004 .or.
      .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2014 .or.
+     .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2024 .or.
      .            abs(kbcinfo(nbl,iset,1,1)) .eq. 2016) goto 5860
             enddo
             do iset=1,nbckdim(nbl)
               if (abs(kbcinfo(nbl,iset,1,2)) .eq. 2004 .or.
      .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2014 .or.
+     .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2024 .or.
      .            abs(kbcinfo(nbl,iset,1,2)) .eq. 2016) goto 5860
             enddo
  5858    continue
@@ -2576,10 +2583,13 @@ c              check storage availability
                   call cntsurf(ns2014,maxbl,maxgr,maxseg,ngrid,nblg,
      .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2014)
+                  call cntsurf(ns2024,maxbl,maxgr,maxseg,ngrid,nblg,
+     .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
+     .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2024)
                   call cntsurf(ns2016,maxbl,maxgr,maxseg,ngrid,nblg,
      .                         nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                         nbckdim,ibcinfo,jbcinfo,kbcinfo,2016)
-                  nsurf=ns2004+ns2014+ns2016
+                  nsurf=ns2004+ns2014+ns2024+ns2016
                end if
 #if defined DIST_MPI
                call MPI_Bcast (nsurf, 1, MPI_INTEGER, myhost,
@@ -2723,7 +2733,7 @@ c
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),265) nbl
                call initvist(nbl,jdim,kdim,idim,w(lvis),w(lxib),
-     .                       w(lsnk0),w(lcmuv))
+     .                       w(lsnk0),w(lcmuv),nummem)
             endif
 c
 #   ifdef FASTIO
@@ -2886,7 +2896,7 @@ c
      .                  iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                  iiig,jjig,kkig,qb,w(lqj0),w(lqk0),
      .                  w(lqi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                  bou,nbuf,ibufdim,irghost)
+     .                  bou,nbuf,ibufdim,irghost,1)
 c           turbulence quantities
             if(iviscg(nbl,1).ge.2 .or. iviscg(nbl,2).ge.2 .or.
      .         iviscg(nbl,3).ge.2) then
@@ -2895,16 +2905,16 @@ c           turbulence quantities
      .                     iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                     iiig,jjig,kkig,qb,w(lvj0),w(lvk0),
      .                     w(lvi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                     bou,nbuf,ibufdim,irghost)
+     .                     bou,nbuf,ibufdim,irghost,2)
             end if
             if(iviscg(nbl,1).ge.4 .or. iviscg(nbl,2).ge.4 .or.
      .         iviscg(nbl,3).ge.4) then
-               ldim = 2
+               ldim = nummem
                call intrbc(w(lxib),jdim,kdim,idim,nbl,ldim,maxbl,
      .                     iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                     iiig,jjig,kkig,qb,w(ltj0),w(ltk0),
      .                     w(lti0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                     bou,nbuf,ibufdim,irghost)
+     .                     bou,nbuf,ibufdim,irghost,3)
             end if
          end if
 c
@@ -2939,7 +2949,7 @@ c              receive vist3d data
             end if
             if (ivmx.ge.4) then
 c              receive turb. data            
-                 do ll=1,2
+                 do ll=1,nummem
                     mytag = mytag_qb(6+ll) + nbl
                     call MPI_Irecv (qb(lig(nbl),ll,3), nvalqb,
      .                              MY_MPI_REAL,
@@ -2974,7 +2984,7 @@ c                    send vist3d data
                   end if
                   if (ivmx.ge.4) then
 c                    send turb. data
-                     do ll=1,2
+                     do ll=1,nummem
                         mytag = mytag_qb(6+ll) + nbl
                         call MPI_Send (qb(lig(nbl),ll,3), nvalqb,
      .                                 MY_MPI_REAL,

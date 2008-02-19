@@ -15,7 +15,7 @@
      .                 rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,
      .                 cmyw,cmzw,n_clcd,clcd,nblocks_clcd,blocks_clcd,
      $                 chdw,swetw,fmdotw,cfttotw,cftmomw,
-     .                 cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,ntr,
+     .                 cftpw,cftvw,rmstr,nneg,ntr,
      .                 ihstry,iadvance,iforce,lfgm,resmx,imx,jmx,kmx,
      .                 vormax,ivmax,jvmax,kvmax,sx,sy,sz,stot,pav,
      .                 ptav,tav,ttav,xmav,fmdot,cfxp,cfyp,cfzp,cfdp,
@@ -49,7 +49,7 @@
      .                 stm,stmi,xs,xxn,gforcn,gforcnm,gforcs,nsegdfrm,
      .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
      .                 timekeep,xorgae0,yorgae0,zorgae0,icouple,
-     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue)
+     .                 iprnsurf,nblelst,iskmax,jskmax,kskmax,ue,nummem)
 c
 c     $Id$
 c
@@ -169,8 +169,8 @@ c
      .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .          chdw(ncycmax),swetw(ncycmax),fmdotw(ncycmax),
      .          cfttotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
-     .          cftvw(ncycmax),rmstr1(ncycmax),rmstr2(ncycmax),
-     .          nneg1(ncycmax),nneg2(ncycmax),timekeep(ncycmax)
+     .          cftvw(ncycmax),rmstr(ncycmax,nummem),
+     .          nneg(ncycmax,nummem),timekeep(ncycmax)
       dimension iadvance(maxbl),iforce(maxbl)
       dimension resmx(maxbl),imx(maxbl),jmx(maxbl),kmx(maxbl)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
@@ -234,6 +234,7 @@ c
       dimension jskmax(maxbl)
       dimension kskmax(maxbl)
       dimension idimt(maxbl),jdimt(maxbl),kdimt(maxbl)
+      dimension nnegb(nummem),rmstb(nummem),sumn(nummem),negn(nummem)
 c
       common /cfl/ dt0,dtold
       common /elastic/ ndefrm,naesrf
@@ -622,7 +623,7 @@ c
      .             lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
      .             istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .             istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
-     .             mxbcfil,iprnsurf)
+     .             mxbcfil,iprnsurf,nummem)
          do iii = 1,iwk3
             iwk(iii) = 0
          end do
@@ -1034,10 +1035,8 @@ c
             clw(ntt)    = 0.
             cdw(ntt)    = 0.
             cyw(ntt)    = 0.
-            rmstr1(ntt) = 0.
-            rmstr2(ntt) = 0.
-            nneg1(ntt)  = 0
-            nneg2(ntt)  = 0
+            rmstr(ntt,:) = 0.
+            nneg(ntt,:)  = 0
             chdw(ntt)   = 0.
             swetw(ntt)  = 0.
             cmxw(ntt)   = 0.
@@ -1059,15 +1058,11 @@ c
          nptsr(ntime+1) = 0
  6010    continue
          nptsrb = 0
-         nnegb1 = 0
-         nnegb2 = 0
-         rmstb1 = 0.
-         rmstb2 = 0.
+         nnegb(:) = 0
+         rmstb(:) = 0.
          rmsb   = 0.
-         sumn1  = 0.
-         sumn2  = 0.
-         negn1  = 0
-         negn2  = 0
+         sumn(:)  = 0.
+         negn(:)  = 0
       end if
 c
 c   meshdef = 1 if flow solution is to be bipassed, and mesh deformation only:
@@ -1135,7 +1130,7 @@ c
      .           irotat,idefrm,igridg,nblg,nbci0,nbcj0,nbck0,
      .           nbcidim,nbcjdim,nbckdim,ibcinfo,jbcinfo,
      .           kbcinfo,bcfilei,bcfilej,bcfilek,lwdat,myid,
-     .           idimg,jdimg,kdimg,bcfiles,mxbcfil)
+     .           idimg,jdimg,kdimg,bcfiles,mxbcfil,nummem)
       end if
  6510 continue
 c
@@ -1170,7 +1165,7 @@ c
      .               isav_prd,period_miss,epsrot,iwk(iwk1),iwk(iwk2),
      .               iwk(iwk3),iwk(iwk4),iwk(iwk5),myid,myhost,
      .               mycomm,mblk2nd,nou,bou,nbuf,ibufdim,
-     .               istat2_pe,istat_size,bcfiles,mxbcfil)
+     .               istat2_pe,istat_size,bcfiles,mxbcfil,nummem)
 c
 c     update embeded-grid boundary conditions
 c
@@ -1198,7 +1193,7 @@ c
      .              isav_emb,iwk(iwk1),iwk(iwk2),
      .              iwk(iwk3),iwk(iwk4),iwk(iwk5),myid,myhost,
      .              mycomm,mblk2nd,nou,bou,nbuf,ibufdim,iviscg,
-     .              istat2_em,istat_size)
+     .              istat2_em,istat_size,nummem)
 c
 c     update 1-1 block boundary conditions
 c
@@ -1227,7 +1222,7 @@ c
      .               mblk2nd,isav_blk,iwk(iwk1),
      .               iwk(iwk2),iwk(iwk3),iwk(iwk4),iwk(iwk5),
      .               nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
-     .               istat2_bl,istat_size)
+     .               istat2_bl,istat_size,nummem)
 c
 c     update patch-grid boundary conditions
 c
@@ -1257,7 +1252,7 @@ c
      .              iwk(iwk1),iwk(iwk2),iwk(iwk3),
      .              iwk(iwk4),iwk(iwk5),myid,myhost,mycomm,
      .              mblk2nd,nou,bou,nbuf,ibufdim,
-     .              istat2_pa,istat_size)
+     .              istat2_pa,istat_size,nummem)
 c
 #if defined(DIST_MPI)
       end if
@@ -1274,7 +1269,7 @@ c
          nsafe = nwork-lres+1
          call bc_xmera(ntime,nbl,lw,lw2,w,mgwk,wk(lres),nsafe,maxbl,
      .                 iitot,iviscg,iovrlp,lbg,ibpntsg,qb,iibg,kkbg,
-     .                 jjbg,ibcg,nou,bou,nbuf,ibufdim,1)
+     .                 jjbg,ibcg,nou,bou,nbuf,ibufdim,1,nummem)
       end if
  6997 continue
 c
@@ -1508,12 +1503,12 @@ c
      .              nblendg,nblstat,nblstag,w(lxib),w(lsig),
      .              w(lsqtq),w(lg),w(ltj0),w(ltk0),w(lti0),
      .              w(lxkb),w(lnbl),w(lvj0),w(lvk0),w(lvi0),w(lbcj),
-     .              w(lbck),w(lbci),nt,sumn1,sumn2,negn1,negn2,w(lux),
+     .              w(lbck),w(lbci),nt,sumn,negn,w(lux),
      .              w(lxib2),w(lcmuv),w(lvolj0),w(lvolk0),w(lvoli0),
      .              nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,maxseg,
      .              nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
      .              jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,idefrm,
-     .              iadvance,w(lqavg))
+     .              iadvance,w(lqavg),nummem)
 c
 c        add 2nd order time terms and subiteration terms
 c
@@ -1634,16 +1629,16 @@ c              but not for the host
      .                 wk(lres),wk(lwk0),wk(lvmuk),wk(lvmuj),
      .                 wk(lvmui),wk(ltot),lsafe,nblstag,nblendg,
      .                 nblstat,nblendt,nptsr(ntime),nptsrb,
-     .                 nnegb1,nnegb2,w(lbcj),w(lbck),w(lbci),
-     .                 w(lblk),nt,sumn1,sumn2,negn1,negn2,rmst,
+     .                 nnegb,w(lbcj),w(lbck),w(lbci),
+     .                 w(lblk),nt,sumn,negn,rmst,
      .                 w(lxtbj),w(lxtbk),w(lxtbi),w(lqc0),w(ldqc0),
      .                 iseq,w(lqj0),w(lqk0),w(lqi0),maxbl,maxgr,
-     .                 maxseg,rms,rmsb,rmstb1,rmstb2,clw,cdw,cdpw,cdvw,
+     .                 maxseg,rms,rmsb,rmstb,clw,cdw,cdpw,cdvw,
      .                 cxw,cyw,czw,cmxw,cmyw,cmzw,
      $                 n_clcd,clcd,nblocks_clcd,blocks_clcd,
      $                 chdw,swetw,fmdotw,
-     .                 cfttotw,cftmomw,cftpw,cftvw,rmstr1,rmstr2,
-     .                 nneg1,nneg2,ihstry,ngrid,nblg,iemg,levelg,
+     .                 cfttotw,cftmomw,cftpw,cftvw,rmstr,
+     .                 nneg,ihstry,ngrid,nblg,iemg,levelg,
      .                 iviscg,itrans,irotat,iforce,swett,clt,cdt,
      .                 cxt,cyt,czt,cmxt,cmyt,cmzt,cdpt,cdvt,nbci0,
      .                 nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,ibcinfo,
@@ -1655,7 +1650,7 @@ c              but not for the host
      .                 cfxtot,cfytot,cfztot,cfdtot,cfltot,cfttot,
      .                 ncs,icsinfo,myid,myhost,mycomm,mblk2nd,nou,
      .                 bou,nbuf,ibufdim,ncycmax,maxcs,thetay,iadvance,
-     .                 idefrm,igridg)
+     .                 idefrm,igridg,nummem)
          end if
 c
 c        after last block on global level is accounted for, set
@@ -1689,7 +1684,7 @@ c
      .                  wk(lvmuk),wk(lvmuj),wk(lvmui),wk(ltot),lsafe,
      .                  nbl,iovrlp(nbl),w(lvk0),w(lbcj),w(lbck),w(lbci),
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
-     .                  w(lvolk0),iadvance)
+     .                  w(lvolk0),iadvance,nummem)
 c 
 c           update the overlapped values if chimera scheme is used
 c
@@ -1713,7 +1708,7 @@ c
      .                      iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                      iiig,jjig,kkig,qb,w(lqj0),w(lqk0),
      .                      w(lqi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                      bou,nbuf,ibufdim,1)
+     .                      bou,nbuf,ibufdim,1,1)
 c               turbulence quantities
                 if(iviscg(nbl,1).ge.2 .or. iviscg(nbl,2).ge.2 .or.
      .             iviscg(nbl,3).ge.2) then
@@ -1722,16 +1717,16 @@ c               turbulence quantities
      .                         iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                         iiig,jjig,kkig,qb,w(lvj0),w(lvk0),
      .                         w(lvi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                         bou,nbuf,ibufdim,1)
+     .                         bou,nbuf,ibufdim,1,2)
                 end if
                 if(iviscg(nbl,1).ge.4 .or. iviscg(nbl,2).ge.4 .or.
      .             iviscg(nbl,3).ge.4) then
-                   ldim = 2
+                   ldim = nummem
                    call intrbc(w(lxib),jdim,kdim,idim,nbl,ldim,maxbl,
      .                         iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                         iiig,jjig,kkig,qb,w(ltj0),w(ltk0),
      .                         w(lti0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                         bou,nbuf,ibufdim,1)
+     .                         bou,nbuf,ibufdim,1,3)
                 end if
             end if
 c
@@ -1769,7 +1764,7 @@ c                 receive vist3d data
                end if
                if (ivmx.ge.4) then
 c                 receive turb. data            
-                    do ll=1,2
+                    do ll=1,nummem
                        mytag = mytag_qb(6+ll) + nbl
                        call MPI_Irecv (qb(lig(nbl),ll,3), nvalqb,
      .                                 MY_MPI_REAL,
@@ -1804,7 +1799,7 @@ c                       send vist3d data
                      end if
                      if (ivmx.ge.4) then
 c                       send turb. data
-                        do ll=1,2
+                        do ll=1,nummem
                            mytag = mytag_qb(6+ll) + nbl
                            call MPI_Send (qb(lig(nbl),ll,3), nvalqb,
      .                                    MY_MPI_REAL,
@@ -1881,7 +1876,7 @@ c
      .                     jc,kc,ic,wk(lres),w(lqrc),wk(lwj0),
      .                     js,ks,is,je,ke,ie,nbl,nblc,
      .                     w(lvis),w(lvtc),w(lxib),w(lxtc),
-     .                     nou,bou,nbuf,ibufdim)
+     .                     nou,bou,nbuf,ibufdim,nummem)
             end if
 c
          end if
@@ -1936,17 +1931,17 @@ c
                end if
                if (ivmx.ge.4) then
                   mytag = itag_qt + nbl
-                  jki2  =  (je-js+1)*(ke-ks+1)*(ie-is+1)*2
+                  jki2  =  (je-js+1)*(ke-ks+1)*(ie-is+1)*nummem
                   if (myid.eq.nd_srce) then
                      call ld_qc(w(lvtc),wk,jc,kc,ic,is,ie,js,je,
-     .                          ks,ke,2)
+     .                          ks,ke,nummem)
                      call MPI_Send(wk,jki2,MY_MPI_REAL,
      .                             nd_dest,mytag,mycomm,ierr)
                   else if (myid .eq. nd_dest) then
                      call MPI_Recv(wk,jki2,MY_MPI_REAL,
      .                             nd_srce,mytag,mycomm,istat,ierr)
                      call unld_qc(w(lvtc),wk,jc,kc,ic,is,ie,js,je,
-     .                            ks,ke,2)
+     .                            ks,ke,nummem)
                   end if
                end if
                mytag = itag_qr + nbl
@@ -2127,7 +2122,7 @@ c
      .                        iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                        iiig,jjig,kkig,qb,w(lqj0),w(lqk0),
      .                        w(lqi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                        bou,nbuf,ibufdim,1)
+     .                        bou,nbuf,ibufdim,1,1)
 c                 turbulence quantities
                   if(iviscg(nblf,1).ge.2 .or. iviscg(nblf,2).ge.2 .or.
      .               iviscg(nblf,3).ge.2) then
@@ -2136,16 +2131,16 @@ c                 turbulence quantities
      .                           iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                           iiig,jjig,kkig,qb,w(lvj0),w(lvk0),
      .                           w(lvi0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                           bou,nbuf,ibufdim,1)
+     .                           bou,nbuf,ibufdim,1,2)
                   end if
                   if(iviscg(nblf,1).ge.4 .or. iviscg(nblf,2).ge.4 .or.
      .               iviscg(nblf,3).ge.4) then
-                     ldim = 2
+                     ldim = nummem
                      call intrbc(w(lxib),jdim,kdim,idim,nblf,ldim,maxbl,
      .                           iitot,lig,iipntsg,dxintg,dyintg,dzintg,
      .                           iiig,jjig,kkig,qb,w(ltj0),w(ltk0),
      .                           w(lti0),wk,w(lbcj),w(lbck),w(lbci),nou,
-     .                           bou,nbuf,ibufdim,1)
+     .                           bou,nbuf,ibufdim,1,3)
                   end if
                end if
 c
@@ -2184,7 +2179,7 @@ c                    receive vist3d data
                   end if
                   if (ivmx.ge.4) then
 c                    receive turb. data            
-                       do ll=1,2
+                       do ll=1,nummem
                           mytag = mytag_qb(6+ll) + nblf
                           call MPI_Irecv (qb(lig(nblf),ll,3), nvalqb,
      .                                    MY_MPI_REAL,
@@ -2219,7 +2214,7 @@ c                          send vist3d data
                         end if
                         if (ivmx.ge.4) then
 c                          send turb. data
-                           do ll=1,2
+                           do ll=1,nummem
                               mytag = mytag_qb(6+ll) + nblf
                               call MPI_Send (qb(lig(nblf),ll,3), nvalqb,
      .                                       MY_MPI_REAL,
@@ -2567,13 +2562,13 @@ c
      .            cmxw,cmyw,cmzw,
      $            n_clcd,clcd,nblocks_clcd,blocks_clcd,
      $            fmdotw,cftmomw,cftpw,cftvw,cfttotw,
-     .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
+     .            rmstr,nneg,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
      .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
-     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz))
+     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz),nummem)
                end if
  6040          continue
                if (myid.eq.myhost) then
@@ -2771,13 +2766,13 @@ c   Open database
      .            cmxw,cmyw,cmzw,
      $            n_clcd,clcd,nblocks_clcd,blocks_clcd,
      $            fmdotw,cftmomw,cftpw,cftvw,cfttotw,
-     .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
+     .            rmstr,nneg,iskipz,w(lvis),w(lxib),
      .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
      .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
      .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
      .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
      .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim,
-     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz))
+     .            w(lqavg),w(lq2avg),w(lx),w(ly),w(lz),nummem)
                end if
  6050          continue
 c
@@ -2841,7 +2836,7 @@ c
      .                 kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                 aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                 maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
-     .                 nwork,idima,jdima,kdima,igrid,w(lxib2))
+     .                 nwork,idima,jdima,kdima,igrid,w(lxib2),nummem)
                end if
  6060          continue
                end if
@@ -2890,7 +2885,7 @@ c
      .                    kcsi,kcsf,freq,gmass,damp,x0,gf0,nmds,maxaes,
      .                    aesrfdat,perturb,myhost,myid,mycomm,mblk2nd,
      .                    maxbl,nsegdfrm,idfrmseg,iaesurf,maxsegdg,wk,
-     .                    nwork,idima,jdima,kdima,igrid,w(lxib2))
+     .                    nwork,idima,jdima,kdima,igrid,w(lxib2),nummem)
                   end if
  6070             continue
 #if defined CGNS
@@ -3010,7 +3005,7 @@ c
      .                 lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
      .                 istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .                 istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
-     .                 mxbcfil,iprnsurf)
+     .                 mxbcfil,iprnsurf,nummem)
 
                   do iii = 1,iwk3
                      iwk(iii) = 0
@@ -3066,7 +3061,7 @@ c
      .              lbcprd,lbcemb,dthetxx,dthetyy,dthetzz,nblcg,lfgm,
      .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
-     .              mxbcfil,iprnsurf,nt,movabs)
+     .              mxbcfil,iprnsurf,nt,movabs,nummem)
                do iii = 1,iwk3
                   iwk(iii) = 0
                end do
@@ -3130,7 +3125,8 @@ c
      .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
      .              mxbcfil,iprnsurf,nt,
-     .              mov_coarse,iinc_coarse,jinc_coarse,kinc_coarse)
+     .              mov_coarse,iinc_coarse,jinc_coarse,kinc_coarse,
+     .              nummem)
                do iii = 1,iwk3
                   iwk(iii) = 0
                end do
@@ -3191,7 +3187,7 @@ c     ! output snapshot every mov_2d time steps
      .              istat2_bl,istat2_pa,istat2_pe,istat2_em,
      .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
      .              mxbcfil,iprnsurf,nt,
-     .              mov_2d,iinc_2d,jinc_2d,kinc_2d)                 
+     .              mov_2d,iinc_2d,jinc_2d,kinc_2d,nummem)
                
                do iii = 1,iwk3
                   iwk(iii) = 0

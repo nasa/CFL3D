@@ -1,12 +1,12 @@
       subroutine rrest(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,ncycmax,ntr,rms,
      .     clw,cdw,cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,
      .     n_clcd, clcd, nblocks_clcd, blocks_clcd,
-     .     fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr1,
-     .     rmstr2,nneg1,nneg2,iskip,vist3d,tursav,
+     .     fmdotw,cftmomw,cftpw,cftvw,cfttotw,rmstr,
+     .     nneg,iskip,vist3d,tursav,
      .     smin,xjb,xkb,blnum,cmuv,maxbl,mblk2nd,
      .     myid,myhost,mycomm,nou,bou,nbuf,ibufdim,
      .     igrid,wk,idima,jdima,kdima,vj0,vk0,vi0,
-     .     tj0,tk0,ti0,qavg,q2avg)
+     .     tj0,tk0,ti0,qavg,q2avg,nummem)
 c     
 c     $Id$
 c     
@@ -44,8 +44,8 @@ c
       dimension q(jdim,kdim,idim,5),qi0(jdim,kdim,5,4),
      .     qj0(kdim,idim-1,5,4), qk0(jdim,idim-1,5,4),
      .     vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
-     .     vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
-     .     tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+     .     vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
+     .     tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .     cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
@@ -53,10 +53,9 @@ c
      .     clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd),
      .     fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
      .     cftvw(ncycmax),cfttotw(ncycmax),
-     .     rmstr1(ncycmax),rmstr2(ncycmax),nneg1(ncycmax),
-     .     nneg2(ncycmax)
+     .     rmstr(ncycmax,nummem),nneg(ncycmax,nummem)
       dimension titlw(20),mblk2nd(maxbl)
-      dimension tursav(jdim,kdim,idim,2),vist3d(jdim,kdim,idim),
+      dimension tursav(jdim,kdim,idim,nummem),vist3d(jdim,kdim,idim),
      .     smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
      .     xkb(jdim-1,kdim-1,idim-1),blnum(jdim-1,kdim-1,idim-1),
      .     cmuv(jdim-1,kdim-1,idim-1)
@@ -80,7 +79,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sminn/ isminc
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .     tur10,tur20
+     .     tur10(7)
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /conversion/ radtodeg
       common /ghost/ irghost,iwghost
@@ -119,11 +118,9 @@ c
       itag_iv1     = itag_time    + ioffset
       itag_iv2     = itag_iv1     + ioffset
       itag_iv3     = itag_iv2     + ioffset
-      itag_rmstr1  = itag_iv3     + ioffset
-      itag_rmstr2  = itag_rmstr1  + ioffset
-      itag_nneg1   = itag_rmstr2  + ioffset
-      itag_nneg2   = itag_nneg1   + ioffset
-      itag_qv      = itag_nneg2   + ioffset
+      itag_rmstr   = itag_iv3     + ioffset
+      itag_nneg    = itag_rmstr   + ioffset
+      itag_qv      = itag_nneg    + ioffset
       itag_qt      = itag_qv      + ioffset
       itag_smin    = itag_qt      + ioffset
       itag_xjb     = itag_smin    + ioffset
@@ -199,12 +196,33 @@ c     convert q to primitive (they are in CGNS file as conserved)
             if (irghost .ne. 0) then
                write(901,'('' cgns reading specific BC values'')')
                call readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
-     +              qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
+     +              qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0,nummem)
             end if
             if (iskip .gt. 0) then
+c             readhist called with all 7 turb histories, but dummy
+c             variables inserted for those not used
+              if (nummem .eq. 2) then
                call readhist(iccg,ibase,ncycmax,ntr,rms,clw,cdw,
      +              cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,
-     +              cftpw,cftvw,cfttotw,rmstr1,rmstr2,nneg1,nneg2)
+     +              cftpw,cftvw,cfttotw,rmstr(1,1),rmstr(1,2),
+     +              rmstr(1,1),rmstr(1,1),rmstr(1,1),rmstr(1,1),
+     +              rmstr(1,1),nneg(1,1),nneg(1,2),nneg(1,1),
+     +              nneg(1,1),nneg(1,1),nneg(1,1),nneg(1,1),nummem)
+              else if (nummem .eq. 3) then
+               call readhist(iccg,ibase,ncycmax,ntr,rms,clw,cdw,
+     +              cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,
+     +              cftpw,cftvw,cfttotw,rmstr(1,1),rmstr(1,2),
+     +              rmstr(1,3),rmstr(1,1),rmstr(1,1),rmstr(1,1),
+     +              rmstr(1,1),nneg(1,1),nneg(1,2),nneg(1,3),
+     +              nneg(1,1),nneg(1,1),nneg(1,1),nneg(1,1),nummem)
+              else
+               call readhist(iccg,ibase,ncycmax,ntr,rms,clw,cdw,
+     +              cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,
+     +              cftpw,cftvw,cfttotw,rmstr(1,1),rmstr(1,2),
+     +              rmstr(1,3),rmstr(1,4),rmstr(1,5),rmstr(1,6),
+     +              rmstr(1,7),nneg(1,1),nneg(1,2),nneg(1,3),
+     +              nneg(1,4),nneg(1,5),nneg(1,6),nneg(1,7),nummem)
+              end if
             end if
             call readref(iccg,ibase,xmachw,reuew,
      +           rho0w,c0w,vk0w,xlength0w,tinfw,alphw)
@@ -693,6 +711,12 @@ c
 #if defined DIST_MPI
       end if
 c     
+      if (iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) then
+        jki2  = 3*jki
+        jk8   = jdim*kdim*12
+        ki8   = kdim*idim1*12
+        ji8   = jdim*idim1*12
+      end if
       mytag = itag_iv1 + nbl
       if (myid .eq. myhost) then
          call MPI_Send(iv1,1,MPI_INTEGER,
@@ -746,6 +770,12 @@ c
                if (icgns .ne. 1) then
                   read(2) (dum,n=1,ntr),(dum,n=1,ntr),
      .                 (idum,n=1,ntr),(idum,n=1,ntr)
+                  if (iv1.ge.30 .or. iv2.ge.30 .or. iv3.ge.30) then
+                    read(2) nummem_read
+                    do l=3,nummem_read
+                      read(2) (dum,n=1,ntt),(idum,n=1,ntt)
+                    enddo
+                  end if
                end if
 #if defined DIST_MPI
             end if
@@ -755,45 +785,33 @@ c
             if (myid.eq.myhost) then
 #endif
                if (icgns .ne. 1) then
-                  read(2) (rmstr1(n),n=1,ntr),(rmstr2(n),n=1,ntr),
-     .                 (nneg1(n), n=1,ntr),(nneg2(n), n=1,ntr)
+                  read(2) (rmstr(n,1),n=1,ntr),(rmstr(n,2),n=1,ntr),
+     .                 (nneg(n,1), n=1,ntr),(nneg(n,2), n=1,ntr)
+                  if (iv1.ge.30 .or. iv2.ge.30 .or. iv3.ge.30) then
+                    read(2) nummem_read
+                    do l=3,nummem_read
+                      read(2) (rmstr(n,l),n=1,ntt),(nneg(n,l),n=1,ntt)
+                    enddo
+                  end if
                end if
 #if defined DIST_MPI
             end if
 c     
-            mytag = itag_rmstr1 + nbl
+            mytag = itag_rmstr + nbl
             if (myid .eq. myhost) then
-               call MPI_Send(rmstr1,ntt,MY_MPI_REAL,
+               call MPI_Send(rmstr,ntt*nummem,MY_MPI_REAL,
      .              nd_dest,mytag,mycomm,ierr)
             else if (myid .eq. mblk2nd(nbl)) then
-               call MPI_Recv(rmstr1,ntt,MY_MPI_REAL,
+               call MPI_Recv(rmstr,ntt*nummem,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
 c     
-            mytag = itag_rmstr2 + nbl
+            mytag = itag_nneg + nbl
             if (myid .eq. myhost) then
-               call MPI_Send(rmstr2,ntt,MY_MPI_REAL,
+               call MPI_Send(nneg,ntt*nummem,MPI_INTEGER,
      .              nd_dest,mytag,mycomm,ierr)
             else if (myid .eq. mblk2nd(nbl)) then
-               call MPI_Recv(rmstr2,ntt,MY_MPI_REAL,
-     .              myhost,mytag,mycomm,istat,ierr)
-            end if
-c     
-            mytag = itag_nneg1 + nbl
-            if (myid .eq. myhost) then
-               call MPI_Send(nneg1,ntt,MPI_INTEGER,
-     .              nd_dest,mytag,mycomm,ierr)
-            else if (myid .eq. mblk2nd(nbl)) then
-               call MPI_Recv(nneg1,ntt,MPI_INTEGER,
-     .              myhost,mytag,mycomm,istat,ierr)
-            end if
-c     
-            mytag = itag_nneg2 + nbl
-            if (myid .eq. myhost) then
-               call MPI_Send(nneg2,ntt,MPI_INTEGER,
-     .              nd_dest,mytag,mycomm,ierr)
-            else if (myid .eq. mblk2nd(nbl)) then
-               call MPI_Recv(nneg2,ntt,MPI_INTEGER,
+               call MPI_Recv(nneg,ntt*nummem,MPI_INTEGER,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
 c     
@@ -812,7 +830,7 @@ c
          call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +        idim,jdim,kdim,wk,iv1,iv2,iv3,iread,irind,jrind,krind,
      +        i2d,ivmx,xmachw,reuew,vist3d,tursav,smin,xjb,xkb,
-     +        tursav(1,1,1,2),blnum,cmuv)
+     +        tursav(1,1,1,2),blnum,cmuv,nummem)
 #endif
       end if
       if (iread .eq. 0) then
@@ -992,13 +1010,50 @@ c
                   read(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),
      $                 i=1,idim1),
      .                 m=1,2)
-                  if (irghost .ne. 0)
-     .                 read(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),
+                  if (iv1.ge.30.or.iv2.ge.30.or.iv3.ge.30) then
+                  read(2) nummem_read
+                  read(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),
+     $                 i=1,idim1),
+     .                 m=3,nummem_read)
+                  end if
+                  if (irghost .ne. 0) then
+                       read(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),
      $                 l=1,2),m=1,4),
      .                 ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,2),
      $                 m=1,4),
      .                 ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,2),
      $                 m=1,4)
+                  if (iv1.ge.30.or.iv2.ge.30.or.iv3.ge.30) then
+                       read(2) ((((ti0(j,k,l,m),j=1,jdim),k=1,kdim),
+     $                 l=3,nummem_read),m=1,4),
+     .                 ((((tj0(k,i,l,m),k=1,kdim),i=1,idim1),
+     .                 l=3,nummem_read),m=1,4),
+     .                 ((((tk0(j,i,l,m),j=1,jdim),i=1,idim1),
+     .                 l=3,nummem_read),m=1,4)
+                  end if
+                  end if
+               end if
+               if ((iv1.eq.25.or.iv2.eq.25.or.iv3.eq.25) .and.
+     .             ivmx.ne.25) then
+                 write(11,*) ' old ivisc=25; new must also be'
+                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               if ((iv1.ne.25.and.iv2.ne.25.and.iv3.ne.25) .and.
+     .             ivmx.eq.25) then
+                 write(11,*) ' new ivisc=25; old must also be'
+                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+c   Note: if you try to allow restarts that change to/from type 30,
+c   it may screw up the restart for time accurate: see rrestg.F
+               if ((iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) .and.
+     .             ivmx.ne.30) then
+                 write(11,*) ' old ivisc=30; new must also be'
+                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+               end if
+               if ((iv1.ne.30.and.iv2.ne.30.and.iv3.ne.30) .and.
+     .             ivmx.eq.30) then
+                 write(11,*) ' new ivisc=30; old must also be'
+                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
                if ((iv1.eq.6.or.iv2.eq.6.or.iv3.eq.6.or.iv1.eq.7.or.
      .              iv2.eq.7.or.iv3.eq.7) .and. (ivisc(1).eq.8.or.

@@ -86,7 +86,7 @@ c
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
 c
 #if defined DIST_MPI

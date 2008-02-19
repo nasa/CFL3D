@@ -131,7 +131,7 @@ c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient
+     .        keepambient,re_thetat0
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -184,7 +184,7 @@ c
      .                     yrotrate,zrotrate,noninflag
       common /key/ nkey
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
@@ -195,6 +195,7 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
+      common /lesinfo/ cs_smagorinsky
 #if defined DIST_MPI
 c
 c***********************
@@ -417,48 +418,55 @@ c
          work(nlast+50) = ides
          work(nlast+51) = cdes
          work(nlast+52) = iteravg
-         work(nlast+53) = tur10
-         work(nlast+54) = tur20
-         work(nlast+55) = tur1cut
-         work(nlast+56) = roll_angle
-         work(nlast+57) = ikoprod
-         work(nlast+58) = isstdenom
-         work(nlast+59) = pklimterm
-         work(nlast+60) = iaxi2plane
-         work(nlast+61) = iturbord
-         work(nlast+62) = tur2cut
-         work(nlast+63) = tur1cutlev
-         work(nlast+64) = tur2cutlev
-         work(nlast+65) = meshdef
-         work(nlast+66) = ifullns
-         work(nlast+67) = ibeta8kzeta
-         work(nlast+68) = isarc2d
-         work(nlast+69) = sarccr3
-         work(nlast+70) = ieasmcc2d
-         work(nlast+71) = ipertavg
-         work(nlast+72) = icoarsemovie
-         work(nlast+73) = i2dmovie
-         work(nlast+74) = iclcd
+         work(nlast+53) = tur10(1)
+         work(nlast+54) = tur10(2)
+         work(nlast+55) = tur10(3)
+         work(nlast+56) = tur10(4)
+         work(nlast+57) = tur10(5)
+         work(nlast+58) = tur10(6)
+         work(nlast+59) = tur10(7)
+         work(nlast+60) = tur1cut
+         work(nlast+61) = roll_angle
+         work(nlast+62) = ikoprod
+         work(nlast+63) = isstdenom
+         work(nlast+64) = pklimterm
+         work(nlast+65) = iaxi2plane
+         work(nlast+66) = iturbord
+         work(nlast+67) = tur2cut
+         work(nlast+68) = tur1cutlev
+         work(nlast+69) = tur2cutlev
+         work(nlast+70) = meshdef
+         work(nlast+71) = ifullns
+         work(nlast+72) = ibeta8kzeta
+         work(nlast+73) = isarc2d
+         work(nlast+74) = sarccr3
+         work(nlast+75) = ieasmcc2d
+         work(nlast+76) = ipertavg
+         work(nlast+77) = icoarsemovie
+         work(nlast+78) = i2dmovie
+         work(nlast+79) = iclcd
          iskip_blocks = max(1,iskip_blocks)
-         work(nlast+75) = iskip_blocks
-         work(nlast+76) = cfltauMax
-         work(nlast+77) = cfltau0
-         work(nlast+78) = irbtrim
-         work(nlast+79) = irigb
-         work(nlast+80) = greflrb
-         work(nlast+81) = tmass
-         work(nlast+82) = yinert
-         work(nlast+83) = gaccel
-         work(nlast+84) = relax
-         work(nlast+85) = itrminc
-         work(nlast+86) = tp(1,1)
-         work(nlast+87) = tp(2,1)
-         work(nlast+88) = tp(1,2)
-         work(nlast+89) = tp(2,2)
-         work(nlast+90) = ndgrd
-         work(nlast+91) = ndwrt
-         work(nlast+92) = i_bsl
-         work(nlast+93) = keepambient
+         work(nlast+80) = iskip_blocks
+         work(nlast+81) = cfltauMax
+         work(nlast+82) = cfltau0
+         work(nlast+83) = irbtrim
+         work(nlast+84) = irigb
+         work(nlast+85) = greflrb
+         work(nlast+86) = tmass
+         work(nlast+87) = yinert
+         work(nlast+88) = gaccel
+         work(nlast+89) = relax
+         work(nlast+90) = itrminc
+         work(nlast+91) = tp(1,1)
+         work(nlast+92) = tp(2,1)
+         work(nlast+93) = tp(1,2)
+         work(nlast+94) = tp(2,2)
+         work(nlast+95) = ndgrd
+         work(nlast+96) = ndwrt
+         work(nlast+97) = i_bsl
+         work(nlast+98) = keepambient
+         work(nlast+99) = re_thetat0
+         work(nlast+100)= cs_smagorinsky
          nlast = nlast+nkey
       end if
 c
@@ -691,47 +699,54 @@ c
          ides      = int(work(nlast+50))
          cdes      = work(nlast+51)
          iteravg   = int(work(nlast+52))
-         tur10     = work(nlast+53)
-         tur20     = work(nlast+54)
-         tur1cut   = work(nlast+55)
-         roll_angle= work(nlast+56)
-         ikoprod   = int(work(nlast+57))
-         isstdenom = int(work(nlast+58))
-         pklimterm = work(nlast+59)
-         iaxi2plane= int(work(nlast+60))
-         iturbord  = int(work(nlast+61))
-         tur2cut   = work(nlast+62)
-         tur1cutlev= work(nlast+63)
-         tur2cutlev= work(nlast+64)
-         meshdef   = int(work(nlast+65))
-         ifullns   = int(work(nlast+66))
-         ibeta8kzeta=int(work(nlast+67))
-         isarc2d   = int(work(nlast+68))
-         sarccr3   = work(nlast+69)
-         ieasmcc2d = int(work(nlast+70))
-         ipertavg  = int(work(nlast+71))
-         icoarsemovie = int(work(nlast+72))
-         i2dmovie = int(work(nlast+73))
-         iclcd     = int(work(nlast+74))
-         iskip_blocks = int(work(nlast+75))
-         cfltauMax = work(nlast+76)
-         cfltau0 = work(nlast+77)
-         irbtrim   = int(work(nlast+78))
-         irigb     = int(work(nlast+79))
-         greflrb   = work(nlast+80)
-         tmass     = work(nlast+81)
-         yinert    = work(nlast+82)
-         gaccel    = work(nlast+83)
-         relax     = work(nlast+84)
-         itrminc   = int(work(nlast+85))
-         tp(1,1)   = work(nlast+86)
-         tp(2,1)   = work(nlast+87)
-         tp(1,2)   = work(nlast+88)
-         tp(2,2)   = work(nlast+89)
-         ndgrd     = int(work(nlast+90))
-         ndwrt     = int(work(nlast+91))
-         i_bsl     = int(work(nlast+92))
-         keepambient = int(work(nlast+93))
+         tur10(1)  = work(nlast+53)
+         tur10(2)  = work(nlast+54)
+         tur10(3)  = work(nlast+55)
+         tur10(4)  = work(nlast+56)
+         tur10(5)  = work(nlast+57)
+         tur10(6)  = work(nlast+58)
+         tur10(7)  = work(nlast+59)
+         tur1cut   = work(nlast+60)
+         roll_angle= work(nlast+61)
+         ikoprod   = int(work(nlast+62))
+         isstdenom = int(work(nlast+63))
+         pklimterm = work(nlast+64)
+         iaxi2plane= int(work(nlast+65))
+         iturbord  = int(work(nlast+66))
+         tur2cut   = work(nlast+67)
+         tur1cutlev= work(nlast+68)
+         tur2cutlev= work(nlast+69)
+         meshdef   = int(work(nlast+70))
+         ifullns   = int(work(nlast+71))
+         ibeta8kzeta=int(work(nlast+72))
+         isarc2d   = int(work(nlast+73))
+         sarccr3   = work(nlast+74)
+         ieasmcc2d = int(work(nlast+75))
+         ipertavg  = int(work(nlast+76))
+         icoarsemovie = int(work(nlast+77))
+         i2dmovie = int(work(nlast+78))
+         iclcd     = int(work(nlast+79))
+         iskip_blocks = int(work(nlast+80))
+         cfltauMax = work(nlast+81)
+         cfltau0 = work(nlast+82)
+         irbtrim   = int(work(nlast+83))
+         irigb     = int(work(nlast+84))
+         greflrb   = work(nlast+85)
+         tmass     = work(nlast+86)
+         yinert    = work(nlast+87)
+         gaccel    = work(nlast+88)
+         relax     = work(nlast+89)
+         itrminc   = int(work(nlast+90))
+         tp(1,1)   = work(nlast+91)
+         tp(2,1)   = work(nlast+92)
+         tp(1,2)   = work(nlast+93)
+         tp(2,2)   = work(nlast+94)
+         ndgrd     = int(work(nlast+95))
+         ndwrt     = int(work(nlast+96))
+         i_bsl     = int(work(nlast+97))
+         keepambient = int(work(nlast+98))
+         re_thetat0  = work(nlast+99)
+         cs_smagorinsky=work(nlast+100)
       end if
 c
 c**************************

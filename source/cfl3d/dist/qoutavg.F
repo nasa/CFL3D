@@ -16,7 +16,7 @@
      .                dthetxx,dthetyy,dthetzz,nblcg,lfgm,istat2_bl,
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
      .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,    
-     .                nt,movabs)                                            
+     .                nt,movabs,nummem)                              
 c
 c     $Id$
 c
@@ -156,7 +156,7 @@ c              need to call even for blocks not advanced
      .                       nbcjdim,nbckdim,ibcinfo,jbcinfo,
      .                       kbcinfo,bcfilei,bcfilej,bcfilek,
      .                       lwdat,myid,idimg,jdimg,kdimg,bcfiles,
-     .                       mxbcfil)
+     .                       mxbcfil,nummem)
                   end if
                end if
             end do
@@ -192,7 +192,7 @@ c
      .                     period_miss,epsrot,iwk(iwk1),iwk(iwk2),
      .                     iwk(iwk3),iwk(iwk4),iwk(iwk5),myid,myhost,
      .                     mycomm,mblk2nd,nou,bou,nbuf,ibufdim,
-     .                     istat2_pe,istat_size,bcfiles,mxbcfil)
+     .                     istat2_pe,istat_size,bcfiles,mxbcfil,nummem)
 c
 c           update embeded-grid boundary conditions
 c
@@ -223,7 +223,7 @@ c
      .                    kdimg,isav_emb,iwk(iwk1),
      .                    iwk(iwk2),iwk(iwk3),iwk(iwk4),iwk(iwk5),
      .                    myid,myhost,mycomm,mblk2nd,nou,bou,nbuf,
-     .                    ibufdim,iviscg,istat2_em,istat_size)
+     .                    ibufdim,iviscg,istat2_em,istat_size,nummem)
 c
 c           update 1-1 block boundary conditions
 c
@@ -255,7 +255,7 @@ c
      .                     mblk2nd,isav_blk,iwk(iwk1),
      .                     iwk(iwk2),iwk(iwk3),iwk(iwk4),iwk(iwk5),
      .                     nou,bou,nbuf,ibufdim,myid,myhost,mycomm,
-     .                     istat2_bl,istat_size)
+     .                     istat2_bl,istat_size,nummem)
 c
 c           update patch-grid boundary conditions
 c
@@ -288,7 +288,7 @@ c
      .                    iwk(iwk1),iwk(iwk2),iwk(iwk3),
      .                    iwk(iwk4),iwk(iwk5),myid,myhost,mycomm,
      .                    mblk2nd,nou,bou,nbuf,ibufdim,
-     .                    istat2_pa,istat_size)
+     .                    istat2_pa,istat_size,nummem)
 c
 c           update chimera boundary conditions
 c
@@ -314,7 +314,7 @@ c
      .                                nsafe,maxbl,iitot,iviscg,iovrlp,
      .                                lbg,ibpntsg,qb,iibg,kkbg,jjbg,
      .                                ibcg,nou,bou,nbuf,ibufdim,
-     .                                int_updt)
+     .                                int_updt,nummem)
                      end if
                   end if
                end if
@@ -709,7 +709,7 @@ c                 have permanent storage for ux, starting at lux
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax)
+     .                           ivmax,jvmax,kvmax,nummem)
                   end if
                else
 c                 need to grab ux storage from temporary work array,
@@ -742,7 +742,7 @@ c                 starting at location ibwk2
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax)
+     .                           ivmax,jvmax,kvmax,nummem)
                   end if
                end if
 c
