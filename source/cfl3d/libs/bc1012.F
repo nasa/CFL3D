@@ -2,7 +2,7 @@
      .                  bci,xtbj,xtbk,xtbi,atbj,atbk,atbi,ista,iend,
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,iwrap,jwrap,kwrap,iuns,
-     .                  nou,bou,nbuf,ibufdim)
+     .                  nou,bou,nbuf,ibufdim,nummem)
 c
 c     $Id$
 c
@@ -25,8 +25,8 @@ c
       dimension xtbj(kdim,idim-1,3,2),xtbk(jdim,idim-1,3,2),
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
 c
@@ -86,7 +86,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 104 k=ksta,kend1
-          do 104 l=1,2
+          do 104 l=1,nummem
           sumtur = 0.0
           do 105 i=ista,iend1
           sumtur = sumtur + tursav(1,k,i,l)
@@ -133,7 +133,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 108 i=ista,iend1
-          do 108 l=1,2
+          do 108 l=1,nummem
           sumtur = 0.0
           do 109 k=ksta,kend1
           sumtur = sumtur + tursav(1,k,i,l)
@@ -187,7 +187,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 204 k=ksta,kend1
-          do 204 l=1,2
+          do 204 l=1,nummem
           sumtur = 0.0
           do 205 i=ista,iend1
           sumtur = sumtur + tursav(jdim1,k,i,l)
@@ -234,7 +234,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 208 i=ista,iend1
-          do 208 l=1,2
+          do 208 l=1,nummem
           sumtur = 0.0
           do 209 k=ksta,kend1
           sumtur = sumtur + tursav(jdim1,k,i,l)
@@ -288,7 +288,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 304 j=jsta,jend1
-          do 304 l=1,2
+          do 304 l=1,nummem
           sumtur = 0.0
           do 305 i=ista,iend1
           sumtur = sumtur + tursav(j,1,i,l)
@@ -335,7 +335,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 308 i=ista,iend1
-          do 308 l=1,2
+          do 308 l=1,nummem
           sumtur = 0.0
           do 309 j=jsta,jend1
           sumtur = sumtur + tursav(j,1,i,l)
@@ -389,7 +389,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 404 j=jsta,jend1
-          do 404 l=1,2
+          do 404 l=1,nummem
           sumtur = 0.0
           do 405 i=ista,iend1
           sumtur = sumtur + tursav(j,kdim1,i,l)
@@ -436,7 +436,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 408 i=ista,iend1
-          do 408 l=1,2
+          do 408 l=1,nummem
           sumtur = 0.0
           do 409 j=jsta,jend1
           sumtur = sumtur + tursav(j,kdim1,i,l)
@@ -490,7 +490,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 504 k=ksta,kend1
-          do 504 l=1,2
+          do 504 l=1,nummem
           sumtur = 0.0
           do 505 j=jsta,jend1
           sumtur = sumtur + tursav(j,k,1,l)
@@ -537,7 +537,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 508 j=jsta,jend1
-          do 508 l=1,2
+          do 508 l=1,nummem
           sumtur = 0.0
           do 509 k=ksta,kend1
           sumtur = sumtur + tursav(j,k,1,l)
@@ -591,7 +591,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 604 k=ksta,kend1
-          do 604 l=1,2
+          do 604 l=1,nummem
           sumtur = 0.0
           do 605 j=jsta,jend1
           sumtur = sumtur + tursav(j,k,idim1,l)
@@ -640,7 +640,7 @@ c       only need to do advanced model turbulence B.C.s on finest grid
         if (level .ge. lglobal) then
         if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
           do 608 j=jsta,jend1
-          do 608 l=1,2
+          do 608 l=1,nummem
           sumtur = 0.0
           do 609 k=ksta,kend1
           sumtur = sumtur + tursav(j,k,idim1,l)

@@ -969,7 +969,7 @@ c
       subroutine writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
      +   xib,blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,
-     +   xmach,reue)
+     +   xmach,reue,nummem)
 c***********************************************************************
 c     Purpose: Writes turb info to CGNS data base for zone number 
 c     "igrid". The CGNS file must be already opened in "MODE_MODIFY"
@@ -1008,8 +1008,8 @@ c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      vist3d...........cell-centered eddy viscosity-values, in (j,k,i) 
 c                       order (real) (CFL3D-normalization)
-c      tursav...........set of 2 cell-centered turbulence quantities, in 
-c                       (j,k,i,2) order (real) (CFL3D-normalization)
+c      tursav...........set of nummem cell-centered turbulence quantities, in 
+c                       (j,k,i,nummem) order (real) (CFL3D-normalization)
 c      smin.............minimum distance function, in (j,k,i) order 
 c                       (real)
 c      xjb..............nearest-wall j-location for B-B, in (j,k,i) 
@@ -1031,20 +1031,21 @@ c                       directions), 1 if 2-D (rind data to be output
 c                       only in j- and k- directions) (integer)
 c      xmach............Mach number (real)
 c      reue.............Reynolds number (real)
+c      nummem...........one of dimensions for tursav, ti0,tj0,tk0 (integer)
 c   OUTPUTS:
 c      none
 c***********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,2),
+      dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,nummem),
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
      .          xkb(jdim-1,kdim-1,idim-1),xib(jdim-1,kdim-1,idim-1),
      .          blnum(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
       dimension wk(i2d:idima-i2d,0:jdima,0:kdima)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
-     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       dimension ivisc(3)
 c
 c   Determine if single or double precision is being used:
@@ -1116,7 +1117,7 @@ c
      .              '' to cgns file'')')
 c        BBReynolds:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
@@ -1185,7 +1186,7 @@ c
      +     '' (SIDS-consistent-normalization)'')')
 c        SANuTilde:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
@@ -1214,7 +1215,7 @@ c
      +     '' (SIDS-consistent-normalization)'')')
 c        Omega:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
@@ -1233,7 +1234,7 @@ c        put in SIDS-like-"consistent normalization"
          if (ier .ne. 0) call cg_error_exit_f
 c        K:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,2,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,2,1,wk)
          if (idouble .eq. 1) then
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
@@ -1253,7 +1254,7 @@ c
      +     '' (SIDS-consistent-normalization)'')')
 c        Epsilon:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
@@ -1272,7 +1273,7 @@ c        put in SIDS-like-"consistent normalization"
          if (ier .ne. 0) call cg_error_exit_f
 c        K:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,2,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,2,1,wk)
          if (idouble .eq. 1) then
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
@@ -1289,7 +1290,7 @@ c
      +     '' (SIDS-consistent-normalization)'')')
 c        Enstrophy:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,1,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
@@ -1308,13 +1309,59 @@ c        put in SIDS-like-"consistent normalization"
          if (ier .ne. 0) call cg_error_exit_f
 c        K:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +     tursav,wk,wk,wk,ti0,tj0,tk0,2,2,1,wk)
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,2,1,wk)
          if (idouble .eq. 1) then
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
          else
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
      +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
+      if (ivisc(1).eq.30.or. ivisc(2).eq.30.or. ivisc(3).eq.30) then
+         write(901,'(''   writing k-omega field eqn turb info'',
+     .              '' plus transition to cgns file'',
+     +     '' (SIDS-consistent-normalization)'')')
+c        Omega:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
+c        put in SIDS-like-"consistent normalization"
+         do i=i2d,idima-i2d
+         do j=0,jdima
+         do k=0,kdima
+           wk(i,j,k)=wk(i,j,k)*reue/xmach
+         enddo
+         enddo
+         enddo
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentDissipationRate', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentDissipationRate', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        K:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,2,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         end if
+c        Intermittency:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,3,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'Intermittency', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'Intermittency', wk, ifindex, ier)
          end if
          if (ier .ne. 0) call cg_error_exit_f
       end if
@@ -1344,7 +1391,7 @@ c
       subroutine readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      .  idim,jdim,kdim,wk,iv1,iv2,iv3,iread,irind,jrind,krind,i2d,
      .  ivmx,xmach,reue,vist3d,tursav,smin,xjb,xkb,xib,
-     .  blnum,cmuv)
+     .  blnum,cmuv,nummem)
 c***********************************************************************
 c     Purpose: Reads turb quantities from CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened. If the desired
@@ -1390,11 +1437,12 @@ c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      ivmx.............turb model number for CFL3D (integer)
 c      xmach............Mach number given in CGNS file (real)
 c      reue.............Reynolds number given in CGNS file (real)
+c      nummem...........one of dimensions of tursav (integer)
 c   OUTPUTS:
 c      vist3d...........cell-centered eddy viscosity-values, in (j,k,i)
 c                       order (real)
-c      tursav...........set of 2 cell-centered turbulence quantities,
-c                       in (j,k,i,2) order (real)
+c      tursav...........set of nummem cell-centered turbulence quantities,
+c                       in (j,k,i,nummem) order (real)
 c      smin.............minimum distance function, in (j,k,i)
 c                       order (real)
 c      xjb..............nearest-wall j-location for B-B, in (j,k,i)
@@ -1411,7 +1459,7 @@ c***********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,2),
+      dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,nummem),
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
      .          xkb(jdim-1,kdim-1,idim-1),xib(jdim-1,kdim-1,idim-1),
      .          blnum(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
@@ -1697,6 +1745,53 @@ c
       if (ier .ne. 0) call cg_error_exit_f
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,2))
+      end if
+c
+c   Read k-omega+transition info
+      if (ivmxold .eq. 30 .and. iread .eq. 1) then
+      solname='TurbulentDissipationRate'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c   Change from SIDS-"consistent-normalization" back to CFL3D-type
+      do i=1,idima-2*irind+1
+      do j=1,jdima-2*jrind+1
+      do k=1,kdima-2*krind+1
+        wk(i,j,k)=wk(i,j,k)*xmach/reue
+      enddo
+      enddo
+      enddo
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,1))
+c
+      solname='TurbulentEnergyKinetic'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,2))
+c
+      solname='Intermittency'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,3))
       end if
 c
 c   Read variable cmuv
@@ -2147,7 +2242,8 @@ c
 c
       subroutine writehist(iccg,ibase,ntt,rms,clw,cdw,cdpw,cdvw,cxw,
      +   cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,
-     +   cfttotw,rmstr1,rmstr2,nneg1,nneg2)
+     +   cfttotw,rmstr1,rmstr2,rmstr3,rmstr4,rmstr5,rmstr6,rmstr7,
+     +   nneg1,nneg2,nneg3,nneg4,nneg5,nneg6,nneg7,nummem)
 c***********************************************************************
 c     Purpose: Writes history info to CGNS file.  
 c
@@ -2158,8 +2254,9 @@ c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
 c      ntt..............no of iterations (integer)
 c      rms..............rms of density residual (real)
-c      clw,cdw,...,rmstr2......other history variables (real)
-c      nneg1,nneg2.............neg pts in turb solution (integer)
+c      clw,cdw,...,rmstr......other history variables (real)
+c      nneg.............neg pts in turb solution (integer)
+c      nummem...........one of dimensions for rmstr, nneg (integer)
 c   OUTPUTS:
 c      none
 c***********************************************************************
@@ -2169,8 +2266,12 @@ c
       dimension rms(ntt),clw(ntt),cdw(ntt),cdpw(ntt),cdvw(ntt),
      +  cxw(ntt),cyw(ntt),czw(ntt),cmxw(ntt),cmyw(ntt),cmzw(ntt),
      +  fmdotw(ntt),cftmomw(ntt),cftpw(ntt),cftvw(ntt),
-     +  cfttotw(ntt),rmstr1(ntt),rmstr2(ntt),nneg1(ntt),
-     +  nneg2(ntt)
+     +  cfttotw(ntt)
+      dimension rmstr1(ntt),rmstr2(ntt),rmstr3(ntt),rmstr4(ntt),
+     +  rmstr5(ntt),rmstr6(ntt),rmstr7(ntt)
+      dimension nneg1(ntt),nneg2(ntt),nneg3(ntt),nneg4(ntt),
+     +  nneg5(ntt),nneg6(ntt),nneg7(ntt)
+      character*32 name
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -2362,50 +2463,89 @@ c   Create total-force-on-control-surface node
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Create turb-equation-1-residual-history node
-      write(901,'('' Creating RSDTurbEqn1RMS history'',
-     +  '' node.'')')
+c   Create turb-equation-residual-history nodes
+      do l=1,nummem
+        if (l .eq. 1) name='RSDTurbEqn1RMS'
+        if (l .eq. 2) name='RSDTurbEqn2RMS'
+        if (l .eq. 3) name='RSDTurbEqn3RMS'
+        if (l .eq. 4) name='RSDTurbEqn4RMS'
+        if (l .eq. 5) name='RSDTurbEqn5RMS'
+        if (l .eq. 6) name='RSDTurbEqn6RMS'
+        if (l .eq. 7) name='RSDTurbEqn7RMS'
+      write(901,'('' Creating RSDTurbEqnxRMS history'',
+     +  '' node'')')
+      write(901,'('' (where x='',i5,'')'')') l
       if (idouble .eq. 1) then
-        call cg_array_write_f('RSDTurbEqn1RMS',
+        if (l .eq. 1) call cg_array_write_f(name,
      +       RealDouble,1,ntt,rmstr1,ier)
-      else
-        call cg_array_write_f('RSDTurbEqn1RMS',
-     +       RealSingle,1,ntt,rmstr1,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
-c
-c   Create turb-equation-2-residual-history node
-      write(901,'('' Creating RSDTurbEqn2RMS history'',
-     +  '' node.'')')
-      if (idouble .eq. 1) then
-        call cg_array_write_f('RSDTurbEqn2RMS',
+        if (l .eq. 2) call cg_array_write_f(name,
      +       RealDouble,1,ntt,rmstr2,ier)
+        if (l .eq. 3) call cg_array_write_f(name,
+     +       RealDouble,1,ntt,rmstr3,ier)
+        if (l .eq. 4) call cg_array_write_f(name,
+     +       RealDouble,1,ntt,rmstr4,ier)
+        if (l .eq. 5) call cg_array_write_f(name,
+     +       RealDouble,1,ntt,rmstr5,ier)
+        if (l .eq. 6) call cg_array_write_f(name,
+     +       RealDouble,1,ntt,rmstr6,ier)
+        if (l .eq. 7) call cg_array_write_f(name,
+     +       RealDouble,1,ntt,rmstr7,ier)
       else
-        call cg_array_write_f('RSDTurbEqn2RMS',
+        if (l .eq. 1) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr1,ier)
+        if (l .eq. 2) call cg_array_write_f(name,
      +       RealSingle,1,ntt,rmstr2,ier)
+        if (l .eq. 3) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr3,ier)
+        if (l .eq. 4) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr4,ier)
+        if (l .eq. 5) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr5,ier)
+        if (l .eq. 6) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr6,ier)
+        if (l .eq. 7) call cg_array_write_f(name,
+     +       RealSingle,1,ntt,rmstr7,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
+      enddo
 c
 c   Create turb-equation-1-bad-points-history node
-      write(901,'('' Creating BadPointsTurbEqn1 history'',
-     +  '' node.'')')
-      call cg_array_write_f('BadPointsTurbEqn1',
+      do l=1,nummem
+        if (l .eq. 1) name='BadPointsTurbEqn1'
+        if (l .eq. 2) name='BadPointsTurbEqn2'
+        if (l .eq. 3) name='BadPointsTurbEqn3'
+        if (l .eq. 4) name='BadPointsTurbEqn4'
+        if (l .eq. 5) name='BadPointsTurbEqn5'
+        if (l .eq. 6) name='BadPointsTurbEqn6'
+        if (l .eq. 7) name='BadPointsTurbEqn7'
+      write(901,'('' Creating BadPointsTurbEqnx history'',
+     +  '' node'')')
+      write(901,'('' (where x='',i5,'')'')') l
+      if (l .eq. 1) call cg_array_write_f(name,
      +       Integer,1,ntt,nneg1,ier)
-      if (ier .ne. 0) call cg_error_exit_f
-c
-c   Create turb-equation-2-bad-points-history node
-      write(901,'('' Creating BadPointsTurbEqn2 history'',
-     +  '' node.'')')
-      call cg_array_write_f('BadPointsTurbEqn2',
+      if (l .eq. 2) call cg_array_write_f(name,
      +       Integer,1,ntt,nneg2,ier)
+      if (l .eq. 3) call cg_array_write_f(name,
+     +       Integer,1,ntt,nneg3,ier)
+      if (l .eq. 4) call cg_array_write_f(name,
+     +       Integer,1,ntt,nneg4,ier)
+      if (l .eq. 5) call cg_array_write_f(name,
+     +       Integer,1,ntt,nneg5,ier)
+      if (l .eq. 6) call cg_array_write_f(name,
+     +       Integer,1,ntt,nneg6,ier)
+      if (l .eq. 7) call cg_array_write_f(name,
+     +       Integer,1,ntt,nneg7,ier)
       if (ier .ne. 0) call cg_error_exit_f
+      enddo
 c
       return
       end
 c
       subroutine readhist(iccg,ibase,ncycmax,ntr,rms,clw,cdw,
      +   cdpw,cdvw,cxw,cyw,czw,cmxw,cmyw,cmzw,fmdotw,cftmomw,
-     +   cftpw,cftvw,cfttotw,rmstr1,rmstr2,nneg1,nneg2)
+     +   cftpw,cftvw,cfttotw,rmstr1,rmstr2,rmstr3,rmstr4,rmstr5,
+     +   rmstr6,rmstr7,nneg1,nneg2,nneg3,nneg4,nneg5,nneg6,nneg7,
+     +   nummem)
 c***********************************************************************
 c     Purpose: Reads history info from CGNS file.  
 c      (NOTE:  cg_array_read_as_f may eventually be converted
@@ -2418,25 +2558,31 @@ c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
 c      ncycmax..........max number of iterations that can be saved
 c                       (integer)
+c      nummem...........one of dimensions for rmstr, nneg (integer)
 c   OUTPUTS:
 c      ntr..............no of iterations (integer)
 c      rms..............rms of density residual (real)
-c      clw,cdw,...,rmstr2......other history variables (real)
-c      nneg1,nneg2.............neg pts in turb solution (integer)
+c      clw,cdw,...,rmstr......other history variables (real)
+c      nneg.............neg pts in turb solution (integer)
 c***********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      parameter (numnames=20)
+      parameter (numnames=30)
 c
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),
      +  cdpw(ncycmax),cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),
      +  czw(ncycmax),cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
      +  fmdotw(ncycmax),cftmomw(ncycmax),cftpw(ncycmax),
-     +  cftvw(ncycmax),cfttotw(ncycmax),rmstr1(ncycmax),
-     +  rmstr2(ncycmax),nneg1(ncycmax),nneg2(ncycmax)
+     +  cftvw(ncycmax),cfttotw(ncycmax)
+      dimension rmstr1(ncycmax),rmstr2(ncycmax),rmstr3(ncycmax),
+     +  rmstr4(ncycmax),rmstr5(ncycmax),rmstr6(ncycmax),
+     +  rmstr7(ncycmax)
+      dimension nneg1(ncycmax),nneg2(ncycmax),nneg3(ncycmax),
+     +  nneg4(ncycmax),nneg5(ncycmax),nneg6(ncycmax),
+     +  nneg7(ncycmax)
       dimension idimvec(4)
-      character*32 name(numnames),name2
+      character*32 name(numnames),name2,searchname
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -2743,61 +2889,71 @@ c   Get Control surface total force
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   Get Residual of turb eqn 1
+c   Get Residual of turb eqns
+      do l=1,nummem
+        if (l .eq. 1) searchname='RSDTurbEqn1RMS'
+        if (l .eq. 2) searchname='RSDTurbEqn2RMS'
+        if (l .eq. 3) searchname='RSDTurbEqn3RMS'
+        if (l .eq. 4) searchname='RSDTurbEqn4RMS'
+        if (l .eq. 5) searchname='RSDTurbEqn5RMS'
+        if (l .eq. 6) searchname='RSDTurbEqn6RMS'
+        if (l .eq. 7) searchname='RSDTurbEqn7RMS'
       do n=1,narrays
-        if (name(n) .eq. 'RSDTurbEqn1RMS') goto 117
+        if (name(n) .eq. searchname) goto 117
       enddo
-      write(901,'('' WARNING. No RSDTurbEqn1RMS node exists'')')
+      write(901,'('' WARNING. No RSDTurbEqnxRMS node exists'')')
+      write(901,'(''   (where x='',i5,'')'')') l
       write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  117  continue
       if (idouble .eq. 1) then
-        call cg_array_read_as_f(n,RealDouble,rmstr1,ier)
+        if (l.eq.1) call cg_array_read_as_f(n,RealDouble,rmstr1,ier)
+        if (l.eq.2) call cg_array_read_as_f(n,RealDouble,rmstr2,ier)
+        if (l.eq.3) call cg_array_read_as_f(n,RealDouble,rmstr3,ier)
+        if (l.eq.4) call cg_array_read_as_f(n,RealDouble,rmstr4,ier)
+        if (l.eq.5) call cg_array_read_as_f(n,RealDouble,rmstr5,ier)
+        if (l.eq.6) call cg_array_read_as_f(n,RealDouble,rmstr6,ier)
+        if (l.eq.7) call cg_array_read_as_f(n,RealDouble,rmstr7,ier)
       else
-        call cg_array_read_as_f(n,RealSingle,rmstr1,ier)
+        if (l.eq.1) call cg_array_read_as_f(n,RealSingle,rmstr1,ier)
+        if (l.eq.2) call cg_array_read_as_f(n,RealSingle,rmstr2,ier)
+        if (l.eq.3) call cg_array_read_as_f(n,RealSingle,rmstr3,ier)
+        if (l.eq.4) call cg_array_read_as_f(n,RealSingle,rmstr4,ier)
+        if (l.eq.5) call cg_array_read_as_f(n,RealSingle,rmstr5,ier)
+        if (l.eq.6) call cg_array_read_as_f(n,RealSingle,rmstr6,ier)
+        if (l.eq.7) call cg_array_read_as_f(n,RealSingle,rmstr7,ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c
-c   Get Residual of turb eqn 2
-      do n=1,narrays
-        if (name(n) .eq. 'RSDTurbEqn2RMS') goto 118
       enddo
-      write(901,'('' WARNING. No RSDTurbEqn2RMS node exists'')')
-      write(901,'(''   setting ntr=0 and continuing'')')
-      ntr=0
-      return
- 118  continue
-      if (idouble .eq. 1) then
-        call cg_array_read_as_f(n,RealDouble,rmstr2,ier)
-      else
-        call cg_array_read_as_f(n,RealSingle,rmstr2,ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
 c
-c   Get turb eqn 1 bad points
+c   Get turb eqn bad points
+      do l=1,nummem
+        if (l .eq. 1) searchname='BadPointsTurbEqn1'
+        if (l .eq. 2) searchname='BadPointsTurbEqn2'
+        if (l .eq. 3) searchname='BadPointsTurbEqn3'
+        if (l .eq. 4) searchname='BadPointsTurbEqn4'
+        if (l .eq. 5) searchname='BadPointsTurbEqn5'
+        if (l .eq. 6) searchname='BadPointsTurbEqn6'
+        if (l .eq. 7) searchname='BadPointsTurbEqn7'
       do n=1,narrays
-        if (name(n) .eq. 'BadPointsTurbEqn1') goto 119
+        if (name(n) .eq. searchname) goto 119
       enddo
-      write(901,'('' WARNING. No BadPointsTurbEqn1 node exists'')')
+      write(901,'('' WARNING. No BadPointsTurbEqnx node exists'')')
+      write(901,'(''   (where x='',i5,'')'')') l
       write(901,'(''   setting ntr=0 and continuing'')')
       ntr=0
       return
  119  continue
-      call cg_array_read_as_f(n,Integer,nneg1,ier)
+      if (l.eq.1) call cg_array_read_as_f(n,Integer,nneg1,ier)
+      if (l.eq.2) call cg_array_read_as_f(n,Integer,nneg2,ier)
+      if (l.eq.3) call cg_array_read_as_f(n,Integer,nneg3,ier)
+      if (l.eq.4) call cg_array_read_as_f(n,Integer,nneg4,ier)
+      if (l.eq.5) call cg_array_read_as_f(n,Integer,nneg5,ier)
+      if (l.eq.6) call cg_array_read_as_f(n,Integer,nneg6,ier)
+      if (l.eq.7) call cg_array_read_as_f(n,Integer,nneg7,ier)
       if (ier .ne. 0) call cg_error_exit_f
-c
-c   Get turb eqn 2 bad points
-      do n=1,narrays
-        if (name(n) .eq. 'BadPointsTurbEqn2') goto 120
       enddo
-      write(901,'('' WARNING. No BadPointsTurbEqn2 node exists'')')
-      write(901,'(''   setting ntr=0 and continuing'')')
-      ntr=0
-      return
- 120  continue
-      call cg_array_read_as_f(n,Integer,nneg2,ier)
-      if (ier .ne. 0) call cg_error_exit_f
 c
       return
       end
@@ -3188,8 +3344,27 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'TwoEquation_K_Enstrophy',ier)
         if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 25) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'LES_Smagorinsky_Cs_const',ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 30) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'ThreeEquation_SST+transition',ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
-      if (ier .ne. 0) call cg_error_exit_f
 c
 c   Create DataArray containing turb Prandtl number under TurbulenceClosure
       call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
@@ -3591,6 +3766,16 @@ c   Read 'TurbulenceModel' node, if appropriate
           iv1=idata(1)*14
           iv2=idata(2)*14
           iv3=idata(3)*14
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'LES_Smagorinsky_Cs_const') then
+          iv1=idata(1)*25
+          iv2=idata(2)*25
+          iv3=idata(3)*25
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'ThreeEquation_SST+transition') then
+          iv1=idata(1)*30
+          iv2=idata(2)*30
+          iv3=idata(3)*30
         else
           write(901,'('' Model name not recognized:'',a32)')
      +     ModelTypeName(itype)
@@ -4881,7 +5066,7 @@ c
 c
       subroutine wsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
-     +                   ivmx)
+     +                   ivmx,nummem)
 c**********************************************************************
 c     Purpose: Writes qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) for 2nd order
@@ -4915,8 +5100,8 @@ c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
 c      tursav2..........cell-centered turb values from last time step, 
-c                       in (j,k,i) order; dimensioned by 4, but only
-c                       need to store two of them (real)
+c                       in (j,k,i) order; dimensioned by 2*nummem, but only
+c                       need to store nummem of them (real)
 c      nsoluse..........FlowSolution index number where data to be
 c                       stored (integer)
 c      i2d..............0 if 3-D (rind data to be output in all 3
@@ -4926,17 +5111,17 @@ c                          and k- directions) (integer)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
 c      ivmx............ turb model number for CFL3D (integer)
+c      nummem...........one of dimensions for tursav2 (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      parameter(numnames=20)
-c
-      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4),
+      dimension qc0(jdim,kdim,idim-1,5),
+     .          tursav2(jdim,kdim,idim,2*nummem),
      .          wk(i2d:idima-i2d,0:jdima,0:kdima)
-      character*32 name(numnames)
+      character*32 name
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -5038,30 +5223,27 @@ c   Pressure:
       end if
       if (ier .ne. 0) call cg_error_exit_f
 c
-c   First turb quantity:
+c   Turb quantities:
       if (ivmx .ge. 4) then
+      do l=1,nummem
+        if (l .eq. 1) name='TurbVal1LastDT'
+        if (l .eq. 2) name='TurbVal2LastDT'
+        if (l .eq. 3) name='TurbVal3LastDT'
+        if (l .eq. 4) name='TurbVal4LastDT'
+        if (l .eq. 5) name='TurbVal5LastDT'
+        if (l .eq. 6) name='TurbVal6LastDT'
+        if (l .eq. 7) name='TurbVal7LastDT'
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +  tursav2,wk,wk,wk,wk,wk,wk,4,1,2,wk)
+     +  tursav2,wk,wk,wk,wk,wk,wk,4,l,2,wk)
       if (idouble .eq. 1) then
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'TurbVal1LastDT', wk, ifindex, ier)
+     +                      name, wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'TurbVal1LastDT', wk, ifindex, ier)
+     +                      name, wk, ifindex, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
-c
-c   Second turb quantity:
-      call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
-     +  tursav2,wk,wk,wk,wk,wk,wk,4,2,2,wk)
-      if (idouble .eq. 1) then
-      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
-     +                      'TurbVal2LastDT', wk, ifindex, ier)
-      else
-      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
-     +                      'TurbVal2LastDT', wk, ifindex, ier)
-      end if
-      if (ier .ne. 0) call cg_error_exit_f
+      enddo
       end if
 c
       return
@@ -5069,7 +5251,7 @@ c
 c
       subroutine rsecord(iccg,ibase,igrid,idima,jdima,kdima,idim,
      +                   jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,dt,
-     +                   ialph,qc0,tursav2,dtold,ivmx)
+     +                   ialph,qc0,tursav2,dtold,ivmx,nummem)
 c**********************************************************************
 c     Purpose: Reads qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) & dt for 2nd order
@@ -5103,24 +5285,25 @@ c      dt...............current time step (real)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
 c      ivmx............ turb model number for CFL3D (integer)
+c      nummem...........one of dimensions for tursav2 (integer)
 c   OUTPUTS:
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
 c      tursav2..........cell-centered turb values from last time step,
-c                       in (j,k,i) order; dimensioned by 4, but only
-c                       need to store two of them (real)
+c                       in (j,k,i) order; dimensioned by 2*nummem, but only
+c                       need to store numem of them (real)
 c      dtold............previous (saved) time step (real)
 c**********************************************************************
 c
 #     include "cgnslib_f.h"
 c
-      parameter(numfield=50,numnames=3)
+      parameter(numfield=50)
 c
-      dimension qc0(jdim,kdim,idim-1,5),tursav2(jdim,kdim,idim,4),
+      dimension qc0(jdim,kdim,idim-1,5),
+     +   tursav2(jdim,kdim,idim,2*nummem),
      +   wk(idima-2*irind+1,jdima-2*jrind+1,kdima-2*krind+1)
       dimension irmin(3),irmax(3)
       character*32 fieldname(numfield),fndesired(numfield)
-      character*32 name(numnames)
 c
 c   Determine if single or double precision is being used:
       idouble=0
@@ -5226,11 +5409,15 @@ c
 c   Now get 2nd order turb quantities (they may not exist if this
 c   is reading an older file, or if last run was not turbulent)
       if (ivmx .ge. 4) then
-      numwanted=2
       fndesired(1)='TurbVal1LastDT'
       fndesired(2)='TurbVal2LastDT'
+      fndesired(3)='TurbVal3LastDT'
+      fndesired(4)='TurbVal4LastDT'
+      fndesired(5)='TurbVal5LastDT'
+      fndesired(6)='TurbVal6LastDT'
+      fndesired(7)='TurbVal7LastDT'
       ibad=0
-      do n=1,numwanted
+      do n=1,nummem
         ido=0
         do nn=1,nfields
           if(fndesired(n) .eq. fieldname(nn)) then
@@ -5249,7 +5436,7 @@ c       Do not read - values will be left as zero (as initialized)
         continue
       else
 c   Read old turb quantities:
-        do m=1,2
+        do m=1,nummem
         if (idouble .eq. 1) then
         call cg_field_read_f(iccg, ibase, igrid, nsoluse,
      +     fndesired(m), RealDouble, irmin, irmax, wk, ier)
@@ -5847,7 +6034,7 @@ c
       end
  
       subroutine writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
-     +  vj0,vk0,vi0,tj0,tk0,ti0,i2d)
+     +  vj0,vk0,vi0,tj0,tk0,ti0,i2d,nummem)
 c**********************************************************************
 c     Purpose:  Store BC info necessary for CFL3D V6 in a
 c     'UserDefinedData'.  If i2d=1, don't write qi0, vi0, or ti0 
@@ -5866,6 +6053,7 @@ c      qi0,qj0,qk0......arrays of BC data (PRIMITIVE quantities) (real)
 c      vi0,vj0,vk0......arrays of eddy viscosity BC data (real)
 c      ti0,tj0,tk0......arrays of turb quantity BC data (real)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
+c      nummem...........one of dimensions for ti0,tj0,tk0 (integer)
 c   OUTPUTS:
 c      none
 c**********************************************************************
@@ -5877,8 +6065,8 @@ c
       dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4), 
      .          qk0(jdim,idim-1,5,4)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
-     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       dimension jdata(4)
       character*32 name(numnames)
 c
@@ -5996,7 +6184,7 @@ c   Write BC ti0 data
       if (i2d .ne. 1) then
       jdata(1)=jdim
       jdata(2)=kdim
-      jdata(3)=2
+      jdata(3)=nummem
       jdata(4)=4
       if (idouble .eq. 1) then
         call cg_array_write_f('Ti0_CFL3D',RealDouble,4,jdata,
@@ -6010,7 +6198,7 @@ c   Write BC ti0 data
 c   Write BC tj0 data
       jdata(1)=kdim
       jdata(2)=idim-1
-      jdata(3)=2
+      jdata(3)=nummem
       jdata(4)=4
       if (idouble .eq. 1) then
         call cg_array_write_f('Tj0_CFL3D',RealDouble,4,jdata,
@@ -6023,7 +6211,7 @@ c   Write BC tj0 data
 c   Write BC tk0 data
       jdata(1)=jdim
       jdata(2)=idim-1
-      jdata(3)=2
+      jdata(3)=nummem
       jdata(4)=4
       if (idouble .eq. 1) then
         call cg_array_write_f('Tk0_CFL3D',RealDouble,4,jdata,
@@ -6038,7 +6226,7 @@ c
       end
 
       subroutine readbcs(iccg,ibase,igrid,idim,jdim,kdim,i2d,
-     +  qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0)
+     +  qj0,qk0,qi0,vj0,vk0,vi0,tj0,tk0,ti0,nummem)
 c**********************************************************************
 c     Purpose:  Reads CFL3D's BC info.
 c     If i2d=1, don't need to read qi0, vi0, or ti0.
@@ -6052,6 +6240,7 @@ c      igrid............zone (or grid) number (integer)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
+c      nummem...........one of dimensions for ti0,tj0,tk0 (integer)
 c   OUTPUTS:
 c      qi0,qj0,qk0......arrays of BC data (PRIMITIVE quantities
 c                       (real)
@@ -6066,8 +6255,8 @@ c
       dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4), 
      .          qk0(jdim,idim-1,5,4)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
-     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       dimension idata(2),jdata(4),idimvec(4)
       character name(numnames)*32
 c

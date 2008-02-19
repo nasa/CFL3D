@@ -3,7 +3,8 @@
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,smin,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
      .                  filname,iuns,irelv,snj0,snk0,sni0,ntime,
-     .                  snjm,snkm,snim,nou,bou,nbuf,ibufdim,myid)
+     .                  snjm,snkm,snim,nou,bou,nbuf,ibufdim,myid,
+     .                  nummem)
 c
 c
 c     $Id$
@@ -74,8 +75,8 @@ c
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
       dimension bcdata(mdim,ndim,2,12)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          smin(jdim-1,kdim-1,idim-1),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
@@ -119,11 +120,11 @@ c
       ip    = 1
 c
 c            * * * * * * * * * * * * * * * * * * * * * *
-c            * standard boundary condition bctype=2004 *
+c            * standard boundary condition bctype=2016 *
 c            * * * * * * * * * * * * * * * * * * * * * *
 c
 c******************************************************************************
-c      j=1 boundary        viscous wall with T & cq specified       bctype 2004
+c      j=1 boundary        viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.3) then
 c
@@ -363,13 +364,22 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,2) = 2.*tj0(k,i,2,1)-tursav(1,k,i,2)
  102    continue
         end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tj0(k,i,3,1) = -tursav(j,k,i,3)
+          tj0(k,i,3,2) = 0.
+        enddo
+        enddo
+        end if
       end if
       end if
 c
       end if
 c
 c******************************************************************************
-c      j=jdim boundary     viscous wall with T & cq specified       bctype 2004
+c      j=jdim boundary     viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.4) then
 c
@@ -609,13 +619,22 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  202    continue
         end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tj0(k,i,3,3) = -tursav(j,k,i,3)
+          tj0(k,i,3,4) = 0.
+        enddo
+        enddo
+        end if
       end if
       end if
 c
       end if
 c
 c******************************************************************************
-c      k=1 boundary        viscous wall with T & cq specified       bctype 2004
+c      k=1 boundary        viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.5) then
 c
@@ -855,13 +874,22 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,2) = 2.*tk0(j,i,2,1)-tursav(j,1,i,2)
  302    continue
         end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tk0(j,i,3,1) = -tursav(j,k,i,3)
+          tk0(j,i,3,2) = 0.
+        enddo
+        enddo
+        end if
       end if
       end if
 c
       end if
 c
 c******************************************************************************
-c      k=kdim boundary     viscous wall with T & cq specified       bctype 2004
+c      k=kdim boundary     viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.6) then
 c 
@@ -1101,13 +1129,22 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,4) = 2.*tk0(j,i,2,3)-tursav(j,kdim-1,i,2)
  402    continue
         end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tk0(j,i,3,3) = -tursav(j,k,i,3)
+          tk0(j,i,3,4) = 0.
+        enddo
+        enddo
+        end if
       end if
       end if
 c
       end if
 c
 c******************************************************************************
-c      i=1 boundary        viscous wall with T & cq specified       bctype 2004
+c      i=1 boundary        viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.1) then
 c 
@@ -1347,13 +1384,22 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,2) = 2.*ti0(j,k,2,1)-tursav(j,k,1,2)
  502    continue
         end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          ti0(j,k,3,1) = -tursav(j,k,i,3)
+          ti0(j,k,3,2) = 0.
+        enddo
+        enddo
+        end if
       end if
       end if
 c
       end if
 c
 c******************************************************************************
-c      i=idim boundary     viscous wall with T & cq specified       bctype 2004
+c      i=idim boundary     viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.2) then
 c
@@ -1592,6 +1638,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,1,4) = 2.*ti0(j,k,1,3)-tursav(j,k,idim-1,1)
           ti0(j,k,2,4) = 2.*ti0(j,k,2,3)-tursav(j,k,idim-1,2)
  602    continue
+        end if
+c       for transition model, intermittency at wall is zero
+        if (ivmx .eq. 30) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          ti0(j,k,3,3) = -tursav(j,k,i,3)
+          ti0(j,k,3,4) = 0.
+        enddo
+        enddo
         end if
       end if
       end if

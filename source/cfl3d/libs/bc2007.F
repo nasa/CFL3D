@@ -2,7 +2,7 @@
      .                  bci,xtbj,xtbk,xtbi,atbj,atbk,atbi,ista,iend,
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
-     .                  filname,iuns,nou,bou,nbuf,ibufdim,myid)
+     .                  filname,iuns,nou,bou,nbuf,ibufdim,myid,nummem)
 c
 c     $Id$
 c
@@ -30,8 +30,8 @@ c
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
       dimension bcdata(mdim,ndim,2,12)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
 c
@@ -111,25 +111,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 101 i=ista,iend1
         ii = i-ista+1
         do 101 k=ksta,kend1
           kk=k-ksta+1
           ip = 1
-          t11 = (1 - itrflg1)*tursav(1,k,i,1) 
-     .        + itrflg1*bcdata(kk,ii,ip,6)
-          t21 = (1 - itrflg2)*tursav(1,k,i,2) 
-     .        + itrflg2*bcdata(kk,ii,ip,7)
+          t11 = (1 - itrflg1)*tursav(1,k,i,l) 
+     .        + itrflg1*bcdata(kk,ii,ip,5+l)
           ip = 2
-          t12 = (1 - itrflg1)*tursav(1,k,i,1)
-     .        + itrflg1*bcdata(kk,ii,ip,6)
-          t22 = (1 - itrflg2)*tursav(1,k,i,2)
-     .        + itrflg2*bcdata(kk,ii,ip,7)
-          tj0(k,i,1,1) = t11
-          tj0(k,i,2,1) = t21
-          tj0(k,i,1,2) = t12
-          tj0(k,i,2,2) = t22
+          t12 = (1 - itrflg1)*tursav(1,k,i,l)
+     .        + itrflg1*bcdata(kk,ii,ip,5+l)
+          tj0(k,i,l,1) = t11
+          tj0(k,i,l,2) = t12
   101   continue
+        enddo
       end if
       end if
       end if
@@ -192,25 +188,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 201 i=ista,iend1
         ii=i-ista+1
         do 201 k=ksta,kend1
           kk=k-ksta+1
           ip = 1
-          t13 = (1 - itrflg1)*tursav(jdim1,k,i,1)
-     .        + itrflg1*bcdata(kk,ii,ip,6)
-          t23 = (1 - itrflg2)*tursav(jdim1,k,i,2)
-     .        + itrflg2*bcdata(kk,ii,ip,7)
+          t13 = (1 - itrflg1)*tursav(jdim1,k,i,l)
+     .        + itrflg1*bcdata(kk,ii,ip,5+l)
           ip = 2
-          t14 = (1 - itrflg1)*tursav(jdim1,k,i,1)
-     .        + itrflg1*bcdata(kk,ii,ip,6)
-          t24 = (1 - itrflg2)*tursav(jdim1,k,i,2)
-     .        + itrflg2*bcdata(kk,ii,ip,7)
-          tj0(k,i,1,3) = t13
-          tj0(k,i,2,3) = t23
-          tj0(k,i,1,4) = t14
-          tj0(k,i,2,4) = t24
+          t14 = (1 - itrflg1)*tursav(jdim1,k,i,l)
+     .        + itrflg1*bcdata(kk,ii,ip,5+l)
+          tj0(k,i,l,3) = t13
+          tj0(k,i,l,4) = t14
   201   continue
+        enddo
       end if
       end if
       end if
@@ -268,25 +260,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 301 i=ista,iend1
         ii=i-ista+1
         do 301 j=jsta,jend1
           jj=j-jsta+1
           ip = 1
-          t11 = (1 - itrflg1)*tursav(j,1,i,1)
-     .        + itrflg1*bcdata(jj,ii,ip,6)
-          t21 = (1 - itrflg2)*tursav(j,1,i,2)
-     .        + itrflg2*bcdata(jj,ii,ip,7)
+          t11 = (1 - itrflg1)*tursav(j,1,i,l)
+     .        + itrflg1*bcdata(jj,ii,ip,5+l)
           ip = 2
-          t12 = (1 - itrflg1)*tursav(j,1,i,1)
-     .        + itrflg1*bcdata(jj,ii,ip,6)
-          t22 = (1 - itrflg2)*tursav(j,1,i,2)
-     .        + itrflg2*bcdata(jj,ii,ip,7)
-          tk0(j,i,1,1) = t11
-          tk0(j,i,2,1) = t21
-          tk0(j,i,1,2) = t12
-          tk0(j,i,2,2) = t22
+          t12 = (1 - itrflg1)*tursav(j,1,i,l)
+     .        + itrflg1*bcdata(jj,ii,ip,5+l)
+          tk0(j,i,l,1) = t11
+          tk0(j,i,l,2) = t12
   301   continue
+        enddo
       end if
       end if
       end if
@@ -344,25 +332,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 401 i=ista,iend1
         ii=i-ista+1
         do 401 j=jsta,jend1
           jj=j-jsta+1
           ip = 1
-          t13 = (1 - itrflg1)*tursav(j,kdim1,i,1)
-     .        + itrflg1*bcdata(jj,ii,ip,6)
-          t23 = (1 - itrflg2)*tursav(j,kdim1,i,2)
-     .        + itrflg2*bcdata(jj,ii,ip,7)
+          t13 = (1 - itrflg1)*tursav(j,kdim1,i,l)
+     .        + itrflg1*bcdata(jj,ii,ip,5+l)
           ip = 2
-          t14 = (1 - itrflg1)*tursav(j,kdim1,i,1)
-     .        + itrflg1*bcdata(jj,ii,ip,6)
-          t24 = (1 - itrflg2)*tursav(j,kdim1,i,2)
-     .        + itrflg2*bcdata(jj,ii,ip,7)
-          tk0(j,i,1,3) = t13
-          tk0(j,i,2,3) = t23
-          tk0(j,i,1,4) = t14
-          tk0(j,i,2,4) = t24
+          t14 = (1 - itrflg1)*tursav(j,kdim1,i,l)
+     .        + itrflg1*bcdata(jj,ii,ip,5+l)
+          tk0(j,i,l,3) = t13
+          tk0(j,i,l,4) = t14
   401   continue
+        enddo
       end if
       end if
       end if
@@ -420,25 +404,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 501 k=ksta,kend1
         kk=k-ksta+1
         do 501 j=jsta,jend1
           jj=j-jsta+1
           ip = 1
-          t11 = (1 - itrflg1)*tursav(j,k,1,1)
-     .        + itrflg1*bcdata(jj,kk,ip,6)
-          t21 = (1 - itrflg2)*tursav(j,k,1,2)
-     .        + itrflg2*bcdata(jj,kk,ip,7)
+          t11 = (1 - itrflg1)*tursav(j,k,1,l)
+     .        + itrflg1*bcdata(jj,kk,ip,5+l)
           ip = 2
-          t12 = (1 - itrflg1)*tursav(j,k,1,1)
-     .        + itrflg1*bcdata(jj,kk,ip,6)
-          t22 = (1 - itrflg2)*tursav(j,k,1,2)
-     .        + itrflg2*bcdata(jj,kk,ip,7)
-          ti0(j,k,1,1) = t11
-          ti0(j,k,2,1) = t21
-          ti0(j,k,1,2) = t12
-          ti0(j,k,2,2) = t22
+          t12 = (1 - itrflg1)*tursav(j,k,1,l)
+     .        + itrflg1*bcdata(jj,kk,ip,5+l)
+          ti0(j,k,l,1) = t11
+          ti0(j,k,l,2) = t12
   501   continue
+        enddo
       end if
       end if
       end if
@@ -496,25 +476,21 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 601 k=ksta,kend1
         kk=k-ksta+1
         do 601 j=jsta,jend1
           jj=j-jsta+1
           ip = 1
-          t13 = (1 - itrflg1)*tursav(j,k,idim1,1)
-     .        + itrflg1*bcdata(jj,kk,ip,6)
-          t23 = (1 - itrflg2)*tursav(j,k,idim1,2)
-     .        + itrflg2*bcdata(jj,kk,ip,7)
+          t13 = (1 - itrflg1)*tursav(j,k,idim1,l)
+     .        + itrflg1*bcdata(jj,kk,ip,5+l)
           ip = 2
-          t14 = (1 - itrflg1)*tursav(j,k,idim1,1)
-     .        + itrflg1*bcdata(jj,kk,ip,6)
-          t24 = (1 - itrflg2)*tursav(j,k,idim1,2)
-     .        + itrflg2*bcdata(jj,kk,ip,7)
-          ti0(j,k,1,3) = t13
-          ti0(j,k,2,3) = t23
-          ti0(j,k,1,4) = t14
-          ti0(j,k,2,4) = t24
+          t14 = (1 - itrflg1)*tursav(j,k,idim1,l)
+     .        + itrflg1*bcdata(jj,kk,ip,5+l)
+          ti0(j,k,l,3) = t13
+          ti0(j,k,l,4) = t14
   601   continue
+        enddo
       end if
       end if
       end if

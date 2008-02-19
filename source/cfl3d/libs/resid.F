@@ -3,11 +3,11 @@
      .           vmuk,vmuj,vmui,wk,nwork,isf,iwfa,wfa,delt,blank,iover,
      .           nblendg,nblstat,nblstag,xib,sig,sqtq,g,
      .           tj0,tk0,ti0,xkb,blnum,vj0,vk0,vi0,bcj,bck,bci,
-     .           nt,sumn1,sumn2,negn1,negn2,ux,xib2,cmuv,volj0,
+     .           nt,sumn,negn,ux,xib2,cmuv,volj0,
      .           volk0,voli0,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
-     .           idefrm,iadvance,qavg)
+     .           idefrm,iadvance,qavg,nummem)
 c
 c     $Id$
 c
@@ -39,10 +39,10 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
      .          sk(jdim*kdim*(idim-1),5)
       dimension res(jdim*kdim*(idim-1),5),vol(jdim*kdim*(idim-1)),
      .          dtj(jdim*kdim*(idim-1)),vist3d(jdim,kdim,idim)
-      dimension xib(jdim,kdim,idim,2),sig(jdim-1,idim-1),
+      dimension xib(jdim,kdim,idim,nummem),sig(jdim-1,idim-1),
      .          sqtq(jdim-1,idim-1),g(-1:jdim+1,-1:idim+1),
-     .          tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
-     .          ti0(jdim,kdim,2,4),xkb(jdim-1,kdim-1,idim-1),
+     .          tj0(kdim,idim-1,nummem,4),tk0(jdim,idim-1,nummem,4),
+     .          ti0(jdim,kdim,nummem,4),xkb(jdim-1,kdim-1,idim-1),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),blnum(jdim-1,kdim-1,idim-1)
       dimension volj0(kdim,idim-1,4),volk0(jdim,idim-1,4),
@@ -50,7 +50,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension wfa(1),iwfa(1)
       dimension jbctyp(2),kbctyp(2),ibctyp(2)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
-      dimension ux(jdim-1,kdim-1,idim-1,9),xib2(jdim,kdim,idim,4)
+      dimension ux(jdim-1,kdim-1,idim-1,9),xib2(jdim,kdim,idim,2*nummem)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
      .          nbck0(maxbl),nbckdim(maxbl),ibcinfo(maxbl,maxseg,7,2),
@@ -58,6 +58,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
       dimension mblk2nd(maxbl),idefrm(maxbl),iadvance(maxbl)
       dimension qavg(jdim,kdim,idim,5)
+      dimension sumn(nummem),negn(nummem)
 c
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -77,7 +78,7 @@ c
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient
+     .        keepambient,re_thetat0
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
@@ -287,7 +288,7 @@ c
       end if
    89 format(1x,27hevaluating turbulence model)
 c
-      if (ivisc(3).eq.2 .or. ivisc(2).eq.2 .or. ivisc(1).eq.2) then
+      if (ivmx .eq. 2) then
 c   Baldwin-Lomax
       inmx = max(jdim,kdim,idim)
       iwk1 = 1
@@ -329,8 +330,7 @@ c
 c   Johnson-King no longer available due to unsuitability for 
 c   multi-block grids
 c
-      else if (ivisc(3).eq.4 .or. ivisc(2).eq.4 .or. 
-     .         ivisc(1).eq.4) then
+      else if (ivmx .eq. 4) then
 c   Baldwin-Barth
       iwk1=1
       if (iturbord .eq. 1) then
@@ -374,10 +374,9 @@ c   Baldwin-Barth
      + wk(iwk6),wk(iwk7),wk(iwk8),wk(iwk9),wk(iwk10),wk(iwk11),
      + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
      + wk(iwk18),wk(iwk19),ntime,tj0,tk0,ti0,nbl,blnum,blank,iover,
-     + sumn1,sumn2,negn1,negn2,xib2,volj0,volk0,voli0,nou,bou,nbuf,
-     + ibufdim,iex,iex2)
-      else if (ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. 
-     .         ivisc(1).eq.5) then
+     + sumn(1),sumn(2),negn(1),negn(2),xib2,volj0,volk0,voli0,nou,bou,
+     + nbuf,ibufdim,iex,iex2,nummem)
+      else if (ivmx .eq. 5) then
 c   Spalart
       iwk1=1
       if (iturbord .eq. 1) then
@@ -429,10 +428,9 @@ c   Spalart
      + wk(iwk6),wk(iwk7),wk(iwk8),wk(iwk9),wk(iwk10),wk(iwk11),
      + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
      + wk(iwk18),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,
-     + sumn1,sumn2,negn1,negn2,xib2,volj0,volk0,voli0,nou,bou,nbuf,
-     + ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19))
-      else if (ivisc(3).ge.6 .or. ivisc(2).ge.6 .or.
-     .         ivisc(1).ge.6) then
+     + sumn(1),sumn(2),negn(1),negn(2),xib2,volj0,volk0,voli0,nou,bou,
+     + nbuf,ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19),nummem)
+      else if (ivmx .ge. 6 .and. ivmx .le. 15) then
 c   two-equation turb model
       iwk1=1
       if (iturbord .eq. 1) then
@@ -481,8 +479,7 @@ c   two-equation turb model
       inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
 c allocate for gradients of vorticity and turbulence - k-zeta only
       iwk34=iwk33+inmx
-      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .    ivisc(3).eq.15) then
+      if (ivmx .eq. 15) then
       inmx=jdim
       else
       inmx=0
@@ -529,8 +526,7 @@ c allocate for gradients of vorticity and turbulence - k-zeta only
       iwk74=iwk73+inmx
       iwk75=iwk74+inmx
       iwk76=iwk75+inmx
-      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .    ivisc(3).eq.15) then
+      if (ivmx .eq. 15) then
       inmx=(jdim+1)*(kdim+1)*(idim+1)
       else
       inmx=0
@@ -538,8 +534,7 @@ c allocate for gradients of vorticity and turbulence - k-zeta only
       iwk77=iwk76+inmx
       iwk78=iwk77+inmx
       iwk79=iwk78+inmx
-      if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .    ivisc(3).eq.15) then
+      if (ivmx .eq. 15) then
       inmx=(jdim+1)*(kdim+1)*(idim+1)*2
       else
       inmx=0
@@ -568,8 +563,8 @@ c allocate for easmcc2d
      + wk(iwk18),wk(iwk19),wk(iwk20),wk(iwk21),wk(iwk22),wk(iwk23),
      + wk(iwk24),wk(iwk25),wk(iwk26),wk(iwk27),wk(iwk28),wk(iwk29),
      + wk(iwk30),wk(iwk31),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,
-     + vj0,vk0,vi0,blank,iover,sumn1,sumn2,negn1,negn2,ux,wk(iwk32),
-     + xib2,wk(iwk33),cmuv,bcj,bck,bci,nbci0,nbcidim,
+     + vj0,vk0,vi0,blank,iover,sumn(1),sumn(2),negn(1),negn(2),ux,
+     + wk(iwk32),xib2,wk(iwk33),cmuv,bcj,bck,bci,nbci0,nbcidim,
      + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
      + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
      + iex3,
@@ -581,7 +576,98 @@ c allocate for easmcc2d
      + wk(iwk61),wk(iwk62),wk(iwk63),wk(iwk64),wk(iwk65),wk(iwk66),
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
-     + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80))
+     + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),nummem)
+      else if (ivmx .eq. 30) then
+c   three-equation turb model
+      iwk1=1
+      if (iturbord .eq. 1) then
+        iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))*3
+        iex=0
+        iex2=-i2d
+      else
+        iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))*3
+        iex=1
+        iex2=1-(2*i2d)
+      end if
+      iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+      iex3=-i2d
+      inmx=(kdim-1)*(jdim-1)
+      iwk6=iwk5+inmx
+      iwk7=iwk6+inmx
+      iwk8=iwk7+inmx
+      iwk9=iwk8+inmx
+      iwk10=iwk9+inmx
+      iwk11=iwk10+inmx
+      iwk12=iwk11+inmx
+      iwk13=iwk12+inmx
+      iwk14=iwk13+inmx
+      inmx=(jdim-1)*(kdim-1)
+      iwk15=iwk14+inmx
+      iwk16=iwk15+inmx
+      iwk17=iwk16+inmx
+      iwk18=iwk17+inmx
+      iwk19=iwk18+inmx
+      iwk20=iwk19+inmx
+      iwk21=iwk20+inmx
+      iwk22=iwk21+inmx
+      iwk23=iwk22+inmx
+      inmx=(kdim-1)*(idim-1)
+      iwk24=iwk23+inmx
+      iwk25=iwk24+inmx
+      iwk26=iwk25+inmx
+      iwk27=iwk26+inmx
+      iwk28=iwk27+inmx
+      iwk29=iwk28+inmx
+      iwk30=iwk29+inmx
+      iwk31=iwk30+inmx
+      iwk32=iwk31+inmx
+      inmx=(jdim-1)*(kdim-1)*(idim-1)*3
+      iwk33=iwk32+inmx
+      inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+      iwk34=iwk33+inmx
+      inmx=(kdim-1)*(jdim-1)
+      iwk35=iwk34+inmx
+      iwk36=iwk35+inmx
+      iwk37=iwk36+inmx
+      iwk38=iwk37+inmx
+      inmx=(jdim-1)*(kdim-1)
+      iwk39=iwk38+inmx
+      iwk40=iwk39+inmx
+      iwk41=iwk40+inmx
+      iwk42=iwk41+inmx
+      inmx=(kdim-1)*(idim-1)
+      iwk43=iwk42+inmx
+      iwk44=iwk43+inmx
+      iwk45=iwk44+inmx
+      nroom=nwork-(iwk45+inmx)
+      if(nroom .lt. 0.) then
+       nou(1) = min(nou(1)+1,ibufdim)
+       write(bou(nou(1),1),'('' not enough memory for 3-eqn turb'',
+     . '' model.'')')
+       nou(1) = min(nou(1)+1,ibufdim)
+       write(bou(nou(1),1),'('' nroom='',i12)') nroom
+       call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      call threeeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
+     + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),wk(iwk4),
+     + wk(iwk5),
+     + wk(iwk6),wk(iwk7),wk(iwk8),wk(iwk9),wk(iwk10),wk(iwk11),
+     + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
+     + wk(iwk18),wk(iwk19),wk(iwk20),wk(iwk21),wk(iwk22),wk(iwk23),
+     + wk(iwk24),wk(iwk25),wk(iwk26),wk(iwk27),wk(iwk28),wk(iwk29),
+     + wk(iwk30),wk(iwk31),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,
+     + vj0,vk0,vi0,blank,iover,sumn(1),sumn(2),sumn(3),negn(1),negn(2),
+     + negn(3),ux,wk(iwk32),
+     + xib2,wk(iwk33),bcj,bck,bci,nbci0,nbcidim,
+     + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
+     + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
+     + iex3,wk(iwk34),wk(iwk35),wk(iwk36),wk(iwk37),
+     + wk(iwk38),wk(iwk39),wk(iwk40),wk(iwk41),
+     + wk(iwk42),wk(iwk43),wk(iwk44),wk(iwk45),nummem)
+      else if (ivmx .eq. 25) then
+c   LES-type model and diagnostics
+        call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
+     +    nou,bou,nbuf,ibufdim)
 c   *********
       end if
       end if
@@ -664,7 +750,7 @@ c
          nvtq = npl*jdim*kdim
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
-     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
 c
 c-- full viscous terms
 c
@@ -718,7 +804,7 @@ c
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .               iadvance(nbl))
+     .               iadvance(nbl),nummem)
 c
 c-- full viscous terms
 c
@@ -775,7 +861,7 @@ c
             nvtq = npl*jdim*idim
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
-     .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
 c
 c-- full viscous terms
 c

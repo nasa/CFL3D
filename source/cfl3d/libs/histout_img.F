@@ -1,7 +1,8 @@
       subroutine histout_img(ihstry,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
      .                   cmxw,cmyw,cmzw,chdw,swetw,fmdotw,cfttotw,
-     .                   cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,
-     .                   ncycmax,aehist,aesrfdat,nmds,maxaes,timekeep)
+     .                   cftmomw,cftpw,cftvw,rmstr,nneg,
+     .                   ncycmax,aehist,aesrfdat,nmds,maxaes,timekeep,
+     .                   nummem)
 c
 c     $Id$
 c
@@ -24,8 +25,8 @@ c
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),
-     .          nneg1(ncycmax),nneg2(ncycmax),timekeep(ncycmax),
+     .          rmstr(ncycmax,nummem),
+     .          nneg(ncycmax,nummem),timekeep(ncycmax),
      .          aehist(ncycmax,3,nmds,maxaes), aesrfdat(5,maxaes)
 c
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,

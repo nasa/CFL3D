@@ -2,7 +2,7 @@
      .                  bci,xtbj,xtbk,xtbi,atbj,atbk,atbi,ista,iend,
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,iuns,nou,bou,nbuf,
-     .                  ibufdim)
+     .                  ibufdim,nummem)
 c
 c     $Id$
 c
@@ -25,14 +25,14 @@ c
       dimension xtbj(kdim,idim-1,3,2),xtbk(jdim,idim-1,3,2),
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
 c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -87,13 +87,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 101 i=ista,iend1
         do 101 k=ksta,kend1
-          tj0(k,i,1,1) = tur10
-          tj0(k,i,2,1) = tur20
-          tj0(k,i,1,2) = tur10
-          tj0(k,i,2,2) = tur20
+          tj0(k,i,l,1) = tur10(l)
+          tj0(k,i,l,2) = tur10(l)
   101   continue
+        enddo
       end if
       end if
 c
@@ -137,13 +137,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 201 i=ista,iend1
         do 201 k=ksta,kend1
-          tj0(k,i,1,3) = tur10
-          tj0(k,i,2,3) = tur20
-          tj0(k,i,1,4) = tur10
-          tj0(k,i,2,4) = tur20
+          tj0(k,i,l,3) = tur10(l)
+          tj0(k,i,l,4) = tur10(l)
   201   continue
+        enddo
       end if
       end if
 c
@@ -187,13 +187,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 301 i=ista,iend1
         do 301 j=jsta,jend1
-          tk0(j,i,1,1) = tur10
-          tk0(j,i,2,1) = tur20
-          tk0(j,i,1,2) = tur10
-          tk0(j,i,2,2) = tur20
+          tk0(j,i,l,1) = tur10(l)
+          tk0(j,i,l,2) = tur10(l)
   301   continue
+        enddo
       end if
       end if
 c
@@ -237,13 +237,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 401 i=ista,iend1
         do 401 j=jsta,jend1
-          tk0(j,i,1,3) = tur10
-          tk0(j,i,2,3) = tur20
-          tk0(j,i,1,4) = tur10
-          tk0(j,i,2,4) = tur20
+          tk0(j,i,l,3) = tur10(l)
+          tk0(j,i,l,4) = tur10(l)
   401   continue
+        enddo
       end if
       end if
 c
@@ -287,13 +287,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 501 k=ksta,kend1
         do 501 j=jsta,jend1
-          ti0(j,k,1,1) = tur10
-          ti0(j,k,2,1) = tur20
-          ti0(j,k,1,2) = tur10
-          ti0(j,k,2,2) = tur20
+          ti0(j,k,l,1) = tur10(l)
+          ti0(j,k,l,2) = tur10(l)
   501   continue
+        enddo
       end if
       end if
 c
@@ -337,13 +337,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 601 k=ksta,kend1
         do 601 j=jsta,jend1
-          ti0(j,k,1,3) = tur10
-          ti0(j,k,2,3) = tur20
-          ti0(j,k,1,4) = tur10
-          ti0(j,k,2,4) = tur20
+          ti0(j,k,l,3) = tur10(l)
+          ti0(j,k,l,4) = tur10(l)
   601   continue
+        enddo
       end if
       end if
       end if

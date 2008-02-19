@@ -19,7 +19,7 @@ c       ista,iend,etc.    = starting and ending values for the
 c                           boundary segment of data array to be loaded
 c                           into the subset arrays
 c       ldim              = number of variables in data array; e.g.
-c                           ldim = 5 for q data, ldim = 2 for turb.
+c                           ldim = 5 for q data, ldim = nummem for turb.
 c                           variables, ldim = 1 for eddy viscosity,
 c                           ldim = 3 for grid data
 c

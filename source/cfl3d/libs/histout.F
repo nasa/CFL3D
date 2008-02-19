@@ -2,8 +2,9 @@
      .                   cmxw,cmyw,cmzw,
      .                   n_clcd,clcd,nblocks_clcd,blocks_clcd,
      .                   chdw,swetw,fmdotw,cfttotw,
-     .                   cftmomw,cftpw,cftvw,rmstr1,rmstr2,nneg1,nneg2,
-     .                   ncycmax,aehist,aesrfdat,nmds,maxaes,timekeep)
+     .                   cftmomw,cftpw,cftvw,rmstr,nneg,
+     .                   ncycmax,aehist,aesrfdat,nmds,maxaes,timekeep,
+     .                   nummem)
 c
 c     $Id$
 c
@@ -27,8 +28,8 @@ c
      .          chdw(ncycmax),swetw(ncycmax),
      .          fmdotw(ncycmax),cfttotw(ncycmax),
      .          cftmomw(ncycmax),cftpw(ncycmax),cftvw(ncycmax),
-     .          rmstr1(ncycmax),rmstr2(ncycmax),
-     .          nneg1(ncycmax),nneg2(ncycmax),timekeep(ncycmax),
+     .          rmstr(ncycmax,nummem),
+     .          nneg(ncycmax,nummem),timekeep(ncycmax),
      .          aehist(ncycmax,3,nmds,maxaes), aesrfdat(5,maxaes),
      .          clcd(2,n_clcd,ncycmax), blocks_clcd(2,nblocks_clcd)
 c
@@ -174,24 +175,63 @@ c
          write(13,'(''# Mach='',e12.4,'', alpha='',e12.4,
      .    '', ReUe='',e12.4)') real(xmach),real(alphw),real(reue)
 c
-         write(13,'(''# Final turres1='',e12.4)') real(rmstr1(ntt))
-         write(13,'(''# Final turres2='',e12.4)') real(rmstr2(ntt))
+         do l=1,nummem
+           write(13,'(''# Final turres'',i2,''='',e12.4)') 
+     +       l,real(rmstr(ntt,l))
+         enddo
          if (real(dt) .gt. 0) then
          write(13,'(''# Final time (for unsteady)='',f10.4)')real(time)
          end if
          if (iclcd .ne. 1 .and. iclcd .ne. 2) then
+            if (nummem .eq. 2) then
             write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
      .           ''  nneg1  nneg2'')') ntt
+            else if (nummem .eq. 3) then
+            write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  nneg1  nneg2  nneg3'')') ntt
+            else
+            write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  log(turres4)  log(turres5)'',
+     .           ''  log(turres6)  log(turres7)  nneg1  nneg2'',
+     .           ''  nneg3  nneg4  nneg5  nneg6  nneg7'')') ntt
+            end if
          else
+            if (nummem .eq. 2) then
             write(13,'(''variables= it  log(turres1)  log(turres2)'',
      .           ''  nneg1  nneg2'')')
+            else if (nummem .eq. 3) then
+            write(13,'(''variables= it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  nneg1  nneg2  nneg3'')')
+            else
+            write(13,'(''variables= it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  log(turres4)  log(turres5)'',
+     .           ''  log(turres6)  log(turres7)  nneg1  nneg2'',
+     .           ''  nneg3  nneg4  nneg5  nneg6  nneg7'')')
+            end if
          end if
          do 3200 n=1,ntt
-         if(real(rmstr1(n)) .le. 0.) rmstr1(n)=1.
-         if(real(rmstr2(n)) .le. 0.) rmstr2(n)=1.
+           do l=1,nummem
+             if(real(rmstr(n,l)) .le. 0.) rmstr(n,l)=1.
+           enddo
+         if (nummem .eq. 2) then
          write(13,'(3x,i6,2e14.5,1x,i6,1x,i6)') n,
-     .   log10(real(rmstr1(n))),log10(real(rmstr2(n))),nneg1(n),
-     .   nneg2(n)
+     .   log10(real(rmstr(n,1))),log10(real(rmstr(n,2))),nneg(n,1),
+     .   nneg(n,2)
+         else if (nummem .eq. 3) then
+         write(13,'(3x,i6,3e14.5,1x,i6,1x,i6,1x,i6)') n,
+     .   log10(real(rmstr(n,1))),log10(real(rmstr(n,2))),
+     .   log10(real(rmstr(n,3))),nneg(n,1),
+     .   nneg(n,2),nneg(n,3)
+         else
+         write(13,'(3x,i6,7e14.5,1x,i6,1x,i6,1x,i6,
+     .   1x,i6,1x,i6,1x,i6,1x,i6)') n,
+     .   log10(real(rmstr(n,1))),log10(real(rmstr(n,2))),
+     .   log10(real(rmstr(n,3))),log10(real(rmstr(n,4))),
+     .   log10(real(rmstr(n,5))),log10(real(rmstr(n,6))),
+     .   log10(real(rmstr(n,7))),
+     .   nneg(n,1),nneg(n,2),nneg(n,3),nneg(n,4),
+     .   nneg(n,5),nneg(n,6),nneg(n,7)
+         end if
  3200    continue
 c
       end if 

@@ -13,7 +13,7 @@
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx)
+     + w1,w2,w3,srce,vx,nummem)
 c
 c     $Id$
 c
@@ -35,7 +35,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /easmv/ c1,c2,c3,c4,c5,sigk1,cmuc1
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -52,7 +52,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient
+     .        keepambient,re_thetat0
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -77,12 +77,13 @@ c
      + workz(kdim-1,idim-1)
       dimension turre(0-iex:jdim+iex,0-iex:kdim+iex,0-iex2:idim+iex2,2),
      + blank(jdim,kdim,idim),
-     + zksav(jdim,kdim,idim,2),rhside(jdim-1,kdim-1,idim-1,2)
-     + ,tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
-     +  ti0(jdim,kdim,2,4),
+     + zksav(jdim,kdim,idim,nummem),rhside(jdim-1,kdim-1,idim-1,2)
+     + ,tj0(kdim,idim-1,nummem,4),tk0(jdim,idim-1,nummem,4),
+     +  ti0(jdim,kdim,nummem,4),
      + qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
      +,vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),vi0(jdim,kdim,1,4)
-      dimension ux(jdim-1,kdim-1,idim-1,9),zksav2(jdim,kdim,idim,4),
+      dimension ux(jdim-1,kdim-1,idim-1,9),
+     + zksav2(jdim,kdim,idim,2*nummem),
      + v3dtmp(0:jdim,0:kdim,0-iex3:idim+iex3)
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
@@ -123,7 +124,7 @@ c      dtj - vol/dt
 c      x,y,z - grid vertex locations
 c      vist3d - turbulent eddy viscosity (nondimensionalized by mulamref)
 c      vor - vorticity
-c      smin - minimum distance to any wall
+c      smin - minimum distance to any wall - set negative if laminar region!
 c      zksav - saved values of the 2 turbulent quantities (1=omega or epsilon,
 c              2=k)
 c                omega is nondimensionalized by rhoref*aref**2/mulamref
@@ -180,6 +181,9 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
      +'' viscosity using 2-eqns, block='',i5)') nbl
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     Freestream tur10,tur20 = '',
+     +     2e19.8)') tur10(1),tur10(2)
         if(iturbord .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     1st order advection on RHS'')')
@@ -1718,9 +1722,9 @@ c            Determine Sij values:
               pk=ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*betax*tur10*tur10
+     +         re*betax*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*cmuc*tur10*tur20
+     +         re*cmuc*tur10(1)*tur10(2)
             enddo
           enddo
         enddo
@@ -1754,7 +1758,7 @@ c            Determine Sij and Wij values:
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
 c            Limit omega here:
-              omegatemp=ccmax(turre(j,k,i,1),tur10)
+              omegatemp=ccmax(turre(j,k,i,1),tur10(1))
 c     Get "factre" term:  changes numerator of cmu for nonlinear terms only
               eta=(2.-c3)**2*(gg*gg/4.)*xis/(omegatemp*re)**2
               squig=(2.-c4)**2*(gg*gg/4.)*wis/(omegatemp*re)**2
@@ -1820,9 +1824,9 @@ c            Add to RHS:
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*beta1*tur10*tur10
+     +         re*beta1*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*tur10*tur20
+     +         re*tur10(1)*tur10(2)
             enddo
           enddo
         enddo
@@ -1873,9 +1877,9 @@ c            Determine Sij values:
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*beta1*tur10*tur10/tur20
+     +         re*beta1*tur10(1)*tur10(1)/tur10(2)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*tur10
+     +         re*tur10(1)
             enddo
           enddo
         enddo
@@ -1990,9 +1994,9 @@ c            Add to RHS:
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*beta1*tur10*tur10/tur20
+     +         re*beta1*tur10(1)*tur10(1)/tur10(2)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*tur10
+     +         re*tur10(1)
             enddo
           enddo
         enddo
@@ -2096,9 +2100,9 @@ c            Add to RHS:
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*beta1*tur10*tur10/tur20
+     +         re*beta1*tur10(1)*tur10(1)/tur10(2)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*tur10
+     +         re*tur10(1)
             enddo
           enddo
         enddo
@@ -2196,9 +2200,9 @@ c            Find nonlinear tauij values:
               pk = ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk - dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*beta1*tur10*tur10
+     +         re*beta1*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*tur10*tur20
+     +         re*tur10(1)*tur10(2)
             enddo
           enddo
         enddo
@@ -2446,7 +2450,7 @@ c
               xnu = fnu(j,k,i)/q(j,k,i,1)
               rt = (turre(j,k,i,2)/xnu)**2/turre(j,k,i,1)
               ft = 1.90*(1. + 
-     +        (beta5/1.90-1.)*cctanh(turre(j,k,i,1)/tur10))/beta5
+     +        (beta5/1.90-1.)*cctanh(turre(j,k,i,1)/tur10(1)))/beta5
               ft= 1.0
               d5 = re*beta5*ft*turre(j,k,i,1)**1.5/(sqrt(rt)+delta)
 c
@@ -3820,6 +3824,7 @@ c     wall function in k-direction
       end if
       do 9171 kset=1,kstop
         if(abs(kbcinfo(nbl,kset,1,kk)).eq.2004 .or.
+     .     abs(kbcinfo(nbl,kset,1,kk)).eq.2024 .or.
      .     abs(kbcinfo(nbl,kset,1,kk)).eq.2016) then
           ibeg=kbcinfo(nbl,kset,2,kk)
           iend=kbcinfo(nbl,kset,3,kk)-1
@@ -3840,7 +3845,7 @@ c     wall function in k-direction
                 tauw=(fnu(j,k,i)+vk0(j,i,1,kk+kk-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
                 omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
-                omegatemp=ccmax(omegatemp,tur10)
+                omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
                 if(ivmx .eq. 6 .or. ivmx .eq. 7) then
@@ -3877,6 +3882,7 @@ c     wall function in j-direction
       end if
       do 9172 jset=1,jstop
         if(abs(jbcinfo(nbl,jset,1,jj)).eq.2004 .or.
+     .     abs(jbcinfo(nbl,jset,1,jj)).eq.2024 .or.
      .     abs(jbcinfo(nbl,jset,1,jj)).eq.2016) then
           ibeg=jbcinfo(nbl,jset,2,jj)
           iend=jbcinfo(nbl,jset,3,jj)-1
@@ -3897,7 +3903,7 @@ c     wall function in j-direction
                 tauw=(fnu(j,k,i)+vj0(k,i,1,jj+jj-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
                 omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
-                omegatemp=ccmax(omegatemp,tur10)
+                omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
                 if(ivmx .eq. 6 .or. ivmx .eq. 7) then
@@ -3934,6 +3940,7 @@ c     wall function in i-direction
       end if
       do 9173 iset=1,istop
         if(abs(ibcinfo(nbl,iset,1,ii)).eq.2004 .or.
+     .     abs(ibcinfo(nbl,iset,1,ii)).eq.2024 .or.
      .     abs(ibcinfo(nbl,iset,1,ii)).eq.2016) then
           jbeg=ibcinfo(nbl,iset,2,ii)
           jend=ibcinfo(nbl,iset,3,ii)-1
@@ -3954,7 +3961,7 @@ c     wall function in i-direction
                 tauw=(fnu(j,k,i)+vi0(k,i,1,ii+ii-1))*dudy
                 utau=sqrt(tauw/q(j,k,i,1)/re)
                 omegatemp=utau/(sqrt(cmuc1)*vk*ccabs(smin(j,k,i))*re)
-                omegatemp=ccmax(omegatemp,tur10)
+                omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
                 if(ivmx .eq. 6 .or. ivmx .eq. 7) then

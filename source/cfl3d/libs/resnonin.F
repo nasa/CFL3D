@@ -25,7 +25,7 @@ c
       dimension res(jdim*kdim*(idim-1),5)
  
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,

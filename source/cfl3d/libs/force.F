@@ -40,7 +40,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /twod/ i2d
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
       common /igrdtyp/ ip3dgrd,ialph
 c
@@ -162,6 +162,7 @@ c
       dcdvl = 0. 
       if (ivisc(3).gt.0 .and. (abs(kbcinfo(nbl,ns,1,kk)).eq.2004 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2014 .or.
+     .    abs(kbcinfo(nbl,ns,1,kk)).eq.2024 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy
@@ -291,6 +292,7 @@ c
       dcdvl = 0.
       if (ivisc(2).gt.0 .and. (abs(jbcinfo(nbl,ns,1,jj)).eq.2004 .or.
      .    abs(jbcinfo(nbl,ns,1,jj)).eq.2014 .or.
+     .    abs(jbcinfo(nbl,ns,1,jj)).eq.2024 .or.
      .    abs(jbcinfo(nbl,ns,1,jj)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy
@@ -420,6 +422,7 @@ c
       dcdvl = 0.
       if (ivisc(1).gt.0 .and. (abs(ibcinfo(nbl,ns,1,ii)).eq.2004 .or.
      .    abs(ibcinfo(nbl,ns,1,ii)).eq.2014 .or.
+     .    abs(ibcinfo(nbl,ns,1,ii)).eq.2024 .or.
      .    abs(ibcinfo(nbl,ns,1,ii)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy

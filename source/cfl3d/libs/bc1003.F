@@ -1,7 +1,7 @@
       subroutine bc1003(jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,bcj,bck,
      .              bci,ista,iend,jsta,jend,ksta,kend,t,jvdim,nface,
      .              tursav,tj0,tk0,ti0,vist3d,vj0,vk0,vi0,iuns,x,z,cl,
-     .              nou,bou,nbuf,ibufdim,myid)
+     .              nou,bou,nbuf,ibufdim,myid,nummem)
 c
 c     $Id$
 c
@@ -24,15 +24,15 @@ c
       dimension sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),
      .          sj(jdim,kdim,idim-1,5)
       dimension t(jvdim,23)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
       dimension x(jdim,kdim,idim),z(jdim,kdim,idim)
 c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -105,22 +105,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 101 i=ista,iend1
         do 101 k=ksta,kend1
           ubar=-(qj0(k,i,2,1)*sj(1,k,i,1)+qj0(k,i,3,1)*sj(1,k,i,2)+
      +           qj0(k,i,4,1)*sj(1,k,i,3))
           if (real(ubar) .lt. 0.) then
-             tj0(k,i,1,1) = tur10
-             tj0(k,i,2,1) = tur20
-             tj0(k,i,1,2) = tur10
-             tj0(k,i,2,2) = tur20
+             tj0(k,i,l,1) = tur10(l)
+             tj0(k,i,l,2) = tur10(l)
           else
-             tj0(k,i,1,1) = tursav(1,k,i,1)
-             tj0(k,i,2,1) = tursav(1,k,i,2)
-             tj0(k,i,1,2) = tj0(k,i,1,1)
-             tj0(k,i,2,2) = tj0(k,i,2,1)
+             tj0(k,i,l,1) = tursav(1,k,i,l)
+             tj0(k,i,l,2) = tj0(k,i,l,1)
           end if
   101   continue
+        enddo
       end if
       end if
 c
@@ -182,22 +180,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 201 i=ista,iend1
         do 201 k=ksta,kend1
           ubar=qj0(k,i,2,3)*sj(jdim,k,i,1)+qj0(k,i,3,3)*sj(jdim,k,i,2)+
      +         qj0(k,i,4,3)*sj(jdim,k,i,3)
           if (real(ubar) .lt. 0.) then
-             tj0(k,i,1,3) = tur10
-             tj0(k,i,2,3) = tur20
-             tj0(k,i,1,4) = tur10
-             tj0(k,i,2,4) = tur20
+             tj0(k,i,l,3) = tur10(l)
+             tj0(k,i,l,4) = tur10(l)
           else
-             tj0(k,i,1,3) = tursav(jdim-1,k,i,1)
-             tj0(k,i,2,3) = tursav(jdim-1,k,i,2)
-             tj0(k,i,1,4) = tj0(k,i,1,3)
-             tj0(k,i,2,4) = tj0(k,i,2,3)
+             tj0(k,i,l,3) = tursav(jdim-1,k,i,l)
+             tj0(k,i,l,4) = tj0(k,i,l,3)
           end if
   201   continue
+        enddo
       end if
       end if
 c
@@ -257,22 +253,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 301 i=ista,iend1
         do 301 j=jsta,jend1
           ubar=-(qk0(j,i,2,1)*sk(j,1,i,1)+qk0(j,i,3,1)*sk(j,1,i,2)+
      +           qk0(j,i,4,1)*sk(j,1,i,3))
           if (real(ubar) .lt. 0.) then
-             tk0(j,i,1,1) = tur10
-             tk0(j,i,2,1) = tur20
-             tk0(j,i,1,2) = tur10
-             tk0(j,i,2,2) = tur20
+             tk0(j,i,l,1) = tur10(l)
+             tk0(j,i,l,2) = tur10(l)
           else
-             tk0(j,i,1,1) = tursav(j,1,i,1)
-             tk0(j,i,2,1) = tursav(j,1,i,2)
-             tk0(j,i,1,2) = tk0(j,i,1,1)
-             tk0(j,i,2,2) = tk0(j,i,2,1)
+             tk0(j,i,l,1) = tursav(j,1,i,l)
+             tk0(j,i,l,2) = tk0(j,i,l,1)
           end if
   301   continue
+        enddo
       end if
       end if
 c
@@ -334,22 +328,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 401 i=ista,iend1
         do 401 j=jsta,jend1
           ubar=qk0(j,i,2,3)*sk(j,kdim,i,1)+qk0(j,i,3,3)*sk(j,kdim,i,2)+
      +         qk0(j,i,4,3)*sk(j,kdim,i,3)
           if (real(ubar) .lt. 0.) then
-             tk0(j,i,1,3) = tur10
-             tk0(j,i,2,3) = tur20
-             tk0(j,i,1,4) = tur10
-             tk0(j,i,2,4) = tur20
+             tk0(j,i,l,3) = tur10(l)
+             tk0(j,i,l,4) = tur10(l)
           else
-             tk0(j,i,1,3) = tursav(j,kdim-1,i,1)
-             tk0(j,i,2,3) = tursav(j,kdim-1,i,2)
-             tk0(j,i,1,4) = tk0(j,i,1,3)
-             tk0(j,i,2,4) = tk0(j,i,2,3)
+             tk0(j,i,l,3) = tursav(j,kdim-1,i,l)
+             tk0(j,i,l,4) = tk0(j,i,l,3)
           end if
   401   continue
+        enddo
       end if
       end if
 c
@@ -399,22 +391,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 501 k=ksta,kend1
         do 501 j=jsta,jend1
           ubar=-(qi0(j,k,2,1)*si(j,k,1,1)+qi0(j,k,3,1)*si(j,k,1,2)+
      +           qi0(j,k,4,1)*si(j,k,1,3))
           if (real(ubar) .lt. 0.) then
-             ti0(j,k,1,1) = tur10
-             ti0(j,k,2,1) = tur20
-             ti0(j,k,1,2) = tur10
-             ti0(j,k,2,2) = tur20
+             ti0(j,k,l,1) = tur10(l)
+             ti0(j,k,l,2) = tur10(l)
           else
-             ti0(j,k,1,1) = tursav(j,k,1,1)
-             ti0(j,k,2,1) = tursav(j,k,1,2)
-             ti0(j,k,1,2) = ti0(j,k,1,1)
-             ti0(j,k,2,2) = ti0(j,k,2,1)
+             ti0(j,k,l,1) = tursav(j,k,1,l)
+             ti0(j,k,l,2) = ti0(j,k,l,1)
           end if
   501   continue
+        enddo
       end if
       end if
 c
@@ -464,22 +454,20 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 601 k=ksta,kend1
         do 601 j=jsta,jend1
           ubar=qi0(j,k,2,3)*si(j,k,idim,1)+qi0(j,k,3,3)*si(j,k,idim,2)+
      +         qi0(j,k,4,3)*si(j,k,idim,3)
           if (real(ubar) .lt. 0.) then
-             ti0(j,k,1,3) = tur10
-             ti0(j,k,2,3) = tur20
-             ti0(j,k,1,4) = tur10
-             ti0(j,k,2,4) = tur20
+             ti0(j,k,l,3) = tur10(l)
+             ti0(j,k,l,4) = tur10(l)
           else
-             ti0(j,k,1,3) = tursav(j,k,idim-1,1)
-             ti0(j,k,2,3) = tursav(j,k,idim-1,2)
-             ti0(j,k,1,4) = ti0(j,k,1,3)
-             ti0(j,k,2,4) = ti0(j,k,2,3)
+             ti0(j,k,l,3) = tursav(j,k,idim-1,l)
+             ti0(j,k,l,4) = ti0(j,k,l,3)
           end if
   601   continue
+        enddo
       end if
       end if
       end if

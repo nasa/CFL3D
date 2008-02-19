@@ -1,7 +1,7 @@
       subroutine coll2q(q,qc,vol,volc,jdim,kdim,idim,jc,kc,ic,
      .                  res,qr,qw,js,ks,is,je,ke,ie,nbl,nblc,
      .                  vistf,vistc,tursavf,tursavc,nou,bou,nbuf,
-     .                  ibufdim)
+     .                  ibufdim,nummem)
 c
 c     $Id$
 c
@@ -23,7 +23,7 @@ c
       dimension qr(je-js+1,ke-ks+1,ie-is,5),qw(jdim,kdim,idim,5)
       dimension res(jdim,kdim,idim-1,5)
       dimension vistf(jdim,kdim,idim),vistc(jc,kc,ic),
-     .          tursavf(jdim,kdim,idim,2),tursavc(jc,kc,ic,2)
+     .          tursavf(jdim,kdim,idim,nummem),tursavc(jc,kc,ic,nummem)
 c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -109,15 +109,32 @@ c
      .                   +tursavf(j,k+1,i,n)   +tursavf(j,k+1,i+1,n)
      .                   +tursavf(j+1,k+1,i,n) +tursavf(j+1,k+1,i+1,n))
       end if
-      if ((ivisc(1).gt.5 .and. n.le.2) .or. (ivisc(2).gt.5 .and. n.le.2)
-     .   .or. (ivisc(3).gt.5 .and. n.le.2)) then
-         tursavc(jq,kq,iq,n)=.125e0*(tursavf(j,k,i,n)+tursavf(j,k,i+1,n)
-     .                   +tursavf(j+1,k,i,n)   +tursavf(j+1,k,i+1,n)
-     .                   +tursavf(j,k+1,i,n)   +tursavf(j,k+1,i+1,n)
-     .                   +tursavf(j+1,k+1,i,n) +tursavf(j+1,k+1,i+1,n))
-      end if
    40 continue
    41 continue
+      if (ivisc(1).gt.5 .or. ivisc(2).gt.5 .or. ivisc(3).gt.5) then
+      do 141 n=1,nummem
+      kk = 0
+      kq = ks-1
+      do 140 k=1,kdim1,2
+      kk = kk+1
+      kq = kq+1
+      ii = 0
+      iq = is-1
+      do 140 i=1,idim1,2
+      ii = ii+1
+      iq = iq+1
+      jj = 0
+      jq = js-1
+      do 140 j=1,jdim1,2
+      jj = jj+1
+      jq = jq+1
+      tursavc(jq,kq,iq,n)=.125e0*(tursavf(j,k,i,n)+tursavf(j,k,i+1,n)
+     .                +tursavf(j+1,k,i,n)   +tursavf(j+1,k,i+1,n)
+     .                +tursavf(j,k+1,i,n)   +tursavf(j,k+1,i+1,n)
+     .                +tursavf(j+1,k+1,i,n) +tursavf(j+1,k+1,i+1,n))
+  140 continue
+  141 continue
+      end if
 c
       else
 c
@@ -155,13 +172,31 @@ c
          tursavc(jq,kq,iq,n)=.25e0*(tursavf(j,k,i,n)+tursavf(j+1,k,i,n)
      .                       +tursavf(j,k+1,i,n)+tursavf(j+1,k+1,i,n))
       end if
-      if ((ivisc(1).gt.5 .and. n.le.2) .or. (ivisc(2).gt.5 .and. n.le.2)
-     .   .or. (ivisc(3).gt.5 .and. n.le.2)) then
-         tursavc(jq,kq,iq,n)=.25e0*(tursavf(j,k,i,n)+tursavf(j+1,k,i,n)
-     .                       +tursavf(j,k+1,i,n)+tursavf(j+1,k+1,i,n))
-      end if
    45 continue
    46 continue
+      if (ivisc(1).gt.5 .or. ivisc(2).gt.5 .or. ivisc(3).gt.5) then
+      do 146 n=1,nummem
+      kk = 0
+      kq = ks-1
+      do 145 k=1,kdim1,2
+      kk = kk+1
+      kq = kq+1
+      ii = 0
+      iq = is-1
+      do 145 i=1,idim1,1
+      ii = ii+1
+      iq = iq+1
+      jj = 0
+      jq = js-1
+      do 145 j=1,jdim1,2
+      jj = jj+1
+      jq = jq+1
+      tursavc(jq,kq,iq,n)=.25e0*(tursavf(j,k,i,n)+tursavf(j+1,k,i,n)
+     .                       +tursavf(j,k+1,i,n)+tursavf(j+1,k+1,i,n))
+  145 continue
+  146 continue
+      end if
+c
       end if
       return
       end

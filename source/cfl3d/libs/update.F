@@ -1,7 +1,8 @@
       subroutine update(jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,vol,dtj,
      .                  vist3d,blank,x,y,z,res,wk0,vmuk,vmuj,vmui,wk,
      .                  nwork,nbl,iover,vk0,bcj,bck,bci,nou,bou,nbuf,
-     .                  ibufdim,myid,mblk2nd,maxbl,volk0,iadvance)
+     .                  ibufdim,myid,mblk2nd,maxbl,volk0,iadvance,
+     .                  nummem)
 c
 c     $Id$
 c
@@ -60,7 +61,7 @@ c
       call af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .          res,vist3d,x,y,z,blank,vmuk,resd,wk,nwork,wk0,1,iover,
      .          vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
-     .          volk0,iadvance)
+     .          volk0,iadvance,nummem)
 c
 c      update 3-d solution
 c

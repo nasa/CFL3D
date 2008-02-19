@@ -1,6 +1,6 @@
       subroutine ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,t,nvtq,
      .                  wi0,vist3d,vmui,vi0,bci,zksav,ti0,cmuv,voli0,
-     .                  nou,bou,nbuf,ibufdim,iadv)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem)
 c
 c     $Id$
 c
@@ -22,7 +22,7 @@ c
      .          vi0(jdim,kdim,1,4),voli0(jdim,kdim,4)
       dimension t(nvtq,32),vmui(jdim-1,kdim-1,2),wi0(npl*(jdim-1),22)
       dimension bci(jdim,kdim,2)
-      dimension zksav(jdim,kdim,idim,2),ti0(jdim,kdim,2,4)
+      dimension zksav(jdim,kdim,idim,nummem),ti0(jdim,kdim,nummem,4)
       dimension cmuv(jdim-1,kdim-1,idim-1)
 c
       common /easmv/ c1,c2,c3,c4,c5,sigk1,cmuc1
@@ -32,7 +32,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -460,7 +460,7 @@ c            Find tauij values:
               w=0.5*(q(j,kk,i,4)+qi0(j,kk,4,1))*(1.-wi0(j+jiv2,5))+
      +            qi0(j,kk,4,1)*wi0(j+jiv2,5)
               zksav1=0.5*(zksav(j,kk,i,1)+ti0(j,kk,1,1))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i,2)+ti0(j,kk,2,1))
               bnum=zksav2*(1.-f7)+f7
               eta=(2.-c3)**2*(gg*gg/4.)*xis*(bnum/(zksav1*re))**2
@@ -563,7 +563,7 @@ c            Find tauij values:
               w=0.5*(q(j,kk,i-1,4)+qi0(j,kk,4,3))*(1.-wi0(j+jiv2,15))+
      +            qi0(j,kk,4,3)*wi0(j+jiv2,15)
               zksav1=0.5*(zksav(j,kk,i-1,1)+ti0(j,kk,1,3))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i-1,2)+ti0(j,kk,2,3))
               bnum=zksav2*(1.-f7)+f7
               eta=(2.-c3)**2*(gg*gg/4.)*xis*(bnum/(zksav1*re))**2
@@ -659,7 +659,7 @@ c            "Constants" are function of c3, c4, and gg:
 c            Find tauij values:
               rho=0.5*(q(j,kk,i,1)+q(j,kk,i-1,1))
               zksav1=0.5*(zksav(j,kk,i,1)+zksav(j,kk,i-1,1))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i,2)+zksav(j,kk,i-1,2))
               bnum=zksav2*(1.-f7)+f7
               eta=(2.-c3)**2*(gg*gg/4.)*xis*(bnum/(zksav1*re))**2
@@ -783,7 +783,7 @@ c            Find tauij values:
               w=0.5*(q(j,kk,i,4)+qi0(j,kk,4,1))*(1.-wi0(j+jiv2,5))+
      +            qi0(j,kk,4,1)*wi0(j+jiv2,5)
               zksav1=0.5*(zksav(j,kk,i,1)+ti0(j,kk,1,1))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i,2)+ti0(j,kk,2,1))
               cmuu = cmuv(j,kk,i)
               bnum=zksav2*(1.-f7)+f7
@@ -878,7 +878,7 @@ c            Find tauij values:
               w=0.5*(q(j,kk,i-1,4)+qi0(j,kk,4,3))*(1.-wi0(j+jiv2,15))+
      +            qi0(j,kk,4,3)*wi0(j+jiv2,15)
               zksav1=0.5*(zksav(j,kk,i-1,1)+ti0(j,kk,1,3))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i-1,2)+ti0(j,kk,2,3))
               cmuu=cmuv(j,kk,i-1)
               bnum=zksav2*(1.-f7)+f7
@@ -966,7 +966,7 @@ c            "Constants" are function of c3, c4, and gg:
 c            Find tauij values:
               rho=0.5*(q(j,kk,i,1)+q(j,kk,i-1,1))
               zksav1=0.5*(zksav(j,kk,i,1)+zksav(j,kk,i-1,1))
-              zksav1=ccmax(zksav1,tur10)
+              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,kk,i,2)+zksav(j,kk,i-1,2))
               cmuu=0.5*(cmuv(j,kk,i)+cmuv(j,kk,i-1))
               bnum=zksav2*(1.-f7)+f7

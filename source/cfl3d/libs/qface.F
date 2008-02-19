@@ -22,7 +22,7 @@ c     ldim is the dimension covering the number of solution variables:
 c
 c     ldim=5 for q/qj0/qk0/qi0
 c     ldim=1 for vist3d/vj0/vk0/vi0
-c     ldim=2 for tursav/tj0/tk0/ti0
+c     ldim=nummem for tursav/tj0/tk0/ti0
 c
 c     The bcj/bck/bci arrays indicate whether the data stored in the
 c     j0/k0/i0 boundary data arrays in the mm=1 and mm=3 arrays are

@@ -1,5 +1,4 @@
       subroutine initnonin(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,
-     .                tj0,tk0,ti0,
      .                vol,volj0,volk0,voli0,
      .                x,y,z)
 c
@@ -16,8 +15,6 @@ c
 c
       dimension q(jdim,kdim,idim,5), qi0(jdim,kdim,5,4),
      .          qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4)
-      dimension tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
-     .          ti0(jdim,kdim  ,2,4)
       dimension volj0(kdim,idim-1,4),volk0(jdim,idim-1,4),
      .          voli0(jdim,kdim  ,4),vol(jdim,kdim,idim-1)
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)

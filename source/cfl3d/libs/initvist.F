@@ -1,4 +1,5 @@
-      subroutine initvist(nbl,jdim,kdim,idim,vist3d,tursav,smin,cmuv)
+      subroutine initvist(nbl,jdim,kdim,idim,vist3d,tursav,smin,cmuv,
+     .                    nummem)
 c
 c     $Id$
 c
@@ -10,11 +11,11 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
-      dimension tursav(jdim,kdim,idim,2),vist3d(jdim,kdim,idim),
+      dimension tursav(jdim,kdim,idim,nummem),vist3d(jdim,kdim,idim),
      .          smin(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
 c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
 c
 c   scaling factor for distance-based I.C.s:
@@ -39,16 +40,17 @@ c   For field eqn turbulence models:
           do 2000 i=1,idim-1
             do 2000 k=1,kdim-1
               do 2000 j=1,jdim-1
-                tursav(j,k,i,1)=tur10
-                vist3d(j,k,i)=0.09*tur10
+                tursav(j,k,i,1)=tur10(1)
+                vist3d(j,k,i)=0.09*tur10(1)
  2000     continue
         else if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or.
      .           ivisc(3).eq.5) then
           do 2001 i=1,idim-1
             do 2001 k=1,kdim-1
               do 2001 j=1,jdim-1
-                tursav(j,k,i,1)=tur10
-                vist3d(j,k,i)=tur10*(tur10**3/(tur10**3+357.911))
+                tursav(j,k,i,1)=tur10(1)
+                vist3d(j,k,i)=tur10(1)*(tur10(1)**3/
+     .                        (tur10(1)**3+357.911))
  2001     continue
         else if (ivisc(1).eq.11 .or. ivisc(2).eq.11 .or.
      .           ivisc(3).eq.11 .or.
@@ -62,7 +64,7 @@ c   For field eqn turbulence models:
           do 2002 i=1,idim-1
             do 2002 k=1,kdim-1
               do 2002 j=1,jdim-1
-                zk1=tur20
+                zk1=tur10(2)
                 exponent=-471.*(ccabs(smin(j,k,i))*refac)+.47
                 if(real(exponent) .lt. -40.) then
                   zk2=0.
@@ -80,7 +82,7 @@ c   For field eqn turbulence models:
                 tursav(j,k,i,2)=ccmax(tursav(j,k,i,2),zk1)
                 tursav(j,k,i,2)=ccmin(tursav(j,k,i,2),zk4)
 c
-                ep1=tur10
+                ep1=tur10(1)
                 exponent=-555.*(ccabs(smin(j,k,i))*refac)-6.
                 if(real(exponent) .lt. -20.) then
                   ep2=0.
@@ -118,11 +120,11 @@ c
      .        ivisc(3).eq.12 .or.
      .        ivisc(1).eq.14 .or. ivisc(2).eq.14 .or.
      .        ivisc(3).eq.14) cmu=.09
-          v3dset=cmu*rho0*tur20/tur10
+          v3dset=cmu*rho0*tur10(2)/tur10(1)
           do 2009 i=1,idim-1
             do 2009 k=1,kdim-1
               do 2009 j=1,jdim-1
-                zk1=tur20
+                zk1=tur10(2)
                 zk2=-const1*(ccabs(smin(j,k,i))*refac)**2 +
      +               const2*ccabs(smin(j,k,i))*refac
                 tursav(j,k,i,2)=ccmax(zk1,zk2)
@@ -134,6 +136,18 @@ c
                 vist3d(j,k,i)=cmu*rho0*tursav(j,k,i,2)/
      .                        tursav(j,k,i,1)
  2009     continue
+        end if
+c
+c       Special for 3-eqn transition model ivisc=30
+        if (ivisc(1).eq.30.or. ivisc(2).eq.30.or.
+     .           ivisc(3).eq.30) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                tursav(j,k,i,3)=tur10(3)
+              enddo
+            enddo
+          enddo
         end if
 c
       else

@@ -1,5 +1,5 @@
       subroutine init(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,tj0,tk0,ti0,
-     .                vol,volj0,volk0,voli0)
+     .                vol,volj0,volk0,voli0,nummem)
 c
 c     $Id$
 c
@@ -14,8 +14,8 @@ c
 c
       dimension q(jdim,kdim,idim,5), qi0(jdim,kdim,5,4),
      .          qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4)
-      dimension tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),
-     .          ti0(jdim,kdim  ,2,4)
+      dimension tj0(kdim,idim-1,nummem,4),tk0(jdim,idim-1,nummem,4),
+     .          ti0(jdim,kdim  ,nummem,4)
       dimension volj0(kdim,idim-1,4),volk0(jdim,idim-1,4),
      .          voli0(jdim,kdim  ,4),vol(jdim,kdim,idim-1)
 c
@@ -24,7 +24,7 @@ c
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
       common /maxiv/ ivmx
 c
@@ -122,12 +122,12 @@ cdir$ ivdep
 c   For field eqn turbulence models:
       if (ivisc(1).ge.4 .or. ivisc(2).ge.4 .or. ivisc(3).ge.4) then
         if (ivisc(1).eq.4 .or. ivisc(2).eq.4 .or. ivisc(3).eq.4) then
-          if (real(tur10) .lt. 0.) tur10=0.1
-          if (real(tur20) .lt. 0.) tur20=0.
+          if (real(tur10(1)) .lt. 0.) tur10(1)=0.1
+          if (real(tur10(2)) .lt. 0.) tur10(2)=0.
         else if (ivisc(1).eq.5 .or. ivisc(2).eq.5 .or.
      .           ivisc(3).eq.5) then
-          if (real(tur10) .lt. 0.) tur10=1.341946
-          if (real(tur20) .lt. 0.) tur20=0.
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.341946
+          if (real(tur10(2)) .lt. 0.) tur10(2)=0.
         else if (ivisc(1).eq.11 .or. ivisc(2).eq.11 .or.
      .           ivisc(3).eq.11 .or.
      .           ivisc(1).eq.10 .or. ivisc(2).eq.10 .or.
@@ -137,37 +137,60 @@ c   For field eqn turbulence models:
      .           ivisc(2).eq.13 .or. ivisc(3).eq.13 .or.
      .           ivisc(1).eq.15 .or. ivisc(2).eq.15 .or.
      .           ivisc(3).eq.15) then
-          if (real(tur10) .lt. 0.) tur10=1.e-17
-          if (real(tur20) .lt. 0.) tur20=1.e-9
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-17
+          if (real(tur10(2)) .lt. 0.) tur10(2)=1.e-9
         else if (ivisc(1).eq. 8 .or. ivisc(2).eq. 8 .or.
      .           ivisc(3).eq. 8 .or.
      .           ivisc(1).eq.12 .or. ivisc(2).eq.12 .or.
      .           ivisc(3).eq.12 .or.
      .           ivisc(1).eq.14 .or. ivisc(2).eq.14 .or.
      .           ivisc(3).eq.14) then
-          if (real(tur10) .lt. 0.) tur10=9.e-8
-          if (real(tur20) .lt. 0.) tur20=9.e-9
+          if (real(tur10(1)) .lt. 0.) tur10(1)=9.e-8
+          if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
         else
-          if (real(tur10) .lt. 0.) tur10=1.e-6
-          if (real(tur20) .lt. 0.) tur20=9.e-9
+c         this includes models 6, 7, and 30:
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
+          if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
         end if
         do 4001 m=1,4
           do 4000 i=1,idim-1
             do 3999 j=1,jdim
-              tk0(j,i,1,m)=tur10
-              tk0(j,i,2,m)=tur20
+              tk0(j,i,1,m)=tur10(1)
+              tk0(j,i,2,m)=tur10(2)
  3999       continue
             do 3998 k=1,kdim
-              tj0(k,i,1,m)=tur10
-              tj0(k,i,2,m)=tur20
+              tj0(k,i,1,m)=tur10(1)
+              tj0(k,i,2,m)=tur10(2)
  3998       continue
  4000     continue
           do 4002 k=1,kdim
             do 4002 j=1,jdim
-              ti0(j,k,1,m)=tur10
-              ti0(j,k,2,m)=tur20
+              ti0(j,k,1,m)=tur10(1)
+              ti0(j,k,2,m)=tur10(2)
  4002     continue
  4001   continue
+c
+c       Special for 3-eqn model number 30:
+        if (ivisc(1).eq.30.or. ivisc(2).eq.30.or.
+     .           ivisc(3).eq.30) then
+          if (real(tur10(3)) .lt. 0.) tur10(3)=1.0
+          do m=1,4
+            do i=1,idim-1
+              do j=1,jdim
+                tk0(j,i,3,m)=tur10(3)
+              enddo
+              do k=1,kdim
+                tj0(k,i,3,m)=tur10(3)
+              enddo
+            enddo
+            do k=1,kdim
+              do j=1,jdim
+                ti0(j,k,3,m)=tur10(3)
+              enddo
+            enddo
+          enddo
+        end if
+c
       end if
 c
 c     boundary volumes (default to interior cells)

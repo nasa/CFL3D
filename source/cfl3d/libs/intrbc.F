@@ -1,7 +1,7 @@
       subroutine intrbc(q,jdim,kdim,idim,nbl,ldim,maxbl,iitot,lig,
      .                  iipntsg,dxintg,dyintg,dzintg,iiig,jjig,kkig,
      .                  qb,qj0,qk0,qi0,qq,bcj,bck,bci,nou,bou,nbuf,
-     .                  ibufdim,icorr)
+     .                  ibufdim,icorr,iset)
 c
 c     $Id$
 c
@@ -33,15 +33,8 @@ c     10.**(-iexp) is machine zero
 c
       qlimit  = 10.**(-iexp)
 c
-c   Set index for loading into appropriate qb array
+c   Note: iset is index for loading into appropriate qb array
 c        (1 for q, 2 for vk0,vj0,vi0, 3 for tj0,tk0,ti0)
-      if (ldim .eq. 5) then
-        iset=1
-      else if (ldim .eq. 1) then
-        iset=2
-      else
-        iset=3
-      end if
 c
       lsta = lig(nbl)
       lend = lsta+iipntsg(nbl)-1

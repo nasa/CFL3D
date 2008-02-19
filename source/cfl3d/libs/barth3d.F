@@ -3,7 +3,7 @@
      + timestp,fnu,
      + bx,cx,dx,fx,workx,by,cy,dy,fy,worky,bz,cz,dz,fz,workz,ntime,
      + tj0,tk0,ti0,nbl,blnum,blank,iover,sumn1,sumn2,negn1,negn2,
-     + tursav2,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2)
+     + tursav2,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,nummem)
 c
 c     $Id$
 c
@@ -34,6 +34,8 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+      common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
+     .        tur10(7)
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -50,11 +52,12 @@ c
      +          bz(kdim-1,idim-1),cz(kdim-1,idim-1),dz(kdim-1,idim-1),
      + fz(kdim-1,idim-1),workz(kdim-1,idim-1)
       dimension turre(0-iex:jdim+iex,0-iex:kdim+iex,0-iex2:idim+iex2),
-     + smin(jdim-1,kdim-1,idim-1),tursav(jdim,kdim,idim,2),
-     + tj0(kdim,idim-1,2,4),tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+     + smin(jdim-1,kdim-1,idim-1),tursav(jdim,kdim,idim,nummem),
+     + tj0(kdim,idim-1,nummem,4),tk0(jdim,idim-1,nummem,4),
+     + ti0(jdim,kdim,nummem,4),
      + xjb(jdim-1,kdim-1,idim-1),xkb(jdim-1,kdim-1,idim-1),
      + blnum(jdim-1,kdim-1,idim-1),blank(jdim,kdim,idim)
-      dimension tursav2(jdim,kdim,idim,4)
+      dimension tursav2(jdim,kdim,idim,2*nummem)
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
 c
@@ -62,6 +65,9 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''   computing turbulent'',
      +   '' viscosity using Baldwin-Barth, block ='',i4)') nbl
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     Freestream tur10 = '',
+     +     e19.8)') tur10(1)
         if(iturbord .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     1st order advection on RHS'')')
@@ -219,8 +225,8 @@ c            blocks for ypls
       enddo
 c If this is 1st global subiteration for time-accurate computation, 
 c save tursav (at time step n):
-c tursav2(j,k,i,1) and (j,k,i,2) are turb quantities
-c tursav2(j,k,i,3) and (j,k,i,4) are Delta turb quantities
+c tursav2(j,k,i,1) is turb quantity
+c tursav2(j,k,i,3) is Delta turb quantity
 c (in BB, only (j,k,i,1) and (j,k,i,3) are used)
       if (real(dt) .gt. 0. .and. icyc .eq. 1) then
       if (abs(ita) .eq. 2) then

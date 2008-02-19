@@ -46,7 +46,7 @@ c     Description of variables:
 c       jdim,kdim,idim    = dimensions of current block
 c       data              = data on current block; corresponds to q 
 c                           if ldim=5, vist3d if ldim=1 and tursav
-c                           if ldim=2
+c                           if ldim=nummem
 c       datak0            = BC values of data assigned for this block
 c       ista,iend,etc.    = indices over which BC is applied
 c       nface             = face number (5 = k=1  6 = k=kdim)

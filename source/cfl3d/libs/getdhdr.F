@@ -47,9 +47,21 @@ c
          end if
       end if
 c
-      if (abs(ibctyp).eq.2004 .or. abs(ibctyp).eq.2014) then
+      if (abs(ibctyp).eq.2004) then
          datahdr(1)  = '   tw/tinf'
          datahdr(2)  = '        cq'
+      end if
+c
+      if (abs(ibctyp).eq.2014) then
+         datahdr(1)  = '   tw/tinf'
+         datahdr(2)  = '        cq'
+         datahdr(3)  = '     index'
+      end if
+c
+      if (abs(ibctyp).eq.2024) then
+         datahdr(1)  = '   tw/tinf'
+         datahdr(2)  = '        cq'
+         datahdr(3)  = ' intermtbc'
       end if
 c
       if (ibctyp.eq.2005) then
@@ -87,7 +99,7 @@ c
          datahdr(4) = '      lref'
       end if
 c
-      if (ibctyp.eq.2008) then
+      if (ibctyp.eq.2008 .or. ibctyp.eq.2038) then
          datahdr(1)  = '       rho'
          datahdr(2)  = '         u'
          datahdr(3)  = '         v'

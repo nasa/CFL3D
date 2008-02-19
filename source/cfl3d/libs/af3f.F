@@ -1,7 +1,7 @@
       subroutine af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .                res,vist3d,x,y,z,blank,vmuk,resid,wk,nwork,wk0,
      .                nwk0,iover,vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,
-     .                myid,mblk2nd,maxbl,volk0,iadvance)
+     .                myid,mblk2nd,maxbl,volk0,iadvance,nummem)
 c
 c     $Id$
 c
@@ -187,7 +187,7 @@ c        implicit (idf=1), so just send dummy variables (wk(iwke)).
          call hfluxv(i,npl,jdim,kdim,idim,1,wk(iwka),wk(iwkb),wk(iwkc),
      .               res,q,qk0,sk,vol,wk(iwkd),nvtq,wk0,vist3d,vmuk,
      .               vk0,bck,wk(iwke),wk(iwke),wk(iwke),
-     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl))
+     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
       end if
 c
       if (iover.eq.1) call abckz(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),

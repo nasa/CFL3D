@@ -1,6 +1,7 @@
       subroutine bc_xmera(ntime,nbl,lw,lw2,w,mgwk,wk,nwork,maxbl,iitot,
      .                    iviscg,iovrlp,lbg,ibpntsg,qb,iibg,kkbg,
-     .                    jjbg,ibcg,nou,bou,nbuf,ibufdim,int_updt)
+     .                    jjbg,ibcg,nou,bou,nbuf,ibufdim,int_updt,
+     .                    nummem)
 c
 c     $Id$
 c
@@ -56,7 +57,7 @@ c
          end if
          if (iviscg(nbl,1).ge.4 .or. iviscg(nbl,2).ge.4 .or.
      .       iviscg(nbl,3).ge.4) then
-             ldim = 2
+             ldim = nummem
              call avghole(w(lxib),w(lblk),jdim,kdim,idim,nbl,ldim,
      .       int_updt)
              call xupdt(w(lxib),w(ltj0),w(ltk0),w(lti0),jdim,kdim,

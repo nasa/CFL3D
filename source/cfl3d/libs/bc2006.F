@@ -3,7 +3,8 @@
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
      .                  filname,iuns,x,y,z,nblc,jdimc,kdimc,idimc,
-     .                  qj0c,qk0c,qi0c,ichk,nou,bou,nbuf,ibufdim,myid)
+     .                  qj0c,qk0c,qi0c,ichk,nou,bou,nbuf,ibufdim,myid,
+     .                  nummem)
 c
 c     $Id$
 c
@@ -103,13 +104,13 @@ c
      .          xtbi(jdim,kdim,3,2),atbj(kdim,idim-1,3,2),
      .          atbk(jdim,idim-1,3,2),atbi(jdim,kdim,3,2)
       dimension bcdata(mdim,ndim,2,12)
-      dimension tursav(jdim,kdim,idim,2),tj0(kdim,idim-1,2,4),
-     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4),
+      dimension tursav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),
+     .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
 c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -345,13 +346,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 180 i=ista,iend1
         do 180 k=ksta,kend1
-          tj0(k,i,1,1) = tursav(1,k,i,1)
-          tj0(k,i,2,1) = tursav(1,k,i,2)
-          tj0(k,i,1,2) = tursav(1,k,i,1)
-          tj0(k,i,2,2) = tursav(1,k,i,2)
+          tj0(k,i,l,1) = tursav(1,k,i,l)
+          tj0(k,i,l,2) = tursav(1,k,i,l)
   180   continue
+        enddo
       end if
       end if
       end if
@@ -551,13 +552,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 280 i=ista,iend1
         do 280 k=ksta,kend1
-          tj0(k,i,1,3) = tursav(jdim1,k,i,1)
-          tj0(k,i,2,3) = tursav(jdim1,k,i,2)
-          tj0(k,i,1,4) = tursav(jdim1,k,i,1)
-          tj0(k,i,2,4) = tursav(jdim1,k,i,2)
+          tj0(k,i,l,3) = tursav(jdim1,k,i,l)
+          tj0(k,i,l,4) = tursav(jdim1,k,i,l)
   280   continue
+        enddo
       end if
       end if
       end if
@@ -758,13 +759,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 380 i=ista,iend1
         do 380 j=jsta,jend1
-          tk0(j,i,1,1) = tursav(j,1,i,1)
-          tk0(j,i,2,1) = tursav(j,1,i,2)
-          tk0(j,i,1,2) = tursav(j,1,i,1)
-          tk0(j,i,2,2) = tursav(j,1,i,2)
+          tk0(j,i,l,1) = tursav(j,1,i,l)
+          tk0(j,i,l,2) = tursav(j,1,i,l)
   380   continue
+        enddo
       end if
       end if
       end if
@@ -966,13 +967,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 480 i=ista,iend1
         do 480 j=jsta,jend1
-          tk0(j,i,1,3) = tursav(j,kdim1,i,1)
-          tk0(j,i,2,3) = tursav(j,kdim1,i,2)
-          tk0(j,i,1,4) = tursav(j,kdim1,i,1)
-          tk0(j,i,2,4) = tursav(j,kdim1,i,2)
+          tk0(j,i,l,3) = tursav(j,kdim1,i,l)
+          tk0(j,i,l,4) = tursav(j,kdim1,i,l)
   480   continue
+        enddo
       end if
       end if
       end if
@@ -1173,13 +1174,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 580 k=ksta,kend1
         do 580 j=jsta,jend1
-          ti0(j,k,1,1) = tursav(j,k,1,1)
-          ti0(j,k,2,1) = tursav(j,k,1,2)
-          ti0(j,k,1,2) = tursav(j,k,1,1)
-          ti0(j,k,2,2) = tursav(j,k,1,2)
+          ti0(j,k,l,1) = tursav(j,k,1,l)
+          ti0(j,k,l,2) = tursav(j,k,1,l)
   580   continue
+        enddo
       end if
       end if
       end if
@@ -1380,13 +1381,13 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+        do l=1,nummem
         do 680 k=ksta,kend1
         do 680 j=jsta,jend1
-          ti0(j,k,1,3) = tursav(j,k,idim1,1)
-          ti0(j,k,2,3) = tursav(j,k,idim1,2)
-          ti0(j,k,1,4) = tursav(j,k,idim1,1)
-          ti0(j,k,2,4) = tursav(j,k,idim1,2)
+          ti0(j,k,l,3) = tursav(j,k,idim1,l)
+          ti0(j,k,l,4) = tursav(j,k,idim1,l)
   680   continue
+        enddo
       end if
       end if
       end if

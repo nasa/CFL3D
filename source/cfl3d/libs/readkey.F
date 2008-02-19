@@ -58,10 +58,10 @@ c
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
-     .        tur10,tur20
+     .        tur10(7)
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient
+     .        keepambient,re_thetat0
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -74,6 +74,7 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
+      common /lesinfo/ cs_smagorinsky
 c
       ititr = 0
       nkey  = 0
@@ -387,9 +388,14 @@ c     turbulent quantity freestream levels
 c     < 0  = use the default value (different for each turb model)
 c     >= 0 = use this number as the specified user input value
 c     (defaults=-1)
-      tur10 = -1.
-      tur20 = -1.
-      nkey     = nkey + 2
+      tur10(1) = -1.
+      tur10(2) = -1.
+      tur10(3) = -1.
+      tur10(4) = -1.
+      tur10(5) = -1.
+      tur10(6) = -1.
+      tur10(7) = -1.
+      nkey     = nkey + 7
 c
 c     value that epsilon or omega is set to for 2-eqn models if 
 c     it goes below tur1cutlev
@@ -556,6 +562,33 @@ c     keepambient used to maintain ambient turb levels for 2-eq models
       keepambient = 0
       nkey     = nkey + 1
 c
+c     re_thetat0 used for transition model
+c     < 0  = use the default computed value
+c     >= 0 = use this number as the specified user input value
+c     (default=-1)
+      re_thetat0 = -1.0
+      nkey     = nkey + 1
+c
+c     turbintensity_inf_percent is freestrem turb intensity
+c     setting this will override any value set for tur20=tur10(2)
+c     this has no effect on tur10=tur10(1)
+c     default=-1.
+      turbintensity_inf_percent = -1.0
+      nkey     = nkey + 1
+c
+c     eddy_visc_inf is freestream mu_t/mu_inf
+c     setting this will override any value set for tur10=tur10(1)
+c     this has no effect on tur20=tur10(2)
+c     default=-1.
+      eddy_visc_inf = -1.0
+      nkey     = nkey + 1
+c
+c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant
+c     if set to zero, you get implicit LES (no model)
+c     default=0.2
+      cs_smagorinsky = 0.2
+      nkey     = nkey + 1
+c
 c*********************************************
 c     check for keyword-driven inputs
 c*********************************************
@@ -645,6 +678,49 @@ c     Check for the existence of the clcd.bin file
  1015    iclcd = 1
  1016    continue
          
+c        the variables turbintensity_inf_percent and eddy_visc_inf
+c        do not go to the rest of the code; instead, if set, they
+c        modify tur10(2) and tur10(1), respectively
+         if (turbintensity_inf_percent .ge. 0.) then
+           if (iunit11.gt.0) write(iunit11,'('' turbintensity_inf'',
+     +       ''_percent always overrides tur20'')')
+           tur10(2)=1.5*xmach**2*(turbintensity_inf_percent/100.)**2
+         end if
+         if (eddy_visc_inf .ge. 0.) then
+           if (iunit11.gt.0) write(iunit11,'('' eddy_visc_inf always'',
+     +       '' overrides tur10'')')
+           if (ivmx .eq. 4) then
+             tur10(1)=eddy_visc_inf/0.09
+           else if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.30) then
+             tur10(1)=tur10(2)/eddy_visc_inf
+           else if (ivmx.eq.8 .or. ivmx.eq.14) then
+             tur10(1)=0.0895*tur10(2)/eddy_visc_inf
+           else if (ivmx.eq.12) then
+             tur10(1)=0.081*tur10(2)/eddy_visc_inf
+           else if (ivmx.eq.10 .or. ivmx.eq.15) then
+             tur10(1)=0.09*tur10(2)**2/eddy_visc_inf
+           else if (ivmx.eq.9 .or. ivmx.eq.13) then
+             tur10(1)=0.0885*tur10(2)**2/eddy_visc_inf
+           else if (ivmx.eq.11) then
+             tur10(1)=0.081*tur10(2)**2/eddy_visc_inf
+           else if (ivmx .eq. 5) then
+c            for SA model, need to iterate to find nuwiggle:
+             tur10(1)=eddy_visc_inf
+             do n=1,100
+               errornum=tur10(1)**4-eddy_visc_inf*tur10(1)**3-
+     +           357.911*eddy_visc_inf
+               errorden=4.*tur10(1)**3-3.*eddy_visc_inf*tur10(1)**2
+               error=errornum/errorden
+               if (abs(error) .lt. 1.e-6) goto 105
+               tur10(1)=tur10(1)-error
+             enddo
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''stopping...Newton iteration'',
+     +         '' using eddy_visc_inf not converged in readkey'')')
+             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+ 105         continue
+           end if
+         end if
          return
       end if
 c
@@ -949,12 +1025,37 @@ c
       else if (inpstr(lc1:lc2).eq.'tur10') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         tur10 = realval(1)
+         tur10(1) = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'tur20') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         tur20 = realval(1)
+         tur10(2) = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur30') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10(3) = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur40') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10(4) = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur50') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10(5) = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur60') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10(6) = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'tur70') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         tur10(7) = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'tur1cut') then
          lc2 = lc2 +1
@@ -1124,6 +1225,26 @@ c
       else if (inpstr(lc1:lc2).eq.'keepambient') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) keepambient
+c
+      else if (inpstr(lc1:lc2).eq.'re_thetat0') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         re_thetat0 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'turbintensity_inf_percent') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         turbintensity_inf_percent = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'eddy_visc_inf') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         eddy_visc_inf = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'cs_smagorinsky') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cs_smagorinsky = realval(1)
 c
       else
 c
