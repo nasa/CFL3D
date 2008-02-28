@@ -1,5 +1,6 @@
       subroutine lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
-     +                   nou,bou,nbuf,ibufdim)
+     +                   vor,smin,xjb,tursav,xkb,blnum,
+     +                   nou,bou,nbuf,ibufdim,nbl,nummem)
 c
 c     $Id$
 c
@@ -10,7 +11,7 @@ c     viscosity is computed and set here.
 c     Output goes to files fort.50x, depending on myid (i.e., if 8
 c     processors are used, files fort.501-508 will be written).
 c
-c     Currently coded: standard Smagorinsky model, no wall damping on Cs
+c     Currently coded: standard Smagorinsky model
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -33,23 +34,50 @@ c
       dimension vist3d(jdim,kdim,idim)
       dimension sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
+c     vor=vorticity, smin=min dist fn, 
+c     the screwy method for keeping track of nearest wall location (for
+c     getting y+ value associated with a field point) is taken from method
+c     used for Baldwin-Barth... it's kind of a memory nightmare:
+c     xjb=j index, tursav(2)=i index, xkb=k index, blnum=corresp block number
+      dimension vor(jdim-1,kdim-1,idim-1),smin(jdim-1,kdim-1,idim-1),
+     + xjb(jdim-1,kdim-1,idim-1),xkb(jdim-1,kdim-1,idim-1),
+     + tursav(jdim,kdim,idim,nummem),blnum(jdim-1,kdim-1,idim-1)
 c
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
 c
+c     imodel controls whether or not a model is used (0=no model)
+c     (for Smagorinsky, this can also be achieved by setting cs_smagorinsky=0)
       imodel=1
+c     iwallscale controls whether the Delta is scaled by van Driest near walls
+      iwallscale=1
+c
       cs=cs_smagorinsky
+      c2b=cbar/tinf
+      c2bp=c2b+1.0
+      re=reue/xmach
+c
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing LES-type turbulent'',
      +'' viscosity, block='',i5)') nbl
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     WARNING: ivisc=25 still under'',
+     .    '' development... use at your own risk!'')')
          if (imodel .eq. 0) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''        no model'')')
          else
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''        Smag model, Cs='',f10.5)') cs
+         end if
+         if (iwallscale .eq. 0) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''        no wall damping'')')
+         else
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''        van Driest wall damping'')')
          end if
       end if
 c
@@ -67,6 +95,28 @@ c
       do i=1,idim-1
         do j=1,jdim-1
           do k=1,kdim-1
+c   Set ypls = big number if nearest body is NOT in current block
+c   ***NOTE: This is a crude approximation which should be ok as long
+c            as block boundaries are not VERY near bodies.  There is
+c            really no EASY way to get correct information from across
+c            blocks for ypls
+            nblb=int(blnum(j,k,i)+0.1)
+            if (nblb .ne. nbl) then
+              ypls=1000.
+            else
+              jbb=int(xjb(j,k,i)+0.1)
+              kbb=int(xkb(j,k,i)+0.1)
+              ibb=int(tursav(j,k,i,2)+0.1)
+              if (jbb .eq. jdim) jbb=jbb-1
+              if (kbb .eq. kdim) kbb=kbb-1
+              if (ibb .eq. idim) ibb=ibb-1
+c             do not allow ibb=0
+              ibb=max(ibb,1)
+              tt=gamma*q(jbb,kbb,ibb,5)/q(jbb,kbb,ibb,1)
+              wnu=c2bp*tt*sqrt(tt)/(c2b+tt)/q(jbb,kbb,ibb,1)
+              utau=sqrt(wnu*vor(jbb,kbb,ibb)/(q(jbb,kbb,ibb,1)*re))
+              ypls=re*q(jbb,kbb,ibb,1)*utau*ccabs(smin(j,k,i))/wnu
+            end if
             deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
             deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
             deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
@@ -74,6 +124,11 @@ c
                delta = (deltai*deltaj*deltak)**0.333333
             else
                delta = sqrt(deltaj*deltak)
+            end if
+c           Scale delta by van Driest function
+            if (iwallscale .eq. 1) then
+              vandriest=1.0-exp(-ypls/25.)
+              delta=delta*vandriest
             end if
             s11 = ux(j,k,i,1)
             s22 = ux(j,k,i,5)

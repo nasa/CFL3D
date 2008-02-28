@@ -1159,8 +1159,8 @@ c
          ltot(nbl) = lvmui + 2*(kdim-1)*(jdim-1) + maxbl0
          itemp=0
 c
-         if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2)then
-            if (ivisc(3).eq.2 .or. ivisc(2).eq.2 .or. ivisc(1).eq.2)then
+         if (ivmx.ge.2)then
+            if (ivmx .eq. 2)then
 c              Baldwin-Lomax
                inmx = max(jdim,kdim,idim)
                iwk1 = 1
@@ -1173,8 +1173,7 @@ c              Baldwin-Lomax
                iwk8 = iwk7+inmx
                iwk9 = iwk8+inmx
                itemp= iwk9+inmx
-            else if (ivisc(3).eq.4 .or. ivisc(2).eq.4 .or. 
-     .               ivisc(1).eq.4) then
+            else if (ivmx .eq. 4) then
 c              Baldwin-Barth
                iwk1=1
                if (iturbord .eq. 1) then
@@ -1200,8 +1199,7 @@ c              Baldwin-Barth
                iwk18=iwk17+inmx
                iwk19=iwk18+inmx
                itemp=iwk19+inmx
-            else if (ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. 
-     .               ivisc(1).eq.5) then
+            else if (ivmx .eq. 5) then
 c              Spalart
                iwk1=1
                if (iturbord .eq. 1) then
@@ -1234,8 +1232,7 @@ c              Spalart
                  inmx=0
                end if
                itemp=iwk19+inmx
-            else if (ivisc(3).ge.6 .or. ivisc(2).ge.6 .or.
-     .               ivisc(1).ge.6) then
+            else if (ivmx .ge. 6 .and. ivmx .le. 15) then
 c              Two-equation turb models
                iwk1=1
                if (iturbord .eq. 1) then
@@ -1279,8 +1276,7 @@ c              Two-equation turb models
                inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
 c allocate for gradients of vorticity and turbulence - k-zeta only:
                iwk34=iwk33+inmx
-               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .         ivisc(3).eq.15) then
+               if (ivmx .eq. 15) then
                inmx=jdim
                else
                inmx=0
@@ -1327,8 +1323,7 @@ c allocate for gradients of vorticity and turbulence - k-zeta only:
                iwk74=iwk73+inmx
                iwk75=iwk74+inmx
                iwk76=iwk75+inmx
-               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .         ivisc(3).eq.15) then
+               if (ivmx .eq. 15) then
                inmx=(jdim+1)*(kdim+1)*(idim+1)
                else
                inmx=0
@@ -1336,8 +1331,7 @@ c allocate for gradients of vorticity and turbulence - k-zeta only:
                iwk77=iwk76+inmx
                iwk78=iwk77+inmx
                iwk79=iwk78+inmx
-               if (ivisc(1).eq.15 .or. ivisc(2).eq.15 .or. 
-     .         ivisc(3).eq.15) then
+               if (ivmx .eq. 15) then
                inmx=(jdim+1)*(kdim+1)*(idim+1)*2
                else
                inmx=0
@@ -1350,6 +1344,69 @@ c allocate for easmcc2d
                  inmx=0
                end if
                itemp=iwk80+inmx
+            else if (ivmx .eq. 30) then
+c   three-equation turb model
+               iwk1=1
+               if (iturbord .eq. 1) then
+                 iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))*3
+                 iex=0
+                 iex2=-i2d
+               else
+                 iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))*3
+                 iex=1
+                 iex2=1-(2*i2d)
+               end if
+               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+               iex3=-i2d
+               inmx=(kdim-1)*(jdim-1)
+               iwk6=iwk5+inmx
+               iwk7=iwk6+inmx
+               iwk8=iwk7+inmx
+               iwk9=iwk8+inmx
+               iwk10=iwk9+inmx
+               iwk11=iwk10+inmx
+               iwk12=iwk11+inmx
+               iwk13=iwk12+inmx
+               iwk14=iwk13+inmx
+               inmx=(jdim-1)*(kdim-1)
+               iwk15=iwk14+inmx
+               iwk16=iwk15+inmx
+               iwk17=iwk16+inmx
+               iwk18=iwk17+inmx
+               iwk19=iwk18+inmx
+               iwk20=iwk19+inmx
+               iwk21=iwk20+inmx
+               iwk22=iwk21+inmx
+               iwk23=iwk22+inmx
+               inmx=(kdim-1)*(idim-1)
+               iwk24=iwk23+inmx
+               iwk25=iwk24+inmx
+               iwk26=iwk25+inmx
+               iwk27=iwk26+inmx
+               iwk28=iwk27+inmx
+               iwk29=iwk28+inmx
+               iwk30=iwk29+inmx
+               iwk31=iwk30+inmx
+               iwk32=iwk31+inmx
+               inmx=(jdim-1)*(kdim-1)*(idim-1)*3
+               iwk33=iwk32+inmx
+               inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+               iwk34=iwk33+inmx
+               inmx=(kdim-1)*(jdim-1)
+               iwk35=iwk34+inmx
+               iwk36=iwk35+inmx
+               iwk37=iwk36+inmx
+               iwk38=iwk37+inmx
+               inmx=(jdim-1)*(kdim-1)
+               iwk39=iwk38+inmx
+               iwk40=iwk39+inmx
+               iwk41=iwk40+inmx
+               iwk42=iwk41+inmx
+               inmx=(kdim-1)*(idim-1)
+               iwk43=iwk42+inmx
+               iwk44=iwk43+inmx
+               iwk45=iwk44+inmx
+               itemp=iwk45+inmx
             end if
          end if
 c
@@ -1391,7 +1448,7 @@ c
          nbll = nblg(igrid)
          ntempf =  9*nsurf + 7*nbb
      .          +  4*jdimg(nbll)*kdimg(nbll)*idimg(nbll)
-         if (ivmx.eq.4) then
+         if (ivmx.eq.4 .or. ivmx.eq.25) then
             ntempi = 15*nsurf + 2*nbb
      .             +    jdimg(nbll)*kdimg(nbll)*idimg(nbll)
          else
@@ -1427,7 +1484,7 @@ c        xs and ixs in subroutines getpts, getptsbb, collect_surf,
 c        and collect_surfbb
 c
          nworkxs  = 4*nsurf
-         if (ivmx.eq.4) then
+         if (ivmx.eq.4 .or. ivmx.eq.25) then
             nworkixs = 4*nsurf
          else
             nworkixs = 0

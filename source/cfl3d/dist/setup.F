@@ -2602,7 +2602,7 @@ c              check storage availability
                nbl = nblg(igrid)
                ntempf =  9*nsurf + 7*nbb
      .                +  4*jdimg(nbl)*kdimg(nbl)*idimg(nbl)
-               if (ivmx.eq.4) then
+               if (ivmx.eq.4 .or. ivmx.eq.25) then
                   ntempi = 15*nsurf + 2*nbb
      .                   +    jdimg(nbl)*kdimg(nbl)*idimg(nbl)
                else
@@ -2629,7 +2629,7 @@ c              xs and ixs in subroutines getpts, getptsbb, collect_surf,
 c              and collect_surfbb
 c
                nworkxs  = 4*nsurf
-               if (ivmx.eq.4) then
+               if (ivmx.eq.4 .or. ivmx.eq.25) then
                   nworkixs = 4*nsurf
                else
                   nworkixs = 0

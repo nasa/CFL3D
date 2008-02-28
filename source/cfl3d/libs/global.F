@@ -828,6 +828,11 @@ c
      .  '' unless ivisc=6,7,8,9,10,11,12,13,14, or 30 used'')')
       end if
 c
+      if (ivmx .eq. 25 .or. ivmx .eq. 30) then
+        write(iunit11,'('' WARNING: ivisc='',i4,'' still under'',
+     .    '' development... use at your own risk!'')') ivmx
+      end if
+c
 c     grid dimensions:
 c     idim - number of points in I-direction
 c

@@ -1,7 +1,8 @@
       subroutine af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .                res,vist3d,x,y,z,blank,vmuk,resid,wk,nwork,wk0,
      .                nwk0,iover,vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,
-     .                myid,mblk2nd,maxbl,volk0,iadvance,nummem)
+     .                myid,mblk2nd,maxbl,volk0,tursav,tk0,cmuv,
+     .                iadvance,nummem)
 c
 c     $Id$
 c
@@ -30,6 +31,8 @@ c
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension mblk2nd(maxbl),volk0(jdim,idim-1,4)
       dimension iadvance(nbl)
+      dimension tursav(jdim,kdim,idim,nummem),tk0(jdim,idim-1,nummem,4),
+     .          cmuv(idim-1,kdim-1,idim-1)
 c
       common /fvfds/ rkap0(3),ifds(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -182,11 +185,10 @@ c
      .           wk,nvtq,wk(iwkd),wk(iwke))
 c
       if (ivisc(3).gt.0) then
-c        Call viscous LHS.  Last 3 parameters currently not used when 
-c        implicit (idf=1), so just send dummy variables (wk(iwke)).
+c        Call viscous LHS.
          call hfluxv(i,npl,jdim,kdim,idim,1,wk(iwka),wk(iwkb),wk(iwkc),
      .               res,q,qk0,sk,vol,wk(iwkd),nvtq,wk0,vist3d,vmuk,
-     .               vk0,bck,wk(iwke),wk(iwke),wk(iwke),
+     .               vk0,bck,tursav,tk0,cmuv,
      .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
       end if
 c

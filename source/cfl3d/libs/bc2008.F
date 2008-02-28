@@ -34,7 +34,7 @@ c
      .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
-      integer   itimearray(3)
+      integer   stats
 c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
@@ -49,6 +49,8 @@ c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
 c
+      allocatable :: harvest(:)
+c
       twopi = 8.0*atan(1.0)
 c
       jdim1 = jdim-1
@@ -60,9 +62,17 @@ c
       iend1 = iend-1
 c
       if (iflag .eq. 2038) then
-        call itime(itimearray)
-        iseed = itimearray(1)+itimearray(2)+itimearray(3)
-        iold  = iseed
+c       generate array of random numbers
+        if (nface .eq. 1 .or. nface .eq. 2) jsize=
+     .     (jend1-jsta+1)*(kend1-ksta+1)
+        if (nface .eq. 3 .or. nface .eq. 4) jsize=
+     .     (iend1-ista+1)*(kend1-ksta+1)
+        if (nface .eq. 5 .or. nface .eq. 6) jsize=
+     .     (iend1-ista+1)*(jend1-jsta+1)
+        allocate( harvest(jsize),stat=stats )
+        call umalloc(jsize,0,'harvest',memuse,stats)
+        call random_seed
+        call random_number(harvest)
       end if
 c
 c     this bc makes use of two planes of data (for ndata>0 in the input
@@ -92,10 +102,12 @@ c
 c
       if (ialph.eq.0) then
          do 100 ip=1,2
+         irnd_count=0
          do 100 i=ista,iend1
          ii = i-ista+1
          do 100 k=ksta,kend1
          kk = k-ksta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
@@ -118,15 +130,12 @@ c
      +     cos(twopi*bcdata(kk,ii,ip,1)*time)
          qj0(k,i,5,ip) = q(1,k,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)*(1.0+rnd_nbr*0.10)
@@ -137,10 +146,12 @@ c
   100    continue
       else
          do 1000 ip=1,2
+         irnd_count=0
          do 1000 i=ista,iend1
          ii = i-ista+1
          do 1000 k=ksta,kend1
          kk = k-ksta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qj0(k,i,1,ip) =  bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)
@@ -162,25 +173,13 @@ c
          qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)*
      +     cos(twopi*bcdata(kk,ii,ip,1)*time)
          qj0(k,i,5,ip) =  q(1,k,i,5)
-         else if (iflag .eq. 2028) then
-         qj0(k,i,1,ip) = q(1,k,i,1)
-         qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,5,ip) = q(1,k,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qj0(k,i,3,ip) =-bcdata(kk,ii,ip,4)*(1.0+rnd_nbr*0.10)
@@ -235,10 +234,12 @@ c
 c
       if (ialph.eq.0) then
          do 200 ip=1,2
+         irnd_count=0
          do 200 i=ista,iend1
          ii = i-ista+1
          do 200 k=ksta,kend1
          kk = k-ksta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
@@ -261,15 +262,12 @@ c
      +     cos(twopi*bcdata(kk,ii,ip,1)*time)
          qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)*(1.0+rnd_nbr*0.10)
@@ -280,10 +278,12 @@ c
   200    continue
       else
          do 2000 ip=1,2
+         irnd_count=0
          do 2000 i=ista,iend1
          ii = i-ista+1
          do 2000 k=ksta,kend1
          kk = k-ksta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qj0(k,i,1,ip+2) =  bcdata(kk,ii,ip,1)
          qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)
@@ -305,25 +305,13 @@ c
          qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)/qj0(k,i,1,ip+2)*
      +     cos(twopi*bcdata(kk,ii,ip,1)*time)
          qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
-         else if (iflag .eq. 2028) then
-         qj0(k,i,1,ip) = q(1,k,i,1)
-         qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)/qj0(k,i,1,ip)*
-     +     cos(twopi*bcdata(kk,ii,ip,1)*time)
-         qj0(k,i,5,ip) = q(1,k,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qj0(k,i,3,ip+2) =-bcdata(kk,ii,ip,4)*(1.0+rnd_nbr*0.10)
@@ -378,10 +366,12 @@ c
 c
       if (ialph.eq.0) then
          do 300 ip=1,2
+         irnd_count=0
          do 300 i=ista,iend1
          ii = i-ista+1
          do 300 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
@@ -404,15 +394,12 @@ c
      +     cos(twopi*bcdata(jj,ii,ip,1)*time)
          qk0(j,i,5,ip) = q(j,1,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)*(1.0+rnd_nbr*0.10)
@@ -423,10 +410,12 @@ c
   300    continue
       else
          do 3000 ip=1,2
+         irnd_count=0
          do 3000 i=ista,iend1
          ii = i-ista+1
          do 3000 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qk0(j,i,1,ip) =  bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)
@@ -449,15 +438,12 @@ c
      +     cos(twopi*bcdata(jj,ii,ip,1)*time)
          qk0(j,i,5,ip) =  q(j,1,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qk0(j,i,3,ip) =-bcdata(jj,ii,ip,4)*(1.0+rnd_nbr*0.10)
@@ -512,10 +498,12 @@ c
 c
       if (ialph.eq.0) then
          do 400 ip=1,2
+         irnd_count=0
          do 400 i=ista,iend1
          ii = i-ista+1
          do 400 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
@@ -538,15 +526,12 @@ c
      +     cos(twopi*bcdata(jj,ii,ip,1)*time)
          qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)*(1.0+rnd_nbr*0.10)
@@ -557,10 +542,12 @@ c
   400    continue
       else
          do 4000 ip=1,2
+         irnd_count=0
          do 4000 i=ista,iend1
          ii = i-ista+1
          do 4000 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qk0(j,i,1,ip+2) =  bcdata(jj,ii,ip,1)
          qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)
@@ -583,15 +570,12 @@ c
      +     cos(twopi*bcdata(jj,ii,ip,1)*time)
          qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)*(1.0+rnd_nbr*0.10)
          qk0(j,i,3,ip+2) =-bcdata(jj,ii,ip,4)*(1.0+rnd_nbr*0.10)
@@ -646,10 +630,12 @@ c
 c
       if (ialph.eq.0) then
          do 500 ip=1,2
+         irnd_count=0
          do 500 k=ksta,kend1
          kk = k-ksta+1
          do 500 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
@@ -672,15 +658,12 @@ c
      +     cos(twopi*bcdata(jj,kk,ip,1)*time)
          qi0(j,k,5,ip) = q(j,k,1,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)*(1.0+rnd_nbr*0.10)
          qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)*(1.0+rnd_nbr*0.10)
@@ -691,10 +674,12 @@ c
   500    continue
       else
          do 5000 ip=1,2
+         irnd_count=0
          do 5000 k=ksta,kend1
          kk = k-ksta+1
          do 5000 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qi0(j,k,1,ip) =  bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)
@@ -717,15 +702,12 @@ c
      +     cos(twopi*bcdata(jj,kk,ip,1)*time)
          qi0(j,k,5,ip) =  q(j,k,1,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)*(1.0+rnd_nbr*0.10)
          qi0(j,k,3,ip) =-bcdata(jj,kk,ip,4)*(1.0+rnd_nbr*0.10)
@@ -780,10 +762,12 @@ c
 c
       if (ialph.eq.0) then
          do 600 ip=1,2
+         irnd_count=0
          do 600 k=ksta,kend1
          kk = k-ksta+1
          do 600 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
@@ -806,15 +790,12 @@ c
      +     cos(twopi*bcdata(jj,kk,ip,1)*time)
          qi0(j,k,5,ip+2) = q(j,k,idim1,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)*(1.0+rnd_nbr*0.10)
          qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)*(1.0+rnd_nbr*0.10)
@@ -825,10 +806,12 @@ c
   600    continue
       else
          do 6000 ip=1,2
+         irnd_count=0
          do 6000 k=ksta,kend1
          kk = k-ksta+1
          do 6000 j=jsta,jend1
          jj = j-jsta+1
+         irnd_count=irnd_count+1
          if (iflag .eq. 2008) then
          qi0(j,k,1,ip+2) =  bcdata(jj,kk,ip,1)
          qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)
@@ -851,15 +834,12 @@ c
      +     cos(twopi*bcdata(jj,kk,ip,1)*time)
          qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
          else if (iflag .eq. 2038) then
-         ixxx = MOD((57*iold+1), 256)
-         iyyy = MOD((57*ixxx+1), 256)
-         rnd_nbr=(float(iyyy)/256.-0.5)
+         rnd_nbr=harvest(irnd_count)-0.5
          if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
          if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
      +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
-         iold=iyyy
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)*(1.0+rnd_nbr*0.10)
          qi0(j,k,3,ip+2) =-bcdata(jj,kk,ip,4)*(1.0+rnd_nbr*0.10)
@@ -896,5 +876,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
+      if (iflag .eq. 2038) then
+        deallocate(harvest)
+      end if
       return 
       end

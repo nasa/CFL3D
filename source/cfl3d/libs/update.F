@@ -1,8 +1,8 @@
       subroutine update(jdim,kdim,idim,q,qj0,qk0,qi0,sj,sk,si,vol,dtj,
      .                  vist3d,blank,x,y,z,res,wk0,vmuk,vmuj,vmui,wk,
      .                  nwork,nbl,iover,vk0,bcj,bck,bci,nou,bou,nbuf,
-     .                  ibufdim,myid,mblk2nd,maxbl,volk0,iadvance,
-     .                  nummem)
+     .                  ibufdim,myid,mblk2nd,maxbl,volk0,tursav,
+     .                  tk0,cmuv,iadvance,nummem)
 c
 c     $Id$
 c
@@ -32,6 +32,8 @@ c
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
       dimension mblk2nd(maxbl),volk0(jdim,idim-1,4)
       dimension iadvance(maxbl)
+      dimension tursav(jdim,kdim,idim,nummem),tk0(jdim,idim-1,nummem,4),
+     .          cmuv(idim-1,kdim-1,idim-1)
 c
       common /chk/ ichk
       common /sklton/ isklton
@@ -61,7 +63,7 @@ c
       call af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .          res,vist3d,x,y,z,blank,vmuk,resd,wk,nwork,wk0,1,iover,
      .          vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
-     .          volk0,iadvance,nummem)
+     .          volk0,tursav,tk0,cmuv,iadvance,nummem)
 c
 c      update 3-d solution
 c

@@ -120,7 +120,7 @@ c
             end do
          end do
       end if
-      if (isklton.eq.1 .and. ldim.eq.5) then
+      if (isklton.eq.1 .and. iset.eq.1) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),*)'  qb points updated = ',iipntsg(nbl)
       end if

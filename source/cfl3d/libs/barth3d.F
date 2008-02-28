@@ -206,6 +206,8 @@ c            blocks for ypls
               if (jbb .eq. jdim) jbb=jbb-1
               if (kbb .eq. kdim) kbb=kbb-1
               if (ibb .eq. idim) ibb=ibb-1
+c             do not allow ibb=0
+              ibb=max(ibb,1)
               ssw=vor(jbb,kbb,ibb)
               wnu=fnu(jbb,kbb,ibb)
               ra=sqrt(re*(ssw/wnu + 1.e-10*xmach**2))

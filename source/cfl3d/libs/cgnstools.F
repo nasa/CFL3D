@@ -333,7 +333,7 @@ c   Open CGNS file
       write(901,'(/,'' Opening cgns database '',a32)') cgnsdesired
       write(901,'(''   Note: if restarting from a cgns file created'',
      +  '' prior to early 2002, then'')')
-      write(901,'(''   it will not work if the old case was (1) second'',
+      write(901,'(''   will not work if the old case was (1) second'',
      +  '' order time accurate,'')')
       write(901,'(''   (2) moving or deforming grid, or (3) ialph>0.'',
      +  ''  In all of these cases,'')')
@@ -385,7 +385,7 @@ c
 c   Get number of zones
       call cg_nzones_f(iccg, ibase, nzones, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(901,'('' Found ''i5,'' zone(s) in basename: '',a32)') nzones,
+      write(901,'('' Found ''i5,'' zone(s) in basename: '',a32)')nzones,
      +  basedesired
 c
       return
@@ -1012,13 +1012,13 @@ c      tursav...........set of nummem cell-centered turbulence quantities, in
 c                       (j,k,i,nummem) order (real) (CFL3D-normalization)
 c      smin.............minimum distance function, in (j,k,i) order 
 c                       (real)
-c      xjb..............nearest-wall j-location for B-B, in (j,k,i) 
+c      xjb..............nearest-wall j-location for B-B/LES, in (j,k,i) 
 c                       order (real)
-c      xkb..............nearest-wall k-location for B-B, in (j,k,i) 
+c      xkb..............nearest-wall k-location for B-B/LES, in (j,k,i) 
 c                       order (real)
-c      xib..............nearest-wall i-location for B-B, in (j,k,i) 
+c      xib..............nearest-wall i-location for B-B/LES, in (j,k,i) 
 c                       order (real)
-c      blnum............nearest-wall block number for B-B, in (j,k,i) 
+c      blnum............nearest-wall block number for B-B/LES, in (j,k,i) 
 c                       order (real)
 c      cmuv.............variable cmu coefficient for EASM, var g, in
 c                       (j,k,i) order (real)
@@ -1040,7 +1040,7 @@ c
 c
       dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,nummem),
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
-     .          xkb(jdim-1,kdim-1,idim-1),xib(jdim-1,kdim-1,idim-1),
+     .          xkb(jdim-1,kdim-1,idim-1),xib(jdim,kdim,idim),
      .          blnum(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
       dimension wk(i2d:idima-i2d,0:jdima,0:kdima)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
@@ -1157,7 +1157,7 @@ c        BBNearestWallK:
          end if
          if (ier .ne. 0) call cg_error_exit_f
 c        BBNearestWallI:
-         call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +     xib,wk,wk,wk,wk,wk,wk,1,1,2,wk)
          if (idouble .eq. 1) then
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
@@ -1320,6 +1320,55 @@ c        K:
          if (ier .ne. 0) call cg_error_exit_f
       end if
 c
+      if (ivisc(1).eq.25.or. ivisc(2).eq.25.or. ivisc(3).eq.25) then
+         write(901,'(''   writing LES-related distance info'',
+     .              '' to cgns file'')')
+c        LESNearestWallJ:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
+     +     xjb,wk,wk,wk,wk,wk,wk,1,1,2,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentLESNearestWallJ', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentLESNearestWallJ', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        LESNearestWallK:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
+     +     xkb,wk,wk,wk,wk,wk,wk,1,1,2,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentLESNearestWallK', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentLESNearestWallK', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        LESNearestWallI:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     xib,wk,wk,wk,wk,wk,wk,1,1,2,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentLESNearestWallI', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentLESNearestWallI', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        LESNearestWallBlk:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
+     +     blnum,wk,wk,wk,wk,wk,wk,1,1,2,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentLESNearestWallBlk', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentLESNearestWallBlk', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
       if (ivisc(1).eq.30.or. ivisc(2).eq.30.or. ivisc(3).eq.30) then
          write(901,'(''   writing k-omega field eqn turb info'',
      .              '' plus transition to cgns file'',
@@ -1445,13 +1494,13 @@ c      tursav...........set of nummem cell-centered turbulence quantities,
 c                       in (j,k,i,nummem) order (real)
 c      smin.............minimum distance function, in (j,k,i)
 c                       order (real)
-c      xjb..............nearest-wall j-location for B-B, in (j,k,i)
+c      xjb..............nearest-wall j-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      xkb..............nearest-wall k-location for B-B, in (j,k,i)
+c      xkb..............nearest-wall k-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      xib..............nearest-wall i-location for B-B, in (j,k,i)
+c      xib..............nearest-wall i-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      blnum............nearest-wall block number for B-B, in (j,k,i)
+c      blnum............nearest-wall block number for B-B/LES, in (j,k,i)
 c                       order (real)
 c      cmuv.............variable cmu coefficient for EASM, var g, in
 c                       (j,k,i) order (real)
@@ -1461,7 +1510,7 @@ c
 c
       dimension vist3d(jdim,kdim,idim),tursav(jdim,kdim,idim,nummem),
      .          smin(jdim-1,kdim-1,idim-1),xjb(jdim-1,kdim-1,idim-1),
-     .          xkb(jdim-1,kdim-1,idim-1),xib(jdim-1,kdim-1,idim-1),
+     .          xkb(jdim-1,kdim-1,idim-1),xib(jdim,kdim,idim),
      .          blnum(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
       dimension wk(idima-2*irind+1,jdima-2*jrind+1,kdima-2*krind+1)
       dimension irmin(3),irmax(3)
@@ -1745,6 +1794,57 @@ c
       if (ier .ne. 0) call cg_error_exit_f
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,2))
+      end if
+c
+c   Read LES-related info
+      if (ivmxold .eq. 25 .and. iread .eq. 1) then
+      solname='TurbulentLESNearestWallJ'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim-1,jdim-1,kdim-1,nfac,
+     +    nfaci,wk,irind,jrind,krind,xjb)
+c
+      solname='TurbulentLESNearestWallK'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim-1,jdim-1,kdim-1,nfac,
+     +    nfaci,wk,irind,jrind,krind,xkb)
+c
+      solname='TurbulentLESNearestWallI'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim-1,jdim-1,kdim-1,nfac,
+     +    nfaci,wk,irind,jrind,krind,xib)
+c
+      solname='TurbulentLESNearestWallBlk'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim-1,jdim-1,kdim-1,nfac,
+     +    nfaci,wk,irind,jrind,krind,blnum)
       end if
 c
 c   Read k-omega+transition info
@@ -2602,7 +2702,7 @@ c   Read number of iterations of data in ConvergenceHistory node
          ntr=0
          return
       end if
-      write(901,'('' reading convergence history data... ntr='',i5)') ntr
+      write(901,'('' reading convergence hist data... ntr='',i5)') ntr
       if (ntr .ge. ncycmax) then
       write(901,1239)
  1239 format(/,1x,11hstopping...,

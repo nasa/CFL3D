@@ -97,7 +97,8 @@ c
       iptri = iialloc(nou,bou,nbuf,ibufdim,myid,8*nsurf)
       isurf = 0
       surfi = 0 
-      if (ivmx.eq.4) surfi = iialloc(nou,bou,nbuf,ibufdim,myid,4*nsurf)
+      if (ivmx.eq.4 .or. ivmx.eq.25) 
+     .  surfi = iialloc(nou,bou,nbuf,ibufdim,myid,4*nsurf)
 c
 c***************************************************************************
 c     collect all the viscous surface points into an array xsurf(nsurf,3)
@@ -175,7 +176,7 @@ c
      .            abs(nbctype).eq.2024 .or. abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         call getptsbb(1,1,1,idim,jdim,kdim,idim,
      .                  jdim,kdim,w(lx),w(ly),w(lz),nface,n1beg,n1end,
      .                  n2beg,n2end,xs,ixs,nsurf,nbl,
@@ -203,7 +204,7 @@ c
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
                         call MPI_Irecv(ixs, nvalbb, 
@@ -225,7 +226,7 @@ c
      .                                    MY_MPI_REAL,
      .                                    nd_dest, mytag, 
      .                                    mycomm, ierr)
-                           if (ivmx .eq.4) then
+                           if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
                               mytag   = itag_ixs + itag
                               call MPI_Send (ixs, nvalbb,
@@ -241,7 +242,7 @@ c
                   if (nreq-1 .gt. 0) then
                      call MPI_Wait(ireq_xs(nreq-1), istat, ierr)
                   end if
-                  if (ivmx.eq.4) then
+                  if (ivmx.eq.4 .or. ivmx.eq.25) then
                      if (nreq_bb-1 .gt. 0) then
                         call MPI_Wait(ireq_bb(nreq_bb-1), istat, ierr)
                      end if
@@ -249,7 +250,7 @@ c
 c
 #endif
 c
-                  if (ivmx .eq.4) then
+                  if (ivmx .eq.4 .or. ivmx.eq.25) then
                      call collect_surfbb(1,1,1,idim,jdim,kdim,idim,
      .               jdim,kdim,xs,ixs,nface,n1beg,
      .               n1end,n2beg,n2end,nsurf,wk(surf),isurf,iwk(ntri),
@@ -289,7 +290,7 @@ c
      .            abs(nbctype).eq.2024 .or. abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         call getptsbb(1,1,1,idim,jdim,kdim,idim,
      .                  jdim,kdim,w(lx),w(ly),w(lz),nface,n1beg,n1end,
      .                  n2beg,n2end,xs,ixs,nsurf,nbl,
@@ -317,7 +318,7 @@ c
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
                         call MPI_Irecv(ixs, nvalbb, 
@@ -339,7 +340,7 @@ c
      .                                    MY_MPI_REAL,
      .                                    nd_dest, mytag, 
      .                                    mycomm, ierr)
-                           if (ivmx .eq.4) then
+                           if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
                               mytag   = itag_ixs + itag
                               call MPI_Send (ixs, nvalbb,
@@ -355,7 +356,7 @@ c
                   if (nreq-1 .gt. 0) then
                      call MPI_Wait(ireq_xs(nreq-1), istat, ierr)
                   end if
-                  if (ivmx.eq.4) then
+                  if (ivmx.eq.4 .or. ivmx.eq.25) then
                      if (nreq_bb-1 .gt. 0) then
                         call MPI_Wait(ireq_bb(nreq_bb-1), istat, ierr)
                      end if
@@ -363,7 +364,7 @@ c
 c
 #endif
 c
-                  if (ivmx .eq.4) then
+                  if (ivmx .eq.4 .or. ivmx.eq.25) then
                      call collect_surfbb(1,1,1,idim,jdim,kdim,idim,
      .               jdim,kdim,xs,ixs,nface,n1beg,
      .               n1end,n2beg,n2end,nsurf,wk(surf),isurf,iwk(ntri),
@@ -403,7 +404,7 @@ c
      .            abs(nbctype).eq.2024 .or. abs(nbctype).eq.2016) then
 c
                   if (myid .eq. mblk2nd(nbl)) then
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         call getptsbb(1,1,1,idim,jdim,kdim,idim,
      .                  jdim,kdim,w(lx),w(ly),w(lz),nface,n1beg,n1end,
      .                  n2beg,n2end,xs,ixs,nsurf,nbl,
@@ -431,7 +432,7 @@ c
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
-                     if (ivmx .eq.4) then
+                     if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
                         call MPI_Irecv(ixs, nvalbb, 
@@ -453,7 +454,7 @@ c
      .                                    MY_MPI_REAL,
      .                                    nd_dest, mytag, 
      .                                    mycomm, ierr)
-                           if (ivmx .eq.4) then
+                           if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
                               mytag   = itag_ixs + itag
                               call MPI_Send (ixs, nvalbb,
@@ -469,7 +470,7 @@ c
                   if (nreq-1 .gt. 0) then
                      call MPI_Wait(ireq_xs(nreq-1), istat, ierr)
                   end if
-                  if (ivmx.eq.4) then
+                  if (ivmx.eq.4 .or. ivmx.eq.25) then
                      if (nreq_bb-1 .gt. 0) then
                         call MPI_Wait(ireq_bb(nreq_bb-1), istat, ierr)
                      end if
@@ -477,7 +478,7 @@ c
 c
 #endif
 c
-                  if (ivmx .eq.4) then
+                  if (ivmx .eq.4 .or. ivmx.eq.25) then
                      call collect_surfbb(1,1,1,idim,jdim,kdim,idim,
      .               jdim,kdim,xs,ixs,nface,n1beg,
      .               n1end,n2beg,n2end,nsurf,wk(surf),isurf,iwk(ntri),
@@ -520,7 +521,7 @@ c     respect to x coordinate.  Better to use a stable sort on
 c     x,y,z and ntri consecutively, but this is good enough
 c     for time being.
 c
-      if (ivmx .eq. 4) then
+      if (ivmx .eq. 4 .or. ivmx.eq.25) then
          call sort_xbb(nsurf,wk(surf),iwk(ntri),iwk(iptri),iwk(surfi),
      .                 wk,iwk,nou,bou,nbuf,ibufdim,myid)
       else
@@ -582,7 +583,7 @@ c
             lsminn(nbl) = lsmin
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),993) nbl
-            if (ivmx .eq. 4) then
+            if (ivmx .eq. 4 .or. ivmx.eq.25) then
                call calc_distbb(1,1,1,idim,jdim,kdim,idim,jdim,kdim,
      .         idim,jdim,kdim,w(lx),w(ly),w(lz),wk(lsmin),
      .         nsurf,wk(surf),nbb,wk(bbdef),iwk(ipv),
@@ -617,7 +618,7 @@ c
  105        continue
          end if
 c
-         if (ncg.gt.0 .and. ivmx.eq.4) then
+         if (ncg.gt.0 .and. (ivmx.eq.4 .or. ivmx.eq.25)) then
             nblc  = nblg(igrid)+j1
             do 1049 m=1,ncg
             call lead(nblc,lw,lw2,maxbl)

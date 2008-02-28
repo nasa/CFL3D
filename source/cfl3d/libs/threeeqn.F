@@ -154,22 +154,36 @@ c      ibcinfo,jbcinfo,kbcinfo - gives i,j,k start and end indices for each
 c               BC segment, among other things
 c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
 c
+c     Parameter if need to revert to standard SST w no transition (itrans_on=0):
+      itrans_on=1
 c     Set some of the transition-related parameters:
+c     Note: ivmx=31 is currently NOT usable at all!
       tu_percent=100.*sqrt(2.*tur10(2)/(3.*xmach*xmach))
       if (re_thetat0 .lt. 0.) then
-c   ***rumsey
-c       re_thetat=400.*tu_percent**(-5./8.)
-        re_thetat=32.591*(tu_percent/100.)**(-0.621)
-c   *********
+        if (ivmx .eq. 30) then
+          re_thetat=400.*tu_percent**(-5./8.)
+c         re_thetat=32.591*(tu_percent/100.)**(-0.621)
+        else if (ivmx .eq. 31) then
+          re_thetat=803.73*(tu_percent+0.6067)**(-1.027)
+        end if
       else
         re_thetat=re_thetat0
       end if
-      re_thetac=0.85*re_thetat
+      if (ivmx .eq. 30) then
+        re_thetac=0.85*re_thetat
+      else if (ivmx .eq. 31) then
+        re_thetac=re_thetat
+        flength=163.*alog(tu_percent)+3.625
+        ce2=50.
+      end if
 c
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
-     +'' viscosity using 3-eqns, block='',i5)') nbl
+     +    '' viscosity using 3-eqns, block='',i5)') nbl
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     WARNING: ivisc=30 still'',
+     .    '' under development... use at your own risk!'')')
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Freestream tur10,tur20,tur30 = '',
      +     3e19.8)') tur10(1),tur10(2),tur10(3)
@@ -185,29 +199,34 @@ c
         if(ivmx .eq. 30) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'',
-     +       '' + transition model'')')
+     +       '' + transition model (Langtry unpublished version)'')')
+        else if (ivmx .eq. 31) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     Tu (percent)='',f10.4)') 
-     +       tu_percent
-           nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     mut_inf/muref='',f10.4,
-     +       '', Re_thetat='',f10.4)') rho0*tur10(2)/tur10(1),re_thetat
-           if(ikoprod .eq. 1) then
-             nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     strain-based production'',
-     +       '' term'')')
-           else
-             nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     approx (vort) production'',
-     .         '' term'')')
-           end if
-           if(isstdenom .eq. 0) then
-             nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     vort in denom of mut term'')')
-           else
-             nou(1) = min(nou(1)+1,ibufdim)
-             write(bou(nou(1),1),'(''     S in denom of mut term'')')
-           end if
+           write(bou(nou(1),1),'(''     k-omega SST (Menter)'',
+     +       '' + transition model (JTurbomach 128:413 2006 and'',
+     +       '' IJHFF 29:48 2008)'')')
+        end if
+        nou(1) = min(nou(1)+1,ibufdim)
+        write(bou(nou(1),1),'(''     Tu (percent)='',f10.4)') 
+     +    tu_percent
+        nou(1) = min(nou(1)+1,ibufdim)
+        write(bou(nou(1),1),'(''     mut_inf/muref='',f10.4,
+     +    '', Re_thetat='',f10.4)') rho0*tur10(2)/tur10(1),re_thetat
+        if(ikoprod .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''     strain-based production'',
+     +    '' term'')')
+        else
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''     approx (vort) production'',
+     .      '' term'')')
+        end if
+        if(isstdenom .eq. 0) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''     vort in denom of mut term'')')
+        else
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''     S in denom of mut term'')')
         end if
 c
         if(keepambient .eq. 1) then
@@ -232,7 +251,7 @@ c is a function of the case).  If turb model seems to be having trouble
 c converging, lowering this factor may be one strategy to try. NOTE: factor
 c used only for steady state cases, not time accurate cases.
 c
-      if(ivmx .eq. 30) factor=10.
+      if(ivmx .eq. 30 .or. ivmx .eq. 31) factor=10.
 c
 c Overwrite with keyword value if nonzero
 c
@@ -271,13 +290,13 @@ c Constants for Set 1:
 c  cmuc1 (normally 0.09):
       cmuc1=0.09
 c  beta1 (constant in omega or epsilon destruction term):
-      if(ivmx.eq.30)                                 beta1=0.075
+      if(ivmx.eq.30 .or. ivmx.eq.31)                 beta1=0.075
 c  sigo1 (constant in omega, epsilon, or zeta diffusion term):
-      if(ivmx.eq.30)                                 sigo1=0.5
+      if(ivmx.eq.30 .or. ivmx.eq.31)                 sigo1=0.5
 c  sigk1 (constant in k diffusion term):
-      if(ivmx.eq.30)                                 sigk1=0.85
+      if(ivmx.eq.30 .or. ivmx.eq.31)                 sigk1=0.85
 c  alp1 (constant in omega or epsilon production term):
-      if(ivmx.eq.30)                                 alp1 =
+      if(ivmx.eq.30 .or. ivmx.eq.31)                 alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
 c
 c  sigg (constant in intermittency diffusion term):
@@ -582,7 +601,7 @@ c      (6) i=idim boundary:
 c    **************
 c
 c Get damp1 = CD = cross derivative term for SST:
-        if(ivmx .eq. 30) then
+        if(ivmx .eq. 30 .or. ivmx.eq.31) then
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -637,7 +656,7 @@ c Get damp1 = CD = cross derivative term for SST:
         end if
         end if
 c   get blend = F1 factor
-        if (ivmx .eq. 30) then
+        if (ivmx .eq. 30 .or. ivmx.eq.31) then
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -1470,10 +1489,11 @@ c            Add to RHS:
               re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
      +             fnu(j,k,i)*re
               fff3=exp(-((re_y/120.)**8))
-c   ***rumsey - use 2nd line if want original SST model no transition
-              blendnew=ccmax(blend(j,k,i),fff3)
-c             blendnew=blend(j,k,i)
-c   *********
+              if (itrans_on .eq. 1) then
+                blendnew=ccmax(blend(j,k,i),fff3)
+              else
+                blendnew=blend(j,k,i)
+              end if
               if (ikoprod .eq. 1) then
 c            Determine Sij values:
               s11 = ux(j,k,i,1)
@@ -1498,9 +1518,9 @@ c            Determine Sij values:
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               pk=ccmin(pk,(pklimterm*dk))
-              dkfactor=ccmax(turre(j,k,i,3),0.1)
+              dkfactor=ccmaxcr(turre(j,k,i,3),0.1)
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk*turre(j,k,i,3)-
-     +         dk*ccmin(dkfactor,1.0)
+     +         dk*ccmincr(dkfactor,1.0)
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
      +         re*betax*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
@@ -1510,16 +1530,109 @@ c
               re_t=q(j,k,i,1)*turre(j,k,i,2)/(fnu(j,k,i)*turre(j,k,i,1))
               fonset1=re_nu/(2.193*re_thetac)
               fonset2=ccmax(fonset1,fonset1**4)
-              fonset2=ccmin(fonset2,2.0)
+              fonset2=ccmincr(fonset2,2.0)
               ftrnlength=cctanh(re_nu/(2.193*0.35*300.))
               trnlength=(0.014*re_thetac+1.25)*ftrnlength+
      +                  2.*(1.-ftrnlength)
-              fonset3=ccmax((1.-re_t/trnlength),0.)
-              fonset=ccmax(fonset2-fonset3,0.)
+              fonset3=ccmaxcr((1.-re_t/trnlength),0.)
+              fonset=ccmaxcr(fonset2-fonset3,0.)
               fturb=exp(-((re_t/2.)**2))
               rhside(j,k,i,3)=rhside(j,k,i,3)+
-     +         5.*p_gamma*fonset*(1.0-ccmin(turre(j,k,i,3),1.0))-
+     +         5.*p_gamma*fonset*(1.0-ccmincr(turre(j,k,i,3),1.0))-
      +         0.1*p_gamma*fturb*cctanh(turre(j,k,i,3)/0.35)
+            enddo
+          enddo
+        enddo
+      elseif (ivmx .eq. 31) then
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
+                cutoff=0.
+              else
+                cutoff=1.
+              end if
+              betax=blend(j,k,i)*beta1+(1.-blend(j,k,i))*beta2
+              cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
+              alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
+c            Add to RHS:
+              re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
+     +             fnu(j,k,i)*re
+              fff3=exp(-((re_y/120.)**8))
+              if (itrans_on .eq. 1) then
+                blendnew=ccmax(blend(j,k,i),fff3)
+              else
+                blendnew=blend(j,k,i)
+              end if
+c            for now, re_thetat_tilde taken = re_thetat
+c            (may instead need to solve 4th eqn eventually)
+              re_thetat_tilde=re_thetat
+              re_nu=q(j,k,i,1)*smin(j,k,i)**2*vor(j,k,i)*re/fnu(j,k,i)
+              re_t=q(j,k,i,1)*turre(j,k,i,2)/(fnu(j,k,i)*turre(j,k,i,1))
+              uuu=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
+              uuu=ccmaxcr(uuu,1.e-20)
+              theta_bl=re_thetat_tilde*fnu(j,k,i)/(q(j,k,i,1)*uuu*re)
+              delta_bl=15.*theta_bl/2.
+              delta=50.*vor(j,k,i)*smin(j,k,i)*delta_bl/uuu
+              re_omega=q(j,k,i,1)*turre(j,k,i,1)*smin(j,k,i)**2/
+     +          fnu(j,k,i)*re*re
+              fwake=exp(-(re_omega/1.e5)**2)
+              f_thetat1=fwake*exp(-(smin(j,k,i)/delta)**4)
+              gamma_lim = ccmincr(turre(j,k,i,3),1.0)
+              f_thetat2=1.-((ce2*gamma_lim-1.)/(ce2-1.))**2
+              f_thetat=ccmax(f_thetat1,f_thetat2)
+              f_thetat=ccmincr(f_thetat,1.0)
+              f_reattach=exp(-(re_t/15.)**4)
+              fonset1=re_nu/(2.193*re_thetac)
+              gamma_sep1=ccmaxcr(fonset1-1.,0.)
+              gamma_sep=ccmincr(8.0*gamma_sep1*f_reattach,5.0)
+              gamma_sep=gamma_sep*f_thetat
+              gamma_eff=ccmax(turre(j,k,i,3),gamma_sep)
+              if (ikoprod .eq. 1) then
+c            Determine Sij values:
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +         2.*xis - re*betax*turre(j,k,i,1)**2
+     +         +(1.-blendnew)*damp1(j,k,i)
+              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+              p_gamma=sqrt(2.*xis)
+              else
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
+     +         +(1.-blendnew)*damp1(j,k,i)
+              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+              p_gamma=vor(j,k,i)
+              end if
+              dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
+              pk=ccmin(pk,(pklimterm*dk))
+              dkfactor=ccmaxcr(gamma_eff,0.1)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk*gamma_eff-
+     +         dk*ccmincr(dkfactor,1.0)
+              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
+     +         re*betax*tur10(1)*tur10(1)
+              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
+     +         re*cmuc*tur10(1)*tur10(2)
+c
+              fonset2=ccmax(fonset1,fonset1**4)
+              fonset2=ccmincr(fonset2,2.0)
+              fonset3=ccmaxcr((1.-(re_t/2.5)**3),0.)
+              fonset=ccmaxcr(fonset2-fonset3,0.)
+              fturb=exp(-((re_t/4.)**4))
+              rhside(j,k,i,3)=rhside(j,k,i,3)+
+     +         (flength*2.0*p_gamma*(gamma_lim*fonset)**0.5)*
+     +         (1.0-gamma_lim) -
+     +         (0.06*vor(j,k,i)*gamma_lim*fturb*
+     +         (ce2*gamma_lim-1.0))
             enddo
           enddo
         enddo
@@ -1606,7 +1719,7 @@ c         Interior points
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30) then
+              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
@@ -1723,7 +1836,7 @@ c         K0 boundary points
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30) then
+              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
@@ -1839,7 +1952,7 @@ c         KDIM boundary points
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30) then
+              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
@@ -2553,8 +2666,8 @@ c
               end if
 c
               sumni=sumni+rhside(j,k,i,3)**2
-c   ***rumsey - comment out all of the following if want original 
-c   SST model no transition
+c             following section not done if transition off (SST only)
+              if (itrans_on .eq. 1) then
               if((real(turre(j,k,i,3)+rhside(j,k,i,3))) .le.
      +          0.0) then
                 negni=negni+1
@@ -2565,7 +2678,7 @@ c   SST model no transition
               else
                 turre(j,k,i,3)=turre(j,k,i,3)+rhside(j,k,i,3)
               end if
-c   *********
+              end if
             enddo
           enddo
         enddo
@@ -2588,7 +2701,7 @@ c
       negn3 = negni
 c
 c Update VIST3D and save omega and k values
-      if (ivmx .eq. 30) then
+      if (ivmx .eq. 30 .or. ivmx .eq. 31) then
         do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
@@ -2659,7 +2772,7 @@ c     wall function in k-direction
                 omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
-                if(ivmx .eq. 30) then
+                if(ivmx .eq. 30 .or. ivmx .eq. 31) then
                   zksav(j,k,i,1)=omegatemp
                   zksav(j,k,i,2)=zktemp
                   zksav(j,k,i,3)=0.0
@@ -2707,7 +2820,7 @@ c     wall function in j-direction
                 omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
-                if(ivmx .eq. 30) then
+                if(ivmx .eq. 30 .or. ivmx .eq. 31) then
                   zksav(j,k,i,1)=omegatemp
                   zksav(j,k,i,2)=zktemp
                   zksav(j,k,i,3)=0.0
@@ -2755,7 +2868,7 @@ c     wall function in i-direction
                 omegatemp=ccmax(omegatemp,tur10(1))
                 zktemp=utau*utau/sqrt(cmuc1)
                 vist3d(j,k,i)=q(j,k,i,1)*zktemp/omegatemp
-                if(ivmx .eq. 30) then
+                if(ivmx .eq. 30 .or. ivmx .eq. 31) then
                   zksav(j,k,i,1)=omegatemp
                   zksav(j,k,i,2)=zktemp
                   zksav(j,k,i,3)=0.0

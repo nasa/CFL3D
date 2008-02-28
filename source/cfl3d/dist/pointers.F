@@ -392,7 +392,7 @@ c
 c........sni0/snj0/xjb(jdim-1,kdim-1,idim-1)
 c        directed distance to nearest i-surface or j-surface in 
 c        current block (B-L turb model); j-location of the nearest
-c        surface point (B-B turb model)
+c        surface point (B-B turb model or LES#25)
 c
 c        sni0 and snj0 share same storage location because
 c        both can not be used at the same time for any given block
@@ -401,7 +401,8 @@ c
          lw(15,nbl) = lw(14,nbl) + ns
          ns = 0
          if (ivisc(1).eq.2 .or. ivisc(2).eq.2 .or. ivisc(3).eq.4 .or.
-     .   ivisc(2).eq.4 .or. ivisc(1).eq.4)
+     .       ivisc(2).eq.4 .or. ivisc(1).eq.4 .or. ivisc(3).eq.25.or.
+     .       ivisc(2).eq.25.or. ivisc(1).eq.25)
      .   ns = jm1km1im1
 c
 c........q1(jdim,kdim,idim,5)
@@ -453,7 +454,7 @@ c
 c
 c........xib/tursav(jdim,kdim,idim,2)
 c        Baldwin-Barth, Spalart, k-omega or SST turbulence model 
-c        parameters (for B-B, the second half of storage is used
+c        parameters (for B-B & LES#25, the second half of storage is used
 c        for k-index of nearest surface point; for Spalart, the
 c        second half of storage is allocated but unused)
 c
@@ -508,23 +509,26 @@ c        extra memory needed for ivisc=30 (3-eqn model)
      .      ns = jmkm*3*4
 c
 c........xkb(jdim-1,kdim-1,idim-1)
-c        k-index of nearest surface point (B-B turb model)
+c        k-index of nearest surface point (B-B turb model or LES#25)
 c        directed distance from MAX on k (B-L turb model)
 c
          lw(26,nbl) = lw(25,nbl) + ns
          ns = 0
-         if(ivisc(3) .eq. 2 .or.
-     .      ivisc(3) .eq. 4 .or. ivisc(2) .eq. 4 .or. ivisc(1) .eq. 4)
+         if(ivisc(3).eq.2 .or.
+     .      ivisc(3).eq.4 .or. ivisc(2).eq.4 .or. ivisc(1).eq.4 .or.
+     .      ivisc(3).eq.25.or. ivisc(2).eq.25.or. ivisc(1).eq.25)
      .      ns = jm1km1im1
 c
 c........blnum(jdim-1,kdim-1,idim-1)
-c        block number containing nearest surface point (B-B turb model)
+c        block number containing nearest surface point (B-B turb model
+c        or LES#25)
 c        directed distance from MAX on i or j (B-L turb model)
 c
          lw(27,nbl) = lw(26,nbl) + ns
          ns = 0
-         if(ivisc(2) .eq. 2 .or. ivisc(1) .eq. 2 .or.
-     .      ivisc(3) .eq. 4 .or. ivisc(2) .eq. 4 .or. ivisc(1) .eq. 4)
+         if(ivisc(2).eq.2 .or. ivisc(1).eq.2 .or.
+     .      ivisc(3).eq.4 .or. ivisc(2).eq.4 .or. ivisc(1).eq.4 .or.
+     .      ivisc(3).eq.25.or. ivisc(2).eq.25.or. ivisc(1).eq.25)
      .      ns = jm1km1im1
 c
 c........vj0(kdim,idim-1,1,4)

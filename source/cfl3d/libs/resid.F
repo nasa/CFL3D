@@ -667,7 +667,7 @@ c   three-equation turb model
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
         call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
-     +    nou,bou,nbuf,ibufdim)
+     +    res,snk0,snj0,xib,xkb,blnum,nou,bou,nbuf,ibufdim,nbl,nummem)
 c   *********
       end if
       end if

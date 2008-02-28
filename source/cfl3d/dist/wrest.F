@@ -650,9 +650,10 @@ c
       end if
 c
 
-         if (ivisc(1).eq.4 .or. ivisc(2).eq.4 .or. ivisc(3).eq.4) then
+         if (ivisc(1).eq.4 .or. ivisc(2).eq.4 .or. ivisc(3).eq.4 .or.
+     .       ivisc(1).eq.25.or. ivisc(2).eq.25.or. ivisc(3).eq.25) then
 c
-c........additional smin-related data for baldwin-barth
+c........additional smin-related data for baldwin-barth or LES#25
 c
 #if defined DIST_MPI
 c

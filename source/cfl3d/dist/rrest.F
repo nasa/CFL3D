@@ -821,10 +821,23 @@ c
 c     
       ivmxold=max(iv1,iv2)
       ivmxold=max(ivmxold,iv3)
+c   Note: if you try to allow restarts that change to/from type 30,
+c   it may screw up the restart for time accurate: see rrestg.F
+      if (ivmxold.eq.30 .and. ivmx.ne.30) then
+        write(11,*) ' old ivisc=30; new must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      if (ivmxold.ne.30 .and. ivmx.eq.30) then
+        write(11,*) ' new ivisc=30; old must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+c
       iread = 1
       if (ivmxold.ne.ivmx) iread=0
       if ((ivmxold.ge.6.and.ivmxold.le.15) .and.
      .     (ivmx.ge.6.and.ivmx.le.15)) iread = 1
+      if ((ivmxold.eq.4 .and. ivmx.eq.25) .or.
+     .    (ivmxold.eq.25.and. ivmx.eq. 4)) iread=1
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 #if defined CGNS
          call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
@@ -891,7 +904,8 @@ c
             end if
 c     
 #endif
-            if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+            if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
+     .          iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
 #if defined DIST_MPI
                if (myid.eq.myhost) then
 #endif
@@ -919,7 +933,14 @@ c
 #endif
             end if
             if ((ivisc(1).ge.5.or.ivisc(2).ge.5.or.ivisc(3).ge.5)
-     .           .and. isminc.ne.2 .and. ivmxold.ne.4) isminc=3
+     .           .and. isminc.ne.2 .and. (ivmxold.ne.4 .and.
+     .           ivmxold.ne.25)) isminc=3
+            if ((ivisc(1).eq.25.or.ivisc(2).eq.25.or.ivisc(3).eq.25)
+     .           .and. (ivmxold.ne.4 .and. ivmxold.ne.25)) isminc=1
+            if ((ivisc(1).eq.25.or.ivisc(2).eq.25.or.ivisc(3).eq.25)
+     .           .and. ivmxold.eq.4) isminc=3
+            if ((ivisc(1).eq. 4.or.ivisc(2).eq. 4.or.ivisc(3).eq. 4)
+     .           .and. ivmxold.eq.25) isminc=3
          end if
          if (isminc .eq. 2) then
             isminc=1
@@ -1032,28 +1053,6 @@ c
      .                 l=3,nummem_read),m=1,4)
                   end if
                   end if
-               end if
-               if ((iv1.eq.25.or.iv2.eq.25.or.iv3.eq.25) .and.
-     .             ivmx.ne.25) then
-                 write(11,*) ' old ivisc=25; new must also be'
-                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-               if ((iv1.ne.25.and.iv2.ne.25.and.iv3.ne.25) .and.
-     .             ivmx.eq.25) then
-                 write(11,*) ' new ivisc=25; old must also be'
-                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-c   Note: if you try to allow restarts that change to/from type 30,
-c   it may screw up the restart for time accurate: see rrestg.F
-               if ((iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) .and.
-     .             ivmx.ne.30) then
-                 write(11,*) ' old ivisc=30; new must also be'
-                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-               end if
-               if ((iv1.ne.30.and.iv2.ne.30.and.iv3.ne.30) .and.
-     .             ivmx.eq.30) then
-                 write(11,*) ' new ivisc=30; old must also be'
-                 call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
                if ((iv1.eq.6.or.iv2.eq.6.or.iv3.eq.6.or.iv1.eq.7.or.
      .              iv2.eq.7.or.iv3.eq.7) .and. (ivisc(1).eq.8.or.
@@ -1235,7 +1234,8 @@ c
             end if
 c     
 #endif
-            if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+            if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
+     .          iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
 #if defined DIST_MPI
                if (myid.eq.myhost) then
 #endif
@@ -1465,7 +1465,6 @@ c
      .        myhost,mytag,mycomm,istat,ierr) 
       end if
 #endif
-
 
       return
  1010 continue

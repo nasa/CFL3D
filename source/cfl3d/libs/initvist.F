@@ -108,6 +108,18 @@ c
      .                        tursav(j,k,i,1)
 
  2002     continue
+        else if (ivisc(1).eq.25 .or. ivisc(2).eq.25 .or.
+     .           ivisc(3).eq.25) then
+c         do nothing
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                tursav(j,k,i,1)=0.0
+                vist3d(j,k,i)=0.0
+              enddo
+            enddo
+          enddo
+          continue
         else
           const1=45.8
           const2=1.68
