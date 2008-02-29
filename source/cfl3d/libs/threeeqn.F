@@ -670,6 +670,12 @@ c   get blend = F1 factor
      +             smin(j,k,i))
               arg=ccmin(arga,argb)
               blend(j,k,i)=cctanh(arg*arg*arg*arg)
+              if (itrans_on .eq. 1) then
+                re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
+     +               fnu(j,k,i)*re
+                fff3=exp(-((re_y/120.)**8))
+                blend(j,k,i)=ccmax(blend(j,k,i),fff3)
+              end if
             enddo
           enddo
         enddo
@@ -1462,12 +1468,6 @@ c    * * * * * * * * * * * *
      .   i5,'', k='',i5,'' to'',i5)') ilamlo,ilamhi,jlamlo,jlamhi,
      .   klamlo,klamhi
         end if
-        nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'('' NOTE:  This particular model'',
-     .   '' <<transitions>> on its own, but there is'')')
-        nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'('' no guarantee that it will transition'',
-     .   '' at all.  Check vist3d levels if unsure.'')')
       end if
 c  Source terms:
       if (ivmx .eq. 30) then
@@ -1486,15 +1486,6 @@ c  Source terms:
               cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
 c            Add to RHS:
-              re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
-     +             fnu(j,k,i)*re
-              fff3=exp(-((re_y/120.)**8))
-              if (itrans_on .eq. 1) then
-                blendnew=ccmax(blend(j,k,i),fff3)
-              else
-                blendnew=blend(j,k,i)
-              end if
-              if (ikoprod .eq. 1) then
 c            Determine Sij values:
               s11 = ux(j,k,i,1)
               s22 = ux(j,k,i,5)
@@ -1504,17 +1495,16 @@ c            Determine Sij values:
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              if (ikoprod .eq. 1) then
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
      +         2.*xis - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blendnew)*damp1(j,k,i)
+     +         +(1.-blend(j,k,i))*damp1(j,k,i)
               pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
-              p_gamma=sqrt(2.*xis)
               else
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
      +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blendnew)*damp1(j,k,i)
+     +         +(1.-blend(j,k,i))*damp1(j,k,i)
               pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
-              p_gamma=vor(j,k,i)
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               pk=ccmin(pk,(pklimterm*dk))
@@ -1538,8 +1528,8 @@ c
               fonset=ccmaxcr(fonset2-fonset3,0.)
               fturb=exp(-((re_t/2.)**2))
               rhside(j,k,i,3)=rhside(j,k,i,3)+
-     +         5.*p_gamma*fonset*(1.0-ccmincr(turre(j,k,i,3),1.0))-
-     +         0.1*p_gamma*fturb*cctanh(turre(j,k,i,3)/0.35)
+     +         5.*sqrt(2.*xis)*fonset*(1.0-ccmincr(turre(j,k,i,3),1.0))-
+     +         0.1*vor(j,k,i)*fturb*cctanh(turre(j,k,i,3)/0.35)
             enddo
           enddo
         enddo
@@ -1558,15 +1548,6 @@ c
               betax=blend(j,k,i)*beta1+(1.-blend(j,k,i))*beta2
               cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
-c            Add to RHS:
-              re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
-     +             fnu(j,k,i)*re
-              fff3=exp(-((re_y/120.)**8))
-              if (itrans_on .eq. 1) then
-                blendnew=ccmax(blend(j,k,i),fff3)
-              else
-                blendnew=blend(j,k,i)
-              end if
 c            for now, re_thetat_tilde taken = re_thetat
 c            (may instead need to solve 4th eqn eventually)
               re_thetat_tilde=re_thetat
@@ -1576,11 +1557,11 @@ c            (may instead need to solve 4th eqn eventually)
               uuu=ccmaxcr(uuu,1.e-20)
               theta_bl=re_thetat_tilde*fnu(j,k,i)/(q(j,k,i,1)*uuu*re)
               delta_bl=15.*theta_bl/2.
-              delta=50.*vor(j,k,i)*smin(j,k,i)*delta_bl/uuu
+              delta=50.*vor(j,k,i)*ccabs(smin(j,k,i))*delta_bl/uuu
               re_omega=q(j,k,i,1)*turre(j,k,i,1)*smin(j,k,i)**2/
      +          fnu(j,k,i)*re*re
               fwake=exp(-(re_omega/1.e5)**2)
-              f_thetat1=fwake*exp(-(smin(j,k,i)/delta)**4)
+              f_thetat1=fwake*exp(-(ccabs(smin(j,k,i))/delta)**4)
               gamma_lim = ccmincr(turre(j,k,i,3),1.0)
               f_thetat2=1.-((ce2*gamma_lim-1.)/(ce2-1.))**2
               f_thetat=ccmax(f_thetat1,f_thetat2)
@@ -1591,7 +1572,6 @@ c            (may instead need to solve 4th eqn eventually)
               gamma_sep=ccmincr(8.0*gamma_sep1*f_reattach,5.0)
               gamma_sep=gamma_sep*f_thetat
               gamma_eff=ccmax(turre(j,k,i,3),gamma_sep)
-              if (ikoprod .eq. 1) then
 c            Determine Sij values:
               s11 = ux(j,k,i,1)
               s22 = ux(j,k,i,5)
@@ -1601,17 +1581,16 @@ c            Determine Sij values:
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              if (ikoprod .eq. 1) then
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
      +         2.*xis - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blendnew)*damp1(j,k,i)
+     +         +(1.-blend(j,k,i))*damp1(j,k,i)
               pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
-              p_gamma=sqrt(2.*xis)
               else
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
      +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blendnew)*damp1(j,k,i)
+     +         +(1.-blend(j,k,i))*damp1(j,k,i)
               pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
-              p_gamma=vor(j,k,i)
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               pk=ccmin(pk,(pklimterm*dk))
@@ -1629,7 +1608,7 @@ c
               fonset=ccmaxcr(fonset2-fonset3,0.)
               fturb=exp(-((re_t/4.)**4))
               rhside(j,k,i,3)=rhside(j,k,i,3)+
-     +         (flength*2.0*p_gamma*(gamma_lim*fonset)**0.5)*
+     +         (flength*2.0*sqrt(2.*xis)*(gamma_lim*fonset)**0.5)*
      +         (1.0-gamma_lim) -
      +         (0.06*vor(j,k,i)*gamma_lim*fturb*
      +         (ce2*gamma_lim-1.0))

@@ -791,9 +791,9 @@ c
       end if
 c
       if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
-     .  ivmx.ne.10 .and. ivmx.ne.15)) then
+     .  ivmx.ne.10 .and. ivmx.ne.15 .and. ivmx.ne.30)) then
         write(iunit11,'('' WARNING: ikoprod not active'',
-     .  '' unless ivisc=6,7,10, or 15 used'')')
+     .  '' unless ivisc=6,7,10,15, or 30 used'')')
       end if
 c
       if (iturbprod .gt. 0 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.

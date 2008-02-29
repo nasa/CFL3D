@@ -331,7 +331,7 @@ c           bc2004 or 2014:
 c           bc2024:
             tj0(k,i,3,1) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
           end if
-          tj0(k,i,3,2) = 0.
+          tj0(k,i,3,2) = 2.*tj0(k,i,3,1)-tursav(1,k,i,3)
         enddo
         enddo
         end if
@@ -571,7 +571,7 @@ c           bc2004 or 2014:
 c           bc2024:
             tj0(k,i,3,3) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
           end if
-          tj0(k,i,3,4) = 0.
+          tj0(k,i,3,4) = 2.*tj0(k,i,3,3)-tursav(jdim-1,k,i,3)
         enddo
         enddo
         end if
@@ -811,7 +811,7 @@ c           bc2004 or 2014:
 c           bc2024:
             tk0(j,i,3,1) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
           end if
-          tk0(j,i,3,2) = 0.
+          tk0(j,i,3,2) = 2.*tk0(j,i,3,1)-tursav(j,1,i,3)
         enddo
         enddo
         end if
@@ -1051,7 +1051,7 @@ c           bc2004 or 2014:
 c           bc2024:
             tk0(j,i,3,3) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
           end if
-          tk0(j,i,3,4) = 0.
+          tk0(j,i,3,4) = 2.*tk0(j,i,3,3)-tursav(j,kdim-1,i,3)
         enddo
         enddo
         end if
@@ -1291,7 +1291,7 @@ c           bc2004 or 2014:
 c           bc2024:
             ti0(j,k,3,1) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
           end if
-          ti0(j,k,3,2) = 0.
+          ti0(j,k,3,2) = 2.*ti0(j,k,3,1)-tursav(j,k,1,3)
         enddo
         enddo
         end if
@@ -1531,7 +1531,7 @@ c           bc2004 or 2014:
 c           bc2024:
             ti0(j,k,3,3) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
           end if
-          ti0(j,k,3,4) = 0.
+          ti0(j,k,3,4) = 2.*ti0(j,k,3,3)-tursav(j,k,idim-1,3)
         enddo
         enddo
         end if
