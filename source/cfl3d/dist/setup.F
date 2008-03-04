@@ -1739,16 +1739,21 @@ c
                end do
             end if
 c
+            do igrid = 1,ngrid
+              nbl = nblg(igrid)
+              ncg = ncgg(igrid)
+              call lead(nbl,lw,lw2,maxbl)
+c             initialize modal data
+              do ll=lxmdj,lvelg-1
+                 w(ll) = 0.
+              end do
+            enddo
             do nm = 1,nmodes
              iunitw = 200+nm
              do igrid = 1,ngrid
                nbl = nblg(igrid)
                ncg = ncgg(igrid)
                call lead(nbl,lw,lw2,maxbl)
-c              initialize modal data
-               do ll=lxmdj,lvelg-1
-                  w(ll) = 0.
-               end do
                iaesrf = 0
                do is=1,nsegdfrm(nbl)
                   iaesrf = iaesrf + iaesurf(nbl,is)
