@@ -52,7 +52,7 @@ c
      + vor(jdim-1,kdim-1,idim-1),smin(jdim-1,kdim-1,idim-1)
       dimension damp1(jdim-1,kdim-1,idim-1),
      + fnu(0:jdim,0:kdim,0-iex3:idim+iex3)
-     + , blend(jdim-1,kdim-1,idim-1),timestp(jdim-1,kdim-1,idim-1)
+     + , blend(jdim-1,kdim-1,idim-1),timestp(jdim-1,kdim-1,idim-1,2)
       dimension bx(kdim-1,jdim-1),bx2(kdim-1,jdim-1),
      + cx(kdim-1,jdim-1),cx2(kdim-1,jdim-1),dx(kdim-1,jdim-1),
      + dx2(kdim-1,jdim-1),fx(kdim-1,jdim-1),fx2(kdim-1,jdim-1),
@@ -119,6 +119,8 @@ c              to LHS diagonal elements
 c      blend - blending term for 2-layer models (just SST right now); 
 c              =1 otherwise
 c      timestp - time step array delta t
+c              - in this routine, 2 sets are kept so different turb equations
+c                can be advanced at different CFL numbers
 c      fnu - laminar viscosity (from Sutherland's law), nondim by mulamref
 c      bx,bx2,cx,cx2,dx,dx2,fx,fx2 - sub, diag, superdiag, & RHS in 
 c                                    eta direction
@@ -250,8 +252,16 @@ c for the turbulence model (this typically can be 2 - 10... optimum value
 c is a function of the case).  If turb model seems to be having trouble
 c converging, lowering this factor may be one strategy to try. NOTE: factor
 c used only for steady state cases, not time accurate cases.
+c It can be overridden with keyword "cflturb".
 c
-      if(ivmx .eq. 30 .or. ivmx .eq. 31) factor=10.
+c fac_intermitt is an additional factor that multiplies the
+c (non-time-accurate) time step only for the intermittency equation -
+c it is an additional multiplier on top of "factor" (currently hardwired)
+c
+      if(ivmx .eq. 30 .or. ivmx .eq. 31) then
+        factor=10.
+        fac_intermitt=10.
+      end if
 c
 c Overwrite with keyword value if nonzero
 c
@@ -265,8 +275,11 @@ c
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
-           timestp(j,k,i)=factor*vol(j,k,i)/dtj(j,k,i)
-           timestp(j,k,i)=ccmincr(timestp(j,k,i),100.)
+           timestp(j,k,i,1)=factor*vol(j,k,i)/dtj(j,k,i)
+           timestp(j,k,i,1)=ccmincr(timestp(j,k,i,1),100.)
+c          Advance the Intermittency equation at a different CFL number
+c          than the 2 turb eqns:
+           timestp(j,k,i,2)=timestp(j,k,i,1)*fac_intermitt
          enddo
          enddo
          enddo
@@ -277,7 +290,8 @@ c          flow equations, since multigrid is not used for turb. eq.)
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
-           timestp(j,k,i)=dt
+           timestp(j,k,i,1)=dt
+           timestp(j,k,i,2)=dt
          enddo
          enddo
          enddo
@@ -1711,18 +1725,18 @@ c               cy3add=???...
 c             cy3(j,k)=cy3(j,k) + cy3add
             enddo
             do j=1,jdim-1
-              by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
-              by3(j,k)=by3(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy3(j,k)=cy3(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
-              dy3(j,k)=dy3(j,k)*timestp(j,k,i)
-              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
-              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)
+              by(j,k)=by(j,k)*timestp(j,k,i,1)
+              by2(j,k)=by2(j,k)*timestp(j,k,i,1)
+              by3(j,k)=by3(j,k)*timestp(j,k,i,2)
+              cy(j,k)=cy(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy3(j,k)=cy3(j,k)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dy(j,k)=dy(j,k)*timestp(j,k,i,1)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i,1)
+              dy3(j,k)=dy3(j,k)*timestp(j,k,i,2)
+              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i,1)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i,1)
+              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i,2)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -1828,18 +1842,18 @@ c               cy3add=???
 c             cy3(j,k)=cy3(j,k) + cy3add
             enddo
             do j=1,jdim-1
-              by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
-              by3(j,k)=by3(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy3(j,k)=cy3(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
-              dy3(j,k)=dy3(j,k)*timestp(j,k,i)
-              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
-              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)
+              by(j,k)=by(j,k)*timestp(j,k,i,1)
+              by2(j,k)=by2(j,k)*timestp(j,k,i,1)
+              by3(j,k)=by3(j,k)*timestp(j,k,i,2)
+              cy(j,k)=cy(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy3(j,k)=cy3(j,k)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dy(j,k)=dy(j,k)*timestp(j,k,i,1)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i,1)
+              dy3(j,k)=dy3(j,k)*timestp(j,k,i,2)
+              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i,1)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i,1)
+              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i,2)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -1944,18 +1958,18 @@ c               cy3add=???
 c             cy3(j,k)=cy3(j,k) + cy3add
             enddo
             do j=1,jdim-1
-              by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
-              by3(j,k)=by3(j,k)*timestp(j,k,i)
-              cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy3(j,k)=cy3(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
-              dy3(j,k)=dy3(j,k)*timestp(j,k,i)
-              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
-              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)
+              by(j,k)=by(j,k)*timestp(j,k,i,1)
+              by2(j,k)=by2(j,k)*timestp(j,k,i,1)
+              by3(j,k)=by3(j,k)*timestp(j,k,i,2)
+              cy(j,k)=cy(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cy3(j,k)=cy3(j,k)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dy(j,k)=dy(j,k)*timestp(j,k,i,1)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i,1)
+              dy3(j,k)=dy3(j,k)*timestp(j,k,i,2)
+              fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i,1)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i,1)
+              fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i,2)
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -2078,15 +2092,15 @@ c         Interior points
               dx3(k,j)=dx3(k,j) + uu*apm
             enddo
             do k=1,kdim-1
-              bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              bx3(k,j)=bx3(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx3(k,j)=cx3(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              dx3(k,j)=dx3(k,j)*timestp(j,k,i)
+              bx(k,j)=bx(k,j)*timestp(j,k,i,1)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i,1)
+              bx3(k,j)=bx3(k,j)*timestp(j,k,i,2)
+              cx(k,j)=cx(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx3(k,j)=cx3(k,j)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dx(k,j)=dx(k,j)*timestp(j,k,i,1)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i,1)
+              dx3(k,j)=dx3(k,j)*timestp(j,k,i,2)
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
@@ -2170,15 +2184,15 @@ c         J0 boundary points
               dx3(k,j)=dx3(k,j) + uu*apm
             enddo
             do k=1,kdim-1
-              bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              bx3(k,j)=bx3(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx3(k,j)=cx3(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              dx3(k,j)=dx3(k,j)*timestp(j,k,i)
+              bx(k,j)=bx(k,j)*timestp(j,k,i,1)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i,1)
+              bx3(k,j)=bx3(k,j)*timestp(j,k,i,2)
+              cx(k,j)=cx(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx3(k,j)=cx3(k,j)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dx(k,j)=dx(k,j)*timestp(j,k,i,1)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i,1)
+              dx3(k,j)=dx3(k,j)*timestp(j,k,i,2)
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
@@ -2261,15 +2275,15 @@ c         JDIM boundary points
               dx3(k,j)=dx3(k,j) + uu*apm
             enddo
             do k=1,kdim-1
-              bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
-              bx3(k,j)=bx3(k,j)*timestp(j,k,i)
-              cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx3(k,j)=cx3(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
-              dx3(k,j)=dx3(k,j)*timestp(j,k,i)
+              bx(k,j)=bx(k,j)*timestp(j,k,i,1)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i,1)
+              bx3(k,j)=bx3(k,j)*timestp(j,k,i,2)
+              cx(k,j)=cx(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i,1)+1.0*(1.+phi)
+              cx3(k,j)=cx3(k,j)*timestp(j,k,i,2)+1.0*(1.+phi)
+              dx(k,j)=dx(k,j)*timestp(j,k,i,1)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i,1)
+              dx3(k,j)=dx3(k,j)*timestp(j,k,i,2)
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
@@ -2386,15 +2400,15 @@ c           Interior points
                 dz3(k,i)=dz3(k,i) + uu*apm
               enddo
               do k=1,kdim-1
-                bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                bz3(k,i)=bz3(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz3(k,i)=cz3(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                dz3(k,i)=dz3(k,i)*timestp(j,k,i)
+                bz(k,i)=bz(k,i)*timestp(j,k,i,1)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i,1)
+                bz3(k,i)=bz3(k,i)*timestp(j,k,i,2)
+                cz(k,i)=cz(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz3(k,i)=cz3(k,i)*timestp(j,k,i,2)+1.0*(1.+phi)
+                dz(k,i)=dz(k,i)*timestp(j,k,i,1)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i,1)
+                dz3(k,i)=dz3(k,i)*timestp(j,k,i,2)
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
@@ -2478,15 +2492,15 @@ c           I0 boundary points
                 dz3(k,i)=dz3(k,i) + uu*apm
               enddo
               do k=1,kdim-1
-                bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                bz3(k,i)=bz3(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz3(k,i)=cz3(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                dz3(k,i)=dz3(k,i)*timestp(j,k,i)
+                bz(k,i)=bz(k,i)*timestp(j,k,i,1)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i,1)
+                bz3(k,i)=bz3(k,i)*timestp(j,k,i,2)
+                cz(k,i)=cz(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz3(k,i)=cz3(k,i)*timestp(j,k,i,2)+1.0*(1.+phi)
+                dz(k,i)=dz(k,i)*timestp(j,k,i,1)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i,1)
+                dz3(k,i)=dz3(k,i)*timestp(j,k,i,2)
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
@@ -2569,15 +2583,15 @@ c           IDIM boundary points
                 dz3(k,i)=dz3(k,i) + uu*apm
               enddo
               do k=1,kdim-1
-                bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
-                bz3(k,i)=bz3(k,i)*timestp(j,k,i)
-                cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz3(k,i)=cz3(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
-                dz3(k,i)=dz3(k,i)*timestp(j,k,i)
+                bz(k,i)=bz(k,i)*timestp(j,k,i,1)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i,1)
+                bz3(k,i)=bz3(k,i)*timestp(j,k,i,2)
+                cz(k,i)=cz(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i,1)+1.0*(1.+phi)
+                cz3(k,i)=cz3(k,i)*timestp(j,k,i,2)+1.0*(1.+phi)
+                dz(k,i)=dz(k,i)*timestp(j,k,i,1)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i,1)
+                dz3(k,i)=dz3(k,i)*timestp(j,k,i,2)
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
