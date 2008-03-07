@@ -1748,9 +1748,7 @@ c             initialize modal data
                  w(ll) = 0.
               end do
             enddo
-            do nm = 1,nmodes
-             iunitw = 200+nm
-             do igrid = 1,ngrid
+            do igrid = 1,ngrid
                nbl = nblg(igrid)
                ncg = ncgg(igrid)
                call lead(nbl,lw,lw2,maxbl)
@@ -1811,17 +1809,20 @@ c
                   jst = lxmdj
                   kst = lxmdk
                   ist = lxmdi
-                  call modread(idim,jdim,kdim,nm,nbl,iunit,jbcinfo,
-     .                         kbcinfo,ibcinfo,nbcj0,nbcjdim,nbck0,
-     .                         nbckdim,nbci0,nbcidim,maxbl,maxseg,
-     .                         nmds,w(jst),w(kst),w(ist),iaes,maxaes)
-                  call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
-     .                         nsegdfrm,iaesurf,jbcinfo,kbcinfo,
-     .                         ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
-     .                         nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
-     .                         w(lx),w(ly),w(lz),w(jst),
-     .                         w(kst),w(ist),jdim,kdim,idim,
-     .                         maxaes,nmds,nbl,iunitw,1)
+                  do nm = 1,nmodes
+                   call modread(idim,jdim,kdim,nm,nbl,iunit,jbcinfo,
+     .                          kbcinfo,ibcinfo,nbcj0,nbcjdim,nbck0,
+     .                          nbckdim,nbci0,nbcidim,maxbl,maxseg,
+     .                          nmds,w(jst),w(kst),w(ist),iaes,maxaes)
+                   iunitw = 200+nm
+                   call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
+     .                          nsegdfrm,iaesurf,jbcinfo,kbcinfo,
+     .                          ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
+     .                          nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
+     .                          w(lx),w(ly),w(lz),w(jst),
+     .                          w(kst),w(ist),jdim,kdim,idim,
+     .                          maxaes,nmds,nbl,iunitw,1)
+                  end do
 c                 close(iunitw)
                end if
 
@@ -1897,7 +1898,6 @@ c
      .                       myid,mycomm,mblk2nd,maxbl)
 #   endif
 c
-             end do
             end do
             do nm=1,nmodes
                close(200+nm)
