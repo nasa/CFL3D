@@ -682,7 +682,7 @@ c
          allocate(blocks_clcd(2,1000))
          blocks_clcd(:,:) = 0
          read(110,*)            ! Cl calc #, block #
- 998     read(110,'(I2,I4)',end=1999,err=1999) 
+ 998     read(110,*,end=1999,err=1999) 
      .        blocks_clcd(:,nblocks_clcd+1)
          if( blocks_clcd(1,nblocks_clcd+1) > 0 .and.  
      .        blocks_clcd(1,nblocks_clcd+1) <= n_clcd .and.  
@@ -703,6 +703,8 @@ c
          open(unit=102,file=clcds,form='unformatted',
      .        status='unknown')
          rewind(102)
+      else
+         allocate(blocks_clcd(1,1))
       end if
 
 
@@ -818,6 +820,10 @@ c
          end if
          call mpi_bcast(blocks_clcd, 2*nblocks_clcd, MPI_INTEGER,
      $        myhost, mycomm, ierr)
+      else
+         if (myid .ne. myhost) then
+            allocate(blocks_clcd(1,1))
+         end if
       end if
 
 #endif
