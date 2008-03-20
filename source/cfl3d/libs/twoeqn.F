@@ -4016,6 +4016,7 @@ c
      +          (q(jset,1,1,4)-qk0(jset,1,4,1))**2)
       utau=sqrt((fnu(jset,1,1)+vk0(jset,1,1,1))*qset/
      +     (ccabs(smin(jset,1,1))*q(jset,1,1,1)*re))
+      write(92,'(''  utau='',e18.8)') utau
       do k=1,kdim-1
         ypl=re*q(jset,1,1,1)*utau*ccabs(smin(jset,k,1))/fnu(jset,1,1)
         ypl=cclog10(ypl)
