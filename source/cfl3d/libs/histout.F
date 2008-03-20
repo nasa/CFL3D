@@ -130,7 +130,7 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
                end do
             end if
       else if (ihstry.eq.1) then
-         write(12,'('' Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
+         write(12,'(''# Final mass_flow,cftp,cftv,cftmom='',4e12.4)')
      .   real(fmdotw(ntt)),real(cftpw(ntt)),real(cftvw(ntt)),
      .   real(cftmomw(ntt))
          if (iclcd .ne. 1 .and. iclcd .ne. 2) then
