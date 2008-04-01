@@ -1078,6 +1078,14 @@ c
 c        Eddy viscosity:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +     vist3d,wk,wk,wk,vi0,vj0,vk0,1,1,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                      'Mu_tOverMu_inf', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                      'Mu_tOverMu_inf', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
 c        put in SIDS-like-"consistent normalization"
          do i=i2d,idima-i2d
          do j=0,jdima
