@@ -85,6 +85,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /sourceterm/ xdir_jonly_source
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -667,7 +668,8 @@ c   three-equation turb model
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
         call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
-     +    res,snk0,snj0,xib,xkb,blnum,nou,bou,nbuf,ibufdim,nbl,nummem)
+     +    res,snk0,snj0,xib,xkb,blnum,nou,bou,nbuf,ibufdim,nbl,nummem,
+     +    x,y,z)
 c   *********
       end if
       end if
@@ -885,6 +887,31 @@ c
         call resnonin(nbl,jdim,kdim,idim,q,x,y,z,sj,sk,si,vol,res,
      .                nou,bou,nbuf,ibufdim)
       endif
+c
+c     add source term in x-dir for problems with inflow/outflow bdys
+c     that are periodic with each other... this source term drives the problem
+c     (there must also be viscous walls in the problem - the source term
+c     adjusts the flow until the source balances the viscous losses)
+c     only works if x is in j-direction of grid, and grid must be cartesian
+c     and must be solved time-accurately (dt > 0)
+c
+      if (ccabs(xdir_jonly_source) .gt. 1.e-12) then
+        if (isklton.eq.1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' Adding x-dir source term to eqns'')')
+        end if
+        izz=0
+        do i=1,idim-1
+        do k=1,kdim
+        do j=1,jdim
+          izz=izz+1
+          fsrce = -xdir_jonly_source*vol(izz)
+          res(izz,2) = res(izz,2) + fsrce
+          res(izz,5) = res(izz,5) + fsrce*q(j,k,i,2)
+        enddo
+        enddo
+        enddo
+      end if
 c
       if (iadvance(nbl) .ge. 0) then
 c

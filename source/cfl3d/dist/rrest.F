@@ -47,6 +47,7 @@ c
      .     vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
      .     tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
       integer blocks_clcd
+      integer stats
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .     cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
      .     cmxw(ncycmax),cmyw(ncycmax),cmzw(ncycmax),
@@ -84,6 +85,9 @@ c
       common /conversion/ radtodeg
       common /ghost/ irghost,iwghost
       common /igrdtyp/ ip3dgrd,ialph
+
+      common /random_input/ randomize
+      allocatable :: harvest(:)
 c     
       idim1 = idim-1
       jdim1 = jdim-1
@@ -670,6 +674,32 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)
          end if
+c
+         if (randomize .gt. 1.e-12) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'('' adding random component to'',
+     .           '' restart values'')')
+           jki_size=(jdim-1)*(kdim-1)*(idim-1)
+           allocate( harvest(jki_size),stat=stats )
+           call umalloc(jki_size,0,'harvest',memuse,stats)
+           call random_seed
+           call random_number(harvest)
+           irnd_count=0
+           do i=1,idim-1
+             do k=1,kdim-1
+               do j=1,jdim-1
+                 irnd_count=irnd_count+1
+                 rnd_nbr=harvest(irnd_count)-0.5
+                 q(j,k,i,1)=q(j,k,i,1)*(1.0+rnd_nbr*randomize)
+                 q(j,k,i,2)=q(j,k,i,2)*(1.0+rnd_nbr*randomize)
+                 q(j,k,i,3)=q(j,k,i,3)*(1.0+rnd_nbr*randomize)
+                 q(j,k,i,4)=q(j,k,i,4)*(1.0+rnd_nbr*randomize)
+                 q(j,k,i,5)=q(j,k,i,5)*(1.0+rnd_nbr*randomize)
+               enddo
+             enddo
+           enddo
+         end if
+c
 #if defined DIST_MPI
 c     
       end if

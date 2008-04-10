@@ -196,6 +196,8 @@ c
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
       common /lesinfo/ cs_smagorinsky
+      common /sourceterm/ xdir_jonly_source
+      common /random_input/ randomize
 #if defined DIST_MPI
 c
 c***********************
@@ -467,6 +469,8 @@ c
          work(nlast+98) = keepambient
          work(nlast+99) = re_thetat0
          work(nlast+100)= cs_smagorinsky
+         work(nlast+101)= xdir_jonly_source
+         work(nlast+102)= randomize
          nlast = nlast+nkey
       end if
 c
@@ -747,6 +751,8 @@ c
          keepambient = int(work(nlast+98))
          re_thetat0  = work(nlast+99)
          cs_smagorinsky=work(nlast+100)
+         xdir_jonly_source = work(nlast+101)
+         randomize= work(nlast+102)
       end if
 c
 c**************************

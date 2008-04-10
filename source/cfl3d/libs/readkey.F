@@ -75,6 +75,8 @@ c
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
       common /lesinfo/ cs_smagorinsky
+      common /sourceterm/ xdir_jonly_source
+      common /random_input/ randomize
 c
       ititr = 0
       nkey  = 0
@@ -587,6 +589,17 @@ c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant
 c     if set to zero, you get implicit LES (no model)
 c     default=0.2
       cs_smagorinsky = 0.2
+      nkey     = nkey + 1
+c
+c     xdir_jonly_source is imposed source term
+c     default=0.0
+      xdir_jonly_source = 0.0
+      nkey     = nkey + 1
+c
+c     randomize adds random perturbation to restart
+c     value is max multiple of current value of q that can be added
+c     default=0.0
+      randomize = 0.0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1245,6 +1258,16 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          cs_smagorinsky = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'xdir_jonly_source') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xdir_jonly_source = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'randomize') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         randomize = abs(realval(1))
 c
       else
 c

@@ -1,6 +1,6 @@
       subroutine lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
      +                   vor,smin,xjb,tursav,xkb,blnum,
-     +                   nou,bou,nbuf,ibufdim,nbl,nummem)
+     +                   nou,bou,nbuf,ibufdim,nbl,nummem,x,y,z)
 c
 c     $Id$
 c
@@ -34,13 +34,16 @@ c
       dimension vist3d(jdim,kdim,idim)
       dimension sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
-c     vor=vorticity, smin=min dist fn, 
+      dimension vor(jdim-1,kdim-1,idim-1),smin(jdim-1,kdim-1,idim-1)
+      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
 c     the screwy method for keeping track of nearest wall location (for
 c     getting y+ value associated with a field point) is taken from method
 c     used for Baldwin-Barth... it's kind of a memory nightmare:
 c     xjb=j index, tursav(2)=i index, xkb=k index, blnum=corresp block number
-      dimension vor(jdim-1,kdim-1,idim-1),smin(jdim-1,kdim-1,idim-1),
-     + xjb(jdim-1,kdim-1,idim-1),xkb(jdim-1,kdim-1,idim-1),
+c     Actually, the Baldwin-Barth index tracking appears to be screwed up -
+c     so for now, do not use it!!
+c     i.e., xjb, xkb, tursav(2), and blnum are not used
+      dimension xjb(jdim-1,kdim-1,idim-1),xkb(jdim-1,kdim-1,idim-1),
      + tursav(jdim,kdim,idim,nummem),blnum(jdim-1,kdim-1,idim-1)
 c
       character*120 bou(ibufdim,nbuf)
@@ -100,23 +103,38 @@ c   ***NOTE: This is a crude approximation which should be ok as long
 c            as block boundaries are not VERY near bodies.  There is
 c            really no EASY way to get correct information from across
 c            blocks for ypls
-            nblb=int(blnum(j,k,i)+0.1)
-            if (nblb .ne. nbl) then
-              ypls=1000.
-            else
-              jbb=int(xjb(j,k,i)+0.1)
-              kbb=int(xkb(j,k,i)+0.1)
-              ibb=int(tursav(j,k,i,2)+0.1)
-              if (jbb .eq. jdim) jbb=jbb-1
-              if (kbb .eq. kdim) kbb=kbb-1
-              if (ibb .eq. idim) ibb=ibb-1
-c             do not allow ibb=0
-              ibb=max(ibb,1)
+c           nblb=int(blnum(j,k,i)+0.1)
+c           if (nblb .ne. nbl) then
+c             ypls=1000.
+c           else
+c             jbb=int(xjb(j,k,i)+0.1)
+c             kbb=int(xkb(j,k,i)+0.1)
+c             ibb=int(tursav(j,k,i,2)+0.1)
+c             if (jbb .eq. jdim) jbb=jbb-1
+c             if (kbb .eq. kdim) kbb=kbb-1
+c             if (ibb .eq. idim) ibb=ibb-1
+c             ibb=max(ibb,1)
+c   The B-B type finding of nearest wall appears to be screwed up big time
+c   So, assume k-walls only, and simply get location to nearest wall
+c   location at same j and i (note- wall could be at k=1 or kdim)
+              jbb=j
+              ibb=i
+              dist1=(x(j,k,i)-x(j,1,i))**2 + 
+     +              (y(j,k,i)-y(j,1,i))**2 +
+     +              (z(j,k,i)-z(j,1,i))**2
+              dist2=(x(j,k,i)-x(j,kdim,i))**2 + 
+     +              (y(j,k,i)-y(j,kdim,i))**2 +
+     +              (z(j,k,i)-z(j,kdim,i))**2
+              if (dist1 .le. dist2) then
+                kbb=1
+              else
+                kbb=kdim-1
+              end if
               tt=gamma*q(jbb,kbb,ibb,5)/q(jbb,kbb,ibb,1)
               wnu=c2bp*tt*sqrt(tt)/(c2b+tt)/q(jbb,kbb,ibb,1)
               utau=sqrt(wnu*vor(jbb,kbb,ibb)/(q(jbb,kbb,ibb,1)*re))
               ypls=re*q(jbb,kbb,ibb,1)*utau*ccabs(smin(j,k,i))/wnu
-            end if
+c           end if
             deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
             deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
             deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
@@ -145,6 +163,21 @@ c           Standard Smagorinsky model:
         enddo
       enddo
       end if
+c     if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. icyc.eq.ncyc1(3)
+c    +.or. icyc.eq.ncyc1(4) .or. icyc.eq.ncyc1(5)) then
+c       write(51,*) idim-1,jdim-1,kdim-1
+c       write(51,*) (((x(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +              (((y(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +              (((z(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+c       write(52,*) idim-1,jdim-1,kdim-1
+c       time=0.
+c       write(52,*) xmach,alpha,reue,time
+c       write(52,*) (((xjb(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +              (((xkb(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +         (((tursav(j,k,i,2),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +         (((tursav(j,k,i,1),i=1,idim-1),j=1,jdim-1),k=1,kdim-1),
+c    +         (((vist3d(j,k,i),i=1,idim-1),j=1,jdim-1),k=1,kdim-1)
+c     end if
 c
 c   obtain LES diagnostic info
 c
