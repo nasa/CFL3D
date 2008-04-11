@@ -75,7 +75,7 @@ c
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
       common /lesinfo/ cs_smagorinsky
-      common /sourceterm/ xdir_jonly_source
+      common /sourceterm/ xdir_only_source
       common /random_input/ randomize
 c
       ititr = 0
@@ -591,9 +591,9 @@ c     default=0.2
       cs_smagorinsky = 0.2
       nkey     = nkey + 1
 c
-c     xdir_jonly_source is imposed source term
+c     xdir_only_source is imposed source term
 c     default=0.0
-      xdir_jonly_source = 0.0
+      xdir_only_source = 0.0
       nkey     = nkey + 1
 c
 c     randomize adds random perturbation to restart
@@ -1259,10 +1259,10 @@ c
          read(inpstr(lc2:lcl),*) realval(1)
          cs_smagorinsky = realval(1)
 c
-      else if (inpstr(lc1:lc2).eq.'xdir_jonly_source') then
+      else if (inpstr(lc1:lc2).eq.'xdir_only_source') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         xdir_jonly_source = realval(1)
+         xdir_only_source = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'randomize') then
          lc2 = lc2 +1

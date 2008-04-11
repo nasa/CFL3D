@@ -85,7 +85,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
-      common /sourceterm/ xdir_jonly_source
+      common /sourceterm/ xdir_only_source
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -892,10 +892,9 @@ c     add source term in x-dir for problems with inflow/outflow bdys
 c     that are periodic with each other... this source term drives the problem
 c     (there must also be viscous walls in the problem - the source term
 c     adjusts the flow until the source balances the viscous losses)
-c     only works if x is in j-direction of grid, and grid must be cartesian
-c     and must be solved time-accurately (dt > 0)
+c     grid must be cartesian
 c
-      if (ccabs(xdir_jonly_source) .gt. 1.e-12) then
+      if (ccabs(xdir_only_source) .gt. 1.e-12) then
         if (isklton.eq.1) then
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'('' Adding x-dir source term to eqns'')')
@@ -905,7 +904,7 @@ c
         do k=1,kdim
         do j=1,jdim
           izz=izz+1
-          fsrce = -xdir_jonly_source*vol(izz)
+          fsrce = -xdir_only_source*vol(izz)
           res(izz,2) = res(izz,2) + fsrce
           res(izz,5) = res(izz,5) + fsrce*q(j,k,i,2)
         enddo
