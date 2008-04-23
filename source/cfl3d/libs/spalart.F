@@ -979,26 +979,26 @@ c
           enddo
         enddo
         end if
-      if (isarc2d .eq. 1) then
-c For SARC model, eventually need to compute rtilde as fn of Dalpha/Dt
+        if (isarc2d .eq. 1) then
+c   For SARC model, eventually need to compute rtilde as fn of Dalpha/Dt
 c   Note SARC currently only set up for curvature in x-z plane, with
 c   y direction (necessarily) in the i-direction
 c   Get vx(3)=DS11/Dt and vx(4)=DS13/Dt:
-        call sijrate2d(idim,jdim,kdim,q,qj0,qk0,
-     .  bcj,bck,vol,sj,sk,vx)
+          call sijrate2d(idim,jdim,kdim,q,qj0,qk0,
+     .    bcj,bck,vol,sj,sk,vx)
 c   compute curvature term, part of Dalpha/Dt: store in vx(1)
 c   modify Sij such that its diagonal terms are traceless in the 2D sense
-        do i=1,idim-1
-          do j=1,jdim-1
-            do k=1,kdim-1
-              s11 = ux(j,k,i,1)
-     +           -(ux(j,k,i,1)+ux(j,k,i,9))/2.
-              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-              vx(j,k,i,1)=s11*vx(j,k,i,4)-s13*vx(j,k,i,3)
+          do i=1,idim-1
+            do j=1,jdim-1
+              do k=1,kdim-1
+                s11 = ux(j,k,i,1)
+     +             -(ux(j,k,i,1)+ux(j,k,i,9))/2.
+                s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+                vx(j,k,i,1)=s11*vx(j,k,i,4)-s13*vx(j,k,i,3)
+              enddo
             enddo
           enddo
-        enddo
-      end if
+        end if
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
