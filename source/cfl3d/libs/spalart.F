@@ -1898,5 +1898,38 @@ c Update VIST3D and save TURRE in TURSAV
         enddo
       enddo
 c
+c
+c-----BEGIN HARDWIRED OUTPUT SECTION
+c
+c  If desired, write out turb index here during last iteration:
+c  This currently writes out assuming body is at k=1;
+c  also, only i=1 index is written
+c
+c  NOTE:
+c
+c     ONLY SET IWRITEAUX=1 IF USING THE SEQUENTIAL BUILD OF THE
+c     CODE - OTHERWISE, IF USED IN PARALELL, EACH PROCESSOR WILL
+c     OVERWRITE UNITS 91 AND 92
+c
+c     THIS SECTION IS PRETTY MUCH HARDWIRED FOR 2D, SINGLE BLOCK
+c     CASES ANYWAY!
+c
+      iwriteaux=0
+      if(iwriteaux .eq. 1) then
+      if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. icyc.eq.ncyc1(3)
+     +.or. icyc.eq.ncyc1(4) .or. icyc.eq.ncyc1(5)) then
+      if(ntime .eq. 1) then
+        i=1
+        write(92,'(''variables="x","i_t"'')')
+        do j=1,jdim-1
+          zit=turre(j,1,i)/(0.41*sqrt(fnu(j,1,i)*vor(j,1,i))*
+     +        smin(j,1,i)*sqrt(re))
+          write(92,'(2e15.5)') 0.5*(x(j,1,i)+x(j+1,1,i)),zit
+        enddo
+      end if
+      end if
+      end if
+c-----END HARDWIRED OUTPUT SECTION
+c
       return
       end
