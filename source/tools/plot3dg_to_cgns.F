@@ -7,7 +7,7 @@ c   Purpose: reads in plot3d-type (or cfl3d-type) unformatted grid file
 c   and writes out a CGNS ADF file.  Also reads in as input the 1-to-1
 c   section of CFL3D input file, for creating the 1-to-1 CGNS
 c   connectivity information.
-c   Currently, you must be linked to CGNS V2.2 or later
+c   Currently, you must be linked to CGNS V2.5.2 or later
 c
 c   This does a 3-D grid only, in MG format
 c***********************************************************************
@@ -29,8 +29,8 @@ c
 c
 c  read the CFL3D input file to determine parameter requirements
 c
-      write(6,'('' Note:  currently, you must be linked to CGNS V2.4'',
-     +  '' or later'',/)')
+      write(6,'('' Note:  currently, you must be linked to CGNS'',
+     +  '' V2.5.2 or later'',/)')
       write(6,'('' What is the CFL3D input file name?'')')
       write(6,'(''   (be sure that IREST=0 in this file!!!)'')')
       read(5,'(a80)') file2
@@ -351,9 +351,9 @@ c   open ADF file
       read(5,'(a32)') filename
       filenamr='solutiononly.cgns'
       write(6,'('' creating adf grid file name:  '',a32)') filename
-      call cg_open_f(filename,MODE_WRITE,iccg,ier)
+      call cg_open_f(filename,CG_MODE_WRITE,iccg,ier)
       if (ier .ne. 0) call cg_error_exit_f
-      call cg_open_f(filenamr,MODE_WRITE,iccgr,ier)
+      call cg_open_f(filenamr,CG_MODE_WRITE,iccgr,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c   create base
       basename='Base'
@@ -1730,7 +1730,7 @@ c  close adf file
       call cg_close_f(iccgr,ier)
       if (ier .ne. 0) call cg_error_exit_f
 c
-      call cg_open_f(filenamr,MODE_MODIFY,iccgr,ier)
+      call cg_open_f(filenamr,CG_MODE_MODIFY,iccgr,ier)
       if (ier .ne. 0) call cg_error_exit_f
       do n=1,nbl
         newname='Base/' // zonename(n) // '/GridCoordinates'

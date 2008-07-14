@@ -19,9 +19,11 @@ c
       character*32 zonename
 c
 c  Read CGNS file
+      write(6,'('' Note:  currently, you must be linked to CGNS'',
+     +  '' V2.5.2 or later'',/)')
       write(6,'('' input name of CGNS file to read'')')
       read(5,'(a80)') file2
-      call cg_open_f(file2,MODE_READ,iccg,ier)
+      call cg_open_f(file2,CG_MODE_READ,iccg,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_nbases_f(iccg,nbases,ier)
       if (ier .ne. 0) call cg_error_exit_f

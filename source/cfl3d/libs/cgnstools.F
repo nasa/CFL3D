@@ -256,7 +256,8 @@ c
 c
       istp=0
 c   Open CGNS file
-      call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
+      write(901,'('' Opening CGNS database from cgnstools/getntr'')')
+      call cg_open_f(cgnsdesired,CG_MODE_READ,iccg,ier)
       if (ier .ne. 0) then
         write(66,'('' Error opening cgns file'')')
         write(66,'('' Make sure the file on 1st line of input IS'',
@@ -286,6 +287,7 @@ c        setting ntr=0 and continuing:
       end if
 c
 c   Close CGNS file
+      write(901,'('' Closing CGNS data base from cgnstools/getntr'')')
       call cg_close_f(iccg,ier)
       if (ier .ne. 0) then
         call cg_error_print_f
@@ -322,8 +324,9 @@ c
 c
 c   Open CGNS file
       write(901,'(/,'' Accessing cgns database... (must'',
-     +  '' be linked to API Version 2.2 or later)'')')
-      call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
+     +  '' be linked to CGNS Version 2.5.2 or later)'')')
+      write(901,'('' Opening CGNS database from cgnstools/ropencgns'')')
+      call cg_open_f(cgnsdesired,CG_MODE_READ,iccg,ier)
       if (ier .ne. 0) then
         write(901,'('' Error opening cgns file'')')
         write(901,'('' Make sure the file on 1st line of input IS'',
@@ -416,7 +419,8 @@ c
       character*32 basedesired,basename
 c
 c   Open CGNS file
-      call cg_open_f(cgnsdesired,MODE_MODIFY,iccg,ier)
+      write(901,'('' Opening CGNS database from cgnstools/wopencgns'')')
+      call cg_open_f(cgnsdesired,CG_MODE_MODIFY,iccg,ier)
       if (ier .ne. 0) then
         write(901,'('' Error opening cgns file'')')
         write(901,'('' Make sure the file on 1st line of input IS'',
