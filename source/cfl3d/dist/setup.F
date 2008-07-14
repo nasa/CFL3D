@@ -2380,6 +2380,7 @@ c
      .                   mycomm, ierr)
 #endif
 c
+      end if
       if (myid.eq.myhost) then
       if (icgns .ne. 1) then
             close (2)
@@ -2390,6 +2391,7 @@ c
       else
 #if defined CGNS
 c   Close data base
+      write(901,'('' Closing CGNS database from setup'')')
       call cg_close_f(iccg, ier)
       if (ier .ne. 0) then
          call cg_error_print_f
@@ -2397,8 +2399,6 @@ c   Close data base
       end if
 #endif
       end if
-         end if
-c
       end if
 c
 c********************************************************

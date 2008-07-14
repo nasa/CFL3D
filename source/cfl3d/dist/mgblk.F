@@ -2579,6 +2579,7 @@ c
                else
 #if defined CGNS
 c   Close data base
+                 write(901,'('' Closing CGNS database from mgblk'')')
                  call cg_close_f(iccg, ier)
                  if (ier .ne. 0) then
                    call cg_error_print_f
@@ -2949,6 +2950,7 @@ c       need to delete CFL3DAeroModeData node if it exists
                else
 #if defined CGNS
 c   Close data base
+                 write(901,'('' Closing CGNS database from mgblk'')')
                  call cg_close_f(iccg, ier)
                  if (ier .ne. 0) then
                    call cg_error_print_f

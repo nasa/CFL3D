@@ -851,6 +851,7 @@ c***********************************************************************
 #if defined CGNS
 c   Close data base
       if (icgns .eq. 1 .and. myid .eq. myhost) then
+        write(901,'('' Closing CGNS database from main'')')
         call cg_close_f(iccg, ier)
         if (ier .ne. 0) then
           call cg_error_print_f
