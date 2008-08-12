@@ -2892,7 +2892,7 @@ c
  6070             continue
 #if defined CGNS
                else
-                  if (icgns .eq. 1) then
+                  if (icgns .eq. 1 .and. myid .eq. myhost) then
                   do igrid=1,ngrid
 c       need to delete certain nodes if they exist
                     call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,'end')
