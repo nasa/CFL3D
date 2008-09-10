@@ -77,6 +77,7 @@ c
       common /lesinfo/ cs_smagorinsky
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       ititr = 0
       nkey  = 0
@@ -600,6 +601,26 @@ c     randomize adds random perturbation to restart
 c     value is max multiple of current value of q that can be added
 c     default=0.0
       randomize = 0.0
+      nkey     = nkey + 1
+c
+c     iexact_trunc is used to check truncation error against exact
+c     solution (MMS=method of manufactured solution)
+c     should be run only 1 iteration
+c     default=0
+      iexact_trunc = 0
+      nkey     = nkey + 1
+c
+c     iexact_disc is used to check discretization error against exact
+c     solution (MMS=method of manufactured solution)
+c     must be run to convergence
+c     default=0
+      iexact_disc = 0
+      nkey     = nkey + 1
+c
+c     iexact_ring is used to overwrite the exact solution on the
+c     outer 2 ring layers of the grid (MMS=method of manufactured solution)
+c     default=0
+      iexact_ring = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1268,6 +1289,18 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          randomize = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'iexact_trunc') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iexact_trunc
+c
+      else if (inpstr(lc1:lc2).eq.'iexact_disc') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iexact_disc
+c
+      else if (inpstr(lc1:lc2).eq.'iexact_ring') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iexact_ring
 c
       else
 c

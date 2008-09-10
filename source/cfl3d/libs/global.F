@@ -180,6 +180,7 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       pi = 4.0*atan(1.0)
 c
@@ -1372,6 +1373,14 @@ c
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
+      if (ibctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+ 2203     format(36h stopping...9999 bc requires keyword,
+     .    28h iexact_trunc or iexact_disc)
+        end if
+      end if
+c
 c     check and correct for reverse input of indicies
       itemp1 = ibcinfo(nbl,abs(nseg),2,1)
       itemp2 = ibcinfo(nbl,abs(nseg),3,1)
@@ -1632,6 +1641,12 @@ c
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
+      if (ibctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+        end if
+      end if
+c
 c     check and correct for reverse input of indicies
       itemp1 = ibcinfo(nbl,abs(nseg),2,2)
       itemp2 = ibcinfo(nbl,abs(nseg),3,2)
@@ -1878,6 +1893,12 @@ c
       if (jbctyp.ge.2000 .and. jbctyp.lt.3000 .and. ndata.eq.0) then
           write(iunit11,2202)
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+c
+      if (jbctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+        end if
       end if
 c
 c     check and correct for reverse input of indicies
@@ -2127,6 +2148,12 @@ c
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
+      if (jbctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+        end if
+      end if
+c
 c     check and correct for reverse input of indicies
       jtemp1 = jbcinfo(nbl,abs(nseg),2,2)
       jtemp2 = jbcinfo(nbl,abs(nseg),3,2)
@@ -2373,6 +2400,12 @@ c
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
+      if (kbctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+        end if
+      end if
+c
 c     check and correct for reverse input of indicies
       ktemp1 = kbcinfo(nbl,abs(nseg),2,1)
       ktemp2 = kbcinfo(nbl,abs(nseg),3,1)
@@ -2617,6 +2650,12 @@ c
       if (kbctyp.ge.2000 .and. kbctyp.lt.3000 .and. ndata.eq.0) then
           write(iunit11,2202)
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+c
+      if (kbctyp.eq.9999) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,2203)
+        end if
       end if
 c
 c     check and correct for reverse input of indicies
@@ -3025,6 +3064,49 @@ c
         write(iunit11,*)' Stopping!',
      .        '  Cannot use iteravg>0 with mseq>1 and embedded grids'
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (iexact_trunc .ne. 0) then
+        if (ncg .ne. 0 .or. mgflag .ne. 0 .or.
+     +      ifullns .ne. 1 .or. i2d .ne. 1) then
+          write(iunit11,*)' Stopping!',
+     .        '  must have ncg=0,mgflag=0,ifullns=1,i2d=1 when',
+     .        ' iexact_trunc.ne.0'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (ivmx .ne. 5) then
+          write(iunit11,*)' Stopping!',
+     .        '  currently must use ivisc=5 for iexact_trunc.ne.0'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+#   ifdef CMPLX
+        write(iunit11,*)' Stopping!',
+     .        '  currently cannot use iexact_trunc.ne.0 with complex'
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+#   endif
+      end if
+      if (iexact_disc .ne. 0) then
+        if (ifullns .ne. 1 .or. i2d .ne. 1) then
+          write(iunit11,*)' Stopping!',
+     .        '  must have ifullns=1,i2d=1 when iexact_disc.ne.0'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (ivmx .ne. 5) then
+          write(iunit11,*)' Stopping!',
+     .        '  currently must use ivisc=5 for iexact_disc.ne.0'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+#   ifdef CMPLX
+        write(iunit11,*)' Stopping!',
+     .        '  currently cannot use iexact_disc.ne.0 with complex'
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+#   endif
+      end if
+      if (iexact_ring .ne. 0) then
+        if (iexact_trunc .eq. 0 .and. iexact_disc .eq. 0) then
+          write(iunit11,*)' iexact_ring must be used with',
+     .      ' iexact_trunc=1 or iexact_disc=1'
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
       end if
 c
 c

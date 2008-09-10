@@ -42,7 +42,7 @@ FSRC_LIBS = \
 	abcjz.f        colldat.f      dlutr.f        abckz.f \
 	collv.f        dlutrp.f       init.f         q8vrev.f \
 	collx.f        dsmin.f        initvist.f     lamfix.f \
-	collxtb.f      expand.f       int2.f \
+	collxtb.f      expand.f       int2.f         bc9999.f \
 	extra.f        extrae.f       lead.f \
 	amafi.f        ffluxl.f       l2norm.f       bc_xmera.f \
 	amafj.f        dabciz.f       fhat.f         l2norm2.f \
@@ -90,7 +90,7 @@ FSRC_LIBS = \
 	pre_patch.f    pre_cblki.f    pre_cblkj.f    pre_cblkk.f \
 	global.f       global2.f      bc.f           getibk0.f \
 	rpatch0.f      cntsurf.f      cctogp.f       bc2009.f \
-	modread.f      genforce.f     rotsurf.f \
+	modread.f      genforce.f     rotsurf.f      mms.f \
 	trnsurf.f      tfiedge.f      tfiface.f      tfivol.f  \
         arclen.f       deform.f       bc_delt.f      getsurf.f \
 	setcorner.f    prolim.f       prolim2.f      readkey.f \

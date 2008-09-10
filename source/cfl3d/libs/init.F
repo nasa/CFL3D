@@ -1,5 +1,5 @@
       subroutine init(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,tj0,tk0,ti0,
-     .                vol,volj0,volk0,voli0,nummem)
+     .                vol,volj0,volk0,voli0,nummem,x,y,z)
 c
 c     $Id$
 c
@@ -18,6 +18,7 @@ c
      .          ti0(jdim,kdim  ,nummem,4)
       dimension volj0(kdim,idim-1,4),volk0(jdim,idim-1,4),
      .          voli0(jdim,kdim  ,4),vol(jdim,kdim,idim-1)
+      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
 c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -27,6 +28,7 @@ c
      .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
       common /maxiv/ ivmx
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
 c     write(15,904)nbl
   904 format(29h initial conditions for block,i3)
@@ -237,6 +239,11 @@ c           assigmnment correctly if the k-loop is innermost
                end do
             end do
          end do
+      end if
+c
+c   Overwrite with exact soln if doing MMS
+      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+        call exact_flow_q(jdim,kdim,idim,x,y,z,q)
       end if
 c
       return

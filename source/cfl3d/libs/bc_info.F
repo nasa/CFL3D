@@ -96,6 +96,10 @@ c
       ndim = kend-ksta
       filname = bcfiles(bcfilei(nbl,nseg,1))
 c
+      if (ibcinfo(nbl,nseg,1,1).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .               nou,bou,nbuf,ibufdim)
+c
       if (ibcinfo(nbl,nseg,1,1).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .               nou,bou,nbuf,ibufdim)
@@ -262,6 +266,10 @@ c
       ndim = kend-ksta
       filname = bcfiles(bcfilei(nbl,nseg,2))
 c
+      if (ibcinfo(nbl,nseg,1,2).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .               nou,bou,nbuf,ibufdim)
+c
       if (ibcinfo(nbl,nseg,1,2).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .               nou,bou,nbuf,ibufdim)
@@ -426,6 +434,10 @@ c
       mdim = kend-ksta
       ndim = iend-ista
       filname = bcfiles(bcfilej(nbl,nseg,1))
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .               nou,bou,nbuf,ibufdim)
 c
       if (jbcinfo(nbl,nseg,1,1).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
@@ -592,6 +604,10 @@ c
       ndim = iend-ista
       filname = bcfiles(bcfilej(nbl,nseg,2))
 c
+      if (jbcinfo(nbl,nseg,1,2).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .               nou,bou,nbuf,ibufdim)
+c
       if (jbcinfo(nbl,nseg,1,2).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .               nou,bou,nbuf,ibufdim)
@@ -757,6 +773,10 @@ c
       ndim = iend-ista
       filname = bcfiles(bcfilek(nbl,nseg,1))
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .               nou,bou,nbuf,ibufdim)
+c
       if (kbcinfo(nbl,nseg,1,1).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .               nou,bou,nbuf,ibufdim)
@@ -921,6 +941,10 @@ c
       mdim = jend-jsta
       ndim = iend-ista
       filname = bcfiles(bcfilek(nbl,nseg,2))
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.9999)
+     .  call out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .               nou,bou,nbuf,ibufdim)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.1000)
      .  call out1000(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
@@ -7853,4 +7877,60 @@ c
  2008 format('           ',a60)
 c
       return 
+      end
+      subroutine out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
+     .                  nface,nou,bou,nbuf,ibufdim)
+c
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+      character*120 bou(ibufdim,nbuf)
+c
+      dimension nou(nbuf)
+c
+      if (nface.eq.3) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1001) ista,iend,ksta,kend
+      end if
+c
+      if (nface.eq.4) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1002) ista,iend,ksta,kend
+      end if
+c
+      if (nface.eq.5) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1003) ista,iend,jsta,jend
+      end if
+c
+      if (nface.eq.6) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1004) ista,iend,jsta,jend
+      end if
+c
+      if (nface.eq.1) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1005) jsta,jend,ksta,kend
+      end if
+c
+      if (nface.eq.2) then
+      nou(1) = min(nou(1)+1,ibufdim)
+      write(bou(nou(1),1),1006) jsta,jend,ksta,kend
+      end if
+c
+ 1001 format(' ','  j=   1  exact soln (MMS)               type 9999',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1002 format(' ','  j=jdim  exact soln (MMS)               type 9999',
+     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+ 1003 format(' ','  k=   1  exact soln (MMS)               type 9999',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1004 format(' ','  k=kdim  exact soln (MMS)               type 9999',
+     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+ 1005 format(' ','  i=   1  exact soln (MMS)               type 9999',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+ 1006 format(' ','  i=idim  exact soln (MMS)               type 9999',
+     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+c
+      return
       end

@@ -1,5 +1,5 @@
       subroutine initvist(nbl,jdim,kdim,idim,vist3d,tursav,smin,cmuv,
-     .                    nummem)
+     .                    nummem,x,y,z)
 c
 c     $Id$
 c
@@ -13,10 +13,12 @@ c
 c
       dimension tursav(jdim,kdim,idim,nummem),vist3d(jdim,kdim,idim),
      .          smin(jdim-1,kdim-1,idim-1),cmuv(jdim-1,kdim-1,idim-1)
+      dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
 c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
 c   scaling factor for distance-based I.C.s:
       refac=reue/5.e6
@@ -170,6 +172,11 @@ c
             vist3d(j,k,i)=0.
  4021 continue
 c
+      end if
+c
+c   Overwrite with exact soln if doing MMS
+      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
       end if
 c
       return

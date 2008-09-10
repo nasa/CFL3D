@@ -1296,6 +1296,12 @@ c
       ii  = i+ipl-1
       do 400 k=1,kdim1
       jkv = (k-1)*jdim1*npl + (ipl-1)*jdim1 + 1
+c   for 2-D, t(3) should be identically zero
+      if (i2d .eq. 1) then
+        do izz=1,jdim1
+          t(izz+jkv-1,3)=0.
+        enddo
+      end if
       do 400 l=2,5
 cdir$ ivdep
       do 1030 izz=1,jdim1

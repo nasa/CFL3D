@@ -38,6 +38,7 @@ c
       common /chk/ ichk
       common /sklton/ isklton
       common /twod/ i2d
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -98,6 +99,10 @@ c
 c
  1002 continue
  4100 continue
+      if (iexact_ring .eq. 1) then
+c       overwrite ring of exact MMS values in outer 2 rows of grid
+        call exact_flow_q_ring(jdim,kdim,idim,x,y,z,q)
+      end if
 c
       if (ichk.eq.1) then
          epsz = 1.0e-05

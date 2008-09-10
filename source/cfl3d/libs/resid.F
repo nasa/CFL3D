@@ -86,6 +86,7 @@ c
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
       common /sourceterm/ xdir_only_source
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -949,6 +950,38 @@ c
       end if
 c
  1447 format(50h blanking the rhs for the cells in the hole  block,i5)
+c
+c   exact solution
+c
+      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+        if (isklton.gt.0 .and. iexact_trunc .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +      '' resid routine to evaluate truncation error'')')
+        else if (isklton.gt.0 .and. iexact_disc .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +      '' resid routine to evaluate discretization error'')')
+        end if
+        call exact_flow_force(jdim,kdim,idim,x,y,z,vol,res,snk0)
+        if (iexact_ring .eq. 1) then
+          if (isklton.gt.0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   Setting res=0 in'',
+     +       '' outer ring'')')
+          end if
+          call zero_resid_ring(jdim,kdim,idim,res,jdim,kdim,idim-1,
+     +      5,2)
+        end if
+c
+        if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or.
+     +     icyc.eq.ncyc1(3) .or. icyc.eq.ncyc1(4) .or.
+     +     icyc.eq.ncyc1(5)) then
+          if(ntime .eq. 1 .and. level.ge.lglobal) then
+            call exact_norm(jdim,kdim,idim,x,y,z,q,xib,vol,res,snk0)
+          end if
+        end if
+      end if
 c
       if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
          return

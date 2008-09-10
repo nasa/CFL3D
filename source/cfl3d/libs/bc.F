@@ -184,6 +184,7 @@ c               (p/pinf), the  amplitude of the pressure oscillation
 c               (deltap/pinf), the reduced frequency of the pressure
 c               oscillation (rfreqp), and the "grid equivalent" length of the
 c               dimensional reference length used to define rfreqp
+c      bc9999 - exact solution
 c
 c
 c      II - Block Interface Boundary Conditions:
@@ -394,6 +395,14 @@ c
       mdim = jend-jsta
       ndim = kend-ksta
       filname = bcfiles(bcfilei(nbl,nseg,1))
+c
+      if (ibcinfo(nbl,nseg,1,1).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
 c
       if (ibcinfo(nbl,nseg,1,1).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -618,6 +627,14 @@ c
       ndim = kend-ksta
       filname = bcfiles(bcfilei(nbl,nseg,2))
 c
+      if (ibcinfo(nbl,nseg,1,2).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
+c
       if (ibcinfo(nbl,nseg,1,2).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
@@ -840,6 +857,14 @@ c
       mdim = kend-ksta
       ndim = iend-ista
       filname = bcfiles(bcfilej(nbl,nseg,1))
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
 c
       if (jbcinfo(nbl,nseg,1,1).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1064,6 +1089,14 @@ c
       ndim = iend-ista
       filname = bcfiles(bcfilej(nbl,nseg,2))
 c
+      if (jbcinfo(nbl,nseg,1,2).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
+c
       if (jbcinfo(nbl,nseg,1,2).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
@@ -1287,6 +1320,14 @@ c
       ndim = iend-ista
       filname = bcfiles(bcfilek(nbl,nseg,1))
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
+c
       if (kbcinfo(nbl,nseg,1,1).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
@@ -1509,6 +1550,14 @@ c
       mdim = jend-jsta
       ndim = iend-ista
       filname = bcfiles(bcfilek(nbl,nseg,2))
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.9999)
+     .  call bc9999(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
+     .  nummem,w(lx),w(ly),w(lz),w(lsnk0))
 c
       if (kbcinfo(nbl,nseg,1,2).eq.1000)
      .  call bc1000(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),

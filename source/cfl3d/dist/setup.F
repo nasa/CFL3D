@@ -1594,7 +1594,7 @@ c        then must call init again to make sure everything ends up
 c        with freestream data
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0),nummem)
+     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz))
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
@@ -1634,7 +1634,7 @@ c        call the noninertial initization to speed convergence
          end if
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0),nummem)
+     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz))
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
@@ -2738,7 +2738,7 @@ c
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),265) nbl
                call initvist(nbl,jdim,kdim,idim,w(lvis),w(lxib),
-     .                       w(lsnk0),w(lcmuv),nummem)
+     .                       w(lsnk0),w(lcmuv),nummem,w(lx),w(ly),w(lz))
             endif
 c
 #   ifdef FASTIO

@@ -198,6 +198,7 @@ c
       common /lesinfo/ cs_smagorinsky
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 #if defined DIST_MPI
 c
 c***********************
@@ -471,6 +472,9 @@ c
          work(nlast+100)= cs_smagorinsky
          work(nlast+101)= xdir_only_source
          work(nlast+102)= randomize
+         work(nlast+103)= iexact_trunc
+         work(nlast+104)= iexact_disc
+         work(nlast+105)= iexact_ring
          nlast = nlast+nkey
       end if
 c
@@ -753,6 +757,9 @@ c
          cs_smagorinsky=work(nlast+100)
          xdir_only_source = work(nlast+101)
          randomize= work(nlast+102)
+         iexact_trunc= int(work(nlast+103))
+         iexact_disc= int(work(nlast+104))
+         iexact_ring= int(work(nlast+105))
       end if
 c
 c**************************

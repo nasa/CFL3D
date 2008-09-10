@@ -40,6 +40,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
+      common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -67,6 +68,11 @@ c
      + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,4)
 c
       if(isklton .gt. 0) then
+        if (iexact_trunc .eq. 1) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +'' Spalart routine to evaluate truncation error'')')
+        else
          if (ides .eq. 1) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''   computing turbulent'',
@@ -87,6 +93,12 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Freestream tur10 = '',
      +     e19.8)') tur10(1)
+         if (iexact_disc .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     using exact MMS source in'',
+     +     '' Spalart routine to evaluate discretization error'')')
+         end if
+        end if
         if(iturbord .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     1st order advection on RHS'')')
@@ -1081,6 +1093,18 @@ c            Add to RHS:
             enddo
           enddo
         enddo
+        if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+c         note vol already included in resid and sign is reverse of mean flow
+          call exact_turb_force(jdim,kdim,idim,x,y,z,vol,vist3d,smin)
+          if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. 
+     +       icyc.eq.ncyc1(3) .or. icyc.eq.ncyc1(4) .or. 
+     +       icyc.eq.ncyc1(5)) then
+            if(ntime .eq. 1) then
+              call exact_turb_res(jdim,kdim,idim,vol,vist3d)
+            end if
+          end if
+        end if
+c
 c      Transition specified by jtran1 and jtran2 (Spalart's method)
 c      NOTE:  This method currently is set up to only work in 2-D with
 c      jtran1 and jtran2 (lower & upper surface) specified.  It needs
@@ -1855,6 +1879,15 @@ c           IDIM boundary points
         end if
 c
 c    Update TURRE
+        if (iexact_ring .eq. 1) then
+          if (isklton.gt.0) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   Setting SA res=0 in'',
+     +         '' outer ring'')')
+          end if
+          call zero_resid_ring(jdim,kdim,idim,vist3d,jdim,kdim,idim,
+     +      1,2)
+        end if
         sumn=0.
         negn=0
         do i=1,idim-1
@@ -1886,6 +1919,11 @@ c
       negn1 = negn
       negn2 = 0
 c
+      if (iexact_trunc .eq. 1) then
+c       need to load exact solution again (lost it in vist3d
+c       because of memory re-use)
+        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
+      else
 c Update VIST3D and save TURRE in TURSAV
       do i=1,idim-1
         do k=1,kdim-1
@@ -1897,6 +1935,11 @@ c Update VIST3D and save TURRE in TURSAV
           enddo
         enddo
       enddo
+      end if
+      if (iexact_ring .eq. 1) then
+c       overwrite ring of turbulence values in outer 2 rows of grid
+        call exact_turb_q_ring(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
+      end if
 c
 c
 c-----BEGIN HARDWIRED OUTPUT SECTION
