@@ -183,7 +183,7 @@ c
      +        i_convert_q,i_forcing,i_gradient,distf,xmut)
             delta_u=ccabs(q(j,k,i,2)-f(2))/xmach
             delta_w=ccabs(q(j,k,i,4)-f(4))/xmach
-            delta_p=ccabs(q(j,k,i,5)-f(5))*gamma
+            delta_p=ccabs(q(j,k,i,5)-f(5))*gamma/(xmach*xmach)
             delta_t=ccabs(tursav(j,k,i)-f(6))/reue
             if (delta_u .gt. u_max) then
               u_max=delta_u
