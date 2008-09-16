@@ -1448,7 +1448,7 @@ c Initialize
       call exact_zero(t, tx, ty, tz, txx, tyy, tzz, txy, txz, tyz )
 c
 c Choose manufactured solution
-c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon)
+c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon), 4=MS4(Lisbon)
       ims_sol=1
       if (ims_sol .eq. 0) then
         u_scale=xmach
@@ -1499,7 +1499,8 @@ c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon)
      +              wxx, wyy, wzz, wxy, wxz, wyz )
         call exact_polyfg(p_scale, p_polyf, x, y, z, p, px, py, pz, 
      +              pxx, pyy, pzz, pxy, pxz, pyz )
-      else if (ims_sol .eq. 1 .or. ims_sol .eq. 2) then
+      else if (ims_sol .eq. 1 .or. ims_sol .eq. 2 .or.
+     +         ims_sol .eq. 4) then
         xlisbon_p_scale = 1.0/gamma
         call exact_lisbon_ms2_u(xmach, x, z, u, ux, uz, uxx, uzz, uxz )
         call exact_lisbon_ms2_v(xmach, x, z, w, wx, wz, wxx, wzz, wxz )
@@ -1605,8 +1606,10 @@ c       Turbulence variable
           call exact_lisbon_ms1_vt(term, x, z, vt, vtx, vtz, vtxx, vtzz)
         else if (ims_sol .eq. 2) then
           call exact_lisbon_ms2_vt(term, x, z, vt, vtx, vtz, vtxx, vtzz)
+        else if (ims_sol .eq. 4) then
+          call exact_lisbon_ms4_vt(term, x, z, vt, vtx, vtz, vtxx, vtzz)
         else
-          write(6,'('' Error... must have ims_sol=1 or 2 with SA'')')
+          write(6,'('' Error... must have ims_sol=1,2, or 4 with SA'')')
         end if
         chi  =   vt/xnu
         chix = ( vtx - chi*xnux )/xnu
@@ -1915,6 +1918,21 @@ c=============================================================================80
       qy =  qy + scale*dem2dyms(x,y)/emu
       qxx = qxx +  scale*dem2dx2ms(x,y)/emu
       qyy = qyy +  scale*dem2dy2ms(x,y)/emu
+      return
+      end
+c
+      subroutine exact_lisbon_ms4_vt(scale, x, y, q, qx, qy, qxx, qyy )
+c=============================== EXACT_LISBON_MS2_VT =========================80
+c
+c Add exact solution and gradients from Lisbon backward facing step ms2.
+c
+c=============================================================================80
+      emu=1.e-6
+      q = q + scale*em4ms(x,y)/emu
+      qx =  qx + scale*dem4dxms(x,y)/emu
+      qy =  qy + scale*dem4dyms(x,y)/emu
+      qxx = qxx +  scale*dem4dx2ms(x,y)/emu
+      qyy = qyy +  scale*dem4dy2ms(x,y)/emu
       return
       end
 c
@@ -2253,6 +2271,15 @@ c
       return
       end
 c
+      function em4ms(x,y)
+      sigeta=1.e1
+      emmax=1.e-3
+      eta=sigeta*y/x
+      t1=0.25*exp(2.)*emmax
+      em4ms=t1*eta*eta*eta*eta*exp(-eta*eta)
+      return
+      end
+c
       function dem1dxms(x,y)
       sigeta=1.e1
       emmax=1.e-3
@@ -2272,6 +2299,15 @@ c
       return
       end
 c
+      function dem4dxms(x,y)
+      sigeta=1.e1
+      emmax=1.e-3
+      eta=sigeta*y/x
+      t1=0.5*exp(2.)*emmax/x
+      dem4dxms=t1*eta*eta*eta*eta*exp(-eta*eta)*(eta*eta-2.0)
+      return
+      end
+c
       function dem1dyms(x,y)
       sigeta=1.e1
       emmax=1.e-3
@@ -2288,6 +2324,15 @@ c
       eta=sigeta*y/x
       t1=2.0*exp(1.0)*emmax*sigeta/x
       dem2dyms=t1*eta*exp(-eta*eta)*(1.0-eta*eta)
+      return
+      end
+c
+      function dem4dyms(x,y)
+      sigeta=1.e1
+      emmax=1.e-3
+      eta=sigeta*y/x
+      t1=0.5*exp(2.)*emmax*sigeta/x
+      dem4dyms=t1*eta*eta*eta*exp(-eta*eta)*(2.0-eta*eta)
       return
       end
 c
@@ -2312,6 +2357,15 @@ c
       return
       end
 c
+      function dem4dx2ms(x,y)
+      sigeta=1.e1
+      eta=sigeta*y/x
+      et2=eta*eta
+      t1=2.0*em4ms(x,y)/x/x
+      dem4dx2ms=t1*(et2*(2.0*et2-11.0)+10.0)
+      return
+      end
+c
       function dem1dy2ms(x,y)
       sigeta=1.e1
       emmax=1.e-3
@@ -2331,6 +2385,16 @@ c
       et2=eta*eta
       t1=2.0*exp(1.0)*emmax*(sigeta/x)*(sigeta/x)*exp(-et2)
       dem2dy2ms=t1*(et2*(2.0*et2-5.0)+1.0)
+      return
+      end
+c
+      function dem4dy2ms(x,y)
+      sigeta=1.e1
+      emmax=1.e-3
+      eta=sigeta*y/x
+      et2=eta*eta
+      t1=0.5*exp(2.)*emmax*et2*(sigeta/x)*(sigeta/x)*exp(-et2)
+      dem4dy2ms=t1*(et2*(2.0*et2-9.0)+6.0)
       return
       end
 c
