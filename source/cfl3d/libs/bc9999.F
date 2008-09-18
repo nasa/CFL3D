@@ -34,14 +34,15 @@ c
       common /maxiv/ ivmx
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
-      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+      if (iexact_trunc .ne. 0 .or. iexact_disc .ne. 0) then
         call exact_flow_bc(jdim,kdim,idim,x,y,z,qi0,qj0,qk0,nface,
      +                       bcj,bck,bci,smin,tj0,tk0,ti0,
-     +                       vj0,vk0,vi0,nummem)
+     +                       vj0,vk0,vi0,nummem,
+     +                       iexact_trunc,iexact_disc)
       else
         nou(1) = min(nou(1)+1,ibufdim)
         write(bou(nou(1),1),'('' Error... bc9999 only usable with'',
-     +   '' iexact_trunc=1 or iexact_disc=1'')')
+     +   '' iexact_trunc .ne. 0 or iexact_disc .ne. 0'')')
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c

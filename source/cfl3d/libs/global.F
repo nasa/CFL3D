@@ -3065,6 +3065,12 @@ c
      .        '  Cannot use iteravg>0 with mseq>1 and embedded grids'
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
+      if (iexact_trunc .ne. 0 .and. iexact_disc .ne. 0) then
+        write(iunit11,*)' Stopping!',
+     .      '  cannot have both iexact_trunc and iexact_disc',
+     .      ' .ne. 0'
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
       if (iexact_trunc .ne. 0) then
         if (ncg .ne. 0 .or. mgflag .ne. 0 .or.
      +      ifullns .ne. 1 .or. i2d .ne. 1) then
@@ -3076,6 +3082,12 @@ c
         if (ivmx .ne. 5) then
           write(iunit11,*)' Stopping!',
      .        '  currently must use ivisc=5 for iexact_trunc.ne.0'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (iexact_trunc .ne. 1 .and. iexact_trunc .ne. 2 .and.
+     .      iexact_trunc .ne. 4) then
+          write(iunit11,*)' Stopping!',
+     .        '  currently must have iexact_trunc=1,2, or 4'
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
 #   ifdef CMPLX
@@ -3094,6 +3106,12 @@ c
           write(iunit11,*)' Stopping!',
      .        '  currently must use ivisc=5 for iexact_disc.ne.0'
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        if (iexact_disc .ne. 1 .and. iexact_disc .ne. 2 .and.
+     .      iexact_disc .ne. 4) then
+          write(iunit11,*)' Stopping!',
+     .        '  currently must have iexact_disc=1,2, or 4'
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
         end if
 #   ifdef CMPLX
         write(iunit11,*)' Stopping!',

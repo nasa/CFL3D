@@ -68,10 +68,18 @@ c
      + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,4)
 c
       if(isklton .gt. 0) then
-        if (iexact_trunc .eq. 1) then
+        if (iexact_trunc .ne. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''   Using exact MMS source in'',
-     +'' Spalart routine to evaluate truncation error'')')
+         if (iexact_trunc .eq. 1) then
+           write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +      '' Spalart routine to evaluate truncation error, MS1'')')
+         else if (iexact_trunc .eq. 2) then
+           write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +      '' Spalart routine to evaluate truncation error, MS2'')')
+         else if (iexact_trunc .eq. 4) then
+           write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +      '' Spalart routine to evaluate truncation error, MS4'')')
+         end if
         else
          if (ides .eq. 1) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -93,10 +101,18 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Freestream tur10 = '',
      +     e19.8)') tur10(1)
-         if (iexact_disc .eq. 1) then
+         if (iexact_disc .ne. 0) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     using exact MMS source in'',
-     +     '' Spalart routine to evaluate discretization error'')')
+           if (iexact_disc .eq. 1) then
+             write(bou(nou(1),1),'(''     using exact MMS source in'',
+     +     '' Spalart routine to evaluate discretization error, MS1'')')
+           else if (iexact_disc .eq. 2) then
+             write(bou(nou(1),1),'(''     using exact MMS source in'',
+     +     '' Spalart routine to evaluate discretization error, MS2'')')
+           else if (iexact_disc .eq. 4) then
+             write(bou(nou(1),1),'(''     using exact MMS source in'',
+     +     '' Spalart routine to evaluate discretization error, MS4'')')
+           end if
          end if
         end if
         if(iturbord .eq. 1) then
@@ -1093,14 +1109,16 @@ c            Add to RHS:
             enddo
           enddo
         enddo
-        if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
+        if (iexact_trunc .ne. 0 .or. iexact_disc .ne. 0) then
 c         note vol already included in resid and sign is reverse of mean flow
-          call exact_turb_force(jdim,kdim,idim,x,y,z,vol,vist3d,smin)
+          call exact_turb_force(jdim,kdim,idim,x,y,z,vol,vist3d,smin,
+     +          iexact_trunc,iexact_disc)
           if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. 
      +       icyc.eq.ncyc1(3) .or. icyc.eq.ncyc1(4) .or. 
      +       icyc.eq.ncyc1(5)) then
             if(ntime .eq. 1) then
-              call exact_turb_res(jdim,kdim,idim,vol,vist3d)
+              call exact_turb_res(jdim,kdim,idim,vol,vist3d,
+     +                            iexact_trunc,iexact_disc)
             end if
           end if
         end if
@@ -1886,7 +1904,7 @@ c    Update TURRE
      +         '' outer ring'')')
           end if
           call zero_resid_ring(jdim,kdim,idim,vist3d,jdim,kdim,idim,
-     +      1,2)
+     +      1,2,iexact_trunc,iexact_disc)
         end if
         sumn=0.
         negn=0
@@ -1919,10 +1937,11 @@ c
       negn1 = negn
       negn2 = 0
 c
-      if (iexact_trunc .eq. 1) then
+      if (iexact_trunc .ne. 0) then
 c       need to load exact solution again (lost it in vist3d
 c       because of memory re-use)
-        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
+        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d,
+     +      iexact_trunc,iexact_disc)
       else
 c Update VIST3D and save TURRE in TURSAV
       do i=1,idim-1
@@ -1938,7 +1957,8 @@ c Update VIST3D and save TURRE in TURSAV
       end if
       if (iexact_ring .eq. 1) then
 c       overwrite ring of turbulence values in outer 2 rows of grid
-        call exact_turb_q_ring(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
+        call exact_turb_q_ring(jdim,kdim,idim,x,y,z,tursav,smin,vist3d,
+     +      iexact_trunc,iexact_disc)
       end if
 c
 c

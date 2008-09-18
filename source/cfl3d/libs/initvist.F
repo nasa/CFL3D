@@ -175,8 +175,9 @@ c
       end if
 c
 c   Overwrite with exact soln if doing MMS
-      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
-        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d)
+      if (iexact_trunc .ne. 0 .or. iexact_disc .ne. 0) then
+        call exact_turb_q(jdim,kdim,idim,x,y,z,tursav,smin,vist3d,
+     +      iexact_trunc,iexact_disc)
       end if
 c
       return

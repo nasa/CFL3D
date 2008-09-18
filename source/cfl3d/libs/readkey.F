@@ -606,6 +606,7 @@ c
 c     iexact_trunc is used to check truncation error against exact
 c     solution (MMS=method of manufactured solution)
 c     should be run only 1 iteration
+c     set=1 for MS1, 2 for MS2, 4 for MS4
 c     default=0
       iexact_trunc = 0
       nkey     = nkey + 1
@@ -613,6 +614,7 @@ c
 c     iexact_disc is used to check discretization error against exact
 c     solution (MMS=method of manufactured solution)
 c     must be run to convergence
+c     set=1 for MS1, 2 for MS2, 4 for MS4
 c     default=0
       iexact_disc = 0
       nkey     = nkey + 1

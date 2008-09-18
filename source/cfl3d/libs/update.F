@@ -101,7 +101,8 @@ c
  4100 continue
       if (iexact_ring .eq. 1) then
 c       overwrite ring of exact MMS values in outer 2 rows of grid
-        call exact_flow_q_ring(jdim,kdim,idim,x,y,z,q)
+        call exact_flow_q_ring(jdim,kdim,idim,x,y,z,q,
+     +      iexact_trunc,iexact_disc)
       end if
 c
       if (ichk.eq.1) then

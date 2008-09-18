@@ -953,17 +953,34 @@ c
 c
 c   exact solution
 c
-      if (iexact_trunc .eq. 1 .or. iexact_disc .eq. 1) then
-        if (isklton.gt.0 .and. iexact_trunc .eq. 1) then
+      if (iexact_trunc .ne. 0 .or. iexact_disc .ne. 0) then
+        if (isklton.gt.0 .and. iexact_trunc .ne. 0) then
           nou(1) = min(nou(1)+1,ibufdim)
-          write(bou(nou(1),1),'(''   Using exact MMS source in'',
-     +      '' resid routine to evaluate truncation error'')')
-        else if (isklton.gt.0 .and. iexact_disc .eq. 1) then
+          if (iexact_trunc .eq. 1) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +        '' resid routine to evaluate truncation error, MS1'')')
+          else if (iexact_trunc .eq. 2) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +        '' resid routine to evaluate truncation error, MS2'')')
+          else if (iexact_trunc .eq. 4) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +        '' resid routine to evaluate truncation error, MS4'')')
+          end if
+        else if (isklton.gt.0 .and. iexact_disc .ne. 0) then
           nou(1) = min(nou(1)+1,ibufdim)
-          write(bou(nou(1),1),'(''   Using exact MMS source in'',
-     +      '' resid routine to evaluate discretization error'')')
+          if (iexact_disc .eq. 1) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +       '' resid routine to evaluate discretization error, MS1'')')
+          else if (iexact_disc .eq. 2) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +       '' resid routine to evaluate discretization error, MS2'')')
+          else if (iexact_disc .eq. 4) then
+            write(bou(nou(1),1),'(''   Using exact MMS source in'',
+     +       '' resid routine to evaluate discretization error, MS4'')')
+          end if
         end if
-        call exact_flow_force(jdim,kdim,idim,x,y,z,vol,res,snk0)
+        call exact_flow_force(jdim,kdim,idim,x,y,z,vol,res,snk0,
+     +      iexact_trunc,iexact_disc)
         if (iexact_ring .eq. 1) then
           if (isklton.gt.0) then
             nou(1) = min(nou(1)+1,ibufdim)
@@ -971,14 +988,15 @@ c
      +       '' outer ring'')')
           end if
           call zero_resid_ring(jdim,kdim,idim,res,jdim,kdim,idim-1,
-     +      5,2)
+     +      5,2,iexact_trunc,iexact_disc)
         end if
 c
         if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or.
      +     icyc.eq.ncyc1(3) .or. icyc.eq.ncyc1(4) .or.
      +     icyc.eq.ncyc1(5)) then
           if(ntime .eq. 1 .and. level.ge.lglobal) then
-            call exact_norm(jdim,kdim,idim,x,y,z,q,xib,vol,res,snk0)
+            call exact_norm(jdim,kdim,idim,x,y,z,q,xib,vol,res,snk0,
+     +           iexact_trunc,iexact_disc)
           end if
         end if
       end if

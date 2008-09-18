@@ -109,7 +109,8 @@ c     NCG=0, MSEQ=1, MGFLAG=0, NCYC=1, MGLEVG=1
 c     start from scratch (IREST=0)
 c
 c=============================================================================80
-      subroutine exact_norm(jdim,kdim,idim,x,y,z,q,tursav,vol,res,smin)
+      subroutine exact_norm(jdim,kdim,idim,x,y,z,q,tursav,vol,res,smin,
+     +   iexact_trunc,iexact_disc)
 c==================================== EXACT_NORM =============================80
 c
 c Routine to get and print out norms
@@ -180,7 +181,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             delta_u=ccabs(q(j,k,i,2)-f(2))/xmach
             delta_w=ccabs(q(j,k,i,4)-f(4))/xmach
             delta_p=ccabs(q(j,k,i,5)-f(5))*gamma/(xmach*xmach)
@@ -363,7 +365,8 @@ c   ***rumsey
       return
       end
 c
-      subroutine exact_turb_res(jdim,kdim,idim,vol,res)
+      subroutine exact_turb_res(jdim,kdim,idim,vol,res,iexact_trunc,
+     +  iexact_disc)
 c==================================== EXACT_TURB_RES =========================80
 c
 c Routine to get and print out turb residuals
@@ -410,7 +413,8 @@ c
       return
       end
 c
-      subroutine exact_flow_force(jdim,kdim,idim,x,y,z,vol,res,smin)
+      subroutine exact_flow_force(jdim,kdim,idim,x,y,z,vol,res,smin,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_FLOW_FORCE =======================80
 c
 c Driver routine to compute the exact forcing terms as a function of (x,y,z).
@@ -451,7 +455,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               res(j,k,i,n)=res(j,k,i,n)-vol(j,k,i)*f(n)
             enddo
@@ -461,7 +466,8 @@ c
       return
       end
 c
-      subroutine exact_turb_force(jdim,kdim,idim,x,y,z,vol,res,smin)
+      subroutine exact_turb_force(jdim,kdim,idim,x,y,z,vol,res,smin,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_TURB_FORCE =======================80
 c
 c Driver routine to compute the exact turb forcing terms as a function of (x,y,z).
@@ -502,7 +508,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             res(j,k,i)=res(j,k,i)+f(6)
           enddo
         enddo
@@ -510,7 +517,8 @@ c
       return
       end
 c
-      subroutine exact_flow_q(jdim,kdim,idim,x,y,z,q)
+      subroutine exact_flow_q(jdim,kdim,idim,x,y,z,q,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_FLOW_Q ===========================80
 c
 c Driver routine to compute the exact q terms as a function of (x,y,z).
@@ -550,7 +558,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -561,7 +570,7 @@ c
       end
 c
       subroutine zero_resid_ring(jdim,kdim,idim,res,jj,kk,ii,numeq,
-     +                           numrows)
+     +                           numrows,iexact_trunc,iexact_disc)
 c==================================== ZERO_RESID_RING ========================80
 c
 c Routine to zero residual in outer numrow rings - valid for 2-D only
@@ -599,7 +608,8 @@ c
       return
       end
 c
-      subroutine exact_flow_q_ring(jdim,kdim,idim,x,y,z,q)
+      subroutine exact_flow_q_ring(jdim,kdim,idim,x,y,z,q,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_FLOW_Q_RING ======================80
 c
 c Driver routine to compute the exact q terms as a function of (x,y,z).
@@ -640,7 +650,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -664,7 +675,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -688,7 +700,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -712,7 +725,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -722,7 +736,8 @@ c
       return
       end
 c
-      subroutine exact_turb_q(jdim,kdim,idim,x,y,z,q,smin,vist3d)
+      subroutine exact_turb_q(jdim,kdim,idim,x,y,z,q,smin,vist3d,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_TURB_Q ===========================80
 c
 c Driver routine to compute the exact turb q terms as a function of (x,y,z).
@@ -763,7 +778,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -772,7 +788,8 @@ c
       return
       end
 c
-      subroutine exact_turb_q_ring(jdim,kdim,idim,x,y,z,q,smin,vist3d)
+      subroutine exact_turb_q_ring(jdim,kdim,idim,x,y,z,q,smin,vist3d,
+     +  iexact_trunc,iexact_disc)
 c==================================== EXACT_TURB_Q_RING ======================80
 c
 c Driver routine to compute the exact turb q terms as a function of (x,y,z).
@@ -814,7 +831,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -838,7 +856,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -862,7 +881,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -886,7 +906,8 @@ c
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -897,7 +918,8 @@ c
 c
       subroutine exact_flow_bc(jdim,kdim,idim,x,y,z,qi0,qj0,qk0,nface,
      +                           bcj,bck,bci,smin,tj0,tk0,ti0,
-     +                           vj0,vk0,vi0,nummem)
+     +                           vj0,vk0,vi0,nummem,
+     +                           iexact_trunc,iexact_disc)
 c==================================== EXACT_FLOW_BC ==========================80
 c
 c Driver routine to compute the exact BC terms as a function of (x,y,z).
@@ -972,7 +994,8 @@ c  QI0 lo
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qi0(j,k,n,1)=f(n)
 c             qi0(j,k,n,2)=qi0(j,k,n,1)
@@ -992,7 +1015,8 @@ c             vi0(j,k,1,2)=vi0(j,k,1,1)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qi0(j,k,n,2)=f(n)
             enddo
@@ -1048,7 +1072,8 @@ c  QI0 hi
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qi0(j,k,n,3)=f(n)
 c             qi0(j,k,n,4)=qi0(j,k,n,3)
@@ -1068,7 +1093,8 @@ c             vi0(j,k,1,4)=vi0(j,k,1,3)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qi0(j,k,n,4)=f(n)
             enddo
@@ -1125,7 +1151,8 @@ c  QJ0 lo
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qj0(k,i,n,1)=f(n)
 c             qj0(k,i,n,2)=qj0(k,i,n,1)
@@ -1145,7 +1172,8 @@ c             vj0(k,i,1,2)=vj0(k,i,1,1)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qj0(k,i,n,2)=f(n)
             enddo
@@ -1201,7 +1229,8 @@ c  QJO hi
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qj0(k,i,n,3)=f(n)
 c             qj0(k,i,n,4)=qj0(k,i,n,3)
@@ -1221,7 +1250,8 @@ c             vj0(k,i,1,4)=vj0(k,i,1,3)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qj0(k,i,n,4)=f(n)
             enddo
@@ -1277,7 +1307,8 @@ c  QK0 lo
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qk0(j,i,n,1)=f(n)
 c             qk0(j,i,n,2)=qk0(j,i,n,1)
@@ -1297,7 +1328,8 @@ c             vk0(j,i,1,2)=vk0(j,i,1,1)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qk0(j,i,n,2)=f(n)
             enddo
@@ -1353,7 +1385,8 @@ c  QKO hi
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qk0(j,i,n,3)=f(n)
 c             qk0(j,i,n,4)=qk0(j,i,n,3)
@@ -1373,7 +1406,8 @@ c             vk0(j,i,1,4)=vk0(j,i,1,3)
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
             call analytic_compressible(xx,yy,zz,nvar,f,
-     +        i_convert_q,i_forcing,i_gradient,distf,xmut)
+     +        i_convert_q,i_forcing,i_gradient,distf,xmut,
+     +        iexact_trunc,iexact_disc)
             do n=1,5
               qk0(j,i,n,4)=f(n)
             enddo
@@ -1396,7 +1430,7 @@ c     do not compile all the exact routines if complex
       continue
 #   else
       subroutine analytic_compressible(x, y, z, neq, q, i_convert_q,
-     +  i_forcing, i_gradient, distf, xmut)
+     +  i_forcing, i_gradient, distf, xmut, iexact_trunc, iexact_disc)
 c================================== ANALYTIC_COMPRESSIBLE  ===================80
 c
 c compressible perfect gas flow...analytic functions.
@@ -1449,8 +1483,8 @@ c Initialize
 c
 c Choose manufactured solution
 c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon), 4=MS4(Lisbon)
-      ims_sol=1
-      if (ims_sol .eq. 0) then
+      ims_sol=max(iexact_trunc, iexact_disc)
+      if (ims_sol .eq. 999) then
         u_scale=xmach
         w_scale=xmach
         p_scale=1.0/gamma
