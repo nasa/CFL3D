@@ -184,6 +184,22 @@ c     read restart file once through to get dimensions
           read(2,*,end=9898) (dum,n=1,ntr),(dum,n=1,ntr),
      .            (idum,n=1,ntr),(idum,n=1,ntr)
           end if
+c   ***rumsey
+          if (iv1.ge.30 .or. iv2.ge.30 .or. iv3.ge.30) then
+            if (iunfi .eq. 1) then
+            read(2,end=9898) nummem
+            else
+            read(2,*,end=9898) nummem
+            end if
+            do l=3,nummem
+              if (iunfi .eq. 1) then
+              read(2,end=9898) (dum,n=1,ntr),(idum,n=1,ntr)
+              else
+              read(2,*,end=9898) (dum,n=1,ntr),(idum,n=1,ntr)
+              end if
+            enddo
+          end if
+c   *********
         end if
         if (iv1.ge.2 .or. iv2.ge.2 .or. iv3.ge.2) then
           if (iunfi .eq. 1) then
@@ -213,6 +229,19 @@ c     read restart file once through to get dimensions
           read(2,*,end=9898) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),
      .      m=1,2)
           end if
+c   ***rumsey
+          if (iv1.ge.30 .or. iv2.ge.30 .or. iv3.ge.30) then
+            if (iunfi .eq. 1) then
+            read(2,end=9898) nummem
+            read(2,end=9898) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .      m=3,nummem)
+            else
+            read(2,*,end=9898) nummem
+            read(2,*,end=9898) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),
+     .      m=3,nummem)
+            end if
+          end if
+c   *********
           if (irghost .eq. 1) then
           if (iunfi .eq. 1) then
           read(2,end=9898) ((((dum,j=1,jdim1+1),k=1,kdim1+1),l=1,2),
@@ -225,13 +254,32 @@ c     read restart file once through to get dimensions
      +            ((((dum,k=1,kdim1+1),i=1,idim1),l=1,2),m=1,4),
      +            ((((dum,j=1,jdim1+1),i=1,idim1),l=1,2),m=1,4)
           end if
+c   ***rumsey
+          if (iv1.ge.30 .or. iv2.ge.30 .or. iv3.ge.30) then
+            if (iunfi .eq. 1) then
+            read(2,end=9898) ((((dum,j=1,jdim1+1),k=1,kdim1+1),
+     +        l=3,nummem),m=1,4),
+     +            ((((dum,k=1,kdim1+1),i=1,idim1),l=3,nummem),m=1,4),
+     +            ((((dum,j=1,jdim1+1),i=1,idim1),l=3,nummem),m=1,4)
+            else
+            read(2,*,end=9898) ((((dum,j=1,jdim1+1),k=1,kdim1+1),
+     +        l=3,nummem),m=1,4),
+     +            ((((dum,k=1,kdim1+1),i=1,idim1),l=3,nummem),m=1,4),
+     +            ((((dum,j=1,jdim1+1),i=1,idim1),l=3,nummem),m=1,4)
+            end if
+          end if
+c   *********
           end if
           if (iunfi .eq. 1) then
           read(2,end=9898) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
           else
           read(2,*,end=9898) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
           end if
-          if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+c   ***rumsey
+c         if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+          if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
+     +        iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
+c   *********
             if (iunfi .eq. 1) then
             read(2,end=9898) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
             read(2,end=9898) (((dum,j=1,jdim1),k=1,kdim1),i=1,idim1)
@@ -662,6 +710,32 @@ c
          write(3,*) (rmstr1(n),n=1,ntr),(rmstr2(n),n=1,ntr),
      .            (nneg1(n), n=1,ntr),(nneg2(n), n=1,ntr)
          end if
+c   ***rumsey
+         if (iv1.ge.30.or. iv2.ge.30.or. iv3.ge.30) then
+           if (iunfi .eq. 1) then
+             read(2) nummem
+           else
+             read(2,*) nummem
+           end if
+           if (iunfo .eq. 1) then
+             write(3) nummem
+           else
+             write(3,*) nummem
+           end if
+           do l=3,nummem
+             if (iunfi .eq. 1) then
+               read(2) (rmstr1(n),n=1,ntr),(nneg1(n),n=1,ntr)
+             else
+               read(2,*) (rmstr1(n),n=1,ntr),(nneg1(n),n=1,ntr)
+             end if
+             if (iunfo .eq. 1) then
+               write(3) (rmstr1(n),n=1,ntr),(nneg1(n),n=1,ntr)
+             else
+               write(3,*) (rmstr1(n),n=1,ntr),(nneg1(n),n=1,ntr)
+             end if
+           enddo
+         end if
+c   *********
       end if
 c
 c   vist3d data:
@@ -734,6 +808,22 @@ c   tursav data:
       if (iv1.ge.4 .or. iv2.ge.4 .or. iv3.ge.4) then
       call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
      +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,2)
+c   ***rumsey
+      if (iv1.ge.30.or. iv2.ge.30.or. iv3.ge.30) then
+        if (iunfi .eq. 1) then
+          read(2) nummem
+        else
+          read(2,*) nummem
+        end if
+        if (iunfo .eq. 1) then
+          write(3) nummem
+        else
+          write(3,*) nummem
+        end if
+        call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
+     +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,nummem-3+1)
+      end if
+c   *********
 c  ghost values ti0,tj0,tk0
       if (irghost .eq. 1) then
       if (iunfi .eq. 1) then
@@ -793,13 +883,88 @@ c       Don't coarsen
      +         ((((qk0c(j,i,l,m),j=1,jdim1c+1),i=1,idim1c),l=1,2),
      +  m=1,4)
       end if
+c   ***rumsey
+      if (iv1.ge.30.or. iv2.ge.30.or. iv3.ge.30) then
+      if (iunfi .eq. 1) then
+      read(2) ((((qi0(j,k,l,m),j=1,jdim1+1),k=1,kdim1+1),
+     +        l=1,nummem-3+1),m=1,4),
+     +        ((((qj0(k,i,l,m),k=1,kdim1+1),i=1,idim1),l=1,nummem-3+1),
+     +        m=1,4),
+     +        ((((qk0(j,i,l,m),j=1,jdim1+1),i=1,idim1),l=1,nummem-3+1),
+     +        m=1,4)
+      else
+      read(2,*)((((qi0(j,k,l,m),j=1,jdim1+1),k=1,kdim1+1),
+     +         l=1,nummem-3+1),m=1,4),
+     +         ((((qj0(k,i,l,m),k=1,kdim1+1),i=1,idim1),l=1,nummem-3+1),
+     +         m=1,4),
+     +         ((((qk0(j,i,l,m),j=1,jdim1+1),i=1,idim1),l=1,nummem-3+1),
+     +         m=1,4)
+      end if
+      if (ihalf .eq. 1) then
+c       Make finer:
+        call makefinbc(qi0,qj0,qk0,qi0c,qj0c,qk0c,
+     +    idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,idim1c,jdim1c,kdim1c,
+     +    ic,jc,kc,nummem-3+1)
+      else if (ihalf .eq. 0) then
+c       Coarsen
+        call makecoarbc(qi0,qj0,qk0,qi0c,qj0c,qk0c,
+     +    idim,jdim,kdim,idimc,jdimc,kdimc,
+     +    idim1,jdim1,kdim1,ic,jc,kc,it,nummem-3+1)
+      else
+c       Don't coarsen
+        do m=1,4
+        do l=1,nummem-3+1
+        do j=1,jdim1
+        do k=1,kdim1
+          qi0c(j,k,l,m)=qi0(j,k,l,m)
+        enddo
+        enddo
+        do k=1,kdim1
+        do i=1,idim1
+          qj0c(k,i,l,m)=qj0(k,i,l,m)
+        enddo
+        enddo
+        do j=1,jdim1
+        do i=1,idim1
+          qk0c(j,i,l,m)=qk0(j,i,l,m)
+        enddo
+        enddo
+        enddo
+        enddo
+      end if
+      if (iunfo .eq. 1) then
+      write(3) ((((qi0c(j,k,l,m),j=1,jdim1c+1),k=1,kdim1c+1),
+     +  l=1,nummem-3+1),m=1,4),
+     +         ((((qj0c(k,i,l,m),k=1,kdim1c+1),i=1,idim1c),
+     +  l=1,nummem-3+1),
+     +  m=1,4),
+     +         ((((qk0c(j,i,l,m),j=1,jdim1c+1),i=1,idim1c),
+     +  l=1,nummem-3+1),
+     +  m=1,4)
+      else
+      write(3,*)((((qi0c(j,k,l,m),j=1,jdim1c+1),k=1,kdim1c+1),
+     +  l=1,nummem-3+1),m=1,4),
+     +         ((((qj0c(k,i,l,m),k=1,kdim1c+1),i=1,idim1c),
+     +  l=1,nummem-3+1),
+     +  m=1,4),
+     +         ((((qk0c(j,i,l,m),j=1,jdim1c+1),i=1,idim1c),
+     +  l=1,nummem-3+1),
+     +  m=1,4)
+      end if
+      end if
+c   *********
       end if
 c
 c   smin data:
       call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
      +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
 c   xjb,xkb,blnum data
-         if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+c   ***rumsey
+c        if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4) then
+         if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
+     +       iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
+c   *********
       call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
      +  kddc(nrty),iunfi,iunfo,ihalf,ic,jc,kc,it,1)
       call getq(idd(nrty),jdd(nrty),kdd(nrty),iddc(nrty),jddc(nrty),
