@@ -557,6 +557,7 @@ c
       xiii=0.
       ff=0.
       zk=0.
+      qinvar=0.
 c   currently unused printout to fort.50 (specifically for k-line)
 c     write(50,'(''variables="y","uuplus","wwplus","vvplus","uwplus",'',
 c    + ''"uvplus","vwplus","u_scaled","kplus","yplus","uplus",'',
@@ -1034,6 +1035,22 @@ c      scalar invariant III:
       end if
 c      scalar invariant F:
       ff=1.+9.*xii+27.*xiii
+c      Q-criterion 2nd invariant of velocity gradient tensor
+c      (not sure if this variable makes sense in 2-d)
+      if (i2d .eq. 1) then
+        if (ialph .eq. 0) then
+          qinvar=-0.5*(ux(j,k,i,1)**2+ux(j,k,i,9)**2+
+     +                 2.*ux(j,k,i,3)*ux(j,k,i,7))
+        else
+          qinvar=-0.5*(ux(j,k,i,1)**2+ux(j,k,i,5)**2+
+     +                 2.*ux(j,k,i,2)*ux(j,k,i,4))
+        end if
+      else
+        qinvar=-0.5*(ux(j,k,i,1)**2+ux(j,k,i,5)**2+ux(j,k,i,9)**2+
+     +               2.*ux(j,k,i,2)*ux(j,k,i,4)+ 
+     +               2.*ux(j,k,i,3)*ux(j,k,i,7)+
+     +               2.*ux(j,k,i,6)*ux(j,k,i,8))
+      end if
       end if
 c
 c     load appropriate data into single precision array
