@@ -563,7 +563,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -578,6 +579,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
@@ -708,7 +714,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -723,6 +730,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
@@ -853,7 +865,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -868,6 +881,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
@@ -998,7 +1016,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -1013,6 +1032,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
@@ -1143,7 +1167,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -1158,6 +1183,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
@@ -1288,7 +1318,8 @@ c XXX
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallInviscid,PointRange,2,ipnts,ibc,ier)
-          else if(ib .eq. 1008) then
+          else if(ib .eq. 1008 .or. ib .eq. 2008 .or. ib .eq. 2018
+     +       .or. ib .eq. 2028 .or. ib .eq. 2009) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCTunnelInflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
@@ -1303,6 +1334,11 @@ c XXX
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCDegenerateLine,PointRange,2,ipnts,ibc,ier)
+          else if(ib .eq. 2002) then
+            call cg_boco_write_f(iccg,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
+            call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
+     +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
           else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
