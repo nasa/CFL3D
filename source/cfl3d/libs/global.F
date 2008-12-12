@@ -176,7 +176,8 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient,re_thetat0
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
@@ -789,6 +790,19 @@ c
      .  ivmx.ne.14)) then
         write(iunit11,'('' WARNING: ieasmcc2d not active'',
      .  '' unless EASM model (ivisc=8,9,11,12,13, or 14) used'')')
+      end if
+c
+      if (i_wilcox06 .eq. 1 .and. ivmx .ne. 6) then
+        write(iunit11,'('' WARNING: i_wilcox06 not active'',
+     .  '' unless Wilcox k-o model (ivisc=6) used'')')
+      end if
+c
+      if (i_turbprod_kterm .eq. 1 .and. (ivmx .ne. 6 .and.
+     .  ivmx .ne. 7)) then
+        if (ikoprod .ne. 1) then
+        write(iunit11,'('' WARNING: i_turbprod_kterm not active'',
+     .  '' unless ivisc=6 or 7 used AND ikoprod=1'')')
+        end if
       end if
 c
       if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.

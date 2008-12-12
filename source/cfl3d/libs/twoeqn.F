@@ -52,7 +52,8 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient,re_thetat0
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -194,12 +195,30 @@ c
       end if
       if(isklton .gt. 0) then
         if(ivmx .eq. 6) then
-           nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     k-omega (Wilcox)'')')
+           if(i_wilcox06 .eq. 1) then
+             if(i_wilcox06_chiw .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     k-omega (Wilcox 06),'',
+     +       '' with vortex stretching term'')')
+             else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     k-omega (Wilcox 06),'',
+     +       '' without vortex stretching term'')')
+             end if
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     k-omega (Wilcox 88)'')')
+           end if
            if(ikoprod .eq. 1) then
+             if(i_turbprod_kterm .ne. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
+             else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     +       '' term with 2/3rho*k subtracted'')')
+             end if
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     approx (vort) production'',
@@ -210,9 +229,15 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'')')
            if(ikoprod .eq. 1) then
+             if(i_turbprod_kterm .ne. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
+             else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     +       '' term with 2/3rho*k subtracted'')')
+             end if
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     approx (vort) production'',
@@ -229,9 +254,15 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega BSL (Menter)'')')
            if(ikoprod .eq. 1) then
+             if(i_turbprod_kterm .ne. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     strain-based production'',
      +       '' term'')')
+             else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     +       '' term with 2/3rho*k subtracted'')')
+             end if
            else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     approx (vort) production'',
@@ -513,6 +544,8 @@ c     SSG:
         c5=1.88
         gg=1./(c1/2.+c5-1.)
       end if
+c  Note: for i_wilcox06, beta1, sigo1, sigk1, alp1 not used
+c  (only beta2, sigo2, sigk2, alp2 are used)
 c  beta1 (constant in omega or epsilon destruction term):
       if(ivmx.eq.6 .or. ivmx.eq.7)                  beta1=0.075
       if(ivmx.eq.12)                                beta1=0.83
@@ -555,12 +588,21 @@ c Coefficient for fnu in diffusion term
         sigkmu = 1./3.
       endif
 c
-c Constants for Set 2 (2-layer SST model only):
-      cmuc2=0.09
-      beta2=0.0828
-      sigo2=0.856
-      sigk2=1.00
-      alp2 =beta2/cmuc2 - sigo2*vk*vk/sqrt(cmuc2)
+c Constants for Set 2 (2-layer SST model and Wilcox06 only):
+      if (ivmx.eq.6 .and. i_wilcox06.eq.1) then
+        cmuc2=0.09
+        beta2=0.0708
+        sigo2=0.5
+        sigk2=0.6
+        alp2 =13./25.
+        sigd0=0.125
+      else
+        cmuc2=0.09
+        beta2=0.0828
+        sigo2=0.856
+        sigk2=1.00
+        alp2 =beta2/cmuc2 - sigo2*vk*vk/sqrt(cmuc2)
+      end if
 c
 c Set up some other needed parameters
       jd2=(jdim-1)/2
@@ -922,6 +964,76 @@ c Get damp1 = CD = cross derivative term for SST or EASM k-o models only:
           enddo
         end if
         end if
+c Get damp1 = CD = cross derivative term for Wilcox06 model only:
+        if(ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
+        do k=1,kdim-1
+          do i=1,idim-1
+            do j=1,jdim-1
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
+              tt=xa*xa+ya*ya+za*za
+              xderiv=0.25*(turre(j,k+1,i,1)-turre(j,k-1,i,1))*
+     +                    (turre(j,k+1,i,2)-turre(j,k-1,i,2))
+              if (xderiv .gt. 0.) then
+                sigd0use=0.125
+              else
+                sigd0use=0.
+              end if
+              damp1(j,k,i)=xderiv*sigd0use*tt/(turre(j,k,i,1)*re)
+            enddo
+          enddo
+        enddo
+        do j=1,jdim-1
+          do i=1,idim-1
+            do k=1,kdim-1
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
+              tt=xa*xa+ya*ya+za*za
+              xderiv=0.25*(turre(j+1,k,i,1)-turre(j-1,k,i,1))*
+     +                    (turre(j+1,k,i,2)-turre(j-1,k,i,2))
+              if (xderiv .gt. 0.) then
+                sigd0use=0.125
+              else
+                sigd0use=0.
+              end if
+              damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0use*tt/
+     +                     (turre(j,k,i,1)*re)
+            enddo
+          enddo
+        enddo
+        if(i2d .ne. 1) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
+     +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
+     +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
+     +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
+                tt=xa*xa+ya*ya+za*za
+                xderiv=0.25*(turre(j,k,i+1,1)-turre(j,k,i-1,1))*
+     +                      (turre(j,k,i+1,2)-turre(j,k,i-1,2))
+                if (xderiv .gt. 0.) then
+                  sigd0use=0.125
+                else
+                  sigd0use=0.
+                end if
+                damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0use*tt/
+     +                       (turre(j,k,i,1)*re)
+              enddo
+            enddo
+          enddo
+        end if
+        end if
 c   get blend = F1 factor
         if (ivmx .eq. 7) then
         do k=1,kdim-1
@@ -937,6 +1049,14 @@ c   get blend = F1 factor
      +             smin(j,k,i))
               arg=ccmin(arga,argb)
               blend(j,k,i)=cctanh(arg*arg*arg*arg)
+            enddo
+          enddo
+        enddo
+        else if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
+        do k=1,kdim-1
+          do i=1,idim-1
+            do j=1,jdim-1
+              blend(j,k,i)=0.0
             enddo
           enddo
         enddo
@@ -1698,25 +1818,52 @@ c  Source terms for k-omega (Wilcox & SST):
               cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
 c            Add to RHS:
+c            Determine Sij etc if needed
+c            (Note not using traceless form due to difficulty in 2D)
+              if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
+     +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1) then
+                s11 = ux(j,k,i,1)
+                s22 = ux(j,k,i,5)
+                s33 = ux(j,k,i,9)
+                s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+                s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+                s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+                xis = s11*s11 + s22*s22 + s33*s33 +
+     +                2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+                w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
+                w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
+                w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+              end if
+c  the following modifies betax via the vortex-stretching parameter
+c  (default is currently i_wilcox06_chiw = 1)
+              if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
+     +            i_wilcox06_chiw .eq. 1) then
+c  in 2-D with x-z plane, the following reduces to: -w13*w13*(s11+s33)
+                xnum=-(w12*w12+w13*w13)*s11 - (w12*w12+w23*w23)*s22
+     +               -(w13*w13+w23*w23)*s33 - 2.*w13*w23*s12
+     +               +2.*w12*w23*s13 - 2.*w12*w13*s23
+                chiw=abs(xnum/((re*beta2*turre(j,k,i,1))**3))
+                fbeta=(1.+85.*chiw)/(1.+100.*chiw)
+                betax=betax*fbeta
+              end if
               if (ikoprod .eq. 1) then
-c            Determine Sij values:
-              s11 = ux(j,k,i,1)
-              s22 = ux(j,k,i,5)
-              s33 = ux(j,k,i,9)
-              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
-              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
-     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         2.*xis - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +           2.*xis - re*betax*turre(j,k,i,1)**2
+     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+c   if desired, subtract off 2/3k term
+c   (can only do this if ikoprod=1):
+                if (i_turbprod_kterm .eq. 1) then
+                  rhside(j,k,i,1)=rhside(j,k,i,1)-(cutoff*2./3.*alp/
+     +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*
+     +              (s11+s22+s33))
+                  pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
+                end if
               else
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +           vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
+     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               pk=ccmin(pk,(pklimterm*dk))
@@ -3481,7 +3628,22 @@ c Update VIST3D and save omega and k values
         do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
+            if (i_wilcox06 .eq. 1) then
+c            Determine Sij values:
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              xxx=sqrt(2.*xis)
+              denom=ccmax(turre(j,k,i,1),xxx*0.875/(re*sqrt(cmuc2)))
+              vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/denom
+            else
+              vist3d(j,k,i)=q(j,k,i,1)*turre(j,k,i,2)/turre(j,k,i,1)
+            end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)

@@ -78,7 +78,8 @@ c
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient,re_thetat0
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
@@ -249,7 +250,7 @@ c
      .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
      .    ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .    ((ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. ivisc(1).eq.5) .and.
-     .    isarc2d.eq.1)) then
+     .    isarc2d.eq.1) .or. (ivmx.eq.6 .and. i_wilcox06.eq.1)) then
       call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)

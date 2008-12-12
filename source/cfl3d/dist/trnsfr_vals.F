@@ -131,7 +131,8 @@ c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient,re_thetat0
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -475,6 +476,9 @@ c
          work(nlast+103)= iexact_trunc
          work(nlast+104)= iexact_disc
          work(nlast+105)= iexact_ring
+         work(nlast+106)= i_wilcox06
+         work(nlast+107)= i_wilcox06_chiw
+         work(nlast+108)= i_turbprod_kterm
          nlast = nlast+nkey
       end if
 c
@@ -760,6 +764,9 @@ c
          iexact_trunc= int(work(nlast+103))
          iexact_disc= int(work(nlast+104))
          iexact_ring= int(work(nlast+105))
+         i_wilcox06= int(work(nlast+106))
+         i_wilcox06_chiw= int(work(nlast+107))
+         i_turbprod_kterm= int(work(nlast+108))
       end if
 c
 c**************************

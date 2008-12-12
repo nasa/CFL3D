@@ -61,7 +61,8 @@ c
      .        tur10(7)
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
-     .        keepambient,re_thetat0
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -623,6 +624,24 @@ c     iexact_ring is used to overwrite the exact solution on the
 c     outer 2 ring layers of the grid (MMS=method of manufactured solution)
 c     default=0
       iexact_ring = 0
+      nkey     = nkey + 1
+c
+c     i_wilcox06 is used to change Wilcox88 model (ivisc=6) to Wilcox06
+c     default=0
+      i_wilcox06 = 0
+      nkey     = nkey + 1
+c
+c     i_wilcox06_chiw is used to turn on/off Wilcox06 k-omega vortex
+c     stretching parameter - only has effect if ivmx=6 and i_wilcox06=1
+c     default=1 (ON)
+      i_wilcox06_chiw = 1
+      nkey     = nkey + 1
+c
+c     i_turbprod_kterm is used to  Wilcox88 mone whether 2/3*rho*k term
+c     gets subtracted from turbulence production in ivisc=6,7 models
+c     (only does anything if ivisc=6 or 7 and ikoprod=1)
+c     default=0 (term not included)
+      i_turbprod_kterm = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1303,6 +1322,18 @@ c
       else if (inpstr(lc1:lc2).eq.'iexact_ring') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iexact_ring
+c
+      else if (inpstr(lc1:lc2).eq.'i_wilcox06') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_wilcox06
+c
+      else if (inpstr(lc1:lc2).eq.'i_wilcox06_chiw') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_wilcox06_chiw
+c
+      else if (inpstr(lc1:lc2).eq.'i_turbprod_kterm') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_turbprod_kterm
 c
       else
 c
