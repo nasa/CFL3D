@@ -689,7 +689,7 @@ c Get laminar viscosity at cell centers
 c
 c Load appropriate turb viscosity at cell centers (NOTE:  the code still
 c uses vi0,vj0,vk0 values for turb viscosity at ghost cells - this means
-c that for nonlinear models, anutp and anutm have variable cmu in them  
+c that for these particular cases it is using slightly different form
 c at the block edges)
       if (ivmx .eq. 12) then
       do i=1,idim-1
@@ -706,6 +706,16 @@ c at the block edges)
         do k=1,kdim-1
           do j=1,jdim-1
             v3dtmp(j,k,i)=cmuc1*q(j,k,i,1)*zksav(j,k,i,2)**2/
+     +                    zksav(j,k,i,1)
+            v3dtmp(j,k,i)=ccmin(v3dtmp(j,k,i),edvislim)
+          enddo
+        enddo
+      enddo
+      else if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
+      do i=1,idim-1
+        do k=1,kdim-1
+          do j=1,jdim-1
+            v3dtmp(j,k,i)=q(j,k,i,1)*zksav(j,k,i,2)/
      +                    zksav(j,k,i,1)
             v3dtmp(j,k,i)=ccmin(v3dtmp(j,k,i),edvislim)
           enddo
