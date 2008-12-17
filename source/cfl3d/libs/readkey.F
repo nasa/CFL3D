@@ -62,7 +62,7 @@ c
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm
+     .        i_turbprod_kterm,i_catris_kw
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -637,11 +637,18 @@ c     default=1 (ON)
       i_wilcox06_chiw = 1
       nkey     = nkey + 1
 c
-c     i_turbprod_kterm is used to  Wilcox88 mone whether 2/3*rho*k term
+c     i_turbprod_kterm is used to determine whether 2/3*rho*k term
 c     gets subtracted from turbulence production in ivisc=6,7 models
 c     (only does anything if ivisc=6 or 7 and ikoprod=1)
 c     default=0 (term not included)
       i_turbprod_kterm = 0
+      nkey     = nkey + 1
+c
+c     i_catris_kw set to 1 alters the k-omega turb diffusion terms to
+c     include density (compressibility) effects, as given in Catris et al,
+c     Aerosp Sci Technol. 4 (2000) 1-11
+c     default=0
+      i_catris_kw = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1334,6 +1341,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_turbprod_kterm') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_turbprod_kterm
+c
+      else if (inpstr(lc1:lc2).eq.'i_catris_kw') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_catris_kw
 c
       else
 c

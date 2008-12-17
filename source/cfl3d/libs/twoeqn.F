@@ -53,7 +53,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm
+     .        i_turbprod_kterm,i_catris_kw
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -462,6 +462,14 @@ c
            write(bou(nou(1),1),'(''         you may need'',
      .     '' WallFunctions to keep from blowing up!'')')
         end if
+        if(ivmx .eq. 6 .or. ivmx .eq. 7 .or. ivmx .eq. 8 .or.
+     .     ivmx .eq. 12.or. ivmx .eq.14) then
+           if (i_catris_kw .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Catris compressible '',
+     .       ''correction for turb diffusion terms being used'')')
+           end if
+        end if
 c
         if(keepambient .eq. 1 .and. ivmx .ne. 15) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -473,6 +481,9 @@ c
 c
 c   Note: (10.**(-iexp) is machine zero)
       xminn=10.**(-iexp+1)
+c
+      catris_kw=0.0
+      if (i_catris_kw .eq. 1) catris_kw=1.0
 c
 c Set number of subiterations to solve turbulence field eqn per iteration
 c (usually, 1 is sufficient... but if residual diverges then may need more)
@@ -1119,20 +1130,34 @@ c       Interior points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j,k+1,i,1)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j,k-1,i,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
-     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,1)
+     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)) +
+     +          catris_kw*(-byy*sqrt(q(j,k-1,i,1))*turre(j,k-1,i,1)
+     +          -cyy*sqrt(q(j,k,i,1))*turre(j,k,i,1) 
+     +          -dyy*sqrt(q(j,k+1,i,1))*turre(j,k+1,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j,k+1,i,1)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j,k-1,i,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
-     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
+              rhside(j,k,i,2)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,2)
+     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)) +
+     +          catris_kw*(-byy*q(j,k-1,i,1)*turre(j,k-1,i,2)
+     +          -cyy*q(j,k,i,1)*turre(j,k,i,2) 
+     +          -dyy*q(j,k+1,i,1)*turre(j,k+1,i,2))
             enddo
           enddo
         enddo
@@ -1175,20 +1200,34 @@ c       K0 boundary points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j,k+1,i,1)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(qk0(j,i,1,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
-     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,1)
+     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)) +
+     +          catris_kw*(-byy*sqrt(qk0(j,i,1,1))*turre(j,k-1,i,1)
+     +          -cyy*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +          -dyy*sqrt(q(j,k+1,i,1))*turre(j,k+1,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j,k+1,i,1)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(qk0(j,i,1,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
-     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
+              rhside(j,k,i,2)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,2)
+     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)) +
+     +          catris_kw*(-byy*qk0(j,i,1,1)*turre(j,k-1,i,2)
+     +          -cyy*q(j,k,i,1)*turre(j,k,i,2)
+     +          -dyy*q(j,k+1,i,1)*turre(j,k+1,i,2))
             enddo
           enddo
 c
@@ -1230,20 +1269,34 @@ c       KDIM points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(qk0(j,i,1,3)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j,k-1,i,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,1)=-byy*turre(j,k-1,i,1)
-     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,1)
+     +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)) +
+     +          catris_kw*(-byy*sqrt(q(j,k-1,i,1))*turre(j,k-1,i,1)
+     +          -cyy*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +          -dyy*sqrt(qk0(j,i,1,3))*turre(j,k+1,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(qk0(j,i,1,3)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j,k-1,i,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
-              rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
-     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
+              rhside(j,k,i,2)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,2)
+     +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)) +
+     +          catris_kw*(-byy*q(j,k-1,i,1)*turre(j,k-1,i,1)
+     +          -cyy*q(j,k,i,1)*turre(j,k,i,1)
+     +          -dyy*qk0(j,i,1,3)*turre(j,k+1,i,1))
             enddo
           enddo
 c    Advective terms in eta
@@ -1345,20 +1398,36 @@ c       Interior points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j+1,k,i,1)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j-1,k,i,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
-     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,1)
+     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)) +
+     +          catris_kw*(-bxx*sqrt(q(j-1,k,i,1))*turre(j-1,k,i,1)
+     +          -cxx*sqrt(q(j,k,i,1))*turre(j,k,i,1) 
+     +          -dxx*sqrt(q(j+1,k,i,1))*turre(j+1,k,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j+1,k,i,1)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j-1,k,i,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
-     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
+              rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,2)
+     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)) +
+     +          catris_kw*(-bxx*q(j-1,k,i,1)*turre(j-1,k,i,2)
+     +          -cxx*q(j,k,i,1)*turre(j,k,i,2) 
+     +          -dxx*q(j+1,k,i,1)*turre(j+1,k,i,2))
             enddo
           enddo
         enddo
@@ -1401,20 +1470,36 @@ c       J0 boundary points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j+1,k,i,1)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(qj0(k,i,1,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
-     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,1)
+     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)) +
+     +          catris_kw*(-bxx*sqrt(qj0(k,i,1,1))*turre(j-1,k,i,1)
+     +          -cxx*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +          -dxx*sqrt(q(j+1,k,i,1))*turre(j+1,k,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j+1,k,i,1)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(qj0(k,i,1,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
-     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
+              rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,2)
+     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)) +
+     +          catris_kw*(-bxx*qj0(k,i,1,1)*turre(j-1,k,i,1)
+     +          -cxx*q(j,k,i,1)*turre(j,k,i,1)
+     +          -dxx*q(j+1,k,i,1)*turre(j+1,k,i,1))
             enddo
           enddo
 c
@@ -1456,20 +1541,36 @@ c       JDIM boundary points
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(qj0(k,i,1,3)+q(j,k,i,1)))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*sqrt(.5*(q(j-1,k,i,1)+q(j,k,i,1)))
+              cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,1)=rhside(j,k,i,1)-bxx*turre(j-1,k,i,1)
-     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)
-              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+              rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,1)
+     +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)) +
+     +          catris_kw*(-bxx*sqrt(q(j-1,k,i,1))*turre(j-1,k,i,1)
+     +          -cxx*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +          -dxx*sqrt(qj0(k,i,1,3))*turre(j+1,k,i,1))
+              rhop=(1.0-catris_kw) +
+     +             catris_kw*.5*(qj0(k,i,1,3)+q(j,k,i,1))
+              rhom=(1.0-catris_kw) +
+     +             catris_kw*.5*(q(j-1,k,i,1)+q(j,k,i,1))
+              cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+              cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
-              rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
-     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
+              rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,2)
+     +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)) +
+     +          catris_kw*(-bxx*q(j-1,k,i,1)*turre(j-1,k,i,1)
+     +          -cxx*q(j,k,i,1)*turre(j,k,i,1)
+     +          -dxx*qj0(k,i,1,3)*turre(j+1,k,i,1))
             enddo
           enddo
 c    Advective terms in xi
@@ -1572,20 +1673,36 @@ c         Interior points
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(q(j,k,i+1,1)+q(j,k,i,1)))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(q(j,k,i-1,1)+q(j,k,i,1)))
+                cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
-     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,1)
+     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)) +
+     +            catris_kw*(-bzz*sqrt(q(j,k,i-1,1))*turre(j,k,i-1,1)
+     +            -czz*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +            -dzz*sqrt(q(j,k,i+1,1))*turre(j,k,i+1,1))
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*.5*(q(j,k,i+1,1)+q(j,k,i,1))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*.5*(q(j,k,i-1,1)+q(j,k,i,1))
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
-     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
+                rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,2)
+     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)) +
+     +            catris_kw*(-bzz*q(j,k,i-1,1)*turre(j,k,i-1,1)
+     +            -czz*q(j,k,i,1)*turre(j,k,i,1)
+     +            -dzz*q(j,k,i+1,1)*turre(j,k,i+1,1))
               enddo
             enddo
           enddo
@@ -1628,20 +1745,36 @@ c         I0 boundary points
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(q(j,k,i+1,1)+q(j,k,i,1)))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(qi0(j,k,1,1)+q(j,k,i,1)))
+                cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
-     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,1)
+     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)) +
+     +            catris_kw*(-bzz*sqrt(qi0(j,k,1,1))*turre(j,k,i-1,1)
+     +            -czz*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +            -dzz*sqrt(q(j,k,i+1,1))*turre(j,k,i+1,1))
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*.5*(q(j,k,i+1,1)+q(j,k,i,1))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*.5*(qi0(j,k,1,1)+q(j,k,i,1))
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
-     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
+                rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,2)
+     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)) +
+     +            catris_kw*(-bzz*qi0(j,k,1,1)*turre(j,k,i-1,1)
+     +            -czz*q(j,k,i,1)*turre(j,k,i,1)
+     +            -dzz*q(j,k,i+1,1)*turre(j,k,i+1,1))
               enddo
             enddo
 c
@@ -1683,20 +1816,36 @@ c         IDIM boundary points
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+sigop*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(fnum+sigom*anutm)*ttm/(q(j,k,i,1)*re)
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(qi0(j,k,1,3)+q(j,k,i,1)))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*sqrt(.5*(q(j,k,i-1,1)+q(j,k,i,1)))
+                cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,1)=rhside(j,k,i,1)-bzz*turre(j,k,i-1,1)
-     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)
-                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(q(j,k,i,1)*re)
+                rhside(j,k,i,1)=rhside(j,k,i,1) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,1)
+     +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)) +
+     +            catris_kw*(-bzz*sqrt(q(j,k,i-1,1))*turre(j,k,i-1,1)
+     +            -czz*sqrt(q(j,k,i,1))*turre(j,k,i,1)
+     +            -dzz*sqrt(qi0(j,k,1,3))*turre(j,k,i+1,1))
+                rhop=(1.0-catris_kw) +
+     +               catris_kw*.5*(qi0(j,k,1,3)+q(j,k,i,1))
+                rhom=(1.0-catris_kw) +
+     +               catris_kw*.5*(q(j,k,i-1,1)+q(j,k,i,1))
+                cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
+                cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
-                rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
-     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
+                rhside(j,k,i,2)=rhside(j,k,i,2) +
+     +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,2)
+     +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)) +
+     +            catris_kw*(-bzz*q(j,k,i-1,1)*turre(j,k,i-1,1)
+     +            -czz*q(j,k,i,1)*turre(j,k,i,1)
+     +            -dzz*qi0(j,k,1,3)*turre(j,k,i+1,1))
               enddo
             enddo
 c    Advective terms in zeta
@@ -2669,6 +2818,7 @@ c
         enddo
       end if
 c
+c    For implicit viscous terms, ignore "catris_kw" - use standard
 c    Implicit F_eta_eta viscous terms.  Do over all i's
         do i=1,idim-1
 c         Interior points
