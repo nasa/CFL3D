@@ -164,7 +164,7 @@ c
       common /ncyct/ ncyctot
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
-      common /sminn/ isminc
+      common /sminn/ isminc,ismincforce
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrestq/ irest,irest2
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,

@@ -154,7 +154,7 @@ c
       common /ncyct/ ncyctot
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /reyue/ reue,tinf,ivisc(3)
-      common /sminn/ isminc
+      common /sminn/ isminc,ismincforce
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst
       common /wallfun/ iwf(3)

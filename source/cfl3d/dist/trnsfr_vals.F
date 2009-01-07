@@ -152,7 +152,7 @@ c
       common /mgv/ epsssc(3),epsssr(3),issc,issr
       common /ncyct/ ncyctot
       common /reyue/ reue,tinf,ivisc(3)
-      common /sminn/ isminc
+      common /sminn/ isminc,ismincforce
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
@@ -480,6 +480,7 @@ c
          work(nlast+107)= i_wilcox06_chiw
          work(nlast+108)= i_turbprod_kterm
          work(nlast+109)= i_catris_kw
+         work(nlast+110)= ismincforce
          nlast = nlast+nkey
       end if
 c
@@ -769,6 +770,7 @@ c
          i_wilcox06_chiw= int(work(nlast+107))
          i_turbprod_kterm= int(work(nlast+108))
          i_catris_kw= int(work(nlast+109))
+         ismincforce= int(work(nlast+110))
       end if
 c
 c**************************

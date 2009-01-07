@@ -78,7 +78,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wrestq/ irest,irest2
       common /reyue/ reue,tinf,ivisc(3)
-      common /sminn/ isminc
+      common /sminn/ isminc,ismincforce
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .     tur10(7)
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
@@ -975,11 +975,13 @@ c
          if (isminc .eq. 2) then
             isminc=1
          end if
+         if (ismincforce .ne. -1) isminc=ismincforce
       else
 c     
          if (isminc .ne. 2) then
             isminc=0
          end if
+         if (ismincforce .ne. -1) isminc=ismincforce
          if (iv1.ge.2 .or. iv2.ge.2 .or. iv3.ge.2) then
 #if defined DIST_MPI
             if (myid.eq.mblk2nd(nbl)) then

@@ -79,6 +79,7 @@ c
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /sminn/ isminc,ismincforce
 c
       ititr = 0
       nkey  = 0
@@ -649,6 +650,21 @@ c     include density (compressibility) effects, as given in Catris et al,
 c     Aerosp Sci Technol. 4 (2000) 1-11
 c     default=0
       i_catris_kw = 0
+      nkey     = nkey + 1
+c
+c     ismincforce overrides normal smin/initvist restart usage -
+c     chief use for this would be if restarting a solution on an altered
+c     grid of the same dimensions (unless you force smin to be recomputed,
+c     the new computation will have the WRONG min distances on the new
+c     grid!). Note that if this keyword is used, the user must also 
+c     appropriately specify whether initvist should be called or not
+c     (it MUST be called if turb model is being changed upon restart)
+c     ismincforce=0 do not compute smin, do not call initvist
+c                =1 compute smin       , call initvist
+c                =2 compute smin       , do not call initvist
+c                =3 do not compute smin, call initvist
+c     default=-1 (do not override normal usage)
+      ismincforce = -1
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1345,6 +1361,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_catris_kw') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_catris_kw
+c
+      else if (inpstr(lc1:lc2).eq.'ismincforce') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ismincforce
 c
       else
 c
