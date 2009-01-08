@@ -53,7 +53,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -140,6 +140,7 @@ c      damp1 - for SST=CD (cross-derivative) term; for others, sometimes used
 c              as storage for linearizations of production terms for addition
 c              to LHS diagonal elements
 c      blend - blending term for 2-layer models (just SST right now); 
+c              =0 Wilcox06
 c              =1 otherwise
 c      timestp - time step array delta t
 c      fnu - laminar viscosity (from Sutherland's law), nondim by mulamref
@@ -403,7 +404,20 @@ c
      .         '' term'')')
            end if
         end if
-
+c
+        if((ikoprod .eq. 1 .and. (ivmx.eq.6.or.ivmx.eq.7.or.
+     .    ivmx.eq.10)) .or. (ivmx.eq.6.and.i_wilcox06.eq.1)) then
+        if(abs(prod2d3dtrace-0.5) .lt. 0.001) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
+     .         '' term forced to be traceless in 2-D sense'')')
+        else if(abs(prod2d3dtrace-0.33333333) .lt. 0.001) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
+     .         '' term forced to be traceless in 3-D sense'')')
+        end if
+        end if
+c
         if(ivmx .eq. 9 .or. ivmx .eq.10 .or. ivmx .eq.11 .or.
      .     ivmx .eq. 13.or. ivmx .eq .15) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -1000,7 +1014,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
               xderiv=0.25*(turre(j,k+1,i,1)-turre(j,k-1,i,1))*
      +                    (turre(j,k+1,i,2)-turre(j,k-1,i,2))
               if (xderiv .gt. 0.) then
-                sigd0use=0.125
+                sigd0use=sigd0
               else
                 sigd0use=0.
               end if
@@ -1021,7 +1035,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
               xderiv=0.25*(turre(j+1,k,i,1)-turre(j-1,k,i,1))*
      +                    (turre(j+1,k,i,2)-turre(j-1,k,i,2))
               if (xderiv .gt. 0.) then
-                sigd0use=0.125
+                sigd0use=sigd0
               else
                 sigd0use=0.
               end if
@@ -1044,7 +1058,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
                 xderiv=0.25*(turre(j,k,i+1,1)-turre(j,k,i-1,1))*
      +                      (turre(j,k,i+1,2)-turre(j,k,i-1,2))
                 if (xderiv .gt. 0.) then
-                  sigd0use=0.125
+                  sigd0use=sigd0
                 else
                   sigd0use=0.
                 end if
@@ -1978,7 +1992,8 @@ c  Source terms for k-omega (Wilcox & SST):
               alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
 c            Add to RHS:
 c            Determine Sij etc if needed
-c            (Note not using traceless form due to difficulty in 2D)
+c            (Note if want traceless must set prod2d3dtrace=0.5 (2D)
+c            or 0.33333 (3D))
               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
      +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1) then
                 s11 = ux(j,k,i,1)
@@ -1987,7 +2002,11 @@ c            (Note not using traceless form due to difficulty in 2D)
                 s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
                 s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
                 s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-                xis = s11*s11 + s22*s22 + s33*s33 +
+                tracepart=(s11+s22+s33)*prod2d3dtrace
+                s11t=s11-tracepart
+                s22t=s22-tracepart
+                s33t=s33-tracepart
+                xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +                2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
                 w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
@@ -1997,9 +2016,12 @@ c  the following modifies betax via the vortex-stretching parameter
 c  (default is currently i_wilcox06_chiw = 1)
               if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
      +            i_wilcox06_chiw .eq. 1) then
-c  in 2-D with x-z plane, the following reduces to: -w13*w13*(s11+s33)
-                xnum=-(w12*w12+w13*w13)*s11 - (w12*w12+w23*w23)*s22
-     +               -(w13*w13+w23*w23)*s33 - 2.*w13*w23*s12
+c  in 2-D with x-z plane, the following reduces to: 
+c  -w13*w13*[(s11-trace2d)+(s33-trace2d)] = 0
+                tracepart=0.5*(s11+s22+s33)
+                xnum=-(w12*w12+w13*w13)*(s11-tracepart)
+     +               -(w12*w12+w23*w23)*(s22-tracepart)
+     +               -(w13*w13+w23*w23)*(s33-tracepart) - 2.*w13*w23*s12
      +               +2.*w12*w23*s13 - 2.*w12*w13*s23
                 chiw=abs(xnum/((re*beta2*turre(j,k,i,1))**3))
                 fbeta=(1.+85.*chiw)/(1.+100.*chiw)
@@ -2163,7 +2185,11 @@ c            Determine Sij values:
               s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
+              tracepart=(s11+s22+s33)*prod2d3dtrace
+              s11t=s11-tracepart
+              s22t=s22-tracepart
+              s33t=s33-tracepart
+              xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp1*
      +         turre(j,k,i,1)*
@@ -3796,7 +3822,11 @@ c            Determine Sij values:
               s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
+              tracepart=(s11+s22+s33)*prod2d3dtrace
+              s11t=s11-tracepart
+              s22t=s22-tracepart
+              s33t=s33-tracepart
+              xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               xxx=sqrt(2.*xis)
               denom=ccmax(turre(j,k,i,1),xxx*0.875/(re*sqrt(cmuc2)))

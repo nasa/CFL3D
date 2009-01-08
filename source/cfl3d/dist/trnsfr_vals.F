@@ -132,7 +132,7 @@ c
       common /fluid2/ pr,prt,cbar
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -481,6 +481,7 @@ c
          work(nlast+108)= i_turbprod_kterm
          work(nlast+109)= i_catris_kw
          work(nlast+110)= ismincforce
+         work(nlast+111)= prod2d3dtrace
          nlast = nlast+nkey
       end if
 c
@@ -771,6 +772,7 @@ c
          i_turbprod_kterm= int(work(nlast+108))
          i_catris_kw= int(work(nlast+109))
          ismincforce= int(work(nlast+110))
+         prod2d3dtrace= work(nlast+111)
       end if
 c
 c**************************

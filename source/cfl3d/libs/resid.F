@@ -79,7 +79,7 @@ c
      .                     yrotrate,zrotrate,noninflag
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
       common /maxiv/ ivmx
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,

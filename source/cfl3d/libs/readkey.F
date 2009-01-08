@@ -62,7 +62,7 @@ c
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -658,13 +658,22 @@ c     grid of the same dimensions (unless you force smin to be recomputed,
 c     the new computation will have the WRONG min distances on the new
 c     grid!). Note that if this keyword is used, the user must also 
 c     appropriately specify whether initvist should be called or not
-c     (it MUST be called if turb model is being changed upon restart)
+c     (it should be called if turb model is being changed upon restart)
 c     ismincforce=0 do not compute smin, do not call initvist
 c                =1 compute smin       , call initvist
 c                =2 compute smin       , do not call initvist
 c                =3 do not compute smin, call initvist
 c     default=-1 (do not override normal usage)
       ismincforce = -1
+      nkey     = nkey + 1
+c
+c     prod2d3dtrace forces Sij used in 2SijSij to be traceless; in 
+c     production term in ivmx=6,7,10,30,31 when ikoprod=1; and in 
+c     Wilcox06 stress-limiter term
+c                =0.5 in 2-D sense
+c                =0.333333 in 3-D sense
+c     default=0. (incompressible Sij used in 2SijSij term)
+      prod2d3dtrace = 0.
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1365,6 +1374,11 @@ c
       else if (inpstr(lc1:lc2).eq.'ismincforce') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ismincforce
+c
+      else if (inpstr(lc1:lc2).eq.'prod2d3dtrace') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         prod2d3dtrace = abs(realval(1))
 c
       else
 c

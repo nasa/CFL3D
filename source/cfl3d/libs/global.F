@@ -177,7 +177,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
@@ -809,6 +809,14 @@ c
      .  ivmx.ne.8 .and. ivmx.ne.12 .and. ivmx.ne.14)) then
         write(iunit11,'('' WARNING: i_catris_kw not active'',
      .  '' unless ivisc=6,7,8,12, or 14 used'')')
+      end if
+c
+      if (abs(prod2d3dtrace-0.5) .lt. 0.01) then
+        prod2d3dtrace=0.5
+      else if (abs(prod2d3dtrace-0.33333333) .lt. 0.01) then
+        prod2d3dtrace=0.33333333
+      else
+        prod2d3dtrace=0.
       end if
 c
       if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.

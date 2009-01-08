@@ -44,7 +44,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -230,6 +230,16 @@ c
         else
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'(''     S in denom of mut term'')')
+        end if
+c
+        if(abs(prod2d3dtrace-0.5) .lt. 0.01) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
+     .         '' term forced to be traceless in 2-D sense'')')
+        else if(abs(prod2d3dtrace-0.33333333) .lt. 0.01) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
+     .         '' term forced to be traceless in 3-D sense'')')
         end if
 c
         if(keepambient .eq. 1) then
@@ -1508,7 +1518,11 @@ c            Determine Sij values:
               s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
+              tracepart=(s11+s22+s33)*prod2d3dtrace
+              s11t=s11-tracepart
+              s22t=s22-tracepart
+              s33t=s33-tracepart
+              xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               if (ikoprod .eq. 1) then
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
@@ -1594,7 +1608,11 @@ c            Determine Sij values:
               s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              xis = s11*s11 + s22*s22 + s33*s33 +
+              tracepart=(s11+s22+s33)*prod2d3dtrace
+              s11t=s11-tracepart
+              s22t=s22-tracepart
+              s33t=s33-tracepart
+              xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               if (ikoprod .eq. 1) then
               rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
