@@ -405,8 +405,8 @@ c
            end if
         end if
 c
-        if((ikoprod .eq. 1 .and. (ivmx.eq.6.or.ivmx.eq.7.or.
-     .    ivmx.eq.10)) .or. (ivmx.eq.6.and.i_wilcox06.eq.1)) then
+        if(ikoprod .eq. 1 .and. (ivmx.eq.6.or.ivmx.eq.7.or.
+     .    ivmx.eq.10)) then
         if(abs(prod2d3dtrace-0.5) .lt. 0.001) then
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
@@ -415,6 +415,17 @@ c
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
      .         '' term forced to be traceless in 3-D sense'')')
+        end if
+        end if
+        if(ivmx.eq.6.and.i_wilcox06.eq.1) then
+        if(abs(prod2d3dtrace-0.5) .lt. 0.001) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij in W06'',
+     .        '' stress-limiter forced to be traceless in 2-D sense'')')
+        else if(abs(prod2d3dtrace-0.33333333) .lt. 0.001) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Sij used in 2SijSij in W06'',
+     .        '' stress-limiter forced to be traceless in 3-D sense'')')
         end if
         end if
 c
