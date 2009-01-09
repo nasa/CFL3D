@@ -1024,12 +1024,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
               tt=xa*xa+ya*ya+za*za
               xderiv=0.25*(turre(j,k+1,i,1)-turre(j,k-1,i,1))*
      +                    (turre(j,k+1,i,2)-turre(j,k-1,i,2))
-              if (xderiv .gt. 0.) then
-                sigd0use=sigd0
-              else
-                sigd0use=0.
-              end if
-              damp1(j,k,i)=xderiv*sigd0use*tt/(turre(j,k,i,1)*re)
+              damp1(j,k,i)=xderiv*sigd0*tt/(turre(j,k,i,1)*re)
             enddo
           enddo
         enddo
@@ -1045,12 +1040,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
               tt=xa*xa+ya*ya+za*za
               xderiv=0.25*(turre(j+1,k,i,1)-turre(j-1,k,i,1))*
      +                    (turre(j+1,k,i,2)-turre(j-1,k,i,2))
-              if (xderiv .gt. 0.) then
-                sigd0use=sigd0
-              else
-                sigd0use=0.
-              end if
-              damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0use*tt/
+              damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0*tt/
      +                     (turre(j,k,i,1)*re)
             enddo
           enddo
@@ -1068,17 +1058,20 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
                 tt=xa*xa+ya*ya+za*za
                 xderiv=0.25*(turre(j,k,i+1,1)-turre(j,k,i-1,1))*
      +                      (turre(j,k,i+1,2)-turre(j,k,i-1,2))
-                if (xderiv .gt. 0.) then
-                  sigd0use=sigd0
-                else
-                  sigd0use=0.
-                end if
-                damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0use*tt/
+                damp1(j,k,i)=damp1(j,k,i)+xderiv*sigd0*tt/
      +                       (turre(j,k,i,1)*re)
               enddo
             enddo
           enddo
         end if
+c   for Wilcox06, damp1 only active if it is positive
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              damp1(j,k,i)=ccmaxcr(damp1(j,k,i),0.)
+            enddo
+          enddo
+        enddo
         end if
 c   get blend = F1 factor
         if (ivmx .eq. 7) then
@@ -2029,6 +2022,7 @@ c  (default is currently i_wilcox06_chiw = 1)
      +            i_wilcox06_chiw .eq. 1) then
 c  in 2-D with x-z plane, the following reduces to: 
 c  -w13*w13*[(s11-trace2d)+(s33-trace2d)] = 0
+c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 tracepart=0.5*(s11+s22+s33)
                 xnum=-(w12*w12+w13*w13)*(s11-tracepart)
      +               -(w12*w12+w23*w23)*(s22-tracepart)
