@@ -177,7 +177,8 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
+     .        i_compress_correct
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d

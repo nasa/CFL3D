@@ -62,7 +62,8 @@ c
       common /gridtrans/ roll_angle
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
+     .        i_compress_correct
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -640,7 +641,8 @@ c     default=1 (ON)
 c
 c     i_turbprod_kterm is used to determine whether 2/3*rho*k term
 c     gets subtracted from turbulence production in ivisc=6,7 models
-c     (only does anything if ivisc=6 or 7 and ikoprod=1)
+c     (only does anything if ivisc=6 or 7, ikoprod=1, and 
+c     i_turbprod_kterm=1)
 c     default=0 (term not included)
       i_turbprod_kterm = 0
       nkey     = nkey + 1
@@ -674,6 +676,14 @@ c                =0.5 in 2-D sense
 c                =0.333333 in 3-D sense
 c     default=0. (incompressible Sij used in 2SijSij term)
       prod2d3dtrace = 0.
+      nkey     = nkey + 1
+c
+c     i_compress_correct adds dilatation-dissipation type compressibility
+c     correction, currently to ivisc=6 or 7 only
+c         =1 Wilcox-type (Turbulence Modeling for CFD, ed 3, p. 258)
+c         =2 Zeman-type for boundary layers (AIAA 93-0897)
+c         =0 (default) or any other number beside 1 or 2 - no correction
+      i_compress_correct = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1379,6 +1389,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          prod2d3dtrace = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'i_compress_correct') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_compress_correct
 c
       else
 c

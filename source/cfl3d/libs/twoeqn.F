@@ -53,7 +53,8 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
+     .        i_compress_correct
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -495,6 +496,17 @@ c
      .       ''correction for turb diffusion terms being used'')')
            end if
         end if
+        if(ivmx .eq. 6 .or. ivmx .eq. 7) then
+           if (i_compress_correct .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Wilcox-type dilatation-'',
+     .       ''dissipation compressibility correction employed'')')
+           else if (i_compress_correct .eq. 2) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     Zeman-BL-type dilatation-'',
+     .       ''dissipation compressibility correction employed'')')
+           end if
+        end if
 c
         if(keepambient .eq. 1 .and. ivmx .ne. 15) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -509,6 +521,17 @@ c   Note: (10.**(-iexp) is machine zero)
 c
       catris_kw=0.0
       if (i_catris_kw .eq. 1) catris_kw=1.0
+      if (i_compress_correct .eq. 1) then
+c        Wilcox-type (Turb Modeling for CFD, Ed 3, 2006, p. 258)
+         turb_mach_0 = 0.25
+         xsi_star = 2.0
+         gam_comp = 0.0
+      else if (i_compress_correct .eq. 2) then
+c        Zeman B.L.-type (AIAA 93-0897)
+         turb_mach_0 = 0.2
+         xsi_star = 0.75
+         gam_comp = 0.66
+      end if
 c
 c Set number of subiterations to solve turbulence field eqn per iteration
 c (usually, 1 is sufficient... but if residual diverges then may need more)
@@ -2031,6 +2054,20 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 chiw=abs(xnum/((re*beta2*turre(j,k,i,1))**3))
                 fbeta=(1.+85.*chiw)/(1.+100.*chiw)
                 betax=betax*fbeta
+              end if
+              if (i_compress_correct .eq. 1) then
+                turb_mach2 = 2.*q(j,k,i,1)*turre(j,k,i,2)/
+     +                      (gamma*q(j,k,i,5))
+                f_turb_mach = ccmaxcr(turb_mach2-turb_mach_0**2,0.0)
+                betax=betax-cmuc*xsi_star*f_turb_mach
+                cmuc=cmuc*(1.+xsi_star*f_turb_mach)
+              else if (i_compress_correct .eq. 2) then
+                turb_mach = sqrt(2.*q(j,k,i,1)*turre(j,k,i,2)/
+     +                      (gamma*q(j,k,i,5)))
+                zeman_lag = ccmaxcr(turb_mach-turb_mach_0,0.0)
+                f_turb_mach = 1.0-(exp(-(zeman_lag/gam_comp)**2))
+                betax=betax-cmuc*xsi_star*f_turb_mach
+                cmuc=cmuc*(1.+xsi_star*f_turb_mach)
               end if
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*

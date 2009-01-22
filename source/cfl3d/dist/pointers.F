@@ -56,7 +56,8 @@ c
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
-     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
+     .        i_compress_correct
       common /curvat/ isarc2d,sarccr3,ieasmcc2d
 c
       if (icall .eq. 0) then
