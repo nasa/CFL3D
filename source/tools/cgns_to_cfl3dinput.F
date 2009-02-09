@@ -1561,11 +1561,6 @@ c       search thru all the 1-to-1 connections
 c
       write(6,'(/,'' PLOT3D file is 3-D, MG type (no iblank)'')')
       write(6,'(''     name='',a80)') file1
-      if (iform .eq. 1) then
-        write(6,'(''     the grid file is unformatted'')')
-      else
-        write(6,'(''     the grid file is formatted'')')
-      end if
       write(6,'('' Initial-guess CFL3D-type input file output'',
      +  '' to cfl3d_guess.inp'')')
       write(6,'(''     (includes all 1-to-1 info from CGNS file'')')
