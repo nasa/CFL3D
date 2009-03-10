@@ -76,7 +76,7 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
-      common /lesinfo/ cs_smagorinsky
+      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
@@ -684,6 +684,19 @@ c         =1 Wilcox-type (Turbulence Modeling for CFD, ed 3, p. 258)
 c         =2 Zeman-type for boundary layers (AIAA 93-0897)
 c         =0 (default) or any other number beside 1 or 2 - no correction
       i_compress_correct = 0
+      nkey     = nkey + 1
+c
+c     les_model determines LES subgrid model to use with ivisc=25
+c         =0 no model (default)
+c         =1 standard Smagorinsky model
+      les_model = 0
+      nkey     = nkey + 1
+c
+c     les_wallscale turns on van Driest type wall scaling of Delta in LES model
+c     should only be used in conjunction with Smagorinsky model les_model=1
+c         =0 scaling off (default)
+c         =1 scaling on
+      les_wallscale = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1393,6 +1406,14 @@ c
       else if (inpstr(lc1:lc2).eq.'i_compress_correct') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_compress_correct
+c
+      else if (inpstr(lc1:lc2).eq.'les_model') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) les_model
+c
+      else if (inpstr(lc1:lc2).eq.'les_wallscale') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) les_wallscale
 c
       else
 c
