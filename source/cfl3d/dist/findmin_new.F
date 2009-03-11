@@ -1980,19 +1980,19 @@ c     pointers are the same as the grid point values with the same
 c     index. note also that iwrk(i) contains imx1*jmx1*kmx1 grid-
 c     point values, whereas xib....blnum can only be set for 
 c     (imx1-1)*(jmx1-1)*(kmx1-1) values, so to keep the conversion
-c     straight, must loop over all i,j,k but skip when at the maximum
+c     straight, must loop over all j,k but skip when at the maximum
 c
       ifactr = 2**j1
       imx1 = imx - 1
       jmx1 = jmx - 1
       kmx1 = kmx - 1
       ig=0
-      do i=imn,imx
+      do i=imn,imx1
       do k=kmn,kmx
 CDIR$ IVDEP
       do j=jmn,jmx
         ig=ig+1
-        if (j.eq.jmx .or. k.eq.kmx .or. i.eq.imx) cycle
+        if (j.eq.jmx .or. k.eq.kmx) cycle
         isurf=iwrk(idist+ig-1)
         xib(j,k,i,2) = int((ibbarth(isurf,1)-1)/ifactr + 1)
         xjb(j,k,i)   = int((ibbarth(isurf,2)-1)/ifactr + 1)
