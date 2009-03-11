@@ -197,7 +197,8 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
-      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky
+      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky,cs_wale,
+     .                 cs_vreman
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
@@ -486,6 +487,8 @@ c
          work(nlast+112)= i_compress_correct
          work(nlast+113)= les_model
          work(nlast+114)= les_wallscale
+         work(nlast+115)= cs_wale
+         work(nlast+116)= cs_vreman
          nlast = nlast+nkey
       end if
 c
@@ -780,6 +783,8 @@ c
          i_compress_correct = int(work(nlast+112))
          les_model = int(work(nlast+113))
          les_wallscale = int(work(nlast+114))
+         cs_wale = work(nlast+115)
+         cs_vreman = work(nlast+116)
       end if
 c
 c**************************

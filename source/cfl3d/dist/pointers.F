@@ -730,6 +730,7 @@ c
 c........ux(jdim-1,kdim-1,idim-1,9)    
 c        velocity gradients for EASM k-omega or k-epsilon turb models
 c        or for k-o/SST/k-e model when isstprod or isstdenom are active
+c        or for any ivisc >= 11 or for SARC or for Wilcox06
 c
          lw(47,nbl) = lw(46,nbl) + ns
          ns = 0

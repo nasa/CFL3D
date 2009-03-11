@@ -76,7 +76,8 @@ c
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst
-      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky
+      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky,cs_wale,
+     .                 cs_vreman
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
@@ -589,10 +590,12 @@ c     default=-1.
       eddy_visc_inf = -1.0
       nkey     = nkey + 1
 c
-c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant
+c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant for LES 
+c     (ivisc=25 + les_model=1)
 c     if set to zero, you get implicit LES (no model)
-c     default=0.2
-      cs_smagorinsky = 0.2
+c     typical values are 0.1-0.2
+c     default=0.0
+      cs_smagorinsky = 0.0
       nkey     = nkey + 1
 c
 c     xdir_only_source is imposed source term
@@ -689,14 +692,32 @@ c
 c     les_model determines LES subgrid model to use with ivisc=25
 c         =0 no model (default)
 c         =1 standard Smagorinsky model
+c         =2 WALE model (Flow, Turb, & Combust 62:183-200 1999)
+c         =3 Vreman model (Phys Fluids 16(10):3670-3681 2004)
       les_model = 0
       nkey     = nkey + 1
 c
 c     les_wallscale turns on van Driest type wall scaling of Delta in LES model
-c     should only be used in conjunction with Smagorinsky model les_model=1
+c     only used in conjunction with Smagorinsky model les_model=1
 c         =0 scaling off (default)
 c         =1 scaling on
       les_wallscale = 0
+      nkey     = nkey + 1
+c
+c     cs_wale is the (non-dynamic) WALE constant for LES 
+c     (ivisc=25 + les_model=2)
+c     if set to zero, you get implicit LES (no model)
+c     typical values are 0.45-0.6
+c     default=0.0
+      cs_wale = 0.0
+      nkey     = nkey + 1
+c
+c     cs_vreman is the (non-dynamic) Vreman constant for LES 
+c     (ivisc=25 + les_model=3)
+c     if set to zero, you get implicit LES (no model)
+c     typical values are 0.025-0.1
+c     default=0.0
+      cs_vreman = 0.0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1414,6 +1435,16 @@ c
       else if (inpstr(lc1:lc2).eq.'les_wallscale') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) les_wallscale
+c
+      else if (inpstr(lc1:lc2).eq.'cs_wale') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cs_wale = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cs_vreman') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cs_vreman = abs(realval(1))
 c
       else
 c

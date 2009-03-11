@@ -27,7 +27,8 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /sklton/ isklton
-      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky
+      common /lesinfo/ les_model,les_wallscale,cs_smagorinsky,cs_wale,
+     .                 cs_vreman
 c
       dimension q(jdim,kdim,idim,5)
       dimension ux(jdim-1,kdim-1,idim-1,9)
@@ -51,8 +52,11 @@ c     les_model controls whether or not a model is used (0=no model)
 c     (for les_model=1,2,3, this can also be achieved by setting 
 c     corresponding cs=0 - e.g., cs_smagorinsky=0 for les_model=1)
 c     les_wallscale controls whether the Delta is scaled by van Driest near walls
+c     (Smagorinsky model only)
 c
-      cs=cs_smagorinsky
+c   Note: (10.**(-iexp) is machine zero)
+      xminn=10.**(-iexp+1)
+c
       c2b=cbar/tinf
       c2bp=c2b+1.0
       re=reue/xmach
@@ -67,16 +71,41 @@ c
          if (les_model .eq. 0) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      no subgrid model'')')
-         else
+         else if (les_model .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''      Smag model, Cs='',f10.5)') cs
+           write(bou(nou(1),1),'(''      Smag model, Cs='',f10.5)') 
+     .      cs_smagorinsky
+         else if (les_model .eq. 2) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      WALE model, Cs='',f10.5)')
+     .      cs_wale
+         else if (les_model .eq. 3) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      Vreman model, Cs='',f10.5)')
+     .      cs_vreman
          end if
-         if (les_wallscale .eq. 0) then
+         if (les_wallscale .eq. 0 .or. les_model .ne. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      no wall damping'')')
          else
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      van Driest wall damping on'')')
+         end if
+c
+         if (cs_smagorinsky .ne. 0. .and. les_model .ne. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     WARNING: cs_smagorinsky has'',
+     .      '' been set but not used (les_model .ne. 1)'')')
+         end if
+         if (cs_wale .ne. 0. .and. les_model .ne. 2) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     WARNING: cs_wale has'',
+     .      '' been set but not used (les_model .ne. 2)'')')
+         end if
+         if (cs_vreman .ne. 0. .and. les_model .ne. 3) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     WARNING: cs_vreman has'',
+     .      '' been set but not used (les_model .ne. 3)'')')
          end if
       end if
 c
@@ -123,22 +152,95 @@ c            blocks for ypls
             else
                delta = sqrt(deltaj*deltak)
             end if
-c           Scale delta by van Driest function
-            if (les_wallscale .eq. 1) then
-              vandriest=1.0-exp(-ypls/25.)
-              delta=delta*vandriest
-            end if
-            s11 = ux(j,k,i,1)
-            s22 = ux(j,k,i,5)
-            s33 = ux(j,k,i,9)
-            s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
-            s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-            s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-            xis = s11*s11 + s22*s22 + s33*s33 +
+            if (les_model .eq. 1) then
+c             Standard Smagorinsky model:
+c             Scale delta by van Driest function
+              if (les_wallscale .eq. 1) then
+                vandriest=1.0-exp(-ypls/25.)
+                delta=delta*vandriest
+              end if
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
      +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-c           Standard Smagorinsky model:
-            vist3d(j,k,i)=q(j,k,i,1)*(cs*delta)**2*sqrt(2.*xis)*
+              vist3d(j,k,i)=q(j,k,i,1)*(cs_smagorinsky*delta)**2*
+     +            sqrt(2.*xis)*reue/xmach
+            else if (les_model .eq. 2) then
+c             WALE model (Flow, Turb, & Combust 62:183-200 1999)
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +            2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              g11=ux(j,k,i,1)*ux(j,k,i,1) + ux(j,k,i,2)*ux(j,k,i,4) +
+     +            ux(j,k,i,3)*ux(j,k,i,7)
+              g22=ux(j,k,i,4)*ux(j,k,i,2) + ux(j,k,i,5)*ux(j,k,i,5) +
+     +            ux(j,k,i,6)*ux(j,k,i,8)
+              g33=ux(j,k,i,7)*ux(j,k,i,3) + ux(j,k,i,8)*ux(j,k,i,6) +
+     +            ux(j,k,i,9)*ux(j,k,i,9)
+              g12=0.5*(ux(j,k,i,1)*ux(j,k,i,2) +
+     +                 ux(j,k,i,2)*ux(j,k,i,5) +
+     +                 ux(j,k,i,3)*ux(j,k,i,8) +
+     +                 ux(j,k,i,4)*ux(j,k,i,1) + 
+     +                 ux(j,k,i,5)*ux(j,k,i,4) +
+     +                 ux(j,k,i,6)*ux(j,k,i,7))
+              g13=0.5*(ux(j,k,i,1)*ux(j,k,i,3) +
+     +                 ux(j,k,i,2)*ux(j,k,i,6) +
+     +                 ux(j,k,i,3)*ux(j,k,i,9) +
+     +                 ux(j,k,i,7)*ux(j,k,i,1) + 
+     +                 ux(j,k,i,8)*ux(j,k,i,4) +
+     +                 ux(j,k,i,9)*ux(j,k,i,7))
+              g23=0.5*(ux(j,k,i,4)*ux(j,k,i,3) +
+     +                 ux(j,k,i,5)*ux(j,k,i,6) +
+     +                 ux(j,k,i,6)*ux(j,k,i,9) +
+     +                 ux(j,k,i,7)*ux(j,k,i,2) + 
+     +                 ux(j,k,i,8)*ux(j,k,i,5) +
+     +                 ux(j,k,i,9)*ux(j,k,i,8))
+              g11=g11-0.3333333*(g11+g22+g33)
+              g22=g22-0.3333333*(g11+g22+g33)
+              g33=g33-0.3333333*(g11+g22+g33)
+              g_gamma=g11*g11 + g22*g22 + g33*g33 +
+     +            2.*g12*g12 + 2.*g13*g13 + 2.*g23*g23
+              denom=xis**2.5 + g_gamma**1.25
+              denom=ccmax(denom,xminn)
+              vist3d(j,k,i)=q(j,k,i,1)*(cs_wale*delta)**2*
+     +            (g_gamma**1.5)/denom*reue/xmach
+            else if (les_model .eq. 2) then
+c             Vreman model (Phys Fluids 16(10):3670-3681 2004)
+              b11=delta**2*(ux(j,k,i,1)*ux(j,k,i,1) +
+     +                      ux(j,k,i,4)*ux(j,k,i,4) +
+     +                      ux(j,k,i,7)*ux(j,k,i,7))
+              b22=delta**2*(ux(j,k,i,2)*ux(j,k,i,2) +
+     +                      ux(j,k,i,5)*ux(j,k,i,5) +
+     +                      ux(j,k,i,8)*ux(j,k,i,8))
+              b33=delta**2*(ux(j,k,i,3)*ux(j,k,i,3) +
+     +                      ux(j,k,i,6)*ux(j,k,i,6) +
+     +                      ux(j,k,i,9)*ux(j,k,i,9))
+              b12=delta**2*(ux(j,k,i,1)*ux(j,k,i,2) +
+     +                      ux(j,k,i,4)*ux(j,k,i,5) +
+     +                      ux(j,k,i,7)*ux(j,k,i,8))
+              b13=delta**2*(ux(j,k,i,1)*ux(j,k,i,3) +
+     +                      ux(j,k,i,4)*ux(j,k,i,6) +
+     +                      ux(j,k,i,7)*ux(j,k,i,9))
+              b23=delta**2*(ux(j,k,i,2)*ux(j,k,i,3) +
+     +                      ux(j,k,i,5)*ux(j,k,i,6) +
+     +                      ux(j,k,i,8)*ux(j,k,i,9))
+              b_beta=b11*b22-b12*b12+b11*b33-b13*b13+b22*b33-b23*b23
+              denom=ux(j,k,i,1)**2 + ux(j,k,i,5)**2 + ux(j,k,i,9)**2 +
+     +            2.*ux(j,k,i,2)*ux(j,k,i,4) +
+     +            2.*ux(j,k,i,3)*ux(j,k,i,7) +
+     +            2.*ux(j,k,i,6)*ux(j,k,i,8)
+              denom=ccmax(denom,xminn)
+              vist3d(j,k,i)=q(j,k,i,1)*cs_vreman*sqrt(b_beta/denom)*
      +            reue/xmach
+            end if
           enddo
         enddo
       enddo
