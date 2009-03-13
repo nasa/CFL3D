@@ -82,8 +82,8 @@ $(FOBJ_MAIN): $(HEAD_MAIN)
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
-	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) $(FOBJ_MAIN) \
-	$(DISTLIB) $(COMMONLIB) $(LLIBS)
+	-ln -s ../libs/*.o .
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS) 
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
