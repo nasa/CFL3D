@@ -368,7 +368,11 @@ c
          np3d      = nblock/lglobal                                     
       elseif(i2d.eq.0)then                                              
 !         np3d      = nblock/lglobal/2                                  
+         if( iskip_blocks > 0 ) then
          np3d      = nblock/lglobal/iskip_blocks                        
+         else
+            np3d      = abs(iskip_blocks)
+         end if
                      !assume NOT spanwise split into 2 blocks for 3D case
       else                                                              
          write(6,*)'i2d = ',i2d; stop                                   
@@ -400,7 +404,11 @@ c
          nbl = lglobal*(n-1)+1                                          
       elseif(i2d.eq.0)then                                              
 !         nbl = lglobal*2*(n-1)+1                                       
+         if( iskip_blocks > 0 ) then
          nbl = lglobal*iskip_blocks*(n-1)+1                             
+         else
+            nbl = lglobal*(n-1)+1                             
+         end if
                !assume NOT spanwise blocks line up one after another:1,2, etc
       else                                                              
          write(6,*)'i2d = ',i2d; stop                                   
@@ -493,7 +501,11 @@ c
       do 1098 nnn = 1,np3d                                         
       !do 1098 nnn = 1,nplot3d                                     
 !      m = 2*(lglobal*(nnn-1)+1)                                    
+         if( iskip_blocks > 0 ) then
       m = iskip_blocks*(lglobal*(nnn-1)+1)                                    
+         else
+            m = (lglobal*(nnn-1)+1)
+         end if
       !m = inpl3d(nnn,1)                                           
       if (n.eq.m) nmap(n) = nnn
  1098 continue
@@ -512,7 +524,11 @@ c
          nbl = lglobal*(n-1)+1                                          
       elseif(i2d.eq.0)then                                              
 !         nbl = lglobal*2*(n-1)+1                                      
+         if( iskip_blocks > 0 ) then
          nbl = lglobal*iskip_blocks*(n-1)+1                            
+         else
+            nbl = lglobal*(n-1)+1
+         end if
                !assume NOT spanwise blocks line up one after another:1,2, etc
       else                                                              
          write(6,*)'i2d = ',i2d; stop                                   

@@ -451,7 +451,7 @@ c
          work(nlast+77) = icoarsemovie
          work(nlast+78) = i2dmovie
          work(nlast+79) = iclcd
-         iskip_blocks = max(1,iskip_blocks)
+         if(iskip_blocks .eq. 0) iskip_blocks = 1
          work(nlast+80) = iskip_blocks
          work(nlast+81) = cfltauMax
          work(nlast+82) = cfltau0
