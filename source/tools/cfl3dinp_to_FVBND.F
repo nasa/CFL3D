@@ -5,8 +5,9 @@ c
 c***********************************************************************
 c     Purpose:
 c     This program reads a CFL3D V6 input file and creates a Fieldview
-c     *.fvbnd file (useful for finding and plotting boundaries).
-c     The *.fvbnd file takes the root name of the grid by default.
+c     *.fvbnd file (useful for finding and plotting viscous/inviscid 
+c     walls). The *.fvbnd file takes the root name of the grid by 
+c     default.
 c***********************************************************************
 c
       parameter(nn=10000)
@@ -111,7 +112,8 @@ c  Grid section:
 c
 c  *** write header for .fvbnd file ***
       write(3,'(''FVBND 1 4'')')
-      write(3,'(''wall'')')
+      write(3,'(''viscous wall'')')
+      write(3,'(''inviscid wall'')')
       write(3,'(''BOUNDARIES'')')
 c  ************************************
 c  Grid i0 section:
@@ -123,6 +125,13 @@ c  *** write to fvbnd file ***
           if (abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014 .or.
      +        abs(ib) .eq. 2024 .or. abs(ib) .eq. 2016) then
             ibd=1
+            indx0=1
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        indx0,indx0,i1,i2,i3,i4,izero
+          end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
             indx0=1
             izero=0
             write(3,'(8i5,''  F '',i5)') ibd,n,
@@ -152,6 +161,13 @@ c  *** write to fvbnd file ***
             write(3,'(8i5,''  F '',i5)') ibd,n,
      +        indx0,indx0,i1,i2,i3,i4,izero
           end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
+            indx0=idx(n)
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        indx0,indx0,i1,i2,i3,i4,izero
+          end if
 c  ***************************
           if (nd .gt. 0) then
             read(2,'(a80)') name
@@ -171,6 +187,13 @@ c  *** write to fvbnd file ***
           if (abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014 .or.
      +        abs(ib) .eq. 2024 .or. abs(ib) .eq. 2016) then
             ibd=1
+            indx0=1
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        i1,i2,indx0,indx0,i3,i4,izero
+          end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
             indx0=1
             izero=0
             write(3,'(8i5,''  F '',i5)') ibd,n,
@@ -200,6 +223,13 @@ c  *** write to fvbnd file ***
             write(3,'(8i5,''  F '',i5)') ibd,n,
      +        i1,i2,indx0,indx0,i3,i4,izero
           end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
+            indx0=jdx(n)
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        i1,i2,indx0,indx0,i3,i4,izero
+          end if
 c  ***************************
           if (nd .gt. 0) then
             read(2,'(a80)') name
@@ -224,6 +254,13 @@ c  *** write to fvbnd file ***
             write(3,'(8i5,''  F '',i5)') ibd,n,
      +        i1,i2,i3,i4,indx0,indx0,izero
           end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
+            indx0=1
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        i1,i2,i3,i4,indx0,indx0,izero
+          end if
 c  ***************************
           if (nd .gt. 0) then
             read(2,'(a80)') name
@@ -243,6 +280,13 @@ c  *** write to fvbnd file ***
           if (abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014 .or.
      +        abs(ib) .eq. 2024 .or. abs(ib) .eq. 2016) then
             ibd=1
+            indx0=kdx(n)
+            izero=0
+            write(3,'(8i5,''  F '',i5)') ibd,n,
+     +        i1,i2,i3,i4,indx0,indx0,izero
+          end if
+          if (abs(ib) .eq. 1005 .or. abs(ib) .eq. 1006) then
+            ibd=2
             indx0=kdx(n)
             izero=0
             write(3,'(8i5,''  F '',i5)') ibd,n,
