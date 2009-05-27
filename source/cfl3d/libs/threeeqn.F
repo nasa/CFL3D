@@ -163,7 +163,7 @@ c     Parameter if need to revert to standard SST w no transition (itrans_on=0):
 c     Set some of the transition-related parameters:
 c     Note: ivmx=31 is currently NOT usable at all!
       tu_percent=100.*sqrt(2.*tur10(2)/(3.*xmach*xmach))
-      if (re_thetat0 .lt. 0.) then
+      if (real(re_thetat0) .lt. 0.) then
         if (ivmx .eq. 30) then
           re_thetat=400.*tu_percent**(-5./8.)
 c         re_thetat=32.591*(tu_percent/100.)**(-0.621)
@@ -177,7 +177,7 @@ c         re_thetat=32.591*(tu_percent/100.)**(-0.621)
         re_thetac=0.85*re_thetat
       else if (ivmx .eq. 31) then
         re_thetac=re_thetat
-        flength=163.*alog(tu_percent)+3.625
+        flength=163.*alog(real(tu_percent))+3.625
         ce2=50.
       end if
 c

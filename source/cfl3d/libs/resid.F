@@ -897,7 +897,7 @@ c     (there must also be viscous walls in the problem - the source term
 c     adjusts the flow until the source balances the viscous losses)
 c     grid must be cartesian
 c
-      if (ccabs(xdir_only_source) .gt. 1.e-12) then
+      if (real(ccabs(xdir_only_source)) .gt. 1.e-12) then
         if (isklton.eq.1) then
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'('' Adding x-dir source term to eqns'')')

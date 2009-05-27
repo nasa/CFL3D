@@ -812,12 +812,12 @@ c     Check for the existence of the clcd.bin file
 c        the variables turbintensity_inf_percent and eddy_visc_inf
 c        do not go to the rest of the code; instead, if set, they
 c        modify tur10(2) and tur10(1), respectively
-         if (turbintensity_inf_percent .ge. 0.) then
+         if (real(turbintensity_inf_percent) .ge. 0.) then
            if (iunit11.gt.0) write(iunit11,'('' turbintensity_inf'',
      +       ''_percent always overrides tur20'')')
            tur10(2)=1.5*xmach**2*(turbintensity_inf_percent/100.)**2
          end if
-         if (eddy_visc_inf .ge. 0.) then
+         if (real(eddy_visc_inf) .ge. 0.) then
            if (iunit11.gt.0) write(iunit11,'('' eddy_visc_inf always'',
      +       '' overrides tur10'')')
            if (ivmx .eq. 4) then

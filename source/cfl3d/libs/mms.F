@@ -180,32 +180,37 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             delta_u=ccabs(q(j,k,i,2)-f(2))/xmach
             delta_w=ccabs(q(j,k,i,4)-f(4))/xmach
             delta_p=ccabs(q(j,k,i,5)-f(5))*gamma/(xmach*xmach)
             delta_t=ccabs(tursav(j,k,i)-f(6))/reue
-            if (delta_u .gt. u_max) then
+            if (real(delta_u) .gt. real(u_max)) then
               u_max=delta_u
               i_u_max=i
               j_u_max=j
               k_u_max=k
             end if
-            if (delta_w .gt. w_max) then
+            if (real(delta_w) .gt. real(w_max)) then
               w_max=delta_w
               i_w_max=i
               j_w_max=j
               k_w_max=k
             end if
-            if (delta_p .gt. p_max) then
+            if (real(delta_p) .gt. real(p_max)) then
               p_max=delta_p
               i_p_max=i
               j_p_max=j
               k_p_max=k
             end if
-            if (delta_t .gt. t_max) then
+            if (real(delta_t) .gt. real(t_max)) then
               t_max=delta_t
               i_t_max=i
               j_t_max=j
@@ -256,7 +261,8 @@ c   residuals
       i=1
       do j=3,jdim-3
         do k=3,kdim-3
-          if (ccabs(res(j,k,i,1)/vol(j,k,i)) .gt. res_1_max) then
+          if (real(ccabs(res(j,k,i,1)/vol(j,k,i))) .gt. 
+     +       real(res_1_max)) then
             res_1_max = ccabs(res(j,k,i,1)/vol(j,k,i))
             i_res_1_max=i
             j_res_1_max=j
@@ -264,7 +270,8 @@ c   residuals
             res_1_max_alone=res(j,k,i,1)
             vol_1_max_alone=vol(j,k,i)
           end if
-          if (ccabs(res(j,k,i,2)/vol(j,k,i)) .gt. res_2_max) then
+          if (real(ccabs(res(j,k,i,2)/vol(j,k,i))) .gt. 
+     +       real(res_2_max)) then
             res_2_max = ccabs(res(j,k,i,2)/vol(j,k,i))
             i_res_2_max=i
             j_res_2_max=j
@@ -272,7 +279,8 @@ c   residuals
             res_2_max_alone=res(j,k,i,2)
             vol_2_max_alone=vol(j,k,i)
           end if
-          if (ccabs(res(j,k,i,3)/vol(j,k,i)) .gt. res_3_max) then
+          if (real(ccabs(res(j,k,i,3)/vol(j,k,i))) .gt. 
+     +       real(res_3_max)) then
             res_3_max = ccabs(res(j,k,i,3)/vol(j,k,i))
             i_res_3_max=i
             j_res_3_max=j
@@ -280,7 +288,8 @@ c   residuals
             res_3_max_alone=res(j,k,i,3)
             vol_3_max_alone=vol(j,k,i)
           end if
-          if (ccabs(res(j,k,i,4)/vol(j,k,i)) .gt. res_4_max) then
+          if (real(ccabs(res(j,k,i,4)/vol(j,k,i))) .gt. 
+     +       real(res_4_max)) then
             res_4_max = ccabs(res(j,k,i,4)/vol(j,k,i))
             i_res_4_max=i
             j_res_4_max=j
@@ -288,7 +297,8 @@ c   residuals
             res_4_max_alone=res(j,k,i,4)
             vol_4_max_alone=vol(j,k,i)
           end if
-          if (ccabs(res(j,k,i,5)/vol(j,k,i)) .gt. res_5_max) then
+          if (real(ccabs(res(j,k,i,5)/vol(j,k,i))) .gt. 
+     +       real(res_5_max)) then
             res_5_max = ccabs(res(j,k,i,5)/vol(j,k,i))
             i_res_5_max=i
             j_res_5_max=j
@@ -384,7 +394,7 @@ c   residuals
       i=1
       do j=3,jdim-3
         do k=3,kdim-3
-          if (ccabs(res(j,k,i)) .gt. res_max) then
+          if (real(ccabs(res(j,k,i))) .gt. real(res_max)) then
             res_max = ccabs(res(j,k,i))
             i_res_max=i
             j_res_max=j
@@ -454,9 +464,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               res(j,k,i,n)=res(j,k,i,n)-vol(j,k,i)*f(n)
             enddo
@@ -507,9 +522,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             res(j,k,i)=res(j,k,i)+f(6)
           enddo
         enddo
@@ -557,9 +577,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -649,9 +674,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -674,9 +704,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -699,9 +734,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -724,9 +764,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               q(j,k,i,n)=f(n)
             enddo
@@ -777,9 +822,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -830,9 +880,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -855,9 +910,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -880,9 +940,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -905,9 +970,14 @@ c
      +                z(j  ,k+1,i  )+z(j  ,k  ,i+1)+
      +                z(j+1,k+1,i  )+z(j+1,k  ,i+1)+
      +                z(j  ,k+1,i+1)+z(j+1,k+1,i+1))
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             q(j,k,i)=f(6)
             vist3d(j,k,i)=xmut
           enddo
@@ -993,9 +1063,14 @@ c  QI0 lo
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qi0(j,k,n,1)=f(n)
 c             qi0(j,k,n,2)=qi0(j,k,n,1)
@@ -1014,9 +1089,14 @@ c             vi0(j,k,1,2)=vi0(j,k,1,1)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qi0(j,k,n,2)=f(n)
             enddo
@@ -1071,9 +1151,14 @@ c  QI0 hi
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qi0(j,k,n,3)=f(n)
 c             qi0(j,k,n,4)=qi0(j,k,n,3)
@@ -1092,9 +1177,14 @@ c             vi0(j,k,1,4)=vi0(j,k,1,3)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qi0(j,k,n,4)=f(n)
             enddo
@@ -1150,9 +1240,14 @@ c  QJ0 lo
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qj0(k,i,n,1)=f(n)
 c             qj0(k,i,n,2)=qj0(k,i,n,1)
@@ -1171,9 +1266,14 @@ c             vj0(k,i,1,2)=vj0(k,i,1,1)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qj0(k,i,n,2)=f(n)
             enddo
@@ -1228,9 +1328,14 @@ c  QJO hi
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qj0(k,i,n,3)=f(n)
 c             qj0(k,i,n,4)=qj0(k,i,n,3)
@@ -1249,9 +1354,14 @@ c             vj0(k,i,1,4)=vj0(k,i,1,3)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qj0(k,i,n,4)=f(n)
             enddo
@@ -1306,9 +1416,14 @@ c  QK0 lo
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qk0(j,i,n,1)=f(n)
 c             qk0(j,i,n,2)=qk0(j,i,n,1)
@@ -1327,9 +1442,14 @@ c             vk0(j,i,1,2)=vk0(j,i,1,1)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qk0(j,i,n,2)=f(n)
             enddo
@@ -1384,9 +1504,14 @@ c  QKO hi
             yy=2.*yy1-yy2
             zz=2.*zz1-zz2
             distf=2.*distf1-distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qk0(j,i,n,3)=f(n)
 c             qk0(j,i,n,4)=qk0(j,i,n,3)
@@ -1405,9 +1530,14 @@ c             vk0(j,i,1,4)=vk0(j,i,1,3)
             yy=3.*yy1-2.*yy2
             zz=3.*zz1-2.*zz2
             distf=3.*distf1-2.*distf2
+#   ifdef CMPLX
+c     analytic_compressible not compiled if complex used
+      continue
+#   else
             call analytic_compressible(xx,yy,zz,nvar,f,
      +        i_convert_q,i_forcing,i_gradient,distf,xmut,
      +        iexact_trunc,iexact_disc)
+#   endif
             do n=1,5
               qk0(j,i,n,4)=f(n)
             enddo
@@ -2673,5 +2803,5 @@ c
       qxz = qxz + scale*( 0.0 )
       qyz = qyz + scale*( 0.0 )
       return
-      end
 #   endif
+      end

@@ -49,7 +49,7 @@ c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
 c
-      allocatable :: harvest(:)
+      real, allocatable :: harvest(:)
 c
       twopi = 8.0*atan(1.0)
 c
@@ -131,9 +131,9 @@ c
          qj0(k,i,5,ip) = q(1,k,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(kk,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -175,9 +175,9 @@ c
          qj0(k,i,5,ip) =  q(1,k,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(kk,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -263,9 +263,9 @@ c
          qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(kk,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -307,9 +307,9 @@ c
          qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(kk,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(kk,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(kk,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(kk,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(kk,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(kk,ii,ip,2)+8.5)*rnd_nbr
          end if
          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -395,9 +395,9 @@ c
          qk0(j,i,5,ip) = q(j,1,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -439,9 +439,9 @@ c
          qk0(j,i,5,ip) =  q(j,1,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -527,9 +527,9 @@ c
          qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -571,9 +571,9 @@ c
          qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,ii,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,ii,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,ii,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,ii,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,ii,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,ii,ip,2)+8.5)*rnd_nbr
          end if
          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)*(1.0+rnd_nbr*0.10)
@@ -659,9 +659,9 @@ c
          qi0(j,k,5,ip) = q(j,k,1,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,kk,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
@@ -703,9 +703,9 @@ c
          qi0(j,k,5,ip) =  q(j,k,1,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,kk,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
@@ -791,9 +791,9 @@ c
          qi0(j,k,5,ip+2) = q(j,k,idim1,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,kk,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)
@@ -835,9 +835,9 @@ c
          qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
          else if (iflag .eq. 2038) then
          rnd_nbr=harvest(irnd_count)-0.5
-         if (bcdata(jj,kk,ip,2) .gt. 0.85*xmach) rnd_nbr=0.
-         if (bcdata(jj,kk,ip,2) .gt. 0.75*xmach .and.
-     +       bcdata(jj,kk,ip,2) .le. 0.85*xmach) then
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.85*real(xmach)) rnd_nbr=0.
+         if (real(bcdata(jj,kk,ip,2)) .gt. 0.75*real(xmach) .and.
+     +       real(bcdata(jj,kk,ip,2)) .le. 0.85*real(xmach)) then
            rnd_nbr = (-10./xmach*bcdata(jj,kk,ip,2)+8.5)*rnd_nbr
          end if
          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)*(1.0+rnd_nbr*0.10)

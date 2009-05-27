@@ -87,7 +87,7 @@ c
       common /igrdtyp/ ip3dgrd,ialph
 
       common /random_input/ randomize
-      allocatable :: harvest(:)
+      real, allocatable :: harvest(:)
 c     
       idim1 = idim-1
       jdim1 = jdim-1
@@ -675,7 +675,7 @@ c
             write(bou(nou(1),1),*)
          end if
 c
-         if (randomize .gt. 1.e-12) then
+         if (real(randomize) .gt. 1.e-12) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'('' adding random component to'',
      .           '' restart values'')')
