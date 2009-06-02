@@ -765,7 +765,7 @@ case $FARCH in LINUX)
 # Default to INTEL settings:
 
   CFLAG=""
-  FFLAG="-O3 -w -ipo"
+  FFLAG="-O3 -w -ip"
   FFLAG_SPEC="$FFLAG"
   LFLAG="-z muldefs -static"                                  
   LLIB=""
@@ -806,7 +806,7 @@ case $FARCH in LINUX)
 
   if [ $linux_compiler_flags = Intel ]; then
      CFLAG=""
-     FFLAG="-O3 -w -ipo -fno-alias -xHost -traceback"
+     FFLAG="-O3 -w -ip -fno-alias -xHost -traceback"
      FFLAG_SPEC="$FFLAG"
      LFLAG="-z muldefs -static -xHost -traceback"
      LLIB=""
