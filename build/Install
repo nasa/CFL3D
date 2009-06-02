@@ -806,9 +806,9 @@ case $FARCH in LINUX)
 
   if [ $linux_compiler_flags = Intel ]; then
      CFLAG=""
-     FFLAG="-O3 -w -ipo -fno-alias -xP -traceback"
+     FFLAG="-O3 -w -ipo -fno-alias -xHost -traceback"
      FFLAG_SPEC="$FFLAG"
-     LFLAG="-z muldefs -static -xP -traceback"
+     LFLAG="-z muldefs -static -xHost -traceback"
      LLIB=""
      LLIB_SEQ=$LLIB
      LLIBDIR=""
