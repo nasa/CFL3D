@@ -281,7 +281,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
       icall  = 0
       memuse = 0

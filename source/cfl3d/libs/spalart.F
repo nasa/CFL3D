@@ -37,7 +37,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring

@@ -189,7 +189,7 @@ c
      .        tur10(7)
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -489,6 +489,8 @@ c
          work(nlast+114)= les_wallscale
          work(nlast+115)= cs_wale
          work(nlast+116)= cs_vreman
+         work(nlast+117)= isstrc
+         work(nlast+118)= sstrc_crc
          nlast = nlast+nkey
       end if
 c
@@ -785,6 +787,8 @@ c
          les_wallscale = int(work(nlast+114))
          cs_wale = work(nlast+115)
          cs_vreman = work(nlast+116)
+         isstrc = int(work(nlast+117))
+         sstrc_crc = work(nlast+118)
       end if
 c
 c**************************

@@ -55,7 +55,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -506,6 +506,12 @@ c
              write(bou(nou(1),1),'(''     Zeman-BL-type dilatation-'',
      .       ''dissipation compressibility correction employed'')')
            end if
+           if (isstrc .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     SSTRC-type curvature'',
+     .       '' correction employed (AIAA 98-2554), sstrc_crc='',f5.2)')
+     .       sstrc_crc
+           end if
         end if
 c
         if(keepambient .eq. 1 .and. ivmx .ne. 15) then
@@ -518,6 +524,8 @@ c
 c
 c   Note: (10.**(-iexp) is machine zero)
       xminn=10.**(-iexp+1)
+c
+      xis=0.0
 c
       catris_kw=0.0
       if (i_catris_kw .eq. 1) catris_kw=1.0
@@ -2022,7 +2030,8 @@ c            Determine Sij etc if needed
 c            (Note if want traceless must set prod2d3dtrace=0.5 (2D)
 c            or 0.33333 (3D))
               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
-     +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1) then
+     +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1
+     +            .or. isstrc .eq. 1) then
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
@@ -2069,9 +2078,15 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 betax=betax-cmuc*xsi_star*f_turb_mach
                 cmuc=cmuc*(1.+xsi_star*f_turb_mach)
               end if
+              sij=sqrt(2.0*xis)
+              f4 = 1.0
+              if (sij .ne. 0.0 .and. isstrc .eq. 1) then
+                ri=(vor(j,k,i)/sij)*(vor(j,k,i)/sij-1.0)
+                f4=1.0/(1.0+sstrc_crc*ri)
+              endif
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           2.*xis - re*betax*turre(j,k,i,1)**2
+     +           2.*xis - f4*re*betax*turre(j,k,i,1)**2
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
 c   if desired, subtract off 2/3k term
@@ -2083,9 +2098,9 @@ c   (can only do this if ikoprod=1):
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
               else
-                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +        vor(j,k,i)**2 - f4*re*betax*turre(j,k,i,1)**2
+     +        +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)

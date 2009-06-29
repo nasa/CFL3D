@@ -58,7 +58,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -738,7 +738,9 @@ c
      .      ivisc(3).eq. 9 .or. ivisc(2).eq. 9 .or. ivisc(1).eq. 9 .or.
      .      ivisc(3).ge.11 .or. ivisc(2).ge.11 .or. ivisc(1).ge.11 .or.
      .      ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
-     .      ikoprod.eq.1) .or. (ivmx.eq.7 .and. isstdenom.eq.1) .or.
+     .      ikoprod.eq.1) .or. 
+     .      (ivmx.eq.7 .and. isstdenom .eq. 1) .or.
+     .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc .eq. 1) .or.
      .      ((ivisc(3).eq.5 .or. ivisc(2).eq.5 .or. ivisc(1).eq.5) .and.
      .      isarc2d.eq.1) .or.
      .      ((ivisc(3).eq.6 .or. ivisc(2).eq.6 .or. ivisc(1).eq.6) .and.

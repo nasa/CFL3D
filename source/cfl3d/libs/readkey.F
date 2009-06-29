@@ -67,7 +67,7 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -718,6 +718,17 @@ c     if set to zero, you get implicit LES (no model)
 c     typical values are 0.025-0.1
 c     default=0.0
       cs_vreman = 0.0
+      nkey     = nkey + 1
+c
+c     isstrc turns on curvature correction for ivmx=6 or 7
+c     AIAA (98-2554)
+c     default=0
+      isstrc = 0
+      nkey     = nkey + 1
+c
+c     sstrc_crc is the constant for isstrc=1
+c     default=3.6 for isstrc=1, 0 otherwise
+      sstrc_crc = 3.6
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1445,6 +1456,15 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          cs_vreman = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'isstrc') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isstrc
+c
+      else if (inpstr(lc1:lc2).eq.'sstrc_crc') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sstrc_crc = abs(realval(1))
 c
       else
 c

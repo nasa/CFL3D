@@ -181,7 +181,7 @@ c
      .        i_compress_correct
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       pi = 4.0*atan(1.0)

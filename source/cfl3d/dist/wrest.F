@@ -90,7 +90,7 @@ c
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fullns/ ifullns
       common /des/ cdes,ides
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
