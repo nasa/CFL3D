@@ -1044,6 +1044,9 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
               fv2=1.-(chi/(1.+chi*fv1))
               sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
               sst=ccmax(sst,xminn)
+c   ***New additional recommended limiter (Spalart, private communication)
+c             sst=ccmax(sst,0.3*ss)
+c   *********
               rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
               rr=ccmincr(rr,10.)
               gg=rr+cw2*(rr**6-rr)

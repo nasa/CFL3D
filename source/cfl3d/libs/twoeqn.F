@@ -2098,9 +2098,9 @@ c   (can only do this if ikoprod=1):
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
               else
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +        vor(j,k,i)**2 - f4*re*betax*turre(j,k,i,1)**2
-     +        +(1.-blend(j,k,i))*damp1(j,k,i)
+                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +          vor(j,k,i)**2 - f4*re*betax*turre(j,k,i,1)**2
+     +          +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
