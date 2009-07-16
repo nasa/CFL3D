@@ -2078,11 +2078,12 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 betax=betax-cmuc*xsi_star*f_turb_mach
                 cmuc=cmuc*(1.+xsi_star*f_turb_mach)
               end if
-              sij=sqrt(2.0*xis)
+              sij=sqrt(2.0*xis) + 1.e-20
               f4 = 1.0
-              if (sij .ne. 0.0 .and. isstrc .eq. 1) then
+              if (isstrc .eq. 1) then
                 ri=(vor(j,k,i)/sij)*(vor(j,k,i)/sij-1.0)
                 f4=1.0/(1.0+sstrc_crc*ri)
+c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
               endif
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*

@@ -728,7 +728,7 @@ c     default=0
 c
 c     sstrc_crc is the constant for isstrc=1
 c     default=3.6 for isstrc=1, 0 otherwise
-      sstrc_crc = 3.6
+      sstrc_crc = 1.4
       nkey     = nkey + 1
 c
 c*********************************************
