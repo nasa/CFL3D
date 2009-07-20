@@ -3045,7 +3045,7 @@ c
      .                        real(cdw(iter)),real(cyw(iter)),
      .                        real(cmyw(iter))
             end if
-  703       format(1x,i5,4x,5e14.5)
+  703       format(1x,i6,3x,5e14.5)
  1710       continue
          end if
       end if
