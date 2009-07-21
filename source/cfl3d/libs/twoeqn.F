@@ -525,8 +525,6 @@ c
 c   Note: (10.**(-iexp) is machine zero)
       xminn=10.**(-iexp+1)
 c
-      xis=0.0
-c
       catris_kw=0.0
       if (i_catris_kw .eq. 1) catris_kw=1.0
       if (i_compress_correct .eq. 1) then
@@ -2078,9 +2076,9 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 betax=betax-cmuc*xsi_star*f_turb_mach
                 cmuc=cmuc*(1.+xsi_star*f_turb_mach)
               end if
-              sij=sqrt(2.0*xis) + 1.e-20
               f4 = 1.0
               if (isstrc .eq. 1) then
+                sij=sqrt(2.0*xis) + 1.e-20
                 ri=(vor(j,k,i)/sij)*(vor(j,k,i)/sij-1.0)
                 f4=1.0/(1.0+sstrc_crc*ri)
 c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
