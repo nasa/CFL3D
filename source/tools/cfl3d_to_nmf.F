@@ -6,6 +6,9 @@ c***********************************************************************
 c     Purpose:
 c     This program reads a CFL3D V6 input file and outputs a .nmf file
 c     (Neutral Map File) - see http://geolab.larc.nasa.gov/Volume/Doc/nmf.htm
+c     Note: currently does finest level only
+c     (if want coarser levels, use v6inpdoubhalf.F to create corresponding
+c     coarser input file first)
 c***********************************************************************
 c
       parameter(nn=10000)
