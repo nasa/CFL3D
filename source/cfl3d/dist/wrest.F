@@ -743,7 +743,7 @@ c
       if (icgns .eq. 1 .and. myid .eq. myhost) then
 #if defined CGNS
         call writeeqn(iccg,ibase,igrid,ivisc(1),ivisc(2),ivisc(3),ideg,
-     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d)
+     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d,isstrc)
         call writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
      +   tursav(1,1,1,2),blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,

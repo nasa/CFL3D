@@ -360,8 +360,8 @@ c
       fmax   = realval(2)
       cfltau = realval(3)
       if (real(dt) .lt. 0.0)  iunst = 0
-      if (real(dt) .lt. 0.0 .and. ides .eq. 1) then
-        write(iunit11,'('' WARNING: DES SHOULD be run time-'',
+      if (real(dt) .lt. 0.0 .and. ides .ge. 1) then
+        write(iunit11,'('' WARNING: DES/DDES SHOULD be run time-'',
      .   ''accurately (dt>0)'')')
       end if
       if (real(dt) .gt. 0.0 .and. cltarg.ne.99999.0) then
@@ -463,8 +463,9 @@ c
         i2d=1
       end if
 c   DES must be run in 3-D
-      if (ides .eq. 1 .and. i2d .eq. 1) then
-        write(iunit11,'('' WARNING: DES SHOULD be run 3-D (i2d=0)'')')
+      if (ides .ge. 1 .and. i2d .eq. 1) then
+        write(iunit11,'('' WARNING: DES/DDES SHOULD be run 3-D'',
+     +    '' (i2d=0)'')')
 c        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c   Check for SARC & EASMCC models
@@ -656,11 +657,11 @@ c   Set wall iwf, wall function parameter:
         ivisc(3) = abs(ivisc(3))
       end if
 c   DES currently only works with Spalart model
-      if (ides .eq. 1) then
+      if (ides .ge. 1) then
         if (ivisc(1) .ne. 5 .or. ivisc(2) .ne. 5 .or.
      .      ivisc(3) .ne. 5) then
-          write(iunit11,'('' DES currently works with SA model only'',
-     .     '', and must be on in all 3 directions'')')
+          write(iunit11,'('' DES/DDES currently works with SA model'',
+     .     '' only, and must be on in all 3 directions'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
       end if
@@ -924,9 +925,9 @@ c   check usage of full N-S
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
       end if
-      if (ides .eq. 1 .and. idim .eq. 2) then
+      if (ides .ge. 1 .and. idim .eq. 2) then
          write(iunit11,339)
-  339    format(47h WARNING: idim=2 for DES may not be a good idea)
+  339    format(52h WARNING: idim=2 for DES/DDES may not be a good idea)
       end if
       nblg(igrid) = nbl
       idimg(nbl)  = idim

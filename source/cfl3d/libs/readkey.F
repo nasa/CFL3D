@@ -374,7 +374,8 @@ c
       itaturb = 1
       nkey     = nkey + 1
 c
-c     flag to perform DES with turbulence model (1) or not (0)
+c     flag to perform DES with turbulence model
+c     0 = no DES, 1 = standard DES, 2 = DDES (TCFD 20:181-195 2006)
 c
       ides = 0
       nkey     = nkey + 1

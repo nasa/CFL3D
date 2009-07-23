@@ -82,21 +82,27 @@ c
          end if
         else
          if (ides .eq. 1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''   computing turbulent'',
-     +'' viscosity using Spalart DES (cdes='',f7.3,
-     +''), block ='',i4)') cdes,nbl
-         else if (isarc2d .eq. 1) then
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''   computing turbulent'',
-     +'' viscosity using Spalart SARC, block ='',i4)') nbl
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''      WARNING: curv terms are'',
-     +'' active in 2-D sense only!!!'')')
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using Spalart DES (cdes='',f7.3,
+     +       ''), block ='',i4)') cdes,nbl
+         else if (ides .eq. 2) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using Spalart DDES (cdes='',f7.3,
+     +       ''), block ='',i4)') cdes,nbl
          else
-         nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''   computing turbulent'',
-     +'' viscosity using Spalart, block ='',i4)') nbl
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using Spalart, block ='',i4)') nbl
+         end if
+         if (isarc2d .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      Rotation-curvature'',
+     +      '' (SARC) terms are ON'')')
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      WARNING: curv terms are'',
+     +       '' active in 2-D sense only!!!'')')
          end if
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Freestream tur10 = '',
@@ -980,6 +986,7 @@ c    Add source term to RHS
 c     can use damp1 to temporarily store distance variable (different for DES)
 c     (later, damp1 is used to store LHS implicit contribution)
         if (ides .eq. 1) then
+c       DES
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -995,6 +1002,34 @@ c
               end if
  
               damp1(j,k,i) = ccmin(ccabs(smin(j,k,i)),cdes*delta)
+            enddo
+          enddo
+        enddo
+        elseif (ides .eq. 2) then
+c       DDES (TCFD 20:181-195, 2006)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+
+              dist = ccabs(smin(j,k,i))
+              velterm=ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + ux(j,k,i,3)**2 +
+     +                ux(j,k,i,4)**2 + ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
+     +                ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
+              rd = turre(j,k,i)/(sqrt(velterm)*akarman*akarman*
+     +             dist*dist*re)
+              fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
+              term = ccmaxrc(0.0,dist-cdes*delta) 
+              damp1(j,k,i) = dist - fd*term
             enddo
           enddo
         enddo
