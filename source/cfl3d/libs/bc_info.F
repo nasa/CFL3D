@@ -72,8 +72,8 @@ c
          write(bou(nou(1),1),8) nbl,igridg(nbl)
       end if
 c
-    7 format(30h boundary conditions for block,i4,1x,6h(grid ,i3,1h))
-    8 format(30h boundary conditions for block,i4,1x,6h(grid ,i3,1h),
+    7 format(30h boundary conditions for block,i4,1x,6h(grid ,i5,1h))
+    8 format(30h boundary conditions for block,i4,1x,6h(grid ,i5,1h),
      .       1x,14h- dynamic mesh)
 c
 c***********************************************************************
@@ -1291,32 +1291,32 @@ c
       end if
 c
  1351 format(' ','  j=   1  embedded, full coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1352 format(' ','  j=jdim  embedded, full coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1353 format(' ','  k=   1  embedded, full coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1354 format(' ','  k=kdim  embedded, full coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1355 format(' ','  i=   1  embedded, full coarsening - i  type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1356 format(' ','  i=idim  embedded, full coarsening - i  type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1451 format(' ','  j=   1  embedded, semi coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1452 format(' ','  j=jdim  embedded, semi coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1453 format(' ','  k=   1  embedded, semi coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1454 format(' ','  k=kdim  embedded, semi coarsening - i  type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1455 format(' ','  i=   1  embedded, semi coarsening - i  type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1456 format(' ','  i=idim  embedded, semi coarsening - i  type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1557 format(' ',9x,' connects to j=',i3,' of block',i3)
- 1558 format(' ',9x,' connects to k=',i3,' of block',i3)
- 1559 format(' ',9x,' connects to i=',i3,' of block',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1557 format(' ',9x,' connects to j=',i5,' of block',i5)
+ 1558 format(' ',9x,' connects to k=',i5,' of block',i5)
+ 1559 format(' ',9x,' connects to i=',i5,' of block',i5)
 c
 c*************************
 c     1-1 block boundaries
@@ -1449,20 +1449,20 @@ c
       end if
 c
  1641 format(' ','  i=   1  1-1 blocking                   type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1642 format(' ','  i=idim  1-1 blocking                   type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1643 format(' ','  j=   1  1-1 blocking                   type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1644 format(' ','  j=jdim  1-1 blocking                   type    0',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1645 format(' ','  k=   1  1-1 blocking                   type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1646 format(' ','  k=kdim  1-1 blocking                   type    0',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
- 1857 format(' ',9x,' connects to i =',i3,' of block',i3)
- 1858 format(' ',9x,' connects to j =',i3,' of block',i3)
- 1859 format(' ',9x,' connects to k =',i3,' of block',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 1857 format(' ',9x,' connects to i =',i5,' of block',i5)
+ 1858 format(' ',9x,' connects to j =',i5,' of block',i5)
+ 1859 format(' ',9x,' connects to k =',i5,' of block',i5)
 c
 c****************************
 c     patched grid boundaries
@@ -1569,20 +1569,20 @@ c
       end if
 c
  1741 format(' ','  i=   1  patched-grid interpolation     type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1742 format(' ','  i=idim  patched-grid interpolation     type    0',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1743 format(' ','  j=   1  patched-grid interpolation     type    0',
-     .       '  k=',i3,',',i3,'  i=',i3,',',i3)
+     .       '  k=',i5,',',i5,'  i=',i5,',',i5)
  1744 format(' ','  j=jdim  patched-grid interpolation     type    0',
-     .       '  k=',i3,',',i3,'  i=',i3,',',i3)
+     .       '  k=',i5,',',i5,'  i=',i5,',',i5)
  1745 format(' ','  k=   1  patched-grid interpolation     type    0',
-     .       '  j=',i3,',',i3,'  i=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  i=',i5,',',i5)
  1746 format(' ','  k=kdim  patched-grid interpolation     type    0',
-     .       '  j=',i3,',',i3,'  i=',i3,',',i3)
- 1957 format(' ',9x,' interpolated from i =',i3,' of block',i3)
- 1958 format(' ',9x,' interpolated from j =',i3,' of block',i3)
- 1959 format(' ',9x,' interpolated from k =',i3,' of block',i3)
+     .       '  j=',i5,',',i5,'  i=',i5,',',i5)
+ 1957 format(' ',9x,' interpolated from i =',i5,' of block',i5)
+ 1958 format(' ',9x,' interpolated from j =',i5,' of block',i5)
+ 1959 format(' ',9x,' interpolated from k =',i5,' of block',i5)
 c
 c****************************
 c     chimera grid boundaries
@@ -1750,30 +1750,30 @@ c
       end if
 c
  1001 format(' ','  j=   1  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  freestream                     type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  freestream                     type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  freestream                     type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
  2001 format(' ','  j=   1  NONINERTIAL freestream         type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  NONINERTIAL freestream         type 1000',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  NONINERTIAL freestream         type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  NONINERTIAL freestream         type 1000',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  NONINERTIAL freestream         type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  NONINERTIAL freestream         type 1000',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -1819,17 +1819,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  symmetry plane                 type 1001',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  symmetry plane                 type 1001',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  symmetry plane                 type 1001',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -1875,17 +1875,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  1-pt extrapolation             type 1002',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  1-pt extrapolation             type 1002',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  1-pt extrapolation             type 1002',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  1-pt extrapolation             type 1002',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  1-pt extrapolation             type 1002',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  1-pt extrapolation             type 1002',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
       return 
       end
       subroutine out1003(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
@@ -1962,17 +1962,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  characteristic inflow/outflow  type 1003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  characteristic inflow/outflow  type 1003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  characteristic inflow/outflow  type 1003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
  3001 format(' ',10x,'With farfield point vortex correction')
       return
@@ -2049,29 +2049,29 @@ c
       end if
 c
  1001 format(' ','  j=   1  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  inviscid surface               type 1005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  inviscid surface               type 1005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  inviscid surface               type 1005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2001 format(' ','  j=   1  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  inviscid surface w norm mom eq type 1006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  inviscid surface w norm mom eq type 1006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  inviscid surface w norm mom eq type 1006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -2117,17 +2117,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  tunnel inflow                  type 1008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  tunnel inflow                  type 1008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  tunnel inflow                  type 1008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -2173,17 +2173,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  singular axis - half plane     type 1011',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  singular axis - half plane     type 1011',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  singular axis - half plane     type 1011',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  singular axis - half plane     type 1011',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  singular axis - half plane     type 1011',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  singular axis - half plane     type 1011',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -2229,17 +2229,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  singular axis - full plane     type 1012',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  singular axis - full plane     type 1012',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  singular axis - full plane     type 1012',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
@@ -2285,17 +2285,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  singular axis - extrapolation  type 1013',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  singular axis - extrapolation  type 1013',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  singular axis - extrapolation  type 1013',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  singular axis - extrapolation  type 1013',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  singular axis - extrapolation  type 1013',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  singular axis - extrapolation  type 1013',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return 
       end
@@ -2517,17 +2517,17 @@ c        check that the required auxiliary data has been set
       end if
 c
  1001 format(' ','  j=   1  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  set p, extrapolate rho,u,v,w   type 2002',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'P/Pinf     = ',f8.4)
  1008 format(11x,'P/Pinf set from file:')
  1009 format('           ',a60)
@@ -3029,17 +3029,17 @@ c        check that the required auxiliary data has been set
       end if
 c
  1001 format(' ','  j=   1  engine inflow                  type 2003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  engine inflow                  type 2003',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  engine inflow                  type 2003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  engine inflow                  type 2003',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  engine inflow                  type 2003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  engine inflow                  type 2003',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'inlet mach     = ',f8.4)
  1008 format(11x,'Pt/Pinf        = ',f8.4)
  1009 format(11x,'Tt/Tinf        = ',f8.4)
@@ -3687,41 +3687,41 @@ c        check that the required auxiliary data has been set
       end if
 c
  1001 format(' ','  j=   1  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  viscous wall                   type 2004',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  viscous wall                   type 2004',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  viscous wall                   type 2004',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1101 format(' ','  j=   1  viscous laminar wall           type 2014',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1102 format(' ','  j=jdim  viscous laminar wall           type 2014',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1103 format(' ','  k=   1  viscous laminar wall           type 2014',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1104 format(' ','  k=kdim  viscous laminar wall           type 2014',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1105 format(' ','  i=   1  viscous laminar wall           type 2014',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1106 format(' ','  i=idim  viscous laminar wall           type 2014',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1201 format(' ','  j=   1  viscous laminar wall           type 2024',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1202 format(' ','  j=jdim  viscous laminar wall           type 2024',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1203 format(' ','  k=   1  viscous laminar wall           type 2024',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1204 format(' ','  k=kdim  viscous laminar wall           type 2024',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1205 format(' ','  i=   1  viscous laminar wall           type 2024',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1206 format(' ','  i=idim  viscous laminar wall           type 2024',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'Tw/Tinf    = ',f8.4)
  1008 format(11x,'C_q        = ',f8.4)
  1013 format(11x,'stopindex  = ',i8)
@@ -4385,39 +4385,39 @@ c
       end if
 c
  1001 format(' ','  j=   1  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  periodic - angular rotation    type 2005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  periodic - angular rotation    type 2005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 1007 format(11x,'periodic with j=jdim, block',i3)
- 1008 format(11x,'periodic with j=   1, block',i3)
- 1009 format(11x,'periodic with k=kdim, block',i3)
- 1010 format(11x,'periodic with k=   1, block',i3)
- 1011 format(11x,'periodic with i=idim, block',i3)
- 1012 format(11x,'periodic with i=   1, block',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1007 format(11x,'periodic with j=jdim, block',i5)
+ 1008 format(11x,'periodic with j=   1, block',i5)
+ 1009 format(11x,'periodic with k=kdim, block',i5)
+ 1010 format(11x,'periodic with k=   1, block',i5)
+ 1011 format(11x,'periodic with i=idim, block',i5)
+ 1012 format(11x,'periodic with i=   1, block',i5)
  1013 format(11x,'dthetax    = ',f8.4)
  1014 format(11x,'dthetay    = ',f8.4)
  1015 format(11x,'dthetaz    = ',f8.4)
 c
  2001 format(' ','  j=   1  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  periodic - angular rotation    type 2005',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  periodic - angular rotation    type 2005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  periodic - angular rotation    type 2005',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2007 format(11x,'periodicity set from file:')
  2008 format('           ',a60)
 c
@@ -4974,31 +4974,31 @@ c
       end if
 c
  1001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'P/Pinf     = ',f8.4)
 c
  2001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2007 format(11x,'P/Pinf set from file:')
  2008 format('           ',a60)
 c
@@ -5010,18 +5010,18 @@ c
  3006 format(11x,'integrated in -i direction')
 c
  4001 format(' ','  j=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  4002 format(' ','  j=jdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  4003 format(' ','  k=   1  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  4004 format(' ','  k=kdim  set p via radial equilibrium   type 2006',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  4005 format(' ','  i=   1  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  4006 format(' ','  i=idim  set p via radial equilibrium   type 2006',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
- 4007 format(11x,'continued from block',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 4007 format(11x,'continued from block',i5)
 c
       return 
       end
@@ -5536,17 +5536,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  set all primative variables    type 2007',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  set all primative variables    type 2007',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'rho/rhoinf       = ',f8.4)
  1008 format(11x,'u/ainf           = ',f8.4)
  1009 format(11x,'v/ainf           = ',f8.4)
@@ -5556,17 +5556,17 @@ c
  1015 format(11x,'turb2 (nondim)   = ',e12.4)
 c
  2001 format(' ','  j=   1  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  set all primative variables    type 2007',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  set all primative variables    type 2007',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  set all primative variables    type 2007',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2007 format(11x,'primative variables set from file:')
  2008 format('           ',a60)
 c
@@ -6297,17 +6297,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  set rho,u,v,w, extrapolate p   type 2008',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1008 format(11x,'rho/rhoinf     = ',f8.4)
  1009 format(11x,'u/ainf         = ',f8.4)
  1010 format(11x,'v/ainf         = ',f8.4)
@@ -6317,49 +6317,49 @@ c
  1014 format(11x,'turb1 (nondim) = ',e12.4)
  1015 format(11x,'turb2 (nondim) = ',e12.4)
  2001 format(' ','  j=   1  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2002 format(' ','  j=jdim  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  2003 format(' ','  k=   1  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2004 format(' ','  k=kdim  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  2005 format(' ','  i=   1  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2006 format(' ','  i=idim  set T,rhou,rhov,rhow, extrap p type 2018',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  2008 format(11x,'T/Tinf         = ',f8.4)
  2009 format(11x,'rhou/rhoinfainf= ',f8.4)
  2010 format(11x,'rhov/rhoinfainf= ',f8.4)
  2011 format(11x,'rhow/rhoinfainf= ',f8.4)
  3001 format(' ','  j=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  3002 format(' ','  j=jdim set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  3003 format(' ','  k=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  3004 format(' ','  k=kdim set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  3005 format(' ','  i=   1 set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  3006 format(' ','  i=idim set f,rhou,rhov,rhow, ext rho,p type 2028',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  3008 format(11x,'freq*lref/aref    = ',f8.4)
  3009 format(11x,'rhoumax/rhoinfainf= ',f8.4)
  3010 format(11x,'rhovmax/rhoinfainf= ',f8.4)
  3011 format(11x,'rhowmax/rhoinfainf= ',f8.4)
  4001 format(' ','  j=   1  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  4002 format(' ','  j=jdim  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  4003 format(' ','  k=   1  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  4004 format(' ','  k=kdim  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  4005 format(' ','  i=   1  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  4006 format(' ','  i=idim  set rho,u,v,w+rndm, extrap p   type 2038',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return 
       end
@@ -6840,17 +6840,17 @@ c        check that the required auxiliary data has been set
       end if
 c
  1001 format(' ','  j=   1  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  nozzle total BC                type 2009',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  nozzle total BC                type 2009',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  nozzle total BC                type 2009',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1008 format(11x,'Pt/Pinf        = ',f8.4)
  1009 format(11x,'Tt/Tinf        = ',f8.4)
  1010 format(11x,'alphe          = ',f8.4)
@@ -7509,17 +7509,17 @@ c        check that the required auxiliary data has been set
       end if
 c
  1001 format(' ','  j=   1  viscous wall                   type 2016',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  viscous wall                   type 2016',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  viscous wall                   type 2016',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  viscous wall                   type 2016',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  viscous wall                   type 2016',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  viscous wall                   type 2016',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'Tw/Tinf    = ',f8.4)
  1008 format(11x,'cq         = ',f8.4)
  1009 format(11x,'Tw/Tinf    = adiabatic wall')
@@ -7851,17 +7851,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  time-varying pressure          type 2102',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  time-varying pressure          type 2102',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  time-varying pressure          type 2102',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  time-varying pressure          type 2102',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  time-varying pressure          type 2102',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  time-varying pressure          type 2102',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'P(t)/Pinf  = P1 + eps*sin(k*t)')
  1008 format(11x,'P1         = ',f8.4)
  1009 format(11x,'eps        = ',f8.4)
@@ -7920,17 +7920,17 @@ c
       end if
 c
  1001 format(' ','  j=   1  exact soln (MMS)               type 9999',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1002 format(' ','  j=jdim  exact soln (MMS)               type 9999',
-     .       '  i=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
  1003 format(' ','  k=   1  exact soln (MMS)               type 9999',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1004 format(' ','  k=kdim  exact soln (MMS)               type 9999',
-     .       '  i=',i3,',',i3,'  j=',i3,',',i3)
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
  1005 format(' ','  i=   1  exact soln (MMS)               type 9999',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  exact soln (MMS)               type 9999',
-     .       '  j=',i3,',',i3,'  k=',i3,',',i3)
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
       return
       end
