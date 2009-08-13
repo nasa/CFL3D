@@ -935,8 +935,9 @@ c      Laminar Viscosity:
       tt=gamma*q(j,k,i,5)/q(j,k,i,1)
       fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
 c      S*k/epsilon:
-      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
-     +    ivmx .eq. 14) then
+      if (ivmx.eq.6 .or. ivmx.eq.7) then
+        ske=sqrt(2.*xis)/(turre(j,k,i,1)*re*0.09)
+      else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
         ske=sqrt(2.*xis)/(turre(j,k,i,1)*re)
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or. 
      .         ivmx.eq.13) then
@@ -949,8 +950,9 @@ c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
 c      unit 1 of grid)
       prod=pk/(xmach*xmach*xmach)
 c      P(k)/epsilon:
-      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
-     +    ivmx .eq. 14) then
+      if (ivmx.eq.6 .or. ivmx.eq.7) then
+        povere=pk/(turre(j,k,i,1)*turre(j,k,i,2)*re*0.09)
+      else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
         povere=pk/(turre(j,k,i,1)*turre(j,k,i,2)*re)
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
      .         ivmx.eq.13) then
@@ -959,8 +961,9 @@ c      P(k)/epsilon:
         povere=pk*q(j,k,i,1)/(fnu*turre(j,k,i,1)*re)
       end if
 c      Turb Reynolds number (4/9*k^2/(nu*epsilon), from NASA-CR 198221, 1995:
-      if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.8 .or. ivmx.eq.12 .or.
-     +    ivmx .eq. 14) then
+      if (ivmx.eq.6 .or. ivmx.eq.7) then
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)/(9.*fnu*turre(j,k,i,1)*0.09)
+      else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
         turbre=4.*q(j,k,i,1)*turre(j,k,i,2)/(9.*fnu*turre(j,k,i,1))
       else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
      .         ivmx.eq.13) then
