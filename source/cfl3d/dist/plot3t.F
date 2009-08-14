@@ -92,6 +92,10 @@ c
       common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
+      common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
+     .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
+     .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
+     .        i_compress_correct
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -832,15 +836,45 @@ c            Find nonlinear tauij values:
      +           +2.*alpa2*vist3d(j,k,i)/turre(j,k,i,1)*
      +                 (s12*s13 + s22*s23 + s23*s33)/re
             end if
-c            Calculate production term (approx form if iturbprod=0):
-            if (iturbprod .eq. 0) then
-            pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
-            else
-            pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
+c            Calculate 2-eqn-specific production term (approx form in 
+c            certain circumstances). Default to vorticity-type:
+            if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) then
+              if (ikoprod .eq. 1) then
+                pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
+              else
+                pk=2.*vist3d(j,k,i)*wis/(q(j,k,i,1)*re)
+              end if
+            else if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.13 .or.
+     +          ivmx.eq.14) then
+              if (iturbprod .eq. 1) then
+                pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
      +            +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
      +                             + t13*(ux(j,k,i,3)+ux(j,k,i,7))
      +                             + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
      +            (q(j,k,i,1)*re)
+              else
+                pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
+              end if
+            else if (ivmx.eq.11 .or. ivmx.eq.12) then
+              pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
+     +            +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
+     +                             + t13*(ux(j,k,i,3)+ux(j,k,i,7))
+     +                             + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
+     +            (q(j,k,i,1)*re)
+            else if (ivmx .eq. 15) then
+              if (ikoprod .eq. 2) then
+                pk = -(t11*ux(j,k,i,1) + t22*ux(j,k,i,5)
+     +            +t33*ux(j,k,i,9) + t12*(ux(j,k,i,2)+ux(j,k,i,4))
+     +                             + t13*(ux(j,k,i,3)+ux(j,k,i,7))
+     +                             + t23*(ux(j,k,i,6)+ux(j,k,i,8)))/
+     +            (q(j,k,i,1)*re)
+              else if (ikoprod .eq. 1) then
+                pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
+              else
+                pk=2.*vist3d(j,k,i)*wis/(q(j,k,i,1)*re)
+              end if
+            else
+              pk=2.*vist3d(j,k,i)*wis/(q(j,k,i,1)*re)
             end if
             pk=pk*cutoff
 c
