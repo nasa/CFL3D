@@ -1006,8 +1006,9 @@ c      Turb Reynolds number (4/9*k^2/(nu*epsilon), from NASA-CR 198221, 1995:
         turbre=4.*q(j,k,i,1)*q(j,k,i,1)*turre(j,k,i,2)**2/
      +    (9.*fnu*fnu*turre(j,k,i,1))
       end if
-c      Mean deformation:
-      def=(xis-wis)/(xis+wis)
+c      Mean deformation (-1: pure solid body rotation, 0: pure shear,
+c      +1: pure strain):
+      def=(xis-wis)/(xis+wis+1.e-20)
 c      Turbulence intensity:
       if (ivmx .ge. 6) then
         tint=sqrt(2.*turre(j,k,i,2)/3.)/xmach
