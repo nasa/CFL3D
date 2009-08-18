@@ -1793,7 +1793,7 @@ c         I0 boundary points
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
                 rhop=(1.0-catris_kw) +
-     +               catris_kw*sqrt(.5*(q(j,k,i+1,1)+q(j,k,i,1)))
+     +               catris_kw*sqrt(.5*(q(j,k,iu,1)+q(j,k,i,1)))
                 rhom=(1.0-catris_kw) +
      +               catris_kw*sqrt(.5*(qi0(j,k,1,1)+q(j,k,i,1)))
                 cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
@@ -1806,9 +1806,9 @@ c         I0 boundary points
      +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)) +
      +            catris_kw*(-bzz*sqrt(qi0(j,k,1,1))*turre(j,k,i-1,1)
      +            -czz*sqrt(q(j,k,i,1))*turre(j,k,i,1)
-     +            -dzz*sqrt(q(j,k,i+1,1))*turre(j,k,i+1,1))
+     +            -dzz*sqrt(q(j,k,iu,1))*turre(j,k,i+1,1))
                 rhop=(1.0-catris_kw) +
-     +               catris_kw*.5*(q(j,k,i+1,1)+q(j,k,i,1))
+     +               catris_kw*.5*(q(j,k,iu,1)+q(j,k,i,1))
                 rhom=(1.0-catris_kw) +
      +               catris_kw*.5*(qi0(j,k,1,1)+q(j,k,i,1))
                 cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
@@ -1821,13 +1821,13 @@ c         I0 boundary points
      +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)) +
      +            catris_kw*(-bzz*qi0(j,k,1,1)*turre(j,k,i-1,1)
      +            -czz*q(j,k,i,1)*turre(j,k,i,1)
-     +            -dzz*q(j,k,i+1,1)*turre(j,k,i+1,1))
+     +            -dzz*q(j,k,iu,1)*turre(j,k,i+1,1))
               enddo
             enddo
 c
 c         IDIM boundary points 
             i=idim-1
-            il=idim-2
+            il=max(1,idim-2)
             iu=idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1866,7 +1866,7 @@ c         IDIM boundary points
                 rhop=(1.0-catris_kw) +
      +               catris_kw*sqrt(.5*(qi0(j,k,1,3)+q(j,k,i,1)))
                 rhom=(1.0-catris_kw) +
-     +               catris_kw*sqrt(.5*(q(j,k,i-1,1)+q(j,k,i,1)))
+     +               catris_kw*sqrt(.5*(q(j,k,il,1)+q(j,k,i,1)))
                 cdp=(fnup+sigop*anutp)*ttp/(rhop*q(j,k,i,1)*re)
                 cdm=(fnum+sigom*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
@@ -1875,13 +1875,13 @@ c         IDIM boundary points
                 rhside(j,k,i,1)=rhside(j,k,i,1) +
      +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,1)
      +            -czz*turre(j,k,i,1) -dzz*turre(j,k,i+1,1)) +
-     +            catris_kw*(-bzz*sqrt(q(j,k,i-1,1))*turre(j,k,i-1,1)
+     +            catris_kw*(-bzz*sqrt(q(j,k,il,1))*turre(j,k,i-1,1)
      +            -czz*sqrt(q(j,k,i,1))*turre(j,k,i,1)
      +            -dzz*sqrt(qi0(j,k,1,3))*turre(j,k,i+1,1))
                 rhop=(1.0-catris_kw) +
      +               catris_kw*.5*(qi0(j,k,1,3)+q(j,k,i,1))
                 rhom=(1.0-catris_kw) +
-     +               catris_kw*.5*(q(j,k,i-1,1)+q(j,k,i,1))
+     +               catris_kw*.5*(q(j,k,il,1)+q(j,k,i,1))
                 cdp=(sigkmu*fnup+sigkp*anutp)*ttp/(rhop*q(j,k,i,1)*re)
                 cdm=(sigkmu*fnum+sigkm*anutm)*ttm/(rhom*q(j,k,i,1)*re)
                 bzz=-cdm
@@ -1890,7 +1890,7 @@ c         IDIM boundary points
                 rhside(j,k,i,2)=rhside(j,k,i,2) +
      +            (1.0-catris_kw)*(-bzz*turre(j,k,i-1,2)
      +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)) +
-     +            catris_kw*(-bzz*q(j,k,i-1,1)*turre(j,k,i-1,1)
+     +            catris_kw*(-bzz*q(j,k,il,1)*turre(j,k,i-1,1)
      +            -czz*q(j,k,i,1)*turre(j,k,i,1)
      +            -dzz*qi0(j,k,1,3)*turre(j,k,i+1,1))
               enddo
