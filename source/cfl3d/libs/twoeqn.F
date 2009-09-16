@@ -54,7 +54,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct
+     .        i_compress_correct,isstsf
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -511,6 +511,11 @@ c
              write(bou(nou(1),1),'(''     SSTRC-type curvature'',
      .       '' correction employed (AIAA 98-2554), sstrc_crc='',f5.2)')
      .       sstrc_crc
+           end if
+           if (isstsf .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     SST-sf separation fix'',
+     .       '' correction employed'')')
            end if
         end if
 c
@@ -2083,9 +2088,25 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 f4=1.0/(1.0+sstrc_crc*ri)
 c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
               endif
+              f5 = 1.0
+              if (isstsf .eq. 1) then
+                povere = vor(j,k,i)**2*vist3d(j,k,i)/(0.09*q(j,k,i,1)*
+     +                   turre(j,k,i,1)*turre(j,k,i,2)*re*re)
+                f5 = 4.*povere-5.0
+                f5 = ccmaxrc(1.0, f5)
+                f5 = ccminrc(12.0, f5)
+                velterm=ux(j,k,i,1)**2+ux(j,k,i,2)**2+ux(j,k,i,3)**2 +
+     +                  ux(j,k,i,4)**2+ux(j,k,i,5)**2+ux(j,k,i,6)**2 +
+     +                  ux(j,k,i,7)**2+ux(j,k,i,8)**2+ux(j,k,i,9)**2
+                rd = (vist3d(j,k,i)+fnu(j,k,i))/
+     +               (q(j,k,i,1)*sqrt(velterm)*0.41*0.41*
+     +               smin(j,k,i)*smin(j,k,i)*re)
+                fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
+                f5 = f5*fd + (1.0-fd)
+              end if
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           2.*xis - f4*re*betax*turre(j,k,i,1)**2
+     +           2.*xis - f5*f4*re*betax*turre(j,k,i,1)**2
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
 c   if desired, subtract off 2/3k term
@@ -2098,7 +2119,7 @@ c   (can only do this if ikoprod=1):
                 end if
               else
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +          vor(j,k,i)**2 - f4*re*betax*turre(j,k,i,1)**2
+     +          vor(j,k,i)**2 - f5*f4*re*betax*turre(j,k,i,1)**2
      +          +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if

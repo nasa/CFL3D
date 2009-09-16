@@ -57,7 +57,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct
+     .        i_compress_correct,isstsf
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /des/ cdes,ides
 c
@@ -740,6 +740,7 @@ c
      .      ikoprod.eq.1) .or.
      .      (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
+     .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .      ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
      .      (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .      (ivmx.eq.5 .and. ides.eq.2))

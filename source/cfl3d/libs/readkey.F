@@ -63,7 +63,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct
+     .        i_compress_correct,isstsf
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -730,6 +730,11 @@ c
 c     sstrc_crc is the constant for isstrc=1
 c     default=1.4
       sstrc_crc = 1.4
+      nkey     = nkey + 1
+c
+c     isstsf turns on separation fix (tends to reattach sooner) for ivmx=6 or 7
+c     default=0
+      isstsf = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1466,6 +1471,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          sstrc_crc = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'isstsf') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isstsf
 c
       else
 c

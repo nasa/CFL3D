@@ -95,7 +95,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct
+     .        i_compress_correct,isstsf
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -547,6 +547,7 @@ c
       vwprime=0.
       ske=0.
       prod=0.
+      fd=0.
       povere=0.
       turbre=0.
       def=0.
@@ -983,6 +984,14 @@ c      S*k/epsilon:
 c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
 c      unit 1 of grid)
       prod=pk/(xmach*xmach*xmach)
+c      Fd blending function for DDES
+      dist = ccabs(smin(j,k,i))
+      velterm=ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + ux(j,k,i,3)**2 +
+     +        ux(j,k,i,4)**2 + ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
+     +        ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
+      rd = (vist3d(j,k,i)+fnu)/(q(j,k,i,1)*sqrt(velterm)*0.41*0.41*
+     +     dist*dist*re)
+      fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd)) 
 c      P(k)/epsilon:
       if (ivmx.eq.6 .or. ivmx.eq.7) then
         povere=pk/(turre(j,k,i,1)*turre(j,k,i,2)*re*0.09)

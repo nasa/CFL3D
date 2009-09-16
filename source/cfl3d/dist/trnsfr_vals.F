@@ -133,7 +133,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct
+     .        i_compress_correct,isstsf
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -491,6 +491,7 @@ c
          work(nlast+116)= cs_vreman
          work(nlast+117)= isstrc
          work(nlast+118)= sstrc_crc
+         work(nlast+119)= isstsf
          nlast = nlast+nkey
       end if
 c
@@ -789,6 +790,7 @@ c
          cs_vreman = work(nlast+116)
          isstrc = int(work(nlast+117))
          sstrc_crc = work(nlast+118)
+         isstsf = int(work(nlast+119))
       end if
 c
 c**************************
