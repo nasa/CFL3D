@@ -59,7 +59,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -743,7 +743,7 @@ c
      .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .      ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
      .      (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .      (ivmx.eq.5 .and. ides.eq.2))
+     .      (ivmx.eq.5 .and. ides.ge.2))
      .      ns = jm1km1im1*9
 c
 c        cmuv(jdim-1,kdim-1,idim-1)

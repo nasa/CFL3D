@@ -3093,7 +3093,7 @@ c      prandtlt.........turbulent Prandtl number (real)
 c      suth.............Sutherland law constant (real)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      ifullns..........0 if thin layer, 1 if full (integer)
-c      ides.............0 if DES off, 1 if DES, 2 if DDES (integer)
+c      ides.............0 if DES off, 1 if DES, 2+ if DDES (integer)
 c      isarc2d..........0 if SARC curv correction off, 1 if on (integer)
 c      ieasmcc2d........0 if EASMCC curv correction off, 1 if on (integer)
 c      isstrc...........0 if SSTRC off, 1 if on (integer)
@@ -3290,7 +3290,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'DetachedEddySimulation',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .eq. 2 .and. isarc2d .ne. 1) then
+      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarc2d .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3320,7 +3320,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'DetachedEddySimulationSARC',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .eq. 2 .and. isarc2d .eq. 1) then
+      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarc2d .eq. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)

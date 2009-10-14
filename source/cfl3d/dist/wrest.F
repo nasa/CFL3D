@@ -89,7 +89,7 @@ c
       common /twod/ i2d
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fullns/ ifullns
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
 c
 #if defined DIST_MPI

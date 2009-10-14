@@ -25,7 +25,7 @@ c
       dimension nou(nbuf)
 c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
@@ -375,7 +375,8 @@ c
       nkey     = nkey + 1
 c
 c     flag to perform DES with turbulence model
-c     0 = no DES, 1 = standard DES, 2 = DDES (TCFD 20:181-195 2006)
+c     0 = no DES, 1 = standard DES, 2 = DDES (TCFD 20:181-195 2006), 3 = DDES + prod
+c      term mod based on fd
 c
       ides = 0
       nkey     = nkey + 1
@@ -384,6 +385,12 @@ c     constant associated with DES
 c
       cdes = 0.65
       nkey     = nkey + 1
+c
+c     constant associated with Modified DDES
+c
+      cddes = 0.975
+      nkey     = nkey + 1
+
 c
 c     flag to store iteration-averaged q values in a PLOT3D file:
 c     0 = no averaging or storage, 1 = start averaging now,
@@ -1165,6 +1172,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          cdes = realval(1)
+      else if (inpstr(lc1:lc2).eq.'cddes') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cddes = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'iteravg') then
          lc2 = lc2 +1
@@ -1495,6 +1506,15 @@ c
       go to 1100
 c
  1900 continue
+
+c     Make sure we are running ddes if cddes is set
+
+      if( abs(cddes - 0.975d0) > 0.001d0 ) ides = 3 
+      if( cddes > 0.999d0) cddes = 0.999d0
+      if( ides == 3 ) then
+         write(*,*) 'Running ides with cddes = ', cddes
+      end if
+
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1901)
       nou(1) = min(nou(1)+1,ibufdim)

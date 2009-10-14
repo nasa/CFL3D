@@ -3,7 +3,7 @@
      + fx,workx,by,cy,dy,fy,worky,bz,cz,dz,fz,workz,ntime,
      + tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,sumn1,sumn2,negn1,negn2,
      + tursav2,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,iex3,
-     + bcj,bck,bci,ux,vx,nummem)
+     + bcj,bck,bci,ux,vx,nummem,fd)
 c
 c     $Id$
 c
@@ -21,7 +21,7 @@ c
 c
       dimension nou(nbuf)
 c
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -42,14 +42,15 @@ c
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
+
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
      +,dtj(jdim,kdim,idim-1),x(jdim,kdim,idim),y(jdim,kdim,idim),
      + z(jdim,kdim,idim),vist3d(jdim,kdim,idim),
      + vor(jdim-1,kdim-1,idim-1)
       dimension damp1(jdim-1,kdim-1,idim-1),
-     + fnu(0:jdim,0:kdim,0-iex3:idim+iex3)
-     + ,timestp(jdim-1,kdim-1,idim-1)
+     + fnu(0:jdim,0:kdim,0-iex3:idim+iex3),
+     + timestp(jdim-1,kdim-1,idim-1),fd(jdim-1,kdim-1,idim-1)
       dimension bx(kdim-1,jdim-1),cx(kdim-1,jdim-1),dx(kdim-1,jdim-1),
      + fx(kdim-1,jdim-1),workx(kdim-1,jdim-1),
      +          by(jdim-1,kdim-1),cy(jdim-1,kdim-1),dy(jdim-1,kdim-1),
@@ -91,6 +92,11 @@ c
            write(bou(nou(1),1),'(''   computing turbulent'',
      +       '' viscosity using Spalart DDES (cdes='',f7.3,
      +       ''), block ='',i4)') cdes,nbl
+         else if (ides .eq. 3) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using Spalart MDDES (cdes='',f7.3,
+     +       '',cddes='',f7.3,''), block ='',i4)') cdes,cddes,nbl
          else
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''   computing turbulent'',
@@ -1005,7 +1011,7 @@ c
             enddo
           enddo
         enddo
-        elseif (ides .eq. 2) then
+        elseif (ides .ge. 2) then
 c       DDES (TCFD 20:181-195, 2006)
         do i=1,idim-1
           do j=1,jdim-1
@@ -1027,9 +1033,9 @@ c
      +                ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
               rd = turre(j,k,i)/(sqrt(velterm)*akarman*akarman*
      +             dist*dist*re)
-              fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
+              fd(j,k,i) = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
               term = ccmaxrc(0.0,dist-cdes*delta) 
-              damp1(j,k,i) = dist - fd*term
+              damp1(j,k,i) = dist - fd(j,k,i)*term
             enddo
           enddo
         enddo
@@ -1065,14 +1071,16 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
-              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .             k.ge.klamlo .and. k.lt.klamhi) .or.
-     .             real(smin(j,k,i)) .lt. 0.) then
-                cutoff=0.
-              else
-                cutoff=1.
-              end if
+               if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .              j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .              k.ge.klamlo .and. k.lt.klamhi) .or.
+     .              real(smin(j,k,i)) .lt. 0.) then
+                  cutoff=0.
+               else if( ides .eq. 3 .and. fd(j,k,i) .gt. cddes ) then
+                  cutoff = (1.d0 - fd(j,k,i))/(1.d0-cddes)
+               else
+                  cutoff=1.
+               end if
               ss=vor(j,k,i)
               chi=turre(j,k,i)/fnu(j,k,i)
               fv1=chi**3/(chi**3+cv1**3)

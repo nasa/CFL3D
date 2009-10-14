@@ -124,7 +124,7 @@ c
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
      .                zrotrate_img
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
       common /cfl/ dt0,dtold
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /precond/ cprec,uref,avn
@@ -492,6 +492,7 @@ c
          work(nlast+117)= isstrc
          work(nlast+118)= sstrc_crc
          work(nlast+119)= isstsf
+         work(nlast+120) = cddes
          nlast = nlast+nkey
       end if
 c
@@ -791,6 +792,7 @@ c
          isstrc = int(work(nlast+117))
          sstrc_crc = work(nlast+118)
          isstsf = int(work(nlast+119))
+         cddes      = work(nlast+120)
       end if
 c
 c**************************
