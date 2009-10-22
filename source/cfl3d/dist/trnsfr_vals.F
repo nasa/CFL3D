@@ -202,6 +202,7 @@ c
       common /sourceterm/ xdir_only_source
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /initfac/ scal_ic
 #if defined DIST_MPI
 c
 c***********************
@@ -492,7 +493,8 @@ c
          work(nlast+117)= isstrc
          work(nlast+118)= sstrc_crc
          work(nlast+119)= isstsf
-         work(nlast+120) = cddes
+         work(nlast+120)= cddes
+         work(nlast+121)= scal_ic
          nlast = nlast+nkey
       end if
 c
@@ -792,7 +794,8 @@ c
          isstrc = int(work(nlast+117))
          sstrc_crc = work(nlast+118)
          isstsf = int(work(nlast+119))
-         cddes      = work(nlast+120)
+         cddes = work(nlast+120)
+         scal_ic = work(nlast+121)
       end if
 c
 c**************************

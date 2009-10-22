@@ -19,9 +19,17 @@ c
      .        tur10(7)
       common /reyue/ reue,tinf,ivisc(3)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /initfac/ scal_ic
 c
 c   scaling factor for distance-based I.C.s:
-      refac=reue/5.e6
+      if (scal_ic .eq. 0.) then
+c       Use freestream ICs everywhere
+        iscal=0
+      else
+c       Scale turb-like IC in BL; lower scal_ic yields thinner layer
+        refac=reue/scal_ic
+        iscal=1
+      end if
 c
 c     write(15,904)nbl
   904 format(39h turbulent initial conditions for block,i3)
@@ -83,6 +91,8 @@ c   For field eqn turbulence models:
                 tursav(j,k,i,2)=ccmin(zk2,zk3)
                 tursav(j,k,i,2)=ccmax(tursav(j,k,i,2),zk1)
                 tursav(j,k,i,2)=ccmin(tursav(j,k,i,2),zk4)
+                tursav(j,k,i,2)=tursav(j,k,i,2)*iscal +
+     +             tur10(2)*(1-iscal)
 c
                 ep1=tur10(1)
                 exponent=-555.*(ccabs(smin(j,k,i))*refac)-6.
@@ -106,6 +116,8 @@ c
                 tursav(j,k,i,1)=ccmin(ep2,ep3)
                 tursav(j,k,i,1)=ccmax(tursav(j,k,i,1),ep1)
                 tursav(j,k,i,1)=ccmin(tursav(j,k,i,1),ep4)
+                tursav(j,k,i,1)=tursav(j,k,i,1)*iscal +
+     +             tur10(1)*(1-iscal)
                 vist3d(j,k,i)=.09*rho0*tursav(j,k,i,2)**2/
      .                        tursav(j,k,i,1)
 
@@ -142,11 +154,15 @@ c         do nothing
                 zk2=-const1*(ccabs(smin(j,k,i))*refac)**2 +
      +               const2*ccabs(smin(j,k,i))*refac
                 tursav(j,k,i,2)=ccmax(zk1,zk2)
+                tursav(j,k,i,2)=tursav(j,k,i,2)*iscal +
+     +             tur10(2)*(1-iscal)
                 v3d=tursav(j,k,i,2)*100./tmax
                 v3d=ccmax(v3d,v3dset)
                 om1=-12444.*(ccabs(smin(j,k,i))*refac) + .54
                 om2=cmu*tursav(j,k,i,2)/v3d
                 tursav(j,k,i,1)=ccmax(om1,om2)
+                tursav(j,k,i,1)=tursav(j,k,i,1)*iscal +
+     +             tur10(1)*(1-iscal)
                 vist3d(j,k,i)=cmu*rho0*tursav(j,k,i,2)/
      .                        tursav(j,k,i,1)
  2009     continue

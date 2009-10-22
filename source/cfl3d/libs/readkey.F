@@ -82,6 +82,7 @@ c
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /sminn/ isminc,ismincforce
+      common /initfac/ scal_ic
 c
       ititr = 0
       nkey  = 0
@@ -742,6 +743,11 @@ c
 c     isstsf turns on separation fix (tends to reattach sooner) for ivmx=6 or 7
 c     default=0
       isstsf = 0
+      nkey     = nkey + 1
+c
+c     scal_ic is a scaling factor for 2-eqn model BL-type approx ICs
+c     default=5.e6 (smaller no. makes profile thinner, 0 uses freestream ICs)
+      scal_ic = 5.e6
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1486,6 +1492,11 @@ c
       else if (inpstr(lc1:lc2).eq.'isstsf') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isstsf
+c
+      else if (inpstr(lc1:lc2).eq.'scal_ic') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         scal_ic = abs(realval(1))
 c
       else
 c
