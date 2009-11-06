@@ -57,7 +57,7 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),17) nbl
       end if
-   17 format(1x,46hupdating with 3-D 3-factor AF scheme for block,i3)
+   17 format(1x,46hupdating with 3-D 3-factor AF scheme for block,i6)
 c
 c     assemble and solve matrix equations
 c

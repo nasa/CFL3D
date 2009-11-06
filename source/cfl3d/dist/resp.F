@@ -1259,22 +1259,22 @@ c
  1060 format(3x,i6,2e14.5,1x,i6,1x,i6)
  1061 format(3x,i6,3e14.5,1x,i6,1x,i6,1x,i6)
  1062 format(3x,i6,7e14.5,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6,1x,i6)
- 1080 format(/1x,5hlevel,1x,3hblk,3x,4hiter,3x,8hresidual,3x,
+ 1080 format(/1x,5hlevel,4x,3hblk,3x,4hiter,3x,8hresidual,3x,
      .       10htotal res.,5x,4hlift,8x,4hdrag,5x,10hside force)
- 2000 format(' ',4x,i1,1x,i3,1x,i6,7(1x,e11.4))
- 2020 format(/1x,5hlevel,1x,3hblk,2x,5hntime,3x,8hresidual,3x,
+ 2000 format(' ',4x,i1,1x,i6,1x,i6,7(1x,e11.4))
+ 2020 format(/1x,5hlevel,4x,3hblk,2x,5hntime,3x,8hresidual,3x,
      .       10htotal res.,5x,4hlift,8x,4hdrag,5x,10hside force)
- 2040 format(/1x,5hlevel,1x,3hblk,2x,5hntime,3x,8hresidual,3x,
+ 2040 format(/1x,5hlevel,4x,3hblk,2x,5hntime,3x,8hresidual,3x,
      .       10htotal res.,5x,4hlift,8x,4hdrag,5x,10hside force,
      .       5x,4htime,7x,5halpha)
- 2060 format(/1x,23hmax residual on block  ,i3,7h (grid ,i3,
-     .       5h) is ,e12.5,12h at j,k,i = ,i3,1h,,i3,1h,,i3,1h.)
- 2080 format(1x,23hmax residual on block  ,i3,7h (grid ,i3,
-     .       5h) is ,e12.5,12h at j,k,i = ,i3,1h,,i3,1h,,i3,1h.)
- 3000 format(/1x,23hmax vorticity on block ,i3,7h (grid ,i3,
-     .       5h) is ,e12.5,12h at j,k,i = ,i3,1h,,i3,1h,,i3,1h.)
- 3020 format(1x,23hmax vorticity on block ,i3,7h (grid ,i3,
-     .       5h) is ,e12.5,12h at j,k,i = ,i3,1h,,i3,1h,,i3,1h.)
+ 2060 format(/1x,23hmax residual on block  ,i6,7h (grid ,i6,
+     .       5h) is ,e12.5,12h at j,k,i = ,i4,1h,,i4,1h,,i4,1h.)
+ 2080 format(1x,23hmax residual on block  ,i6,7h (grid ,i6,
+     .       5h) is ,e12.5,12h at j,k,i = ,i4,1h,,i4,1h,,i4,1h.)
+ 3000 format(/1x,23hmax vorticity on block ,i6,7h (grid ,i6,
+     .       5h) is ,e12.5,12h at j,k,i = ,i4,1h,,i4,1h,,i4,1h.)
+ 3020 format(1x,23hmax vorticity on block ,i6,7h (grid ,i6,
+     .       5h) is ,e12.5,12h at j,k,i = ,i4,1h,,i4,1h,,i4,1h.)
 c
       if (myid.eq.myhost) call my_flush(11)
       if (real(dt).ge.0.) then

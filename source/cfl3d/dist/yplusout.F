@@ -473,21 +473,21 @@ c
          end if
       end if
 c
-  100 format(/,1x,46hYPLUS STATISTICS (endpts not included) - BLOCK,i3,
-     .      6h (GRID,i3,1h))
+  100 format(/,1x,46hYPLUS STATISTICS (endpts not included) - BLOCK,i6,
+     .      6h (GRID,i6,1h))
   101 format(/,1x,38hYPLUS STATISTICS (endpts not included),
      .      20h - ALL GLOBAL BLOCKS)
-  102 format(5x,6hY+ MAX,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
-     .       2x,5hBLOCK,3x,4hGRID)
-  103 format(5x,6hY+ MIN,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
-     .       2x,5hBLOCK,3x,4hGRID)
-  104 format(5x,6hDN MAX,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
-     .       2x,5hBLOCK,3x,4hGRID)
-  105 format(5x,6hDN MIN,3x,4hILOC,3x,4hJLOC,3x,4hKLOC,
-     .       2x,5hBLOCK,3x,4hGRID)
+  102 format(5x,6hY+ MAX,4x,4hILOC,4x,4hJLOC,4x,4hKLOC,
+     .       5x,5hBLOCK,6x,4hGRID)
+  103 format(5x,6hY+ MIN,4x,4hILOC,4x,4hJLOC,4x,4hKLOC,
+     .       5x,5hBLOCK,6x,4hGRID)
+  104 format(5x,6hDN MAX,4x,4hILOC,4x,4hJLOC,4x,4hKLOC,
+     .       5x,5hBLOCK,6x,4hGRID)
+  105 format(5x,6hDN MIN,4x,4hILOC,4x,4hJLOC,4x,4hKLOC,
+     .       5x,5hBLOCK,6x,4hGRID)
   106 format(5x,6hY+ AVG,4x,10hY+ STD DEV,7x,5hNY+ >,i2,
      .       3x,4hNPTS)
-  107 format(1x,e10.3,4x,i3,4x,i3,4x,i3,4x,i3,4x,i3)
+  107 format(1x,e10.3,4x,i4,4x,i4,4x,i4,4x,i6,4x,i6)
   108 format(1x,e10.3,4x,e10.3,8x,i6,1x,i6)
   109 format(/,1x,'writing function file surf_y+.fmt (y+)',
      .       /,1x,'writing function file surf_dn.fmt (normal spacing)',

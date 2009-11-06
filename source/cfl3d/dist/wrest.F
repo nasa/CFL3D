@@ -168,8 +168,8 @@ c
       else
          write(11,7)nbl
       end if
-    6 format(/,1x,30hwriting restart file for block,i5)
-    7 format(1x,30hwriting restart file for block,i5)
+    6 format(/,1x,30hwriting restart file for block,i6)
+    7 format(1x,30hwriting restart file for block,i6)
       if (iskip.gt.0) then
         do n=1,ntt
           do l=1,nummem
@@ -530,7 +530,7 @@ c
                end do
             end if
          write(11,'(''   writing vist3d data to restart file'',
-     .   '', block'',i5)') nbl
+     .   '', block'',i6)') nbl
          if (icgns .ne. 1) then
          write(2) (((vist3d(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
          if (iwghost .ne. 0)
@@ -593,7 +593,7 @@ c
          if (myid .eq. myhost) then
          write(11,'(''   writing field eqn turb quantities'',
      .              '' to restart file'',
-     .              '', block'',i5)') nbl
+     .              '', block'',i6)') nbl
          if (icgns .ne. 1) then
          write(2) ((((tursav(j,k,i,m),j=1,jdim1),k=1,kdim1),i=1,idim1),
      .            m=1,2)

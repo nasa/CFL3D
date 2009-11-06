@@ -283,8 +283,8 @@ c
       write(11,*)
 #endif
 c
-  677 format(/1x,37hSUMMARY OF FORCES AND MOMENTS - BLOCK,i4,
-     .       6h (GRID,i4,1h),/)
+  677 format(/1x,37hSUMMARY OF FORCES AND MOMENTS - BLOCK,i6,
+     .       6h (GRID,i6,1h),/)
   620 format(1x,'forces computed on i=1 surface segment(s):')
   621 format(1x,'forces computed on i=idim surface segment(s):')
   622 format(1x,'forces computed on i=1 and i=idim surface segment(s):')
@@ -302,9 +302,9 @@ c
   703 format(/10x,2hCL,16x,2hCD,15x,3hCDp,15x,3hCDv)
   704 format(10x,2hCZ,16x,2hCY,15x,2hCX,12x,11hwetted area)
   705 format(10x,3hCMY,14x,3hCMX,15x,3hCMZ)
-  720 format(4x,'segment',i3,'  j=',i4,',',i4,'  k=',i4,',',i4)
-  721 format(4x,'segment',i3,'  i=',i4,',',i4,'  k=',i4,',',i4)
-  722 format(4x,'segment',i3,'  i=',i4,',',i4,'  j=',i4,',',i4)
+  720 format(4x,'segment',i5,'  j=',i5,',',i5,'  k=',i5,',',i5)
+  721 format(4x,'segment',i5,'  i=',i5,',',i5,'  k=',i5,',',i5)
+  722 format(4x,'segment',i5,'  i=',i5,',',i5,'  j=',i5,',',i5)
   653 format(1x,e18.11,4(1x,e18.11))
 c
       return

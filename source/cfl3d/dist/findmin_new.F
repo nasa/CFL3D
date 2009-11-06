@@ -662,7 +662,7 @@ c
  1050 continue
 c
   993 format(45h computing smin (min dist func) for field eqn,
-     .       21h turb model for block,i5)
+     .       21h turb model for block,i6)
 c
       return
       end

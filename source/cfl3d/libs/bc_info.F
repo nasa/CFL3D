@@ -72,8 +72,8 @@ c
          write(bou(nou(1),1),8) nbl,igridg(nbl)
       end if
 c
-    7 format(30h boundary conditions for block,i4,1x,6h(grid ,i5,1h))
-    8 format(30h boundary conditions for block,i4,1x,6h(grid ,i5,1h),
+    7 format(30h boundary conditions for block,i6,1x,6h(grid ,i6,1h))
+    8 format(30h boundary conditions for block,i6,1x,6h(grid ,i6,1h),
      .       1x,14h- dynamic mesh)
 c
 c***********************************************************************

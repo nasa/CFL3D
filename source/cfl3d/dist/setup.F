@@ -276,7 +276,7 @@ c
 c   Check number of zones
       if (nzones .ne. ngrid) then
         write(901,'('' inconsistency between cgns # of zones & input.'',
-     + '' nzones,ngrid='',2i5)') nzones,ngrid
+     + '' nzones,ngrid='',2i6)') nzones,ngrid
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
       end if
@@ -330,7 +330,7 @@ c
             read(1) jdum,kdum,idum  
          end if
 c
-  100       format(13h reading grid,i4,24h of dimensions (I/J/K) :,3i4)
+  100       format(13h reading grid,i6,24h of dimensions (I/J/K) :,3i6)
 #   ifdef FASTIO
          mytag   = itag_flag + nbl
          nd_scrc = mblk2nd(nbl)
@@ -524,8 +524,8 @@ c
             lzc = lw(12,nbl)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),110) nbl,ii2,jj2,kk2
-  110       format(25h   creating coarser block,i4,
-     .      24h of dimensions (I/J/K) :,3i4)
+  110       format(25h   creating coarser block,i6,
+     .      24h of dimensions (I/J/K) :,3i6)
             call collx(w(lx),w(ly),w(lz),w(lxc),w(lyc),w(lzc),jdim,
      .                 kdim,idim,jj2,kk2,ii2)
             call lead(nbl,lw,lw2,maxbl)
@@ -752,7 +752,7 @@ c
      .          16h increase mwork))
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),310) nbl,igrid
-  310    format(28h computing metrics for block,i4,7h  (grid,i4,1h))
+  310    format(28h computing metrics for block,i6,7h  (grid,i6,1h))
          call metric(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),w(lsk),
      .               w(lsi),wk(1),wk(jdim*kdim*6+1),nbl,iflag,icnt,
      .               nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
@@ -774,7 +774,7 @@ c
             call lead(nbl,lw,lw2,maxbl)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),320) nbl
-  320       format(38h   computing metrics for coarser block,i4)
+  320       format(38h   computing metrics for coarser block,i6)
             call metric(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),w(lsk),
      .                  w(lsi),wk(1),wk(jdim*kdim*6+1),nbl,iflag,icnt,
      .                  nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
@@ -840,8 +840,8 @@ c
      .          16h increase mwork))
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),410)nbl,igrid
-  410    format(33h computing cell volumes for block,i4,
-     .           7h  (grid,i4,1h))
+  410    format(33h computing cell volumes for block,i6,
+     .           7h  (grid,i6,1h))
          call cellvol(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),
      .                w(lsk),w(lsi),w(lvol),wk,nou,bou,nbuf,ibufdim,
      .                myid,mblk2nd,maxbl,nbl,0,iflagv,imin,imax,jmin,
@@ -858,7 +858,7 @@ c
             lvolc  = lw( 8,nbl)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),420) nbl
-  420       format(43h   computing cell volumes for coarser block,i4)
+  420       format(43h   computing cell volumes for coarser block,i6)
             call collv(w(lvol),w(lvolc),jdim,kdim,idim,jj2,kk2,ii2)
             call lead(nbl,lw,lw2,maxbl)
          end if
@@ -1224,11 +1224,11 @@ c
          if (myid .eq. mblk2nd(nbl)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),500)nbl,igrid
-  500       format(38h reading overlap information for block,i4,
-     .             7h  (grid,i4,1h))
+  500       format(38h reading overlap information for block,i6,
+     .             7h  (grid,i6,1h))
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),101)nbl
-  101       format(1x,37hreading overlap information for block,1x,i3)
+  101       format(1x,37hreading overlap information for block,1x,i6)
          end if
          if (myid .eq. myhost) then
             if (nbl.gt.1) then
@@ -1289,8 +1289,8 @@ c
          if (myid .eq. mblk2nd(nbl)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),510)nbl,igrid
-  510       format(38h setting blank array to 1.0 for block ,i4,
-     .             7h  (grid,i4,1h))
+  510       format(38h setting blank array to 1.0 for block ,i6,
+     .             7h  (grid,i6,1h))
          end if
          if (myid.eq.myhost) then
             call setblk(w(lblk),jdim,kdim,idim,nbl)
@@ -1496,7 +1496,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),520) nbl
   520       format(41h   setting blank array to 1.0 for coarser,
-     .             6h block,i4)
+     .             6h block,i6)
             call setblk(w(lblkc),jj2,kk2,ii2,nbl)
          end if
          call lead(nbl,lw,lw2,maxbl)
@@ -1613,7 +1613,7 @@ c        call the noninertial initization to speed convergence
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),200) nbl,igrid
   200       format(45h setting initial conditions as freestream for,
-     .             6h block,i4,7h  (grid,i4,1h))
+     .             6h block,i6,7h  (grid,i6,1h))
             if (noninflag.gt.0) then
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),201)
@@ -1624,7 +1624,7 @@ c        call the noninertial initization to speed convergence
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),210) nbl
   210       format(43h   setting initial conditions as freestream,
-     .             18h for coarser block,i4)
+     .             18h for coarser block,i6)
             if (noninflag.gt.0) then
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),211)
@@ -1803,8 +1803,8 @@ c
                   write(bou(nou(1),1),*)
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),605) nbl,idim,jdim,kdim
-  605             format(32h reading modal surface for block,i4,
-     .            24h of dimensions (I/J/K) :,3i4)
+  605             format(32h reading modal surface for block,i6,
+     .            24h of dimensions (I/J/K) :,3i6)
                   iunit = 33
                   jst = lxmdj
                   kst = lxmdk
@@ -1876,7 +1876,7 @@ c
                         nou(1) = min(nou(1)+1,ibufdim)
                         write(bou(nou(1),1),610) nbl
   610                   format(25h   creating modal surface,
-     .                  18h for coarser block,i4)
+     .                  18h for coarser block,i6)
                         jst = lxmdj
                         kst = lxmdk
                         ist = lxmdi
@@ -1980,19 +1980,19 @@ c
          if (myid.eq.mblk2nd(nbl)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),700) nbl,igrid
-  700       format(31h reading restart file for block,i4,
-     .      7h  (grid,i4,1h))
+  700       format(31h reading restart file for block,i6,
+     .      7h  (grid,i6,1h))
 c
             if (iteravg .eq. 1) then
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),811) nbl
   811         format(35h running-average to be started from,
-     .          18h scratch for block,i4)
+     .          18h scratch for block,i6)
             end if
             if (iteravg .eq. 2) then
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),812) nbl
-  812         format(39h reading running-average file for block,i4)
+  812         format(39h reading running-average file for block,i6)
             end if
 c
                if (icgns .eq. 1) then
@@ -2276,7 +2276,7 @@ c
                            write(bou(nou(1),1),810) nbl
   810                      format(25h reconstructing last grid,
      .                            29h position from data for block,
-     .                            i4)
+     .                            i6)
                            call grdmove(nbl,jdim,kdim,idim,w(lx),w(ly),
      .                          w(lz),xorig0(nbl),yorig0(nbl),
      .                          zorig0(nbl),xorig(nbl),yorig(nbl),
@@ -2334,7 +2334,7 @@ c
      .                                ll=1,3),n=1,nmodes)
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),'('' reading generalized force/'',
-     .            ''displacement data for aeroelastic surface '',i4)')
+     .            ''displacement data for aeroelastic surface '',i6)')
      .            iaes
 c
 c                 if x0 data is non-zero in input file, overwrite xxn with x0
@@ -2428,8 +2428,8 @@ c
      .             16h increase mwork))
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),901) nbl,igrid
-  901       format(39h computing directed distances for block,i4,
-     .             7h  (grid,i4,1h))
+  901       format(39h computing directed distances for block,i6,
+     .             7h  (grid,i6,1h))
             call dird(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),w(lsk),
      .                w(lsi),w(lsni0),w(lsnk0),w(lsni0),w(lnbl),
      .                w(lxkb),w(lnbl),wk,ivisc,nou,bou,nbuf,ibufdim)
@@ -2445,7 +2445,7 @@ c
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),910) nbl
   910          format(43h   computing directed distances for coarser,
-     .                6h block,i4)
+     .                6h block,i6)
                call dird(jdim,kdim,idim,w(lx),w(ly),w(lz),w(lsj),w(lsk),
      .                   w(lsi),w(lsni0),w(lsnk0),w(lsni0),w(lnbl),
      .                   w(lxkb),w(lnbl),wk,ivisc,nou,bou,nbuf,ibufdim)
@@ -2752,7 +2752,7 @@ c
  2070       continue
 c
   260       format(1h )
-  265       format(44h setting turbulent initial conditions, block,i4)
+  265       format(44h setting turbulent initial conditions, block,i6)
          end if
 c
       end if
@@ -3006,7 +3006,7 @@ c
       end if
  2110 continue
 c
-  350 format(1x,43hinterpolating for cells overlapped to block,i4)
+  350 format(1x,43hinterpolating for cells overlapped to block,i6)
 c
       nblout = nblg(igrid)
 #   ifdef FASTIO

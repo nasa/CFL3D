@@ -781,7 +781,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),'('' WARNING: restarting block'',i4,
+            write(bou(nou(1),1),'('' WARNING: restarting block'',i6,
      .           '' with DIFFERENT'',
      .           '' ivisc: old='',3i3,'', new='',3i3)') nbl,iv1,iv2,
      .           iv3,ivisc(1),ivisc(2),ivisc(3)
@@ -1054,7 +1054,7 @@ c
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),'('' reading field eqn turb '',
      .              '' quantities from restart file'',
-     .              '', block'',i5)') nbl
+     .              '', block'',i6)') nbl
 #if defined DIST_MPI
             end if
             if (myid.eq.myhost) then
@@ -1501,13 +1501,13 @@ c
       return
  1010 continue
       write(11,'(/,'' stopping... flag iteravg=2, but cannot read'',
-     +     '' running-average Q file, nbl='',i5)') nbl
+     +     '' running-average Q file, nbl='',i6)') nbl
       write(11,'('' ... it either does not exist or it is an'',
      +     '' incorrect file'')')
       call termn8(myid,-1,ibufdim,nbuf,bou,nou)
  1012 continue
       write(11,'(/,'' stopping... flag iclcd=2, but cannot read'',
-     +     '' clcd.bin file, nbl='',i5)') nbl
+     +     '' clcd.bin file, nbl='',i6)') nbl
       write(11,'('' ... it either does not exist or it is an'',
      +     '' incorrect file'')')
       call termn8(myid,-1,ibufdim,nbuf,bou,nou)
