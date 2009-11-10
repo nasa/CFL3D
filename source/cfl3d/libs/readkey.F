@@ -682,7 +682,7 @@ c     default=-1 (do not override normal usage)
       nkey     = nkey + 1
 c
 c     prod2d3dtrace forces Sij used in 2SijSij to be traceless; in 
-c     production term in ivmx=6,7,10,30,31 when ikoprod=1; and in 
+c     production term in ivmx=6,7,10,30 when ikoprod=1; and in 
 c     Wilcox06 stress-limiter term
 c                =0.5 in 2-D sense
 c                =0.333333 in 3-D sense
