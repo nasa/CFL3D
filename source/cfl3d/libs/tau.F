@@ -69,8 +69,8 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),8) nbl,nbl-1,kode
       end if
-    8 format(1x,36hadding residual correction for block,i3,
-     .       1x,16hfrom finer block,i3,7h; kode=,i3)
+    8 format(1x,36hadding residual correction for block,i6,
+     .       1x,16hfrom finer block,i6,7h; kode=,i3)
 c
 c     residual correction from global grids
 c
@@ -124,8 +124,8 @@ c
          call tau2x(jdim,kdim,idim,res,w(lqrc),jsc,ksc,isc,jec,kec,iec,
      .              kode)
       end if
-   18 format(1x,36hadding residual correction for block,i3,
-     .       1x,19hfrom embedded block,i3,7h; kode=,i3)
+   18 format(1x,36hadding residual correction for block,i6,
+     .       1x,19hfrom embedded block,i6,7h; kode=,i3)
  9638 continue
       end if
       end if

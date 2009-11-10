@@ -692,7 +692,7 @@ c
            write(bou(nou(1),1),777)
          end if
       end if
-    7 format(1x,29hcomputing residuals for block,i4)
+    7 format(1x,29hcomputing residuals for block,i6)
   777 format(1x,21hFull N-S terms are ON)
 c
       end if  ! iadvance .ge. 0
