@@ -304,7 +304,9 @@ c
         sumuv=sumuv+q(j,k,i,2)*q(j,k,i,3)
         sumuw=sumuw+q(j,k,i,2)*q(j,k,i,4)
         sumvw=sumvw+q(j,k,i,3)*q(j,k,i,4)
-        sumenergy=sumenergy+q(j,k,i,5)
+        energy=q(j,k,i,5)/gm1 + 0.5*q(j,k,i,1)*(q(j,k,i,2)**2 +
+     +         q(j,k,i,3)**2 + q(j,k,i,4)**2)
+        sumenergy=sumenergy+energy
         s11 = ux(j,k,i,1)
         s22 = ux(j,k,i,5)
         s33 = ux(j,k,i,9)
