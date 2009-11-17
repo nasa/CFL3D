@@ -2760,7 +2760,9 @@ c   make smin negative in regions where want laminar flow
 c   (field equation models only)
       if (ivmx .ge. 4) then
       do n=1,ngrid
+        llev=0
         do nbl=nblg(n),nblg(n)+ncgg(n)
+          llev=llev+1
           if (mblk2nd(nbl).eq.myid) then
             call lead(nbl,lw,lw2,maxbl)
 c     J-dir:
@@ -2776,7 +2778,7 @@ c     J-dir:
                 ndim=iend-ibeg
                 ldata=lwdat(nbl,nseg,3)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,3)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,3,llev)
               end if
             enddo
             do nseg=1,nbcjdim(nbl)
@@ -2791,7 +2793,7 @@ c     J-dir:
                 ndim=iend-ibeg
                 ldata=lwdat(nbl,nseg,4)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,4)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,4,llev)
               end if
             enddo
 c     K-dir:
@@ -2807,7 +2809,7 @@ c     K-dir:
                 ndim=iend-ibeg
                 ldata=lwdat(nbl,nseg,5)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,5)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,5,llev)
               end if
             enddo
             do nseg=1,nbckdim(nbl)
@@ -2822,7 +2824,7 @@ c     K-dir:
                 ndim=iend-ibeg
                 ldata=lwdat(nbl,nseg,6)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,6)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,6,llev)
               end if
             enddo
 c     I-dir:
@@ -2838,7 +2840,7 @@ c     I-dir:
                 ndim=kend-kbeg
                 ldata=lwdat(nbl,nseg,1)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,1)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,1,llev)
               end if
             enddo
             do nseg=1,nbcidim(nbl)
@@ -2853,7 +2855,7 @@ c     I-dir:
                 ndim=kend-kbeg
                 ldata=lwdat(nbl,nseg,2)
                 call lamfix(jdim,kdim,idim,w(lsnk0),mdim,ndim,w(ldata),
-     .                 ibeg,iend,jbeg,jend,kbeg,kend,2)
+     .                 ibeg,iend,jbeg,jend,kbeg,kend,2,llev)
               end if
             enddo
           endif

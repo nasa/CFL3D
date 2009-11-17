@@ -1,5 +1,5 @@
       subroutine lamfix(jdim,kdim,idim,smin,mdim,ndim,bcdata,
-     .             ibeg,iend,jbeg,jend,kbeg,kend,nface)
+     .             ibeg,iend,jbeg,jend,kbeg,kend,nface,llev)
 c
 c     $Id$
 c
@@ -26,6 +26,10 @@ c  J-dir:
               jend=jdim
             else
               jend=int(bcdata(kk,ii,1,3)+.001)
+              if (llev .eq. 2) jend=(jend+1)/2
+              if (llev .eq. 3) jend=(jend+3)/4
+              if (llev .eq. 4) jend=(jend+7)/8
+              if (llev .eq. 5) jend=(jend+15)/16
             end if
             do j=jbeg,jend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))
@@ -42,7 +46,12 @@ c  J-dir:
             if(real(bcdata(kk,ii,1,3)) .lt. 1.) then
               jbeg=1
             else
-              jbeg=jdim-int(bcdata(kk,ii,1,3)+.001)+1
+              jbeg=int(bcdata(kk,ii,1,3)+.001)+1
+              if (llev .eq. 2) jbeg=(jbeg+1)/2
+              if (llev .eq. 3) jbeg=(jbeg+3)/4
+              if (llev .eq. 4) jbeg=(jbeg+7)/8
+              if (llev .eq. 5) jbeg=(jbeg+15)/16
+              jbeg=jdim-jbeg
             end if
             do j=jbeg,jend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))
@@ -61,6 +70,10 @@ c  K-dir:
               kend=kdim
             else
               kend=int(bcdata(jj,ii,1,3)+.001)
+              if (llev .eq. 2) kend=(kend+1)/2
+              if (llev .eq. 3) kend=(kend+3)/4
+              if (llev .eq. 4) kend=(kend+7)/8
+              if (llev .eq. 5) kend=(kend+15)/16
             end if
             do k=kbeg,kend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))
@@ -77,7 +90,12 @@ c  K-dir:
             if(real(bcdata(jj,ii,1,3)) .lt. 1.) then
               kbeg=1
             else
-              kbeg=kdim-int(bcdata(jj,ii,1,3)+.001)+1
+              kbeg=int(bcdata(jj,ii,1,3)+.001)+1
+              if (llev .eq. 2) kbeg=(kbeg+1)/2
+              if (llev .eq. 3) kbeg=(kbeg+3)/4
+              if (llev .eq. 4) kbeg=(kbeg+7)/8
+              if (llev .eq. 5) kbeg=(kbeg+15)/16
+              kbeg=kdim-kbeg
             end if
             do k=kbeg,kend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))
@@ -96,6 +114,10 @@ c  I-dir:
               iend=idim
             else
               iend=int(bcdata(jj,kk,1,3)+.001)
+              if (llev .eq. 2) iend=(iend+1)/2
+              if (llev .eq. 3) iend=(iend+3)/4
+              if (llev .eq. 4) iend=(iend+7)/8
+              if (llev .eq. 5) iend=(iend+15)/16
             end if
             do i=ibeg,iend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))
@@ -112,7 +134,12 @@ c  I-dir:
             if(real(bcdata(jj,kk,1,3)) .lt. 1.) then
               ibeg=1
             else
-              ibeg=idim-int(bcdata(jj,kk,1,3)+.001)+1
+              ibeg=int(bcdata(jj,kk,1,3)+.001)+1
+              if (llev .eq. 2) ibeg=(ibeg+1)/2
+              if (llev .eq. 3) ibeg=(ibeg+3)/4
+              if (llev .eq. 4) ibeg=(ibeg+7)/8
+              if (llev .eq. 5) ibeg=(ibeg+15)/16
+              ibeg=idim-ibeg
             end if
             do i=ibeg,iend-1
               smin(j,k,i)=-(ccabs(smin(j,k,i)))

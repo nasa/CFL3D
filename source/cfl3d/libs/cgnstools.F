@@ -1114,6 +1114,14 @@ c
 c        Min distance:
          call reordsln(nfac,i2d,idima,jdima,kdima,idim-1,jdim-1,kdim-1,
      +     smin,wk,wk,wk,wk,wk,wk,1,1,2,wk)
+c        Need to be sure to write out absolute value of smin
+         do i=i2d,idima-i2d
+         do j=0,jdima
+         do k=0,kdima
+           wk(i,j,k)=abs(wk(i,j,k))
+         enddo
+         enddo
+         enddo
          if (idouble .eq. 1) then
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                   'TurbulentDistance', wk, ifindex, ier)
