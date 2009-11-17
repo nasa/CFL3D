@@ -741,12 +741,6 @@ c
 #if defined DIST_MPI
       end if
 c     
-      if (iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) then
-        jki2  = 3*jki
-        jk8   = jdim*kdim*12
-        ki8   = kdim*idim1*12
-        ji8   = jdim*idim1*12
-      end if
       mytag = itag_iv1 + nbl
       if (myid .eq. myhost) then
          call MPI_Send(iv1,1,MPI_INTEGER,
@@ -1209,6 +1203,12 @@ c     end host section for tursav
 c     
             end if
 c     
+            if (iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) then
+              jki2  = 3*jki
+              jk8   = jdim*kdim*12
+              ki8   = kdim*idim1*12
+              ji8   = jdim*idim1*12
+            end if
             mytag = itag_qt + nbl
             if (myid .eq. myhost) then
                call MPI_Send(tursav,jki2,MY_MPI_REAL,
