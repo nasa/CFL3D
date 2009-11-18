@@ -97,6 +97,16 @@ c
            write(bou(nou(1),1),'(''   computing turbulent'',
      +       '' viscosity using Spalart MDDES (cdes='',f7.3,
      +       '',cddes='',f7.3,''), block ='',i4)') cdes,cddes,nbl
+         else if (ides .ge. 4 .and. ides .le. 6) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using Spalart MuDDES (cdes='',f7.3,
+     +       '',cddes='',f7.3,''), block ='',i4)') cdes,cddes,nbl
+         else if (ides .ge. 7) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''   computing turbulent'',
+     +       '' viscosity using S-A fd on nu (cdes='',f7.3,
+     +       '',cddes='',f7.3,''), block ='',i4)') cdes,cddes,nbl
          else
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''   computing turbulent'',
@@ -1034,8 +1044,12 @@ c
               rd = turre(j,k,i)/(sqrt(velterm)*akarman*akarman*
      +             dist*dist*re)
               fd(j,k,i) = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
-              term = ccmaxrc(0.0,dist-cdes*delta) 
-              damp1(j,k,i) = dist - fd(j,k,i)*term
+              if( ides .ne. 7 ) then
+                 term = ccmaxrc(0.0,dist-cdes*delta) 
+                 damp1(j,k,i) = dist - fd(j,k,i)*term
+              else
+                 damp1(j,k,i) = ccabs(smin(j,k,i))
+              end if
             enddo
           enddo
         enddo
@@ -1078,6 +1092,10 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
                   cutoff=0.
                else if( ides .eq. 3 .and. fd(j,k,i) .gt. cddes ) then
                   cutoff = (1.d0 - fd(j,k,i))/(1.d0-cddes)
+               else if( ides .eq. 4 .and. fd(j,k,i) .gt. cddes ) then
+                  cutoff = (1.d0 - fd(j,k,i))/(1.d0-cddes)
+               else if( ides .eq. 5 .and. fd(j,k,i) .gt. 0.999d0 ) then
+                  cutoff = (1.d0 - fd(j,k,i))/(1.d0-0.999d0)
                else
                   cutoff=1.
                end if
@@ -1996,6 +2014,10 @@ c Update VIST3D and save TURRE in TURSAV
             chi=turre(j,k,i)/fnu(j,k,i)
             fv1=chi**3/(chi**3+cv1**3)
             vist3d(j,k,i)=fv1*turre(j,k,i)*q(j,k,i,1)
+            if( ides .ge. 4 .and. fd(j,k,i) .gt. cddes ) then
+               vist3d(j,k,i) = vist3d(j,k,i)
+     $              * (1.d0 - fd(j,k,i))/(1.d0-cddes)
+            end if
             tursav(j,k,i,1)=turre(j,k,i)
           enddo
         enddo
