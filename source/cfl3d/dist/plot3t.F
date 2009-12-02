@@ -7,7 +7,7 @@
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,volj0,volk0,voli0,
-     .                  vormax,ivmax,jvmax,kvmax,nummem)
+     .                  vormax,ivmax,jvmax,kvmax,nummem,ifuncdim)
 c
 c     $Id$
 c
@@ -46,10 +46,10 @@ c
 #endif
 c
 #if defined P3D_SINGLE
-      real*4    xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+      real*4    xw(jdw,kdw,idw,ifuncdim),xg(jdw,kdw,idw,4)
       real*4    xmachw,alphww,reuew,timew
 #else
-      real xw(jdw,kdw,idw,5),xg(jdw,kdw,idw,4)
+      real xw(jdw,kdw,idw,ifuncdim),xg(jdw,kdw,idw,4)
 #endif
 c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
@@ -96,6 +96,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf
+      common /plot3dtyp/ ifunct,lowmem_ux
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -119,7 +120,7 @@ c
       do j=1,jw
          do k=1,kw
             do i=1,iw
-               do l= 1,5
+               do l= 1,ifuncdim
                xw(j,k,i,l) = 0.
                end do
                do l= 1,4
@@ -388,15 +389,21 @@ c
      .         11h qualifiers)
             end if
          end if
-         write(11,'(''   plot3d file is Q file of turbulence'',
-     .    '' quantities'')')
-         if (i2d .eq. 1) then
-            write(11,
-     .       '(''  Defaults are production-term, uw, uu, ww for 2D'')') 
+         if (ifunct .eq. 0) then
+           write(11,'(''   plot3d file is Q file of turbulence'',
+     .      '' quantities'')')
+           if (i2d .eq. 1) then
+              write(11,
+     .         '(''  Defaults are production-term, uw, uu, ww'',
+     .         '' for 2D'')') 
+           else
+              write(11,
+     .         '(''   Defaults are production-term, uw, uu, ww,'',
+     .         '' Sk/eps for 3D'')')
+           end if
          else
-            write(11,
-     .       '(''   Defaults are production-term, uw, uu, ww,'',
-     .       '' Sk/eps for 3D'')')
+           write(11,'(''   plot3d file is function file of'',i5,
+     .      '' turbulence quantities'')') ifunct
          end if
 #        ifdef CMPLX
          if (ip3dgrad .ne. 0) then
@@ -480,7 +487,8 @@ c
                write(3,'(5e14.6)')
      .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
      .                   (((xg(j,k,i,2),i=1,iw),j=1,jw),k=1,kw),
-     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+               write(3,'(10i8)')
      .               (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
             end if
          else
@@ -491,7 +499,8 @@ c
             else
                write(3,'(5e14.6)')
      .                   (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
-     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
+     .                   (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
+               write(3,'(10i8)')
      .               (((int(xg(j,k,i,4)),i=1,iw),j=1,jw),k=1,kw)
             end if
          end if
@@ -532,7 +541,9 @@ c
 c     turbulent quantities
 c
 c     There are a variety of turbulent quantities that can be computed and printed
-c     out.  However, only 5 (or 4, for 2-D) can be printed out at a time.  
+c     out.  By default, only 5 (or 4, for 2-D) can be printed out at a time,
+c     into a PLOT3D Q-type file.  However, if the keyword ifunct is employed, 
+c     a function file is written instead, with "ifunct" number of variables.  
 c     Modify the section that assigns quantities to the "xw" arrays in order to 
 c     get what you want.  (See "Modify Here" section below.)
 c 
@@ -1111,8 +1122,11 @@ c
 c
 c     Modify Here:
 c
+c     By default:
 c     - if 3-D, prints out all 5 quantities
 c     - if 2-D, only prints out the first 4
+c     If keyword ifunct is employed:
+c     - writes out "ifunct" number of variables to function file
 c     Note that the u, v, and w prime quantities are aligned with the x, y, and
 c     z axes OF THE GRID, respectively.  You must transform these quantities 
 c     appropriately if they are desired in a different coordinate system.
@@ -1124,12 +1138,18 @@ c
          xw(jw,kw,iw,3) = real(uuprime)
          xw(jw,kw,iw,4) = real(wwprime)
          xw(jw,kw,iw,5) = real(ske)
+c        can add more here, but only if ifunct keyword is big enough!
+c        if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(whatever)
+c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
          xw(jw,kw,iw,3) = imag(uuprime)/real(delh)
          xw(jw,kw,iw,4) = imag(wwprime)/real(delh)
          xw(jw,kw,iw,5) = imag(ske)/real(delh)
+c        can add more here, but only if ifunct keyword is big enough!
+c        if (ifunct .ge. 6) xw(jw,kw,iw,6) = imag(whatever)/real(delh)
+c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(whatever)/real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1137,6 +1157,9 @@ c
       xw(jw,kw,iw,3) = real(uuprime)
       xw(jw,kw,iw,4) = real(wwprime)
       xw(jw,kw,iw,5) = real(ske)
+c     can add more here, but only if ifunct keyword is big enough!
+c     if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(whatever)
+c     if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
 #     endif
  4000 continue
 c
@@ -1149,7 +1172,7 @@ c
       kw = (k2-k1)/k3 + 1
       iw = (i2-i1)/i3 + 1
 c
-      nnq = jw*kw*iw*5
+      nnq = jw*kw*iw*ifuncdim
       nd_srce = mblk2nd(nblk)
       mytag = itag_q + nblk
 c
@@ -1167,6 +1190,7 @@ c
 c        output turb data in plot3d q file
 c
          if (ibin.eq.0) then
+           if (ifunct .eq. 0) then
             if (i2d .eq. 0) then
                write(4,'(5e14.6)') xmachw,alphww,reuew,timew
                write(4,'(5e14.6)')
@@ -1176,7 +1200,12 @@ c
                write(4,'(5e14.6)') 
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,4)
             end if
+           else
+               write(4,'(5e14.6)')
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,ifunct)
+           end if
          else
+           if (ifunct .eq. 0) then
             if (i2d .eq. 0) then
                write(4) xmachw,alphww,reuew,timew
                write(4)
@@ -1186,6 +1215,10 @@ c
                write(4)
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,4)
             end if
+           else
+               write(4)
+     .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,ifunct)
+           end if
          end if
       end if
 c

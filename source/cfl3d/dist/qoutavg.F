@@ -102,6 +102,7 @@ c
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /plot3dtyp/ ifunct,lowmem_ux
 c
 c***********************************************************************
 c     write output file in PLOT3D format
@@ -427,11 +428,18 @@ c
       ncount    = 0
       np3d      = nplot3d
       ifunc     = 0
+      ifuncuse  = 0
 c
 c     if zone has function file output, all must, and all
 c     must have the same function output
 c
-      if (abs(inpl3d(1,2)).gt.2) ifunc = inpl3d(1,2)
+      if (abs(inpl3d(1,2)).gt.2) then
+        ifunc = inpl3d(1,2)
+        ifuncuse = 1
+      end if
+      if (abs(inpl3d(1,2)).eq.2) then
+        ifuncuse = ifunct
+      end if
 c
       do 60 n=1,nplot3d
       if (n.eq.1) then
@@ -487,36 +495,38 @@ c
             if (i2d.eq.0) then
                if (icall1.eq.0) 
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
-               if (ifunc.eq.0) then
+               if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
                else
-                  write(4,'(3i5)') ((ip3ddim(i,n),i=1,3),1,n=1,ncount)
+                  write(4,'(4i5)') ((ip3ddim(i,n),i=1,3),ifuncuse,
+     .              n=1,ncount)
                end if
             else
                if (icall1.eq.0) 
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
-               if (ifunc.eq.0) then
+               if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
                else
-                  write(4,'(3i5)') ((ip3ddim(i,n),i=2,3),1,n=1,ncount)
+                  write(4,'(3i5)') ((ip3ddim(i,n),i=2,3),ifuncuse,
+     .              n=1,ncount)
                end if
             end if
          else
             if (i2d.eq.0) then
                if (icall1.eq.0) 
      .         write(3) ((ip3ddim(i,n),i=1,3),n=1,ncount)
-               if (ifunc.eq.0) then
+               if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=1,3),n=1,ncount)
                else
-                  write(4) ((ip3ddim(i,n),i=1,3),1,n=1,ncount)
+                  write(4) ((ip3ddim(i,n),i=1,3),ifuncuse,n=1,ncount)
                end if
             else
                if (icall1.eq.0) 
      .         write(3) ((ip3ddim(i,n),i=2,3),n=1,ncount)
-               if (ifunc.eq.0) then
+               if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=2,3),n=1,ncount)
                else
-                  write(4) ((ip3ddim(i,n),i=2,3),1,n=1,ncount)
+                  write(4) ((ip3ddim(i,n),i=2,3),ifuncuse,n=1,ncount)
                end if
             end if
          end if
@@ -680,10 +690,12 @@ c
 c
 c              check storage availability
 c
-               if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11) then
+               if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
+     .             lowmem_ux.eq.0) then
 c                 have permanent storage for ux, starting at lux
                   ixwk  = 1
-                  ibwk  = ixwk + jdw*kdw*idw*5
+                  ifuncdim = max(5,ifunct)
+                  ibwk  = ixwk + jdw*kdw*idw*ifuncdim
                   ixgk  = ibwk + jdim*kdim*idim
                   ibwk3 = ixgk + jdw*kdw*idw*4
                   nroom=nwork-(ibwk3+jdim*kdim*9)
@@ -709,13 +721,14 @@ c                 have permanent storage for ux, starting at lux
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax,nummem)
+     .                           ivmax,jvmax,kvmax,nummem,ifuncdim)
                   end if
                else
 c                 need to grab ux storage from temporary work array,
 c                 starting at location ibwk2
                   ixwk  = 1
-                  ibwk  = ixwk + jdw*kdw*idw*5
+                  ifuncdim = max(5,ifunct)
+                  ibwk  = ixwk + jdw*kdw*idw*ifuncdim
                   ixgk  = ibwk + jdim*kdim*idim
                   ibwk2 = ixgk + jdw*kdw*idw*4
                   ibwk3 = ibwk2 +(jdim-1)*(kdim-1)*(idim-1)*9
@@ -742,7 +755,7 @@ c                 starting at location ibwk2
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax,nummem)
+     .                           ivmax,jvmax,kvmax,nummem,ifuncdim)
                   end if
                end if
 c

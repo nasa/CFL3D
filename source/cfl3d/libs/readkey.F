@@ -83,6 +83,7 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /sminn/ isminc,ismincforce
       common /initfac/ scal_ic
+      common /plot3dtyp/ ifunct,lowmem_ux
 c
       ititr = 0
       nkey  = 0
@@ -748,6 +749,23 @@ c
 c     scal_ic is a scaling factor for 2-eqn model BL-type approx ICs
 c     default=5.e6 (smaller no. makes profile thinner, 0 uses freestream ICs)
       scal_ic = 5.e6
+      nkey     = nkey + 1
+c
+c     ifunct will output a PLOT3D function file (instead of Q-type file)
+c     only when iptype=2 in the plot3d section of the input file.
+c     There will be ifunct variables in the file.
+c     (Use of this requires hardwire mod in plot3t.F, to specify what
+c     variables are to be output.)
+c     Note that if ifunct is large, you may run out of memory when writing
+c     and need to augment with keyword memadd.
+      ifunct = 0
+      nkey     = nkey + 1
+c
+c     lowmem_ux allows reversion to lower memory usage of ux array
+c     (i.e., only allocate this jdim*kdim*idim*9 array for velocity 
+c     derivatives if it is needed for a particular model)
+c     By default, the memory is always allocated, to avoid memory problems
+      lowmem_ux=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1497,6 +1515,14 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          scal_ic = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'ifunct') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ifunct
+c
+      else if (inpstr(lc1:lc2).eq.'lowmem_ux') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) lowmem_ux
 c
       else
 c

@@ -60,6 +60,7 @@ c
      .        i_compress_correct,isstsf
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
       common /des/ cdes,ides,cddes
+      common /plot3dtyp/ ifunct,lowmem_ux
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -735,16 +736,20 @@ c        or for any ivisc >= 11 or for SARC or for Wilcox06
 c
          lw(47,nbl) = lw(46,nbl) + ns
          ns = 0
-         if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
-     .      ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and.
-     .      ikoprod.eq.1) .or.
-     .      (ivmx.eq.7 .and. isstdenom.eq.1) .or.
-     .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
-     .      ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
-     .      ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
-     .      (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .      (ivmx.eq.5 .and. ides.ge.2))
-     .      ns = jm1km1im1*9
+         if (lowmem_ux .eq. 1) then
+           if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
+     .        ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and.
+     .        ikoprod.eq.1) .or.
+     .        (ivmx.eq.7 .and. isstdenom.eq.1) .or.
+     .        ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
+     .        ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
+     .        ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
+     .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
+     .        (ivmx.eq.5 .and. ides.ge.2))
+     .        ns = jm1km1im1*9
+         else
+           ns = jm1km1im1*9
+         end if
 c
 c        cmuv(jdim-1,kdim-1,idim-1)
 c........EASM, var-g (now considered the "Standard" EASM)

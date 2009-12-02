@@ -711,7 +711,7 @@ c                 have permanent storage for ux, starting at lux
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax,nummem)
+     .                           ivmax,jvmax,kvmax,nummem,5)
                   end if
                else
 c                 need to grab ux storage from temporary work array,
@@ -744,7 +744,7 @@ c                 starting at location ibwk2
      .                           mxbli,thetay,maxbl,maxgr,myid,myhost,
      .                           mycomm,mblk2nd,inpl3d,nblock,nblkpt,
      .                           w(lvolj0),w(lvolk0),w(lvoli0),vormax,
-     .                           ivmax,jvmax,kvmax,nummem)
+     .                           ivmax,jvmax,kvmax,nummem,5)
                   end if
                end if
 c

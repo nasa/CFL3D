@@ -203,6 +203,7 @@ c
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /initfac/ scal_ic
+      common /plot3dtyp/ ifunct,lowmem_ux
 #if defined DIST_MPI
 c
 c***********************
@@ -495,6 +496,8 @@ c
          work(nlast+119)= isstsf
          work(nlast+120)= cddes
          work(nlast+121)= scal_ic
+         work(nlast+122)= ifunct
+         work(nlast+123)= lowmem_ux
          nlast = nlast+nkey
       end if
 c
@@ -796,6 +799,8 @@ c
          isstsf = int(work(nlast+119))
          cddes = work(nlast+120)
          scal_ic = work(nlast+121)
+         ifunct = int(work(nlast+122))
+         lowmem_ux = int(work(nlast+123))
       end if
 c
 c**************************
