@@ -325,11 +325,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do k=ksta,kend1
         kk = k-ksta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            tj0(k,i,3,1) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            tj0(k,i,3,1) = tursav(j,k,i,3)
           else
-c           bc2024:
-            tj0(k,i,3,1) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           tj0(k,i,3,1) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tj0(k,i,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(kk,ii,ip,3)*reue/xmach
           end if
           tj0(k,i,3,2) = 2.*tj0(k,i,3,1)-tursav(1,k,i,3)
         enddo
@@ -565,11 +578,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do k=ksta,kend1
         kk = k-ksta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            tj0(k,i,3,3) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            tj0(k,i,3,3) = tursav(j,k,i,3)
           else
-c           bc2024:
-            tj0(k,i,3,3) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           tj0(k,i,3,3) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tj0(k,i,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(kk,ii,ip,3)*reue/xmach
           end if
           tj0(k,i,3,4) = 2.*tj0(k,i,3,3)-tursav(jdim-1,k,i,3)
         enddo
@@ -805,11 +831,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do j=jsta,jend1
         jj = j-jsta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            tk0(j,i,3,1) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            tk0(j,i,3,1) = tursav(j,k,i,3)
           else
-c           bc2024:
-            tk0(j,i,3,1) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           tk0(j,i,3,1) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tk0(j,i,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,ii,ip,3)*reue/xmach
           end if
           tk0(j,i,3,2) = 2.*tk0(j,i,3,1)-tursav(j,1,i,3)
         enddo
@@ -1045,11 +1084,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do j=jsta,jend1
         jj = j-jsta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            tk0(j,i,3,3) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            tk0(j,i,3,3) = tursav(j,k,i,3)
           else
-c           bc2024:
-            tk0(j,i,3,3) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           tk0(j,i,3,3) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tk0(j,i,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,ii,ip,3)*reue/xmach
           end if
           tk0(j,i,3,4) = 2.*tk0(j,i,3,3)-tursav(j,kdim-1,i,3)
         enddo
@@ -1285,11 +1337,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do j=jsta,jend1
         jj = j-jsta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            ti0(j,k,3,1) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            ti0(j,k,3,1) = tursav(j,k,i,3)
           else
-c           bc2024:
-            ti0(j,k,3,1) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           ti0(j,k,3,1) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            ti0(j,k,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,kk,ip,3)*reue/xmach
           end if
           ti0(j,k,3,2) = 2.*ti0(j,k,3,1)-tursav(j,k,1,3)
         enddo
@@ -1525,11 +1590,24 @@ c       for trans model, intermittency at wall is either zero or set by user
         do j=jsta,jend1
         jj = j-jsta+1
           if (iuse3 .eq. 0) then
-c           bc2004 or 2014:
-            ti0(j,k,3,3) = -tursav(j,k,i,3)
+c           bc2004 or 2014 -> zero flux:
+            ti0(j,k,3,3) = tursav(j,k,i,3)
           else
-c           bc2024:
-            ti0(j,k,3,3) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           ti0(j,k,3,3) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            ti0(j,k,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,kk,ip,3)*reue/xmach
           end if
           ti0(j,k,3,4) = 2.*ti0(j,k,3,3)-tursav(j,k,idim-1,3)
         enddo
