@@ -2104,7 +2104,7 @@ c
       sigma=4.0
       u1=1.0
       eta=sigma*y/x
-      ums=derf(eta)
+      ums=user_derf(eta)
       return
       end
 c
@@ -2712,7 +2712,7 @@ c
       return
       end
 c
-      function derfc(x)
+      function user_derfc(x)
       parameter(pv= 1.26974899965115684e+01, 
      +          ph= 6.10399733098688199e+00, 
      +          p0= 2.96316885199227378e-01, 
@@ -2736,11 +2736,11 @@ c
      +  +p5/(y+q5)+p4/(y+q4)+p3/(y+q3) 
      +  +p2/(y+q2)+p1/(y+q1)+p0/(y+q0))
       if(x < ph) y=y+2/(exp(pv*x)+1)
-      derfc=y
+      user_derfc=y
       return
       end
 c
-      function derf(x)
+      function user_derf(x)
       parameter(p0= 1.12837916709551257e+00, 
      +          p1=-3.76126389031833602e-01, 
      +          p2= 1.12837916706621301e-01, 
@@ -2749,10 +2749,10 @@ c
      +          p5=-8.49202435186918470e-04)
       y=abs(x)
       if(y .gt. 0.125) then
-        derf=sign(1-derfc(y),x)
+        user_derf=sign(1-user_derfc(y),x)
       else
         y=x*x
-        derf=(((((p5*y+p4)*y+p3)*y+p2)*y+p1)*y+p0)*x
+        user_derf=(((((p5*y+p4)*y+p3)*y+p2)*y+p1)*y+p0)*x
       end if
       return
       end
