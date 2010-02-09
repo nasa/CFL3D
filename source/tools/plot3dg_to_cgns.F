@@ -2034,12 +2034,78 @@ c
           end if
 c
 c   Need to fill the "unused" index with the direction not currently employed
+          irev=1
+          if ((isva1 .eq. 1 .and. isvb1 .eq. 2) .or.
+     +        (isva1 .eq. 2 .and. isvb1 .eq. 1)) then
+            if ((isva2 .eq. 1 .and. isvb2 .eq. 2) .or.
+     +          (isva2 .eq. 2 .and. isvb2 .eq. 1)) then
+              if ((klo1 .eq. 1 .and. klo2 .eq. 1) .or.
+     +            (klo1 .ne. 1 .and. klo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 1 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 1)) then
+              if ((klo1 .eq. 1 .and. jlo2 .eq. 1) .or.
+     +            (klo1 .ne. 1 .and. jlo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 2 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 2)) then
+              if ((klo1 .eq. 1 .and. ilo2 .eq. 1) .or.
+     +            (klo1 .ne. 1 .and. ilo2 .ne. 1)) then
+                irev=-1
+              end if
+            end if
+          else if ((isva1 .eq. 1 .and. isvb1 .eq. 3) .or.
+     +             (isva1 .eq. 3 .and. isvb1 .eq. 1)) then
+            if ((isva2 .eq. 1 .and. isvb2 .eq. 2) .or.
+     +          (isva2 .eq. 2 .and. isvb2 .eq. 1)) then
+              if ((jlo1 .eq. 1 .and. klo2 .eq. 1) .or.
+     +            (jlo1 .ne. 1 .and. klo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 1 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 1)) then
+              if ((jlo1 .eq. 1 .and. jlo2 .eq. 1) .or.
+     +            (jlo1 .ne. 1 .and. jlo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 2 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 2)) then
+              if ((jlo1 .eq. 1 .and. ilo2 .eq. 1) .or.
+     +            (jlo1 .ne. 1 .and. ilo2 .ne. 1)) then
+                irev=-1
+              end if
+            end if
+          else if ((isva1 .eq. 2 .and. isvb1 .eq. 3) .or.
+     +             (isva1 .eq. 3 .and. isvb1 .eq. 2)) then
+            if ((isva2 .eq. 1 .and. isvb2 .eq. 2) .or.
+     +          (isva2 .eq. 2 .and. isvb2 .eq. 1)) then
+              if ((ilo1 .eq. 1 .and. klo2 .eq. 1) .or.
+     +            (ilo1 .ne. 1 .and. klo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 1 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 1)) then
+              if ((ilo1 .eq. 1 .and. jlo2 .eq. 1) .or.
+     +            (ilo1 .ne. 1 .and. jlo2 .ne. 1)) then
+                irev=-1
+              end if
+            else if ((isva2 .eq. 2 .and. isvb2 .eq. 3) .or.
+     +               (isva2 .eq. 3 .and. isvb2 .eq. 2)) then
+              if ((ilo1 .eq. 1 .and. ilo2 .eq. 1) .or.
+     +            (ilo1 .ne. 1 .and. ilo2 .ne. 1)) then
+                irev=-1
+              end if
+            end if
+          end if
+c
           if (     itransform(1) .eq. 0) then
-            itransform(1)=6-abs(itransform(2))-abs(itransform(3))
+            itransform(1)=irev*(6-abs(itransform(2))-abs(itransform(3)))
           else if (itransform(2) .eq. 0) then
-            itransform(2)=6-abs(itransform(1))-abs(itransform(3))
+            itransform(2)=irev*(6-abs(itransform(1))-abs(itransform(3)))
           else if (itransform(3) .eq. 0) then
-            itransform(3)=6-abs(itransform(1))-abs(itransform(2))
+            itransform(3)=irev*(6-abs(itransform(1))-abs(itransform(2)))
           end if
           return
           end
