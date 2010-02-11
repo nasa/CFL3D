@@ -23,6 +23,11 @@ c  Read CGNS file
      +  '' V2.5.2 or later'',/)')
       write(6,'('' input name of CGNS file to read'')')
       read(5,'(a80)') file2
+      write(6,'('' input 1 if you want to key BCs off of boconame'',
+     +  '' instead of the preferred bctype'')')
+      write(6,'(''     (looks for body, farfield, and symmetry)'')')
+      write(6,'(''     0 is default:'')')
+      read(5,*) ibcname_read
       call cg_open_f(file2,CG_MODE_READ,iccg,ier)
       if (ier .ne. 0) call cg_error_exit_f
       call cg_nbases_f(iccg,nbases,ier)
@@ -46,7 +51,7 @@ c   Now get 1-to-1 connectivity info
      +  num1to1
       write(6,'(''   (this reflects total number divided by 2)'')')
 c
-      call reader(iccg,ibase,nblock,num1to1,file1)
+      call reader(iccg,ibase,nblock,num1to1,file1,ibcname_read)
 c
 c   Close data base
       call cg_close_f(iccg,ier)
@@ -168,7 +173,7 @@ c
       end
 c*******************************************************************
 c
-      subroutine reader(iccg,ibase,nblock,num1to1,file1)
+      subroutine reader(iccg,ibase,nblock,num1to1,file1,ibcname_read)
 c
       parameter(numbcperzone=100)
 c
@@ -192,6 +197,7 @@ c
 #     include "cgnslib_f.h"
 c
       character*32 boconame
+      character*3 boconame_short
       dimension normalindex(3),ipnts(6)
       dimension data_double(6)
 c
@@ -263,28 +269,47 @@ c   See if there is any BC info
      +        idatatype, ndataset, ier)
             if (ier .ne. 0) call cg_error_exit_f
             if (npnts .ne. 2) then
-c             write(6,'('' cannot use... npnts must be 2'')')
+              write(6,'('' ERROR, cannot use BCs... npnts must be 2'')')
               goto 333
             end if
             if (iptset_type .ne. PointRange) then
-c             write(6,'('' cannot use... iptset_type must be'',
-c    +         '' PointRange'')')
+              write(6,'('' ERROR, cannot use BCs... iptset_type must'',
+     +         '' be PointRange'')')
               goto 333
             end if
-            if (ibocotype .ne. BCFarfield .and.
-     +          ibocotype .ne. BCInflow .and.
-     +          ibocotype .ne. BCSymmetryPlane .and.
-     +          ibocotype .ne. BCWallViscous .and.
-     +          ibocotype .ne. BCExtrapolate .and.
-     +          ibocotype .ne. BCWallViscousHeatFlux .and.
-     +          ibocotype .ne. BCWallViscousIsothermal .and.
-     +          ibocotype .ne. BCWallInviscid .and.
-     +          ibocotype .ne. BCInflowSupersonic .and.
-     +          ibocotype .ne. BCTunnelInflow .and.
-     +          ibocotype .ne. BCSymmetryPolar .and.
-     +          ibocotype .ne. BCWall .and.
-     +          ibocotype .ne. BCDegenerateLine) then
-              goto 333
+            if (ibcname_read .eq. 1) then
+              boconame_short(1:3)=boconame(1:3)
+              if (boconame_short .ne. "bod" .and.
+     +            boconame_short .ne. "BOD" .and.
+     +            boconame_short .ne. "Bod" .and.
+     +            boconame_short .ne. "sym" .and.
+     +            boconame_short .ne. "SYM" .and.
+     +            boconame_short .ne. "Sym" .and.
+     +            boconame_short .ne. "far" .and.
+     +            boconame_short .ne. "FAR" .and.
+     +            boconame_short .ne. "Far") then
+                write(6,'('' ERROR:'',a32,'' not recognized'')') 
+     +            boconame
+                goto 333
+              end if
+            else
+              if (ibocotype .ne. BCFarfield .and.
+     +            ibocotype .ne. BCInflow .and.
+     +            ibocotype .ne. BCSymmetryPlane .and.
+     +            ibocotype .ne. BCWallViscous .and.
+     +            ibocotype .ne. BCExtrapolate .and.
+     +            ibocotype .ne. BCWallViscousHeatFlux .and.
+     +            ibocotype .ne. BCWallViscousIsothermal .and.
+     +            ibocotype .ne. BCWallInviscid .and.
+     +            ibocotype .ne. BCInflowSupersonic .and.
+     +            ibocotype .ne. BCTunnelInflow .and.
+     +            ibocotype .ne. BCSymmetryPolar .and.
+     +            ibocotype .ne. BCWall .and.
+     +            ibocotype .ne. BCDegenerateLine) then
+                write(6,'('' ERROR: bocotype '',a32,
+     +            '' not recognized'')') BCTypeName(ibocotype)
+                goto 333
+              end if
             end if
             call cg_boco_read_f(iccg, ibase, n, m, ipnts,
      +        data_double, ier)
@@ -292,6 +317,7 @@ c    +         '' PointRange'')')
             if ((ipnts(1).eq.ipnts(4)).and.(ipnts(2).eq.ipnts(5)).or.
      +          (ipnts(1).eq.ipnts(4)).and.(ipnts(3).eq.ipnts(6)).or.
      +          (ipnts(2).eq.ipnts(5)).and.(ipnts(3).eq.ipnts(6))) then
+              write(6,'('' ERROR: BC points screwed up'')')
               goto 333
             end if
 c           write(6,'(''... boconame='',a32)') boconame
@@ -309,7 +335,23 @@ c           write(6,'(''... ipnts='',6i12)') ipnts(1),ipnts(2),ipnts(3),
 c    +       ipnts(4),ipnts(5),ipnts(6)
 c   the relevant info that I can use is ibocotype and ipnts(1-6)
             nbc(n)=nbc(n)+1
-            ibctype(n,nbc(n))=ibocotype
+            if (ibcname_read .eq. 1) then
+              if (boconame_short .eq. "bod" .or.
+     +            boconame_short .eq. "BOD" .or.
+     +            boconame_short .eq. "Bod") then
+                ibctype(n,nbc(n))=22
+              else if (boconame_short .eq. "sym" .or.
+     +            boconame_short .eq. "SYM" .or.
+     +            boconame_short .eq. "Sym") then
+                ibctype(n,nbc(n))=16
+              else if (boconame_short .eq. "far" .or.
+     +            boconame_short .eq. "FAR" .or.
+     +            boconame_short .eq. "Far") then
+                ibctype(n,nbc(n))=7
+              end if
+            else
+              ibctype(n,nbc(n))=ibocotype
+            end if
             do ii=1,6
               ips(n,nbc(n),ii)=ipnts(ii)
             enddo
@@ -816,8 +858,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (jdim(n)-1)*(kdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -931,8 +973,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (jdim(n)-1)*(kdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -1046,8 +1088,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (idim(n)-1)*(kdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -1161,8 +1203,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (idim(n)-1)*(kdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -1276,8 +1318,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (idim(n)-1)*(jdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -1391,8 +1433,8 @@ c       search thru all the 1-to-1 connections
      +    ''         0         0         0'')') n
         else
         if (isum .ne. (idim(n)-1)*(jdim(n)-1)) then
-        write(7,'(2i10,''      xxxx        ??        ??'',
-     +    ''        ??        ??         0'')') n,iseg+1
+        write(7,'(2i10,''      xxxx        xx        xx'',
+     +    ''        xx        xx         0'')') n,iseg+1
         end if
         end if
       enddo
@@ -1566,7 +1608,7 @@ c
       write(6,'(''     (includes all 1-to-1 info from CGNS file'')')
       write(6,'(''      and an attempt at the BCs, if available)'')')
       write(6,'(''     Edit cfl3d_guess.inp and replace all'',
-     +  '' occurrences of xxxx and ????'')')
+     +  '' occurrences of xxxx and xx'')')
 c
 c   deallocate memory
       deallocate(idim)
