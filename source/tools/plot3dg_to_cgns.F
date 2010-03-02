@@ -143,9 +143,9 @@ c
       allocatable :: klo1(:)
       allocatable :: klo2(:)
       allocatable :: km(:)
-      allocatable :: x(:,:,:,:)
-      allocatable :: y(:,:,:,:)
-      allocatable :: z(:,:,:,:)
+      allocatable :: x(:,:,:)
+      allocatable :: y(:,:,:)
+      allocatable :: z(:,:,:)
 c
 c     real*8 pidz,pidnew
 c
@@ -232,12 +232,6 @@ c
       call umalloc_r(n11,1,'klo2',memuse,stats)
       allocate( km(nblock), stat=stats )
       call umalloc_r(nblock,1,'km',memuse,stats)
-      allocate( x(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'x',memuse,stats)
-      allocate( y(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'y',memuse,stats)
-      allocate( z(idm,jdm,kdm,nblock), stat=stats )
-      call umalloc_r(idm*jdm*kdm*nblock,0,'z',memuse,stats)
 c
       iflag=0
       write(6,'('' read a 0=formatted or 1=unformatted grid?'')')
@@ -257,20 +251,20 @@ c  PLOT3D-type
           stop
         end if
         read(2) (idim(n),jdim(n),kdim(n),n=1,nbl)
-        do n=1,nbl
-          id=idim(n)
-          jd=jdim(n)
-          kd=kdim(n)
-          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
-          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
-            write(6,'('' need to increase idm,jdm,kdm to:'',
-     +        3i5)') id,jd,kd
-            stop
-          end if
-          read(2) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +            (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +            (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
-        enddo
+c       do n=1,nbl
+c         id=idim(n)
+c         jd=jdim(n)
+c         kd=kdim(n)
+c         write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+c         if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+c           write(6,'('' need to increase idm,jdm,kdm to:'',
+c    +        3i5)') id,jd,kd
+c           stop
+c         end if
+c         read(2) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+c    +            (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+c    +            (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
+c       enddo
       else
 c   CFL3D-type
         nbl = nblock
@@ -285,9 +279,12 @@ c   CFL3D-type
      +        3i5)') id,jd,kd
             stop
           end if
-          read(2) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
-     +            (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
-     +            (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+c         read(2) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+c    +            (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+c    +            (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+          read(2) (((dum,j=1,jd),k=1,kd),i=1,id),
+     +            (((dum,j=1,jd),k=1,kd),i=1,id),
+     +            (((dum,j=1,jd),k=1,kd),i=1,id)
         enddo
       end if
       else
@@ -305,20 +302,20 @@ c  PLOT3D-type
           stop
         end if
         read(2,*) (idim(n),jdim(n),kdim(n),n=1,nbl)
-        do n=1,nbl
-          id=idim(n)
-          jd=jdim(n)
-          kd=kdim(n)
-          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
-          if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
-            write(6,'('' need to increase idm,jdm,kdm to:'',
-     +        3i5)') id,jd,kd
-            stop
-          end if
-          read(2,*) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +              (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
-     +              (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
-        enddo
+c       do n=1,nbl
+c         id=idim(n)
+c         jd=jdim(n)
+c         kd=kdim(n)
+c         write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+c         if (id.gt.idm .or. jd.gt.jdm .or. kd.gt.kdm) then
+c           write(6,'('' need to increase idm,jdm,kdm to:'',
+c    +        3i5)') id,jd,kd
+c           stop
+c         end if
+c         read(2,*) (((x(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+c    +              (((y(i,j,k,n),i=1,id),j=1,jd),k=1,kd),
+c    +              (((z(i,j,k,n),i=1,id),j=1,jd),k=1,kd)
+c       enddo
       else
 c   CFL3D-type
         nbl = nblock
@@ -333,12 +330,26 @@ c   CFL3D-type
      +        3i5)') id,jd,kd
             stop
           end if
-          read(2,*) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
-     +              (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
-     +              (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+c         read(2,*) (((x(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+c    +              (((y(i,j,k,n),j=1,jd),k=1,kd),i=1,id),
+c    +              (((z(i,j,k,n),j=1,jd),k=1,kd),i=1,id)
+          read(2,*) (((dum,j=1,jd),k=1,kd),i=1,id),
+     +              (((dum,j=1,jd),k=1,kd),i=1,id),
+     +              (((dum,j=1,jd),k=1,kd),i=1,id)
         enddo
       end if
       end if
+c
+      icount_tot_pts=0
+      icount_tot_cel=0
+      do n=1,nbl
+        icount_tot_pts=icount_tot_pts+(idim(n)*jdim(n)*kdim(n))
+        icount_tot_cel=icount_tot_cel+((idim(n)-1)*(jdim(n)-1)*
+     +   (kdim(n)-1))
+      enddo
+      write(6,'('' total points='',i12)') icount_tot_pts
+      write(6,'('' total cells ='',i12)') icount_tot_cel
+      rewind(2)
 c
 c   open ADF file
       write(6,'(/,'' This program creates a grid file SEPARATE'',
@@ -391,10 +402,86 @@ c   create zones (name them Zone1, Zone2, ..., ZoneN)
       enddo
 c  create and write the grid coordinates only to grid file
 c  will put a link in the soln.cgns file (below)
-      do n=1,nbl
-        call writexyz(iccg,ibase,idouble,iz(n),idim(n),jdim(n),kdim(n),
-     +    idm,jdm,kdm,x(1,1,1,n),y(1,1,1,n),z(1,1,1,n))
-      enddo
+      if (iform .eq. 1 .and. itype .eq. 0) then
+        read(2) idum
+        read(2) (idum,idum,idum,n=1,nbl)
+        do n=1,nbl
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,id,jd,kd
+          allocate( x(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'x',memuse,stats)
+          allocate( y(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'y',memuse,stats)
+          allocate( z(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'z',memuse,stats)
+          read(2) (((x(i,j,k),i=1,id),j=1,jd),k=1,kd),
+     +            (((y(i,j,k),i=1,id),j=1,jd),k=1,kd),
+     +            (((z(i,j,k),i=1,id),j=1,jd),k=1,kd)
+          call writexyz(iccg,ibase,idouble,iz(n),id,jd,kd,
+     +      id,jd,kd,x,y,z)
+          deallocate(x,y,z)
+        enddo
+      else if (iform .eq. 1 .and. itype .eq. 1) then
+        do n=1,nbl
+          read(2) idum,idum,idum
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          allocate( x(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'x',memuse,stats)
+          allocate( y(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'y',memuse,stats)
+          allocate( z(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'z',memuse,stats)
+          read(2) (((x(i,j,k),j=1,jd),k=1,kd),i=1,id),
+     +            (((y(i,j,k),j=1,jd),k=1,kd),i=1,id),
+     +            (((z(i,j,k),j=1,jd),k=1,kd),i=1,id)
+          call writexyz(iccg,ibase,idouble,iz(n),id,jd,kd,
+     +      id,jd,kd,x,y,z)
+          deallocate(x,y,z)
+        enddo
+      else if (iform .eq. 0 .and. itype .eq. 0) then
+        read(2,*) idum
+        read(2,*) (idum,idum,idum,n=1,nbl)
+        do n=1,nbl
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          allocate( x(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'x',memuse,stats)
+          allocate( y(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'y',memuse,stats)
+          allocate( z(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'z',memuse,stats)
+          read(2,*) (((x(i,j,k),i=1,id),j=1,jd),k=1,kd),
+     +              (((y(i,j,k),i=1,id),j=1,jd),k=1,kd),
+     +              (((z(i,j,k),i=1,id),j=1,jd),k=1,kd)
+          call writexyz(iccg,ibase,idouble,iz(n),id,jd,kd,
+     +      id,jd,kd,x,y,z)
+          deallocate(x,y,z)
+        enddo
+      else if (iform .eq. 0 .and. itype .eq. 1) then
+        do n=1,nbl
+          read(2,*) idum,idum,idum
+          id=idim(n)
+          jd=jdim(n)
+          kd=kdim(n)
+          allocate( x(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'x',memuse,stats)
+          allocate( y(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'y',memuse,stats)
+          allocate( z(id,jd,kd), stat=stats )
+          call umalloc_r(id*jd*kd,0,'z',memuse,stats)
+          read(2,*) (((x(i,j,k),j=1,jd),k=1,kd),i=1,id),
+     +              (((y(i,j,k),j=1,jd),k=1,kd),i=1,id),
+     +              (((z(i,j,k),j=1,jd),k=1,kd),i=1,id)
+          call writexyz(iccg,ibase,idouble,iz(n),id,jd,kd,
+     +      id,jd,kd,x,y,z)
+          deallocate(x,y,z)
+        enddo
+      end if
 c  reopen the CFL3D input file
       open(3,file=file2,form='formatted',status='old')
 c------------------------------------------------------------------------
@@ -1837,9 +1924,6 @@ c
 c
 c     deallocate memory
 c
-      deallocate(x)
-      deallocate(y)
-      deallocate(z)
       deallocate(idim)
       deallocate(jdim)
       deallocate(kdim)
