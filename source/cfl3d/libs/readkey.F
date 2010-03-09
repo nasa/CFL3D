@@ -383,12 +383,12 @@ c
       ides = 0
       nkey     = nkey + 1
 c
-c     constant associated with DES
+c     constant associated with DES or DDES
 c
       cdes = 0.65
       nkey     = nkey + 1
 c
-c     constant associated with Modified DDES
+c     additional constant associated with Modified DDES (ides .ge. 3)
 c
       cddes = 0.975
       nkey     = nkey + 1
