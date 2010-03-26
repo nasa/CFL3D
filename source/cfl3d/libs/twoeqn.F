@@ -2200,8 +2200,8 @@ c   (can only do this if ikoprod=1):
                 dk=(turre(j,k,i,2)**1.5)/xlscale(j,k,i)
               else
                 dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
-                pk=ccmin(pk,(pklimterm*dk))
               end if
+              pk=ccmin(pk,(pklimterm*dk))
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
      +         re*betax*tur10(1)*tur10(1)
