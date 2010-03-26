@@ -2197,7 +2197,7 @@ c   (can only do this if ikoprod=1):
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               if (ides .ne. 0) then
-                dk=(turre(j,k,i,1)**1.5)/xlscale(j,k,i)
+                dk=(turre(j,k,i,2)**1.5)/xlscale(j,k,i)
               else
                 dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
                 pk=ccmin(pk,(pklimterm*dk))
