@@ -656,13 +656,41 @@ c   Set wall iwf, wall function parameter:
         iwf(3)=1
         ivisc(3) = abs(ivisc(3))
       end if
-c   DES currently only works with Spalart model
-      if (ides .ge. 1) then
-        if (ivisc(1) .ne. 5 .or. ivisc(2) .ne. 5 .or.
-     .      ivisc(3) .ne. 5) then
-          write(iunit11,'('' DES/DDES currently works with SA model'',
-     .     '' only, and must be on in all 3 directions'')')
-          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+c   DES currently only works with models 5,6,7
+      if (ides .eq. 1 .or. ides .eq. 2 .or. ides .eq. 3) then
+        if (i2d .ne. 1) then
+          if ((ivisc(1).lt.5 .or. ivisc(1).gt.7) .and.
+     .        (ivisc(2).lt.5 .or. ivisc(2).gt.7) .and.
+     .        (ivisc(3).lt.5 .or. ivisc(3).gt.7)) then
+            write(iunit11,'('' ides=1,2,3 currently works with ivisc'',
+     .       '' 5,6,7 only, and must be on in all directions'')')
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+          end if
+        else
+          if ((ivisc(2).lt.5 .or. ivisc(2).gt.7) .and.
+     .        (ivisc(3).lt.5 .or. ivisc(3).gt.7)) then
+            write(iunit11,'('' ides=1,2,3 currently works with ivisc'',
+     .       '' 5,6,7 only, and must be on in all directions'')')
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+          end if
+        end if
+      end if
+      if (ides .gt. 3) then
+        if (i2d .ne. 1) then
+          if ((ivisc(1).lt.5 .or. ivisc(1).gt.5) .and.
+     .        (ivisc(2).lt.5 .or. ivisc(2).gt.5) .and.
+     .        (ivisc(3).lt.5 .or. ivisc(3).gt.5)) then
+            write(iunit11,'('' ides>3 currently works with ivisc'',
+     .       '' 5 only, and must be on in all directions'')')
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+          end if
+        else
+          if ((ivisc(2).lt.5 .or. ivisc(2).gt.5) .and.
+     .        (ivisc(3).lt.5 .or. ivisc(3).gt.5)) then
+            write(iunit11,'('' ides>3 currently works with ivisc'',
+     .       '' 5 only, and must be on in all directions'')')
+            call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+          end if
         end if
       end if
 c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:

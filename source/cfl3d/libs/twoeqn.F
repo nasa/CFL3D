@@ -13,7 +13,7 @@
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx,nummem)
+     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem)
 c
 c     $Id$
 c
@@ -31,6 +31,7 @@ c
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
+      common /des/ cdes,ides,cddes
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -113,6 +114,8 @@ c
      +          w3(0:jdim,0:kdim,0:idim)
       dimension srce(0:jdim,0:kdim,0:idim,2)
       dimension vx(0:jdim,0:kdim,idim-1,4)
+      dimension xlscale(jdim-1,kdim-1,idim-1),
+     +          fdsav(jdim-1,kdim-1,idim-1)
 c
 c
 c   Variables:
@@ -179,6 +182,7 @@ c      nbci0,nbcidim,nbcj0,nbcjdim,nbck0,nbckdim - no. of BC segments each face
 c      ibcinfo,jbcinfo,kbcinfo - gives i,j,k start and end indices for each
 c               BC segment, among other things
 c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
+c      xlscale - length scale for use with DES 2-eqn model
 c
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -404,6 +408,20 @@ c
              write(bou(nou(1),1),'(''     approx (vort) production'',
      .         '' term'')')
            end if
+        end if
+c
+        if (ides .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with DES, cdes='',f7.3)') cdes
+        else if (ides .eq. 2) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with DDES, cdes='',f7.3)') cdes
+        else if (ides .eq. 3) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with MDDES, cdes='',f7.3,'', cddes='',f7.3)') cdes,cddes
         end if
 c
         if(ikoprod .eq. 1 .and. (ivmx.eq.6.or.ivmx.eq.7.or.
@@ -2012,6 +2030,59 @@ c    * * * * * * * * * * * *
         write(bou(nou(1),1),'('' no guarantee that it will transition'',
      .   '' at all.  Check vist3d levels if unsure.'')')
       end if
+c  DES implementation
+      if (ides .eq. 1 .and. (ivmx .eq. 6 .or. ivmx .eq. 7)) then
+c       DES (based on AIAA 2001-0879, but uses only 1 CDES constant)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+              ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
+              xlscale(j,k,i) = ccmin(ell,cdes*delta)
+            enddo
+          enddo
+        enddo
+      elseif (ides .ge. 2 .and. (ivmx .eq. 6 .or. ivmx .eq. 7)) then
+c       DDES (based on TCFD 20:181-195, 2006)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+              ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
+              dist = ccabs(smin(j,k,i))
+              velterm=ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + ux(j,k,i,3)**2 +
+     +                ux(j,k,i,4)**2 + ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
+     +                ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
+              rd = (vist3d(j,k,i)+fnu(j,k,i))/(q(j,k,i,1)*
+     +             sqrt(velterm)*vk*vk*dist*dist*re)
+              fd = 1.0-cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
+              term = ccmaxrc(0.0,ell-cdes*delta)
+              xlscale(j,k,i) = ell - fd*term
+              if (ides .eq. 3) then
+                fdsav(j,k,i)=fd
+              end if
+            enddo
+          enddo
+        enddo
+      end if
 c  Source terms for k-omega (Wilcox & SST):
       if (ivmx .eq. 6 .or. ivmx .eq. 7) then
         do i=1,idim-1
@@ -2022,6 +2093,8 @@ c  Source terms for k-omega (Wilcox & SST):
      .             k.ge.klamlo .and. k.lt.klamhi) .or.
      .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
+              else if( ides .eq. 3 .and. fdsav(j,k,i) .gt. cddes ) then
+                cutoff = (1.d0 - fdsav(j,k,i))/(1.d0-cddes)
               else
                 cutoff=1.
               end if
@@ -2123,8 +2196,12 @@ c   (can only do this if ikoprod=1):
      +          +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
-              dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
-              pk=ccmin(pk,(pklimterm*dk))
+              if (ides .ne. 0) then
+                dk=(turre(j,k,i,1)**1.5)/xlscale(j,k,i)
+              else
+                dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
+                pk=ccmin(pk,(pklimterm*dk))
+              end if
               rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
      +         re*betax*tur10(1)*tur10(1)

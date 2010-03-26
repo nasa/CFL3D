@@ -254,7 +254,7 @@ c
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .    (ivmx.eq.5 .and. ides.ge.2)) then
+     .    ides.ge.2) then
       call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)
@@ -552,7 +552,20 @@ c allocate for easmcc2d
       else
         inmx=0
       end if
-      nroom=nwork-(iwk80+inmx)
+      iwk81=iwk80+inmx
+c allocate for DES and DDES
+      if (ides .ne. 0) then
+        inmx=(jdim-1)*(kdim-1)*(idim-1)
+      else
+        inmx=0
+      end if
+      iwk82=iwk81+inmx
+      if (ides .eq. 3) then
+        inmx=(jdim-1)*(kdim-1)*(idim-1)
+      else
+        inmx=0
+      end if
+      nroom=nwork-(iwk82+inmx)
       if(nroom .lt. 0.) then
        nou(1) = min(nou(1)+1,ibufdim)
        write(bou(nou(1),1),'('' not enough memory for 2-eqn turb'',
@@ -582,7 +595,8 @@ c allocate for easmcc2d
      + wk(iwk61),wk(iwk62),wk(iwk63),wk(iwk64),wk(iwk65),wk(iwk66),
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
-     + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),nummem)
+     + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
+     + wk(iwk82),nummem)
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1

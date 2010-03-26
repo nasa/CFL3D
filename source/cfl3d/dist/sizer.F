@@ -240,6 +240,7 @@ c
       allocatable :: zorig(:)
       allocatable :: zorig0(:)
 c
+      common /des/ cdes,ides,cddes
       common /params/ lmaxgr,lmaxbl,lmxseg,lmaxcs,lnplts,lmxbli,lmaxxe,
      .                lnsub1,lintmx,lmxxe,liitot,isum,lncycm,
      .                isum_n,lminnode,isumi,isumi_n,lmptch,
@@ -1343,7 +1344,20 @@ c allocate for easmcc2d
                else
                  inmx=0
                end if
-               itemp=iwk80+inmx
+               iwk81=iwk80+inmx
+c allocate for DES and DDES
+               if (ides .ne. 0) then
+                 inmx=(jdim-1)*(kdim-1)*(idim-1)
+               else
+                 inmx=0
+               end if
+               iwk82=iwk81+inmx
+               if (ides .eq. 3) then
+                 inmx=(jdim-1)*(kdim-1)*(idim-1)
+               else
+                 inmx=0
+               end if
+               itemp=iwk82+inmx
             else if (ivmx .eq. 30) then
 c   three-equation turb model
                iwk1=1

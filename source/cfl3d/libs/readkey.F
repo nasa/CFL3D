@@ -384,6 +384,8 @@ c
       nkey     = nkey + 1
 c
 c     constant associated with DES or DDES
+c     cdes=0.65 is standard value for SA-DES; SST-DES may need a different value
+c     (AIAA 2001-0879 uses 0.78)
 c
       cdes = 0.65
       nkey     = nkey + 1

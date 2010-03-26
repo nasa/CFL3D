@@ -745,7 +745,7 @@ c
      .        ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .        ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .        (ivmx.eq.5 .and. ides.ge.2))
+     .        ides.ge.2)
      .        ns = jm1km1im1*9
          else
            ns = jm1km1im1*9
