@@ -181,7 +181,8 @@ c
      .        i_compress_correct,isstsf
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
 c
       pi = 4.0*atan(1.0)
@@ -476,6 +477,10 @@ c   Check for SARC & EASMCC models
      .  '' direction; i-index derivatives are not accounted for)...'')')
         write(iunit11,'(''          usage in 3-D cases is'',
      .  '' discouraged'')')
+      end if
+      if (isarc2d .eq. 1 .and. isar .eq. 1) then
+        write(iunit11,'('' ERROR: cannot have isarc2d and isar=1'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
 c     for cfl3d type grids, set ialph = 0 regardless of input value

@@ -189,7 +189,8 @@ c
      .        tur10(7)
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -203,7 +204,8 @@ c
       common /random_input/ randomize
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /initfac/ scal_ic
-      common /plot3dtyp/ ifunct,lowmem_ux
+      common /plot3dtyp/ ifunct
+      common /memry/ lowmem_ux
 #if defined DIST_MPI
 c
 c***********************
@@ -498,6 +500,8 @@ c
          work(nlast+121)= scal_ic
          work(nlast+122)= ifunct
          work(nlast+123)= lowmem_ux
+         work(nlast+124)= isar
+         work(nlast+125)= crot
          nlast = nlast+nkey
       end if
 c
@@ -801,6 +805,8 @@ c
          scal_ic = work(nlast+121)
          ifunct = int(work(nlast+122))
          lowmem_ux = int(work(nlast+123))
+         isar = int(work(nlast+124))
+         crot = work(nlast+125)
       end if
 c
 c**************************

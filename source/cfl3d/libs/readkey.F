@@ -67,7 +67,8 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -83,7 +84,8 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /sminn/ isminc,ismincforce
       common /initfac/ scal_ic
-      common /plot3dtyp/ ifunct,lowmem_ux
+      common /plot3dtyp/ ifunct
+      common /memry/ lowmem_ux
 c
       ititr = 0
       nkey  = 0
@@ -763,11 +765,21 @@ c     and need to augment with keyword memadd.
       ifunct = 0
       nkey     = nkey + 1
 c
-c     lowmem_ux allows reversion to lower memory usage of ux array
+c     lowmem_ux=1 allows reversion to lower memory usage of ux array
 c     (i.e., only allocate this jdim*kdim*idim*9 array for velocity 
 c     derivatives if it is needed for a particular model)
-c     By default, the memory is always allocated, to avoid memory problems
+c     By default, after V6.5, the memory is always allocated and ux
+c     is always computed 
       lowmem_ux=0
+      nkey     = nkey + 1
+c
+c     SAR - Spalart-Allmaras rotation correction (Dacles-Mariani,
+c     AIAA J 33(9):1561-1568, 1995
+      isar = 0
+      nkey     = nkey + 1
+c
+c     constant for SAR - Spalart-Allmaras rotation correction
+      crot = 2.0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1525,6 +1537,15 @@ c
       else if (inpstr(lc1:lc2).eq.'lowmem_ux') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) lowmem_ux
+c
+      else if (inpstr(lc1:lc2).eq.'isar') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isar
+c
+      else if (inpstr(lc1:lc2).eq.'crot') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         crot = abs(realval(1))
 c
       else
 c

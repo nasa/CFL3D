@@ -37,7 +37,8 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
@@ -119,6 +120,11 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      WARNING: curv terms are'',
      +       '' active in 2-D sense only!!!'')')
+         end if
+         if (isar .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      Dacles-Mariani rotation'',
+     +      '' (SAR) correction is ON, crot='',f7.3)') crot
          end if
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Freestream tur10 = '',
@@ -1100,6 +1106,18 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
                   cutoff=1.
                end if
               ss=vor(j,k,i)
+              if (isar .eq. 1) then
+                s11 = ux(j,k,i,1)
+                s22 = ux(j,k,i,5)
+                s33 = ux(j,k,i,9)
+                s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+                s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+                s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+                xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+                xisabs = sqrt(2.*xis)
+                ss=vor(j,k,i)+crot*ccminrc(0.,xisabs-vor(j,k,i))
+              end if
               chi=turre(j,k,i)/fnu(j,k,i)
               fv1=chi**3/(chi**3+cv1**3)
               fv2=1.-(chi/(1.+chi*fv1))

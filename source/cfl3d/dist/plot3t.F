@@ -96,7 +96,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf
-      common /plot3dtyp/ ifunct,lowmem_ux
+      common /plot3dtyp/ ifunct
 c
 #if defined DIST_MPI
 c     set baseline tag values

@@ -90,7 +90,8 @@ c
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
       common /fullns/ ifullns
       common /des/ cdes,ides,cddes
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
@@ -736,7 +737,8 @@ c
       if (icgns .eq. 1 .and. myid .eq. myhost) then
 #if defined CGNS
         call writeeqn(iccg,ibase,igrid,ivisc(1),ivisc(2),ivisc(3),ideg,
-     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d,isstrc)
+     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d,isstrc,
+     +   isar)
         call writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
      +   tursav(1,1,1,2),blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,

@@ -86,10 +86,12 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
-      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot
       common /sourceterm/ xdir_only_source
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /des/ cdes,ides
+      common /memry/ lowmem_ux
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -246,16 +248,23 @@ c
       icall = 0
       if (icyc.eq.(icyc/1)*1 .and. level.ge.lglobal .and. ntime.le.nit)
      .    icall = 1
-      if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
+      if (lowmem_ux .eq. 1) then
+        if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
      .    ikoprod.eq.1) .or. 
      .    (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
+     .    ((ivmx.eq.5) .and. isar.eq.1) .or. 
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .    ides.ge.2) then
-      call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
+          call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
+     .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
+     .          maxbl,vormax,ivmax,jvmax,kvmax)
+        end if
+      else
+          call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)
       end if

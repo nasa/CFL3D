@@ -100,7 +100,8 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
-      common /plot3dtyp/ ifunct,lowmem_ux
+      common /plot3dtyp/ ifunct
+      common /memry/ lowmem_ux
 c
 c***********************************************************************
 c     write output file in PLOT3D format
