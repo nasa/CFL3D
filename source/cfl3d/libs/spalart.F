@@ -1134,7 +1134,11 @@ c             fix for single prec. via TLNS3D via FUN3D via Tim Barth
               fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
 c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
               ft2=ct3*exp(-ct4*chi**2)
-              term1=cb1*(1.-ft2)*ss
+c             term1=cb1*(1.-ft2)*ss
+c   Because we split up sst between term1 and term2, need to limit ss >= 0
+c   for case when using isar=1 (for which ss itself may be negative).
+c   Normally, with ss=vor, it is always non-negative.
+              term1=cb1*(1.-ft2)*ccmaxrc(0.,ss)
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
               if (isarc2d .eq. 1) then
 c               For SARC, note that fr1 multiplies the production term
