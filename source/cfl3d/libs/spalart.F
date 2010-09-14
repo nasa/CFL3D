@@ -116,7 +116,7 @@ c
          if (isarc2d .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      Rotation-curvature'',
-     +      '' (SARC) terms are ON'')')
+     +      '' (SARC) terms are ON; sarccr3='',f7.3)') sarccr3
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      WARNING: curv terms are'',
      +       '' active in 2-D sense only!!!'')')
