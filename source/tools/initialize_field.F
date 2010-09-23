@@ -87,6 +87,7 @@ c   Read input file
       read(2,*)
       read(2,*)
       read(2,*) xmachw,alphw,betaw,reuew
+      reuew=reuew*1.e6
       do n=1,5
         read(2,*)
       enddo
