@@ -483,7 +483,7 @@ c
       call umalloc(ncycmax,0,'cmzw',memuse,stats)
       allocate( clcd(2,n_clcd,ncycmax),stat=stats )
       call umalloc(2*n_clcd*ncycmax,0,'clcd',memuse,stats)
-      clcd(1,:,:) = 1.e100
+      clcd(1,:,:) = 1.e21
       allocate( cxt(maxbl),stat=stats )
       call umalloc(maxbl,0,'cxt',memuse,stats)
       allocate( cxw(ncycmax),stat=stats )

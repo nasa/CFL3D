@@ -1469,7 +1469,7 @@ c
       if (iskip.gt.0) then
          if (myid.eq.myhost) then
             if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
-               clcd(1,:,:) = 1.e100
+               clcd(1,:,:) = 1.e21
                clcd(2,:,:) = 0.e0
                i_ntt = 0
             end if
