@@ -576,15 +576,15 @@ c
       zk=0.
       qinvar=0.
 c   currently unused printout to fort.50 (specifically for k-line)
-      write(50,'(''variables="y","uuplus","wwplus","vvplus","uwplus",'',
-     + ''"uvplus","vwplus","u_scaled","kplus","yplus","uplus",'',
-     + ''"mu_turbulent/mu_lam_ref","eplus","cmu"'')')
-      jloc=49
-      iloc=1
-      write(50,'(''#'',i5,''  CFL3D scaled turb results along k-line'',
-     + '' at j,i='',2i4, '' x='',f16.6)') k2-k1+1,jloc,iloc,
-     +  0.5*(x(jloc,1,iloc)+x(jloc+1,1,iloc))
-      write(50,'(''# NOTE: eplus applies to k-eps models only'')')
+c     write(50,'(''variables="y","uuplus","wwplus","vvplus","uwplus",'',
+c    + ''"uvplus","vwplus","u_scaled","kplus","yplus","uplus",'',
+c    + ''"mu_turbulent/mu_lam_ref","eplus","cmu"'')')
+c     jloc=49
+c     iloc=1
+c     write(50,'(''#'',i5,''  CFL3D scaled turb results along k-line'',
+c    + '' at j,i='',2i4, '' x='',f16.6)') k2-k1+1,jloc,iloc,
+c    +  0.5*(x(jloc,1,iloc)+x(jloc+1,1,iloc))
+c     write(50,'(''# NOTE: eplus applies to k-eps models only'')')
 c
       iw = 0
       do 4000 i=i1,i2,i3
@@ -920,43 +920,43 @@ c            certain circumstances). Default to vorticity-type:
             pk=pk*cutoff
 c
 c   currently unused printout to fort.50 (specifically for k-line)
-      if (j .eq. jloc .and. i .eq. iloc) then
-        yget=ccabs(smin(j,k,i))
-        qset=sqrt(q(j,1,i,2)**2+q(j,1,i,3)**2+q(j,1,i,4)**2)
-        tt=gamma*q(j,1,i,5)/q(j,1,i,1)
-        c2b=198.6/tinf
-        c2bp=c2b+1.0
-        fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
-        utau=sqrt(fnuw*qset/(ccabs(smin(j,1,i))*
-     +     q(j,1,i,1)*re))
-        ypl=re*q(j,1,i,1)*utau*ccabs(smin(j,k,i))/fnuw
-        upl=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
-     +        /utau
-        zkplus=zk/(utau**2)
-        uuplus=abs(t11)/(re*utau*utau)
-        vvplus=abs(t22)/(re*utau*utau)
-        wwplus=abs(t33)/(re*utau*utau)
-        uwplus=-t13/(re*utau*utau)
-        vwplus=-t23/(re*utau*utau)
-        uvplus=-t12/(re*utau*utau)
-        uloc=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)/xmach
-        ttx=gamma*q(j,k,i,5)/q(j,k,i,1)
-        fnu=c2bp*ttx*sqrt(ttx)/(c2b+ttx)
-        if (ivmx .eq. 9 .or. ivmx .eq. 10 .or. ivmx .eq. 11 .or.
-     +      ivmx .eq. 13) then
-        eplus=turre(j,k,i,1)*fnu/(q(j,k,i,1)*utau*utau*utau*utau)
-        else
-        eplus=0.
-        end if
-        if(ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .ge. 13) then
-          cmuxx=-cmuv(j,k,i)
-        else
-          cmuxx=.09
-        end if
-        write(50,'(14e15.5)') yget,uuplus,wwplus,vvplus,uwplus,
-     +   uvplus,vwplus,uloc,zkplus,ypl,upl,vist3d(j,k,i),eplus,
-     +   cmuxx
-      end if
+c     if (j .eq. jloc .and. i .eq. iloc) then
+c       yget=ccabs(smin(j,k,i))
+c       qset=sqrt(q(j,1,i,2)**2+q(j,1,i,3)**2+q(j,1,i,4)**2)
+c       tt=gamma*q(j,1,i,5)/q(j,1,i,1)
+c       c2b=198.6/tinf
+c       c2bp=c2b+1.0
+c       fnuw=c2bp*tt*sqrt(tt)/(c2b+tt)
+c       utau=sqrt(fnuw*qset/(ccabs(smin(j,1,i))*
+c    +     q(j,1,i,1)*re))
+c       ypl=re*q(j,1,i,1)*utau*ccabs(smin(j,k,i))/fnuw
+c       upl=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
+c    +        /utau
+c       zkplus=zk/(utau**2)
+c       uuplus=abs(t11)/(re*utau*utau)
+c       vvplus=abs(t22)/(re*utau*utau)
+c       wwplus=abs(t33)/(re*utau*utau)
+c       uwplus=-t13/(re*utau*utau)
+c       vwplus=-t23/(re*utau*utau)
+c       uvplus=-t12/(re*utau*utau)
+c       uloc=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)/xmach
+c       ttx=gamma*q(j,k,i,5)/q(j,k,i,1)
+c       fnu=c2bp*ttx*sqrt(ttx)/(c2b+ttx)
+c       if (ivmx .eq. 9 .or. ivmx .eq. 10 .or. ivmx .eq. 11 .or.
+c    +      ivmx .eq. 13) then
+c       eplus=turre(j,k,i,1)*fnu/(q(j,k,i,1)*utau*utau*utau*utau)
+c       else
+c       eplus=0.
+c       end if
+c       if(ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .ge. 13) then
+c         cmuxx=-cmuv(j,k,i)
+c       else
+c         cmuxx=.09
+c       end if
+c       write(50,'(14e15.5)') yget,uuplus,wwplus,vvplus,uwplus,
+c    +   uvplus,vwplus,uloc,zkplus,ypl,upl,vist3d(j,k,i),eplus,
+c    +   cmuxx
+c     end if
 c
 c      u'/u_inf:
       uprime=sqrt(abs(t11)/(q(j,k,i,1)*re))/xmach
@@ -1181,23 +1181,14 @@ c        if (ifunct .ge. 6) xw(jw,kw,iw,6) = imag(whatever)/real(delh)
 c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(whatever)/real(delh)
       end if
 #     else
-c   ***rumsey
-c     xw(jw,kw,iw,1) = real(prod)
-c     xw(jw,kw,iw,2) = real(uwprime)
-c     xw(jw,kw,iw,3) = real(uuprime)
-c     xw(jw,kw,iw,4) = real(wwprime)
-c     xw(jw,kw,iw,5) = real(ske)
+      xw(jw,kw,iw,1) = real(prod)
+      xw(jw,kw,iw,2) = real(uwprime)
+      xw(jw,kw,iw,3) = real(uuprime)
+      xw(jw,kw,iw,4) = real(wwprime)
+      xw(jw,kw,iw,5) = real(ske)
 c     can add more here, but only if ifunct keyword is big enough!
 c     if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(whatever)
 c     if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
-c   *********
-      xw(jw,kw,iw,1) = real(t11)
-      xw(jw,kw,iw,2) = real(t22)
-      xw(jw,kw,iw,3) = real(t33)
-      xw(jw,kw,iw,4) = real(t12)
-      xw(jw,kw,iw,5) = real(t13)
-      if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(t23)
-c   *********
 #     endif
  4000 continue
 c
