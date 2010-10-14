@@ -1,6 +1,6 @@
       subroutine gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,t,nvtq,
      .                  wj0,vist3d,vmuj,vj0,bcj,zksav,tj0,cmuv,volj0,
-     .                  nou,bou,nbuf,ibufdim,iadv,nummem)
+     .                  nou,bou,nbuf,ibufdim,iadv,nummem,ux)
 c
 c     $Id$
 c
@@ -24,6 +24,7 @@ c
       dimension bcj(kdim,idim-1,2)
       dimension zksav(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4)
       dimension cmuv(jdim-1,kdim-1,idim-1)
+      dimension ux(jdim-1,kdim-1,idim-1,9)
 c
       common /easmv/ c1,c2,c3,c4,c5,sigk1,cmuc1
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -36,6 +37,7 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
+      common /constit/ i_nonlin,c_nonlin
 c
 c******************************************************************************
 c     right-hand-side residual contribution in J-direction (viscous terms)
@@ -64,9 +66,16 @@ c
       if (isklton.gt.0 .and. i.eq.1 .and. iadv.ge.0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),1442)
+         if (ivisc(2).eq.11 .or. ivisc(2).eq.12 .or.
+     +       ivisc(2).eq.13 .or. ivisc(2).eq.14 .or.
+     +       i_nonlin.ne.0) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),1444)
+         end if
       end if
  1442 format(52h   computing viscous  fluxes, J-direction - central ,
      .12hdifferencing)
+ 1444 format(37h      nonlinear constitutive relation)
 c
 c******************************************************************************
 c
@@ -1043,9 +1052,236 @@ c   to get mulam, need mulam=t14*t15/xmre-t24
             end if
  1285     continue
  1286   continue
+      else if(i_nonlin .ne. 0 .and. level .ge. lglobal) then
+        re=reue/xmach
+c   Add nonlinear terms to RHS
+        do 1296 ipl=1,npl
+          ii=i+ipl-1
+          jkv2=(ipl-1)*kdim1
+          do 1295 j=1,jdim
+            jkv=(j-1)*npl*kdim1 + (ipl-1)*kdim1
+            if (j.eq.1) then
+              do 1294 k=1,kdim1
+c            Determine Sij and Wij values (at cell interface)
+              s11 = t(k+jkv,8) *t(k+jkv,25)
+              s22 = t(k+jkv,9) *t(k+jkv,26)
+              s33 = t(k+jkv,10)*t(k+jkv,27)
+              s12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) +
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              s13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              s23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              w12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) -
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              w13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              s11 = s11 - (s11+s22+s33)/3.
+              s22 = s22 - (s11+s22+s33)/3.
+              s33 = s33 - (s11+s22+s33)/3.
+c             Note: denom term is taken at nearest cell center
+              denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
+     +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
+     +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
+              denom=sqrt(denom)+1.e-10
+c            Find tauij values:
+              u=0.5*(q(j,k,ii,2)+qj0(k,ii,2,1))*(1.-wj0(k+jkv2,5))+
+     +            qj0(k,ii,2,1)*wj0(k+jkv2,5)
+              v=0.5*(q(j,k,ii,3)+qj0(k,ii,3,1))*(1.-wj0(k+jkv2,5))+
+     +            qj0(k,ii,3,1)*wj0(k+jkv2,5)
+              w=0.5*(q(j,k,ii,4)+qj0(k,ii,4,1))*(1.-wj0(k+jkv2,5))+
+     +            qj0(k,ii,4,1)*wj0(k+jkv2,5)
+              zk_sa=0.
+              if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
+     +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
+                zk_sa=0.5*(zksav(j,k,ii,2)+tj0(k,ii,2,1))
+              end if
+              t11 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s11
+c             t11=ccmax(t11,xlnpt)
+              t11 = t11*(1.-bcj(k,ii,1))
+              t22 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s12*w12 - s23*w23)
+c             xlnpt=2.*t(k+jkv,24)*s22
+c             t22=ccmax(t22,xlnpt)
+              t22 = t22*(1.-bcj(k,ii,1))
+              t33 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s23*w23 + s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s33
+c             t33=ccmax(t33,xlnpt.or. ivisc(2).eq.15)
+              t33 = t33*(1.-bcj(k,ii,1))
+              t12 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)
+              t12 = t12*(1.-bcj(k,ii,1))
+              t13 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)
+              t13 = t13*(1.-bcj(k,ii,1))
+              t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
+              t23 = t23*(1.-bcj(k,ii,1))
+c
+              t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
+     +                          t(k+jkv,27)*t13)/t(k+jkv,15)
+              t(k+jkv,29)=xmre*(t(k+jkv,25)*t12+t(k+jkv,26)*t22+
+     +                          t(k+jkv,27)*t23)/t(k+jkv,15)
+              t(k+jkv,30)=xmre*(t(k+jkv,25)*t13+t(k+jkv,26)*t23+
+     +                          t(k+jkv,27)*t33)/t(k+jkv,15)
+              t(k+jkv,31)=xmre/t(k+jkv,15)*(
+     +           t(k+jkv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(k+jkv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(k+jkv,27)*(u*t13 + v*t23 + w*t33))
+ 1294         continue
+            else if(j.eq.jdim) then
+              do 1293 k=1,kdim1
+c            Determine Sij and Wij values (at cell interface)
+              s11 = t(k+jkv,8) *t(k+jkv,25)
+              s22 = t(k+jkv,9) *t(k+jkv,26)
+              s33 = t(k+jkv,10)*t(k+jkv,27)
+              s12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) +
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              s13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              s23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              w12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) -
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              w13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              s11 = s11 - (s11+s22+s33)/3.
+              s22 = s22 - (s11+s22+s33)/3.
+              s33 = s33 - (s11+s22+s33)/3.
+c             Note: denom term is taken at nearest cell center
+              denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
+     +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
+     +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
+              denom=sqrt(denom)+1.e-10
+c            Find tauij values:
+              u=0.5*(q(j-1,k,ii,2)+qj0(k,ii,2,3))*(1.-wj0(k+jkv2,15))+
+     +            qj0(k,ii,2,3)*wj0(k+jkv2,15)
+              v=0.5*(q(j-1,k,ii,3)+qj0(k,ii,3,3))*(1.-wj0(k+jkv2,15))+
+     +            qj0(k,ii,3,3)*wj0(k+jkv2,15)
+              w=0.5*(q(j-1,k,ii,4)+qj0(k,ii,4,3))*(1.-wj0(k+jkv2,15))+
+     +            qj0(k,ii,4,3)*wj0(k+jkv2,15)
+              zk_sa=0.
+              if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
+     +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
+                zk_sa=0.5*(zksav(j-1,k,ii,2)+tj0(k,ii,2,3))
+              end if
+              t11 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s11
+c             t11=ccmax(t11,xlnpt)
+              t11 = t11*(1.-bcj(k,ii,2))
+              t22 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s12*w12 - s23*w23)
+c             xlnpt=2.*t(k+jkv,24)*s22
+c             t22=ccmax(t22,xlnpt)
+              t22 = t22*(1.-bcj(k,ii,2))
+              t33 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s23*w23 + s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s33
+c             t33=ccmax(t33,xlnpt)
+              t33 = t33*(1.-bcj(k,ii,2))
+              t12 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)
+              t12 = t12*(1.-bcj(k,ii,2))
+              t13 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)
+              t13 = t13*(1.-bcj(k,ii,2))
+              t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
+              t23 = t23*(1.-bcj(k,ii,2))
+c
+              t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
+     +                          t(k+jkv,27)*t13)/t(k+jkv,15)
+              t(k+jkv,29)=xmre*(t(k+jkv,25)*t12+t(k+jkv,26)*t22+
+     +                          t(k+jkv,27)*t23)/t(k+jkv,15)
+              t(k+jkv,30)=xmre*(t(k+jkv,25)*t13+t(k+jkv,26)*t23+
+     +                          t(k+jkv,27)*t33)/t(k+jkv,15)
+              t(k+jkv,31)=xmre/t(k+jkv,15)*(
+     +           t(k+jkv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(k+jkv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(k+jkv,27)*(u*t13 + v*t23 + w*t33))
+ 1293         continue
+            else
+              do 1292 k=1,kdim1
+c            Determine Sij and Wij values (at cell interfaces):
+              s11 = t(k+jkv,8) *t(k+jkv,25)
+              s22 = t(k+jkv,9) *t(k+jkv,26)
+              s33 = t(k+jkv,10)*t(k+jkv,27)
+              s12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) +
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              s13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              s23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) +
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              w12 = 0.5*(t(k+jkv,8) *t(k+jkv,26) -
+     +                   t(k+jkv,9) *t(k+jkv,25))
+              w13 = 0.5*(t(k+jkv,8) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,25))
+              w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
+     +                   t(k+jkv,10)*t(k+jkv,26))
+              s11 = s11 - (s11+s22+s33)/3.
+              s22 = s22 - (s11+s22+s33)/3.
+              s33 = s33 - (s11+s22+s33)/3.
+c             Note: denom term is taken at nearest cell center
+              denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
+     +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
+     +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
+              denom=sqrt(denom)+1.e-10
+c            Find tauij values:
+              zk_sa=0.
+              if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
+     +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
+                zk_sa=0.5*(zksav(j,k,ii,2)+zksav(j-1,k,ii,2))
+              end if
+              t11 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s11
+c             t11=ccmax(t11,xlnpt)
+              t22 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s12*w12 - s23*w23)
+c             xlnpt=2.*t(k+jkv,24)*s22
+c             t22=ccmax(t22,xlnpt)
+              t33 = 2.*rho*zk_sa*re/3.
+     +             -8.*c_nonlin*t(k+jkv,24)/denom*( s23*w23 + s13*w13)
+c             xlnpt=2.*t(k+jkv,24)*s33
+c             t33=ccmax(t33,xlnpt)
+              t12 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)
+              t13 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)
+              t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
+     +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
+c
+              t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
+     +                          t(k+jkv,27)*t13)/t(k+jkv,15)
+              t(k+jkv,29)=xmre*(t(k+jkv,25)*t12+t(k+jkv,26)*t22+
+     +                          t(k+jkv,27)*t23)/t(k+jkv,15)
+              t(k+jkv,30)=xmre*(t(k+jkv,25)*t13+t(k+jkv,26)*t23+
+     +                          t(k+jkv,27)*t33)/t(k+jkv,15)
+              t(k+jkv,31)=xmre/t(k+jkv,15)*(
+     +           t(k+jkv,25)*(0.5*(q(j,k,ii,2)+q(j-1,k,ii,2))*t11
+     +                       +0.5*(q(j,k,ii,3)+q(j-1,k,ii,3))*t12
+     +                       +0.5*(q(j,k,ii,4)+q(j-1,k,ii,4))*t13)
+     +          +t(k+jkv,26)*(0.5*(q(j,k,ii,2)+q(j-1,k,ii,2))*t12
+     +                       +0.5*(q(j,k,ii,3)+q(j-1,k,ii,3))*t22
+     +                       +0.5*(q(j,k,ii,4)+q(j-1,k,ii,4))*t23)
+     +          +t(k+jkv,27)*(0.5*(q(j,k,ii,2)+q(j-1,k,ii,2))*t13
+     +                       +0.5*(q(j,k,ii,3)+q(j-1,k,ii,3))*t23
+     +                       +0.5*(q(j,k,ii,4)+q(j-1,k,ii,4))*t33))
+ 1292         continue
+            end if
+ 1295     continue
+ 1296   continue
       end if
       if((ivisc(2).eq.11.or.ivisc(2).eq.12.or.ivisc(2).eq.13.or.
-     +    ivisc(2).eq.14)
+     +    ivisc(2).eq.14.or.i_nonlin.ne.0)
      +    .and.level.ge.lglobal) then
         do 1271 l=2,5
         do 1270 izz=1,n

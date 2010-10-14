@@ -86,6 +86,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
+      common /constit/ i_nonlin,c_nonlin
 c
       ititr = 0
       nkey  = 0
@@ -780,6 +781,14 @@ c     AIAA J 33(9):1561-1568, 1995
 c
 c     constant for SAR - Spalart-Allmaras rotation correction
       crot = 2.0
+      nkey     = nkey + 1
+c
+c     nonlinear constitutive relation for use with linear models
+      i_nonlin = 0
+      nkey     = nkey + 1
+c
+c     nonlinear constitutive relation constant
+      c_nonlin = 0.3
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1546,6 +1555,15 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          crot = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'i_nonlin') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_nonlin
+c
+      else if (inpstr(lc1:lc2).eq.'c_nonlin') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         c_nonlin = abs(realval(1))
 c
       else
 c

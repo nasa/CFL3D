@@ -206,6 +206,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
+      common /constit/ i_nonlin,c_nonlin
 #if defined DIST_MPI
 c
 c***********************
@@ -502,6 +503,8 @@ c
          work(nlast+123)= lowmem_ux
          work(nlast+124)= isar
          work(nlast+125)= crot
+         work(nlast+126)= i_nonlin
+         work(nlast+127)= c_nonlin
          nlast = nlast+nkey
       end if
 c
@@ -807,6 +810,8 @@ c
          lowmem_ux = int(work(nlast+123))
          isar = int(work(nlast+124))
          crot = work(nlast+125)
+         i_nonlin = int(work(nlast+126))
+         c_nonlin = work(nlast+127)
       end if
 c
 c**************************

@@ -63,6 +63,7 @@ c
       common /des/ cdes,ides,cddes
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
+      common /constit/ i_nonlin,c_nonlin
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -748,7 +749,7 @@ c
      .        ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
      .        ((ivmx.eq.5) .and. isar.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .        ides.ge.2)
+     .        ides.ge.2 .or. i_nonlin.ne.0)
      .        ns = jm1km1im1*9
          else
            ns = jm1km1im1*9

@@ -92,6 +92,7 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /des/ cdes,ides
       common /memry/ lowmem_ux
+      common /constit/ i_nonlin,c_nonlin
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -258,7 +259,7 @@ c
      .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
      .    ((ivmx.eq.5) .and. isar.eq.1) .or. 
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .    ides.ge.2) then
+     .    ides.ge.2 .or. i_nonlin.ne.0) then
           call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,
      .          maxbl,vormax,ivmax,jvmax,kvmax)
@@ -780,7 +781,7 @@ c
          nvtq = npl*jdim*kdim
          call gfluxv(i,npl,jdim,kdim,idim,res,q,qj0,sj,vol,wk,
      .               nvtq,wj0,vist3d,vmuj,vj0,bcj,xib,tj0,cmuv,
-     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
+     .               volj0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux)
 c
 c-- full viscous terms
 c
@@ -834,7 +835,7 @@ c
          call hfluxv(i,npl,jdim,kdim,idim,0,wk(iwk4),wk(iwk5),wk(iwk6),
      .               res,q,qk0,sk,vol,wk,nvtq,wk0,vist3d,vmuk,vk0,bck,
      .               xib,tk0,cmuv,volk0,nou,bou,nbuf,ibufdim,
-     .               iadvance(nbl),nummem)
+     .               iadvance(nbl),nummem,ux)
 c
 c-- full viscous terms
 c
@@ -891,7 +892,8 @@ c
             nvtq = npl*jdim*idim
             call ffluxv(k,npl,jdim,kdim,idim,res,q,qi0,si,vol,wk,
      .                  nvtq,wi0,vist3d,vmui,vi0,bci,xib,ti0,cmuv,
-     .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
+     .                  voli0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem
+     .                  ,ux)
 c
 c-- full viscous terms
 c

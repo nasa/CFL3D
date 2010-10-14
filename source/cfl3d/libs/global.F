@@ -184,6 +184,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /constit/ i_nonlin,c_nonlin
 c
       pi = 4.0*atan(1.0)
 c
@@ -895,6 +896,14 @@ c
       if (ivmx .eq. 25 .or. ivmx .eq. 30) then
         write(iunit11,'('' WARNING: ivisc='',i4,'' still under'',
      .    '' development... use at your own risk!'')') ivmx
+      end if
+c
+      if (i_nonlin .ne. 0 .and. (ivmx .lt. 2 .or. ivmx .eq. 8
+     .  .or. ivmx .eq. 9 .or. ivmx .eq. 11 .or. ivmx .eq. 12 .or.
+     .  ivmx .eq. 13 .or. ivmx .eq. 14 .or. ivmx .gt. 15)) then
+        write(iunit11,'('' i_nonlin cannot be used with'',
+     .    '' this ivisc'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
 c     grid dimensions:
