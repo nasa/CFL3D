@@ -182,7 +182,7 @@ c
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /constit/ i_nonlin,c_nonlin
 c
@@ -481,6 +481,14 @@ c   Check for SARC & EASMCC models
       end if
       if (isarc2d .eq. 1 .and. isar .eq. 1) then
         write(iunit11,'('' ERROR: cannot have isarc2d and isar=1'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (isarc3d .eq. 1 .and. isar .eq. 1) then
+        write(iunit11,'('' ERROR: cannot have isarc3d and isar=1'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (isarc3d .eq. 1 .and. isarc2d .eq. 1) then
+        write(iunit11,'('' ERROR: cannot have isarc3d and isarc2d=1'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -817,8 +825,8 @@ c
         end if
       end if
 c
-      if (isarc2d .eq. 1 .and. ivmx .ne. 5) then
-        write(iunit11,'('' WARNING: isarc2d not active'',
+      if ((isarc2d .eq. 1 .or. isarc3d .eq. 1) .and. ivmx .ne. 5) then
+        write(iunit11,'('' WARNING: isarc2d/3d not active'',
      .  '' unless SA model (ivisc=5) used'')')
       end if
       if (ieasmcc2d .eq. 1 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.

@@ -91,7 +91,7 @@ c
       common /fullns/ ifullns
       common /des/ cdes,ides,cddes
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
 c
 #if defined DIST_MPI
       nd_srce = mblk2nd(nbl)
@@ -736,8 +736,9 @@ c
          end if
       if (icgns .eq. 1 .and. myid .eq. myhost) then
 #if defined CGNS
+        isarcxd=max(isarc2d,isarc3d)
         call writeeqn(iccg,ibase,igrid,ivisc(1),ivisc(2),ivisc(3),ideg,
-     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarc2d,ieasmcc2d,isstrc,
+     +   gamma,pr,prt,cbar,i2d,ifullns,ides,isarcxd,ieasmcc2d,isstrc,
      +   isar)
         call writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
      +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,

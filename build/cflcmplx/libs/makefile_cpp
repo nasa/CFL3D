@@ -103,7 +103,7 @@ FSRC_LIBS = \
         pltmode.f      bcnonin.f      initnonin.f    resnonin.f \
         my_flush.f     bc2016.f       gfluxv1.f      hfluxv1.f \
         ffluxv1.f      sijrate2d.f    threeeqn.f     lesdiag.f \
-        histout_img.f
+        histout_img.f  sijrate3d.f
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others

@@ -3079,7 +3079,7 @@ c
       end
 c
       subroutine writeeqn(iccg,ibase,igrid,iv1,iv2,iv3,ideg,gamma,
-     +   prandtl,prandtlt,suth,i2d,ifullns,ides,isarc2d,ieasmcc2d,
+     +   prandtl,prandtlt,suth,i2d,ifullns,ides,isarcxd,ieasmcc2d,
      +   isstrc,isar)
 c***********************************************************************
 c     Purpose: Writes equation info to CGNS data base for zone number 
@@ -3102,7 +3102,7 @@ c      suth.............Sutherland law constant (real)
 c      i2d..............0 if 3-D, 1 if 2-D (integer)
 c      ifullns..........0 if thin layer, 1 if full (integer)
 c      ides.............0 if DES off, 1 if DES, 2+ if DDES (integer)
-c      isarc2d..........0 if SARC curv correction off, 1 if on (integer)
+c      isarcxd..........0 if SARC curv correction off, 1 if on (integer)
 c      ieasmcc2d........0 if EASMCC curv correction off, 1 if on (integer)
 c      isstrc...........0 if SSTRC off, 1 if on (integer)
 c      isar.............0 if SAR curv correction off, 1 if on (integer)
@@ -3285,12 +3285,12 @@ c   (non-standard)
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   OneEquation_BaldwinBarth,ier)
-      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarc2d .ne. 1
+      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarcxd .ne. 1
      +  .and. isar .ne. 1) then
 c   (standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   OneEquation_SpalartAllmaras,ier)
-      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarc2d .ne. 1
+      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarcxd .ne. 1
      +  .and. isar .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
@@ -3301,7 +3301,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'DetachedEddySimulation',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarc2d .ne. 1
+      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarcxd .ne. 1
      +  .and. isar .ne. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
@@ -3312,7 +3312,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'DDES',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarc2d .eq. 1) then
+      else if(ivmx .eq. 5 .and. ides .ne. 1 .and. isarcxd .eq. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3322,7 +3322,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'SpalartAllmarasSARC',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarc2d .eq. 1) then
+      else if(ivmx .eq. 5 .and. ides .eq. 1 .and. isarcxd .eq. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)
@@ -3332,7 +3332,7 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'DetachedEddySimulationSARC',ier)
         if (ier .ne. 0) call cg_error_exit_f
-      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarc2d .eq. 1) then
+      else if(ivmx .eq. 5 .and. ides .ge. 2 .and. isarcxd .eq. 1) then
 c   (non-standard)
         call cg_model_write_f('TurbulenceModel_t',
      +   UserDefined,ier)

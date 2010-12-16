@@ -59,7 +59,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /des/ cdes,ides,cddes
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
@@ -747,6 +747,7 @@ c
      .        ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
      .        ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .        ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
+     .        ((ivmx.eq.5) .and. isarc3d.eq.1) .or.
      .        ((ivmx.eq.5) .and. isar.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .        ides.ge.2 .or. i_nonlin.ne.0)

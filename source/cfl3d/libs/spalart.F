@@ -3,7 +3,7 @@
      + fx,workx,by,cy,dy,fy,worky,bz,cz,dz,fz,workz,ntime,
      + tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,sumn1,sumn2,negn1,negn2,
      + tursav2,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,iex3,
-     + bcj,bck,bci,ux,vx,nummem,fd)
+     + bcj,bck,bci,ux,vx,nummem,fd,isarcnum)
 c
 c     $Id$
 c
@@ -38,7 +38,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
@@ -67,7 +67,7 @@ c
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2),
-     + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,4)
+     + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,isarcnum)
 c
       if(isklton .gt. 0) then
         if (iexact_trunc .ne. 0) then
@@ -113,10 +113,12 @@ c
            write(bou(nou(1),1),'(''   computing turbulent'',
      +       '' viscosity using Spalart, block ='',i4)') nbl
          end if
-         if (isarc2d .eq. 1) then
+         if (isarc2d .eq. 1 .or. isarc3d .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      Rotation-curvature'',
      +      '' (SARC) terms are ON; sarccr3='',f7.3)') sarccr3
+         end if
+         if (isarc2d .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      WARNING: curv terms are'',
      +       '' active in 2-D sense only!!!'')')
@@ -1068,10 +1070,12 @@ c
           enddo
         enddo
         end if
-        if (isarc2d .eq. 1) then
+c
 c   For SARC model, eventually need to compute rtilde as fn of Dalpha/Dt
-c   Note SARC currently only set up for curvature in x-z plane, with
+        if (isarc2d .eq. 1) then
+c   Note 2-D SARC currently only set up for curvature in x-z plane, with
 c   y direction (necessarily) in the i-direction
+c   It also makes incompressible assumption that S11=-S33
 c   Get vx(3)=DS11/Dt and vx(4)=DS13/Dt:
           call sijrate2d(idim,jdim,kdim,q,qj0,qk0,
      .    bcj,bck,vol,sj,sk,vx)
@@ -1088,6 +1092,13 @@ c   modify Sij such that its diagonal terms are traceless in the 2D sense
             enddo
           enddo
         end if
+        if (isarc3d .eq. 1) then
+c   Newer generalized 3-D SARC
+c   Get vx(1)=DS11/Dt, vx(2)=DS12/Dt, vx(3)=DS13/Dt,
+c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
+          call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
+        end if
+c
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -1140,14 +1151,13 @@ c   for case when using isar=1 (for which ss itself may be negative).
 c   Normally, with ss=vor, it is always non-negative.
               term1=cb1*(1.-ft2)*ccmaxrc(0.,ss)
               term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
-              if (isarc2d .eq. 1) then
-c               For SARC, note that fr1 multiplies the production term
-c               cb1*Stilde*nuwiggle, as specified in AIAA J 38(5):784,2000,
-c               where Stilde=vort+nuwiggle*fv2/(kappa^2*d^2)
-c               (in Aerospace Science & Tech. 1(5):297,1997 it
-c               multiplies cb1*vort*nuwiggle).
-c               Ends up making very little difference.
-c
+c             For SARC, note that fr1 multiplies the production term
+c             cb1*Stilde*nuwiggle, as specified in AIAA J 38(5):784,2000,
+c             where Stilde=vort+nuwiggle*fv2/(kappa^2*d^2)
+c             (in Aerospace Science & Tech. 1(5):297,1997 it
+c             multiplies cb1*vort*nuwiggle).
+c             Ends up making very little difference.
+              if (isarc2d .eq. 1 .or. isarc3d .eq. 1) then
 c               Determine Sij and Wij values:
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
@@ -1164,8 +1174,21 @@ c               Determine Sij and Wij values:
                 xisabs=sqrt(2.*xis)
                 rstar=xisabs/ss
                 xisabs=ccmax(xisabs,xminn)
-                rtilde=-4.*vx(j,k,i,1)*w13/
-     +             (0.5*(ss**2+xisabs**2))**2
+                if (isarc2d .eq. 1) then
+                  rtilde=-4.*vx(j,k,i,1)*w13/
+     +               (0.5*(ss**2+xisabs**2))**2
+                else if (isarc3d .eq. 1) then
+                  rtilde=2./(0.5*(ss**2+xisabs**2))**2*
+     +              ( -w12*vx(j,k,i,2)*(s11-s22)
+     +                -w13*vx(j,k,i,3)*(s11-s33)
+     +                -w23*vx(j,k,i,5)*(s22-s33)
+     +                +s12*(-w12*(vx(j,k,i,4)-vx(j,k,i,1))
+     +                      -w13*vx(j,k,i,5)-w23*vx(j,k,i,3))
+     +                +s13*(-w13*(vx(j,k,i,6)-vx(j,k,i,1))
+     +                      -w12*vx(j,k,i,5)+w23*vx(j,k,i,2))
+     +                +s23*(-w23*(vx(j,k,i,6)-vx(j,k,i,4))
+     +                      +w12*vx(j,k,i,3)+w13*vx(j,k,i,2)) )
+                end if
                 fr1=4.*rstar/(1.+rstar)*(1.-sarccr3*
      +             ccatan(12.*rtilde))-1.
                 term1=cb1*(fr1-ft2)*ss

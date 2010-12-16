@@ -95,7 +95,8 @@ FSRC_LIBS = \
 	rb_pred.F      rb_corr.F      init_rb.F      init_trim.F \
 	pltmode.F      bcnonin.F      initnonin.F    resnonin.F \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
-        ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F
+        ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
+        sijrate3d.F
 
 #place routines needing special compilation flags (e.g low-level optimization)
 #in FSRC_SPEC...include a fake routine in case there are no others

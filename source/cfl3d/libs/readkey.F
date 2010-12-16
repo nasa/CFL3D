@@ -68,7 +68,7 @@ c
       common /fullns/ ifullns
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -479,7 +479,13 @@ c     beta8 parameter in k-enstrophy model
       nkey     = nkey + 1
 c
 c     SARC - Spalart-Allmaras curvature correction in 2D sense only
+c     does not account for system rotation
       isarc2d = 0
+      nkey     = nkey + 1
+c
+c     SARC - Spalart-Allmaras curvature correction in 3D
+c     does not account for system rotation
+      isarc3d = 0
       nkey     = nkey + 1
 c
 c     parameter cr3 in SARC model
@@ -1320,6 +1326,10 @@ c
       else if (inpstr(lc1:lc2).eq.'isarc2d') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isarc2d
+c
+      else if (inpstr(lc1:lc2).eq.'isarc3d') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isarc3d
 c
       else if (inpstr(lc1:lc2).eq.'sarccr3') then
          lc2 = lc2 +1

@@ -190,7 +190,7 @@ c
       common /gridtrans/ roll_angle
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /rigidbody/ irigb,irbtrim
       common /rbstmt2/ tmass,yinert,uinfrb,qinfrb,greflrb,gaccel,crefrb,
      .                 xtmref,areat
@@ -505,6 +505,7 @@ c
          work(nlast+125)= crot
          work(nlast+126)= i_nonlin
          work(nlast+127)= c_nonlin
+         work(nlast+128)= isarc3d
          nlast = nlast+nkey
       end if
 c
@@ -812,6 +813,7 @@ c
          crot = work(nlast+125)
          i_nonlin = int(work(nlast+126))
          c_nonlin = work(nlast+127)
+         isarc3d = int(work(nlast+128))
       end if
 c
 c**************************

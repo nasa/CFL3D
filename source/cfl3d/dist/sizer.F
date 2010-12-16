@@ -283,7 +283,7 @@ c
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
 c
       icall  = 0
       memuse = 0
@@ -1230,6 +1230,8 @@ c              Spalart
                iwk19=iwk18+inmx
                if (isarc2d .eq. 1) then
                  inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+               else if (isarc3d .eq. 1) then
+                 inmx=(jdim+1)*(kdim+1)*(idim-1)*6
                else
                  inmx=0
                end if

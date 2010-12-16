@@ -87,7 +87,7 @@ c
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
-     .        isar,crot
+     .        isar,crot,isarc3d
       common /sourceterm/ xdir_only_source
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /des/ cdes,ides
@@ -257,6 +257,7 @@ c
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
+     .    ((ivmx.eq.5) .and. isarc3d.eq.1) .or. 
      .    ((ivmx.eq.5) .and. isar.eq.1) .or. 
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .    ides.ge.2 .or. i_nonlin.ne.0) then
@@ -426,8 +427,13 @@ c   Spalart
       iwk18=iwk17+inmx
       iwk19=iwk18+inmx
       if (isarc2d .eq. 1) then
-        inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+        isarcnum=4
+        inmx=(jdim+1)*(kdim+1)*(idim-1)*isarcnum
+      else if (isarc3d .eq. 1) then
+        isarcnum=6
+        inmx=(jdim+1)*(kdim+1)*(idim-1)*isarcnum
       else
+        isarcnum=1
         inmx=0
       end if
       nroom=nwork-(iwk19+inmx)
@@ -445,7 +451,8 @@ c   Spalart
      + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
      + wk(iwk18),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,blank,iover,sumn(1),
      + sumn(2),negn(1),negn(2),xib2,volj0,volk0,voli0,nou,bou,nbuf,
-     + ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19),nummem,res(1,4))
+     + ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19),nummem,res(1,4),
+     + isarcnum)
       else if (ivmx .ge. 6 .and. ivmx .le. 15) then
 c   two-equation turb model
       iwk1=1
