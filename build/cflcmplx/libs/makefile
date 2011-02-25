@@ -16,7 +16,6 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_S)/*.F .
 	ln -s $(CFLSRC_S)/*.c .
-	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -98,10 +97,7 @@ FSRC_LIBS = \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
         histout_img.F  sijrate3d.F
 
-#place routines needing special compilation flags (e.g low-level optimization)
-#in FSRC_SPEC...include a fake routine in case there are no others
-
-FSRC_SPEC = fake.F addx.F
+FSRC_SPEC = addx.F
 
 CSRC_LIBS = bessel.c
 

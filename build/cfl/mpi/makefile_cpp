@@ -13,7 +13,6 @@ lncode:
 	@ echo "        linking source code"
 	ln -s $(CFLSRC_D)/*.F .
 	ln -s $(CFLSRC_S)/ccomplex.F .
-	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -50,10 +49,7 @@ FSRC_DIST = \
 	umalloc.f      reass.f        qoutavg.f      plot3davg.f \
         qout_coarse.f  qout_2d.f      plot3d_2d.f    plot3d_coarse.f
 
-#place routines needing special compilation flags (e.g low-level optimization)
-#in FSRC_SPEC...include a fake routine in case there are no others
-
-FSRC_SPEC = fake.f
+FSRC_SPEC =
 
 FOBJ_DIST = $(FSRC_DIST:.f=.o)
 

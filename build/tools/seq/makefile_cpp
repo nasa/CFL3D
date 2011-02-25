@@ -22,7 +22,6 @@ lncode:
 	ln -s $(CFLSRC_S)/cgnstools.F  .
 	ln -s  $(CFLSRC_S)/my_flush.F .
 	ln -s $(CFLSRC_D)/termn8.F .
-	ln -s $(CFLSRC_D)/development.F_clean fake.F
 
 lnhead:
 
@@ -43,10 +42,7 @@ lnhead:
 SOURCELIBS = umalloc_c.f umalloc_r.f \
 	readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f my_flush.f
 
-#place routines needing special compilation flags (e.g low-level optimization)
-#in FSRC_SPEC...include a fake routine in case there are no others
-
-FSRC_SPEC = fake.f
+FSRC_SPEC =
 
 OBJECTLIBS = $(SOURCELIBS:.f=.o)
 
