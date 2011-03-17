@@ -855,6 +855,16 @@ c   it may screw up the restart for time accurate: see rrestg.F
         write(11,*) ' new ivisc=30; old must also be... stopping'
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
+c   Note: if you try to allow restarts that change to/from type 40,
+c   it may screw up the restart for time accurate: see rrestg.F
+      if (ivmxold.eq.40 .and. ivmx.ne.40) then
+        write(11,*) ' old ivisc=40; new must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      if (ivmxold.ne.40 .and. ivmx.eq.40) then
+        write(11,*) ' new ivisc=40; old must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
 c
       iread = 1
       if (ivmxold.ne.ivmx) iread=0
@@ -1208,6 +1218,12 @@ c
               jk8   = jdim*kdim*12
               ki8   = kdim*idim1*12
               ji8   = jdim*idim1*12
+            end if
+            if (iv1.eq.40.or.iv2.eq.40.or.iv3.eq.40) then
+              jki2  = 4*jki
+              jk8   = jdim*kdim*16
+              ki8   = kdim*idim1*16
+              ji8   = jdim*idim1*16
             end if
             mytag = itag_qt + nbl
             if (myid .eq. myhost) then

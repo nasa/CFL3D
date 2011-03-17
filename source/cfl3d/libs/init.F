@@ -156,7 +156,7 @@ c         set them anyway for safety:
           if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
           if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
         else
-c         this includes models 6, 7, and 30:
+c         this includes models 6, 7, 30, and 40:
           if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
           if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
         end if
@@ -194,6 +194,39 @@ c       Special for 3-eqn model number 30:
             do k=1,kdim
               do j=1,jdim
                 ti0(j,k,3,m)=tur10(3)
+              enddo
+            enddo
+          enddo
+        end if
+c
+c       Special for 4-eqn model number 40:
+        if (ivisc(1).eq.40.or. ivisc(2).eq.40.or.
+     .           ivisc(3).eq.40) then
+          if (real(tur10(3)) .lt. 0.) tur10(3)=1.0
+          if (real(tur10(4)) .lt. 0.) then
+            turbintensity_inf_percent=100./xmach*sqrt(tur10(2)/1.5)
+            if (turbintensity_inf_percent .le. 1.3) then
+             tur10(4)=1173.51-589.428*turbintensity_inf_percent+
+     .          0.2196/(turbintensity_inf_percent**2)
+            else
+             tur10(4)=331.5*(turbintensity_inf_percent-0.5658)**(-0.671)
+            end if
+          end if
+          do m=1,4
+            do i=1,idim-1
+              do j=1,jdim
+                tk0(j,i,3,m)=tur10(3)
+                tk0(j,i,4,m)=tur10(4)
+              enddo
+              do k=1,kdim
+                tj0(k,i,3,m)=tur10(3)
+                tj0(k,i,4,m)=tur10(4)
+              enddo
+            enddo
+            do k=1,kdim
+              do j=1,jdim
+                ti0(j,k,3,m)=tur10(3)
+                ti0(j,k,4,m)=tur10(4)
               enddo
             enddo
           enddo

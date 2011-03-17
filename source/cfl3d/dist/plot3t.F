@@ -89,7 +89,7 @@ c
       common /igrdtyp/ ip3dgrd,ialph
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,

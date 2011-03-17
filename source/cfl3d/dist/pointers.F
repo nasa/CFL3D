@@ -472,6 +472,9 @@ c
 c        extra memory needed for ivisc=30 (3-eqn model)
          if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
      .      ns = jmkmim*3
+c        extra memory needed for ivisc=40 (4-eqn model)
+         if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
+     .      ns = jmkmim*4
 c
 c........Johnson-King data no longer stored
 c
@@ -492,6 +495,9 @@ c
 c        extra memory needed for ivisc=30 (3-eqn model)
          if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
      .      ns = kmim1*3*4
+c        extra memory needed for ivisc=40 (4-eqn model)
+         if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
+     .      ns = kmim1*4*4
 c
 c........tk0(jdim,idim-1,2,4)
 c        turbulence model variable at k-boundary
@@ -503,6 +509,9 @@ c
 c        extra memory needed for ivisc=30 (3-eqn model)
          if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
      .      ns = jmim1*3*4
+c        extra memory needed for ivisc=40 (4-eqn model)
+         if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
+     .      ns = jmim1*4*4
 c
 c........ti0(jdim,jdim,2,4)
 c        turbulence model variable at i-boundary
@@ -514,6 +523,9 @@ c
 c        extra memory needed for ivisc=30 (3-eqn model)
          if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
      .      ns = jmkm*3*4
+c        extra memory needed for ivisc=40 (4-eqn model)
+         if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
+     .      ns = jmkm*4*4
 c
 c........xkb(jdim-1,kdim-1,idim-1)
 c        k-index of nearest surface point (B-B turb model or LES#25)
@@ -724,6 +736,9 @@ c
 c        extra memory needed for ivisc=30 (3-eqn model)
          if(ivisc(3).eq.30 .or. ivisc(2).eq.30 .or. ivisc(1).eq.30)
      .      ns = jmkmim*6
+c        extra memory needed for ivisc=40 (4-eqn model)
+         if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
+     .      ns = jmkmim*8
 c
 c........qavg(jdim,kdim,idim,5) iteration-averaged data
 c

@@ -1435,6 +1435,62 @@ c        Intermittency:
          if (ier .ne. 0) call cg_error_exit_f
       end if
 c
+      if (ivisc(1).eq.40.or. ivisc(2).eq.40.or. ivisc(3).eq.40) then
+         write(901,'(''   writing k-omega field eqn turb info'',
+     .              '' plus intermittency and Retheta_t to cgns file'',
+     +     '' (SIDS-consistent-normalization)'')')
+c        Omega:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,1,1,wk)
+c        put in SIDS-like-"consistent normalization"
+         do i=i2d,idima-i2d
+         do j=0,jdima
+         do k=0,kdima
+           wk(i,j,k)=wk(i,j,k)*reue/xmach
+         enddo
+         enddo
+         enddo
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentDissipationRate', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentDissipationRate', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+c        K:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,2,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'TurbulentEnergyKinetic', wk, ifindex, ier)
+         end if
+c        Intermittency:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,3,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'Intermittency', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'Intermittency', wk, ifindex, ier)
+         end if
+c        Retheta_t:
+         call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +     tursav,wk,wk,wk,ti0,tj0,tk0,nummem,4,1,wk)
+         if (idouble .eq. 1) then
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
+     +                   'Retheta_t', wk, ifindex, ier)
+         else
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
+     +                   'Retheta_t', wk, ifindex, ier)
+         end if
+         if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
       if (ivisc(1).eq.8 .or. ivisc(2).eq.8 .or. ivisc(3).eq.8 .or.
      .    ivisc(1).eq.9 .or. ivisc(2).eq.9 .or. ivisc(3).eq.9 .or.
      .    ivisc(1).eq.13.or. ivisc(2).eq.13.or. ivisc(3).eq.13.or.
@@ -1912,6 +1968,65 @@ c
       if (ier .ne. 0) call cg_error_exit_f
       call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
      +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,3))
+      end if
+c
+c   Read k-omega+intermittency+Retheta_t info
+      if (ivmxold .eq. 40 .and. iread .eq. 1) then
+      solname='TurbulentDissipationRate'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+c   Change from SIDS-"consistent-normalization" back to CFL3D-type
+      do i=1,idima-2*irind+1
+      do j=1,jdima-2*jrind+1
+      do k=1,kdima-2*krind+1
+        wk(i,j,k)=wk(i,j,k)*xmach/reue
+      enddo
+      enddo
+      enddo
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,1))
+c
+      solname='TurbulentEnergyKinetic'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,2))
+c
+      solname='Intermittency'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,3))
+c
+      solname='Retheta_t'
+      if (idouble .eq. 1) then
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealDouble, irmin, irmax, wk, ier)
+      else
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
+     +                     RealSingle, irmin, irmax, wk, ier)
+      end if
+      if (ier .ne. 0) call cg_error_exit_f
+      call reorderq(idima,jdima,kdima,idim,jdim,kdim,nfac,
+     +    nfaci,wk,irind,jrind,krind,tursav(1,1,1,4))
       end if
 c
 c   Read variable cmuv
@@ -3640,6 +3755,16 @@ c   (non-standard)
         call cg_descriptor_write_f('TurbulenceModelName',
      +   'ThreeEquation_SST+transition',ier)
         if (ier .ne. 0) call cg_error_exit_f
+      else if(ivmx .eq. 40) then
+c   (non-standard)
+        call cg_model_write_f('TurbulenceModel_t',
+     +   UserDefined,ier)
+        call cg_goto_f(iccg,ibase,ier,'Zone_t',igrid,
+     +   'FlowEquationSet_t',1,'TurbulenceModel_t',1,'end')
+        if (ier .ne. 0) call cg_error_exit_f
+        call cg_descriptor_write_f('TurbulenceModelName',
+     +   'FourEquation_SST+transition',ier)
+        if (ier .ne. 0) call cg_error_exit_f
       end if
 c
 c   Create DataArray containing turb Prandtl number under TurbulenceClosure
@@ -4052,6 +4177,11 @@ c   Read 'TurbulenceModel' node, if appropriate
           iv1=idata(1)*30
           iv2=idata(2)*30
           iv3=idata(3)*30
+        else if(itype .eq. UserDefined .and.
+     +   text .eq. 'FourEquation_SST+transition') then
+          iv1=idata(1)*40
+          iv2=idata(2)*40
+          iv3=idata(3)*40
         else
           write(901,'('' Model name not recognized:'',a32)')
      +     ModelTypeName(itype)

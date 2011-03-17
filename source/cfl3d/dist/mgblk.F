@@ -282,7 +282,7 @@ c
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
      .              tp(4,4),zlfct,epstr,relax,ittrst 
       common /rigidbody/ irigb,irbtrim
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,

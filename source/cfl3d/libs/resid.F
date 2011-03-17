@@ -82,7 +82,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf
       common /maxiv/ ivmx
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /fullns/ ifullns
@@ -701,6 +701,111 @@ c   three-equation turb model
      + iex3,wk(iwk34),wk(iwk35),wk(iwk36),wk(iwk37),
      + wk(iwk38),wk(iwk39),wk(iwk40),wk(iwk41),
      + wk(iwk42),wk(iwk43),wk(iwk44),wk(iwk45),nummem)
+      else if (ivmx .eq. 40) then
+c   four-equation turb model
+      iwk1=1
+      if (iturbord .eq. 1) then
+        iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))*4
+        iex=0
+        iex2=-i2d
+      else
+        iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))*4
+        iex=1
+        iex2=1-(2*i2d)
+      end if
+      iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+      iex3=-i2d
+      inmx=(kdim-1)*(jdim-1)
+      iwk6=iwk5+inmx
+      iwk7=iwk6+inmx
+      iwk8=iwk7+inmx
+      iwk9=iwk8+inmx
+      iwk10=iwk9+inmx
+      iwk11=iwk10+inmx
+      iwk12=iwk11+inmx
+      iwk13=iwk12+inmx
+      iwk14=iwk13+inmx
+      inmx=(jdim-1)*(kdim-1)
+      iwk15=iwk14+inmx
+      iwk16=iwk15+inmx
+      iwk17=iwk16+inmx
+      iwk18=iwk17+inmx
+      iwk19=iwk18+inmx
+      iwk20=iwk19+inmx
+      iwk21=iwk20+inmx
+      iwk22=iwk21+inmx
+      iwk23=iwk22+inmx
+      inmx=(kdim-1)*(idim-1)
+      iwk24=iwk23+inmx
+      iwk25=iwk24+inmx
+      iwk26=iwk25+inmx
+      iwk27=iwk26+inmx
+      iwk28=iwk27+inmx
+      iwk29=iwk28+inmx
+      iwk30=iwk29+inmx
+      iwk31=iwk30+inmx
+      iwk32=iwk31+inmx
+      inmx=(jdim-1)*(kdim-1)*(idim-1)*4
+      iwk33=iwk32+inmx
+      inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+      iwk34=iwk33+inmx
+      inmx=(kdim-1)*(jdim-1)
+      iwk35=iwk34+inmx
+      iwk36=iwk35+inmx
+      iwk37=iwk36+inmx
+      iwk38=iwk37+inmx
+      inmx=(jdim-1)*(kdim-1)
+      iwk39=iwk38+inmx
+      iwk40=iwk39+inmx
+      iwk41=iwk40+inmx
+      iwk42=iwk41+inmx
+      inmx=(kdim-1)*(idim-1)
+      iwk43=iwk42+inmx
+      iwk44=iwk43+inmx
+      iwk45=iwk44+inmx
+      iwk46=iwk45+inmx
+      inmx=(kdim-1)*(jdim-1)
+      iwk47=iwk46+inmx
+      iwk48=iwk47+inmx
+      iwk49=iwk48+inmx
+      iwk50=iwk49+inmx
+      inmx=(jdim-1)*(kdim-1)
+      iwk51=iwk50+inmx
+      iwk52=iwk51+inmx
+      iwk53=iwk52+inmx
+      iwk54=iwk53+inmx
+      inmx=(kdim-1)*(idim-1)
+      iwk55=iwk54+inmx
+      iwk56=iwk55+inmx
+      iwk57=iwk56+inmx
+      nroom=nwork-(iwk57+inmx)
+      if(nroom .lt. 0.) then
+       nou(1) = min(nou(1)+1,ibufdim)
+       write(bou(nou(1),1),'('' not enough memory for 4-eqn turb'',
+     . '' model.'')')
+       nou(1) = min(nou(1)+1,ibufdim)
+       write(bou(nou(1),1),'('' nroom='',i12)') nroom
+       call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      call foureqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
+     + res,snk0,xib,wk(iwk1),res(1,2),res(1,3),res(1,4),res(1,5),
+     + wk(iwk4),wk(iwk5),
+     + wk(iwk6),wk(iwk7),wk(iwk8),wk(iwk9),wk(iwk10),wk(iwk11),
+     + wk(iwk12),wk(iwk13),wk(iwk14),wk(iwk15),wk(iwk16),wk(iwk17),
+     + wk(iwk18),wk(iwk19),wk(iwk20),wk(iwk21),wk(iwk22),wk(iwk23),
+     + wk(iwk24),wk(iwk25),wk(iwk26),wk(iwk27),wk(iwk28),wk(iwk29),
+     + wk(iwk30),wk(iwk31),ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,
+     + vj0,vk0,vi0,blank,iover,sumn(1),sumn(2),sumn(3),sumn(4),
+     + negn(1),negn(2),negn(3),negn(4),ux,wk(iwk32),
+     + xib2,wk(iwk33),bcj,bck,bci,nbci0,nbcidim,
+     + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
+     + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
+     + iex3,wk(iwk34),wk(iwk35),wk(iwk36),wk(iwk37),
+     + wk(iwk38),wk(iwk39),wk(iwk40),wk(iwk41),
+     + wk(iwk42),wk(iwk43),wk(iwk44),wk(iwk45),
+     + wk(iwk46),wk(iwk47),wk(iwk48),wk(iwk49),
+     + wk(iwk50),wk(iwk51),wk(iwk52),wk(iwk53),
+     + wk(iwk54),wk(iwk55),wk(iwk56),wk(iwk57),nummem)
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
         call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,

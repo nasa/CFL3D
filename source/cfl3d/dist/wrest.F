@@ -76,7 +76,7 @@ c
       common /conversion/ radtodeg
       common /maxiv/ ivmx
       common /ghost/ irghost,iwghost
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
@@ -161,6 +161,12 @@ c
         jk8   = jdim*kdim*12
         ki8   = kdim*idim1*12
         ji8   = jdim*idim1*12
+      end if
+      if (ivisc(1).eq.40.or.ivisc(2).eq.40.or.ivisc(3).eq.40) then
+        jki2=4*jki
+        jk8   = jdim*kdim*16
+        ki8   = kdim*idim1*16
+        ji8   = jdim*idim1*16
       end if
 c
       if (myid.eq.myhost) then

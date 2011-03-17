@@ -607,6 +607,7 @@ c     set nummem (usually 2 for 1 or 2 turbulence equations)
 c     need to also set memory appropriately in pointers
       nummem=2
       if (ivmx .eq. 30) nummem=3
+      if (ivmx .eq. 40) nummem=4
       allocate( rmstr(ncycmax,nummem),stat=stats )
       call umalloc(ncycmax*nummem,0,'rmstr',memuse,stats)
       allocate( nneg(ncycmax,nummem),stat=stats )

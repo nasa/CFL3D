@@ -189,6 +189,10 @@ c
             else if (nummem .eq. 3) then
             write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
      .           ''  log(turres3)  nneg1  nneg2  nneg3'')') ntt
+            else if (nummem .eq. 4) then
+            write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  log(turres4)  nneg1'',
+     .           ''  nneg2  nneg3  nneg4'')') ntt
             else
             write(13,'(''#'',i6,'' it  log(turres1)  log(turres2)'',
      .           ''  log(turres3)  log(turres4)  log(turres5)'',
@@ -202,6 +206,10 @@ c
             else if (nummem .eq. 3) then
             write(13,'(''variables= it  log(turres1)  log(turres2)'',
      .           ''  log(turres3)  nneg1  nneg2  nneg3'')')
+            else if (nummem .eq. 4) then
+            write(13,'(''variables= it  log(turres1)  log(turres2)'',
+     .           ''  log(turres3)  log(turres4)  nneg1'',
+     .           ''  nneg2  nneg3  nneg4'')')
             else
             write(13,'(''variables= it  log(turres1)  log(turres2)'',
      .           ''  log(turres3)  log(turres4)  log(turres5)'',
@@ -222,6 +230,11 @@ c
      .   log10(real(rmstr(n,1))),log10(real(rmstr(n,2))),
      .   log10(real(rmstr(n,3))),nneg(n,1),
      .   nneg(n,2),nneg(n,3)
+         else if (nummem .eq. 4) then
+         write(13,'(3x,i6,4e14.5,1x,i6,1x,i6,1x,i6,1x,i6)') n,
+     .   log10(real(rmstr(n,1))),log10(real(rmstr(n,2))),
+     .   log10(real(rmstr(n,3))),log10(real(rmstr(n,4))),
+     .   nneg(n,1),nneg(n,2),nneg(n,3),nneg(n,4)
          else
          write(13,'(3x,i6,7e14.5,1x,i6,1x,i6,1x,i6,
      .   1x,i6,1x,i6,1x,i6,1x,i6)') n,

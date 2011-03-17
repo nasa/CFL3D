@@ -33,7 +33,7 @@ c
       common /sklton/ isklton
       common /twod/ i2d
       common /zero/ iexp
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
@@ -210,8 +210,8 @@ c
 c
 c Overwrite with keyword value if nonzero
 c
-      if (real(cflturb).ne.0.) then
-         factor = cflturb
+      if (real(cflturb(1)).ne.0.) then
+         factor = cflturb(1)
       end if
 c
 c Timestep for turb model - damp(j,k,i) 

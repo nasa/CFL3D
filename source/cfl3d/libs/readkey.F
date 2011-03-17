@@ -43,7 +43,7 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /precond/ cprec,uref,avn
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /entfix/ epsa_l,epsa_r
@@ -183,8 +183,14 @@ c     factor governing cfl number for turbulence model; supercedes
 c     the hardwired value of "factor" in the turb. model only
 c     if nonzero
 c
-      cflturb  = 0.
-      nkey     = nkey + 1
+      cflturb(1)  = 0.
+      cflturb(2)  = 0.
+      cflturb(3)  = 0.
+      cflturb(4)  = 0.
+      cflturb(5)  = 0.
+      cflturb(6)  = 0.
+      cflturb(7)  = 0.
+      nkey     = nkey + 7
 c
 c     limit on ratio of minimum to maximum |eigenvalue| - the
 c     parameter for Harten's entropy fix or some variation 
@@ -694,7 +700,7 @@ c     default=-1 (do not override normal usage)
       nkey     = nkey + 1
 c
 c     prod2d3dtrace forces Sij used in 2SijSij to be traceless; in 
-c     production term in ivmx=6,7,10,30 when ikoprod=1; and in 
+c     production term in ivmx=6,7,10,30,40 when ikoprod=1; and in 
 c     Wilcox06 stress-limiter term
 c                =0.5 in 2-D sense
 c                =0.333333 in 3-D sense
@@ -899,7 +905,8 @@ c        modify tur10(2) and tur10(1), respectively
      +       '' overrides tur10'')')
            if (ivmx .eq. 4) then
              tur10(1)=eddy_visc_inf/0.09
-           else if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.30) then
+           else if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.30 .or.
+     +              ivmx.eq.40) then
              tur10(1)=tur10(2)/eddy_visc_inf
            else if (ivmx.eq.8 .or. ivmx.eq.14) then
              tur10(1)=0.0895*tur10(2)/eddy_visc_inf
@@ -1066,9 +1073,45 @@ c
          read(inpstr(lc2:lcl),*) nsubturb
 c
       else if (inpstr(lc1:lc2).eq.'cflturb') then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''stopping...keyword cflturb no '',
+     .       ''longer allowed... use cflturb1, 2, etc instead'')')
+         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb1') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         cflturb = abs(realval(1))
+         cflturb(1) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb2') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(2) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb3') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(3) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb4') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(4) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb5') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(5) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb6') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(6) = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'cflturb7') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cflturb(7) = abs(realval(1))
 c
       else if (inpstr(lc1:lc2).eq.'epsa_r') then
          lc2 = lc2 +1

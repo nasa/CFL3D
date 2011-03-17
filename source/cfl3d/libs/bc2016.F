@@ -316,7 +316,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -364,12 +364,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,2) = 2.*tj0(k,i,2,1)-tursav(1,k,i,2)
  102    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
         do i=ista,iend1
+        ii = i-ista+1
         do k=ksta,kend1
-          tj0(k,i,3,1) = -tursav(j,k,i,3)
-          tj0(k,i,3,2) = 0.
+        kk = k-ksta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            tj0(k,i,3,1) = tursav(j,k,i,3)
+          else
+c           tj0(k,i,3,1) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tj0(k,i,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(kk,ii,ip,3)*reue/xmach
+          end if
+          tj0(k,i,3,2) = 2.*tj0(k,i,3,1)-tursav(1,k,i,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do i=ista,iend1
+        ii = i-ista+1
+        do k=ksta,kend1
+        kk = k-ksta+1
+          tj0(k,i,3,1) = tursav(j,k,i,3)
+          tj0(k,i,4,1) = tursav(j,k,i,4)
         enddo
         enddo
         end if
@@ -571,7 +601,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -619,12 +649,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  202    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
         do i=ista,iend1
+        ii = i-ista+1
         do k=ksta,kend1
-          tj0(k,i,3,3) = -tursav(j,k,i,3)
-          tj0(k,i,3,4) = 0.
+        kk = k-ksta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            tj0(k,i,3,3) = tursav(j,k,i,3)
+          else
+c           tj0(k,i,3,3) = 2.*bcdata(kk,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tj0(k,i,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(kk,ii,ip,3)*reue/xmach
+          end if
+          tj0(k,i,3,4) = 2.*tj0(k,i,3,3)-tursav(jdim-1,k,i,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do i=ista,iend1
+        ii = i-ista+1
+        do k=ksta,kend1
+        kk = k-ksta+1
+          tj0(k,i,3,3) = tursav(j,k,i,3)
+          tj0(k,i,4,3) = tursav(j,k,i,4)
         enddo
         enddo
         end if
@@ -826,7 +886,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -874,12 +934,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,2) = 2.*tk0(j,i,2,1)-tursav(j,1,i,2)
  302    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
         do i=ista,iend1
-        do k=ksta,kend1
-          tk0(j,i,3,1) = -tursav(j,k,i,3)
-          tk0(j,i,3,2) = 0.
+        ii = i-ista+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            tk0(j,i,3,1) = tursav(j,k,i,3)
+          else
+c           tk0(j,i,3,1) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tk0(j,i,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,ii,ip,3)*reue/xmach
+          end if
+          tk0(j,i,3,2) = 2.*tk0(j,i,3,1)-tursav(j,1,i,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do i=ista,iend1
+        ii = i-ista+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          tk0(j,i,3,1) = tursav(j,k,i,3)
+          tk0(j,i,4,1) = tursav(j,k,i,4)
         enddo
         enddo
         end if
@@ -1081,7 +1171,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -1129,12 +1219,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,4) = 2.*tk0(j,i,2,3)-tursav(j,kdim-1,i,2)
  402    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
         do i=ista,iend1
-        do k=ksta,kend1
-          tk0(j,i,3,3) = -tursav(j,k,i,3)
-          tk0(j,i,3,4) = 0.
+        ii = i-ista+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            tk0(j,i,3,3) = tursav(j,k,i,3)
+          else
+c           tk0(j,i,3,3) = 2.*bcdata(jj,ii,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            tk0(j,i,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,ii,ip,3)*reue/xmach
+          end if
+          tk0(j,i,3,4) = 2.*tk0(j,i,3,3)-tursav(j,kdim-1,i,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do i=ista,iend1
+        ii = i-ista+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          tk0(j,i,3,3) = tursav(j,k,i,3)
+          tk0(j,i,4,3) = tursav(j,k,i,4)
         enddo
         enddo
         end if
@@ -1336,7 +1456,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -1384,12 +1504,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,2) = 2.*ti0(j,k,2,1)-tursav(j,k,1,2)
  502    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
-        do i=ista,iend1
         do k=ksta,kend1
-          ti0(j,k,3,1) = -tursav(j,k,i,3)
-          ti0(j,k,3,2) = 0.
+        kk = k-ksta+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            ti0(j,k,3,1) = tursav(j,k,i,3)
+          else
+c           ti0(j,k,3,1) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            ti0(j,k,3,1) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,kk,ip,3)*reue/xmach
+          end if
+          ti0(j,k,3,2) = 2.*ti0(j,k,3,1)-tursav(j,k,1,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do k=ksta,kend1
+        kk = k-ksta+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          ti0(j,k,3,1) = tursav(j,k,i,3)
+          ti0(j,k,4,1) = tursav(j,k,i,4)
         enddo
         enddo
         end if
@@ -1591,7 +1741,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         re=reue/xmach
         if (     ivmx.eq.6) then
           beta1=.075
-        else if (ivmx.eq.7) then
+        else if (ivmx.eq.7 .or. ivmx.eq.30 .or. ivmx.eq.40) then
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
@@ -1639,12 +1789,42 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,4) = 2.*ti0(j,k,2,3)-tursav(j,k,idim-1,2)
  602    continue
         end if
-c       for transition model, intermittency at wall is zero
+c       for trans model, intermittency at wall is either zero flux or set by user
         if (ivmx .eq. 30) then
-        do i=ista,iend1
         do k=ksta,kend1
-          ti0(j,k,3,3) = -tursav(j,k,i,3)
-          ti0(j,k,3,4) = 0.
+        kk = k-ksta+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          if (iuse3 .eq. 0) then
+c           bc2004 or 2014 -> zero flux:
+            ti0(j,k,3,3) = tursav(j,k,i,3)
+          else
+c           ti0(j,k,3,3) = 2.*bcdata(jj,kk,ip,3)-tursav(j,k,i,3)
+c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
+            tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+            fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+            dist=ccabs(smin(j,k,i))
+            hee=(1.+0.5*gm1*xmach**2)/gm1
+            rhoee=(gamma*q(j,k,i,5))**(1./gamma)
+            uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
+            if (uee2 .gt. 0.) then
+              uee=sqrt(uee2)
+            else
+              uee=xmach
+            end if
+            ti0(j,k,3,3) = tursav(j,k,i,3) + 2.*dist*q(j,k,i,1)/fnu*
+     +        uee*bcdata(jj,kk,ip,3)*reue/xmach
+          end if
+          ti0(j,k,3,4) = 2.*ti0(j,k,3,3)-tursav(j,k,idim-1,3)
+        enddo
+        enddo
+        else if (ivmx .eq. 40) then
+        do k=ksta,kend1
+        kk = k-ksta+1
+        do j=jsta,jend1
+        jj = j-jsta+1
+          ti0(j,k,3,3) = tursav(j,k,i,3)
+          ti0(j,k,4,3) = tursav(j,k,i,4)
         enddo
         enddo
         end if

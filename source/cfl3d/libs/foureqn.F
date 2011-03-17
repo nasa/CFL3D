@@ -1,19 +1,28 @@
-      subroutine threeeqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,
-     + x,y,z,vist3d,vor,smin,zksav,turre,damp1,blend,timestp,fnu,bx,bx2,
-     + cx,cx2,dx,dx2,fx,fx2,workx,by,by2,cy,cy2,dy,dy2,fy,fy2,worky,
-     + bz,bz2,cz,cz2,dz,dz2,fz,fz2,workz,ntime,tj0,tk0,ti0,nbl,
-     + qj0,qk0,qi0,vj0,vk0,vi0,blank,iover,sumn1,sumn2,sumn3,
-     + negn1,negn2,negn3,
-     + ux,rhside,zksav2,v3dtmp,bcj,bck,bci,nbci0,nbcidim,
+      subroutine foureqn(jdim,kdim,idim,q,sj,sk,si,vol,dtj,x,y,z,vist3d,
+     + vor,smin,zksav,turre,damp1,blend,timestp,wrks,
+     + fnu,bx,
+     + bx2,cx,cx2,dx,dx2,fx,
+     + fx2,workx,by,by2,cy,cy2,
+     + dy,dy2,fy,fy2,worky,bz,
+     + bz2,cz,cz2,dz,dz2,fz,
+     + fz2,workz,ntime,tj0,tk0,ti0,nbl,qj0,qk0,qi0,
+     + vj0,vk0,vi0,blank,iover,sumn1,sumn2,sumn3,sumn4,
+     + negn1,negn2,negn3,negn4,ux,rhside,
+     + zksav2,v3dtmp,bcj,bck,bci,nbci0,nbcidim,
      + nbcj0,nbcjdim,nbck0,nbckdim,ibcinfo,jbcinfo,kbcinfo,
      + maxbl,maxseg,volj0,volk0,voli0,nou,bou,nbuf,ibufdim,iex,iex2,
-     + iex3,bx3,cx3,dx3,fx3,by3,cy3,dy3,fy3,bz3,cz3,dz3,fz3,nummem)
+     + iex3,bx3,cx3,dx3,fx3,
+     + by3,cy3,dy3,fy3,
+     + bz3,cz3,dz3,fz3,
+     + bx4,cx4,dx4,fx4,
+     + by4,cy4,dy4,fy4,
+     + bz4,cz4,dz4,fz4,nummem)
 c
 c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Compute turbulent viscosity distributions using
-c     3-equation turbulence models
+c     4-equation turbulence models
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -73,9 +82,15 @@ c
      +  dy3(jdim-1,kdim-1),fy3(jdim-1,kdim-1),
      +           bz3(kdim-1,idim-1),cz3(kdim-1,idim-1),
      +  dz3(kdim-1,idim-1),fz3(kdim-1,idim-1)
-      dimension turre(0-iex:jdim+iex,0-iex:kdim+iex,0-iex2:idim+iex2,3),
+       dimension bx4(kdim-1,jdim-1),cx4(kdim-1,jdim-1),
+     +  dx4(kdim-1,jdim-1),fx4(kdim-1,jdim-1),
+     +           by4(jdim-1,kdim-1),cy4(jdim-1,kdim-1),
+     +  dy4(jdim-1,kdim-1),fy4(jdim-1,kdim-1),
+     +           bz4(kdim-1,idim-1),cz4(kdim-1,idim-1),
+     +  dz4(kdim-1,idim-1),fz4(kdim-1,idim-1)
+      dimension turre(0-iex:jdim+iex,0-iex:kdim+iex,0-iex2:idim+iex2,4),
      + blank(jdim,kdim,idim),
-     + zksav(jdim,kdim,idim,nummem),rhside(jdim-1,kdim-1,idim-1,3)
+     + zksav(jdim,kdim,idim,nummem),rhside(jdim-1,kdim-1,idim-1,4)
      + ,tj0(kdim,idim-1,nummem,4),tk0(jdim,idim-1,nummem,4),
      +  ti0(jdim,kdim,nummem,4),
      + qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
@@ -89,6 +104,7 @@ c
      +          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
+      dimension wrks(jdim-1,kdim-1,idim-1)
 c
 c
 c   Variables:
@@ -103,24 +119,26 @@ c      x,y,z - grid vertex locations
 c      vist3d - turbulent eddy viscosity (nondimensionalized by mulamref)
 c      vor - vorticity
 c      smin - minimum distance to any wall - set negative if laminar region!
-c      zksav - saved values of the 3 turbulent quantities (1=omega or epsilon,
-c              2=k, 3=intermittency)
+c      zksav - saved values of the 4 turbulent quantities (1=omega or epsilon,
+c              2=k, 3=intermittency, 4=Rethetat_tilde)
 c                omega is nondimensionalized by rhoref*aref**2/mulamref
 c                epsilon          "             rhoref*aref**4/mulamref
 c                k                "             aref**2
 c      zksav2 - auxiliary k and omega (or epsilon) for saving quantities
 c               from last time step during time-accurate subiterations
-c               (k,j,i,1), (j,k,i,2), and (j,k,i,3) = k and omega (or epsilon) 
-c                   and intermittency
-c               (k,j,i,4), (j,k,i,5), and (j,k,i,6) = delta k and delta omega 
+c               (j,k,i,1) - (j,k,i,4) = k and omega (or epsilon) 
+c                   and intermittency and Rethetat_tilde
+c               (j,k,i,5) - (j,k,i,8) = delta k and delta omega 
 c                   (or epsilon) and delta intermittency
-c      turre - working values of 3 turb quantities in this subroutine
+c                   and delta Rethetat_tilde
+c      turre - working values of 4 turb quantities in this subroutine
 c      damp1 - for SST=CD (cross-derivative) term; for others, sometimes used
 c              as storage for linearizations of production terms for addition
 c              to LHS diagonal elements
 c      blend - blending term for 2-layer models (just SST right now); 
 c              =1 otherwise
 c      timestp - time step array delta t
+c      wrks    - spare array used for temporary storage
 c      fnu - laminar viscosity (from Sutherland's law), nondim by mulamref
 c      bx,bx2,cx,cx2,dx,dx2,fx,fx2 - sub, diag, superdiag, & RHS in 
 c                                    eta direction
@@ -136,8 +154,8 @@ c      qj0,qk0,qi0 - BCs for q's
 c      vj0,vk0,vi0 - BCs for vist3d
 c      blank - iblanking array for overset
 c      iover - overset gridding parameter
-c      sumn1,sumn2,sunm3 - residual for 2 turbulence equations
-c      negn1,negn2,negn3 - number of locations where the solution yields a "negative"
+c      sumn1,sumn2,sumn3,sumn4 - residual for 4 turbulence equations
+c      negn1,negn2,negn3,negn4 - number of locations where the solution yields a "negative"
 c                    turbulence quantity.  This SHOULD be zero, but it seems
 c                    to be OK if there are only a few of these.  When they
 c                    go negative, the values are artificially limited to be
@@ -146,7 +164,7 @@ c                    the solution is probably going to blow up.  Check your
 c                    grid for excessive grid stretching, or try lowering CFL.
 c      ux - 9 components of velocity derivative: ux,uy,uz,vx,vy,vz,wx,wy,wz 
 c           at cell centers.  Used for nonlinear models only.
-c      rhside - right-hand-side terms for 3 eqns
+c      rhside - right-hand-side terms for 4 eqns
 c      v3dtmp - temporary storage for vist3d (needed for nonlinear models,
 c               which require turb viscosity in diffusion term WITHOUT
 c               variable cmu)
@@ -159,36 +177,36 @@ c
 c     Parameter if need to revert to standard SST w no transition (itrans_on=0):
       itrans_on=1
 c     Set some of the transition-related parameters:
-c     Note: ivmx=31 is currently NOT usable at all!
+c     Note that Tu is LIMITED to be no less than 0.027
       tu_percent=100.*sqrt(2.*tur10(2)/(3.*xmach*xmach))
-      if (real(re_thetat0) .lt. 0.) then
-        if (ivmx .eq. 30) then
-          re_thetat=400.*tu_percent**(-5./8.)
-c         re_thetat=32.591*(tu_percent/100.)**(-0.621)
-        else if (ivmx .eq. 31) then
-          re_thetat=803.73*(tu_percent+0.6067)**(-1.027)
-        end if
-      else
-        re_thetat=re_thetat0
-      end if
-      if (ivmx .eq. 30) then
-        re_thetac=0.85*re_thetat
-      else if (ivmx .eq. 31) then
-        re_thetac=re_thetat
-        flength=163.*alog(real(tu_percent))+3.625
-        ce2=50.
-      end if
+      ca1=2.0
+      ca2=0.06
+      ce1=1.0
+      ce2=50.
+      sigma_f=1.0
+      s1=2.0
+      cthetat=0.03
+      sigma_thetat=2.0
+      ce2inv=1./ce2
 c
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     Computing turbulent'',
-     +    '' viscosity using 3-eqns, block='',i5)') nbl
+     +    '' viscosity using 4-eqns, block='',i5)') nbl
          nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''     WARNING: ivisc=30 still'',
+         write(bou(nou(1),1),'(''     nummem='',i5)') nummem
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     WARNING: ivisc=40 still'',
      .    '' under development... use at your own risk!'')')
          nou(1) = min(nou(1)+1,ibufdim)
-         write(bou(nou(1),1),'(''     Freestream tur10,tur20,tur30 = '',
-     +     3e19.8)') tur10(1),tur10(2),tur10(3)
+         write(bou(nou(1),1),'(''     WARNING: Results may be'',
+     .    '' sensitive to I.C.s and how case is run!!!!'')')
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     Freestream tur10-tur40 = '',
+     +     4e19.8)') tur10(1),tur10(2),tur10(3),tur10(4)
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''     cflturb(1)-(4) = '',
+     +     4f12.5)') cflturb(1),cflturb(2),cflturb(2),cflturb(4)
         if(iturbord .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     1st order advection on RHS'')')
@@ -198,22 +216,21 @@ c
         end if
       end if
       if(isklton .gt. 0) then
-        if(ivmx .eq. 30) then
+        if(ivmx .eq. 40) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'',
-     +       '' + transition model (Langtry unpublished version)'')')
-        else if (ivmx .eq. 31) then
+     +       '' + transition model (AIAA J 47(12) 2009, p2894-2906)'')')
+        end if
+        if(itrans_on .eq. 0) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     k-omega SST (Menter)'',
-     +       '' + transition model (JTurbomach 128:413 2006 and'',
-     +       '' IJHFF 29:48 2008)'')')
+           write(bou(nou(1),1),'(''     transition part turned OFF'')')
         end if
         nou(1) = min(nou(1)+1,ibufdim)
         write(bou(nou(1),1),'(''     Tu (percent)='',f10.4)') 
      +    tu_percent
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''     mut_inf/muref='',f10.4,
-     +    '', Re_thetat='',f10.4)') rho0*tur10(2)/tur10(1),re_thetat
+        write(bou(nou(1),1),'(''     mut_inf/muref='',f10.4)')
+     +    rho0*tur10(2)/tur10(1)
         if(ikoprod .eq. 1) then
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'(''     strain-based production'',
@@ -268,7 +285,8 @@ c ones.
 c
       factor1=10.
       factor2=10.
-      factor3=100.
+      factor3=0.1
+      factor4=0.1
 c
 c Overwrite factors with keyword value "cflturb()" if nonzero
 c
@@ -281,9 +299,13 @@ c
       if (real(cflturb(3)).ne.0.) then
          factor3 = cflturb(3)
       end if
-c factor2 and 3 are set relative to factor1
+      if (real(cflturb(4)).ne.0.) then
+         factor4 = cflturb(4)
+      end if
+c factor2, 3, and 4 are set relative to factor1
       factor2=factor2/factor1
       factor3=factor3/factor1
+      factor4=factor4/factor1
 c
 c Timestep for turb model
 c
@@ -306,6 +328,7 @@ c          flow equations, since multigrid is not used for turb. eq.)
            timestp(j,k,i)=dt
            factor2=1.
            factor3=1.
+           factor4=1.
          enddo
          enddo
          enddo
@@ -318,19 +341,17 @@ c Constants for Set 1:
 c  cmuc1 (normally 0.09):
       cmuc1=0.09
 c  beta1 (constant in omega or epsilon destruction term):
-      if(ivmx.eq.30 .or. ivmx.eq.31)                 beta1=0.075
+      if(ivmx.eq.40)                 beta1=0.075
 c  sigo1 (constant in omega, epsilon, or zeta diffusion term):
-      if(ivmx.eq.30 .or. ivmx.eq.31)                 sigo1=0.5
+      if(ivmx.eq.40)                 sigo1=0.5
 c  sigk1 (constant in k diffusion term):
-      if(ivmx.eq.30 .or. ivmx.eq.31)                 sigk1=0.85
+      if(ivmx.eq.40)                 sigk1=0.85
 c  alp1 (constant in omega or epsilon production term):
-      if(ivmx.eq.30 .or. ivmx.eq.31)                 alp1 =
+      if(ivmx.eq.40)                 alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
-c
-c  sigg (constant in intermittency diffusion term):
-      sigg=1.0
 c Coefficient for fnu in diffusion term
       sigkmu = 1.0
+      sigg=1./sigma_f
 c
 c Constants for Set 2 (2-layer SST model only):
       cmuc2=0.09
@@ -359,9 +380,11 @@ c
         sumn1 = 0.
         sumn2 = 0.
         sumn3 = 0.
+        sumn4 = 0.
         negn1 = 0
         negn2 = 0
         negn3 = 0
+        negn4 = 0
         return
       end if
       phi=0.
@@ -470,20 +493,21 @@ c   Load appropriate vist3d value into ghost cells
       end if
 c If this is 1st global subiteration for time-accurate computation,
 c save zksav (at time step n):
-c zksav2(j,k,i,1), (j,k,i,2), and (j,k,i,3) are turb quantities
-c zksav2(j,k,i,4), (j,k,i,5), and (j,k,i,6) are Delta turb quantities
+c zksav2(j,k,i,1)-(j,k,i,4) are turb quantities
+c zksav2(j,k,i,5)-(j,k,i,8) are Delta turb quantities
       if (real(dt) .gt. 0. .and. icyc .eq. 1) then
       if (abs(ita) .eq. 2) then
 c     if zksav2 at 1st point is zero, then we know that we do not have
 c     2nd order data from the restart; no choice but to set
-c     zksav2(j,k,i,4&5&6)=deltaQ=0 for 1st iteration
+c     zksav2(j,k,i,5&6&7&8)=deltaQ=0 for 1st iteration
         if (real(zksav2(1,1,1,1)) .eq. 0.) then
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
-              zksav2(j,k,i,4)=0.
               zksav2(j,k,i,5)=0.
               zksav2(j,k,i,6)=0.
+              zksav2(j,k,i,7)=0.
+              zksav2(j,k,i,8)=0.
             enddo
           enddo
         enddo
@@ -491,9 +515,10 @@ c     zksav2(j,k,i,4&5&6)=deltaQ=0 for 1st iteration
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
-              zksav2(j,k,i,4)=zksav(j,k,i,1)-zksav2(j,k,i,1)
-              zksav2(j,k,i,5)=zksav(j,k,i,2)-zksav2(j,k,i,2)
-              zksav2(j,k,i,6)=zksav(j,k,i,3)-zksav2(j,k,i,3)
+              zksav2(j,k,i,5)=zksav(j,k,i,1)-zksav2(j,k,i,1)
+              zksav2(j,k,i,6)=zksav(j,k,i,2)-zksav2(j,k,i,2)
+              zksav2(j,k,i,7)=zksav(j,k,i,3)-zksav2(j,k,i,3)
+              zksav2(j,k,i,8)=zksav(j,k,i,4)-zksav2(j,k,i,4)
             enddo
           enddo
         enddo
@@ -505,6 +530,7 @@ c     zksav2(j,k,i,4&5&6)=deltaQ=0 for 1st iteration
               zksav2(j,k,i,1)=zksav(j,k,i,1)
               zksav2(j,k,i,2)=zksav(j,k,i,2)
               zksav2(j,k,i,3)=zksav(j,k,i,3)
+              zksav2(j,k,i,4)=zksav(j,k,i,4)
             enddo
           enddo
         enddo
@@ -516,6 +542,7 @@ c Get TURRE values
             turre(j,k,i,1)=zksav(j,k,i,1)
             turre(j,k,i,2)=zksav(j,k,i,2)
             turre(j,k,i,3)=zksav(j,k,i,3)
+            turre(j,k,i,4)=zksav(j,k,i,4)
           enddo
         enddo
       enddo
@@ -530,6 +557,7 @@ c      (1) k=0 boundary:
             turre(j,0,i,1)=tk0(j,i,1,1)
             turre(j,0,i,2)=tk0(j,i,2,1)
             turre(j,0,i,3)=tk0(j,i,3,1)
+            turre(j,0,i,4)=tk0(j,i,4,1)
           enddo
         enddo
 c      (2) k=kdim boundary:
@@ -538,6 +566,7 @@ c      (2) k=kdim boundary:
             turre(j,kdim,i,1)=tk0(j,i,1,3)
             turre(j,kdim,i,2)=tk0(j,i,2,3)
             turre(j,kdim,i,3)=tk0(j,i,3,3)
+            turre(j,kdim,i,4)=tk0(j,i,4,3)
           enddo
         enddo
 c      (3) j=0 boundary:
@@ -546,6 +575,7 @@ c      (3) j=0 boundary:
             turre(0,k,i,1)=tj0(k,i,1,1)
             turre(0,k,i,2)=tj0(k,i,2,1)
             turre(0,k,i,3)=tj0(k,i,3,1)
+            turre(0,k,i,4)=tj0(k,i,4,1)
           enddo
         enddo
 c      (4) j=jdim boundary:
@@ -554,6 +584,7 @@ c      (4) j=jdim boundary:
             turre(jdim,k,i,1)=tj0(k,i,1,3)
             turre(jdim,k,i,2)=tj0(k,i,2,3)
             turre(jdim,k,i,3)=tj0(k,i,3,3)
+            turre(jdim,k,i,4)=tj0(k,i,4,3)
           enddo
         enddo
         if (i2d .ne. 1) then
@@ -563,6 +594,7 @@ c      (5) i=0 boundary:
             turre(j,k,0,1)=ti0(j,k,1,1)
             turre(j,k,0,2)=ti0(j,k,2,1)
             turre(j,k,0,3)=ti0(j,k,3,1)
+            turre(j,k,0,4)=ti0(j,k,4,1)
           enddo
         enddo
 c      (6) i=idim boundary:
@@ -571,6 +603,7 @@ c      (6) i=idim boundary:
             turre(j,k,idim,1)=ti0(j,k,1,3)
             turre(j,k,idim,2)=ti0(j,k,2,3)
             turre(j,k,idim,3)=ti0(j,k,3,3)
+            turre(j,k,idim,4)=ti0(j,k,4,3)
           enddo
         enddo
         end if
@@ -581,6 +614,7 @@ c      (1) k=0 boundary:
             turre(j,-1,i,1)=tk0(j,i,1,2)
             turre(j,-1,i,2)=tk0(j,i,2,2)
             turre(j,-1,i,3)=tk0(j,i,3,2)
+            turre(j,-1,i,4)=tk0(j,i,4,2)
           enddo
         enddo
 c      (2) k=kdim boundary:
@@ -589,6 +623,7 @@ c      (2) k=kdim boundary:
             turre(j,kdim+1,i,1)=tk0(j,i,1,4)
             turre(j,kdim+1,i,2)=tk0(j,i,2,4)
             turre(j,kdim+1,i,3)=tk0(j,i,3,4)
+            turre(j,kdim+1,i,4)=tk0(j,i,4,4)
           enddo
         enddo
 c      (3) j=0 boundary:
@@ -597,6 +632,7 @@ c      (3) j=0 boundary:
             turre(-1,k,i,1)=tj0(k,i,1,2)
             turre(-1,k,i,2)=tj0(k,i,2,2)
             turre(-1,k,i,3)=tj0(k,i,3,2)
+            turre(-1,k,i,4)=tj0(k,i,4,2)
           enddo
         enddo
 c      (4) j=jdim boundary:
@@ -605,6 +641,7 @@ c      (4) j=jdim boundary:
             turre(jdim+1,k,i,1)=tj0(k,i,1,4)
             turre(jdim+1,k,i,2)=tj0(k,i,2,4)
             turre(jdim+1,k,i,3)=tj0(k,i,3,4)
+            turre(jdim+1,k,i,4)=tj0(k,i,4,4)
           enddo
         enddo
         if (i2d .ne. 1) then
@@ -614,6 +651,7 @@ c      (5) i=0 boundary:
             turre(j,k,-1,1)=ti0(j,k,1,2)
             turre(j,k,-1,2)=ti0(j,k,2,2)
             turre(j,k,-1,3)=ti0(j,k,3,2)
+            turre(j,k,-1,4)=ti0(j,k,4,2)
           enddo
         enddo
 c      (6) i=idim boundary:
@@ -622,6 +660,7 @@ c      (6) i=idim boundary:
             turre(j,k,idim+1,1)=ti0(j,k,1,4)
             turre(j,k,idim+1,2)=ti0(j,k,2,4)
             turre(j,k,idim+1,3)=ti0(j,k,3,4)
+            turre(j,k,idim+1,4)=ti0(j,k,4,4)
           enddo
         enddo
         end if
@@ -629,7 +668,7 @@ c      (6) i=idim boundary:
 c    **************
 c
 c Get damp1 = CD = cross derivative term for SST:
-        if(ivmx .eq. 30 .or. ivmx.eq.31) then
+        if(ivmx .eq. 40) then
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -684,7 +723,7 @@ c Get damp1 = CD = cross derivative term for SST:
         end if
         end if
 c   get blend = F1 factor
-        if (ivmx .eq. 30 .or. ivmx.eq.31) then
+        if (ivmx .eq. 40) then
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -762,13 +801,20 @@ c       Interior points
               dyy=-cdp
               rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
      +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
               rhside(j,k,i,3)=-byy*turre(j,k-1,i,3)
      +          -cyy*turre(j,k,i,3) -dyy*turre(j,k+1,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              byy=-cdm
+              cyy= cdp+cdm
+              dyy=-cdp
+              rhside(j,k,i,4)=-byy*turre(j,k-1,i,4)
+     +          -cyy*turre(j,k,i,4) -dyy*turre(j,k+1,i,4)
             enddo
           enddo
         enddo
@@ -825,13 +871,20 @@ c       K0 boundary points
               dyy=-cdp
               rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
      +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
               rhside(j,k,i,3)=-byy*turre(j,k-1,i,3)
      +          -cyy*turre(j,k,i,3) -dyy*turre(j,k+1,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              byy=-cdm
+              cyy= cdp+cdm
+              dyy=-cdp
+              rhside(j,k,i,4)=-byy*turre(j,k-1,i,4)
+     +          -cyy*turre(j,k,i,4) -dyy*turre(j,k+1,i,4)
             enddo
           enddo
 c
@@ -887,13 +940,20 @@ c       KDIM points
               dyy=-cdp
               rhside(j,k,i,2)=-byy*turre(j,k-1,i,2)
      +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               byy=-cdm
               cyy= cdp+cdm
               dyy=-cdp
               rhside(j,k,i,3)=-byy*turre(j,k-1,i,3)
      +          -cyy*turre(j,k,i,3) -dyy*turre(j,k+1,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              byy=-cdm
+              cyy= cdp+cdm
+              dyy=-cdp
+              rhside(j,k,i,4)=-byy*turre(j,k-1,i,4)
+     +          -cyy*turre(j,k,i,4) -dyy*turre(j,k+1,i,4)
             enddo
           enddo
 c    Advective terms in eta
@@ -922,6 +982,9 @@ c    Advective terms in eta
               rhside(j,k,i,3)=rhside(j,k,i,3)-uu*(app*(turre(j,k,i,3)-
      +          turre(j,k-1,i,3)) + apm*(turre(j,k+1,i,3)-
      +          turre(j,k,i,3)))
+              rhside(j,k,i,4)=rhside(j,k,i,4)-uu*(app*(turre(j,k,i,4)-
+     +          turre(j,k-1,i,4)) + apm*(turre(j,k+1,i,4)-
+     +          turre(j,k,i,4)))
             enddo
           enddo
         enddo
@@ -960,6 +1023,12 @@ c       2nd order upwind; LHS remains 1st order everywhere
      +                                   +1.5*uu*apm*turre(j,k,i,3)
      +                                    -2.*uu*apm*turre(j,k+1,i,3)
      +                                   +0.5*uu*apm*turre(j,k+2,i,3)
+             rhside(j,k,i,4)=rhside(j,k,i,4)-0.5*uu*app*turre(j,k-2,i,4)
+     +                                    +2.*uu*app*turre(j,k-1,i,4)
+     +                                   -1.5*uu*app*turre(j,k,i,4)
+     +                                   +1.5*uu*apm*turre(j,k,i,4)
+     +                                    -2.*uu*apm*turre(j,k+1,i,4)
+     +                                   +0.5*uu*apm*turre(j,k+2,i,4)
             enddo
           enddo
         enddo
@@ -1018,13 +1087,20 @@ c       Interior points
               dxx=-cdp
               rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
      +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
               rhside(j,k,i,3)=rhside(j,k,i,3)-bxx*turre(j-1,k,i,3)
      +          -cxx*turre(j,k,i,3) -dxx*turre(j+1,k,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bxx=-cdm
+              cxx= cdp+cdm
+              dxx=-cdp
+              rhside(j,k,i,4)=rhside(j,k,i,4)-bxx*turre(j-1,k,i,4)
+     +          -cxx*turre(j,k,i,4) -dxx*turre(j+1,k,i,4)
             enddo
           enddo
         enddo
@@ -1081,13 +1157,20 @@ c       J0 boundary points
               dxx=-cdp
               rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
      +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
               rhside(j,k,i,3)=rhside(j,k,i,3)-bxx*turre(j-1,k,i,3)
      +          -cxx*turre(j,k,i,3) -dxx*turre(j+1,k,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bxx=-cdm
+              cxx= cdp+cdm
+              dxx=-cdp
+              rhside(j,k,i,4)=rhside(j,k,i,4)-bxx*turre(j-1,k,i,4)
+     +          -cxx*turre(j,k,i,4) -dxx*turre(j+1,k,i,4)
             enddo
           enddo
 c
@@ -1143,13 +1226,20 @@ c       JDIM boundary points
               dxx=-cdp
               rhside(j,k,i,2)=rhside(j,k,i,2)-bxx*turre(j-1,k,i,2)
      +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bxx=-cdm
               cxx= cdp+cdm
               dxx=-cdp
               rhside(j,k,i,3)=rhside(j,k,i,3)-bxx*turre(j-1,k,i,3)
      +          -cxx*turre(j,k,i,3) -dxx*turre(j+1,k,i,3)
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bxx=-cdm
+              cxx= cdp+cdm
+              dxx=-cdp
+              rhside(j,k,i,4)=rhside(j,k,i,4)-bxx*turre(j-1,k,i,4)
+     +          -cxx*turre(j,k,i,4) -dxx*turre(j+1,k,i,4)
             enddo
           enddo
 c    Advective terms in xi
@@ -1178,6 +1268,9 @@ c    Advective terms in xi
               rhside(j,k,i,3)=rhside(j,k,i,3)-uu*(app*(turre(j,k,i,3)-
      +          turre(j-1,k,i,3)) + apm*(turre(j+1,k,i,3)-
      +          turre(j,k,i,3)))
+              rhside(j,k,i,4)=rhside(j,k,i,4)-uu*(app*(turre(j,k,i,4)-
+     +          turre(j-1,k,i,4)) + apm*(turre(j+1,k,i,4)-
+     +          turre(j,k,i,4)))
             enddo
           enddo
         enddo
@@ -1216,6 +1309,12 @@ c       2nd order upwind; LHS remains 1st order everywhere
      +                                   +1.5*uu*apm*turre(j,k,i,3)
      +                                    -2.*uu*apm*turre(j+1,k,i,3)
      +                                   +0.5*uu*apm*turre(j+2,k,i,3)
+             rhside(j,k,i,4)=rhside(j,k,i,4)-0.5*uu*app*turre(j-2,k,i,4)
+     +                                    +2.*uu*app*turre(j-1,k,i,4)
+     +                                   -1.5*uu*app*turre(j,k,i,4)
+     +                                   +1.5*uu*apm*turre(j,k,i,4)
+     +                                    -2.*uu*apm*turre(j+1,k,i,4)
+     +                                   +0.5*uu*apm*turre(j+2,k,i,4)
             enddo
           enddo
         enddo
@@ -1275,13 +1374,20 @@ c         Interior points
                 dzz=-cdp
                 rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
      +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
                 rhside(j,k,i,3)=rhside(j,k,i,3)-bzz*turre(j,k,i-1,3)
      +            -czz*turre(j,k,i,3) -dzz*turre(j,k,i+1,3)
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bzz=-cdm
+                czz= cdp+cdm
+                dzz=-cdp
+                rhside(j,k,i,4)=rhside(j,k,i,4)-bzz*turre(j,k,i-1,4)
+     +            -czz*turre(j,k,i,4) -dzz*turre(j,k,i+1,4)
               enddo
             enddo
           enddo
@@ -1338,13 +1444,20 @@ c         I0 boundary points
                 dzz=-cdp
                 rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
      +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
                 rhside(j,k,i,3)=rhside(j,k,i,3)-bzz*turre(j,k,i-1,3)
      +            -czz*turre(j,k,i,3) -dzz*turre(j,k,i+1,3)
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bzz=-cdm
+                czz= cdp+cdm
+                dzz=-cdp
+                rhside(j,k,i,4)=rhside(j,k,i,4)-bzz*turre(j,k,i-1,4)
+     +            -czz*turre(j,k,i,4) -dzz*turre(j,k,i+1,4)
               enddo
             enddo
 c
@@ -1400,13 +1513,20 @@ c         IDIM boundary points
                 dzz=-cdp
                 rhside(j,k,i,2)=rhside(j,k,i,2)-bzz*turre(j,k,i-1,2)
      +            -czz*turre(j,k,i,2) -dzz*turre(j,k,i+1,2)
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bzz=-cdm
                 czz= cdp+cdm
                 dzz=-cdp
                 rhside(j,k,i,3)=rhside(j,k,i,3)-bzz*turre(j,k,i-1,3)
      +            -czz*turre(j,k,i,3) -dzz*turre(j,k,i+1,3)
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bzz=-cdm
+                czz= cdp+cdm
+                dzz=-cdp
+                rhside(j,k,i,4)=rhside(j,k,i,4)-bzz*turre(j,k,i-1,4)
+     +            -czz*turre(j,k,i,4) -dzz*turre(j,k,i+1,4)
               enddo
             enddo
 c    Advective terms in zeta
@@ -1435,6 +1555,9 @@ c    Advective terms in zeta
                 rhside(j,k,i,3)=rhside(j,k,i,3)-uu*(app*(turre(j,k,i,3)-
      +           turre(j,k,i-1,3)) + apm*(turre(j,k,i+1,3)-
      +           turre(j,k,i,3)))
+                rhside(j,k,i,4)=rhside(j,k,i,4)-uu*(app*(turre(j,k,i,4)-
+     +           turre(j,k,i-1,4)) + apm*(turre(j,k,i+1,4)-
+     +           turre(j,k,i,4)))
               enddo
             enddo
           enddo
@@ -1473,6 +1596,12 @@ c       2nd order upwind; LHS remains 1st order everywhere
      +                                   +1.5*uu*apm*turre(j,k,i,3)
      +                                    -2.*uu*apm*turre(j,k,i+1,3)
      +                                   +0.5*uu*apm*turre(j,k,i+2,3)
+             rhside(j,k,i,4)=rhside(j,k,i,4)-0.5*uu*app*turre(j,k,i-2,4)
+     +                                    +2.*uu*app*turre(j,k,i-1,4)
+     +                                   -1.5*uu*app*turre(j,k,i,4)
+     +                                   +1.5*uu*apm*turre(j,k,i,4)
+     +                                    -2.*uu*apm*turre(j,k,i+1,4)
+     +                                   +0.5*uu*apm*turre(j,k,i+2,4)
               enddo
             enddo
           enddo
@@ -1498,7 +1627,7 @@ c    * * * * * * * * * * * *
         end if
       end if
 c  Source terms:
-      if (ivmx .eq. 30) then
+      if (ivmx .eq. 40) then
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -1527,127 +1656,162 @@ c            Determine Sij values:
               s33t=s33-tracepart
               xis = s11t*s11t + s22t*s22t + s33t*s33t +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-              if (ikoprod .eq. 1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         2.*xis - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
-              else
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
-              end if
-              dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
-              pk=ccmin(pk,(pklimterm*dk))
-              dkfactor=ccmaxcr(turre(j,k,i,3),0.1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk*turre(j,k,i,3)-
-     +         dk*ccmincr(dkfactor,1.0)
-              rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
-     +         re*betax*tur10(1)*tur10(1)
-              rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
-     +         re*cmuc*tur10(1)*tur10(2)
+c            Find some needed parameters for the model
+c             dist=ccabs(smin(j,k,i))
+              dist2=smin(j,k,i)**2
+              dist=sqrt(dist2)
+              fnuinv=1./fnu(j,k,i)
+              re_v=q(j,k,i,1)*dist2*sqrt(2.*xis)*re*fnuinv
+              re_y=q(j,k,i,1)*dist*sqrt(turre(j,k,i,2))*fnuinv*re
+              re_t=q(j,k,i,1)*turre(j,k,i,2)*fnuinv/turre(j,k,i,1)
+              re_omega=q(j,k,i,1)*dist2*turre(j,k,i,1)*re*re*
+     +                 fnuinv
 c
-              re_nu=q(j,k,i,1)*smin(j,k,i)**2*vor(j,k,i)*re/fnu(j,k,i)
-              re_t=q(j,k,i,1)*turre(j,k,i,2)/(fnu(j,k,i)*turre(j,k,i,1))
-              fonset1=re_nu/(2.193*re_thetac)
-              fonset2=ccmax(fonset1,fonset1**4)
-              fonset2=ccmincr(fonset2,2.0)
-              ftrnlength=cctanh(re_nu/(2.193*0.35*300.))
-              trnlength=(0.014*re_thetac+1.25)*ftrnlength+
-     +                  2.*(1.-ftrnlength)
-              fonset3=ccmaxcr((1.-re_t/trnlength),0.)
-              fonset=ccmaxcr(fonset2-fonset3,0.)
-              fturb=exp(-((re_t/2.)**2))
-              rhside(j,k,i,3)=rhside(j,k,i,3)+
-     +         5.*sqrt(2.*xis)*fonset*(1.0-ccmincr(turre(j,k,i,3),1.0))-
-     +         0.1*vor(j,k,i)*fturb*cctanh(turre(j,k,i,3)/0.35)
-            enddo
-          enddo
-        enddo
-      elseif (ivmx .eq. 31) then
-        do i=1,idim-1
-          do j=1,jdim-1
-            do k=1,kdim-1
-              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
-     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
-     .             k.ge.klamlo .and. k.lt.klamhi) .or.
-     .             real(smin(j,k,i)) .lt. 0.) then
-                cutoff=0.
+              f_turb=exp(-((0.25*re_t)**4))
+              f_sublayer=exp(-((0.005*re_omega)**2))
+              if (turre(j,k,i,4) .lt. 400.) then
+                f_length=39.8189-(119.27e-4)*turre(j,k,i,4)-
+     +                   (132.567e-6)*turre(j,k,i,4)**2
+              else if (turre(j,k,i,4) .ge. 400. .and. 
+     +                 turre(j,k,i,4) .lt. 596.) then
+                f_length=263.404-(123.939e-2)*turre(j,k,i,4)+
+     +                   (194.548e-5)*turre(j,k,i,4)**2-
+     +                   (101.695e-8)*turre(j,k,i,4)**3
+              else if (turre(j,k,i,4) .ge. 596. .and. 
+     +                 turre(j,k,i,4) .lt. 1200.) then
+                f_length=0.5-((turre(j,k,i,4)-596.)*3.e-4)
               else
-                cutoff=1.
+                f_length=0.3188
               end if
-              betax=blend(j,k,i)*beta1+(1.-blend(j,k,i))*beta2
-              cmuc= blend(j,k,i)*cmuc1+(1.-blend(j,k,i))*cmuc2
-              alp=  blend(j,k,i)*alp1 +(1.-blend(j,k,i))*alp2
-c            for now, re_thetat_tilde taken = re_thetat
-c            (may instead need to solve 4th eqn eventually)
-              re_thetat_tilde=re_thetat
-              re_nu=q(j,k,i,1)*smin(j,k,i)**2*vor(j,k,i)*re/fnu(j,k,i)
-              re_t=q(j,k,i,1)*turre(j,k,i,2)/(fnu(j,k,i)*turre(j,k,i,1))
+              f_length=f_length*(1.-f_sublayer)+40.*f_sublayer
+              if (turre(j,k,i,4) .le. 1870.) then
+                re_thetac=turre(j,k,i,4)-(396.035e-2 -
+     +                    (120.656e-4)*turre(j,k,i,4)+
+     +                    (868.23e-6)*turre(j,k,i,4)**2-
+     +                    (696.506e-9)*turre(j,k,i,4)**3+
+     +                    (174.105e-12)*turre(j,k,i,4)**4)
+              else
+                re_thetac=turre(j,k,i,4)-(593.11+
+     +                    (turre(j,k,i,4)-1870.)*0.482)
+              end if
+              f_onset1=re_v/(2.193*re_thetac)
+              f_onset2=ccmax(f_onset1,f_onset1**4)
+              f_onset2=ccmincr(f_onset2,2.)
+              f_onset3=ccmaxcr((1.-(0.4*re_t)**3), 0.)
+              f_onset =ccmaxcr((f_onset2-f_onset3),0.)
+              f_reattach=exp(-((0.05*re_t)**4))
+c
               uuu=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
               uuu=ccmaxcr(uuu,1.e-20)
-              theta_bl=re_thetat_tilde*fnu(j,k,i)/(q(j,k,i,1)*uuu*re)
-              delta_bl=15.*theta_bl/2.
-              delta=50.*vor(j,k,i)*ccabs(smin(j,k,i))*delta_bl/uuu
-              re_omega=q(j,k,i,1)*turre(j,k,i,1)*smin(j,k,i)**2/
-     +          fnu(j,k,i)*re*re
-              fwake=exp(-(re_omega/1.e5)**2)
-              f_thetat1=fwake*exp(-(ccabs(smin(j,k,i))/delta)**4)
-              gamma_lim = ccmincr(turre(j,k,i,3),1.0)
-              f_thetat2=1.-((ce2*gamma_lim-1.)/(ce2-1.))**2
-              f_thetat=ccmax(f_thetat1,f_thetat2)
-              f_thetat=ccmincr(f_thetat,1.0)
-              f_reattach=exp(-(re_t/15.)**4)
-              fonset1=re_nu/(2.193*re_thetac)
-              gamma_sep1=ccmaxcr(fonset1-1.,0.)
-              gamma_sep=ccmincr(8.0*gamma_sep1*f_reattach,5.0)
+              dist_delta=q(j,k,i,1)*re*uuu**2/
+     +                   (375.*vor(j,k,i)*turre(j,k,i,4)*fnu(j,k,i))
+              f_thetat1=exp(-((1.e-5*re_omega)**2))*
+     +                  exp(-(dist_delta**4))
+              f_thetat2=1.-(((turre(j,k,i,3)-ce2inv)/(1.-ce2inv))**2)
+              f_thetat = ccmax(f_thetat1,f_thetat2)
+              f_thetat = ccmincr(f_thetat,1.)
+c
+              gamma_sep=ccmaxcr((re_v/(3.235*re_thetac)-1.),0.)
+              gamma_sep=ccmincr((gamma_sep*f_reattach*s1),2.)
               gamma_sep=gamma_sep*f_thetat
               gamma_eff=ccmax(turre(j,k,i,3),gamma_sep)
-c            Determine Sij values:
-              s11 = ux(j,k,i,1)
-              s22 = ux(j,k,i,5)
-              s33 = ux(j,k,i,9)
-              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
-              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
-              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              tracepart=(s11+s22+s33)*prod2d3dtrace
-              s11t=s11-tracepart
-              s22t=s22-tracepart
-              s33t=s33-tracepart
-              xis = s11t*s11t + s22t*s22t + s33t*s33t +
-     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-              if (ikoprod .eq. 1) then
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         2.*xis - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+c
+              du_dx=(q(j,k,i,2)*ux(j,k,i,1)+
+     +               q(j,k,i,3)*ux(j,k,i,4)+
+     +               q(j,k,i,4)*ux(j,k,i,7))/uuu
+              du_dy=(q(j,k,i,2)*ux(j,k,i,2)+
+     +               q(j,k,i,3)*ux(j,k,i,5)+
+     +               q(j,k,i,4)*ux(j,k,i,8))/uuu
+              du_dz=(q(j,k,i,2)*ux(j,k,i,3)+
+     +               q(j,k,i,3)*ux(j,k,i,6)+
+     +               q(j,k,i,4)*ux(j,k,i,9))/uuu
+              du_ds=q(j,k,i,2)/uuu*du_dx+
+     +              q(j,k,i,3)/uuu*du_dy+
+     +              q(j,k,i,4)/uuu*du_dz
+c
+              tu_percent_ltd=100.*sqrt(2.*turre(j,k,i,2)/3.)/uuu
+              tu_percent_ltd=ccmaxcr(tu_percent_ltd,0.027)
+              rey=q(j,k,i,1)*uuu*re/fnu(j,k,i)
+              if (tu_percent_ltd .gt. 1.3) then
+                reth_part=331.5*(tu_percent_ltd-0.5658)**(-0.671)
               else
-              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +         vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
-     +         +(1.-blend(j,k,i))*damp1(j,k,i)
-              pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+                reth_part=(1173.51-589.428*tu_percent_ltd+
+     +                 0.2196/(tu_percent_ltd**2))
+              end if
+              thetat=reth_part/rey
+c             iterate to get re_thetat
+              do nmo=1,10
+                xlam=q(j,k,i,1)*thetat**2*fnuinv*du_ds*re
+                dlam=2.*q(j,k,i,1)*thetat*fnuinv*du_ds*re
+                if (xlam .le. -0.1) then
+                  xlam=-0.1
+                  dlam=0.
+                else if (xlam .ge. 0.1) then
+                  xlam=0.1
+                  dlam=0.
+                end if
+                if (xlam .le. 0.) then
+                  eff_lambda=1.-((-12.986*xlam-
+     +                       123.66*xlam**2-
+     +                       405.689*xlam**3)*
+     +                       exp(-((tu_percent_ltd/1.5)**1.5)))
+                  eff_deriv =(12.986+2.*123.66*xlam+
+     +                       3.*405.689*xlam**2)*
+     +                       dlam*exp(-((tu_percent_ltd/1.5)**1.5))
+                else
+                  eff_lambda=1.+(0.275*(1.-exp(-35.*xlam))*
+     +                       exp(-2.*tu_percent_ltd))
+                  eff_deriv =35.*0.275*exp(-35.*xlam)*
+     +                       dlam*exp(-2.*tu_percent_ltd)
+                end if
+                resr=reth_part*eff_lambda-rey*thetat
+                dresr=reth_part*eff_deriv-rey
+                dthetat=-resr/dresr
+                dthetat=ccmin(ccmax(dthetat,-0.9*thetat),0.9*thetat)
+                thetat=thetat+dthetat
+              enddo
+              re_thetat=rey*thetat
+              re_thetat=ccmaxcr(re_thetat,20.)
+c
+              if (ikoprod .eq. 1) then
+                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +           2.*xis - re*betax*turre(j,k,i,1)**2
+     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+              else
+                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
+     +           vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
+     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
+              if (itrans_on .eq. 1) then
+                dkfactor=ccmaxcr(gamma_eff,0.1)
+                dkfactor=ccmincr(dkfactor,1.0)
+                dk=dk*dkfactor
+                pk=pk*gamma_eff
+              end if
               pk=ccmin(pk,(pklimterm*dk))
-              dkfactor=ccmaxcr(gamma_eff,0.1)
-              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk*gamma_eff-
-     +         dk*ccmincr(dkfactor,1.0)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
      +         re*betax*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
      +         re*cmuc*tur10(1)*tur10(2)
 c
-              fonset2=ccmax(fonset1,fonset1**4)
-              fonset2=ccmincr(fonset2,2.0)
-              fonset3=ccmaxcr((1.-(re_t/2.5)**3),0.)
-              fonset=ccmaxcr(fonset2-fonset3,0.)
-              fturb=exp(-((re_t/4.)**4))
-              rhside(j,k,i,3)=rhside(j,k,i,3)+
-     +         (flength*2.0*sqrt(2.*xis)*(gamma_lim*fonset)**0.5)*
-     +         (1.0-gamma_lim) -
-     +         (0.06*vor(j,k,i)*gamma_lim*fturb*
-     +         (ce2*gamma_lim-1.0))
+              p_gamma=f_length*ca1*sqrt(2.*xis)*
+     +         sqrt(turre(j,k,i,3)*f_onset)*
+     +         (1.-(ce1*turre(j,k,i,3)))
+              d_gamma=ca2*vor(j,k,i)*turre(j,k,i,3)*f_turb*
+     +         (ce2*turre(j,k,i,3)-1.)
+              rhside(j,k,i,3)=rhside(j,k,i,3)+p_gamma-d_gamma
+c
+c             Here, wrks array is used to store diag LHS of 
+c             rethetat eqn:
+              wrks(j,k,i)=cthetat*q(j,k,i,1)*uuu**2*0.002*fnuinv*
+     +             (1.-f_thetat)*re
+              p_re=wrks(j,k,i)*re_thetat
+              d_re=wrks(j,k,i)*turre(j,k,i,4)
+              rhside(j,k,i,4)=rhside(j,k,i,4)+p_re-d_re
             enddo
           enddo
         enddo
@@ -1702,11 +1866,16 @@ c         Interior points
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               by3(j,k)=-cdm
               cy3(j,k)= cdp+cdm
               dy3(j,k)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              by4(j,k)=-cdm
+              cy4(j,k)= cdp+cdm
+              dy4(j,k)=-cdp
             enddo
             do j=1,jdim-1
               xc=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
@@ -1724,50 +1893,62 @@ c         Interior points
               by(j,k)=by(j,k) - uu*app
               by2(j,k)=by2(j,k) - uu*app
               by3(j,k)=by3(j,k) - uu*app
+              by4(j,k)=by4(j,k) - uu*app
               cy(j,k)=cy(j,k) + uu*(app-apm)
               cy2(j,k)=cy2(j,k) + uu*(app-apm)
               cy3(j,k)=cy3(j,k) + uu*(app-apm)
+              cy4(j,k)=cy4(j,k) + uu*(app-apm)
               dy(j,k)=dy(j,k) + uu*apm
               dy2(j,k)=dy2(j,k) + uu*apm
               dy3(j,k)=dy3(j,k) + uu*apm
+              dy4(j,k)=dy4(j,k) + uu*apm
             enddo
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
+              if (ivmx .eq. 40) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
      +                 ccabs(damp1(j,k,i))/turre(j,k,i,1)
                 cy2add=re*cmuc*turre(j,k,i,1)
-c               cy3add=???...
+                cy3add=ca2*vor(j,k,i)*
+     +                 ccabs(2.*ce2*turre(j,k,i,3)-1.)
+                cy4add=wrks(j,k,i)
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
-c             cy3(j,k)=cy3(j,k) + cy3add
+              cy3(j,k)=cy3(j,k) + cy3add
+              cy4(j,k)=cy4(j,k) + cy4add
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               by3(j,k)=by3(j,k)*timestp(j,k,i)*factor3
+              by4(j,k)=by4(j,k)*timestp(j,k,i)*factor4
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cy3(j,k)=cy3(j,k)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cy4(j,k)=cy4(j,k)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               dy3(j,k)=dy3(j,k)*timestp(j,k,i)*factor3
+              dy4(j,k)=dy4(j,k)*timestp(j,k,i)*factor4
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
               fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
               fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)*factor3
+              fy4(j,k)=rhside(j,k,i,4)*timestp(j,k,i)*factor4
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
                 fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
-     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,4)
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,5)
                 fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
-     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,5)
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,6)
                 fy3(j,k)=fy3(j,k)+(1.+phi)*(zksav2(j,k,i,3)-
-     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,6)
+     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,7)
+                fy4(j,k)=fy4(j,k)+(1.+phi)*(zksav2(j,k,i,4)-
+     +                 turre(j,k,i,4))+phi*zksav2(j,k,i,8)
               enddo
             end if
           enddo
@@ -1819,11 +2000,16 @@ c         K0 boundary points
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               by3(j,k)=-cdm
               cy3(j,k)= cdp+cdm
               dy3(j,k)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              by4(j,k)=-cdm
+              cy4(j,k)= cdp+cdm
+              dy4(j,k)=-cdp
             enddo
             do j=1,jdim-1
               xc=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
@@ -1841,50 +2027,62 @@ c         K0 boundary points
               by(j,k)=by(j,k) - uu*app
               by2(j,k)=by2(j,k) - uu*app
               by3(j,k)=by3(j,k) - uu*app
+              by4(j,k)=by4(j,k) - uu*app
               cy(j,k)=cy(j,k) + uu*(app-apm)
               cy2(j,k)=cy2(j,k) + uu*(app-apm)
               cy3(j,k)=cy3(j,k) + uu*(app-apm)
+              cy4(j,k)=cy4(j,k) + uu*(app-apm)
               dy(j,k)=dy(j,k) + uu*apm
               dy2(j,k)=dy2(j,k) + uu*apm
               dy3(j,k)=dy3(j,k) + uu*apm
+              dy4(j,k)=dy4(j,k) + uu*apm
             enddo
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
+              if (ivmx .eq. 40) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
      +                 ccabs(damp1(j,k,i))/turre(j,k,i,1)
                 cy2add=re*cmuc*turre(j,k,i,1)
-c               cy3add=???
+                cy3add=ca2*vor(j,k,i)*
+     +                 ccabs(2.*ce2*turre(j,k,i,3)-1.)
+                cy4add=wrks(j,k,i)
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
-c             cy3(j,k)=cy3(j,k) + cy3add
+              cy3(j,k)=cy3(j,k) + cy3add
+              cy4(j,k)=cy4(j,k) + cy4add
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               by3(j,k)=by3(j,k)*timestp(j,k,i)*factor3
+              by4(j,k)=by4(j,k)*timestp(j,k,i)*factor4
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cy3(j,k)=cy3(j,k)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cy4(j,k)=cy4(j,k)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               dy3(j,k)=dy3(j,k)*timestp(j,k,i)*factor3
+              dy4(j,k)=dy4(j,k)*timestp(j,k,i)*factor4
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
               fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
               fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)*factor3
+              fy4(j,k)=rhside(j,k,i,4)*timestp(j,k,i)*factor4
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
                 fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
-     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,4)
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,5)
                 fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
-     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,5)
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,6)
                 fy3(j,k)=fy3(j,k)+(1.+phi)*(zksav2(j,k,i,3)-
-     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,6)
+     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,7)
+                fy4(j,k)=fy4(j,k)+(1.+phi)*(zksav2(j,k,i,4)-
+     +                 turre(j,k,i,4))+phi*zksav2(j,k,i,8)
               enddo
             end if
 c
@@ -1935,11 +2133,16 @@ c         KDIM boundary points
               by2(j,k)=-cdm
               cy2(j,k)= cdp+cdm
               dy2(j,k)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               by3(j,k)=-cdm
               cy3(j,k)= cdp+cdm
               dy3(j,k)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              by4(j,k)=-cdm
+              cy4(j,k)= cdp+cdm
+              dy4(j,k)=-cdp
             enddo
             do j=1,jdim-1
               xc=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4)+
@@ -1957,50 +2160,62 @@ c         KDIM boundary points
               by(j,k)=by(j,k) - uu*app
               by2(j,k)=by2(j,k) - uu*app
               by3(j,k)=by3(j,k) - uu*app
+              by4(j,k)=by4(j,k) - uu*app
               cy(j,k)=cy(j,k) + uu*(app-apm)
               cy2(j,k)=cy2(j,k) + uu*(app-apm)
               cy3(j,k)=cy3(j,k) + uu*(app-apm)
+              cy4(j,k)=cy4(j,k) + uu*(app-apm)
               dy(j,k)=dy(j,k) + uu*apm
               dy2(j,k)=dy2(j,k) + uu*apm
               dy3(j,k)=dy3(j,k) + uu*apm
+              dy4(j,k)=dy4(j,k) + uu*apm
             enddo
 c      Add part of source terms to diagonal LHS in this sweep (helps increase
 c      diagonal dominance)
             do j=1,jdim-1
-              if (ivmx .eq. 30 .or. ivmx .eq. 31) then
+              if (ivmx .eq. 40) then
                 cmuc=  blend(j,k,i)*cmuc1 + (1.-blend(j,k,i))*cmuc2
                 betax= blend(j,k,i)*beta1 + (1.-blend(j,k,i))*beta2
                 cyadd= 2.*re*betax*turre(j,k,i,1) +
      +                 ccabs(damp1(j,k,i))/turre(j,k,i,1)
                 cy2add=re*cmuc*turre(j,k,i,1)
-c               cy3add=???
+                cy3add=ca2*vor(j,k,i)*
+     +                 ccabs(2.*ce2*turre(j,k,i,3)-1.)
+                cy4add=wrks(j,k,i)
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
-c             cy3(j,k)=cy3(j,k) + cy3add
+              cy3(j,k)=cy3(j,k) + cy3add
+              cy4(j,k)=cy4(j,k) + cy4add
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
               by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               by3(j,k)=by3(j,k)*timestp(j,k,i)*factor3
+              by4(j,k)=by4(j,k)*timestp(j,k,i)*factor4
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
               cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cy3(j,k)=cy3(j,k)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cy4(j,k)=cy4(j,k)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
               dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               dy3(j,k)=dy3(j,k)*timestp(j,k,i)*factor3
+              dy4(j,k)=dy4(j,k)*timestp(j,k,i)*factor4
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
               fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
               fy3(j,k)=rhside(j,k,i,3)*timestp(j,k,i)*factor3
+              fy4(j,k)=rhside(j,k,i,4)*timestp(j,k,i)*factor4
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
                 fy(j,k)=fy(j,k)+(1.+phi)*(zksav2(j,k,i,1)-
-     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,4)
+     +                 turre(j,k,i,1))+phi*zksav2(j,k,i,5)
                 fy2(j,k)=fy2(j,k)+(1.+phi)*(zksav2(j,k,i,2)-
-     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,5)
+     +                 turre(j,k,i,2))+phi*zksav2(j,k,i,6)
                 fy3(j,k)=fy3(j,k)+(1.+phi)*(zksav2(j,k,i,3)-
-     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,6)
+     +                 turre(j,k,i,3))+phi*zksav2(j,k,i,7)
+                fy4(j,k)=fy4(j,k)+(1.+phi)*(zksav2(j,k,i,4)-
+     +                 turre(j,k,i,4))+phi*zksav2(j,k,i,8)
               enddo
             end if
           if (iover .eq. 1) then
@@ -2018,6 +2233,10 @@ c             cy3(j,k)=cy3(j,k) + cy3add
                 by3(j,k)=by3(j,k)*blank(j,k,i)
                 dy3(j,k)=dy3(j,k)*blank(j,k,i)
                 cy3(j,k)=cy3(j,k)*blank(j,k,i)+(1.-blank(j,k,i))
+                fy4(j,k)=fy4(j,k)*blank(j,k,i)
+                by4(j,k)=by4(j,k)*blank(j,k,i)
+                dy4(j,k)=dy4(j,k)*blank(j,k,i)
+                cy4(j,k)=cy4(j,k)*blank(j,k,i)+(1.-blank(j,k,i))
               enddo
             enddo
           end if
@@ -2026,11 +2245,14 @@ c             cy3(j,k)=cy3(j,k) + cy3add
      +     dy2,fy2)
           call triv(jdim-1,kdim-1,1,jdim-1,1,kdim-1,worky,by3,cy3,
      +     dy3,fy3)
+          call triv(jdim-1,kdim-1,1,jdim-1,1,kdim-1,worky,by4,cy4,
+     +     dy4,fy4)
           do k=1,kdim-1
             do j=1,jdim-1
               rhside(j,k,i,1)=fy(j,k)
               rhside(j,k,i,2)=fy2(j,k)
               rhside(j,k,i,3)=fy3(j,k)
+              rhside(j,k,i,4)=fy4(j,k)
             enddo
           enddo
         enddo
@@ -2084,11 +2306,16 @@ c         Interior points
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bx3(k,j)=-cdm
               cx3(k,j)= cdp+cdm
               dx3(k,j)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bx4(k,j)=-cdm
+              cx4(k,j)= cdp+cdm
+              dx4(k,j)=-cdp
             enddo
             do k=1,kdim-1
               xc=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
@@ -2106,26 +2333,33 @@ c         Interior points
               bx(k,j)=bx(k,j) - uu*app
               bx2(k,j)=bx2(k,j) - uu*app
               bx3(k,j)=bx3(k,j) - uu*app
+              bx4(k,j)=bx4(k,j) - uu*app
               cx(k,j)=cx(k,j) + uu*(app-apm)
               cx2(k,j)=cx2(k,j) + uu*(app-apm)
               cx3(k,j)=cx3(k,j) + uu*(app-apm)
+              cx4(k,j)=cx4(k,j) + uu*(app-apm)
               dx(k,j)=dx(k,j) + uu*apm
               dx2(k,j)=dx2(k,j) + uu*apm
               dx3(k,j)=dx3(k,j) + uu*apm
+              dx4(k,j)=dx4(k,j) + uu*apm
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               bx3(k,j)=bx3(k,j)*timestp(j,k,i)*factor3
+              bx4(k,j)=bx4(k,j)*timestp(j,k,i)*factor4
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cx3(k,j)=cx3(k,j)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cx4(k,j)=cx4(k,j)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               dx3(k,j)=dx3(k,j)*timestp(j,k,i)*factor3
+              dx4(k,j)=dx4(k,j)*timestp(j,k,i)*factor4
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
+              fx4(k,j)=rhside(j,k,i,4)*(1.+phi)
             enddo
           enddo
 c
@@ -2176,11 +2410,16 @@ c         J0 boundary points
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bx3(k,j)=-cdm
               cx3(k,j)= cdp+cdm
               dx3(k,j)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bx4(k,j)=-cdm
+              cx4(k,j)= cdp+cdm
+              dx4(k,j)=-cdp
             enddo
             do k=1,kdim-1
               xc=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
@@ -2198,26 +2437,33 @@ c         J0 boundary points
               bx(k,j)=bx(k,j) - uu*app
               bx2(k,j)=bx2(k,j) - uu*app
               bx3(k,j)=bx3(k,j) - uu*app
+              bx4(k,j)=bx4(k,j) - uu*app
               cx(k,j)=cx(k,j) + uu*(app-apm)
               cx2(k,j)=cx2(k,j) + uu*(app-apm)
               cx3(k,j)=cx3(k,j) + uu*(app-apm)
+              cx4(k,j)=cx4(k,j) + uu*(app-apm)
               dx(k,j)=dx(k,j) + uu*apm
               dx2(k,j)=dx2(k,j) + uu*apm
               dx3(k,j)=dx3(k,j) + uu*apm
+              dx4(k,j)=dx4(k,j) + uu*apm
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               bx3(k,j)=bx3(k,j)*timestp(j,k,i)*factor3
+              bx4(k,j)=bx4(k,j)*timestp(j,k,i)*factor4
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cx3(k,j)=cx3(k,j)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cx4(k,j)=cx4(k,j)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               dx3(k,j)=dx3(k,j)*timestp(j,k,i)*factor3
+              dx4(k,j)=dx4(k,j)*timestp(j,k,i)*factor4
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
+              fx4(k,j)=rhside(j,k,i,4)*(1.+phi)
             enddo
 c
 c         JDIM boundary points
@@ -2267,11 +2513,16 @@ c         JDIM boundary points
               bx2(k,j)=-cdm
               cx2(k,j)= cdp+cdm
               dx2(k,j)=-cdp
-              cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-              cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+              cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+              cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
               bx3(k,j)=-cdm
               cx3(k,j)= cdp+cdm
               dx3(k,j)=-cdp
+              cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+              cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+              bx4(k,j)=-cdm
+              cx4(k,j)= cdp+cdm
+              dx4(k,j)=-cdp
             enddo
             do k=1,kdim-1
               xc=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4)+
@@ -2289,26 +2540,33 @@ c         JDIM boundary points
               bx(k,j)=bx(k,j) - uu*app
               bx2(k,j)=bx2(k,j) - uu*app
               bx3(k,j)=bx3(k,j) - uu*app
+              bx4(k,j)=bx4(k,j) - uu*app
               cx(k,j)=cx(k,j) + uu*(app-apm)
               cx2(k,j)=cx2(k,j) + uu*(app-apm)
               cx3(k,j)=cx3(k,j) + uu*(app-apm)
+              cx4(k,j)=cx4(k,j) + uu*(app-apm)
               dx(k,j)=dx(k,j) + uu*apm
               dx2(k,j)=dx2(k,j) + uu*apm
               dx3(k,j)=dx3(k,j) + uu*apm
+              dx4(k,j)=dx4(k,j) + uu*apm
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
               bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               bx3(k,j)=bx3(k,j)*timestp(j,k,i)*factor3
+              bx4(k,j)=bx4(k,j)*timestp(j,k,i)*factor4
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
               cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               cx3(k,j)=cx3(k,j)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+              cx4(k,j)=cx4(k,j)*timestp(j,k,i)*factor4+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
               dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               dx3(k,j)=dx3(k,j)*timestp(j,k,i)*factor3
+              dx4(k,j)=dx4(k,j)*timestp(j,k,i)*factor4
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
               fx3(k,j)=rhside(j,k,i,3)*(1.+phi)
+              fx4(k,j)=rhside(j,k,i,4)*(1.+phi)
             enddo
           if (iover .eq. 1) then
             do k=1,kdim-1
@@ -2325,6 +2583,10 @@ c         JDIM boundary points
                 bx3(k,j)=bx3(k,j)*blank(j,k,i)
                 dx3(k,j)=dx3(k,j)*blank(j,k,i)
                 cx3(k,j)=cx3(k,j)*blank(j,k,i)+(1.-blank(j,k,i))
+                fx4(k,j)=fx4(k,j)*blank(j,k,i)
+                bx4(k,j)=bx4(k,j)*blank(j,k,i)
+                dx4(k,j)=dx4(k,j)*blank(j,k,i)
+                cx4(k,j)=cx4(k,j)*blank(j,k,i)+(1.-blank(j,k,i))
               enddo
             enddo
           end if
@@ -2333,11 +2595,14 @@ c         JDIM boundary points
      +     cx2,dx2,fx2)
           call triv(kdim-1,jdim-1,1,kdim-1,1,jdim-1,workx,bx3,
      +     cx3,dx3,fx3)
+          call triv(kdim-1,jdim-1,1,kdim-1,1,jdim-1,workx,bx4,
+     +     cx4,dx4,fx4)
           do j=1,jdim-1
             do k=1,kdim-1
               rhside(j,k,i,1)=fx(k,j)
               rhside(j,k,i,2)=fx2(k,j)
               rhside(j,k,i,3)=fx3(k,j)
+              rhside(j,k,i,4)=fx4(k,j)
             enddo
           enddo
         enddo
@@ -2392,11 +2657,16 @@ c           Interior points
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bz3(k,i)=-cdm
                 cz3(k,i)= cdp+cdm
                 dz3(k,i)=-cdp
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bz4(k,i)=-cdm
+                cz4(k,i)= cdp+cdm
+                dz4(k,i)=-cdp
               enddo
               do k=1,kdim-1
                 xc=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4)+
@@ -2414,26 +2684,33 @@ c           Interior points
                 bz(k,i)=bz(k,i) - uu*app
                 bz2(k,i)=bz2(k,i) - uu*app
                 bz3(k,i)=bz3(k,i) - uu*app
+                bz4(k,i)=bz4(k,i) - uu*app
                 cz(k,i)=cz(k,i) + uu*(app-apm)
                 cz2(k,i)=cz2(k,i) + uu*(app-apm)
                 cz3(k,i)=cz3(k,i) + uu*(app-apm)
+                cz4(k,i)=cz4(k,i) + uu*(app-apm)
                 dz(k,i)=dz(k,i) + uu*apm
                 dz2(k,i)=dz2(k,i) + uu*apm
                 dz3(k,i)=dz3(k,i) + uu*apm
+                dz4(k,i)=dz4(k,i) + uu*apm
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 bz3(k,i)=bz3(k,i)*timestp(j,k,i)*factor3
+                bz4(k,i)=bz4(k,i)*timestp(j,k,i)*factor4
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 cz3(k,i)=cz3(k,i)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+                cz4(k,i)=cz4(k,i)*timestp(j,k,i)*factor4+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 dz3(k,i)=dz3(k,i)*timestp(j,k,i)*factor3
+                dz4(k,i)=dz4(k,i)*timestp(j,k,i)*factor4
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
+                fz4(k,i)=rhside(j,k,i,4)*(1.+phi)
               enddo
             enddo
 c
@@ -2484,11 +2761,16 @@ c           I0 boundary points
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bz3(k,i)=-cdm
                 cz3(k,i)= cdp+cdm
                 dz3(k,i)=-cdp
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bz4(k,i)=-cdm
+                cz4(k,i)= cdp+cdm
+                dz4(k,i)=-cdp
               enddo
               do k=1,kdim-1
                 xc=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4)+
@@ -2506,26 +2788,33 @@ c           I0 boundary points
                 bz(k,i)=bz(k,i) - uu*app
                 bz2(k,i)=bz2(k,i) - uu*app
                 bz3(k,i)=bz3(k,i) - uu*app
+                bz4(k,i)=bz4(k,i) - uu*app
                 cz(k,i)=cz(k,i) + uu*(app-apm)
                 cz2(k,i)=cz2(k,i) + uu*(app-apm)
                 cz3(k,i)=cz3(k,i) + uu*(app-apm)
+                cz4(k,i)=cz4(k,i) + uu*(app-apm)
                 dz(k,i)=dz(k,i) + uu*apm
                 dz2(k,i)=dz2(k,i) + uu*apm
                 dz3(k,i)=dz3(k,i) + uu*apm
+                dz4(k,i)=dz4(k,i) + uu*apm
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 bz3(k,i)=bz3(k,i)*timestp(j,k,i)*factor3
+                bz4(k,i)=bz4(k,i)*timestp(j,k,i)*factor4
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 cz3(k,i)=cz3(k,i)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+                cz4(k,i)=cz4(k,i)*timestp(j,k,i)*factor4+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 dz3(k,i)=dz3(k,i)*timestp(j,k,i)*factor3
+                dz4(k,i)=dz4(k,i)*timestp(j,k,i)*factor4
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
+                fz4(k,i)=rhside(j,k,i,4)*(1.+phi)
               enddo
 c
 c           IDIM boundary points
@@ -2575,11 +2864,16 @@ c           IDIM boundary points
                 bz2(k,i)=-cdm
                 cz2(k,i)= cdp+cdm
                 dz2(k,i)=-cdp
-                cdp=(sigkmu*fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
-                cdm=(sigkmu*fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
+                cdp=(fnup+sigg*anutp)*ttp/(q(j,k,i,1)*re)
+                cdm=(fnum+sigg*anutm)*ttm/(q(j,k,i,1)*re)
                 bz3(k,i)=-cdm
                 cz3(k,i)= cdp+cdm
                 dz3(k,i)=-cdp
+                cdp=(sigma_thetat*(fnup+anutp))*ttp/(q(j,k,i,1)*re)
+                cdm=(sigma_thetat*(fnum+anutm))*ttm/(q(j,k,i,1)*re)
+                bz4(k,i)=-cdm
+                cz4(k,i)= cdp+cdm
+                dz4(k,i)=-cdp
               enddo
               do k=1,kdim-1
                 xc=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4)+
@@ -2597,26 +2891,33 @@ c           IDIM boundary points
                 bz(k,i)=bz(k,i) - uu*app
                 bz2(k,i)=bz2(k,i) - uu*app
                 bz3(k,i)=bz3(k,i) - uu*app
+                bz4(k,i)=bz4(k,i) - uu*app
                 cz(k,i)=cz(k,i) + uu*(app-apm)
                 cz2(k,i)=cz2(k,i) + uu*(app-apm)
                 cz3(k,i)=cz3(k,i) + uu*(app-apm)
+                cz4(k,i)=cz4(k,i) + uu*(app-apm)
                 dz(k,i)=dz(k,i) + uu*apm
                 dz2(k,i)=dz2(k,i) + uu*apm
                 dz3(k,i)=dz3(k,i) + uu*apm
+                dz4(k,i)=dz4(k,i) + uu*apm
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
                 bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 bz3(k,i)=bz3(k,i)*timestp(j,k,i)*factor3
+                bz4(k,i)=bz4(k,i)*timestp(j,k,i)*factor4
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
                 cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 cz3(k,i)=cz3(k,i)*timestp(j,k,i)*factor3+1.0*(1.+phi)
+                cz4(k,i)=cz4(k,i)*timestp(j,k,i)*factor4+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
                 dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 dz3(k,i)=dz3(k,i)*timestp(j,k,i)*factor3
+                dz4(k,i)=dz4(k,i)*timestp(j,k,i)*factor4
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
                 fz3(k,i)=rhside(j,k,i,3)*(1.+phi)
+                fz4(k,i)=rhside(j,k,i,4)*(1.+phi)
               enddo
             if (iover .eq. 1) then
               do i=1,idim-1
@@ -2633,6 +2934,10 @@ c           IDIM boundary points
                   bz3(k,i)=bz3(k,i)*blank(j,k,i)
                   dz3(k,i)=dz3(k,i)*blank(j,k,i)
                   cz3(k,i)=cz3(k,i)*blank(j,k,i)+(1.-blank(j,k,i))
+                  fz4(k,i)=fz4(k,i)*blank(j,k,i)
+                  bz4(k,i)=bz4(k,i)*blank(j,k,i)
+                  dz4(k,i)=dz4(k,i)*blank(j,k,i)
+                  cz4(k,i)=cz4(k,i)*blank(j,k,i)+(1.-blank(j,k,i))
                 enddo
               enddo
             end if
@@ -2642,11 +2947,14 @@ c           IDIM boundary points
      +                cz2,dz2,fz2)
             call triv(kdim-1,idim-1,1,kdim-1,1,idim-1,workz,bz3,
      +                cz3,dz3,fz3)
+            call triv(kdim-1,idim-1,1,kdim-1,1,idim-1,workz,bz4,
+     +                cz4,dz4,fz4)
             do i=1,idim-1
               do k=1,kdim-1
                 rhside(j,k,i,1)=fz(k,i)
                 rhside(j,k,i,2)=fz2(k,i)
                 rhside(j,k,i,3)=fz3(k,i)
+                rhside(j,k,i,4)=fz4(k,i)
               enddo
             enddo
           enddo
@@ -2656,9 +2964,11 @@ c    Update TURRE
         sumno=0.
         sumnk=0.
         sumni=0.
+        sumnr=0.
         negno=0
         negnk=0
         negni=0
+        negnr=0
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -2687,11 +2997,20 @@ c             following section not done if transition off (SST only)
      +          0.0) then
                 negni=negni+1
                 turre(j,k,i,3)=0.0
-              else if ((real(turre(j,k,i,3)+rhside(j,k,i,3))) .ge.
-     +          100.0) then
-                turre(j,k,i,3)=100.0
               else
                 turre(j,k,i,3)=turre(j,k,i,3)+rhside(j,k,i,3)
+              end if
+              end if
+c
+              sumnr=sumnr+rhside(j,k,i,4)**2
+c             following section not done if transition off (SST only)
+              if (itrans_on .eq. 1) then
+              if((real(turre(j,k,i,4)+rhside(j,k,i,4))) .le.
+     +          20.0) then
+                negnr=negnr+1
+                turre(j,k,i,4)=20.0
+              else
+                turre(j,k,i,4)=turre(j,k,i,4)+rhside(j,k,i,4)
               end if
               end if
             enddo
@@ -2700,6 +3019,7 @@ c             following section not done if transition off (SST only)
         sumno=sqrt(sumno)/float((kdim-1)*(jdim-1)*(idim-1))
         sumnk=sqrt(sumnk)/float((kdim-1)*(jdim-1)*(idim-1))
         sumni=sqrt(sumni)/float((kdim-1)*(jdim-1)*(idim-1))
+        sumnr=sqrt(sumnr)/float((kdim-1)*(jdim-1)*(idim-1))
 c
 c       if(iwrite .eq. 1) then
 c         write(15,'('' icyc, it, logreso, negno, logresk, negnk'',
@@ -2711,12 +3031,14 @@ c
       sumn1 = sumno
       sumn2 = sumnk
       sumn3 = sumni
+      sumn4 = sumnr
       negn1 = negno
       negn2 = negnk
       negn3 = negni
+      negn4 = negnr
 c
 c Update VIST3D and save omega and k values
-      if (ivmx .eq. 30 .or. ivmx .eq. 31) then
+      if (ivmx .eq. 40) then
         do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
@@ -2746,6 +3068,7 @@ c            Determine Sij values:
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)
             zksav(j,k,i,3)=turre(j,k,i,3)
+            zksav(j,k,i,4)=turre(j,k,i,4)
           enddo
         enddo
         enddo

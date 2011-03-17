@@ -48,7 +48,7 @@ c
       common /twod/ i2d
       common /zero/ iexp
       common /wallfun/ iwf(3)
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
@@ -568,11 +568,14 @@ c (usually, 1 is sufficient... but if residual diverges then may need more)
 c
       nsubit=nsubturb
 c
-c Set factor that multiplies the N-S CFL number, to determine CFL number
+c Set factors that multiply the N-S CFL number, to determine CFL number
 c for the turbulence model (this typically can be 2 - 10... optimum value
 c is a function of the case).  If turb model seems to be having trouble
-c converging, lowering this factor may be one strategy to try. NOTE: factor
+c converging, lowering these factors may be one strategy to try. NOTE: factors
 c used only for steady state cases, not time accurate cases.
+c They can be overridden with keyword "cflturb" if want all CFLs to be the
+c same (not recommended), or by cflturb1, cflturb2, etc to set individual
+c ones.
 c
       if(ivmx .eq. 6) factor=2.
       if(ivmx .eq. 7) factor=10.
@@ -580,20 +583,27 @@ c
       if(ivmx .eq. 10 .or. ivmx .eq. 11) factor=2.
       if(ivmx .eq. 9 .or. ivmx .eq. 13) factor=5.
       if(ivmx .eq. 15) factor=10.
+      factor1=factor
+      factor2=factor
 c
-c Overwrite with keyword value if nonzero
+c Overwrite factors with keyword value "cflturb()" if nonzero
 c
-      if (real(cflturb).ne.0.) then
-         factor = cflturb
+      if (real(cflturb(1)).ne.0.) then
+         factor1 = cflturb(1)
       end if
+      if (real(cflturb(2)).ne.0.) then
+         factor2 = cflturb(2)
+      end if
+c factor2 is set relative to factor1
+      factor2=factor2/factor1
 c
-c Timestep for turb model - damp(j,k,i)
+c Timestep for turb model
 c
       if (real(dt).lt.0) then
          do i=1,idim-1
          do k=1,kdim-1
          do j=1,jdim-1
-           timestp(j,k,i)=factor*vol(j,k,i)/dtj(j,k,i)
+           timestp(j,k,i)=factor1*vol(j,k,i)/dtj(j,k,i)
            timestp(j,k,i)=ccmincr(timestp(j,k,i),100.)
          enddo
          enddo
@@ -606,6 +616,7 @@ c          flow equations, since multigrid is not used for turb. eq.)
          do k=1,kdim-1
          do j=1,jdim-1
            timestp(j,k,i)=dt
+           factor2=1.
          enddo
          enddo
          enddo
@@ -3107,13 +3118,13 @@ c
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
+              by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -3229,13 +3240,13 @@ c
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
+              by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -3350,13 +3361,13 @@ c
             enddo
             do j=1,jdim-1
               by(j,k)=by(j,k)*timestp(j,k,i)
-              by2(j,k)=by2(j,k)*timestp(j,k,i)
+              by2(j,k)=by2(j,k)*timestp(j,k,i)*factor2
               cy(j,k)=cy(j,k)*timestp(j,k,i)+1.0*(1.+phi)
-              cy2(j,k)=cy2(j,k)*timestp(j,k,i)+1.0*(1.+phi)
+              cy2(j,k)=cy2(j,k)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dy(j,k)=dy(j,k)*timestp(j,k,i)
-              dy2(j,k)=dy2(j,k)*timestp(j,k,i)
+              dy2(j,k)=dy2(j,k)*timestp(j,k,i)*factor2
               fy(j,k)=rhside(j,k,i,1)*timestp(j,k,i)
-              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)
+              fy2(j,k)=rhside(j,k,i,2)*timestp(j,k,i)*factor2
             enddo
             if (real(dt) .gt. 0.) then
               do j=1,jdim-1
@@ -3463,11 +3474,11 @@ c         Interior points
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
@@ -3543,11 +3554,11 @@ c         J0 boundary points
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
@@ -3622,11 +3633,11 @@ c         JDIM boundary points
             enddo
             do k=1,kdim-1
               bx(k,j)=bx(k,j)*timestp(j,k,i)
-              bx2(k,j)=bx2(k,j)*timestp(j,k,i)
+              bx2(k,j)=bx2(k,j)*timestp(j,k,i)*factor2
               cx(k,j)=cx(k,j)*timestp(j,k,i)+1.0*(1.+phi)
-              cx2(k,j)=cx2(k,j)*timestp(j,k,i)+1.0*(1.+phi)
+              cx2(k,j)=cx2(k,j)*timestp(j,k,i)*factor2+1.0*(1.+phi)
               dx(k,j)=dx(k,j)*timestp(j,k,i)
-              dx2(k,j)=dx2(k,j)*timestp(j,k,i)
+              dx2(k,j)=dx2(k,j)*timestp(j,k,i)*factor2
               fx(k,j)=rhside(j,k,i,1)*(1.+phi)
               fx2(k,j)=rhside(j,k,i,2)*(1.+phi)
             enddo
@@ -3728,11 +3739,11 @@ c           Interior points
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo
@@ -3808,11 +3819,11 @@ c           I0 boundary points
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo
@@ -3887,11 +3898,11 @@ c           IDIM boundary points
               enddo
               do k=1,kdim-1
                 bz(k,i)=bz(k,i)*timestp(j,k,i)
-                bz2(k,i)=bz2(k,i)*timestp(j,k,i)
+                bz2(k,i)=bz2(k,i)*timestp(j,k,i)*factor2
                 cz(k,i)=cz(k,i)*timestp(j,k,i)+1.0*(1.+phi)
-                cz2(k,i)=cz2(k,i)*timestp(j,k,i)+1.0*(1.+phi)
+                cz2(k,i)=cz2(k,i)*timestp(j,k,i)*factor2+1.0*(1.+phi)
                 dz(k,i)=dz(k,i)*timestp(j,k,i)
-                dz2(k,i)=dz2(k,i)*timestp(j,k,i)
+                dz2(k,i)=dz2(k,i)*timestp(j,k,i)*factor2
                 fz(k,i)=rhside(j,k,i,1)*(1.+phi)
                 fz2(k,i)=rhside(j,k,i,2)*(1.+phi)
               enddo

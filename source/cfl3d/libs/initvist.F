@@ -180,6 +180,19 @@ c       Special for 3-eqn transition model ivisc=30
           enddo
         end if
 c
+c       Special for 4-eqn transition model ivisc=40
+        if (ivisc(1).eq.40.or. ivisc(2).eq.40.or.
+     .           ivisc(3).eq.40) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                tursav(j,k,i,3)=tur10(3)
+                tursav(j,k,i,4)=tur10(4)
+              enddo
+            enddo
+          enddo
+        end if
+c
       else
 c
       do 4021 i=1,idim-1

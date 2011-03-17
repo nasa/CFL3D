@@ -277,7 +277,7 @@ c
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /elastic_ss/ idef_ss
       common /memory/ memadd,memaddi
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -1424,6 +1424,84 @@ c   three-equation turb model
                iwk44=iwk43+inmx
                iwk45=iwk44+inmx
                itemp=iwk45+inmx
+            else if (ivmx .eq. 40) then
+c   four-equation turb model
+               iwk1=1
+               if (iturbord .eq. 1) then
+                 iwk4=iwk1+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))*4
+                 iex=0
+                 iex2=-i2d
+               else
+                 iwk4=iwk1+(jdim+3)*(kdim+3)*(idim+3-(4*i2d))*4
+                 iex=1
+                 iex2=1-(2*i2d)
+               end if
+               iwk5=iwk4+(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+               iex3=-i2d
+               inmx=(kdim-1)*(jdim-1)
+               iwk6=iwk5+inmx
+               iwk7=iwk6+inmx
+               iwk8=iwk7+inmx
+               iwk9=iwk8+inmx
+               iwk10=iwk9+inmx
+               iwk11=iwk10+inmx
+               iwk12=iwk11+inmx
+               iwk13=iwk12+inmx
+               iwk14=iwk13+inmx
+               inmx=(jdim-1)*(kdim-1)
+               iwk15=iwk14+inmx
+               iwk16=iwk15+inmx
+               iwk17=iwk16+inmx
+               iwk18=iwk17+inmx
+               iwk19=iwk18+inmx
+               iwk20=iwk19+inmx
+               iwk21=iwk20+inmx
+               iwk22=iwk21+inmx
+               iwk23=iwk22+inmx
+               inmx=(kdim-1)*(idim-1)
+               iwk24=iwk23+inmx
+               iwk25=iwk24+inmx
+               iwk26=iwk25+inmx
+               iwk27=iwk26+inmx
+               iwk28=iwk27+inmx
+               iwk29=iwk28+inmx
+               iwk30=iwk29+inmx
+               iwk31=iwk30+inmx
+               iwk32=iwk31+inmx
+               inmx=(jdim-1)*(kdim-1)*(idim-1)*4
+               iwk33=iwk32+inmx
+               inmx=(jdim+1)*(kdim+1)*(idim+1-(2*i2d))
+               iwk34=iwk33+inmx
+               inmx=(kdim-1)*(jdim-1)
+               iwk35=iwk34+inmx
+               iwk36=iwk35+inmx
+               iwk37=iwk36+inmx
+               iwk38=iwk37+inmx
+               inmx=(jdim-1)*(kdim-1)
+               iwk39=iwk38+inmx
+               iwk40=iwk39+inmx
+               iwk41=iwk40+inmx
+               iwk42=iwk41+inmx
+               inmx=(kdim-1)*(idim-1)
+               iwk43=iwk42+inmx
+               iwk44=iwk43+inmx
+               iwk45=iwk44+inmx
+               iwk46=iwk45+inmx
+               inmx=(kdim-1)*(jdim-1)
+               iwk47=iwk46+inmx
+               iwk48=iwk47+inmx
+               iwk49=iwk48+inmx
+               iwk50=iwk49+inmx
+               inmx=(jdim-1)*(kdim-1)
+               iwk51=iwk50+inmx
+               iwk52=iwk51+inmx
+               iwk53=iwk52+inmx
+               iwk54=iwk53+inmx
+               inmx=(kdim-1)*(idim-1)
+               iwk55=iwk54+inmx
+               iwk56=iwk55+inmx
+               iwk57=iwk56+inmx
+               itemp=iwk57+inmx
             end if
          end if
 c

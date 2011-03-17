@@ -172,7 +172,7 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
-      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+      common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
@@ -654,6 +654,13 @@ c
         write(iunit11,
      .  '(''     Use ivisc=3 for B-L with Degani-Schiff'')')
       end if
+c
+      if (ivisc(1).eq.-30 .or. ivisc(2).eq.-30 .or. ivisc(3).eq.-30 .or.
+     .    ivisc(1).eq.-40 .or. ivisc(2).eq.-40 .or. ivisc(3).eq.-40)
+     .    then
+        write(iunit11,'('' cannot use wall fns with ivisc 30 or 40'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
 c   Set wall iwf, wall function parameter:
       iwf(1)=0
       iwf(2)=0
@@ -727,7 +734,8 @@ c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       iv(igrid) = max(ivisc(3),iv(igrid))
       if (ivisc(1).gt.15.or. ivisc(2).gt.15.or. ivisc(3).gt.15) then
         if (ivisc(1).ne.25.and.ivisc(2).ne.25.and.ivisc(3).ne.25.and.
-     .      ivisc(1).ne.30.and.ivisc(2).ne.30.and.ivisc(3).ne.30) then
+     .      ivisc(1).ne.30.and.ivisc(2).ne.30.and.ivisc(3).ne.30.and.
+     .      ivisc(1).ne.40.and.ivisc(2).ne.40.and.ivisc(3).ne.40) then
           write(iunit11,'('' Unknown turb model type chosen'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
@@ -864,9 +872,10 @@ c
       end if
 c
       if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
-     .  ivmx.ne.10 .and. ivmx.ne.15 .and. ivmx.ne.30)) then
+     .  ivmx.ne.10 .and. ivmx.ne.15 .and. ivmx.ne.30 .and.
+     .  ivmx.ne.40)) then
         write(iunit11,'('' WARNING: ikoprod not active'',
-     .  '' unless ivisc=6,7,10,15, or 30 used'')')
+     .  '' unless ivisc=6,7,10,15,30, or 40 used'')')
       end if
 c
       if (iturbprod .gt. 0 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.
@@ -896,12 +905,12 @@ c
       if (keepambient .ne. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
      .  ivmx.ne.8 .and. ivmx.ne.9 .and. ivmx.ne.10 .and.
      .  ivmx.ne.11 .and. ivmx.ne.12 .and. ivmx.ne.13 .and.
-     .  ivmx.ne.14 .and. ivmx.ne.30)) then
+     .  ivmx.ne.14 .and. ivmx.ne.30 .and. ivmx.ne.40)) then
         write(iunit11,'('' WARNING: keepambient not active'',
-     .  '' unless ivisc=6,7,8,9,10,11,12,13,14, or 30 used'')')
+     .  '' unless ivisc=6,7,8,9,10,11,12,13,14,30, or 40 used'')')
       end if
 c
-      if (ivmx .eq. 25 .or. ivmx .eq. 30) then
+      if (ivmx .eq. 25 .or. ivmx .eq. 30 .or. ivmx .eq. 40) then
         write(iunit11,'('' WARNING: ivisc='',i4,'' still under'',
      .    '' development... use at your own risk!'')') ivmx
       end if
