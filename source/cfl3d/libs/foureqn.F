@@ -1669,22 +1669,22 @@ c             dist=ccabs(smin(j,k,i))
 c
               f_turb=exp(-((0.25*re_t)**4))
               f_sublayer=exp(-((0.005*re_omega)**2))
-              if (turre(j,k,i,4) .lt. 400.) then
+              if (real(turre(j,k,i,4)) .lt. 400.) then
                 f_length=39.8189-(119.27e-4)*turre(j,k,i,4)-
      +                   (132.567e-6)*turre(j,k,i,4)**2
-              else if (turre(j,k,i,4) .ge. 400. .and. 
-     +                 turre(j,k,i,4) .lt. 596.) then
+              else if (real(turre(j,k,i,4)) .ge. 400. .and. 
+     +                 real(turre(j,k,i,4)) .lt. 596.) then
                 f_length=263.404-(123.939e-2)*turre(j,k,i,4)+
      +                   (194.548e-5)*turre(j,k,i,4)**2-
      +                   (101.695e-8)*turre(j,k,i,4)**3
-              else if (turre(j,k,i,4) .ge. 596. .and. 
-     +                 turre(j,k,i,4) .lt. 1200.) then
+              else if (real(turre(j,k,i,4)) .ge. 596. .and. 
+     +                 real(turre(j,k,i,4)) .lt. 1200.) then
                 f_length=0.5-((turre(j,k,i,4)-596.)*3.e-4)
               else
                 f_length=0.3188
               end if
               f_length=f_length*(1.-f_sublayer)+40.*f_sublayer
-              if (turre(j,k,i,4) .le. 1870.) then
+              if (real(turre(j,k,i,4)) .le. 1870.) then
                 re_thetac=turre(j,k,i,4)-(396.035e-2 -
      +                    (120.656e-4)*turre(j,k,i,4)+
      +                    (868.23e-6)*turre(j,k,i,4)**2-
@@ -1732,7 +1732,7 @@ c
               tu_percent_ltd=100.*sqrt(2.*turre(j,k,i,2)/3.)/uuu
               tu_percent_ltd=ccmaxcr(tu_percent_ltd,0.027)
               rey=q(j,k,i,1)*uuu*re/fnu(j,k,i)
-              if (tu_percent_ltd .gt. 1.3) then
+              if (real(tu_percent_ltd) .gt. 1.3) then
                 reth_part=331.5*(tu_percent_ltd-0.5658)**(-0.671)
               else
                 reth_part=(1173.51-589.428*tu_percent_ltd+
@@ -1743,14 +1743,14 @@ c             iterate to get re_thetat
               do nmo=1,10
                 xlam=q(j,k,i,1)*thetat**2*fnuinv*du_ds*re
                 dlam=2.*q(j,k,i,1)*thetat*fnuinv*du_ds*re
-                if (xlam .le. -0.1) then
+                if (real(xlam) .le. -0.1) then
                   xlam=-0.1
                   dlam=0.
-                else if (xlam .ge. 0.1) then
+                else if (real(xlam) .ge. 0.1) then
                   xlam=0.1
                   dlam=0.
                 end if
-                if (xlam .le. 0.) then
+                if (real(xlam) .le. 0.) then
                   eff_lambda=1.-((-12.986*xlam-
      +                       123.66*xlam**2-
      +                       405.689*xlam**3)*

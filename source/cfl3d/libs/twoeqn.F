@@ -2105,7 +2105,8 @@ c  Source terms for k-omega (Wilcox & SST):
      .             k.ge.klamlo .and. k.lt.klamhi) .or.
      .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
-              else if( ides .eq. 3 .and. fdsav(j,k,i) .gt. cddes ) then
+              else if( ides .eq. 3 .and. 
+     .         real(fdsav(j,k,i)) .gt. real(cddes) ) then
                 cutoff = (1.d0 - fdsav(j,k,i))/(1.d0-cddes)
               else
                 cutoff=1.

@@ -205,7 +205,7 @@ c       Special for 4-eqn model number 40:
           if (real(tur10(3)) .lt. 0.) tur10(3)=1.0
           if (real(tur10(4)) .lt. 0.) then
             turbintensity_inf_percent=100./xmach*sqrt(tur10(2)/1.5)
-            if (turbintensity_inf_percent .le. 1.3) then
+            if (real(turbintensity_inf_percent) .le. 1.3) then
              tur10(4)=1173.51-589.428*turbintensity_inf_percent+
      .          0.2196/(turbintensity_inf_percent**2)
             else

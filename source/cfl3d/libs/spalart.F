@@ -1107,11 +1107,14 @@ c
      .              k.ge.klamlo .and. k.lt.klamhi) .or.
      .              real(smin(j,k,i)) .lt. 0.) then
                   cutoff=0.
-               else if( ides .eq. 3 .and. fd(j,k,i) .gt. cddes ) then
+               else if( ides .eq. 3 .and. 
+     .          real(fd(j,k,i)) .gt. real(cddes) ) then
                   cutoff = (1.d0 - fd(j,k,i))/(1.d0-cddes)
-               else if( ides .eq. 4 .and. fd(j,k,i) .gt. cddes ) then
+               else if( ides .eq. 4 .and. 
+     .          real(fd(j,k,i)) .gt. real(cddes) ) then
                   cutoff = (1.d0 - fd(j,k,i))/(1.d0-cddes)
-               else if( ides .eq. 5 .and. fd(j,k,i) .gt. 0.999d0 ) then
+               else if( ides .eq. 5 .and. 
+     .          real(fd(j,k,i)) .gt. 0.999d0 ) then
                   cutoff = (1.d0 - fd(j,k,i))/(1.d0-0.999d0)
                else
                   cutoff=1.
@@ -2059,7 +2062,7 @@ c Update VIST3D and save TURRE in TURSAV
             chi=turre(j,k,i)/fnu(j,k,i)
             fv1=chi**3/(chi**3+cv1**3)
             vist3d(j,k,i)=fv1*turre(j,k,i)*q(j,k,i,1)
-            if( ides .ge. 4 .and. fd(j,k,i) .gt. cddes ) then
+            if( ides .ge. 4 .and. real(fd(j,k,i)) .gt. real(cddes)) then
                vist3d(j,k,i) = vist3d(j,k,i)
      $              * (1.d0 - fd(j,k,i))/(1.d0-cddes)
             end if

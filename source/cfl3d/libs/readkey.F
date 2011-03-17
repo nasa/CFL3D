@@ -1641,7 +1641,7 @@ c
 c     Make sure we are running ddes if cddes is set
 
       if( abs(cddes - 0.975d0) > 0.001d0 ) ides = 3 
-      if( cddes > 0.999d0) cddes = 0.999d0
+      if( real(cddes) > 0.999d0) cddes = 0.999d0
       if( ides == 3 ) then
          write(*,*) 'Running ides with cddes = ', cddes
       end if

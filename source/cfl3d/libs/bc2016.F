@@ -382,7 +382,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
@@ -667,7 +667,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
@@ -952,7 +952,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
@@ -1237,7 +1237,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
@@ -1522,7 +1522,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
@@ -1807,7 +1807,7 @@ c           bc2024 -> d(gamma)/dn=-(bcdata(3))*rho/mu*Uedge:
             hee=(1.+0.5*gm1*xmach**2)/gm1
             rhoee=(gamma*q(j,k,i,5))**(1./gamma)
             uee2=(gm1*rhoee*hee-gamma*q(j,k,i,5))/(0.5*gm1*rhoee)
-            if (uee2 .gt. 0.) then
+            if (real(uee2) .gt. 0.) then
               uee=sqrt(uee2)
             else
               uee=xmach
