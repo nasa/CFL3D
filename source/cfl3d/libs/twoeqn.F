@@ -184,6 +184,7 @@ c      ibcinfo,jbcinfo,kbcinfo - gives i,j,k start and end indices for each
 c               BC segment, among other things
 c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
 c      xlscale - length scale for use with DES 2-eqn model
+c      fdsav - f_d parameter for use with DDES
 c
       if(isklton .gt. 0) then
          nou(1) = min(nou(1)+1,ibufdim)

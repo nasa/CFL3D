@@ -16,7 +16,8 @@
      + bz3,cz3,dz3,fz3,
      + bx4,cx4,dx4,fx4,
      + by4,cy4,dy4,fy4,
-     + bz4,cz4,dz4,fz4,nummem)
+     + bz4,cz4,dz4,fz4,
+     + xlscale,fdsav,nummem)
 c
 c     $Id$
 c
@@ -32,6 +33,7 @@ c
       character*120 bou(ibufdim,nbuf)
 c
       dimension nou(nbuf)
+      common /des/ cdes,ides,cddes
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -105,6 +107,8 @@ c
       dimension volj0(kdim,idim-1,4),
      +          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
       dimension wrks(jdim-1,kdim-1,idim-1)
+      dimension xlscale(jdim-1,kdim-1,idim-1),
+     +          fdsav(jdim-1,kdim-1,idim-1)
 c
 c
 c   Variables:
@@ -173,6 +177,8 @@ c      nbci0,nbcidim,nbcj0,nbcjdim,nbck0,nbckdim - no. of BC segments each face
 c      ibcinfo,jbcinfo,kbcinfo - gives i,j,k start and end indices for each
 c               BC segment, among other things
 c      maxbl,maxseg - dimensions used in nbci0,etc and ibcinfo, etc arrays
+c      xlscale - length scale for use with DES 2-eqn model
+c      fdsav - f_d parameter for use with DDES
 c
 c     Parameter if need to revert to standard SST w no transition (itrans_on=0):
       itrans_on=1
@@ -206,7 +212,7 @@ c
      +     4e19.8)') tur10(1),tur10(2),tur10(3),tur10(4)
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),'(''     cflturb(1)-(4) = '',
-     +     4f12.5)') cflturb(1),cflturb(2),cflturb(2),cflturb(4)
+     +     4f12.5)') cflturb(1),cflturb(2),cflturb(3),cflturb(4)
         if(iturbord .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     1st order advection on RHS'')')
@@ -246,6 +252,20 @@ c
         else
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'(''     S in denom of mut term'')')
+        end if
+c
+        if (ides .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with DES, cdes='',f7.3)') cdes
+        else if (ides .eq. 2) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with DDES, cdes='',f7.3)') cdes
+        else if (ides .eq. 3) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   using model in conjunction'',
+     +      '' with MDDES, cdes='',f7.3,'', cddes='',f7.3)') cdes,cddes
         end if
 c
         if(abs(prod2d3dtrace-0.5) .lt. 0.01) then
@@ -1626,6 +1646,59 @@ c    * * * * * * * * * * * *
      .   klamlo,klamhi
         end if
       end if
+c  DES implementation
+      if (ides .eq. 1 .and. ivmx .eq. 40) then
+c       DES (based on AIAA 2001-0879, but uses only 1 CDES constant)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+              ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
+              xlscale(j,k,i) = ccmin(ell,cdes*delta)
+            enddo
+          enddo
+        enddo
+      elseif (ides .ge. 2 .and. ivmx .eq. 40) then
+c       DDES (based on TCFD 20:181-195, 2006)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              deltaj = 2.*vol(j,k,i)/(sj(j,k,i,4)+sj(j+1,k,i,4))
+              deltak = 2.*vol(j,k,i)/(sk(j,k,i,4)+sk(j,k+1,i,4))
+              deltai = 2.*vol(j,k,i)/(si(j,k,i,4)+si(j,k,i+1,4))
+              delta = ccmax(deltaj,deltak)
+c
+c Modification to allow DES to run in 2d
+c
+              if( i2d .ne. 1 ) then
+                 delta = ccmax(delta,deltai)
+              end if
+              ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
+              dist = ccabs(smin(j,k,i))
+              velterm=ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + ux(j,k,i,3)**2 +
+     +                ux(j,k,i,4)**2 + ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
+     +                ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
+              rd = (vist3d(j,k,i)+fnu(j,k,i))/(q(j,k,i,1)*
+     +             sqrt(velterm)*vk*vk*dist*dist*re)
+              fd = 1.0-cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
+              term = ccmaxrc(0.0,ell-cdes*delta)
+              xlscale(j,k,i) = ell - fd*term
+              if (ides .eq. 3) then
+                fdsav(j,k,i)=fd
+              end if
+            enddo
+          enddo
+        enddo
+      end if
 c  Source terms:
       if (ivmx .eq. 40) then
         do i=1,idim-1
@@ -1636,6 +1709,10 @@ c  Source terms:
      .             k.ge.klamlo .and. k.lt.klamhi) .or.
      .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
+              else if( ides .eq. 3 .and.
+     .         real(fdsav(j,k,i)) .gt. real(cddes) ) then
+                cutoff = (1.d0 - fdsav(j,k,i))/(1.d0-cddes)
+
               else
                 cutoff=1.
               end if
@@ -1784,7 +1861,11 @@ c
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
-              dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
+              if (ides .ne. 0) then
+                dk=(turre(j,k,i,2)**1.5)/xlscale(j,k,i)
+              else
+                dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
+              end if
               if (itrans_on .eq. 1) then
                 dkfactor=ccmaxcr(gamma_eff,0.1)
                 dkfactor=ccmincr(dkfactor,1.0)

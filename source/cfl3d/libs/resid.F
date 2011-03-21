@@ -778,7 +778,20 @@ c   four-equation turb model
       iwk55=iwk54+inmx
       iwk56=iwk55+inmx
       iwk57=iwk56+inmx
-      nroom=nwork-(iwk57+inmx)
+      iwk58=iwk57+inmx
+c allocate for DES and DDES
+      if (ides .ne. 0) then
+        inmx=(jdim-1)*(kdim-1)*(idim-1)
+      else
+        inmx=0
+      end if
+      iwk59=iwk58+inmx
+      if (ides .eq. 3) then
+        inmx=(jdim-1)*(kdim-1)*(idim-1)
+      else
+        inmx=0
+      end if
+      nroom=nwork-(iwk59+inmx)
       if(nroom .lt. 0.) then
        nou(1) = min(nou(1)+1,ibufdim)
        write(bou(nou(1),1),'('' not enough memory for 4-eqn turb'',
@@ -805,7 +818,8 @@ c   four-equation turb model
      + wk(iwk42),wk(iwk43),wk(iwk44),wk(iwk45),
      + wk(iwk46),wk(iwk47),wk(iwk48),wk(iwk49),
      + wk(iwk50),wk(iwk51),wk(iwk52),wk(iwk53),
-     + wk(iwk54),wk(iwk55),wk(iwk56),wk(iwk57),nummem)
+     + wk(iwk54),wk(iwk55),wk(iwk56),wk(iwk57),
+     + wk(iwk58),wk(iwk59),nummem)
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
         call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,

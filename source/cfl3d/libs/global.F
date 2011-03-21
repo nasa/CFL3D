@@ -680,18 +680,27 @@ c   Set wall iwf, wall function parameter:
 c   DES currently only works with models 5,6,7
       if (ides .eq. 1 .or. ides .eq. 2 .or. ides .eq. 3) then
         if (i2d .ne. 1) then
-          if ((ivisc(1).lt.5 .or. ivisc(1).gt.7) .and.
-     .        (ivisc(2).lt.5 .or. ivisc(2).gt.7) .and.
-     .        (ivisc(3).lt.5 .or. ivisc(3).gt.7)) then
+          if ((ivisc(1).eq.5 .or. ivisc(1).eq.6 .or. ivisc(1).eq.7 .or.
+     .         ivisc(1).eq.40) .and.
+     .        (ivisc(2).eq.5 .or. ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
+     .         ivisc(2).eq.40) .and.
+     .        (ivisc(3).eq.5 .or. ivisc(3).eq.6 .or. ivisc(3).eq.7 .or.
+     .         ivisc(3).eq.40)) then
+            continue
+          else
             write(iunit11,'('' ides=1,2,3 currently works with ivisc'',
-     .       '' 5,6,7 only, and must be on in all directions'')')
+     .       '' 5,6,7,40 only, and must be on in all directions'')')
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
           end if
         else
-          if ((ivisc(2).lt.5 .or. ivisc(2).gt.7) .and.
-     .        (ivisc(3).lt.5 .or. ivisc(3).gt.7)) then
+          if ((ivisc(2).eq.5 .or. ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
+     .         ivisc(2).eq.40) .and.
+     .        (ivisc(3).eq.5 .or. ivisc(3).eq.6 .or. ivisc(3).eq.7 .or.
+     .         ivisc(3).eq.40)) then
+            continue
+          else
             write(iunit11,'('' ides=1,2,3 currently works with ivisc'',
-     .       '' 5,6,7 only, and must be on in all directions'')')
+     .       '' 5,6,7,40 only, and must be on in all directions'')')
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
           end if
         end if

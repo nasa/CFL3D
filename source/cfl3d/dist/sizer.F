@@ -1501,7 +1501,20 @@ c   four-equation turb model
                iwk55=iwk54+inmx
                iwk56=iwk55+inmx
                iwk57=iwk56+inmx
-               itemp=iwk57+inmx
+               iwk58=iwk57+inmx
+c allocate for DES and DDES
+               if (ides .ne. 0) then
+                 inmx=(jdim-1)*(kdim-1)*(idim-1)
+               else
+                 inmx=0
+               end if
+               iwk59=iwk58+inmx
+               if (ides .eq. 3) then
+                 inmx=(jdim-1)*(kdim-1)*(idim-1)
+               else
+                 inmx=0
+               end if
+               itemp=iwk59+inmx
             end if
          end if
 c
