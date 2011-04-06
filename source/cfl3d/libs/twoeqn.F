@@ -2150,7 +2150,7 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
      +               -(w12*w12+w23*w23)*(s22-tracepart)
      +               -(w13*w13+w23*w23)*(s33-tracepart) - 2.*w13*w23*s12
      +               +2.*w12*w23*s13 - 2.*w12*w13*s23
-                chiw=abs(xnum/((re*beta2*turre(j,k,i,1))**3))
+                chiw=abs(xnum/((re*cmuc2*turre(j,k,i,1))**3))
                 fbeta=(1.+85.*chiw)/(1.+100.*chiw)
                 betax=betax*fbeta
               end if
