@@ -589,10 +589,11 @@ c
             nroom = nwork - (ixvk+jdw*kdw*idw*5-1)
             if (nroom .lt. 0.) then
                if (myid.eq.myhost) then
-                  write(11,'('' not enough memory for plot3d'')')
+                  write(11,'('' not enough memory for plot3d_2d'')')
                   write(11,'('' have, need = '',2i12)') nwork,
      .            nwork-nroom
-                  write(11,'('' not writing out plot3d files'')')
+                  write(11,'('' Aborting - not calling plot3d_2d'')')
+                  call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
                end if
             else
                call plot3d_2d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,

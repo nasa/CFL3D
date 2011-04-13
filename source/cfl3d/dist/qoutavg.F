@@ -388,10 +388,10 @@ c
             nroom = nwork - (ixvk+jdw*kdw*idw*5-1)                      
             if (nroom .lt. 0.) then                                     
                if (myid.eq.myhost) then                                 
-                  write(11,'('' not enough memory for plot3d'')')       
+                  write(11,'('' not enough memory for plot3davg'')')
                   write(11,'('' have, need = '',2i12)') nwork,          
      .            nwork-nroom                                           
-                  write(11,'('' Aborting - not calling plot3davg '')')
+                  write(11,'('' Aborting - not calling plot3davg'')')
                   call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
                end if                                                   
             else                                                        
