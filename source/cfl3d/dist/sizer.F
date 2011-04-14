@@ -284,6 +284,7 @@ c
      .                 nsprgit,ndgrd,ndwrt 
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
 c
       icall  = 0
       memuse = 0
@@ -1935,6 +1936,34 @@ c           plot3t requirements
          write(66,*)'       parallel: itemp, need = ',itemp,
      .   mem_req_node(ii)
       end do
+c
+c     requirements for qoutavg (plot3davg) output for iteravg>0
+c
+      if(iteravg.gt.0)then
+      do n=1,nplot3d
+         nbl = inpl3d(n,1)
+         call lead(nbl,lw,lw2,maxbl0)
+         i1 = 1
+         i2 = idim
+         i3 = 1
+         j1 = 1
+         j2 = jdim
+         j3 = 1
+         k1 = 1
+         k2 = kdim
+         k3 = 1
+            jdw = (j2-j1)/j3 + 1
+            kdw = (k2-k1)/k3 + 1
+            idw = (i2-i1)/i3 + 1
+            itemp = jdw*kdw*idw*14 + jdim*kdim*idim*2
+         need  = max(need,itemp)
+         ii = mblk2nd(nbl)
+         mem_req_node(ii) = max(mem_req_node(ii),itemp)
+         write(66,*)' 23(plot3davg)   itemp, need = ',itemp,need
+         write(66,*)'       parallel: itemp, need = ',itemp,
+     .   mem_req_node(ii)
+      end do
+      end if
 c
 c     requirements for print output
 c
