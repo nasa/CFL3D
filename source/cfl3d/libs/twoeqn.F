@@ -2119,9 +2119,8 @@ c            Add to RHS:
 c            Determine Sij etc if needed
 c            (Note if want traceless must set prod2d3dtrace=0.5 (2D)
 c            or 0.33333 (3D))
-              if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
-     +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1
-     +            .or. isstrc .eq. 1) then
+              if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1)
+     +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1) then
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
@@ -2137,6 +2136,13 @@ c            or 0.33333 (3D))
                 w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
                 w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
                 w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+              end if
+c  the following forces use of omega rather than omegatilde in
+c  omega production term for Wilcox06
+              w06mult=1.0
+              if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
+                wtilde=ccmax(turre(j,k,i,1),sqrt(2.*xis/cmuc2)*0.875/re)
+                w06mult=turre(j,k,i,1)/wtilde
               end if
 c  the following modifies betax via the vortex-stretching parameter
 c  (default is currently i_wilcox06_chiw = 1)
@@ -2193,20 +2199,20 @@ c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
               end if
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           2.*xis - f5*f4*re*betax*turre(j,k,i,1)**2
+     +           2.*xis*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
 c   if desired, subtract off 2/3k term
 c   (can only do this if ikoprod=1):
                 if (i_turbprod_kterm .eq. 1) then
                   rhside(j,k,i,1)=rhside(j,k,i,1)-(cutoff*2./3.*alp/
-     +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*
+     +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*w06mult*
      +              (s11+s22+s33))
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
               else
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +          vor(j,k,i)**2 - f5*f4*re*betax*turre(j,k,i,1)**2
+     +          vor(j,k,i)**2*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2
      +          +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
