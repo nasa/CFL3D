@@ -392,7 +392,11 @@ c
                   write(11,'('' have, need = '',2i12)') nwork,          
      .            nwork-nroom                                           
                   write(11,'('' Aborting - not calling plot3davg'')')
+#if defined DIST_MPI
                   call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
+#else
+                  stop
+#endif
                end if                                                   
             else                                                        
 c

@@ -531,7 +531,11 @@ c
                   write(11,'('' have, need = '',2i12)') nwork,
      .            nwork-nroom
                   write(11,'('' Aborting - not calling plot3d'')')
+#if defined DIST_MPI
                   call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
+#else
+                  stop
+#endif
                end if
             else
                call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
