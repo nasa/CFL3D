@@ -126,7 +126,7 @@ c
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /des/ cdes,ides,cddes
       common /cfl/ dt0,dtold
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /precond/ cprec,uref,avn
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
@@ -512,6 +512,7 @@ c
          work(nlast+132)= i_nonlin
          work(nlast+133)= c_nonlin
          work(nlast+134)= isarc3d
+         work(nlast+135)= isubit_r
          nlast = nlast+nkey
       end if
 c
@@ -826,6 +827,7 @@ c
          i_nonlin = int(work(nlast+132))
          c_nonlin = work(nlast+133)
          isarc3d = int(work(nlast+134))
+         isubit_r = int(work(nlast+135))
       end if
 c
 c**************************

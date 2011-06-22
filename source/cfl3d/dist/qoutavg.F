@@ -101,7 +101,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /conversion/ radtodeg
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
 c

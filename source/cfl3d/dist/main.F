@@ -165,6 +165,8 @@ c           97......cfl3d_avg_ruvwp.p3d
 c           98......cfl3d_avg_ruvwp2.p3d                     
 c           99......precfl3d.error / cfl3d.error
 c           102.....clcd.bin
+c           103.....subit.res
+c           111.....subit_r
 c           901.....cgnsinfo.out
 c
 c           Unit 26 is reserved for reading in bc data via the
@@ -317,7 +319,7 @@ c
       dimension itrnsfr(29),titlw(20),nou(nbuf)
 c
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
@@ -638,6 +640,12 @@ c
 #   ifdef CMPLX
       open(unit=35,file=sdhist,form='formatted',status='unknown')
 #   endif
+
+
+      if( isubit_r .ne. 0 ) then
+         open(unit=111,file="cfl3d.subit_r", 
+     .        form='formatted',status='unknown')
+      endif
 
       inc_2d(:) = 0
       inc_coarse(:) = 0

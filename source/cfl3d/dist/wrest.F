@@ -87,7 +87,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /twod/ i2d
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /fullns/ ifullns
       common /des/ cdes,ides,cddes
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
@@ -121,7 +121,7 @@ c
       itag_tj0   = itag_ti0   + ioffset
       itag_tk0   = itag_tj0   + ioffset
       itag_qavg  = itag_tk0   + ioffset
-      itag_qavg2  = itag_qavg   + ioffset
+      itag_q2avg  = itag_qavg   + ioffset
 c
       if (myid .eq. mblk2nd(nbl)) then
          mytag = nbl

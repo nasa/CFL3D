@@ -53,7 +53,7 @@ c
 #endif
       character*120 bou(ibufdim,nbuf)
 c
-      dimension nou(nbuf)
+      dimension nou(nbuf), resa(5), rmsba(5)
       dimension wk(nwork),mblk2nd(maxbl),iadvance(maxbl)
       dimension res(jdim*kdim*(idim-1),5),qc0(jdim,kdim,idim-1,5),
      .          dqc0(jdim,kdim,idim-1,5)
@@ -107,7 +107,7 @@ c
       dimension igridg(maxbl)
       common /twod/ i2d
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /account/ iaccnt,ioutsub
       common /fsum/ sref,cref,bref,xmc,ymc,zmc
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -866,6 +866,43 @@ c           rmstb  = sqrt(resd/t1)
             rmssum = rmssum + resd
             rmsb   = sqrt(  rmssum / float( nptsrb) )
          end if
+
+         if( isubit_r .ne. 0 ) then
+c
+c        l2-norm of full residual (INCLUDING time terms)
+c
+            resa = 0.
+            if (myid.eq.mblk2nd(nbl) .and. iadvance(nbl).ge.0) then
+               call l2normAll(nbl,icyc,resa,0,jdim,kdim,idim,res,vol)
+            end if
+
+#if defined DIST_MPI
+            nd_srce = mblk2nd(nbl)
+            mytag = itag_rms + nbl
+            if (myid.eq.mblk2nd(nbl)) then
+               call MPI_Send (resa, 5, MY_MPI_REAL, myhost,
+     .              mytag, mycomm, ierr)
+            end if
+            if (myid.eq.myhost) then
+               call MPI_Recv (resa, 5, MY_MPI_REAL, nd_srce,
+     .              mytag, mycomm, istat, ierr)
+            end if
+#endif
+c
+            if (myid.eq.myhost .and. iadvance(nbl).ge.0) then
+               do ivar = 1, 5
+                  rmssum = 0.
+                  if (nptsrb.gt.jdim1*kdim1*idim1) then
+                     rmssum = rmsba(ivar)*rmsba(ivar)
+     $                    *float(nptsrb-jdim1*kdim1*idim1)
+                  end if
+                  rmssum = rmssum + resa(ivar)
+                  rmsba(ivar) = sqrt(  rmssum / float( nptsrb) )
+               end do
+            end if
+
+         end if
+            
 c
 c        turbulence residual
 c
@@ -1197,6 +1234,10 @@ c
                      write(23,1020) nout,log10(real(rmsb)),real(cltsub),
      .               real(cdtsub),real(cztsub),real(cmztsub)
                      end if
+                     if(isubit_r.ne.0) then
+                        write(111,'(I6,1x,5(E14.5))') nout,
+     $                       log10(real(rmsba(1:5)))
+                     end if
                   else if (ihstry.eq.1) then
                      if (nout.eq.1) write(23,1010)
                      write(23,1020) nout,log10(real(rmsb)),
@@ -1208,6 +1249,10 @@ c
      .               real(cdtsub),real(cxtsub),real(cytsub),
      .               real(cztsub),real(cmxtsub),real(cmytsub),
      .               real(cmztsub)
+                     if(isubit_r.ne.0) then
+                        write(111,'(I6,1x,5(E14.5))') nout,
+     $                       log10(real(rmsba(1:5)))
+                     end if
                  end if
                end if
                if (iwrit3.gt.1) then

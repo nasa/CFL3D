@@ -53,7 +53,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /elastic/ ndefrm,naesrf
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,

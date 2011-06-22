@@ -66,7 +66,7 @@ c
       dimension irinddata(6)
 c     
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /twod/ i2d
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
