@@ -43,7 +43,7 @@ c
       common /maxiv/ ivmx
       common /elastic/ ndefrm,naesrf
       common /reyue/ reue,tinf,ivisc(3)
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
 c
       alphw = radtodeg*alpha
 c

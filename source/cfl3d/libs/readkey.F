@@ -26,7 +26,7 @@ c
 c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /des/ cdes,ides,cddes
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /unit5/ iunit5
@@ -801,6 +801,10 @@ c     nonlinear constitutive relation for use with linear models
 c
 c     nonlinear constitutive relation constant
       c_nonlin = 0.3
+      nkey     = nkey + 1
+c
+c     isubit_r - write out the subiteration residual for all variables to subit_res
+      isubit_r    = 0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1617,6 +1621,9 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          c_nonlin = abs(realval(1))
+      else if (inpstr(lc1:lc2).eq.'isubit_r') then 
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isubit_r
 c
       else
 c

@@ -60,7 +60,7 @@ c     dimension vmu(jdim-1,idim-1),vmuj1(kdim-1,idim-1)
       dimension qavg(jdim,kdim,idim,5)
       dimension sumn(nummem),negn(nummem)
 c
-      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /cfl/ dt0,dtold
       common /fvfds/ rkap0(3),ifds(3)
