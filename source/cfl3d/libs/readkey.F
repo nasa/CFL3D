@@ -63,7 +63,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -805,6 +805,17 @@ c     nonlinear constitutive relation constant
 c
 c     isubit_r - write out the subiteration residual for all variables to subit_res
       isubit_r    = 0
+      nkey     = nkey + 1
+c
+c     i_wilcox98 is used to change Wilcox88 model (ivisc=6) to Wilcox06
+c     default=0
+      i_wilcox98 = 0
+      nkey     = nkey + 1
+c
+c     i_wilcox98_chiw is used to turn on/off Wilcox98 k-omega vortex
+c     stretching parameter - only has effect if ivmx=6 and i_wilcox98=1
+c     default=1 (ON)
+      i_wilcox98_chiw = 1
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1624,6 +1635,14 @@ c
       else if (inpstr(lc1:lc2).eq.'isubit_r') then 
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isubit_r
+c
+      else if (inpstr(lc1:lc2).eq.'i_wilcox98') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_wilcox98
+c
+      else if (inpstr(lc1:lc2).eq.'i_wilcox98_chiw') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_wilcox98_chiw
 c
       else
 c

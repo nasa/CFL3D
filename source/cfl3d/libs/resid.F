@@ -80,7 +80,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /maxiv/ ivmx
       common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
@@ -260,6 +260,7 @@ c
      .    ((ivmx.eq.5) .and. isarc3d.eq.1) .or. 
      .    ((ivmx.eq.5) .and. isar.eq.1) .or. 
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
+     .    (ivmx.eq.6 .and. i_wilcox98.eq.1) .or.
      .    ides.ge.2 .or. i_nonlin.ne.0) then
           call delv(jdim,kdim,idim,q,sj,sk,si,vol,ux,wk,blank,iover,
      .          qj0,qk0,qi0,bcj,bck,bci,nbl,volj0,volk0,voli0,

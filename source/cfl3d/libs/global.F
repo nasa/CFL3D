@@ -178,7 +178,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /axisym/ iaxi2plane
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
@@ -856,6 +856,15 @@ c
       if (i_wilcox06 .eq. 1 .and. ivmx .ne. 6) then
         write(iunit11,'('' WARNING: i_wilcox06 not active'',
      .  '' unless Wilcox k-o model (ivisc=6) used'')')
+      end if
+      if (i_wilcox98 .eq. 1 .and. ivmx .ne. 6) then
+        write(iunit11,'('' WARNING: i_wilcox98 not active'',
+     .  '' unless Wilcox k-o model (ivisc=6) used'')')
+      end if
+      if (i_wilcox98 .eq. 1 .and. i_wilcox06 .eq. 1) then
+        write(iunit11,'('' Error: cannot have both i_wilcox98=1'',
+     .    '' and i_wilcox06=1'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
       if (i_turbprod_kterm .eq. 1 .and. (ivmx .ne. 6 .and.

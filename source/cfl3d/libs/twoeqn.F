@@ -55,7 +55,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
 c
@@ -211,6 +211,16 @@ c
              else
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     k-omega (Wilcox 06),'',
+     +       '' without vortex stretching term'')')
+             end if
+           elseif(i_wilcox98 .eq. 1) then
+             if(i_wilcox98_chiw .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     k-omega (Wilcox 98),'',
+     +       '' with vortex stretching term'')')
+             else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     k-omega (Wilcox 98),'',
      +       '' without vortex stretching term'')')
              end if
            else
@@ -648,7 +658,9 @@ c     SSG:
 c  Note: for i_wilcox06, beta1, sigo1, sigk1, alp1 not used
 c  (only beta2, sigo2, sigk2, alp2 are used)
 c  beta1 (constant in omega or epsilon destruction term):
-      if(ivmx.eq.6 .or. ivmx.eq.7)                  beta1=0.075
+      if(ivmx.eq.6 .and. i_wilcox98.eq.1)           beta1=0.072
+      if(ivmx.eq.6 .and. i_wilcox98.ne.1)           beta1=0.075
+      if(ivmx.eq.7)                                 beta1=0.075
       if(ivmx.eq.12)                                beta1=0.83
       if(ivmx.eq.8 .or. ivmx.eq.14)                 beta1=0.83
       if(ivmx.eq.10 .or. ivmx.eq.11 .or.ivmx.eq.9
@@ -671,7 +683,10 @@ c  sigk1 (constant in k diffusion term):
       if(ivmx.eq.15)                                sigk1 = 1.8
 c
 c  alp1 (constant in omega or epsilon production term):
-      if(ivmx.eq.6 .or. ivmx.eq.7)                  alp1 =
+      if(ivmx.eq.6 .and. i_wilcox98.eq.1)           alp1 = 13./25.
+      if(ivmx.eq.6 .and. i_wilcox98.ne.1)           alp1 =
+     +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
+      if(ivmx.eq.7)                                 alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
       if(ivmx.eq.10)                                alp1 =1.45
       if(ivmx.eq.11 .or. ivmx.eq.12)                alp1 =
@@ -1130,6 +1145,69 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
           enddo
         end if
 c   for Wilcox06, damp1 only active if it is positive
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              damp1(j,k,i)=ccmaxcr(damp1(j,k,i),0.)
+            enddo
+          enddo
+        enddo
+        end if
+c Get damp1 = CD = cross derivative term for Wilcox98 model only:
+        if(ivmx .eq. 6 .and. i_wilcox98 .eq. 1) then
+        do k=1,kdim-1
+          do i=1,idim-1
+            do j=1,jdim-1
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
+     +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
+              tt=xa*xa+ya*ya+za*za
+              xderiv=0.25*(turre(j,k+1,i,1)-turre(j,k-1,i,1))*
+     +                    (turre(j,k+1,i,2)-turre(j,k-1,i,2))
+              damp1(j,k,i)=xderiv*tt/(turre(j,k,i,1)**3*re*re)
+            enddo
+          enddo
+        enddo
+        do j=1,jdim-1
+          do i=1,idim-1
+            do k=1,kdim-1
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
+     +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
+              tt=xa*xa+ya*ya+za*za
+              xderiv=0.25*(turre(j+1,k,i,1)-turre(j-1,k,i,1))*
+     +                    (turre(j+1,k,i,2)-turre(j-1,k,i,2))
+              damp1(j,k,i)=damp1(j,k,i)+xderiv*tt/
+     +                     (turre(j,k,i,1)**3*re*re)
+            enddo
+          enddo
+        enddo
+        if(i2d .ne. 1) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
+     +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
+     +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
+     +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
+                tt=xa*xa+ya*ya+za*za
+                xderiv=0.25*(turre(j,k,i+1,1)-turre(j,k,i-1,1))*
+     +                      (turre(j,k,i+1,2)-turre(j,k,i-1,2))
+                damp1(j,k,i)=damp1(j,k,i)+xderiv*tt/
+     +                       (turre(j,k,i,1)**3*re*re)
+              enddo
+            enddo
+          enddo
+        end if
+c   for Wilcox98, damp1 only active if it is positive
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
@@ -2119,7 +2197,8 @@ c            Add to RHS:
 c            Determine Sij etc if needed
 c            (Note if want traceless must set prod2d3dtrace=0.5 (2D)
 c            or 0.33333 (3D))
-              if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1)
+              if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1) .or.
+     +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1) then
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
@@ -2141,13 +2220,13 @@ c  the following forces use of omega rather than omegatilde in
 c  omega production term for Wilcox06
               w06mult=1.0
               if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
-                wtilde=ccmax(turre(j,k,i,1),sqrt(2.*xis/cmuc2)*0.875/re)
+                wtilde=ccmax(turre(j,k,i,1),sqrt(2.*xis/cmuc)*0.875/re)
                 w06mult=turre(j,k,i,1)/wtilde
               end if
 c  the following modifies betax via the vortex-stretching parameter
 c  (default is currently i_wilcox06_chiw = 1)
-              if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
-     +            i_wilcox06_chiw .eq. 1) then
+              if (ivmx .eq. 6 .and. (i_wilcox06 .eq. 1 .or.
+     +            i_wilcox98 .eq. 1)) then
 c  in 2-D with x-z plane, the following reduces to: 
 c  -w13*w13*[(s11-trace2d)+(s33-trace2d)] = 0
 c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
@@ -2156,9 +2235,21 @@ c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
      +               -(w12*w12+w23*w23)*(s22-tracepart)
      +               -(w13*w13+w23*w23)*(s33-tracepart) - 2.*w13*w23*s12
      +               +2.*w12*w23*s13 - 2.*w12*w13*s23
-                chiw=abs(xnum/((re*cmuc2*turre(j,k,i,1))**3))
-                fbeta=(1.+85.*chiw)/(1.+100.*chiw)
+                chiw=abs(xnum/((re*cmuc*turre(j,k,i,1))**3))
+                if (i_wilcox06_chiw .eq. 1) then
+                  fbeta=(1.+85.*chiw)/(1.+100.*chiw)
+                else if (i_wilcox98_chiw .eq. 1) then
+                  fbeta=(1.+70.*chiw)/(1.+80.*chiw)
+                else
+                  fbeta=1.
+                end if
                 betax=betax*fbeta
+              end if
+c   Wilcox98 has an fbetastar term multiplying cmuc:
+              if (ivmx .eq. 6 .and. i_wilcox98 .eq. 1) then
+                fbetastar=(1.+680.*damp1(j,k,i)**2)/
+     +                    (1.+400.*damp1(j,k,i)**2)
+                cmuc=cmuc*fbetastar
               end if
               if (i_compress_correct .eq. 1) then
                 turb_mach2 = 2.*q(j,k,i,1)*turre(j,k,i,2)/

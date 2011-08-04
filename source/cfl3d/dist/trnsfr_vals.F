@@ -133,7 +133,7 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /axisym/ iaxi2plane
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -513,6 +513,8 @@ c
          work(nlast+133)= c_nonlin
          work(nlast+134)= isarc3d
          work(nlast+135)= isubit_r
+         work(nlast+136)= i_wilcox98
+         work(nlast+137)= i_wilcox98_chiw
          nlast = nlast+nkey
       end if
 c
@@ -828,6 +830,8 @@ c
          c_nonlin = work(nlast+133)
          isarc3d = int(work(nlast+134))
          isubit_r = int(work(nlast+135))
+         i_wilcox98= int(work(nlast+136))
+         i_wilcox98_chiw= int(work(nlast+137))
       end if
 c
 c**************************
