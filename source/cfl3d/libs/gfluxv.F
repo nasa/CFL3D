@@ -1087,6 +1087,8 @@ c             Note: denom term is taken at nearest cell center
      +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
               denom=sqrt(denom)+1.e-10
 c            Find tauij values:
+              rho=0.5*(q(j,k,ii,1)+qj0(k,ii,1,1))*(1.-wj0(k+jkv2,5))+
+     +            qj0(k,ii,1,1)*wj0(k+jkv2,5)
               u=0.5*(q(j,k,ii,2)+qj0(k,ii,2,1))*(1.-wj0(k+jkv2,5))+
      +            qj0(k,ii,2,1)*wj0(k+jkv2,5)
               v=0.5*(q(j,k,ii,3)+qj0(k,ii,3,1))*(1.-wj0(k+jkv2,5))+
@@ -1161,6 +1163,8 @@ c             Note: denom term is taken at nearest cell center
      +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
               denom=sqrt(denom)+1.e-10
 c            Find tauij values:
+              rho=0.5*(q(j-1,k,ii,1)+qj0(k,ii,1,3))*(1.-wj0(k+jkv2,15))+
+     +            qj0(k,ii,1,3)*wj0(k+jkv2,15)
               u=0.5*(q(j-1,k,ii,2)+qj0(k,ii,2,3))*(1.-wj0(k+jkv2,15))+
      +            qj0(k,ii,2,3)*wj0(k+jkv2,15)
               v=0.5*(q(j-1,k,ii,3)+qj0(k,ii,3,3))*(1.-wj0(k+jkv2,15))+
@@ -1235,6 +1239,7 @@ c             Note: denom term is taken at nearest cell center
      +              +ux(j,k,ii,7)**2 +ux(j,k,ii,8)**2 +ux(j,k,ii,9)**2
               denom=sqrt(denom)+1.e-10
 c            Find tauij values:
+              rho=0.5*(q(j,k,ii,1)+q(j-1,k,ii,1))
               zk_sa=0.
               if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
      +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
