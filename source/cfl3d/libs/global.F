@@ -185,6 +185,7 @@ c
      .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /constit/ i_nonlin,c_nonlin
+      common /easmlim/ cmulim
 c
       pi = 4.0*atan(1.0)
 c
@@ -940,6 +941,12 @@ c
      .    '' this ivisc'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
+c
+      if ((ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .eq. 13 .or.
+     .     ivmx .eq. 14) .and. cmulim .gt. .04) then
+        write(iunit11,'('' error... cmulim set too high'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if 
 c
 c     grid dimensions:
 c     idim - number of points in I-direction

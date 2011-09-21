@@ -207,6 +207,7 @@ c
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin
+      common /easmlim/ cmulim
 #if defined DIST_MPI
 c
 c***********************
@@ -515,6 +516,7 @@ c
          work(nlast+135)= isubit_r
          work(nlast+136)= i_wilcox98
          work(nlast+137)= i_wilcox98_chiw
+         work(nlast+138)= cmulim
          nlast = nlast+nkey
       end if
 c
@@ -832,6 +834,7 @@ c
          isubit_r = int(work(nlast+135))
          i_wilcox98= int(work(nlast+136))
          i_wilcox98_chiw= int(work(nlast+137))
+         cmulim= work(nlast+138)
       end if
 c
 c**************************

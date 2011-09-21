@@ -87,6 +87,7 @@ c
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin
+      common /easmlim/ cmulim
 c
       ititr = 0
       nkey  = 0
@@ -816,6 +817,15 @@ c     i_wilcox98_chiw is used to turn on/off Wilcox98 k-omega vortex
 c     stretching parameter - only has effect if ivmx=6 and i_wilcox98=1
 c     default=1 (ON)
       i_wilcox98_chiw = 1
+      nkey     = nkey + 1
+c
+c     cmulim limits the abs min computed value of cmu for EASM (ivisc=8,9,13,14);
+c     may need higher number (.025?) for supersonic BL flow to avoid kink at
+c     BL edge on very fine grids;
+c     should never be set higher than .03 or so (.08-.09 is the std value of cmu
+c     in the log layer)
+c     default=.0005
+      cmulim = .0005
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1643,6 +1653,11 @@ c
       else if (inpstr(lc1:lc2).eq.'i_wilcox98_chiw') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_wilcox98_chiw
+c
+      else if (inpstr(lc1:lc2).eq.'cmulim') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cmulim = abs(realval(1))
 c
       else
 c

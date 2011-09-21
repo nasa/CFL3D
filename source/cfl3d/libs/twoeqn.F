@@ -58,6 +58,7 @@ c
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
+      common /easmlim/ cmulim
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -4320,7 +4321,7 @@ c   choose min of real roots
             cmuj=ccmin(cmuj,cmuc)
             end if
             end if
-            cmuj = ccmincr(cmuj,-.0005)
+            cmuj = ccmincr(cmuj,-cmulim)
 c Uncomment next line for constant cmu:
 c           cmuj=-cmuc1
             cmu = -fmu*cmuj
@@ -4399,7 +4400,7 @@ c   choose min of real roots
             cmuj=ccmin(cmuj,cmuc)
             end if
             end if
-            cmuj = ccmincr(cmuj,-.0005)
+            cmuj = ccmincr(cmuj,-cmulim)
 c Uncomment next line for constant cmu:
 c           cmuj=-cmuc1
             cmu = -cmuj
