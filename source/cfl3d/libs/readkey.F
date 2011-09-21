@@ -822,7 +822,7 @@ c
 c     cmulim limits the abs min computed value of cmu for EASM (ivisc=8,9,13,14);
 c     may need higher number (.025?) for supersonic BL flow to avoid kink at
 c     BL edge on very fine grids;
-c     should never be set higher than .03 or so (.08-.09 is the std value of cmu
+c     should never be set higher than .04 or so (.08-.09 is the std value of cmu
 c     in the log layer)
 c     default=.0005
       cmulim = .0005
