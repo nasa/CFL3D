@@ -228,6 +228,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
 c
+      if (ibcinfo(nbl,nseg,1,1).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
+c
       if (ibcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -396,6 +401,11 @@ c
      .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
@@ -566,6 +576,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
 c
+      if (jbcinfo(nbl,nseg,1,1).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
+c
       if (jbcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -734,6 +749,11 @@ c
      .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
@@ -904,6 +924,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
+c
       if (kbcinfo(nbl,nseg,1,1).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
@@ -1072,6 +1097,11 @@ c
      .  call out2016(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,5)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2026)
+     .  call out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2018)
      .  call out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
@@ -7537,6 +7567,618 @@ c
  3003 format(' ',10x,'Wall function employed in i-direction')
 c
       return
+      end
+      subroutine out2026(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
+     .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
+     .                  filname,myid,mblk2nd,maxbl)
+c
+#   ifdef CMPLX
+      implicit complex(a-h,o-z)
+#   endif
+c
+      character*120 bou(ibufdim,nbuf)
+      character*80 filname
+c
+      dimension nou(nbuf)
+      dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
+c
+      jend1 = jend-1
+      kend1 = kend-1
+      iend1 = iend-1
+c
+      if (nface.eq.3) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 1 l=1,9
+         do 1 ipp=1,2
+         do 1 i=ista,iend1
+         ii = i-ista+1
+         do 1 k=ksta,kend1
+         kk = k-ksta+1
+         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
+   1     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do i=ista,iend1
+         ii = i-ista+1
+         do k=ksta,kend1
+         kk = k-ksta+1
+           if(real(bcdata(kk,ii,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(kk,ii,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c 
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+      if (nface.eq.4) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 2 l=1,9
+         do 2 ipp=1,2
+         do 2 i=ista,iend1
+         ii = i-ista+1
+         do 2 k=ksta,kend1
+         kk = k-ksta+1
+         if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
+   2     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do i=ista,iend1
+         ii = i-ista+1
+         do k=ksta,kend1
+         kk = k-ksta+1
+           if(real(bcdata(kk,ii,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(kk,ii,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(kk,ii,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+      if (nface.eq.5) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 3 l=1,9
+         do 3 ipp=1,2
+         do 3 i=ista,iend1
+         ii = i-ista+1
+         do 3 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
+   3     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do i=ista,iend1
+         ii = i-ista+1
+         do j=jsta,jend1
+         jj = j-jsta+1
+           if(real(bcdata(jj,ii,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(jj,ii,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+      if (nface.eq.6) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 4 l=1,9
+         do 4 ipp=1,2
+         do 4 i=ista,iend1
+         ii = i-ista+1
+         do 4 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
+   4     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do i=ista,iend1
+         ii = i-ista+1
+         do j=jsta,jend1
+         jj = j-jsta+1
+           if(real(bcdata(jj,ii,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(jj,ii,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(jj,ii,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+      if (nface.eq.1) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 5 l=1,9
+         do 5 ipp=1,2
+         do 5 k=ksta,kend1
+         kk = k-ksta+1
+         do 5 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
+   5     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do k=ksta,kend1
+         kk = k-ksta+1
+         do j=jsta,jend1
+         jj = j-jsta+1
+           if(real(bcdata(jj,kk,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(jj,kk,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+      if (nface.eq.2) then
+c
+c        check to see if turbulence data is input (itrflg1/2 = 1) or
+c        if freestream values are to be used (itrflg1/2 = 0); the check
+c        assumes if the first point has been set, all points have been
+c
+         ipp     = 1
+         itrflg1 = 0
+         itrflg2 = 0
+         if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
+         if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+c
+c        check that the required auxiliary data has been set
+         iflg = 0
+         do 6 l=1,9
+         do 6 ipp=1,2
+         do 6 k=ksta,kend1
+         kk = k-ksta+1
+         do 6 j=jsta,jend1
+         jj = j-jsta+1
+         if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
+   6     continue
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  variable data incorrectly set '
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+         iflg = 0
+         do ipp=1,2
+         do k=ksta,kend1
+         kk = k-ksta+1
+         do j=jsta,jend1
+         jj = j-jsta+1
+           if(real(bcdata(jj,kk,ipp,4)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,5)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,6)) .eq. 0.) iflg = 1
+           if(real(bcdata(jj,kk,ipp,7)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,8)) .eq. 0. .and.
+     +        real(bcdata(jj,kk,ipp,9)) .eq. 0.) iflg = 1
+         enddo
+         enddo
+         enddo
+         if (iflg.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  Stopping in bc2026:'
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),*)'  normal vectors cannot be zero'
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (filname.eq.'null') then
+            vmag       = bcdata(1,1,1,1)
+            rfreq      = bcdata(1,1,1,2)
+            sideangj   = bcdata(1,1,1,3)
+            sxa        = bcdata(1,1,1,4)
+            sya        = bcdata(1,1,1,5)
+            sza        = bcdata(1,1,1,6)
+            sxb        = bcdata(1,1,1,7)
+            syb        = bcdata(1,1,1,8)
+            szb        = bcdata(1,1,1,9)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1008) real(vmag)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1009) real(rfreq)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1010) real(sideangj)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1011) real(sxa),real(sya),real(sza)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1007) real(sxb),real(syb),real(szb)
+            if (itrflg1.gt.0) then
+               t1 = bcdata(1,1,1,10)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1014) real(t1)
+            end if
+            if (itrflg2.gt.0) then
+               t2 = bcdata(1,1,1,11)
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),1015) real(t2)
+            end if
+         else
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1012)
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),1013) filname
+         end if
+c
+      end if
+c
+ 1001 format(' ','  j=   1  wagging jet   type 2026',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 1002 format(' ','  j=jdim  wagging jet   type 2026',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 1003 format(' ','  k=   1  wagging jet   type 2026',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 1004 format(' ','  k=kdim  wagging jet   type 2026',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 1005 format(' ','  i=   1  wagging jet   type 2026',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1006 format(' ','  i=idim  wagging jet   type 2026',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1008 format(11x,'vmag/ainf      = ',f8.4)
+ 1009 format(11x,'rfreq*lref/ainf= ',f8.4)
+ 1010 format(11x,'sideangj (deg) = ',f8.4)
+ 1011 format(11x,'sxa,sya,sza    = ',3f8.4)
+ 1007 format(11x,'sxb,syb,szb    = ',3f8.4)
+ 1012 format(11x,'inflow data set from file:')
+ 1013 format('           ',a60)
+ 1014 format(11x,'turb1 (nondim) = ',e12.4)
+ 1015 format(11x,'turb2 (nondim) = ',e12.4)
+c
+      return 
       end
       subroutine out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,

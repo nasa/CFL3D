@@ -915,7 +915,7 @@ c
          mdim = ibcinfo(nbl,nseg,3,mm)-ibcinfo(nbl,nseg,2,mm)
          ndim = ibcinfo(nbl,nseg,5,mm)-ibcinfo(nbl,nseg,4,mm)  
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif
@@ -945,7 +945,7 @@ c
          mdim = ibcinfo(nbl,nseg,3,mm)-ibcinfo(nbl,nseg,2,mm)
          ndim = ibcinfo(nbl,nseg,5,mm)-ibcinfo(nbl,nseg,4,mm)
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif
@@ -975,7 +975,7 @@ c
          mdim = jbcinfo(nbl,nseg,5,mm)-jbcinfo(nbl,nseg,4,mm)
          ndim = jbcinfo(nbl,nseg,3,mm)-jbcinfo(nbl,nseg,2,mm)
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif
@@ -1005,7 +1005,7 @@ c
          mdim = jbcinfo(nbl,nseg,5,mm)-jbcinfo(nbl,nseg,4,mm)
          ndim = jbcinfo(nbl,nseg,3,mm)-jbcinfo(nbl,nseg,2,mm)
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif
@@ -1035,7 +1035,7 @@ c
          mdim = kbcinfo(nbl,nseg,5,mm)-kbcinfo(nbl,nseg,4,mm)
          ndim = kbcinfo(nbl,nseg,3,mm)-kbcinfo(nbl,nseg,2,mm)
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif
@@ -1065,7 +1065,7 @@ c
          mdim = kbcinfo(nbl,nseg,5,mm)-kbcinfo(nbl,nseg,4,mm)
          ndim = kbcinfo(nbl,nseg,3,mm)-kbcinfo(nbl,nseg,2,mm)
 #if defined DIST_MPI
-         nvals = mdim*ndim*7*2
+         nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
          if (myid .eq. myhost) then
 #endif

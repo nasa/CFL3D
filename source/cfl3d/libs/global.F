@@ -1577,7 +1577,7 @@ c
          write(iunit11,'(''     '',a60)') bcfiles(nfl)
       end if
  1210 format(10a10)
- 1212 format(4f10.5,3e10.3)
+ 1212 format(4f10.5,8e10.3)
  1213 format(17h     bc data file)
 c
       if (ibcinfo(nbl,nseg,2,1).lt.1 .or.

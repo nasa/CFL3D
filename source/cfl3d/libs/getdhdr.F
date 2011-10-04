@@ -122,6 +122,24 @@ c
          datahdr(7)  = '     rfreq'
       end if
 c
+      if (abs(ibctyp).eq.2026) then
+         datahdr(1)  = '      vmag'
+         datahdr(2)  = '     rfreq'
+         datahdr(3)  = '  sideangj'
+         datahdr(4)  = '       sxa'
+         datahdr(5)  = '       sya'
+         datahdr(6)  = '       sza'
+         datahdr(7)  = '       sxb'
+         datahdr(8)  = '       syb'
+         datahdr(9)  = '       szb'
+         if (abs(ndata).gt.9) then
+            datahdr(10)  = '     turb1'
+         end if
+         if (abs(ndata).gt.10) then
+            datahdr(11)  = '     turb2'
+         end if
+      end if
+c
       if (ibctyp.eq.2018) then
          datahdr(1)  = '         T'
          datahdr(2)  = '      rhou'
