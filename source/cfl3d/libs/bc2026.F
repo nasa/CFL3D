@@ -10,20 +10,20 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Set "wagging jet" blowing BC
+c     Purpose:  Set "sweeping jet" blowing BC
 c               with 9 pieces of auxiliary data and up to 2 turbulence quantities:
 c     This BC is NOT treated as a "wall" bc; i.e., forces are not integrated on it,
 c     and the min distance does not see it as a wall
 c     (so ismincforce=2 should be invoked if restarting from a soln w/o bc2026)
 c
 c           1) vmag = jet velocity magnitude/a_ref
-c           2) rfreq = reduced frequency of unsteady jet wagging =
+c           2) rfreq = reduced frequency of unsteady jet sweeping =
 c                      thetajet=sideangj*sin(twopi*rfreq*time)
-c           3) sideangj = max angle (deg) that the jet "wags" in each direction
+c           3) sideangj = max angle (deg) that the jet "sweeps" in each direction
 c                           (+-sideangj)
-c           4) sxa = direction number for surface jet prior to wagging (x-direction)
-c           5) sya = direction number for surface jet prior to wagging (y-direction)
-c           6) sza = direction number for surface jet prior to wagging (z-direction)
+c           4) sxa = direction number for surface jet prior to sweeping (x-direction)
+c           5) sya = direction number for surface jet prior to sweeping (y-direction)
+c           6) sza = direction number for surface jet prior to sweeping (z-direction)
 c           7) sxb = x-direction number for vector normal to (sxa,sya,sza), in
 c                       plane perpendicular to body surface and pointing downstream
 c           8) syb = y-direction number for vector normal to (sxa,sya,sza), in
@@ -96,7 +96,7 @@ c            * standard boundary condition bctype=2026 *
 c            * * * * * * * * * * * * * * * * * * * * * *
 c
 c******************************************************************************
-c      j=1 boundary        wagging jet                              bctype 2026
+c      j=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.3) then
 c
@@ -140,7 +140,7 @@ c
       wwb = xtbj(k,i,3,1)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)
@@ -212,7 +212,7 @@ c
       end if
 c
 c******************************************************************************
-c      j=jdim boundary     wagging jet                              bctype 2026
+c      j=jdim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.4) then
 c
@@ -256,7 +256,7 @@ c
       wwb = xtbj(k,i,3,2)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)
@@ -328,7 +328,7 @@ c
       end if
 c
 c******************************************************************************
-c      k=1 boundary        wagging jet                              bctype 2026
+c      k=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.5) then
 c
@@ -371,7 +371,7 @@ c     if irelv > 0; otherwise, set to zero
       wwb = xtbk(j,i,3,1)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)
@@ -443,7 +443,7 @@ c
       end if
 c
 c******************************************************************************
-c      k=kdim boundary     wagging jet                              bctype 2026
+c      k=kdim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.6) then
 c
@@ -487,7 +487,7 @@ c     if irelv > 0; otherwise, set to zero
       wwb = xtbk(j,i,3,2)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)
@@ -559,7 +559,7 @@ c
       end if
 c
 c******************************************************************************
-c      i=1 boundary        wagging jet                              bctype 2026
+c      i=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.1) then
 c
@@ -603,7 +603,7 @@ c
       wwb = xtbi(j,k,3,1)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)
@@ -675,7 +675,7 @@ c
       end if
 c
 c******************************************************************************
-c      i=idim boundary     wagging jet                              bctype 2026
+c      i=idim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.2) then
 c
@@ -718,7 +718,7 @@ c     if irelv > 0; otherwise, set to zero
       wwb = xtbi(j,k,3,2)
       end if
 c
-c     find angle of wagging jet relative to frame pointing up in z
+c     find angle of sweeping jet relative to frame pointing up in z
       thetajet=sideangj*sin(twopi*rfreq*time)
       sjetx1=0.
       sjety1=sin(thetajet)

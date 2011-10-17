@@ -8156,17 +8156,17 @@ c
 c
       end if
 c
- 1001 format(' ','  j=   1  wagging jet   type 2026',
+ 1001 format(' ','  j=   1  sweeping jet   type 2026',
      .       '  i=',i5,',',i5,'  k=',i5,',',i5)
- 1002 format(' ','  j=jdim  wagging jet   type 2026',
+ 1002 format(' ','  j=jdim  sweeping jet   type 2026',
      .       '  i=',i5,',',i5,'  k=',i5,',',i5)
- 1003 format(' ','  k=   1  wagging jet   type 2026',
+ 1003 format(' ','  k=   1  sweeping jet   type 2026',
      .       '  i=',i5,',',i5,'  j=',i5,',',i5)
- 1004 format(' ','  k=kdim  wagging jet   type 2026',
+ 1004 format(' ','  k=kdim  sweeping jet   type 2026',
      .       '  i=',i5,',',i5,'  j=',i5,',',i5)
- 1005 format(' ','  i=   1  wagging jet   type 2026',
+ 1005 format(' ','  i=   1  sweeping jet   type 2026',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
- 1006 format(' ','  i=idim  wagging jet   type 2026',
+ 1006 format(' ','  i=idim  sweeping jet   type 2026',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1008 format(11x,'vmag/ainf      = ',f8.4)
  1009 format(11x,'rfreq*lref/ainf= ',f8.4)

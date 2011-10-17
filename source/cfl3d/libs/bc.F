@@ -167,15 +167,15 @@ c              4.  For rfreq < 0: ramp the mass flow coefficient from zero to
 c                  a terminal value where
 c                  cq  = terminal mass flow coefficient value
 c                  cqu = constant rate of change
-c      bc2026 - wagging jet (set ndata=9)
+c      bc2026 - sweeping jet (set ndata=9)
 c           1) vmag = jet velocity magnitude/a_ref
-c           2) rfreq = reduced frequency of unsteady jet wagging =
+c           2) rfreq = reduced frequency of unsteady jet sweeping =
 c                      thetajet=sideangj*sin(twopi*rfreq*time)
-c           3) sideangj = max angle (deg) that the jet "wags" in each direction
+c           3) sideangj = max angle (deg) that the jet "sweeps" in each direction
 c                           (+-sideangj)
-c           4) sxa = direction number for surface jet prior to wagging (x-direction)
-c           5) sya = direction number for surface jet prior to wagging (y-direction)
-c           6) sza = direction number for surface jet prior to wagging (z-direction)
+c           4) sxa = direction number for surface jet prior to sweeping (x-direction)
+c           5) sya = direction number for surface jet prior to sweeping (y-direction)
+c           6) sza = direction number for surface jet prior to sweeping (z-direction)
 c           7) sxb = x-direction number for vector normal to (sxa,sya,sza), in
 c                       plane perpendicular to body surface and pointing downstream
 c           8) syb = y-direction number for vector normal to (sxa,sya,sza), in
