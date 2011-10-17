@@ -751,6 +751,19 @@ c
             end if
 #           endif
          end if
+         if (inpl3d(iplot,2).eq.-1) then
+            write(11,'(''   plot3dg file is an xyz file'',
+     .      '' at grid points'')')
+            write(11,'(''   plot3dq file is a    q file'',
+     .      '' at grid points with off-surface data used when output'',
+     .      '' is on body only'')')
+#           ifdef CMPLX
+            if (ip3dgrad .ne. 0) then
+               write(11,'(''   NOTE: contains dq/d(), rather than q'')')
+               call gradinfo(delh,11)
+            end if
+#           endif
+         end if
          if (ifunc.eq.-5) then
             write(11,'(''   plot3dg file is an xyz file'',
      .      '' at grid points'')')
@@ -946,6 +959,8 @@ c     ifunc...flag to determine whether a plot3d q file or plot3d function
 c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST
 c           = 0 plot3d q file is written at grid points
+c             (if inpl3d(iplot,2)=-1 then same, except off-body data used 
+c             when output is on body only)
 c           < 0 function file is written
 c            -4 vist3d at grid points
 c            -5 pressure coefficient (cp) at grid points
@@ -956,8 +971,35 @@ c
         call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,vist3d,
      .              vi0,vj0,vk0,jdw,kdw,idw,xvist3d,1)
       else
-        call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
+        if (inpl3d(iplot,2) .eq. -1) then
+        if (i1 .eq. i2 .and. i1 .eq. 1) then
+          call cctogp(jdim,kdim,idim,i1+1,i2+1,i3,j1,j2,j3,k1,k2,k3,q,
      .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        if (i1 .eq. i2 .and. i1 .eq. idim) then
+          call cctogp(jdim,kdim,idim,i1-1,i2-1,i3,j1,j2,j3,k1,k2,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        if (j1 .eq. j2 .and. j1 .eq. 1) then
+          call cctogp(jdim,kdim,idim,i1,i2,i3,j1+1,j2+1,j3,k1,k2,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        if (j1 .eq. j2 .and. j1 .eq. jdim) then
+          call cctogp(jdim,kdim,idim,i1,i2,i3,j1-1,j2-1,j3,k1,k2,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        if (k1 .eq. k2 .and. k1 .eq. 1) then
+          call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1+1,k2+1,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        if (k1 .eq. k2 .and. k1 .eq. kdim) then
+          call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1-1,k2-1,k3,q,
+     .              qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
+        else
+          call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
+     .                qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
+        end if
       end if
 
 c
@@ -973,6 +1015,96 @@ c
 #     endif
 c
       if (ifunc.eq.0) then
+c       special: if inpl3d(iplot,2) is -1, find approx wall-parallel components
+        if (inpl3d(iplot,2) .eq. -1) then
+          if (i1 .eq. i2) then
+            ix=0
+            do i=i1,i2,i3
+              ix=ix+1
+              im1=max(1,i-1)
+              kx=0
+              do k=k1,k2,k3
+                kx=kx+1
+                km1=max(1,k-1)
+                jx=0
+                do j=j1,j2,j3
+                  jx=jx+1
+                  jm1=max(1,j-1)
+                  sim1=(si(j  ,k  ,i  ,1)+si(jm1,k  ,i  ,1)+
+     +                  si(j  ,km1,i  ,1)+si(jm1,km1,i  ,1))*.25
+                  sim2=(si(j  ,k  ,i  ,2)+si(jm1,k  ,i  ,2)+
+     +                  si(j  ,km1,i  ,2)+si(jm1,km1,i  ,2))*.25
+                  sim3=(si(j  ,k  ,i  ,3)+si(jm1,k  ,i  ,3)+
+     +                  si(j  ,km1,i  ,3)+si(jm1,km1,i  ,3))*.25
+                  vnorm = xv(jx,kx,ix,2)*sim1 +
+     +                    xv(jx,kx,ix,3)*sim2 +
+     +                    xv(jx,kx,ix,4)*sim3
+                  xv(jx,kx,ix,2) = xv(jx,kx,ix,2)-vnorm*sim1
+                  xv(jx,kx,ix,3) = xv(jx,kx,ix,3)-vnorm*sim2
+                  xv(jx,kx,ix,4) = xv(jx,kx,ix,4)-vnorm*sim3
+                enddo
+              enddo
+            enddo
+          end if
+          if (j1 .eq. j2) then
+            ix=0
+            do i=i1,i2,i3
+              ix=ix+1
+              im1=max(1,i-1)
+              kx=0
+              do k=k1,k2,k3
+                kx=kx+1
+                km1=max(1,k-1)
+                jx=0
+                do j=j1,j2,j3
+                  jx=jx+1
+                  jm1=max(1,j-1)
+                  sjm1=(sj(j  ,k  ,i  ,1)+sj(j  ,k  ,im1,1)+
+     +                  sj(j  ,km1,i  ,1)+sj(j  ,km1,im1,1))*.25
+                  sjm2=(sj(j  ,k  ,i  ,2)+sj(j  ,k  ,im1,2)+
+     +                  sj(j  ,km1,i  ,2)+sj(j  ,km1,im1,2))*.25
+                  sjm3=(sj(j  ,k  ,i  ,3)+sj(j  ,k  ,im1,3)+
+     +                  sj(j  ,km1,i  ,3)+sj(j  ,km1,im1,3))*.25
+                  vnorm = xv(jx,kx,ix,2)*sjm1 +
+     +                    xv(jx,kx,ix,3)*sjm2 +
+     +                    xv(jx,kx,ix,4)*sjm3
+                  xv(jx,kx,ix,2) = xv(jx,kx,ix,2)-vnorm*sjm1
+                  xv(jx,kx,ix,3) = xv(jx,kx,ix,3)-vnorm*sjm2
+                  xv(jx,kx,ix,4) = xv(jx,kx,ix,4)-vnorm*sjm3
+                enddo
+              enddo
+            enddo
+          end if
+          if (k1 .eq. k2) then
+            ix=0
+            do i=i1,i2,i3
+              ix=ix+1
+              im1=max(1,i-1)
+              kx=0
+              do k=k1,k2,k3
+                kx=kx+1
+                km1=max(1,k-1)
+                jx=0
+                do j=j1,j2,j3
+                  jx=jx+1
+                  jm1=max(1,j-1)
+                  skm1=(sk(j  ,k  ,i  ,1)+sk(j  ,k  ,im1,1)+
+     +                  sk(jm1,k  ,i  ,1)+sk(jm1,k  ,im1,1))*.25
+                  skm2=(sk(j  ,k  ,i  ,2)+sk(j  ,k  ,im1,2)+
+     +                  sk(jm1,k  ,i  ,2)+sk(jm1,k  ,im1,2))*.25
+                  skm3=(sk(j  ,k  ,i  ,3)+sk(j  ,k  ,im1,3)+
+     +                  sk(jm1,k  ,i  ,3)+sk(jm1,k  ,im1,3))*.25
+                  vnorm = xv(jx,kx,ix,2)*skm1 +
+     +                    xv(jx,kx,ix,3)*skm2 +
+     +                    xv(jx,kx,ix,4)*skm3
+                  xv(jx,kx,ix,2) = xv(jx,kx,ix,2)-vnorm*skm1
+                  xv(jx,kx,ix,3) = xv(jx,kx,ix,3)-vnorm*skm2
+                  xv(jx,kx,ix,4) = xv(jx,kx,ix,4)-vnorm*skm3
+                enddo
+              enddo
+            enddo
+          end if
+        end if
 c
 c        load solution (q) in xv array
 c

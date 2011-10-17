@@ -79,6 +79,7 @@ c
       common /conversion/ radtodeg
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
+      common /fluid2/ pr,prt,cbar
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -514,6 +515,26 @@ c
             end if
 #           endif
          end if
+         if (ifunc.eq.7) then
+            if (ipsurf.eq.0) then
+               write(11,'(''   plot3dg file is an xyz file'',
+     .         '' at cell centers'')')
+               write(11,'(''   plot3dq file is a function'',
+     .         '' file of turbulence index at the wall'')')
+            else
+               write(11,'(''   plot3dg file is an xyz file'',
+     .         '' at cell face centers'')')
+               write(11,'(''   plot3dq file is a function'',
+     .         '' file of turbulence index at the wall'')')
+            end if
+#           ifdef CMPLX
+            if (ip3dgrad .ne. 0) then
+               write(11,'(''   NOTE: ip3dgrad .ne. 0 has no'',
+     .                    '' effect on this'')')
+               call gradinfo(delh,11)
+            end if
+#           endif
+         end if
          if (i2d .eq. 1) then
             if (iblnk .eq. 0) then
                write(11,2041)
@@ -671,6 +692,7 @@ c             3 minimum distance to a solid surface (smin) at cell centers
 c             4 turbulent viscosity (vist3d) at cell centers
 c             5 pressure coefficient (cp) at cell centers
 c             6 p/pinf at cell centers
+c             7 turbulence index at cell centers, when output on body only
 c
 c            Note: if nplot3d < 0 in the input file, then ipsurf is
 c            set to 1 and solid surface, cell face center data is output,
@@ -1221,6 +1243,44 @@ c           at cell face centers in a wall, smin is by definition zero
  4043          continue
             end if
          end if
+      end if
+      if (ifunc.eq.7) then
+         iw = 0
+         do 5768 i=i1,i2,i3
+         iw = iw + 1
+         kw = 0
+         do 5768 k=k1,k2,k3
+         kw = kw + 1
+         jw = 0
+         do 5768 j=j1,j2,j3
+         jw = jw + 1
+c        vorticity at wall is approximate
+         vor=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)/
+     +       (ccabs(smin(j,k,i)))
+         tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+         c2b=cbar/tinf
+         c2bp=c2b+1.0
+         xmu=c2bp*tt*sqrt(tt)/(c2b+tt)
+c        iterate to get nuwiggle
+         xmut=vist3d(j,k,i)
+         xnuwiggle=500.
+         do n=1,50
+           delta=(xnuwiggle**4 - xmut*xnuwiggle**3-xmut*(7.1**3))/
+     +           (4.*xnuwiggle**3-3.*xmut*xnuwiggle**2)
+           xnuwiggle=xnuwiggle-delta
+         enddo
+c        iteration may not work
+         xnuwiggle=ccmaxcr(xnuwiggle,1.e-20)
+         xnuwiggle=ccmincr(xnuwiggle,5000.)
+#        ifdef CMPLX
+         xw(jw,kw,iw,1) = real(xnuwiggle)/real(ccabs(smin(j,k,i)))*
+     +    sqrt(real(q(j,k,i,1)))*sqrt(xmach/reue)/(0.41*
+     +    sqrt(real(xmu)*real(vor)))
+#        else
+         xw(jw,kw,iw,1) = xnuwiggle/(ccabs(smin(j,k,i)))*
+     +    sqrt(q(j,k,i,1)*xmach/reue)/(0.41*sqrt(xmu*vor))
+#        endif
+ 5768    continue
       end if
 c
       end if

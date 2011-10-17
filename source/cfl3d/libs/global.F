@@ -943,7 +943,7 @@ c
       end if
 c
       if ((ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .eq. 13 .or.
-     .     ivmx .eq. 14) .and. cmulim .gt. .04) then
+     .     ivmx .eq. 14) .and. real(cmulim) .gt. .04) then
         write(iunit11,'('' error... cmulim set too high'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if 
@@ -3661,9 +3661,24 @@ c
 c
          if (iflag.eq.0) then
             read(iunit5,*)(im(l),l=1,11)
+            if (im(2) .eq. -1) then
+             write(iunit11,*)'stopping...iptyp should not be -1',
+     .       ' unless nplot3d=-1 (surface only)'
+             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+            end if
+            if (im(2) .eq. 7) then
+             write(iunit11,*)'stopping...iptyp should not be 7',
+     .       ' unless nplot3d=-1 (surface only)'
+             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+            end if
          else
             if (n.le.np3dhold) then
                read(iunit5,*) idum,iptyp,(idum,l=3,11)
+            end if
+            if (iptyp .eq. 7 .and. i2d .ne. 0) then
+             write(iunit11,*)'stopping...iptyp 7',
+     .       ' does not work for 2D'
+             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
          end if
 c
@@ -3707,7 +3722,8 @@ c
          iptyp = im(2)
          if ((iptyp-0)*(iptyp-1)*(iptyp-1)*(iptyp-3)*
      .       (iptyp-4)*(iptyp-5)*(iptyp+5)*(iptyp-6)*
-     .       (iptyp+6)*(iptyp-2)*(iptyp+4) .ne. 0) then
+     .       (iptyp+6)*(iptyp-2)*(iptyp+4)*(iptyp+1)*
+     .       (iptyp-7) .ne. 0) then
              write(iunit11,*)'stopping...inappropriate value',
      .       ' for iptyp for plot3d data'
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
