@@ -1095,9 +1095,10 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(j+jkv,10)*t(j+jkv,25))
               w23 = 0.5*(t(j+jkv,9) *t(j+jkv,27) -
      +                   t(j+jkv,10)*t(j+jkv,26))
-              s11 = s11 - (s11+s22+s33)/3.
-              s22 = s22 - (s11+s22+s33)/3.
-              s33 = s33 - (s11+s22+s33)/3.
+              tmp = (s11+s22+s33)/3.
+              s11 = s11 - tmp
+              s22 = s22 - tmp
+              s33 = s33 - tmp
 c             Note: denom term is taken at nearest cell center
               denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
      +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
@@ -1171,9 +1172,10 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(j+jkv,10)*t(j+jkv,25))
               w23 = 0.5*(t(j+jkv,9) *t(j+jkv,27) -
      +                   t(j+jkv,10)*t(j+jkv,26))
-              s11 = s11 - (s11+s22+s33)/3.
-              s22 = s22 - (s11+s22+s33)/3.
-              s33 = s33 - (s11+s22+s33)/3.
+              tmp = (s11+s22+s33)/3.
+              s11 = s11 - tmp
+              s22 = s22 - tmp
+              s33 = s33 - tmp
 c             Note: denom term is taken at nearest cell center
               denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
      +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
@@ -1247,9 +1249,10 @@ c            Determine Sij and Wij values (at cell interfaces):
      +                   t(j+jkv,10)*t(j+jkv,25))
               w23 = 0.5*(t(j+jkv,9) *t(j+jkv,27) -
      +                   t(j+jkv,10)*t(j+jkv,26))
-              s11 = s11 - (s11+s22+s33)/3.
-              s22 = s22 - (s11+s22+s33)/3.
-              s33 = s33 - (s11+s22+s33)/3.
+              tmp = (s11+s22+s33)/3.
+              s11 = s11 - tmp
+              s22 = s22 - tmp
+              s33 = s33 - tmp
 c             Note: denom term is taken at nearest cell center
               denom= ux(j,k,ii,1)**2 +ux(j,k,ii,2)**2 +ux(j,k,ii,3)**2
      +              +ux(j,k,ii,4)**2 +ux(j,k,ii,5)**2 +ux(j,k,ii,6)**2
