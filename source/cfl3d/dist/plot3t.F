@@ -1120,7 +1120,7 @@ c      scalar invariant III:
      +       3.*b22*b12**2+3.*b22*b23**2+
      +       3.*b33*b13**2+3.*b33*b23**2+6.*b12*b13*b23) 
       end if
-c      scalar invariant F:
+c      scalar invariant F ("flatness parameter"):
       ff=1.+9.*xii+27.*xiii
 c      Q-criterion 2nd invariant of velocity gradient tensor
 c      (not sure if this variable makes sense in 2-d)
