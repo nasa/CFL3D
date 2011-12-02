@@ -1270,7 +1270,7 @@ c        iterate to get nuwiggle
            xnuwiggle=xnuwiggle-delta
 c          iteration may not be working
            xnuwiggle=ccmaxcr(xnuwiggle,1.e-20)
-           xnuwiggle=ccmincr(xnuwiggle,10000.)
+           xnuwiggle=ccmincr(xnuwiggle,5000.)
          enddo
 #        ifdef CMPLX
          xw(jw,kw,iw,1) = real(xnuwiggle)/real(ccabs(smin(j,k,i)))*
@@ -1281,7 +1281,9 @@ c          iteration may not be working
      +    sqrt(q(j,k,i,1)*xmach/reue)/(0.41*sqrt(xmu*vor))
 #        endif
 c        limit maximum to 1 (represents turbulent)
-         xw(jw,kw,iw,1)=ccmincr(xw(jw,kw,iw,1),1.0)
+         if (xw(jw,kw,iw,1) .gt. 1.0) then
+           xw(jw,kw,iw,1)=1.0
+         end if
  5768    continue
       end if
 c
