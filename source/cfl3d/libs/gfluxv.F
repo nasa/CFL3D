@@ -37,7 +37,7 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
-      common /constit/ i_nonlin,c_nonlin
+      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
 c
 c******************************************************************************
 c     right-hand-side residual contribution in J-direction (viscous terms)
@@ -72,10 +72,15 @@ c
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),1444)
          end if
+         if (i_nonlin.ne.0 .and. i_nonlin_lim.eq.1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),1445)
+         end if
       end if
  1442 format(52h   computing viscous  fluxes, J-direction - central ,
      .12hdifferencing)
  1444 format(37h      nonlinear constitutive relation)
+ 1445 format(31h      limiter ON for robustness)
 c
 c******************************************************************************
 c
@@ -1078,6 +1083,8 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(k+jkv,10)*t(k+jkv,25))
               w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
      +                   t(k+jkv,10)*t(k+jkv,26))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               tmp = (s11+s22+s33)/3.
               s11 = s11 - tmp
               s22 = s22 - tmp
@@ -1097,9 +1104,12 @@ c            Find tauij values:
               w=0.5*(q(j,k,ii,4)+qj0(k,ii,4,1))*(1.-wj0(k+jkv2,5))+
      +            qj0(k,ii,4,1)*wj0(k+jkv2,5)
               zk_sa=0.
+c             approximation for models w/o k equation:
+              zk_d=t(k+jkv,24)/rho*sqrt(2.*xis)/(re*.31)
               if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
      +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
                 zk_sa=0.5*(zksav(j,k,ii,2)+tj0(k,ii,2,1))
+                zk_d=zk_sa
               end if
               t11 = 2.*rho*zk_sa*re/3.
      +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
@@ -1114,7 +1124,7 @@ c             t22=ccmax(t22,xlnpt)
               t33 = 2.*rho*zk_sa*re/3.
      +             -8.*c_nonlin*t(k+jkv,24)/denom*( s23*w23 + s13*w13)
 c             xlnpt=2.*t(k+jkv,24)*s33
-c             t33=ccmax(t33,xlnpt.or. ivisc(2).eq.15)
+c             t33=ccmax(t33,xlnpt)
               t33 = t33*(1.-bcj(k,ii,1))
               t12 =-4.*c_nonlin*t(k+jkv,24)/denom*
      +                 ( s11*w12 - s22*w12 - s13*w23 - s23*w13)
@@ -1125,6 +1135,32 @@ c             t33=ccmax(t33,xlnpt.or. ivisc(2).eq.15)
               t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
      +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
               t23 = t23*(1.-bcj(k,ii,1))
+c   Check realizability in A3-A2 space, just using a simple box that
+c   encloses the Lumley triangle (use big factor of safety)
+c   zero out nonlinear terms if violated...
+c   this helps prevent blowing up during start-up.
+c   Note the txx terms are not complete, they only include terms
+c   in one coordinate direction, but this helps find problem points
+c   nonetheless.
+              a11=(-2.*t(k+jkv,24)*s11+t11)/(rho*zk_d*re)-0.666666667
+              a22=(-2.*t(k+jkv,24)*s22+t22)/(rho*zk_d*re)-0.666666667
+              a33=(-2.*t(k+jkv,24)*s33+t33)/(rho*zk_d*re)-0.666666667
+              a12=(-2.*t(k+jkv,24)*s12+t12)/(rho*zk_d*re)
+              a13=(-2.*t(k+jkv,24)*s13+t13)/(rho*zk_d*re)
+              a23=(-2.*t(k+jkv,24)*s23+t23)/(rho*zk_d*re)
+              a2=a11**2+a22**2+a33**2+2.*(a12**2+a13**2+a23**2)
+              a3=a11**3+a22**3+a33**3+3.*a12**2*(a11+a22)+
+     +            3.*a13**2*(a11+a33)+3.*a23**2*(a22+a33)+
+     +            6.*a12*a13*a23
+              if ((a2 .gt. 3.0 .or. a3 .lt. -0.5 .or. a3 .gt. 2.0) .and.
+     +            i_nonlin_lim .eq. 1) then
+                t11=0.
+                t22=0.
+                t33=0.
+                t12=0.
+                t13=0.
+                t23=0.
+              end if
 c
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)
@@ -1155,6 +1191,8 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(k+jkv,10)*t(k+jkv,25))
               w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
      +                   t(k+jkv,10)*t(k+jkv,26))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               tmp = (s11+s22+s33)/3.
               s11 = s11 - tmp
               s22 = s22 - tmp
@@ -1174,9 +1212,12 @@ c            Find tauij values:
               w=0.5*(q(j-1,k,ii,4)+qj0(k,ii,4,3))*(1.-wj0(k+jkv2,15))+
      +            qj0(k,ii,4,3)*wj0(k+jkv2,15)
               zk_sa=0.
+c             approximation for models w/o k equation:
+              zk_d=t(k+jkv,24)/rho*sqrt(2.*xis)/(re*.31)
               if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
      +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
                 zk_sa=0.5*(zksav(j-1,k,ii,2)+tj0(k,ii,2,3))
+                zk_d=zk_sa
               end if
               t11 = 2.*rho*zk_sa*re/3.
      +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
@@ -1202,6 +1243,32 @@ c             t33=ccmax(t33,xlnpt)
               t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
      +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
               t23 = t23*(1.-bcj(k,ii,2))
+c   Check realizability in A3-A2 space, just using a simple box that
+c   encloses the Lumley triangle (use big factor of safety)
+c   zero out nonlinear terms if violated...
+c   this helps prevent blowing up during start-up.
+c   Note the txx terms are not complete, they only include terms
+c   in one coordinate direction, but this helps find problem points
+c   nonetheless.
+              a11=(-2.*t(k+jkv,24)*s11+t11)/(rho*zk_d*re)-0.666666667
+              a22=(-2.*t(k+jkv,24)*s22+t22)/(rho*zk_d*re)-0.666666667
+              a33=(-2.*t(k+jkv,24)*s33+t33)/(rho*zk_d*re)-0.666666667
+              a12=(-2.*t(k+jkv,24)*s12+t12)/(rho*zk_d*re)
+              a13=(-2.*t(k+jkv,24)*s13+t13)/(rho*zk_d*re)
+              a23=(-2.*t(k+jkv,24)*s23+t23)/(rho*zk_d*re)
+              a2=a11**2+a22**2+a33**2+2.*(a12**2+a13**2+a23**2)
+              a3=a11**3+a22**3+a33**3+3.*a12**2*(a11+a22)+
+     +            3.*a13**2*(a11+a33)+3.*a23**2*(a22+a33)+
+     +            6.*a12*a13*a23
+              if ((a2 .gt. 3.0 .or. a3 .lt. -0.5 .or. a3 .gt. 2.0) .and.
+     +            i_nonlin_lim .eq. 1) then
+                t11=0.
+                t22=0.
+                t33=0.
+                t12=0.
+                t13=0.
+                t23=0.
+              end if
 c
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)
@@ -1232,6 +1299,8 @@ c            Determine Sij and Wij values (at cell interfaces):
      +                   t(k+jkv,10)*t(k+jkv,25))
               w23 = 0.5*(t(k+jkv,9) *t(k+jkv,27) -
      +                   t(k+jkv,10)*t(k+jkv,26))
+              xis = s11*s11 + s22*s22 + s33*s33 +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
               tmp = (s11+s22+s33)/3.
               s11 = s11 - tmp
               s22 = s22 - tmp
@@ -1244,9 +1313,12 @@ c             Note: denom term is taken at nearest cell center
 c            Find tauij values:
               rho=0.5*(q(j,k,ii,1)+q(j-1,k,ii,1))
               zk_sa=0.
+c             approximation for models w/o k equation:
+              zk_d=t(k+jkv,24)/rho*sqrt(2.*xis)/(re*.31)
               if (ivisc(2).eq.6 .or. ivisc(2).eq.7 .or.
      +            ivisc(2).eq.10.or. ivisc(2).eq.15) then
                 zk_sa=0.5*(zksav(j,k,ii,2)+zksav(j-1,k,ii,2))
+                zk_d=zk_sa
               end if
               t11 = 2.*rho*zk_sa*re/3.
      +             -8.*c_nonlin*t(k+jkv,24)/denom*(-s12*w12 - s13*w13)
@@ -1266,6 +1338,32 @@ c             t33=ccmax(t33,xlnpt)
      +                 ( s11*w13 + s12*w23 - s23*w12 - s33*w13)
               t23 =-4.*c_nonlin*t(k+jkv,24)/denom*
      +                 ( s12*w13 + s22*w23 + s13*w12 - s33*w23)
+c   Check realizability in A3-A2 space, just using a simple box that
+c   encloses the Lumley triangle (use big factor of safety)
+c   zero out nonlinear terms if violated...
+c   this helps prevent blowing up during start-up.
+c   Note the txx terms are not complete, they only include terms
+c   in one coordinate direction, but this helps find problem points
+c   nonetheless.
+              a11=(-2.*t(k+jkv,24)*s11+t11)/(rho*zk_d*re)-0.666666667
+              a22=(-2.*t(k+jkv,24)*s22+t22)/(rho*zk_d*re)-0.666666667
+              a33=(-2.*t(k+jkv,24)*s33+t33)/(rho*zk_d*re)-0.666666667
+              a12=(-2.*t(k+jkv,24)*s12+t12)/(rho*zk_d*re)
+              a13=(-2.*t(k+jkv,24)*s13+t13)/(rho*zk_d*re)
+              a23=(-2.*t(k+jkv,24)*s23+t23)/(rho*zk_d*re)
+              a2=a11**2+a22**2+a33**2+2.*(a12**2+a13**2+a23**2)
+              a3=a11**3+a22**3+a33**3+3.*a12**2*(a11+a22)+
+     +            3.*a13**2*(a11+a33)+3.*a23**2*(a22+a33)+
+     +            6.*a12*a13*a23
+              if ((a2 .gt. 3.0 .or. a3 .lt. -0.5 .or. a3 .gt. 2.0) .and.
+     +            i_nonlin_lim .eq. 1) then
+                t11=0.
+                t22=0.
+                t33=0.
+                t12=0.
+                t13=0.
+                t23=0.
+              end if
 c
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)

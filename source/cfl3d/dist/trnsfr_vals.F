@@ -206,7 +206,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin
+      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
       common /easmlim/ cmulim
 #if defined DIST_MPI
 c
@@ -512,11 +512,12 @@ c
          work(nlast+131)= crot
          work(nlast+132)= i_nonlin
          work(nlast+133)= c_nonlin
-         work(nlast+134)= isarc3d
-         work(nlast+135)= isubit_r
-         work(nlast+136)= i_wilcox98
-         work(nlast+137)= i_wilcox98_chiw
-         work(nlast+138)= cmulim
+         work(nlast+134)= i_nonlin_lim
+         work(nlast+135)= isarc3d
+         work(nlast+136)= isubit_r
+         work(nlast+137)= i_wilcox98
+         work(nlast+138)= i_wilcox98_chiw
+         work(nlast+139)= cmulim
          nlast = nlast+nkey
       end if
 c
@@ -830,11 +831,12 @@ c
          crot = work(nlast+131)
          i_nonlin = int(work(nlast+132))
          c_nonlin = work(nlast+133)
-         isarc3d = int(work(nlast+134))
-         isubit_r = int(work(nlast+135))
-         i_wilcox98= int(work(nlast+136))
-         i_wilcox98_chiw= int(work(nlast+137))
-         cmulim= work(nlast+138)
+         i_nonlin_lim = int(work(nlast+134))
+         isarc3d = int(work(nlast+135))
+         isubit_r = int(work(nlast+136))
+         i_wilcox98= int(work(nlast+137))
+         i_wilcox98_chiw= int(work(nlast+138))
+         cmulim= work(nlast+139)
       end if
 c
 c**************************

@@ -97,7 +97,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /plot3dtyp/ ifunct
-      common /constit/ i_nonlin,c_nonlin
+      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
 c
 #if defined DIST_MPI
 c     set baseline tag values

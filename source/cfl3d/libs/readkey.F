@@ -86,7 +86,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin
+      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
       common /easmlim/ cmulim
 c
       ititr = 0
@@ -802,6 +802,13 @@ c     nonlinear constitutive relation for use with linear models
 c
 c     nonlinear constitutive relation constant
       c_nonlin = 0.3
+      nkey     = nkey + 1
+c
+c     limiter for nonlinear constitutive relation constant (improves robustness)
+c     active in ffluxv, hfluxv, and gfluxv; shuts off nonlinear terms on a
+c     point-by-point basis when a sort of "realizability box" is violated
+c     default=1
+      i_nonlin_lim = 1
       nkey     = nkey + 1
 c
 c     isubit_r - write out the subiteration residual for all variables to subit_res
@@ -1642,6 +1649,11 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          c_nonlin = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'i_nonlin_lim') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_nonlin_lim
+c
       else if (inpstr(lc1:lc2).eq.'isubit_r') then 
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isubit_r

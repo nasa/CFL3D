@@ -92,7 +92,7 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /des/ cdes,ides
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin
+      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
