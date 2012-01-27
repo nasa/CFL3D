@@ -147,14 +147,14 @@ c        write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
      .   real(fmdotw(n)),real(cftpw(n)),real(cftvw(n)),real(cftmomw(n))
  3100    continue
       else
-         write(12,'('' Final cl,cd       ='',2e13.5)')
+         write(12,'(''# Final cl,cd       ='',2e13.5)')
      .   real(clw(ntt)),real(cdw(ntt))
-         write(12,'('' Final cx,cy,cz    ='',3e13.5)')
+         write(12,'(''# Final cx,cy,cz    ='',3e13.5)')
      .   real(cxw(ntt)),real(cyw(ntt)),real(czw(ntt))
-         write(12,'('' Final cmx,cmy,cmz ='',3e13.5)')
+         write(12,'(''# Final cmx,cmy,cmz ='',3e13.5)')
      .   real(cmxw(ntt)),real(cmyw(ntt)),real(cmzw(ntt))
          write(12,*)
-         write(12,'(''    it     log(res)           cl'',
+         write(12,'(''#    it     log(res)           cl'',
      .   ''           cd           cx           cy'',
      .   ''           cz          cmx          cmy'',
      .   ''          cmz'')')
