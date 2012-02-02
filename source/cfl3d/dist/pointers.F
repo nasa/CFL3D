@@ -63,7 +63,7 @@ c
       common /des/ cdes,ides,cddes
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim
 c
       if (icall .eq. 0) then
          ierrflg = -99

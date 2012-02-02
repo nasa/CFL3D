@@ -97,7 +97,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /plot3dtyp/ ifunct
-      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -856,7 +856,8 @@ c            Find nonlinear tauij values:
              denom=ux(j,k,i,1)**2+ux(j,k,i,2)**2+ux(j,k,i,3)**2+
      +             ux(j,k,i,4)**2+ux(j,k,i,5)**2+ux(j,k,i,6)**2+
      +             ux(j,k,i,7)**2+ux(j,k,i,8)**2+ux(j,k,i,9)**2
-             denom=sqrt(denom)+1.e-10
+             denom=sqrt(denom)
+             denom=ccmax(denom,snonlin_lim)
              s11t=s11-(s11+s22+s33)/3.
              s22t=s22-(s11+s22+s33)/3.
              s33t=s33-(s11+s22+s33)/3.
@@ -1068,37 +1069,36 @@ c      Turbulence intensity:
         tint=sqrt(2.*turre(j,k,i,2)/3.)/xmach
       end if
 c      anisotropy tensor component b11:
-      if (ivmx .ge. 6) then
-      b11=t11/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+      b11=t11/(2.*q(j,k,i,1)*zk*re)-.33333333
 c      anisotropy tensor component b22:
       if (ialph .eq. 0) then
-        b22=t22/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+        b22=t22/(2.*q(j,k,i,1)*zk*re)-.33333333
       else
-        b22=t33/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+        b22=t33/(2.*q(j,k,i,1)*zk*re)-.33333333
       end if
 c      anisotropy tensor component b33:
       if (ialph .eq. 0) then
-        b33=t33/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+        b33=t33/(2.*q(j,k,i,1)*zk*re)-.33333333
       else
-        b33=t22/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)-.33333333
+        b33=t22/(2.*q(j,k,i,1)*zk*re)-.33333333
       end if
 c      anisotropy tensor component b12:
       if (ialph .eq. 0) then
-        b12=t12/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b12=t12/(2.*q(j,k,i,1)*zk*re)
       else
-        b12=t13/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b12=t13/(2.*q(j,k,i,1)*zk*re)
       end if
 c      anisotropy tensor component b13:
       if (ialph .eq. 0) then
-        b13=t13/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b13=t13/(2.*q(j,k,i,1)*zk*re)
       else
-        b13=-t12/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b13=-t12/(2.*q(j,k,i,1)*zk*re)
       end if
 c      anisotropy tensor component b23:
       if (ialph .eq. 0) then
-        b23=t23/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b23=t23/(2.*q(j,k,i,1)*zk*re)
       else
-        b23=-t23/(2.*q(j,k,i,1)*turre(j,k,i,2)*re)
+        b23=-t23/(2.*q(j,k,i,1)*zk*re)
       end if
 c      scalar invariant II:
       if (i2d .eq. 1) then
@@ -1142,7 +1142,6 @@ c      (not sure if this variable makes sense in 2-d)
      +               2.*ux(j,k,i,2)*ux(j,k,i,4)+ 
      +               2.*ux(j,k,i,3)*ux(j,k,i,7)+
      +               2.*ux(j,k,i,6)*ux(j,k,i,8))
-      end if
       end if
 c
 c     load appropriate data into single precision array

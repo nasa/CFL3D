@@ -184,7 +184,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /constit/ i_nonlin,c_nonlin,i_nonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmlim/ cmulim
 c
       pi = 4.0*atan(1.0)
