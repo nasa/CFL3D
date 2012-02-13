@@ -179,7 +179,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
-      common /axisym/ iaxi2plane
+      common /axisym/ iaxi2plane,iaxi2planeturb
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
@@ -979,6 +979,11 @@ c
         write(iunit11,'('' WARNING: iaxi2plane set back to 0'')')
         write(iunit11,'(''    (i2d must=0 and idim must=2)'')')
         iaxi2plane=0
+      end if
+      if (iaxi2planeturb.eq.1 .and. (i2d .ne. 0 .or. idim .ne. 2)) then
+        write(iunit11,'('' WARNING: iaxi2planeturb set back to 0'')')
+        write(iunit11,'(''    (i2d must=0 and idim must=2)'')')
+        iaxi2planeturb=0
       end if
 c   check usage of full N-S
       if (ifullns .ne. 0) then

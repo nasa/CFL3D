@@ -64,7 +64,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
-      common /axisym/ iaxi2plane
+      common /axisym/ iaxi2plane,iaxi2planeturb
       common /fullns/ ifullns
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
@@ -832,6 +832,12 @@ c     should never be set higher than .04 or so (.08-.09 is the std value of cmu
 c     in the log layer)
 c     default=.0005
       cmulim = .0005
+      nkey     = nkey + 1
+c
+c     iaxi2planeturb used to force solve of field turb model eqns in j-k 
+c     plane only; only allowed if i2d=0 & idim=2
+c     default=0 (include i-dir)
+      iaxi2planeturb=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1670,6 +1676,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          cmulim = abs(realval(1))
+c
+      else if (inpstr(lc1:lc2).eq.'iaxi2planeturb') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iaxi2planeturb
 c
       else
 c

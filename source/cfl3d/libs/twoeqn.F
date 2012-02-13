@@ -59,6 +59,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /easmlim/ cmulim
+      common /axisym/ iaxi2plane,iaxi2planeturb
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -556,6 +557,11 @@ c
      .     '' levels not allowed to decay'')')
         end if
 c
+        if(iaxi2planeturb .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     2-eqn model ignoring i-dir'')')
+        end if
+c
       end if
 c
 c   Note: (10.**(-iexp) is machine zero)
@@ -793,7 +799,7 @@ c Get laminar viscosity at cell centers
           fnu(j,kdim,i)=c2bp*tt*sqrt(tt)/(c2b+tt)
         enddo
       enddo
-      if (i2d .ne. 1) then
+      if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
       do j=1,jdim-1
         do k=1,kdim-1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
@@ -868,7 +874,7 @@ c   Load appropriate vist3d value into ghost cells
      +    (1.-bcj(k,i,2))*vj0(k,i,1,3)
       enddo
       enddo
-      if (i2d .ne. 1) then
+      if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
       do j=1,jdim-1
       do k=1,kdim-1
         v3dtmp(j,k,0)=bci(j,k,1)*(iwf(1)*v3dtmp(j,k,1) +
@@ -960,7 +966,7 @@ c      (4) j=jdim boundary:
             turre(jdim,k,i,2)=tj0(k,i,2,3)
           enddo
         enddo
-        if (i2d .ne. 1) then
+        if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c      (5) i=0 boundary:
         do k=1,kdim-1
           do j=1,jdim-1
@@ -1005,7 +1011,7 @@ c      (4) j=jdim boundary:
             turre(jdim+1,k,i,2)=tj0(k,i,2,4)
           enddo
         enddo
-        if (i2d .ne. 1) then
+        if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c      (5) i=0 boundary:
         do k=1,kdim-1
           do j=1,jdim-1
@@ -1059,7 +1065,7 @@ c Get damp1 = CD = cross derivative term for SST or EASM k-o models only:
             enddo
           enddo
         enddo
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1126,7 +1132,7 @@ c Get damp1 = CD = cross derivative term for Wilcox06 model only:
             enddo
           enddo
         enddo
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1189,7 +1195,7 @@ c Get damp1 = CD = cross derivative term for Wilcox98 model only:
             enddo
           enddo
         enddo
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -1796,7 +1802,7 @@ c       2nd order upwind; LHS remains 1st order everywhere
         end if
 c
 c    F_zeta_zeta viscous terms
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c         Interior points
           do i=2,idim-2
             il=i-1
@@ -2135,7 +2141,7 @@ c       DES (based on AIAA 2001-0879, but uses only 1 CDES constant)
 c
 c Modification to allow DES to run in 2d
 c
-              if( i2d .ne. 1 ) then
+              if( i2d .ne. 1 .and. iaxi2planeturb .ne. 1 ) then
                  delta = ccmax(delta,deltai)
               end if
               ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
@@ -2155,7 +2161,7 @@ c       DDES (based on TCFD 20:181-195, 2006)
 c
 c Modification to allow DES to run in 2d
 c
-              if( i2d .ne. 1 ) then
+              if( i2d .ne. 1 .and. iaxi2planeturb .ne. 1 ) then
                  delta = ccmax(delta,deltai)
               end if
               ell=sqrt(turre(j,k,i,2))/(cmuc1*turre(j,k,i,1)*re)
@@ -3767,7 +3773,7 @@ c         JDIM boundary points
         enddo
 c
 c    Implicit F_zeta_zeta viscous terms.  Do over all j's
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
           do j=1,jdim-1
 c           Interior points
             do i=2,idim-2
@@ -4547,7 +4553,7 @@ c     wall function in j-direction
  9182 continue
       end if
 c     wall function in i-direction
-      if(i2d .ne. 1 .and. iwf(1) .eq. 1) then
+      if(i2d .ne. 1 .and. iwf(1) .eq. 1 .and. iaxi2planeturb.ne.1) then
       do 9183 ii=1,2
       if(ii .eq. 1) then
         i=1

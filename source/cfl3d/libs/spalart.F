@@ -42,6 +42,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /axisym/ iaxi2plane,iaxi2planeturb
 c
 
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -143,6 +144,10 @@ c
              write(bou(nou(1),1),'(''     using exact MMS source in'',
      +     '' Spalart routine to evaluate discretization error, MS4'')')
            end if
+         end if
+         if(iaxi2planeturb .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     SA model ignoring i-dir'')')
          end if
         end if
         if(iturbord .eq. 1) then
@@ -288,7 +293,7 @@ c Get laminar viscosity (divided by rho) at cell centers
           fnu(j,kdim,i)=c2bp*tt*sqrt(tt)/(c2b+tt)/qk0(j,i,1,3)
         enddo
       enddo
-      if (i2d .ne. 1) then
+      if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
       do j=1,jdim-1
         do k=1,kdim-1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
@@ -370,7 +375,7 @@ c      (4) j=jdim boundary:
             turre(jdim,k,i)=tj0(k,i,1,3)
           enddo
         enddo
-        if (i2d .ne. 1) then
+        if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c      (5) i=0 boundary:
         do k=1,kdim-1
           do j=1,jdim-1
@@ -409,7 +414,7 @@ c      (4) j=jdim boundary:
             turre(jdim+1,k,i)=tj0(k,i,1,4)
           enddo
         enddo
-        if (i2d .ne. 1) then
+        if (i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c      (5) i=0 boundary:
         do k=1,kdim-1
           do j=1,jdim-1
@@ -797,7 +802,7 @@ c       2nd order upwind; LHS remains 1st order everywhere
         end if
 c
 c    F_zeta_zeta viscous terms
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
 c         Interior points
           do i=2,idim-2
             il=i-1
@@ -1021,7 +1026,7 @@ c       DES
 c
 c Modification to allow DES to run in 2d
 c
-              if( i2d .ne. 1 ) then
+              if( i2d .ne. 1 .and. iaxi2planeturb .ne. 1 ) then
                  delta = ccmax(delta,deltai)
               end if
  
@@ -1041,7 +1046,7 @@ c       DDES (TCFD 20:181-195, 2006)
 c
 c Modification to allow DES to run in 2d
 c
-              if( i2d .ne. 1 ) then
+              if( i2d .ne. 1 .and. iaxi2planeturb .ne. 1 ) then
                  delta = ccmax(delta,deltai)
               end if
 
@@ -1791,7 +1796,7 @@ c         JDIM boundary points
         enddo
 c
 c    Implicit F_zeta_zeta viscous terms.  Do over all j's
-        if(i2d .ne. 1) then
+        if(i2d .ne. 1 .and. iaxi2planeturb .ne. 1) then
           do j=1,jdim-1
 c           Interior points
             do i=2,idim-2
