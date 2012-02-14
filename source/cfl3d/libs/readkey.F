@@ -64,7 +64,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
-      common /axisym/ iaxi2plane,iaxi2planeturb
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /fullns/ ifullns
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
@@ -838,6 +838,11 @@ c     iaxi2planeturb used to force solve of field turb model eqns in j-k
 c     plane only; only allowed if i2d=0 & idim=2
 c     default=0 (include i-dir)
       iaxi2planeturb=0
+      nkey     = nkey + 1
+c
+c     istrongturbdis for strong conservation of diss terms in field turb eqns
+c     default=0 (weak conservation)
+      istrongturbdis=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1680,6 +1685,11 @@ c
       else if (inpstr(lc1:lc2).eq.'iaxi2planeturb') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iaxi2planeturb
+c
+c
+      else if (inpstr(lc1:lc2).eq.'istrongturbdis') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) istrongturbdis
 c
       else
 c

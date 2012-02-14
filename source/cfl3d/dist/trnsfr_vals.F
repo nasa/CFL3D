@@ -134,7 +134,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
-      common /axisym/ iaxi2plane,iaxi2planeturb
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
@@ -519,6 +519,7 @@ c
          work(nlast+138)= i_wilcox98_chiw
          work(nlast+139)= cmulim
          work(nlast+140)= iaxi2planeturb
+         work(nlast+141)= istrongturbdis
          nlast = nlast+nkey
       end if
 c
@@ -839,6 +840,7 @@ c
          i_wilcox98_chiw= int(work(nlast+138))
          cmulim= work(nlast+139)
          iaxi2planeturb= int(work(nlast+140))
+         istrongturbdis= int(work(nlast+141))
       end if
 c
 c**************************

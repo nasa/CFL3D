@@ -38,7 +38,7 @@ c
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /precond/ cprec,uref,avn
-      common /axisym/ iaxi2plane,iaxi2planeturb
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
 c
       idim1 = idim-1

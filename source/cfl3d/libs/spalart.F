@@ -42,7 +42,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /axisym/ iaxi2plane,iaxi2planeturb
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
 c
 
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -148,6 +148,10 @@ c
          if(iaxi2planeturb .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     SA model ignoring i-dir'')')
+         end if
+         if(istrongturbdis .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     strong conserv - diss terms'')')
          end if
         end if
         if(iturbord .eq. 1) then
@@ -458,8 +462,17 @@ c       Interior points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -504,8 +517,17 @@ c       K0 boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -549,8 +571,17 @@ c       KDIM boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -644,8 +675,17 @@ c       interior points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -689,8 +729,17 @@ c       J0 boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -733,8 +782,17 @@ c       JDIM boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -829,8 +887,17 @@ c         Interior points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud
@@ -875,8 +942,17 @@ c         I0 boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud
@@ -920,8 +996,17 @@ c         IDIM boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud
@@ -1359,8 +1444,17 @@ c         Interior points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1436,8 +1530,17 @@ c         K0 boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1512,8 +1615,17 @@ c         KDIM boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1607,8 +1719,17 @@ c         Interior points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1673,8 +1794,17 @@ c         J0 boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1738,8 +1868,17 @@ c         JDIM boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               cnud=-cb2*turre(j,k,i)/(sigma*re)
               cap=ttp*cnud
               cam=ttm*cnud
@@ -1823,8 +1962,17 @@ c           Interior points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud
@@ -1889,8 +2037,17 @@ c           I0 boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud
@@ -1954,8 +2111,17 @@ c           IDIM boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 cnud=-cb2*turre(j,k,i)/(sigma*re)
                 cap=ttp*cnud
                 cam=ttm*cnud

@@ -46,7 +46,7 @@ c
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
-      common /axisym/ iaxi2plane,iaxi2planeturb
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -251,6 +251,10 @@ c
         if(iaxi2planeturb .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     3-eqn model ignoring i-dir'')')
+        end if
+        if(istrongturbdis .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     strong conserv - diss terms'')')
         end if
 c
       end if
@@ -748,8 +752,17 @@ c       Interior points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -811,8 +824,17 @@ c       K0 boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -873,8 +895,17 @@ c       KDIM points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -1004,8 +1035,17 @@ c       Interior points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -1067,8 +1107,17 @@ c       J0 boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -1129,8 +1178,17 @@ c       JDIM boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -1261,8 +1319,17 @@ c         Interior points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
@@ -1324,8 +1391,17 @@ c         I0 boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
@@ -1386,8 +1462,17 @@ c         IDIM boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
@@ -1692,8 +1777,17 @@ c         Interior points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -1809,8 +1903,17 @@ c         K0 boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -1925,8 +2028,17 @@ c         KDIM boundary points
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
               za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volku)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volkl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k+1,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k-1,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
@@ -2074,8 +2186,17 @@ c         Interior points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -2166,8 +2287,17 @@ c         J0 boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -2257,8 +2387,17 @@ c         JDIM boundary points
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
               za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
-              ttp=xp*xa+yp*ya+zp*za
-              ttm=xm*xa+ym*ya+zm*za
+c
+              ttpo=xp*xa+yp*ya+zp*za
+              ttmo=xm*xa+ym*ya+zm*za
+              ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+volju)/
+     +             vol(j,k,i)
+              ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+voljl)/
+     +             vol(j,k,i)
+c             choose between weak (o) and strong (n) conservation form
+              ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+              ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
               anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j+1,k,i))
               anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j-1,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
@@ -2382,8 +2521,17 @@ c           Interior points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
@@ -2474,8 +2622,17 @@ c           I0 boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
@@ -2565,8 +2722,17 @@ c           IDIM boundary points
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
                 za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
-                ttp=xp*xa+yp*ya+zp*za
-                ttm=xm*xa+ym*ya+zm*za
+c
+                ttpo=xp*xa+yp*ya+zp*za
+                ttmo=xm*xa+ym*ya+zm*za
+                ttpn=(xp*xp+yp*yp+zp*zp)*0.5*(vol(j,k,i)+voliu)/
+     +               vol(j,k,i)
+                ttmn=(xm*xm+ym*ym+zm*zm)*0.5*(vol(j,k,i)+volil)/
+     +               vol(j,k,i)
+c               choose between weak (o) and strong (n) conservation form
+                ttp=ttpo*(1-istrongturbdis)+ttpn*istrongturbdis
+                ttm=ttmo*(1-istrongturbdis)+ttmn*istrongturbdis
+c
                 anutp=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i+1))
                 anutm=.5*(v3dtmp(j,k,i)+v3dtmp(j,k,i-1))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
