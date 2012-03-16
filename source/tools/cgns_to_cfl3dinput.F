@@ -175,7 +175,7 @@ c*******************************************************************
 c
       subroutine reader(iccg,ibase,nblock,num1to1,file1,ibcname_read)
 c
-      parameter(numbcperzone=100)
+      parameter(numbcperzone=100,nfammax=100)
 c
       integer stats
       dimension isize(9)
@@ -196,10 +196,12 @@ c
 c
 #     include "cgnslib_f.h"
 c
-      character*32 boconame
+      character*32 boconame,familyname
+      character*32 famname(nfammax),dumfam
       character*3 boconame_short
       dimension normalindex(3),ipnts(6)
       dimension data_double(6)
+      dimension nfambc(nfammax),ibctypef(nfammax)
 c
 c   allocate memory
       memuse=0
@@ -221,6 +223,26 @@ c   allocate memory
       call umalloc_r(nblock*numbcperzone,0,'ibctype',memuse,stats)
       allocate( ips(nblock,numbcperzone,6), stat=stats )
       call umalloc_r(nblock*numbcperzone*6,0,'ips',memuse,stats)
+c
+c  First, see if there are any Family_t nodes
+      call cg_nfamilies_f(iccg, ibase, nfamilies, ier)
+      if (ier .ne. 0) call cg_error_exit_f
+      if (nfamilies .gt. nfammax) then
+        write(6,'('' Error, need to increase nfammax to at least '',
+     +     i5)') nfamilies
+        stop
+      end if
+      if (nfamilies .gt. 0) then
+      write(6,'('' Found '',i5,'' families:'')') nfamilies
+      do n=1,nfamilies
+        call cg_family_read_f(iccg, ibase, n, famname(n), nfambc(n), 
+     +     ngeo, ier)
+        call cg_fambc_read_f(iccg, ibase, n, 1, dumfam,
+     +     ibctypef(n), ier)
+        write(6,'('' n,famname(n),type='',i2,3x,a32,3x,a32)') 
+     +     n,famname(n),BCTypeName(ibctypef(n))
+      enddo
+      end if
 c
 c  Read CGNS file
       nbl=nblock
@@ -305,6 +327,7 @@ c   See if there is any BC info
      +            ibocotype .ne. BCTunnelInflow .and.
      +            ibocotype .ne. BCSymmetryPolar .and.
      +            ibocotype .ne. BCWall .and.
+     +            ibocotype .ne. FamilySpecified .and.
      +            ibocotype .ne. BCDegenerateLine) then
                 write(6,'('' ERROR: bocotype '',a32,
      +            '' not recognized'')') BCTypeName(ibocotype)
@@ -350,7 +373,21 @@ c   the relevant info that I can use is ibocotype and ipnts(1-6)
                 ibctype(n,nbc(n))=7
               end if
             else
-              ibctype(n,nbc(n))=ibocotype
+              if (ibocotype .eq. FamilySpecified) then
+                call cg_goto_f(iccg, ibase, ier, 'Zone_t', n, 
+     +            'ZoneBC_t', 1, 'BC_t', m, 'end')
+                if (ier .ne. 0) call cg_error_exit_f
+                call cg_famname_read_f(familyname, ier)
+                if (ier .ne. 0) call cg_error_exit_f
+                write(6,'('' familyname='',a32)') familyname
+                do mmm=1,nfamilies
+                  if(familyname .eq. famname(mmm)) then
+                    ibctype(n,nbc(n))=ibctypef(mmm)
+                  end if
+                enddo
+              else
+                ibctype(n,nbc(n))=ibocotype
+              end if
             end if
             do ii=1,6
               ips(n,nbc(n),ii)=ipnts(ii)
