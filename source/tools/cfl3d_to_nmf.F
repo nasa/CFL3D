@@ -607,7 +607,7 @@ c
       write(6,'(''WARNING: check .nmf file for BC names!  Be'',
      + '' sure they are appropriate for'')')
       write(6,'(''  your application (e.g., this code uses a'',
-     + '' BC name symmetry... some aps may need'')')
-      write(6,'(''  symmetry_y, for example)'')')
+     + '' BC name symmetry... some aps may need specific'')')
+      write(6,'(''  symmetry_y or symmetry_y_strong, for example)'')')
       stop
       end
