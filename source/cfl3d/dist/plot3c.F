@@ -1280,6 +1280,12 @@ c          iteration may not be working
          xw(jw,kw,iw,1) = xnuwiggle/(ccabs(smin(j,k,i)))*
      +    sqrt(q(j,k,i,1)*xmach/reue)/(0.41*sqrt(xmu*vor))
 #        endif
+c        Note Strelets / NTS formula for SST (not used):
+c        (need to bring in turre and nummem if want to use it)
+c        xw(jw,kw,iw,1) = 7.4*turre(j,k,i,2)**0.31/(ccabs(smin(j,k,i)))*
+c    +    xmu/q(j,k,i,1)*(q(j,k,i,1)/(xmu*real(vor)))**0.81*
+c    +    (xmach/reue)**0.19
+c
 c        limit maximum to 1 (represents turbulent)
          if (xw(jw,kw,iw,1) .gt. 1.0) then
            xw(jw,kw,iw,1)=1.0
