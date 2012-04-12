@@ -1870,8 +1870,9 @@ c
 c
               uuu=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
               uuu=ccmaxcr(uuu,1.e-20)
+              vortpluseps = vor(j,k,i)+1.e-20
               dist_delta=q(j,k,i,1)*re*uuu**2/
-     +                   (375.*vor(j,k,i)*turre(j,k,i,4)*fnu(j,k,i))
+     +                   (375.*vortpluseps*turre(j,k,i,4)*fnu(j,k,i))
               f_thetat1=exp(-((1.e-5*re_omega)**2))*
      +                  exp(-(dist_delta**4))
               f_thetat2=1.-(((turre(j,k,i,3)-ce2inv)/(1.-ce2inv))**2)
