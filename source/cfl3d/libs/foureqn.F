@@ -58,6 +58,8 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
+     .        isar,crot,isarc3d
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -277,6 +279,13 @@ c
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     Sij used in 2SijSij prod'',
      .         '' term forced to be traceless in 3-D sense'')')
+        end if
+c
+        if (isstrc .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''     SSTRC-type curvature'',
+     .    '' correction employed (AIAA 98-2554), sstrc_crc='',f5.2)')
+     .    sstrc_crc
         end if
 c
         if(keepambient .eq. 1) then
@@ -1941,14 +1950,21 @@ c             iterate to get re_thetat
               re_thetat=rey*thetat
               re_thetat=ccmaxcr(re_thetat,20.)
 c
+              f4 = 1.0
+              if (isstrc .eq. 1) then
+                sij=sqrt(2.0*xis) + 1.e-20
+                ri=(vor(j,k,i)/sij)*(vor(j,k,i)/sij-1.0)
+                f4=1.0/(1.0+sstrc_crc*ri)
+c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
+              endif
               if (ikoprod .eq. 1) then
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           2.*xis - re*betax*turre(j,k,i,1)**2
+     +           2.*xis - f4*re*betax*turre(j,k,i,1)**2
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
               else
                 rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           vor(j,k,i)**2 - re*betax*turre(j,k,i,1)**2
+     +           vor(j,k,i)**2 - f4*re*betax*turre(j,k,i,1)**2
      +           +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
