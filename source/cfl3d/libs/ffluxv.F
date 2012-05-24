@@ -26,7 +26,7 @@ c
       dimension cmuv(jdim-1,kdim-1,idim-1)
       dimension ux(jdim-1,kdim-1,idim-1,9)
 c
-      common /easmv/ c1,c2,c3,c4,c5,sigk1,cmuc1
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -433,7 +433,7 @@ c   f7=0 for k-epsilon, 1 for k-omega
         f7=0.
         if (ivisc(1) .eq. 12) f7=1.
         re=reue/xmach
-        gg=1./(c1/2.+c5-1.)
+        gg=1./(c10+c5-1.)
 c   Add nonlinear terms to RHS
         do 1276 kpl=1,npl
           kk=k+kpl-1
@@ -752,8 +752,8 @@ c   f7=0 for k-epsilon, 1 for k-omega
         f7=0.
         if (ivisc(1) .eq. 14) f7=1.
         re=reue/xmach
-              al10 = 0.25*c1 -1.
-              al1 = 3.8
+              al10 = 0.5*c10-1.
+              al1 = 2.*(0.5*c11+1.)
 c          2-line improvement for wake
               al10=al10+1.8864
               al1=al1-2.

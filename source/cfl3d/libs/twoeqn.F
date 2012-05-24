@@ -37,7 +37,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
-      common /easmv/ c1,c2,c3,c4,c5,sigk1,cmuc1
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
@@ -655,16 +655,18 @@ c  cmuc1 (normally 0.09):
 c  constants for EASM models:
       if(ivmx.eq.8 .or. ivmx.eq.11 .or. ivmx .eq. 12 .or.
      .   ivmx.eq.9 .or. ivmx.eq.13 .or. ivmx .eq. 14) then
-c     SSG:
+c     SSG (linearized... not fn of bij^2; Sij coeff simplified):
         cmuc1=0.081
         if(ivmx .eq. 9 .or. ivmx .eq. 13) cmuc1=0.0885
         if(ivmx .eq. 8 .or. ivmx .eq. 14) cmuc1=0.0895
-        c1=6.8
+c       Note: c1 = 2*c10; c5 and gg only used for ivmx=11,12
+        c10=3.4
+        c11=1.8
         c2=0.36
         c3=1.25
         c4=0.40
         c5=1.88
-        gg=1./(c1/2.+c5-1.)
+        gg=1./(c10+c5-1.)
       end if
 c  Note: for i_wilcox06, beta1, sigo1, sigk1, alp1 not used
 c  (only beta2, sigo2, sigk2, alp2 are used)
@@ -2722,8 +2724,8 @@ c              Approximate term (exact for 2-D incompressible flow):
               pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
               else
 c              Exact term:
-              al10 = 0.25*c1 -1.
-              al1 = 3.8
+              al10 = 0.5*c10-1.
+              al1 = 2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
               al10=al10+1.8864
               al1=al1-2.
@@ -2822,10 +2824,20 @@ c              Approximate term (exact for 2-D incompressible flow):
               if (iturbprod .eq. 0) then
               pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
               else
-c              Exact term:
-              al10 = 0.25*c1 -1.
-              al1 = 3.8
+c            Exact term:
+c            al10 is original gamma1
+c            al1  is original 2*gamma0=2*(c11/2+1)
+              al10 = 0.5*c10-1.
+              al1 = 2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
+c            al10 is new gamma1star=gamma1+1+(ce2-ce1)/(ce1-1)
+c            al1  is new 2*gamma0star=2*(gamma0-1)
+c            al2  is -a1
+c            al3  is -a3
+c            al4  is -a2
+c            eta1 is (eta*tau)^2
+c            alpa1 is a2*a4
+c            alpa2 is 2*a3*a4
               al10=al10+1.8864
               al1=al1-2.
               al2 = 0.5*c2 -2./3.
@@ -4423,8 +4435,8 @@ c          Limit cmu:
       else if (ivmx .eq. 9 .or. ivmx .eq. 13) then
         pi = acos(-1.)
         tpi3=2.*pi/3.
-        al10 = 0.25*c1 -1.
-        al1=3.8
+        al10 = 0.5*c10-1.
+        al1=2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
         al10=al10+1.8864
         al1=al1-2.
@@ -4509,8 +4521,8 @@ c           cmuj=-cmuc1
       else if (ivmx .eq. 8 .or. ivmx .eq. 14) then
         pi = acos(-1.)
         tpi3=2.*pi/3.
-        al10 = 0.25*c1 -1.
-        al1=3.8
+        al10 = 0.5*c10-1.
+        al1=2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
         al10=al10+1.8864
         al1=al1-2.
