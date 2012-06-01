@@ -29,7 +29,7 @@ c
       dimension t(nvtq,32),wi0(npl*(jdim-1),22)
       dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
 c
-      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,

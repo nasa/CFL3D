@@ -30,7 +30,7 @@ c
       dimension volk0(jdim,idim-1,4)
       dimension ux(jdim-1,kdim-1,idim-1,9)
 c
-      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -783,8 +783,10 @@ c   Add nonlinear terms to RHS
               al10 = 0.5*c10-1.
               al1 = 2.*(0.5*c11+1.)
 c          2-line improvement for wake
-              al10=al10+1.8864
-              al1=al1-2.
+              if (ieasm_type .eq. 0) then
+                al10=al10+1.8864
+                al1=al1-2.
+              end if
               al2 = 0.5*c2 -2./3.
               al3 = 0.5*c3 -1.
               al4 = 0.5*c4 -1.

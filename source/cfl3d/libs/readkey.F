@@ -88,6 +88,7 @@ c
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmlim/ cmulim
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
 c
       ititr = 0
       nkey  = 0
@@ -843,6 +844,14 @@ c
 c     istrongturbdis for strong conservation of diss terms in field turb eqns
 c     default=0 (weak conservation)
       istrongturbdis=0
+      nkey     = nkey + 1
+c
+c     ieasm_type used to change pressure-strain models within context of
+c     existing k-eps or k-omega (EXPERIMENTAL ONLY - not documented officially)
+c     default=0 (linear SSG, as used by std Gatski-Rumsey)
+c     1=Wallin-Johansson type
+c     2=LRR-QI type
+      ieasm_type=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1686,10 +1695,13 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iaxi2planeturb
 c
-c
       else if (inpstr(lc1:lc2).eq.'istrongturbdis') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) istrongturbdis
+c
+      else if (inpstr(lc1:lc2).eq.'ieasm_type') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ieasm_type
 c
       else
 c

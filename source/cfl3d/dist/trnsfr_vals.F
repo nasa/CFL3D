@@ -208,6 +208,7 @@ c
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmlim/ cmulim
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
 #if defined DIST_MPI
 c
 c***********************
@@ -520,6 +521,7 @@ c
          work(nlast+139)= cmulim
          work(nlast+140)= iaxi2planeturb
          work(nlast+141)= istrongturbdis
+         work(nlast+142)= ieasm_type
          nlast = nlast+nkey
       end if
 c
@@ -841,6 +843,7 @@ c
          cmulim= work(nlast+139)
          iaxi2planeturb= int(work(nlast+140))
          istrongturbdis= int(work(nlast+141))
+         ieasm_type= int(work(nlast+142))
       end if
 c
 c**************************
