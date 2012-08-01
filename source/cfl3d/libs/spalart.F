@@ -1227,8 +1227,13 @@ c
               fv2=1.-(chi/(1.+chi*fv1))
               sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
               sst=ccmax(sst,xminn)
-c   ***New additional recommended limiter (Spalart, private communication)
-c             sst=ccmax(sst,0.3*ss)
+c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
+c             sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
+c             if (sbar .ge. -0.7*ss) then
+c               sst=ss+sbar
+c             else
+c               sst=ss+(ss*(0.7*0.7*ss+0.9*sbar)/((0.9-2.*0.7)*ss-sbar))
+c             end if
 c   *********
               rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
               rr=ccmincr(rr,10.)
