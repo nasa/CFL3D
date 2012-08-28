@@ -1172,8 +1172,13 @@ c
          xw(jw,kw,iw,4) = real(wwprime)
          xw(jw,kw,iw,5) = real(ske)
 c        can add more here, but only if ifunct keyword is big enough!
-c        if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(whatever)
-c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
+         if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(turre(j,k,i,1))
+         if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(turre(j,k,i,2))
+         if (ifunct .ge. 8) xw(jw,kw,iw,8) = real(vist3d(j,k,i))
+         if (ifunct .ge. 9) xw(jw,kw,iw,9) = real(xii)
+         if (ifunct .ge.10) xw(jw,kw,iw,10) = real(xiii)
+         if (ifunct .ge.11) xw(jw,kw,iw,11) = real(povere)
+         if (ifunct .ge.12) xw(jw,kw,iw,12) = real(cmuv(j,k,i))
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1181,8 +1186,17 @@ c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
          xw(jw,kw,iw,4) = imag(wwprime)/real(delh)
          xw(jw,kw,iw,5) = imag(ske)/real(delh)
 c        can add more here, but only if ifunct keyword is big enough!
-c        if (ifunct .ge. 6) xw(jw,kw,iw,6) = imag(whatever)/real(delh)
-c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(whatever)/real(delh)
+         if (ifunct .ge. 6) xw(jw,kw,iw,6) = imag(turre(j,k,i,1))/
+     +     real(delh)
+         if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(turre(j,k,i,2))/
+     +     real(delh)
+         if (ifunct .ge. 8) xw(jw,kw,iw,8) = imsg(vist3d(j,k,i))/
+     +     real(delh)
+         if (ifunct .ge. 9) xw(jw,kw,iw,9) = imag(xii)/real(delh)
+         if (ifunct .ge.10) xw(jw,kw,iw,10) = imag(xiii)/real(delh)
+         if (ifunct .ge.11) xw(jw,kw,iw,11) = imag(povere)/real(delh)
+         if (ifunct .ge.12) xw(jw,kw,iw,12) = imag(cmuv(j,k,i))/
+     +     real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1191,8 +1205,13 @@ c        if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(whatever)/real(delh)
       xw(jw,kw,iw,4) = real(wwprime)
       xw(jw,kw,iw,5) = real(ske)
 c     can add more here, but only if ifunct keyword is big enough!
-c     if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(whatever)
-c     if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(whatever)
+      if (ifunct .ge. 6) xw(jw,kw,iw,6) = real(turre(j,k,i,1))
+      if (ifunct .ge. 7) xw(jw,kw,iw,7) = real(turre(j,k,i,2))
+      if (ifunct .ge. 8) xw(jw,kw,iw,8) = real(vist3d(j,k,i))
+      if (ifunct .ge. 9) xw(jw,kw,iw,9) = real(xii)
+      if (ifunct .ge.10) xw(jw,kw,iw,10) = real(xiii)
+      if (ifunct .ge.11) xw(jw,kw,iw,11) = real(povere)
+      if (ifunct .ge.12) xw(jw,kw,iw,12) = real(cmuv(j,k,i))
 #     endif
  4000 continue
 c
