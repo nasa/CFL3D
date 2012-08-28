@@ -209,6 +209,7 @@ c
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
+      common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
 #if defined DIST_MPI
 c
 c***********************
@@ -522,6 +523,7 @@ c
          work(nlast+140)= iaxi2planeturb
          work(nlast+141)= istrongturbdis
          work(nlast+142)= ieasm_type
+         work(nlast+143)= ipatch1st
          nlast = nlast+nkey
       end if
 c
@@ -844,6 +846,7 @@ c
          iaxi2planeturb= int(work(nlast+140))
          istrongturbdis= int(work(nlast+141))
          ieasm_type= int(work(nlast+142))
+         ipatch1st= int(work(nlast+143))
       end if
 c
 c**************************

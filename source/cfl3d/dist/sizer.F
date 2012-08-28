@@ -266,7 +266,7 @@ c
       common /twod/ i2d
       common /is_blockbc/ is_blk(5),ie_blk(5),ivolint
       common /is_perbc/ is_prd(5),ie_prd(5),nbcprd
-      common /is_patch/ is_pat(5),ie_pat(5)
+      common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /is_embedbc/ is_emb(5),ie_emb(5),nbcemb
       common /filenam/ grid,plt3dg,plt3dq,output,residual,turbres,blomx,
      .                 output2,printout,pplunge,ovrlap,patch,restrt,

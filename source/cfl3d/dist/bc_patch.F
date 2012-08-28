@@ -65,7 +65,7 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /maxiv/ ivmx
-      common /is_patch/ is_pat(5),ie_pat(5)
+      common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
 c
 c     lim_ptch = 0 for patching without limiting; = 1 with limiting
 c
@@ -79,9 +79,10 @@ c                    the current processor
 c***********************************************************************
 c
 c        first order interpolation for q if icyc .le. nitfo
+c        or if ipatch1st is specified as 1
 c
          ifo = 0
-         if (icyc.gt.nitfo) ifo = 1
+         if (icyc.gt.nitfo .and. ipatch1st.ne.1) ifo = 1
 c
          do lcnt = is_pat(level),ie_pat(level)
 c           nb_to is current (to) block
@@ -236,9 +237,10 @@ c
 #        endif
 c
 c        first order interpolation for q if icyc .le. nitfo
+c        or if ipatch1st is specified as 1
 c
          ifo = 0
-         if (icyc.gt.nitfo) ifo = 1
+         if (icyc.gt.nitfo .and. ipatch1st.ne.1) ifo = 1
 c
 c        set baseline tag values
 c
