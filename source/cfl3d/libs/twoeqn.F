@@ -680,6 +680,13 @@ c         LRR-QI type pressure-strain
           constt=0.4
           c3=6./11.*(2.+(3.*constt))
           c4=2./11.*(10.-(7.*constt))
+        else if (ieasm_type .eq. 3) then
+          c10=3.4
+          c11=1.8
+          c2=1.2
+          c3=1.25
+          c4=0.40
+          css=0.84
         else
 c         linear SSG Gatski-Rumsey type (default) pressure-strain
           c10=3.4
@@ -733,6 +740,7 @@ c  alp1 (constant in omega or epsilon production term):
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
       if(ivmx.eq.8 .or. ivmx.eq.14)                 sigo1=
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
+      if (ivmx.eq.14 .and. ieasm_type.eq.3) sigo1=0.65
 c
 c Coefficient for fnu in diffusion term
       sigkmu = 1.0
@@ -2863,7 +2871,7 @@ c            al4  is -a2
 c            eta1 is (eta*tau)^2
 c            alpa1 is a2*a4
 c            alpa2 is 2*a3*a4
-              if (ieasm_type .eq. 0) then
+              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
                 al10=al10+1.8864
                 al1=al1-2.
               end if
@@ -4553,7 +4561,7 @@ c           cmuj=-cmuc1
         al10 = 0.5*c10-1.
         al1=2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
-        if (ieasm_type .eq. 0) then
+        if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
           al10=al10+1.8864
           al1=al1-2.
         end if
@@ -4581,6 +4589,10 @@ c            Determine Sij and Wij values:
             wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
             eta1  = xis/(turre(j,k,i,1)*re)**2
             eta2  = wis/(turre(j,k,i,1)*re)**2
+            if (ieasm_type .eq. 3) then
+              fff=0.5*(1.+tanh(4.0/1.414214*sqrt(eta1)-10.0))
+              al2=-0.5*(4./3.-c2+(c2-0.36)*fff)
+            end if
             if(real(eta1).le.1.e-6) then
             cmuj=al10*al2/(al10*al10+2.*eta2*al4*al4)
             else
@@ -4589,6 +4601,10 @@ c            Determine Sij and Wij values:
             ar=-al10*al2/eta11**2
             aq=al10*al10+eta11*al2-0.666667*eta1*al3*al3
      +         +2.*eta2*al4*al4
+            if (ieasm_type .eq. 3) then
+              ap=ap+css*(1.-fff)/al1
+              aq=aq-al10*css*(1.-fff)*eta1
+            end if
             aq=aq/(eta11*eta11)
             aa=(aq-ap*ap/3.)
             ab=(2.*ap*ap*ap-9.*ap*aq+27.*ar)/27.

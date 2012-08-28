@@ -765,7 +765,7 @@ c   f7=0 for k-epsilon, 1 for k-omega
               al10 = 0.5*c10-1.
               al1 = 2.*(0.5*c11+1.)
 c          2-line improvement for wake
-              if (ieasm_type .eq. 0) then
+              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
                 al10=al10+1.8864
                 al1=al1-2.
               end if
