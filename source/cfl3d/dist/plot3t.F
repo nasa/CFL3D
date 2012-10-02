@@ -1179,6 +1179,10 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.10) xw(jw,kw,iw,10) = real(xiii)
          if (ifunct .ge.11) xw(jw,kw,iw,11) = real(povere)
          if (ifunct .ge.12) xw(jw,kw,iw,12) = real(cmuv(j,k,i))
+         if (ifunct .ge.13) xw(jw,kw,iw,13) = real(b11)
+         if (ifunct .ge.14) xw(jw,kw,iw,14) = real(b22)
+         if (ifunct .ge.15) xw(jw,kw,iw,15) = real(b33)
+         if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1197,6 +1201,10 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.11) xw(jw,kw,iw,11) = imag(povere)/real(delh)
          if (ifunct .ge.12) xw(jw,kw,iw,12) = imag(cmuv(j,k,i))/
      +     real(delh)
+         if (ifunct .ge.13) xw(jw,kw,iw,13) = imag(b11)/real(delh)
+         if (ifunct .ge.14) xw(jw,kw,iw,14) = imag(b22)/real(delh)
+         if (ifunct .ge.15) xw(jw,kw,iw,15) = imag(b33)/real(delh)
+         if (ifunct .ge.16) xw(jw,kw,iw,16) = imag(b13)/real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1212,6 +1220,10 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.10) xw(jw,kw,iw,10) = real(xiii)
       if (ifunct .ge.11) xw(jw,kw,iw,11) = real(povere)
       if (ifunct .ge.12) xw(jw,kw,iw,12) = real(cmuv(j,k,i))
+      if (ifunct .ge.13) xw(jw,kw,iw,13) = real(b11)
+      if (ifunct .ge.14) xw(jw,kw,iw,14) = real(b22)
+      if (ifunct .ge.15) xw(jw,kw,iw,15) = real(b33)
+      if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
 #     endif
  4000 continue
 c
