@@ -98,6 +98,7 @@ c
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
       common /plot3dtyp/ ifunct
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -619,11 +620,12 @@ c          Determine Sij and Wij values:
             xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
             wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
-            c1=6.8
-            c2=0.36
-            c3=1.25
-            c4=0.40
-            c5=1.88
+            c1=2.*c10
+c           c1=6.8
+c           c2=0.36
+c           c3=1.25
+c           c4=0.40
+c           c5=1.88
             gg=1./(c1/2.+c5-1.)
             if (ivmx .lt. 6) then
 c   The following gets an estimate for turb kinetic energy for
@@ -756,9 +758,10 @@ c            Find nonlinear tauij values:
                al10 = 0.25*c1 -1.
                al1 = 3.8
 c          2-line improvement for wake
-               al10=al10+1.8864
-               al1=al1-2.
-               al2 = 0.5*c2 -2./3.
+               if (ieasm_type .eq. 0) then
+                 al10=al10+1.8864
+                 al1=al1-2.
+               end if
                al3 = 0.5*c3 -1.
                al4 = 0.5*c4 -1.
               eta1=xis*turre(j,k,i,2)**2/(turre(j,k,i,1)*re)**2
@@ -806,9 +809,10 @@ c            Find nonlinear tauij values:
                al10 = 0.25*c1 -1.
                al1 = 3.8
 c          2-line improvement for wake
-               al10=al10+1.8864
-               al1=al1-2.
-               al2 = 0.5*c2 -2./3.
+               if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
+                 al10=al10+1.8864
+                 al1=al1-2.
+               end if
                al3 = 0.5*c3 -1.
                al4 = 0.5*c4 -1.
               eta1=xis/(turre(j,k,i,1)*re)**2
