@@ -1147,6 +1147,15 @@ c      (not sure if this variable makes sense in 2-d)
      +               2.*ux(j,k,i,3)*ux(j,k,i,7)+
      +               2.*ux(j,k,i,6)*ux(j,k,i,8))
       end if
+c      velocities by Uref
+      uuu=q(j,k,i,2)/xmach
+      if (ialph .eq. 0) then
+        vvv=q(j,k,i,3)/xmach
+        www=q(j,k,i,4)/xmach
+      else
+        vvv=q(j,k,i,4)/xmach
+        www=-q(j,k,i,3)/xmach
+      end if
 c
 c     load appropriate data into single precision array
 c
@@ -1187,6 +1196,8 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.14) xw(jw,kw,iw,14) = real(b22)
          if (ifunct .ge.15) xw(jw,kw,iw,15) = real(b33)
          if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
+         if (ifunct .ge.17) xw(jw,kw,iw,17) = real(uuu)
+         if (ifunct .ge.18) xw(jw,kw,iw,18) = real(www)
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1209,6 +1220,8 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.14) xw(jw,kw,iw,14) = imag(b22)/real(delh)
          if (ifunct .ge.15) xw(jw,kw,iw,15) = imag(b33)/real(delh)
          if (ifunct .ge.16) xw(jw,kw,iw,16) = imag(b13)/real(delh)
+         if (ifunct .ge.17) xw(jw,kw,iw,17) = imag(uuu)/real(delh)
+         if (ifunct .ge.18) xw(jw,kw,iw,18) = imag(www)/real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1228,6 +1241,8 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.14) xw(jw,kw,iw,14) = real(b22)
       if (ifunct .ge.15) xw(jw,kw,iw,15) = real(b33)
       if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
+      if (ifunct .ge.17) xw(jw,kw,iw,17) = real(uuu)
+      if (ifunct .ge.18) xw(jw,kw,iw,18) = real(www)
 #     endif
  4000 continue
 c
