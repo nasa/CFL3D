@@ -576,6 +576,9 @@ c
       ff=0.
       zk=0.
       qinvar=0.
+      uuu=0.
+      vvv=0.
+      www=0.
 c   currently unused printout to fort.50 (specifically for k-line)
       ifort50write=0
       if (ifort50write .eq. 1) then
