@@ -579,6 +579,25 @@ c
       uuu=0.
       vvv=0.
       www=0.
+      sigma=0.
+      r11slow=0.
+      r22slow=0.
+      r33slow=0.
+      r12slow=0.
+      r13slow=0.
+      r23slow=0.
+      r11rapid=0.
+      r22rapid=0.
+      r33rapid=0.
+      r12rapid=0.
+      r13rapid=0.
+      r23rapid=0.
+      r11=0.
+      r22=0.
+      r33=0.
+      r12=0.
+      r13=0.
+      r23=0.
 c   currently unused printout to fort.50 (specifically for k-line)
       ifort50write=0
       if (ifort50write .eq. 1) then
@@ -620,6 +639,7 @@ c          Determine Sij and Wij values:
             w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
             w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
             w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+c           xis=SijSij, wis=WijWij
             xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
             wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
@@ -812,12 +832,24 @@ c            Find nonlinear tauij values:
                al10 = 0.25*c1 -1.
                al1 = 3.8
 c          2-line improvement for wake
-               if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
+               if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3 .or.
+     +             ieasm_type .eq. 4) then
                  al10=al10+1.8864
                  al1=al1-2.
                end if
                al3 = 0.5*c3 -1.
                al4 = 0.5*c4 -1.
+c              Girimaji JFM 2000 fix to c4
+               if (ieasm_type .eq. 4) then
+                 eta1_girimaji=xis/(xis+wis)
+                 if (eta1_girimaji .lt. 0.5) then
+                   c4new=2.0-((2.0-c4)*
+     +                   (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+                 else
+                   c4new=c4
+                 end if
+                 al4 = 0.5*c4new -1.
+               end if
               eta1=xis/(turre(j,k,i,1)*re)**2
               alpa1 = -al4/(al10-eta1*al1*cmuv(j,k,i))
               alpa2 = -2.*al3/(al10-eta1*cmuv(j,k,i)*al1)
@@ -1159,6 +1191,98 @@ c      velocities by Uref
         vvv=q(j,k,i,4)/xmach
         www=-q(j,k,i,3)/xmach
       end if
+c      dissipation*Lr/(u_inf)**3  (where Lr is reference length corresponding to
+c      unit 1 of grid)
+      if (ivmx.eq.6 .or. ivmx.eq.7) then
+        epsilon=turre(j,k,i,1)*turre(j,k,i,2)*re*0.09/
+     +          (xmach*xmach*xmach)
+      else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
+        epsilon=turre(j,k,i,1)*turre(j,k,i,2)*re/(xmach*xmach*xmach)
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
+     .         ivmx.eq.13) then
+        epsilon=turre(j,k,i,1)*re/(xmach*xmach*xmach)
+      else if (ivmx.eq.15) then
+        epsilon=fnu*turre(j,k,i,1)*re/q(j,k,i,1)/(xmach*xmach*xmach)
+      end if
+c      sigma is Sk/e, using Wallin-Johansson defn of S:
+      if (ivmx.eq.6 .or. ivmx.eq.7) then
+        ske=sqrt(xis/2.)/(turre(j,k,i,1)*re*0.09)
+      else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
+        ske=sqrt(xis/2.)/(turre(j,k,i,1)*re)
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
+     .         ivmx.eq.13) then
+        ske=sqrt(xis/2.)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
+      else if (ivmx.eq.15) then
+        ske=sqrt(xis/2.)*turre(j,k,i,2)*q(j,k,i,1)/
+     +    (fnu*turre(j,k,i,1)*re)
+      end if
+c      pressure-strain (only applies for EASMs):
+      if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.13 .or.
+     +    ivmx.eq.14) then
+      s1kbk1=s11*b11+s12*b12+s13*b13
+      s2kbk2=s12*b12+s22*b22+s23*b23
+      s3kbk3=s13*b13+s23*b23+s33*b33
+      s1kbk2=s11*b12+s12*b22+s13*b23
+      s1kbk3=s11*b13+s12*b23+s13*b33
+      s2kbk3=s12*b13+s22*b23+s23*b33
+      b1ksk1=b11*s11+b12*s12+b13*s13
+      b2ksk2=b12*s12+b22*s22+b23*s23
+      b3ksk3=b13*s13+b23*s23+b33*s33
+      b1ksk2=b11*s12+b12*s22+b13*s23
+      b1ksk3=b11*s13+b12*s23+b13*s33
+      b2ksk3=b12*s13+b22*s23+b23*s33
+      sklblk=s11*b11+s22*b22+s33*b33+
+     +    2.*s12*b12+2.*s13*b13+2.*s23*b23
+      w11=0.
+      w22=0.
+      w33=0.
+      w1kbk1=w11*b11+w12*b12+w13*b13
+      w2kbk2=-w12*b12+w22*b22+w23*b23
+      w3kbk3=-w13*b13-w23*b23+w33*b33
+      w1kbk2=w11*b12+w12*b22+w13*b23
+      w1kbk3=w11*b13+w12*b23+w13*b33
+      w2kbk3=-w12*b13+w22*b23+w23*b33
+      b1kwk1=b11*w11-b12*w12-b13*w13
+      b2kwk2=b12*w12+b22*w22-b23*w23
+      b3kwk3=b13*w13+b23*w23+b33*w33
+      b1kwk2=b11*w12+b12*w22-b13*w23
+      b1kwk3=b11*w13+b12*w23+b13*w33
+      b2kwk3=b12*w13+b22*w23+b23*w33
+      arg=4.*sigma-10.
+      if (ivmx .eq. 14 .and. (ieasm_type .eq. 3 .or.
+     +    ieasm_type .eq.4)) then
+        f=0.5*(1.+tanh(arg))
+      else
+        f=1.0
+      end if
+      c2star=1.2+(c2-1.2)*f+0.84*povere*(f-1.)
+c      pstrain*Lr/(u_inf)**3  (where Lr is reference length corresponding to
+c      unit 1 of grid)
+      r11slow=-(3.4*epsilon+1.8*prod)*b11
+      r22slow=-(3.4*epsilon+1.8*prod)*b22
+      r33slow=-(3.4*epsilon+1.8*prod)*b33
+      r12slow=-(3.4*epsilon+1.8*prod)*b12
+      r13slow=-(3.4*epsilon+1.8*prod)*b13
+      r23slow=-(3.4*epsilon+1.8*prod)*b23
+      r11rapid=(c2star*zk*s11+zk*1.25*(s1kbk1+b1ksk1-0.66667*sklblk)+
+     +  zk*0.4*(w1kBk1-b1kWk1))/(xmach*xmach*xmach)
+      r22rapid=(c2star*zk*s22+zk*1.25*(s2kbk2+b2ksk2-0.66667*sklblk)+
+     +  zk*0.4*(w2kBk2-b2kWk2))/(xmach*xmach*xmach)
+      r33rapid=(c2star*zk*s33+zk*1.25*(s3kbk3+b3ksk3-0.66667*sklblk)+
+     +  zk*0.4*(w3kBk3-b3kWk3))/(xmach*xmach*xmach)
+      r12rapid=(c2star*zk*s12+zk*1.25*(s1kbk2+b1ksk2)+
+     +  zk*0.4*(w1kBk2-b1kWk2))/(xmach*xmach*xmach)
+      r13rapid=(c2star*zk*s13+zk*1.25*(s1kbk3+b1ksk3)+
+     +  zk*0.4*(w1kBk3-b1kWk3))/(xmach*xmach*xmach)
+      r23rapid=(c2star*zk*s23+zk*1.25*(s2kbk3+b2ksk3)+
+     +  zk*0.4*(w2kBk3-b2kWk3))/(xmach*xmach*xmach)
+      r11=r11slow+r11rapid
+      r22=r22slow+r22rapid
+      r33=r33slow+r33rapid
+      r12=r12slow+r12rapid
+      r13=r13slow+r13rapid
+      r23=r23slow+r23rapid
+      end if
 c
 c     load appropriate data into single precision array
 c
@@ -1201,6 +1325,9 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
          if (ifunct .ge.17) xw(jw,kw,iw,17) = real(uuu)
          if (ifunct .ge.18) xw(jw,kw,iw,18) = real(www)
+         if (ifunct .ge.19) xw(jw,kw,iw,19) = real(r11)
+         if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
+         if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1225,6 +1352,9 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.16) xw(jw,kw,iw,16) = imag(b13)/real(delh)
          if (ifunct .ge.17) xw(jw,kw,iw,17) = imag(uuu)/real(delh)
          if (ifunct .ge.18) xw(jw,kw,iw,18) = imag(www)/real(delh)
+         if (ifunct .ge.19) xw(jw,kw,iw,19) = imag(r11)/real(delh)
+         if (ifunct .ge.20) xw(jw,kw,iw,20) = imag(r33)/real(delh)
+         if (ifunct .ge.21) xw(jw,kw,iw,21) = imag(r13)/real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1246,6 +1376,9 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.16) xw(jw,kw,iw,16) = real(b13)
       if (ifunct .ge.17) xw(jw,kw,iw,17) = real(uuu)
       if (ifunct .ge.18) xw(jw,kw,iw,18) = real(www)
+      if (ifunct .ge.19) xw(jw,kw,iw,19) = real(r11)
+      if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
+      if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
 #     endif
  4000 continue
 c

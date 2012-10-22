@@ -62,6 +62,9 @@ c
       gpr   = gamma/pr
       gm1pr = gm1*pr
       prtr  = pr/prt
+c     Durbin TCFD 1991 near-wall limiter (0=off)
+c     (using it tends to delay separation - generally not desired!)
+      idurbinlim=0
 c
       if (isklton.gt.0 .and. i.eq.1 .and. iadv.ge.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -765,7 +768,8 @@ c   f7=0 for k-epsilon, 1 for k-omega
               al10 = 0.5*c10-1.
               al1 = 2.*(0.5*c11+1.)
 c          2-line improvement for wake
-              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
+              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4) then
                 al10=al10+1.8864
                 al1=al1-2.
               end if
@@ -798,6 +802,18 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(k+jkv,10)*t(k+jkv,26))
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+c             Girimaji JFM 2000 fix to c4
+              if (ieasm_type .eq. 4) then
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+                eta1_girimaji=xis/(xis+wis)
+                if (eta1_girimaji .lt. 0.5) then
+                  c4new=2.0-((2.0-c4)*
+     +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+                else
+                  c4new=c4
+                end if
+                al4 = 0.5*c4new -1.
+              end if
 c            "Constants" are function of c3, c4, and gg:
 c            Find tauij values:
               rho=0.5*(q(j,k,ii,1)+qj0(k,ii,1,1))*(1.-wj0(k+jkv2,5))+
@@ -809,11 +825,20 @@ c            Find tauij values:
               w=0.5*(q(j,k,ii,4)+qj0(k,ii,4,1))*(1.-wj0(k+jkv2,5))+
      +            qj0(k,ii,4,1)*wj0(k+jkv2,5)
               zksav1=0.5*(zksav(j,k,ii,1)+tj0(k,ii,1,1))
-              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,k,ii,2)+tj0(k,ii,2,1))
               cmuu = cmuv(j,k,ii)
               bnum=zksav2*(1.-f7)+f7
-              eta1 = xis*(bnum/zksav1/re)**2
+c             Durbin TCFD 1991 near-wall limiter
+              if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4)) then
+                tau=bnum/zksav1
+                fmu=t(k+jkv,14)*t(k+jkv,15)/xmre-t(k+jkv,24)
+                zkolmog=6.*sqrt(fmu*bnum/(rho*zksav2*zksav1))
+                tau=ccmax(tau,zkolmog)
+                zksav1=bnum/tau
+              end if
+              zksav1=ccmax(zksav1,tur10(1))
+              eta1=xis*(bnum/zksav1/re)**2
               alpa1 = -al4/(al10-eta1*al1*cmuu)
               alpa2 = -2.*al3/(al10-eta1*cmuu*al1)
               t11 = 2.*rho*zksav2*re/3.
@@ -893,6 +918,18 @@ c            Determine Sij and Wij values (at cell interface)
      +                   t(k+jkv,10)*t(k+jkv,26))
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+c             Girimaji JFM 2000 fix to c4
+              if (ieasm_type .eq. 4) then
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+                eta1_girimaji=xis/(xis+wis)
+                if (eta1_girimaji .lt. 0.5) then
+                  c4new=2.0-((2.0-c4)*
+     +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+                else
+                  c4new=c4
+                end if
+                al4 = 0.5*c4new -1.
+              end if
 c            "Constants" are function of c3, c4, and gg:
 c            Find tauij values:
               rho=0.5*(q(j-1,k,ii,1)+qj0(k,ii,1,3))*(1.-wj0(k+jkv2,15))+
@@ -904,11 +941,20 @@ c            Find tauij values:
               w=0.5*(q(j-1,k,ii,4)+qj0(k,ii,4,3))*(1.-wj0(k+jkv2,15))+
      +            qj0(k,ii,4,3)*wj0(k+jkv2,15)
               zksav1=0.5*(zksav(j-1,k,ii,1)+tj0(k,ii,1,3))
-              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j-1,k,ii,2)+tj0(k,ii,2,3))
               cmuu=cmuv(j-1,k,ii)
               bnum=zksav2*(1.-f7)+f7
-              eta1 = xis*(bnum/zksav1/re)**2
+c             Durbin TCFD 1991 near-wall limiter
+              if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4)) then
+                tau=bnum/zksav1
+                fmu=t(k+jkv,14)*t(k+jkv,15)/xmre-t(k+jkv,24)
+                zkolmog=6.*sqrt(fmu*bnum/(rho*zksav2*zksav1))
+                tau=ccmax(tau,zkolmog)
+                zksav1=bnum/tau
+              end if
+              zksav1=ccmax(zksav1,tur10(1))
+              eta1=xis*(bnum/zksav1/re)**2
               alpa1 = -al4/(al10-eta1*al1*cmuu)
               alpa2 = -2.*al3/(al10-eta1*cmuu*al1)
               t11 = 2.*rho*zksav2*re/3.
@@ -988,14 +1034,35 @@ c            Determine Sij and Wij values (at cell interfaces):
      +                   t(k+jkv,10)*t(k+jkv,26))
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+c             Girimaji JFM 2000 fix to c4
+              if (ieasm_type .eq. 4) then
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+                eta1_girimaji=xis/(xis+wis)
+                if (eta1_girimaji .lt. 0.5) then
+                  c4new=2.0-((2.0-c4)*
+     +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+                else
+                  c4new=c4
+                end if
+                al4 = 0.5*c4new -1.
+              end if
 c            "Constants" are function of c3, c4, and gg:
 c            Find tauij values:
               rho=0.5*(q(j,k,ii,1)+q(j-1,k,ii,1))
               zksav1=0.5*(zksav(j,k,ii,1)+zksav(j-1,k,ii,1))
-              zksav1=ccmax(zksav1,tur10(1))
               zksav2=0.5*(zksav(j,k,ii,2)+zksav(j-1,k,ii,2))
               cmuu=0.5*(cmuv(j,k,ii)+cmuv(j-1,k,ii))
               bnum=zksav2*(1.-f7)+f7
+c             Durbin TCFD 1991 near-wall limiter
+              if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4)) then
+                tau=bnum/zksav1
+                fmu=t(k+jkv,14)*t(k+jkv,15)/xmre-t(k+jkv,24)
+                zkolmog=6.*sqrt(fmu*bnum/(rho*zksav2*zksav1))
+                tau=ccmax(tau,zkolmog)
+                zksav1=bnum/tau
+              end if
+              zksav1=ccmax(zksav1,tur10(1))
               eta1=xis*(bnum/zksav1/re)**2
               alpa1 = -al4/(al10-eta1*al1*cmuu)
               alpa2 = -2.*al3/(al10-eta1*cmuu*al1)

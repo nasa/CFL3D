@@ -680,7 +680,7 @@ c         LRR-QI type pressure-strain
           constt=0.4
           c3=6./11.*(2.+(3.*constt))
           c4=2./11.*(10.-(7.*constt))
-        else if (ieasm_type .eq. 3) then
+        else if (ieasm_type .eq. 3 .or. ieasm_type .eq. 4) then
           c10=3.4
           c11=1.8
           c2=1.2
@@ -695,8 +695,12 @@ c         linear SSG Gatski-Rumsey type (default) pressure-strain
           c3=1.25
           c4=0.40
           c5=1.88
+          css=0.0
           gg=1./(c10+c5-1.)
         end if
+c       Durbin TCFD 1991 near-wall limiter (0=off)
+c       (using it tends to delay separation - generally not desired!)
+        idurbinlim=0
       end if
 c  Note: for i_wilcox06, beta1, sigo1, sigk1, alp1 not used
 c  (only beta2, sigo2, sigk2, alp2 are used)
@@ -740,7 +744,8 @@ c  alp1 (constant in omega or epsilon production term):
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
       if(ivmx.eq.8 .or. ivmx.eq.14)                 sigo1=
      + sqrt(cmuc1)*(beta1-alp1)/(vk*vk)
-      if (ivmx.eq.14 .and. ieasm_type.eq.3) sigo1=0.65
+      if ((ivmx.eq.8 .or. ivmx.eq.14) .and. (ieasm_type.eq.3 .or.
+     +    ieasm_type.eq.4)) sigo1=0.65
 c
 c Coefficient for fnu in diffusion term
       sigkmu = 1.0
@@ -2771,6 +2776,10 @@ c   2-line modification to improve center of WAKE:
               eta1=xis*turre(j,k,i,2)**2/(turre(j,k,i,1)*re)**2
               alpa1 = -al4/(al10-eta1*al1*cmuv(j,k,i))
               alpa2 = -2.*al3/(al10-eta1*cmuv(j,k,i)*al1)
+              if (ivmx .eq. 9) then
+                alpa1=0.
+                alpa2=0.
+              end if
 c            Find nonlinear tauij values:
               t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
      +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
@@ -2871,7 +2880,8 @@ c            al4  is -a2
 c            eta1 is (eta*tau)^2
 c            alpa1 is a2*a4
 c            alpa2 is 2*a3*a4
-              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
+              if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4) then
                 al10=al10+1.8864
                 al1=al1-2.
               end if
@@ -2881,9 +2891,34 @@ c            alpa2 is 2*a3*a4
               w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
               w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
               w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+c             Girimaji JFM 2000 fix to c4
+              if (ieasm_type .eq. 4) then
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+                eta1_girimaji=xis/(xis+wis)
+                if (eta1_girimaji .lt. 0.5) then
+                  c4new=2.0-((2.0-c4)*
+     +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+                else
+                  c4new=c4
+                end if
+                al4 = 0.5*c4new -1.
+              end if
               eta1=xis/(turre(j,k,i,1)*re)**2
+c             Durbin TCFD 1991 near-wall limiter
+              if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +            ieasm_type .eq. 4)) then
+                tau=1./turre(j,k,i,1)
+                taulim=6.*sqrt(fnu(j,k,i)/(q(j,k,i,1)*turre(j,k,i,1)*
+     +                 turre(j,k,i,2)))
+                tau=ccmax(tau,taulim)
+                eta1=xis*(tau/re)**2
+              end if
               alpa1 = -al4/(al10-eta1*al1*cmuv(j,k,i))
               alpa2 = -2.*al3/(al10-eta1*cmuv(j,k,i)*al1)
+              if (ivmx .eq. 8) then
+                alpa1=0.
+                alpa2=0.
+              end if
 c            Find nonlinear tauij values:
               t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
      +             -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
@@ -4561,7 +4596,8 @@ c           cmuj=-cmuc1
         al10 = 0.5*c10-1.
         al1=2.*(0.5*c11+1.)
 c   2-line modification to improve center of WAKE:
-        if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3) then
+        if (ieasm_type .eq. 0 .or. ieasm_type .eq. 3 .or.
+     +      ieasm_type .eq. 4) then
           al10=al10+1.8864
           al1=al1-2.
         end if
@@ -4589,9 +4625,28 @@ c            Determine Sij and Wij values:
             wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
             eta1  = xis/(turre(j,k,i,1)*re)**2
             eta2  = wis/(turre(j,k,i,1)*re)**2
-            if (ieasm_type .eq. 3) then
-              fff=0.5*(1.+tanh(4.0/1.414214*sqrt(eta1)-10.0))
-              al2=-0.5*(4./3.-c2+(c2-0.36)*fff)
+c           Durbin TCFD 1991 near-wall limiter
+            if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +          ieasm_type .eq. 4)) then
+              tau=1./turre(j,k,i,1)
+              taulim=6.*sqrt(fnu(j,k,i)/(q(j,k,i,1)*turre(j,k,i,1)*
+     +               turre(j,k,i,2)))
+              tau=ccmax(tau,taulim)
+              eta1=xis*(tau/re)**2
+              eta2=wis*(tau/re)**2
+            end if
+            fff=0.5*(1.+tanh(4.0/1.414214*sqrt(eta1)-10.0))
+            al2=-0.5*(4./3.-c2+(c2-0.36)*fff)
+c           Girimaji JFM 2000 fix to c4
+            if (ieasm_type .eq. 4) then
+              eta1_girimaji=xis/(xis+wis)
+              if (eta1_girimaji .lt. 0.5) then
+                c4new=2.0-((2.0-c4)*
+     +                (eta1_girimaji/(1.-eta1_girimaji))**0.75)
+              else
+                c4new=c4
+              end if
+              al4 = 0.5*c4new -1.
             end if
             if(real(eta1).le.1.e-6) then
             cmuj=al10*al2/(al10*al10+2.*eta2*al4*al4)
@@ -4601,7 +4656,7 @@ c            Determine Sij and Wij values:
             ar=-al10*al2/eta11**2
             aq=al10*al10+eta11*al2-0.666667*eta1*al3*al3
      +         +2.*eta2*al4*al4
-            if (ieasm_type .eq. 3) then
+            if (ieasm_type .eq. 3 .or. ieasm_type .eq. 4) then
               ap=ap+css*(1.-fff)/al1
               aq=aq-al10*css*(1.-fff)*eta1
             end if
@@ -4632,11 +4687,21 @@ c   choose min of real roots
             end if
             end if
             cmuj = ccmincr(cmuj,-cmulim)
+c   Realizability limiter:
+            if (ieasm_type .eq. 3 .or. ieasm_type .eq. 4) then
+              facy = -1./(sqrt(6.*eta1))
+              cmuj = ccmaxcr(cmuj,facy)
+            end if
 c Uncomment next line for constant cmu:
 c           cmuj=-cmuc1
             cmu = -cmuj
-            vist3d(j,k,i)=cmu*q(j,k,i,1)*turre(j,k,i,2)/
-     +       turre(j,k,i,1)
+            if (idurbinlim .ne. 0 .and. (ieasm_type .eq. 3 .or.
+     +          ieasm_type .eq. 4)) then
+              vist3d(j,k,i)=cmu*q(j,k,i,1)*turre(j,k,i,2)*tau
+            else
+              vist3d(j,k,i)=cmu*q(j,k,i,1)*turre(j,k,i,2)/
+     +         turre(j,k,i,1)
+            end if
             vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
             zksav(j,k,i,1)=turre(j,k,i,1)
             zksav(j,k,i,2)=turre(j,k,i,2)

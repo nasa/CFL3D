@@ -498,7 +498,7 @@ c     does not account for system rotation
       nkey     = nkey + 1
 c
 c     parameter cr3 in SARC model
-      sarccr3 = 0.6
+      sarccr3 = 1.0
       nkey     = nkey + 1
 c
 c     EASMCC - EASM curvature correction in 2D sense only
