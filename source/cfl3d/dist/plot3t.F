@@ -842,7 +842,7 @@ c          2-line improvement for wake
 c              Girimaji JFM 2000 fix to c4
                if (ieasm_type .eq. 4) then
                  eta1_girimaji=xis/(xis+wis)
-                 if (eta1_girimaji .lt. 0.5) then
+                 if (real(eta1_girimaji) .lt. 0.5) then
                    c4new=2.0-((2.0-c4)*
      +                   (eta1_girimaji/(1.-eta1_girimaji))**0.75)
                  else
@@ -1251,7 +1251,7 @@ c      pressure-strain (only applies for EASMs):
       arg=4.*sigma-10.
       if (ivmx .eq. 14 .and. (ieasm_type .eq. 3 .or.
      +    ieasm_type .eq.4)) then
-        f=0.5*(1.+tanh(arg))
+        f=0.5*(1.+cctanh(arg))
       else
         f=1.0
       end if
@@ -1339,7 +1339,7 @@ c        can add more here, but only if ifunct keyword is big enough!
      +     real(delh)
          if (ifunct .ge. 7) xw(jw,kw,iw,7) = imag(turre(j,k,i,2))/
      +     real(delh)
-         if (ifunct .ge. 8) xw(jw,kw,iw,8) = imsg(vist3d(j,k,i))/
+         if (ifunct .ge. 8) xw(jw,kw,iw,8) = imag(vist3d(j,k,i))/
      +     real(delh)
          if (ifunct .ge. 9) xw(jw,kw,iw,9) = imag(xii)/real(delh)
          if (ifunct .ge.10) xw(jw,kw,iw,10) = imag(xiii)/real(delh)

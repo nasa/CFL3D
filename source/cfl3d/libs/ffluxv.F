@@ -796,7 +796,7 @@ c             Girimaji JFM 2000 fix to c4
               if (ieasm_type .eq. 4) then
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
                 eta1_girimaji=xis/(xis+wis)
-                if (eta1_girimaji .lt. 0.5) then
+                if (real(eta1_girimaji) .lt. 0.5) then
                   c4new=2.0-((2.0-c4)*
      +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
                 else
@@ -912,7 +912,7 @@ c             Girimaji JFM 2000 fix to c4
               if (ieasm_type .eq. 4) then
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
                 eta1_girimaji=xis/(xis+wis)
-                if (eta1_girimaji .lt. 0.5) then
+                if (real(eta1_girimaji) .lt. 0.5) then
                   c4new=2.0-((2.0-c4)*
      +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
                 else
@@ -1028,7 +1028,7 @@ c             Girimaji JFM 2000 fix to c4
               if (ieasm_type .eq. 4) then
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
                 eta1_girimaji=xis/(xis+wis)
-                if (eta1_girimaji .lt. 0.5) then
+                if (real(eta1_girimaji) .lt. 0.5) then
                   c4new=2.0-((2.0-c4)*
      +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
                 else
@@ -1226,9 +1226,12 @@ c            Determine Sij and Wij values (at cell interface)
               s22 = s22 - tmp
               s33 = s33 - tmp
 c             Note: denom term is taken at nearest cell center
-              denom= ux(j,kk,i,1)**2 +ux(j,kk,i,2)**2 +ux(j,kk,i,3)**2
-     +              +ux(j,kk,i,4)**2 +ux(j,kk,i,5)**2 +ux(j,kk,i,6)**2
-     +              +ux(j,kk,i,7)**2 +ux(j,kk,i,8)**2 +ux(j,kk,i,9)**2
+              denom= ux(j,kk,i-1,1)**2 +ux(j,kk,i-1,2)**2
+     +              +ux(j,kk,i-1,3)**2
+     +              +ux(j,kk,i-1,4)**2 +ux(j,kk,i-1,5)**2
+     +              +ux(j,kk,i-1,6)**2
+     +              +ux(j,kk,i-1,7)**2 +ux(j,kk,i-1,8)**2
+     +              +ux(j,kk,i-1,9)**2
               denom=sqrt(denom)
               denom=ccmax(denom,snonlin_lim)
 c            Find tauij values:
@@ -1303,10 +1306,19 @@ c            Determine Sij and Wij values (at cell interfaces):
               s11 = s11 - tmp
               s22 = s22 - tmp
               s33 = s33 - tmp
-c             Note: denom term is taken at nearest cell center
-              denom= ux(j,kk,i,1)**2 +ux(j,kk,i,2)**2 +ux(j,kk,i,3)**2
-     +              +ux(j,kk,i,4)**2 +ux(j,kk,i,5)**2 +ux(j,kk,i,6)**2
-     +              +ux(j,kk,i,7)**2 +ux(j,kk,i,8)**2 +ux(j,kk,i,9)**2
+c             Note: denom term is averaged to cell face
+              ux1 = 0.5*(ux(j,kk,i-1,1) + ux(j,kk,i,1))
+              ux2 = 0.5*(ux(j,kk,i-1,2) + ux(j,kk,i,2))
+              ux3 = 0.5*(ux(j,kk,i-1,3) + ux(j,kk,i,3))
+              ux4 = 0.5*(ux(j,kk,i-1,4) + ux(j,kk,i,4))
+              ux5 = 0.5*(ux(j,kk,i-1,5) + ux(j,kk,i,5))
+              ux6 = 0.5*(ux(j,kk,i-1,6) + ux(j,kk,i,6))
+              ux7 = 0.5*(ux(j,kk,i-1,7) + ux(j,kk,i,7))
+              ux8 = 0.5*(ux(j,kk,i-1,8) + ux(j,kk,i,8))
+              ux9 = 0.5*(ux(j,kk,i-1,9) + ux(j,kk,i,9))
+              denom= ux1**2 +ux2**2 +ux3**2
+     +              +ux4**2 +ux5**2 +ux6**2
+     +              +ux7**2 +ux8**2 +ux9**2
               denom=sqrt(denom)
               denom=ccmax(denom,snonlin_lim)
 c            Find tauij values:

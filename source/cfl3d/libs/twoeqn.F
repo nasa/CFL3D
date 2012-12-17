@@ -2895,7 +2895,7 @@ c             Girimaji JFM 2000 fix to c4
               if (ieasm_type .eq. 4) then
                 wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
                 eta1_girimaji=xis/(xis+wis)
-                if (eta1_girimaji .lt. 0.5) then
+                if (real(eta1_girimaji) .lt. 0.5) then
                   c4new=2.0-((2.0-c4)*
      +                  (eta1_girimaji/(1.-eta1_girimaji))**0.75)
                 else
@@ -4635,12 +4635,12 @@ c           Durbin TCFD 1991 near-wall limiter
               eta1=xis*(tau/re)**2
               eta2=wis*(tau/re)**2
             end if
-            fff=0.5*(1.+tanh(4.0/1.414214*sqrt(eta1)-10.0))
+            fff=0.5*(1.+cctanh(4.0/1.414214*sqrt(eta1)-10.0))
             al2=-0.5*(4./3.-c2+(c2-0.36)*fff)
 c           Girimaji JFM 2000 fix to c4
             if (ieasm_type .eq. 4) then
               eta1_girimaji=xis/(xis+wis)
-              if (eta1_girimaji .lt. 0.5) then
+              if (real(eta1_girimaji) .lt. 0.5) then
                 c4new=2.0-((2.0-c4)*
      +                (eta1_girimaji/(1.-eta1_girimaji))**0.75)
               else
