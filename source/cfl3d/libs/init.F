@@ -1,5 +1,6 @@
       subroutine init(nbl,jdim,kdim,idim,q,qj0,qk0,qi0,tj0,tk0,ti0,
-     .                vol,volj0,volk0,voli0,nummem,x,y,z)
+     .                vol,volj0,volk0,voli0,nummem,x,y,z,
+     .                nou,bou,nbuf,ibufdim,iflagprnt)
 c
 c     $Id$
 c
@@ -19,6 +20,9 @@ c
       dimension volj0(kdim,idim-1,4),volk0(jdim,idim-1,4),
      .          voli0(jdim,kdim  ,4),vol(jdim,kdim,idim-1)
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
+c
+      character*120 bou(ibufdim,nbuf)
+      dimension nou(nbuf)
 c
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -155,53 +159,21 @@ c         tur10 and tur20 not used for model 25, but we
 c         set them anyway for safety:
           if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
           if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
-        else
-c         this includes models 6, 7, 30, and 40:
+        else if (ivisc(1).eq. 6 .or. ivisc(2).eq. 6 .or.
+     .           ivisc(3).eq. 6 .or.
+     .           ivisc(1).eq. 7 .or. ivisc(2).eq. 7 .or.
+     .           ivisc(3).eq. 7) then
           if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
           if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
-        end if
-        do 4001 m=1,4
-          do 4000 i=1,idim-1
-            do 3999 j=1,jdim
-              tk0(j,i,1,m)=tur10(1)
-              tk0(j,i,2,m)=tur10(2)
- 3999       continue
-            do 3998 k=1,kdim
-              tj0(k,i,1,m)=tur10(1)
-              tj0(k,i,2,m)=tur10(2)
- 3998       continue
- 4000     continue
-          do 4002 k=1,kdim
-            do 4002 j=1,jdim
-              ti0(j,k,1,m)=tur10(1)
-              ti0(j,k,2,m)=tur10(2)
- 4002     continue
- 4001   continue
-c
-c       Special for 3-eqn model number 30:
-        if (ivisc(1).eq.30.or. ivisc(2).eq.30.or.
+        else if (ivisc(1).eq.30 .or. ivisc(2).eq.30 .or.
      .           ivisc(3).eq.30) then
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
+          if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
           if (real(tur10(3)) .lt. 0.) tur10(3)=1.0
-          do m=1,4
-            do i=1,idim-1
-              do j=1,jdim
-                tk0(j,i,3,m)=tur10(3)
-              enddo
-              do k=1,kdim
-                tj0(k,i,3,m)=tur10(3)
-              enddo
-            enddo
-            do k=1,kdim
-              do j=1,jdim
-                ti0(j,k,3,m)=tur10(3)
-              enddo
-            enddo
-          enddo
-        end if
-c
-c       Special for 4-eqn model number 40:
-        if (ivisc(1).eq.40.or. ivisc(2).eq.40.or.
+        else if (ivisc(1).eq.40 .or. ivisc(2).eq.40 .or.
      .           ivisc(3).eq.40) then
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.e-6
+          if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
           if (real(tur10(3)) .lt. 0.) tur10(3)=1.0
           if (real(tur10(4)) .lt. 0.) then
             turbintensity_inf_percent=100./xmach*sqrt(tur10(2)/1.5)
@@ -212,25 +184,66 @@ c       Special for 4-eqn model number 40:
              tur10(4)=331.5*(turbintensity_inf_percent-0.5658)**(-0.671)
             end if
           end if
-          do m=1,4
-            do i=1,idim-1
-              do j=1,jdim
-                tk0(j,i,3,m)=tur10(3)
-                tk0(j,i,4,m)=tur10(4)
-              enddo
-              do k=1,kdim
-                tj0(k,i,3,m)=tur10(3)
-                tj0(k,i,4,m)=tur10(4)
-              enddo
-            enddo
-            do k=1,kdim
-              do j=1,jdim
-                ti0(j,k,3,m)=tur10(3)
-                ti0(j,k,4,m)=tur10(4)
-              enddo
-            enddo
-          enddo
+        else if (ivisc(1).eq.72 .or. ivisc(2).eq.72 .or.
+     .           ivisc(3).eq.72) then
+          if (real(tur10(1)) .eq. -1.) tur10(1)=-2./3.*9.e-9
+          if (real(tur10(2)) .eq. -1.) tur10(2)=-2./3.*9.e-9
+          if (real(tur10(3)) .eq. -1.) tur10(3)=-2./3.*9.e-9
+          if (real(tur10(4)) .eq. -1.) tur10(4)=0.
+          if (real(tur10(5)) .eq. -1.) tur10(5)=0.
+          if (real(tur10(6)) .eq. -1.) tur10(6)=0.
+          if (real(tur10(7)) .eq. -1.) tur10(7)=1.e-6
+c    Write out some diagnostic info:
+c    CFL3D has default tur10 values; can be overridden via
+c    turbintensity_inf_percent and/or eddy_visc_inf (see readkey.F)
+          if (nbl .eq. 1 .and. iflagprnt .eq. 0) then
+          tke=-(tur10(1)+tur10(2)+tur10(3))/2.
+          tu=sqrt(tke/1.5)/xmach
+          xnu_ratio=tke/tur10(7)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' For Wilcox Stress-Omega RSM'',
+     .      '', ivisc=72 (all blocks):'')')
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' initial Tu ='',es12.5)') tu
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' initial xnu_ratio ='',es12.5)') 
+     .      xnu_ratio
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' initial tke ='',es12.5)') tke
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' initial omega ='',es12.5)') tur10(7)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(1) ='',es12.5)') tur10(1)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(2) ='',es12.5)') tur10(2)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(3) ='',es12.5)') tur10(3)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(4) ='',es12.5)') tur10(4)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(5) ='',es12.5)') tur10(5)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(6) ='',es12.5)') tur10(6)
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' tur10(7) ='',es12.5)') tur10(7)
+          end if
         end if
+        do 4003 nn=1,nummem
+        do 4001 m=1,4
+          do 4000 i=1,idim-1
+            do 3999 j=1,jdim
+              tk0(j,i,nn,m)=tur10(nn)
+ 3999       continue
+            do 3998 k=1,kdim
+              tj0(k,i,nn,m)=tur10(nn)
+ 3998       continue
+ 4000     continue
+          do 4002 k=1,kdim
+            do 4002 j=1,jdim
+              ti0(j,k,nn,m)=tur10(nn)
+ 4002     continue
+ 4001   continue
+ 4003   continue
 c
       end if
 c

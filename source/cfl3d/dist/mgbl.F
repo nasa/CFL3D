@@ -51,6 +51,10 @@
      .                maxsegdg,nmaster,aehist,timekeep,xorgae0,yorgae0,
      .                zorgae0,icouple,nblelst,iskmax,jskmax,kskmax,ue,
      .                irdrea)
+#   ifdef CMPLX
+#   else
+      use module_kwstm, only:kws_get_nummem
+#   endif
 c
 c     $Id$
 c
@@ -608,6 +612,11 @@ c     need to also set memory appropriately in pointers
       nummem=2
       if (ivmx .eq. 30) nummem=3
       if (ivmx .eq. 40) nummem=4
+#   ifdef CMPLX
+c     RSM not working in complex mode
+#   else
+      if (ivmx .eq. 72) nummem=kws_get_nummem()
+#   endif
       allocate( rmstr(ncycmax,nummem),stat=stats )
       call umalloc(ncycmax*nummem,0,'rmstr',memuse,stats)
       allocate( nneg(ncycmax,nummem),stat=stats )

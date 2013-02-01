@@ -42,12 +42,20 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      real :: coef_eddy
 c
 c******************************************************************************
 c     right-hand-side residual contribution in K-direction (viscous terms)
 c     written 2-10-88  S.L. Taylor  and J.L. Thomas
 c     Analytical Methods Branch, NASA Langley Research Center
 c******************************************************************************
+c
+c     coefficient used to turn off eddy-viscosity based
+c     turbulent stress calculation for ivmx==70 (full
+c     Reynolds stress model)  - xxiao
+c
+      coef_eddy = 1.0
+      if(ivisc(3)>=70) coef_eddy=0.
 c
       kdim1 = kdim-1
       jdim1 = jdim-1
@@ -323,7 +331,7 @@ cdir$ ivdep
       do 1022 izz=1,l0
 c  ratio of turbulent to laminar viscosity
       t25 = t(izz,24)/t(izz,14) 
-      t24 = 1.e0+t25
+      t24 = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
 c
@@ -456,6 +464,115 @@ cdir$ ivdep
       res(izz,k,ii,l) = res(izz,k,ii,l)+t(izz+jkv-1,l)
  1030 continue
   400 continue
+c  Add tau_ij's for RSMs:
+      if (ivisc(3) .ge. 70) then
+        re=reue/xmach
+        do 8296 ipl=1,npl
+          ii=i+ipl-1
+          jkv2=(ipl-1)*jdim1
+          do 8295 k=1,kdim
+            jk  = (k-1)*jdim
+            jkv=(k-1)*npl*jdim1 + (ipl-1)*jdim1
+            if (k.eq.1) then
+              do 8294 j=1,jdim1
+              rho=0.5*(q(j,k,ii,1)+qk0(j,ii,1,1))*(1.-wk0(j+jkv2,5))+
+     +            qk0(j,ii,1,1)*wk0(j+jkv2,5)
+              u=0.5*(q(j,k,ii,2)+qk0(j,ii,2,1))*(1.-wk0(j+jkv2,5))+
+     +            qk0(j,ii,2,1)*wk0(j+jkv2,5)
+              v=0.5*(q(j,k,ii,3)+qk0(j,ii,3,1))*(1.-wk0(j+jkv2,5))+
+     +            qk0(j,ii,3,1)*wk0(j+jkv2,5)
+              w=0.5*(q(j,k,ii,4)+qk0(j,ii,4,1))*(1.-wk0(j+jkv2,5))+
+     +            qk0(j,ii,4,1)*wk0(j+jkv2,5)
+              t11=-rho*0.5*(zksav(j,k,ii,1)+tk0(j,ii,1,1))*re
+              t22=-rho*0.5*(zksav(j,k,ii,2)+tk0(j,ii,2,1))*re
+              t33=-rho*0.5*(zksav(j,k,ii,3)+tk0(j,ii,3,1))*re
+              t12=-rho*0.5*(zksav(j,k,ii,4)+tk0(j,ii,4,1))*re
+              t23=-rho*0.5*(zksav(j,k,ii,5)+tk0(j,ii,5,1))*re
+              t13=-rho*0.5*(zksav(j,k,ii,6)+tk0(j,ii,6,1))*re
+              t(j+jkv,28)=xmre*(t(j+jkv,25)*t11+t(j+jkv,26)*t12+
+     +                          t(j+jkv,27)*t13)/t(j+jkv,15)
+              t(j+jkv,29)=xmre*(t(j+jkv,25)*t12+t(j+jkv,26)*t22+
+     +                          t(j+jkv,27)*t23)/t(j+jkv,15)
+              t(j+jkv,30)=xmre*(t(j+jkv,25)*t13+t(j+jkv,26)*t23+
+     +                          t(j+jkv,27)*t33)/t(j+jkv,15)
+              t(j+jkv,31)=xmre/t(j+jkv,15)*(
+     +           t(j+jkv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(j+jkv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(j+jkv,27)*(u*t13 + v*t23 + w*t33))
+ 8294         continue
+            else if(k.eq.kdim) then
+              do 8293 j=1,jdim1
+              rho=0.5*(q(j,k-1,ii,1)+qk0(j,ii,1,3))*(1.-wk0(j+jkv2,15))+
+     +            qk0(j,ii,1,3)*wk0(j+jkv2,15)
+              u=0.5*(q(j,k-1,ii,2)+qk0(j,ii,2,3))*(1.-wk0(j+jkv2,15))+
+     +            qk0(j,ii,2,3)*wk0(j+jkv2,15)
+              v=0.5*(q(j,k-1,ii,3)+qk0(j,ii,3,3))*(1.-wk0(j+jkv2,15))+
+     +            qk0(j,ii,3,3)*wk0(j+jkv2,15)
+              w=0.5*(q(j,k-1,ii,4)+qk0(j,ii,4,3))*(1.-wk0(j+jkv2,15))+
+     +            qk0(j,ii,4,3)*wk0(j+jkv2,15)
+              t11=-rho*0.5*(zksav(j,k-1,ii,1)+tk0(j,ii,1,3))*re
+              t22=-rho*0.5*(zksav(j,k-1,ii,2)+tk0(j,ii,2,3))*re
+              t33=-rho*0.5*(zksav(j,k-1,ii,3)+tk0(j,ii,3,3))*re
+              t12=-rho*0.5*(zksav(j,k-1,ii,4)+tk0(j,ii,4,3))*re
+              t23=-rho*0.5*(zksav(j,k-1,ii,5)+tk0(j,ii,5,3))*re
+              t13=-rho*0.5*(zksav(j,k-1,ii,6)+tk0(j,ii,6,3))*re
+              t(j+jkv,28)=xmre*(t(j+jkv,25)*t11+t(j+jkv,26)*t12+
+     +                          t(j+jkv,27)*t13)/t(j+jkv,15)
+              t(j+jkv,29)=xmre*(t(j+jkv,25)*t12+t(j+jkv,26)*t22+
+     +                          t(j+jkv,27)*t23)/t(j+jkv,15)
+              t(j+jkv,30)=xmre*(t(j+jkv,25)*t13+t(j+jkv,26)*t23+
+     +                          t(j+jkv,27)*t33)/t(j+jkv,15)
+              t(j+jkv,31)=xmre/t(j+jkv,15)*(
+     +           t(j+jkv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(j+jkv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(j+jkv,27)*(u*t13 + v*t23 + w*t33))
+ 8293         continue
+            else
+              do 8292 j=1,jdim1
+              rho=0.5*(q(j,k,ii,1)+q(j,k-1,ii,1))
+              t11=-rho*0.5*(zksav(j,k,ii,1)+zksav(j,k-1,ii,1))*re
+              t22=-rho*0.5*(zksav(j,k,ii,2)+zksav(j,k-1,ii,2))*re
+              t33=-rho*0.5*(zksav(j,k,ii,3)+zksav(j,k-1,ii,3))*re
+              t12=-rho*0.5*(zksav(j,k,ii,4)+zksav(j,k-1,ii,4))*re
+              t23=-rho*0.5*(zksav(j,k,ii,5)+zksav(j,k-1,ii,5))*re
+              t13=-rho*0.5*(zksav(j,k,ii,6)+zksav(j,k-1,ii,6))*re
+              t(j+jkv,28)=xmre*(t(j+jkv,25)*t11+t(j+jkv,26)*t12+
+     +                          t(j+jkv,27)*t13)/t(j+jkv,15)
+              t(j+jkv,29)=xmre*(t(j+jkv,25)*t12+t(j+jkv,26)*t22+
+     +                          t(j+jkv,27)*t23)/t(j+jkv,15)
+              t(j+jkv,30)=xmre*(t(j+jkv,25)*t13+t(j+jkv,26)*t23+
+     +                          t(j+jkv,27)*t33)/t(j+jkv,15)
+              t(j+jkv,31)=xmre/t(j+jkv,15)*(
+     +           t(j+jkv,25)*(0.5*(q(j,k,ii,2)+q(j,k-1,ii,2))*t11
+     +                       +0.5*(q(j,k,ii,3)+q(j,k-1,ii,3))*t12
+     +                       +0.5*(q(j,k,ii,4)+q(j,k-1,ii,4))*t13)
+     +          +t(j+jkv,26)*(0.5*(q(j,k,ii,2)+q(j,k-1,ii,2))*t12
+     +                       +0.5*(q(j,k,ii,3)+q(j,k-1,ii,3))*t22
+     +                       +0.5*(q(j,k,ii,4)+q(j,k-1,ii,4))*t23)
+     +          +t(j+jkv,27)*(0.5*(q(j,k,ii,2)+q(j,k-1,ii,2))*t13
+     +                       +0.5*(q(j,k,ii,3)+q(j,k-1,ii,3))*t23
+     +                       +0.5*(q(j,k,ii,4)+q(j,k-1,ii,4))*t33))
+ 8292         continue
+            end if
+ 8295     continue
+ 8296   continue
+        do 8271 l=2,5
+        do 8270 izz=1,n
+c   Take positive derivative, because want negative of all above for correct
+c   sign (this term is going into -d/dxj(Hv) term)
+          t(izz,l)=t(izz+js-1,l+26)-t(izz,l+26)
+ 8270   continue
+ 8271   continue
+        do 8268 ipl=1,npl
+          ii=i+ipl-1
+          do 8268 k=1,kdim1
+            jkv=(k-1)*jdim1*npl + (ipl-1)*jdim1+1
+            do 8268 l=2,5
+              do 8267 izz=1,jdim1
+                res(izz,k,ii,l)=res(izz,k,ii,l)+t(izz+jkv-1,l)
+ 8267         continue
+ 8268   continue
+      end if
       if((ivisc(3) .eq. 11 .or. ivisc(3) .eq. 12) .and. 
      .    level .ge. lglobal) then
 c f7=factor for determining whether it's a k-omega or k-epsilon formulation

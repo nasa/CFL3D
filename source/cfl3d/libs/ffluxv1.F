@@ -40,6 +40,10 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
+      REAL :: coef_eddy  ! used to turn off eddy viscosity for stress calculation
+
+      coef_eddy = 1.0
+      if(ivisc(1)>=70) coef_eddy=0.
 c
 c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey
@@ -1169,7 +1173,7 @@ c
       do 1022 j=1,l0
 c  ratio of turbulent to laminar viscosity
       t25     = t(j,24)/t(j,14) 
-      t24     = 1.e0+t25
+      t24     = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
 c

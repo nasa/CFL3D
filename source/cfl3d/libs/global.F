@@ -186,6 +186,9 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmlim/ cmulim
+      common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
+     .        tur10(7)
+      common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
 c
       pi = 4.0*atan(1.0)
 c
@@ -745,7 +748,8 @@ c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       if (ivisc(1).gt.15.or. ivisc(2).gt.15.or. ivisc(3).gt.15) then
         if (ivisc(1).ne.25.and.ivisc(2).ne.25.and.ivisc(3).ne.25.and.
      .      ivisc(1).ne.30.and.ivisc(2).ne.30.and.ivisc(3).ne.30.and.
-     .      ivisc(1).ne.40.and.ivisc(2).ne.40.and.ivisc(3).ne.40) then
+     .      ivisc(1).ne.40.and.ivisc(2).ne.40.and.ivisc(3).ne.40.and.
+     .      ivisc(1).ne.72.and.ivisc(2).ne.72.and.ivisc(3).ne.72) then
           write(iunit11,'('' Unknown turb model type chosen'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
@@ -929,10 +933,80 @@ c
      .  '' unless ivisc=6,7,8,9,10,11,12,13,14,30, or 40 used'')')
       end if
 c
-      if (ivmx .eq. 25 .or. ivmx .eq. 30 .or. ivmx .eq. 40) then
+      if (ivmx .eq. 25 .or. ivmx .eq. 30 .or. ivmx .eq. 40 .or.
+     .    ivmx .eq. 72) then
         write(iunit11,'('' WARNING: ivisc='',i4,'' still under'',
      .    '' development... use at your own risk!'')') ivmx
       end if
+c
+c     Need to check for keywords that do not work for ivmx=72:
+      if (ivmx .eq. 72) then
+        write(iunit11,'('' WARNING: keyword ifullns has no effect for'',
+     .    '' ivisc=72 - it is ALWAYS full NS'')')
+        write(iunit11,'(''          (but diffusion'',
+     .    '' terms in turb eqns are still thin-layer)'')')
+        if (edvislim .ne. 1.e10) then
+          write(iunit11,'('' WARNING: keyword edvislim has influence'',
+     .      '' only in turb heat flux in energy eqn for ivisc=72'')')
+        end if
+        if (icgns .ne. 0) then
+          write(iunit11,'('' ERROR: CGNS not working yet'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (itaturb .ne. 1) then
+          write(iunit11,'('' ERROR: itaturb not implemented'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (iturbord .ne. 1) then
+          write(iunit11,'('' ERROR: iturbord not implemented'',
+     .      '' for ivisc=72 (default is 1st order)'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (nfreeze .ne. 0) then
+          write(iunit11,'('' ERROR: nfreeze not implemented'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (iaxi2planeturb .ne. 0) then
+          write(iunit11,'('' ERROR: iaxi2planeturb not implemented'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (istrongturbdis .ne. 0) then
+          write(iunit11,'('' ERROR: istrongturbdis not implemented'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (cflturb(2) .ne. 0. .or. cflturb(3) .ne. 0. .or.
+     .      cflturb(4) .ne. 0. .or. cflturb(5) .ne. 0. .or.
+     .      cflturb(6) .ne. 0. .or. cflturb(7) .ne. 0.) then
+          write(iunit11,'('' ERROR: cflturb2...cflturb7 not'',
+     .      '' implemented for ivisc=72'')')
+          write(iunit11,'(''  ... use cflturb1 to set CFL for all'',
+     .      '' seven turb equations'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (tur1cut .ne. 1.e-20 .or. tur2cut .ne. 1.e-20) then
+          write(iunit11,'('' ERROR: tur1cut, tur2cut not implemented'',
+     .      '' for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (tur1cutlev .ne. 0. .or. tur2cutlev .ne. 0.) then
+          write(iunit11,'('' ERROR: tur1cutlev, tur2cutlev not'',
+     .      '' implemented for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+      end if
+c
+#   ifdef CMPLX
+      if (ivmx==72) then
+        write(iunit11,'('' Error... ivmx=72 not allowed for'',
+     +   '' complex mode'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+#   endif
 c
       if (i_nonlin .ne. 0 .and. (ivmx .lt. 2 .or. ivmx .eq. 8
      .  .or. ivmx .eq. 9 .or. ivmx .eq. 11 .or. ivmx .eq. 12 .or.
@@ -3676,6 +3750,12 @@ c
      .       ' unless nplot3d=-1 (surface only)'
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
+            if (ivmx .eq. 72 .and. im(2) .eq. 2) then
+               write(iunit11,*)'stopping...iptyp=2 not implemented',
+     .         ' for ivisc=72... turbulence variables are ouput',
+     .         ' automatically to turre...plt'
+               call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+            end if
          else
             if (n.le.np3dhold) then
                read(iunit5,*) idum,iptyp,(idum,l=3,11)
@@ -3684,6 +3764,12 @@ c
              write(iunit11,*)'stopping...iptyp 7',
      .       ' does not work for 2D'
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+            end if
+            if (ivmx .eq. 72 .and. iptyp .eq. 2) then
+               write(iunit11,*)'stopping...iptyp=2 not implemented',
+     .         ' for ivisc=72... turbulence variables are ouput',
+     .         ' automatically to turre...plt'
+               call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
             end if
          end if
 c

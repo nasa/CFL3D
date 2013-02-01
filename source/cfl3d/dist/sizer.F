@@ -1516,6 +1516,8 @@ c allocate for DES and DDES
                  inmx=0
                end if
                itemp=iwk59+inmx
+            else if(ivmx.eq.72) then 
+               itemp = 0
             end if
          end if
 c

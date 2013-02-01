@@ -55,6 +55,10 @@ $(DISTLIB): $(FSRC_DIST) $(FOBJ_DIST) $(FSRC_SPEC) $(FOBJ_SPEC)
 	@$(RANLIB) $(DISTLIB)
 
 HEAD_DIST = 
+qout.o: ../libs/module_kwstm.o ../libs/module_profileout.o ../libs/module_contour.o
+pointers.o: ../libs/module_kwstm.o
+mgbl.o: ../libs/module_kwstm.o
+setup.o: ../libs/module_kwstm.o
 
 $(FOBJ_DIST): $(HEAD_DIST)
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F

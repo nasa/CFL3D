@@ -951,14 +951,29 @@ c     Check for the existence of the clcd.bin file
 c        the variables turbintensity_inf_percent and eddy_visc_inf
 c        do not go to the rest of the code; instead, if set, they
 c        modify tur10(2) and tur10(1), respectively
+c        (or tur10(1,2,3) and tur10(7) for ivmx=72)
          if (real(turbintensity_inf_percent) .ge. 0.) then
-           if (iunit11.gt.0) write(iunit11,'('' turbintensity_inf'',
-     +       ''_percent always overrides tur20'')')
-           tur10(2)=1.5*xmach**2*(turbintensity_inf_percent/100.)**2
+           if (ivmx .eq. 72) then
+             if (iunit11.gt.0) write(iunit11,'('' turbintensity_inf'',
+     +         ''_percent always overrides tur10,20,30 for ivmx=72'')')
+             zkinf=1.5*xmach**2*(turbintensity_inf_percent/100.)**2
+             tur10(1)=-2./3.*zkinf
+             tur10(2)=-2./3.*zkinf
+             tur10(3)=-2./3.*zkinf
+           else
+             if (iunit11.gt.0) write(iunit11,'('' turbintensity_inf'',
+     +         ''_percent always overrides tur20'')')
+             tur10(2)=1.5*xmach**2*(turbintensity_inf_percent/100.)**2
+           end if
          end if
          if (real(eddy_visc_inf) .ge. 0.) then
-           if (iunit11.gt.0) write(iunit11,'('' eddy_visc_inf always'',
-     +       '' overrides tur10'')')
+           if (ivmx .eq. 72) then
+            if (iunit11.gt.0) write(iunit11,'('' eddy_visc_inf always'',
+     +        '' overrides tur70 for ivmx=72'')')
+           else
+            if (iunit11.gt.0) write(iunit11,'('' eddy_visc_inf always'',
+     +        '' overrides tur10'')')
+           end if
            if (ivmx .eq. 4) then
              tur10(1)=eddy_visc_inf/0.09
            else if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.30 .or.
@@ -990,6 +1005,8 @@ c            for SA model, need to iterate to find nuwiggle:
      +         '' using eddy_visc_inf not converged in readkey'')')
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
  105         continue
+           else if (ivmx .eq. 72) then
+             tur10(7)=-3./2.*tur10(1)/eddy_visc_inf
            end if
          end if
          return

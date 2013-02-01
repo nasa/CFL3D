@@ -41,11 +41,14 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /twod/ i2d
+      REAL :: coef_eddy
 c
 c******************************************************************************
 c     written mid-2005   V. Venkatakrishnan & C. Rumsey
 c******************************************************************************
 c
+      coef_eddy = 1.0
+      if(ivisc(3)>=70) coef_eddy = 0.0
       kdim1 = kdim-1
       jdim1 = jdim-1
       idim1 = idim-1
@@ -1173,7 +1176,7 @@ cdir$ ivdep
       do 1022 izz=1,l0
 c  ratio of turbulent to laminar viscosity
       t25 = t(izz,24)/t(izz,14) 
-      t24 = 1.e0+t25
+      t24 = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
 c

@@ -168,6 +168,12 @@ c
         ki8   = kdim*idim1*16
         ji8   = jdim*idim1*16
       end if
+      if (ivisc(1).eq.72.or.ivisc(2).eq.72.or.ivisc(3).eq.72) then
+        jki2=7*jki
+        jk8   = jdim*kdim*28
+        ki8   = kdim*idim1*28
+        ji8   = jdim*idim1*28
+      end if
 c
       if (myid.eq.myhost) then
       if (iskip.gt.0) then 

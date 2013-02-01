@@ -38,6 +38,14 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      real :: coef_eddy
+c
+c     coefficient used to turn off eddy-viscosity based
+c     turbulent stress calculation for ivmx==70 (full
+c     Reynolds stress model)  - xxiao
+c
+      coef_eddy = 1.0
+      if(ivisc(1)>=70) coef_eddy=0.0
 c
       idim1  =  idim-1
       jdim1  =  jdim-1
@@ -309,7 +317,7 @@ c
       do 1022 j=1,l0
 c  ratio of turbulent to laminar viscosity
       t25     = t(j,24)/t(j,14) 
-      t24     = 1.e0+t25
+      t24     = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
 c
@@ -429,6 +437,115 @@ c
       res(j,kk,i,l) = res(j,kk,i,l) + t(j+jiv-1,l)
  1030 continue
   400 continue
+c  Add tau_ij's for RSMs:
+      if (ivisc(1) .ge. 70) then
+        re=reue/xmach
+        do 8296 kpl=1,npl
+          kk=k+kpl-1
+          jiv2=(kpl-1)*jdim1
+          do 8295 i=1,idim
+            jiv=(i-1)*npl*jdim1 + (kpl-1)*jdim1
+            if (i.eq.1) then
+              do 8294 j=1,jdim1
+              rho=0.5*(q(j,kk,i,1)+qi0(j,kk,1,1))*(1.-wi0(j+jiv2,5))+
+     +            qi0(j,kk,1,1)*wi0(j+jiv2,5)
+              u=0.5*(q(j,kk,i,2)+qi0(j,kk,2,1))*(1.-wi0(j+jiv2,5))+
+     +            qi0(j,kk,2,1)*wi0(j+jiv2,5)
+              v=0.5*(q(j,kk,i,3)+qi0(j,kk,3,1))*(1.-wi0(j+jiv2,5))+
+     +            qi0(j,kk,3,1)*wi0(j+jiv2,5)
+              w=0.5*(q(j,kk,i,4)+qi0(j,kk,4,1))*(1.-wi0(j+jiv2,5))+
+     +            qi0(j,kk,4,1)*wi0(j+jiv2,5)
+              t11 =-rho*0.5*(zksav(j,kk,i,1)+ti0(j,kk,1,1))*re
+              t22 =-rho*0.5*(zksav(j,kk,i,2)+ti0(j,kk,2,1))*re
+              t33 =-rho*0.5*(zksav(j,kk,i,3)+ti0(j,kk,3,1))*re
+              t12 =-rho*0.5*(zksav(j,kk,i,4)+ti0(j,kk,4,1))*re
+              t23 =-rho*0.5*(zksav(j,kk,i,5)+ti0(j,kk,5,1))*re
+              t13 =-rho*0.5*(zksav(j,kk,i,6)+ti0(j,kk,6,1))*re
+              t(j+jiv,28)=xmre*(t(j+jiv,25)*t11+t(j+jiv,26)*t12+
+     +                          t(j+jiv,27)*t13)/t(j+jiv,15)
+              t(j+jiv,29)=xmre*(t(j+jiv,25)*t12+t(j+jiv,26)*t22+
+     +                          t(j+jiv,27)*t23)/t(j+jiv,15)
+              t(j+jiv,30)=xmre*(t(j+jiv,25)*t13+t(j+jiv,26)*t23+
+     +                          t(j+jiv,27)*t33)/t(j+jiv,15)
+              t(j+jiv,31)=xmre/t(j+jiv,15)*(
+     +           t(j+jiv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(j+jiv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(j+jiv,27)*(u*t13 + v*t23 + w*t33))
+ 8294         continue
+            else if(i.eq.idim) then
+              do 8293 j=1,jdim1
+              rho=0.5*(q(j,kk,i-1,1)+qi0(j,kk,1,3))*(1.-wi0(j+jiv2,15))+
+     +            qi0(j,kk,1,3)*wi0(j+jiv2,15)
+              u=0.5*(q(j,kk,i-1,2)+qi0(j,kk,2,3))*(1.-wi0(j+jiv2,15))+
+     +            qi0(j,kk,2,3)*wi0(j+jiv2,15)
+              v=0.5*(q(j,kk,i-1,3)+qi0(j,kk,3,3))*(1.-wi0(j+jiv2,15))+
+     +            qi0(j,kk,3,3)*wi0(j+jiv2,15)
+              w=0.5*(q(j,kk,i-1,4)+qi0(j,kk,4,3))*(1.-wi0(j+jiv2,15))+
+     +            qi0(j,kk,4,3)*wi0(j+jiv2,15)
+              t11 =-rho*0.5*(zksav(j,kk,i-1,1)+ti0(j,kk,1,3))*re
+              t22 =-rho*0.5*(zksav(j,kk,i-1,2)+ti0(j,kk,2,3))*re
+              t33 =-rho*0.5*(zksav(j,kk,i-1,3)+ti0(j,kk,3,3))*re
+              t12 =-rho*0.5*(zksav(j,kk,i-1,4)+ti0(j,kk,4,3))*re
+              t23 =-rho*0.5*(zksav(j,kk,i-1,5)+ti0(j,kk,5,3))*re
+              t13 =-rho*0.5*(zksav(j,kk,i-1,6)+ti0(j,kk,6,3))*re
+              t(j+jiv,28)=xmre*(t(j+jiv,25)*t11+t(j+jiv,26)*t12+
+     +                          t(j+jiv,27)*t13)/t(j+jiv,15)
+              t(j+jiv,29)=xmre*(t(j+jiv,25)*t12+t(j+jiv,26)*t22+
+     +                          t(j+jiv,27)*t23)/t(j+jiv,15)
+              t(j+jiv,30)=xmre*(t(j+jiv,25)*t13+t(j+jiv,26)*t23+
+     +                          t(j+jiv,27)*t33)/t(j+jiv,15)
+              t(j+jiv,31)=xmre/t(j+jiv,15)*(
+     +           t(j+jiv,25)*(u*t11 + v*t12 + w*t13)
+     +          +t(j+jiv,26)*(u*t12 + v*t22 + w*t23)
+     +          +t(j+jiv,27)*(u*t13 + v*t23 + w*t33))
+ 8293         continue
+            else
+              do 8292 j=1,jdim1
+              rho=0.5*(q(j,kk,i,1)+q(j,kk,i-1,1))
+              t11=-rho*0.5*(zksav(j,kk,i,1)+zksav(j,kk,i-1,1))*re
+              t22=-rho*0.5*(zksav(j,kk,i,2)+zksav(j,kk,i-1,2))*re
+              t33=-rho*0.5*(zksav(j,kk,i,3)+zksav(j,kk,i-1,3))*re
+              t12=-rho*0.5*(zksav(j,kk,i,4)+zksav(j,kk,i-1,4))*re
+              t23=-rho*0.5*(zksav(j,kk,i,5)+zksav(j,kk,i-1,5))*re
+              t13=-rho*0.5*(zksav(j,kk,i,6)+zksav(j,kk,i-1,6))*re
+              t(j+jiv,28)=xmre*(t(j+jiv,25)*t11+t(j+jiv,26)*t12+
+     +                          t(j+jiv,27)*t13)/t(j+jiv,15)
+              t(j+jiv,29)=xmre*(t(j+jiv,25)*t12+t(j+jiv,26)*t22+
+     +                          t(j+jiv,27)*t23)/t(j+jiv,15)
+              t(j+jiv,30)=xmre*(t(j+jiv,25)*t13+t(j+jiv,26)*t23+
+     +                          t(j+jiv,27)*t33)/t(j+jiv,15)
+              t(j+jiv,31)=xmre/t(j+jiv,15)*(
+     +           t(j+jiv,25)*(0.5*(q(j,kk,i,2)+q(j,kk,i-1,2))*t11
+     +                       +0.5*(q(j,kk,i,3)+q(j,kk,i-1,3))*t12
+     +                       +0.5*(q(j,kk,i,4)+q(j,kk,i-1,4))*t13)
+     +          +t(j+jiv,26)*(0.5*(q(j,kk,i,2)+q(j,kk,i-1,2))*t12
+     +                       +0.5*(q(j,kk,i,3)+q(j,kk,i-1,3))*t22
+     +                       +0.5*(q(j,kk,i,4)+q(j,kk,i-1,4))*t23)
+     +          +t(j+jiv,27)*(0.5*(q(j,kk,i,2)+q(j,kk,i-1,2))*t13
+     +                       +0.5*(q(j,kk,i,3)+q(j,kk,i-1,3))*t23
+     +                       +0.5*(q(j,kk,i,4)+q(j,kk,i-1,4))*t33))
+ 8292         continue
+            end if
+ 8295     continue
+ 8296   continue
+        do 8271 l=2,5
+        do 8270 izz=1,n
+c   Take positive derivative, because want negative of all above for correct
+c   sign (this term is going into -d/dxj(Hv) term)
+          t(izz,l)=t(izz+js-1,l+26)-t(izz,l+26)
+ 8270   continue
+ 8271   continue
+        do 8268 kpl=1,npl
+          kk=k+kpl-1
+          do 8268 i=1,idim1
+            jiv=(i-1)*jdim1*npl + (kpl-1)*jdim1+1
+            do 8268 l=2,5
+              do 8267 izz=1,jdim1
+                res(izz,kk,i,l)=res(izz,kk,i,l)+t(izz+jiv-1,l)
+ 8267         continue
+ 8268   continue
+      end if
+c
       if((ivisc(1) .eq. 11 .or. ivisc(1) .eq. 12) .and.
      .    level .ge. lglobal) then
 c f7=factor for determining whether it's a k-omega or k-epsilon formulation

@@ -8,6 +8,10 @@
      .           maxseg,nbci0,nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,
      .           ibcinfo,jbcinfo,kbcinfo,vormax,ivmax,jvmax,kvmax,
      .           idefrm,iadvance,qavg,nummem)
+#   ifdef CMPLX
+#   else
+      use module_kwstm, only: kws_main,kws_dump_movie
+#   endif
 c
 c     $Id$
 c
@@ -250,8 +254,9 @@ c
       if (icyc.eq.(icyc/1)*1 .and. level.ge.lglobal .and. ntime.le.nit)
      .    icall = 1
       if (lowmem_ux .eq. 1) then
-        if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
-     .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and. 
+        if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or. 
+     .      ivmx.eq.72 .or.
+     .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10).and. 
      .    ikoprod.eq.1) .or. 
      .    (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
@@ -821,6 +826,21 @@ c allocate for DES and DDES
      + wk(iwk50),wk(iwk51),wk(iwk52),wk(iwk53),
      + wk(iwk54),wk(iwk55),wk(iwk56),wk(iwk57),
      + wk(iwk58),wk(iwk59),nummem)
+      else if (ivmx .eq. 72) then ! full stress model, k-omega based stress model
+#   ifdef CMPLX
+c          RSM not working in complex mode
+#   else
+         if (isklton.eq.1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'('' Computing turbulence using '',
+     +        ''Wilcox Stress-Omega 7-eqn RSM, block='',i5)') nbl
+         end if
+         call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
+     $        tj0,tk0,ti0,xib,
+     $        ux,
+     $        sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
+     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl)
+#   endif
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
         call lesdiag(myid,jdim,kdim,idim,q,ux,vist3d,vol,si,sj,sk,
@@ -838,13 +858,13 @@ c
          write(bou(nou(1),1),*)
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),7) nbl
-         if (ifullns .ne. 0) then
+         if (ifullns .ne. 0 .or. ivmx .ge. 70) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),777)
          end if
       end if
     7 format(1x,29hcomputing residuals for block,i6)
-  777 format(1x,21hFull N-S terms are ON)
+  777 format(1x,37hFull N-S terms are ON - meanflow only)
 c
       end if  ! iadvance .ge. 0
 c

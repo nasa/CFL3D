@@ -1,5 +1,6 @@
       subroutine collq(q,qq,vol,volc,jdim,kdim,idim,jj2,kk2,ii2,
-     .                 res,qr,qw,vistf,vistc,nbl,nou,bou,nbuf,ibufdim)
+     .                 res,qr,qw,vistf,vistc,tursavf,tursavc,
+     .                 nbl,nou,bou,nbuf,ibufdim,nummem)
 c
 c     $Id$
 c
@@ -22,6 +23,8 @@ c
       dimension vol(jdim,kdim,idim-1),volc(jj2,kk2,ii2-1),
      .          res(jdim,kdim,idim-1,5)
       dimension vistf(jdim,kdim,idim),vistc(jj2,kk2,ii2)
+      dimension tursavf(jdim,kdim,idim,nummem),
+     .          tursavc(jj2,kk2,ii2,nummem)
 c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -119,5 +122,41 @@ c
       end if
    60 continue
       call fill(jj2,kk2,ii2,qq,5)
+c
+c  Turbulence variables needed for RSMs:
+      if (ivisc(1).ge.70 .or. ivisc(2).ge.70 .or. ivisc(3).ge.70) then
+      do 600 n=1,nummem
+      if (idim.gt.2) then
+      kk = 0
+      do 400 k=1,kdim1,2
+      kk = kk+1
+      jj = 0
+      do 400 j=1,jdim1,2
+      jj = jj+1
+      ii = 0
+      do 400 i=1,idim1,2
+      ii = ii+1
+       tursavc(jj,kk,ii,n) = .125e0*(tursavf(j,k,i,n)+tursavf(j,k,i+1,n)
+     .                   +tursavf(j+1,k,i,n)   +tursavf(j+1,k,i+1,n)
+     .                   +tursavf(j,k+1,i,n)   +tursavf(j,k+1,i+1,n)
+     .                   +tursavf(j+1,k+1,i,n) +tursavf(j+1,k+1,i+1,n))
+  400 continue
+c
+      else
+c
+      ii = 1
+      i  = 1
+      kk = 0
+      do 4040 k=1,kdim1,2
+      kk = kk+1
+      jj = 0
+      do 4040 j=1,jdim1,2
+      jj = jj+1
+         tursavc(jj,kk,ii,n) = .25e0*(tursavf(j,k,i,n) 
+     .      +tursavf(j+1,k,i,n)+tursavf(j,k+1,i,n)+tursavf(j+1,k+1,i,n))
+ 4040 continue
+      end if
+  600 continue
+      end if
       return
       end

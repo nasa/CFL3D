@@ -16,6 +16,7 @@ build/cfl/libs/bessel.c
 build/cfl/seq/*.F*
 build/cfl/mpi/*.F*
 build/cfl/libs/*.F*
+build/cfl/libs/*.mod
 libcommon.a
 libdist.a
 cfl3d_seq

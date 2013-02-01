@@ -8,6 +8,10 @@
      .                     klamlog,ilamhig,jlamhig,klamhig,idegg,iwfg,
      .                     idiagg,iflimg,ifdsg,rkap0g,jsg,ksg,isg,jeg,
      .                     keg,ieg,memblock,icall,nmds,maxaes,mpihost)
+#   ifdef CMPLX
+#   else
+      use module_kwstm, only:kws_get_nummem
+#   endif
 c
 c     $Id$
 c
@@ -475,6 +479,13 @@ c        extra memory needed for ivisc=30 (3-eqn model)
 c        extra memory needed for ivisc=40 (4-eqn model)
          if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
      .      ns = jmkmim*4
+c	 extra memory needed for ivisc=72 (stress-omega model,Wilcox 3rd Edition)
+#   ifdef CMPLX
+c        RSM not working in complex mode
+#   else
+         if(ivisc(3).eq.72 .or. ivisc(2).eq.72 .or. ivisc(1).eq.72)
+     .      ns = jmkmim*kws_get_nummem()
+#   endif
 c
 c........Johnson-King data no longer stored
 c
@@ -498,6 +509,14 @@ c        extra memory needed for ivisc=30 (3-eqn model)
 c        extra memory needed for ivisc=40 (4-eqn model)
          if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
      .      ns = kmim1*4*4
+c        extra memory needed for ivisc=72 (stress-omega  model)
+#   ifdef CMPLX
+c        RSM not working in complex mode
+#   else
+         if(ivisc(3).eq.72 .or. ivisc(2).eq.72 .or. ivisc(1).eq.72)
+     .      ns = kmim1*kws_get_nummem()*4
+#   endif
+
 c
 c........tk0(jdim,idim-1,2,4)
 c        turbulence model variable at k-boundary
@@ -512,6 +531,13 @@ c        extra memory needed for ivisc=30 (3-eqn model)
 c        extra memory needed for ivisc=40 (4-eqn model)
          if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
      .      ns = jmim1*4*4
+c        extra memory needed for ivisc=72 (4-eqn model)
+#   ifdef CMPLX
+c        RSM not working in complex mode
+#   else
+         if(ivisc(3).eq.72 .or. ivisc(2).eq.72 .or. ivisc(1).eq.72)
+     .      ns = jmim1*kws_get_nummem()*4
+#   endif
 c
 c........ti0(jdim,jdim,2,4)
 c        turbulence model variable at i-boundary
@@ -526,6 +552,13 @@ c        extra memory needed for ivisc=30 (3-eqn model)
 c        extra memory needed for ivisc=40 (4-eqn model)
          if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
      .      ns = jmkm*4*4
+c        extra memory needed for ivisc=72 (stress-omega model)
+#   ifdef CMPLX
+c        RSM not working in complex mode
+#   else
+         if(ivisc(3).eq.72 .or. ivisc(2).eq.72 .or. ivisc(1).eq.72)
+     .      ns = jmkm*kws_get_nummem()*4
+#   endif
 c
 c........xkb(jdim-1,kdim-1,idim-1)
 c        k-index of nearest surface point (B-B turb model or LES#25)
@@ -739,6 +772,9 @@ c        extra memory needed for ivisc=30 (3-eqn model)
 c        extra memory needed for ivisc=40 (4-eqn model)
          if(ivisc(3).eq.40 .or. ivisc(2).eq.40 .or. ivisc(1).eq.40)
      .      ns = jmkmim*8
+c        extra memory needed for ivisc=72 (stress-omega model)
+         if(ivisc(3).eq.72 .or. ivisc(2).eq.72 .or. ivisc(1).eq.72)
+     .      ns = jmkmim*14
 c
 c........qavg(jdim,kdim,idim,5) iteration-averaged data
 c
@@ -747,7 +783,8 @@ c
 
          if (iteravg.eq.1 .or. iteravg.eq.2) ns = jmkmim*5
 c
-c........ux(jdim-1,kdim-1,idim-1,9)    
+c........ux(jdim-1,kdim-1,idim-1,9)
+
 c        velocity gradients for EASM k-omega or k-epsilon turb models
 c        or for k-o/SST/k-e model when isstprod or isstdenom are active
 c        or for any ivisc >= 11 or for SARC or for Wilcox06
@@ -765,7 +802,7 @@ c
      .        ((ivmx.eq.5) .and. isarc3d.eq.1) .or.
      .        ((ivmx.eq.5) .and. isar.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
-     .        (ivmx.eq.6 .and. i_wilcox98.eq.1) .or.
+     .        (ivmx.eq.6 .and. i_wilcox98.eq.1) .or. ivmax==72 .or.
      .        ides.ge.2 .or. i_nonlin.ne.0)
      .        ns = jm1km1im1*9
          else

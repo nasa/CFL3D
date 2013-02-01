@@ -765,9 +765,11 @@ case $FARCH in LINUX)
 # Default to INTEL settings:
 
   CFLAG=""
-  FFLAG="-O2 -w -ip"
+  FFLAG="-O2 -w -ip -fno-alias -xHost -traceback"
+  CURLIB=`pwd`
+  FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
   FFLAG_SPEC="$FFLAG"
-  LFLAG="-z muldefs -static"                                  
+  LFLAG="-z muldefs -static -xHost -traceback -fpe0"                                  
   LLIB=""
   LLIB_SEQ=$LLIB
   LLIBDIR=""
@@ -782,7 +784,7 @@ case $FARCH in LINUX)
      PREC=""
   fi
   if [ ! x$cgnsdir = x ]; then
-     CGNS_LLIBDIR="-L$CGNS_HOME/LINUX64"
+     CGNS_LLIBDIR="-L$CGNS_HOME/lib"
      CGNS_LLIB="cgns"
   fi
   FTN="mpif90"
@@ -807,8 +809,10 @@ case $FARCH in LINUX)
   if [ $linux_compiler_flags = Intel ]; then
      CFLAG=""
      FFLAG="-O2 -w -ip -fno-alias -xHost -traceback"
+     CURLIB=`pwd`
+     FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
      FFLAG_SPEC="$FFLAG"
-     LFLAG="-z muldefs -static -xHost -traceback"
+     LFLAG="-z muldefs -xHost -traceback -fpe0"
      LLIB=""
      LLIB_SEQ=$LLIB
      LLIBDIR=""
@@ -829,7 +833,7 @@ case $FARCH in LINUX)
         CGNS_LLIBDIR="-L$CGNS_HOME/LINUX64"
         CGNS_LLIB="cgns"
      fi
-     FTN="mpif90"
+     FTN="mpiifort"
 # Alternate Intel compiler you may need if mpif90 doesn't
 # work (e.g. you don't have mpi installed):
 #    FTN="ifort"

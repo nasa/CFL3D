@@ -14,15 +14,21 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(CFLSRC_S)/*.F .
-	ln -s $(CFLSRC_S)/*.c .
+	ln -sf $(CFLSRC_S)/*.F .
+	ln -sf $(CFLSRC_S)/*.F90 .
+	ln -sf $(CFLSRC_S)/*.c .
 
 lnhead:
 
 # ****************************** SUFFIX RULES ********************************
-
-.F.o:
+.SUFFIXES:
+.SUFFIXES:.F .o .F90 .c
+.F.o: 
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+.F90.o: 
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F90
+.c.o:
+	$(CC) $(CFLAG) -c $*.c
 
 # *************************** LIBRARY DEFINITIONS ****************************
 
@@ -96,6 +102,7 @@ FSRC_LIBS = \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
         sijrate3d.F    foureqn.F      bc2026.F
+F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 
 
 FSRC_SPEC = addx.F
 
@@ -107,11 +114,18 @@ FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
 
 COBJ_LIBS = $(CSRC_LIBS:.c=.o)
 
+F90OBJ_LIBS = $(F90SRC_LIBS:.F90=.o) 
+
 COMMONLIB = libcommon.a
 
+initvist.o: module_kwstm.o
+resid.o: module_kwstm.o
+init.o:  module_kwstm.o
+module_kwstm.o: module_profileout.o
+
 $(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
-	$(CSRC_LIBS) $(COBJ_LIBS)
-	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(FOBJ_SPEC) $(COBJ_LIBS) 
+	$(CSRC_LIBS) $(COBJ_LIBS) $(F90OBJ_LIBS)
+	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(F90OBJ_LIBS) $(FOBJ_SPEC) $(COBJ_LIBS) 
 	@$(RANLIB) $(COMMONLIB)
 
 $(FOBJ_LIBS): 
@@ -144,7 +158,7 @@ $(EXEC): $(COMMONLIB)
 
 cleano:
 	@touch temp.o
-	-rm -f *.o
+	-rm -f *.o *.mod
 
 cleane:
 	-rm -f $(EXEC) 
@@ -163,7 +177,7 @@ cleanh:
 
 cleang:
 	@touch temp.F
-	-rm -f *.F
+	-rm -f *.F *.F90 
 
 cleanc:
 	@touch temp.c

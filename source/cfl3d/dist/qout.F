@@ -17,6 +17,12 @@
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
      .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,
      .                nummem)
+#   ifdef CMPLX
+#   else
+      USE module_kwstm, only:kws_plot,need_contplot
+      USE module_profileout,ONLY:profile_plot,cfcp_plot
+      USE module_contour, ONLY: cont_plot
+#   endif
 c
 c     $Id$
 c
@@ -696,6 +702,35 @@ c
          end if
 c
       end if
+
+c     Special turbulence output for certain models
+#   ifdef CMPLX
+c     not working in complex mode
+#   else
+      if(ivmx==6.or.ivmx==7.or.ivmx==15.or.ivmx==72) then
+#if defined DIST_MPI
+         if (mblk2nd(nbl).eq.myid) then
+#endif
+                  call lead(nbl,lw,lw2,maxbl)
+                  if(need_contplot) 
+     $            call cont_plot(
+     $                 nframes,jdim,kdim,idim,nummem,nbl
+     $                 ,w(lq),w(lx),w(ly),w(lz),w(lvis),w(lux)
+     $                 ,w(lxib),w(lsnk0))
+                  if(ivmx==72) then
+                  call kws_plot(
+     $                nframes,jdim,kdim,idim,nummem,nbl,w(lq),
+     $                w(lx),w(ly),w(lz),w(lvis),w(lux),w(lxib),w(lsnk0))
+                  endif
+                  call profile_plot(jdim,kdim,idim,nummem,nbl,w(lq),
+     $               w(lx),w(ly),w(lz),w(lvis),w(lux),w(lxib),w(lsnk0))
+                  call cfcp_plot(jdim,kdim,idim,nummem,nbl,w(lq),
+     $               w(lx),w(ly),w(lz),w(lvis),w(lux),w(lxib),w(lsnk0))
+#if defined DIST_MPI
+         end if
+#   endif
+      end if
+#   endif
 c
       if (iblnkfr .eq. 0) then
 c

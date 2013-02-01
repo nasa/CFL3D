@@ -134,6 +134,22 @@ c         do nothing
             enddo
           enddo
           continue
+        elseif(ivisc(1).eq.72.or.ivisc(2).eq.72.or.ivisc(3).eq.72) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                tursav(j,k,i,1)=tur10(1)
+                tursav(j,k,i,2)=tur10(2)
+                tursav(j,k,i,3)=tur10(3)
+                tursav(j,k,i,4)=tur10(4)
+                tursav(j,k,i,5)=tur10(5)
+                tursav(j,k,i,6)=tur10(6)
+                tursav(j,k,i,7)=tur10(7)
+                zkinf=-(tur10(1)+tur10(2)+tur10(3))/2.
+                vist3d(j,k,i)=rho0*zkinf/tur10(7)
+              enddo
+            enddo
+          enddo
         else
           const1=45.8
           const2=1.68

@@ -264,6 +264,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         j=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -295,6 +297,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,2) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,6
+                    tj0(k,i,iv,1) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,2) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j+1,k,i,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 tj0(k,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7)
+                 tj0(k,i,7,2) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,6
+                    tj0(k,i,iv,1) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,2) = 2*tj0(k,i,iv,1) - tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 tj0(k,i,7,1) = 
+     $                   2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +                   tursav(j,k,i,7)
+                 tj0(k,i,7,2) = 2*tj0(k,i,7,1) - tursav(j,k,i,7) 
+              enddo
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do i=ista,iend1
@@ -526,6 +565,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         j=jdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -557,6 +598,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,4) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,6
+                    tj0(k,i,iv,3) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,4) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j-1,k,i,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 tj0(k,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7)
+                 tj0(k,i,7,4) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,6
+                    tj0(k,i,iv,3) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,4) = 2*tj0(k,i,iv,3) - tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(k,j,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 tj0(k,i,7,3) = 
+     $                  2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +                  tursav(j,k,i,7)
+                 tj0(k,i,7,4) = 2*tj0(k,i,7,3) - tursav(j,k,i,7)
+              enddo
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do i=ista,iend1
@@ -788,6 +866,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         k=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -819,6 +899,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,2) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    tk0(j,i,iv,1) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,2) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j,k+1,i,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 tk0(j,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7)
+                 tk0(j,i,7,2) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    tk0(j,i,iv,1) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,2) = 2*tk0(j,i,iv,1) - tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 tk0(j,i,7,1) = 
+     $               2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +               tursav(j,k,i,7)
+                 tk0(j,i,7,2) = 2*tk0(j,i,7,1) - tursav(j,k,i,7)
+              enddo 
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do i=ista,iend1
@@ -1050,6 +1167,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         k=kdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -1081,6 +1200,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,4) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    tk0(j,i,iv,3) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,4) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j,k-1,i,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 tk0(j,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7) 
+                 tk0(j,i,7,4) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    tk0(j,i,iv,3) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,4) = 2*tk0(j,i,iv,3)- tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 tk0(j,i,7,3) = 
+     $                 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +                 tursav(j,k,i,7)
+                 tk0(j,i,7,4) = 2*tk0(j,i,7,3)- tursav(j,k,i,7)
+              enddo
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do i=ista,iend1
@@ -1312,6 +1468,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         i=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -1343,6 +1501,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,2) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    ti0(j,k,iv,1) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,2) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j,k,i+1,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 ti0(j,k,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7)
+                 ti0(j,k,7,2) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    ti0(j,k,iv,1) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,2) = 2.*ti0(j,k,iv,1)-tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 ti0(j,k,7,1) = 
+     $               2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +                   tursav(j,k,i,7)
+                 ti0(j,k,7,2) = 2.*ti0(j,k,7,1)-tursav(j,k,i,7)
+              enddo
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do k=ksta,kend1
@@ -1574,6 +1769,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
           beta1=.075
         else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx.eq.14) then
           beta1=.83
+        else if (ivmx.eq.72) then
+          beta1=.0708
         end if
         i=idim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
@@ -1605,6 +1802,43 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,4) = 0.
         enddo
         enddo
+#   ifdef CMPLX
+c         RSM not working in complex mode
+#   else
+        else if(ivmx.eq.70) then  ! k-zeta Reynolds Stress model - xxiao
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    ti0(j,k,iv,3) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,4) = huge(tke1)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 tke1 = -0.5*sum(tursav(j,k,i,1:3))
+                 tke2 = -0.5*sum(tursav(j,k,i-1,1:3))
+                 dkdy=0.5*(tke1+tke2)/3.*0.5
+                 ti0(j,k,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
+     $                - tursav(j,k,i,7) 
+                 ti0(j,k,7,4) = 0.0
+              enddo
+           enddo
+        else if(ivmx.eq.72) then
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,6
+                    ti0(j,k,iv,3) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,4) = 2.*ti0(j,k,iv,3) - tursav(j,k,i,iv)
+                 enddo
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
+                 fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
+                 dist=ccabs(smin(j,k,i))
+                 ti0(j,k,7,3) = 
+     $                2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
+     +                 tursav(j,k,i,7)
+                 ti0(j,k,7,4) = 2.*ti0(j,k,7,3) - tursav(j,k,i,7)
+              enddo
+           enddo
+#   endif
         else if(ivmx.eq.25) then
 c       not used, but set anyway
         do k=ksta,kend1

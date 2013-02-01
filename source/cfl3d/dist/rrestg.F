@@ -184,6 +184,8 @@ c   read/write incorrectly!!!
           read(2) nummem_read
           if (nummem_read .ne. nummem) then
             write(11,'('' ERROR: nummem_read .ne. nummem in rrestg'')')
+            write(11,'(''   cannot change ivisc with time-accurate'')')
+            write(11,'(''   run for ivisc.ge.30'')')
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
           end if
           read(2) ((((tursav2(j,k,i,l),j=1,jdim1),k=1,kdim1),i=1,idim1),

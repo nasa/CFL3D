@@ -110,7 +110,7 @@ c
       dimension iw(maxbl*7*3),timesave(maxbl),lwdat(maxbl,maxseg,6)
       dimension inpl3d(nplots,11),inpr(nplots,11)
       dimension deltat(5),nptsr(20)
-      dimension mblk2nd(maxbl),ireq_qb(maxbl*8),mytag_qb(8)
+      dimension mblk2nd(maxbl),ireq_qb(maxbl*13),mytag_qb(13)
       dimension iovrlp(maxbl),lig(maxbl),lbg(maxbl),ibpntsg(maxbl,4),
      .          iipntsg(maxbl),iibg(iitot),kkbg(iitot),jjbg(iitot),
      .          ibcg(iitot),dxintg(iitot),dyintg(iitot),dzintg(iitot),
@@ -462,7 +462,7 @@ c
       itag_qr = itag_qt + ioffset
 c
       mytag_qb(1) = 0
-      do ll=2,8
+      do ll=2,13
         mytag_qb(ll) = mytag_qb(ll-1) + maxbl
       end do
 #endif
@@ -1832,6 +1832,7 @@ c
                lvolc = lw( 8,nbl+1)
                lvtc  = lw(13,nbl+1)
                lqrc  = lw(17,nbl+1)
+               lxibc = lw(19,nbl+1)
                lqc0c  = lw(34,nbl+1)
                ldqc0c = lw(35,nbl+1)
                nroom = nwork-lwj0
@@ -1843,7 +1844,8 @@ c
                end if
                call collq(w(lq),w(lqc),w(lvol),w(lvolc),jdim,kdim,idim,
      .                    jj2,kk2,ii2,wk(lres),w(lqrc),wk(lwj0),
-     .                    w(lvis),w(lvtc),nbl,nou,bou,nbuf,ibufdim)
+     .                    w(lvis),w(lvtc),w(lxib),w(lxibc),
+     .                    nbl,nou,bou,nbuf,ibufdim,nummem)
 c
 c              restrict qc0 and dqc0 for time-accurate multigrid
 c
@@ -1934,14 +1936,14 @@ c
                   mytag = itag_qt + nbl
                   jki2  =  (je-js+1)*(ke-ks+1)*(ie-is+1)*nummem
                   if (myid.eq.nd_srce) then
-                     call ld_qc(w(lvtc),wk,jc,kc,ic,is,ie,js,je,
+                     call ld_qc(w(lxtc),wk,jc,kc,ic,is,ie,js,je,
      .                          ks,ke,nummem)
                      call MPI_Send(wk,jki2,MY_MPI_REAL,
      .                             nd_dest,mytag,mycomm,ierr)
                   else if (myid .eq. nd_dest) then
                      call MPI_Recv(wk,jki2,MY_MPI_REAL,
      .                             nd_srce,mytag,mycomm,istat,ierr)
-                     call unld_qc(w(lvtc),wk,jc,kc,ic,is,ie,js,je,
+                     call unld_qc(w(lxtc),wk,jc,kc,ic,is,ie,js,je,
      .                            ks,ke,nummem)
                   end if
                end if

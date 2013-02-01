@@ -29,6 +29,10 @@
      .                 iadvance,xs,gforcs,xorgae0,yorgae0,zorgae0,
      .                 icouple,lfgm,nblk,limblk,isva,nblelst,
      .                 iskmax,jskmax,kskmax,ue,irdrea,nbli,nummem)
+#   ifdef CMPLX
+#   else
+      use module_kwstm, only:kws_init
+#   endif
 c
 c     $Id$
 c
@@ -1576,6 +1580,14 @@ c
          write(bou(nou(1),1),*)
       end if
 c
+#   ifdef CMPLX
+c     RSM not working in complex mode
+#   else
+c     Get some settings for RSM, and print some info:
+      if (ivmx .eq. 72) then
+        call kws_init(nou,bou,nbuf,ibufdim)
+      end if
+#   endif
       do 1100 igrid=1,ngrid
       nbl = nblg(igrid)-1
       ncg = ncgg(igrid)
@@ -1594,7 +1606,8 @@ c        then must call init again to make sure everything ends up
 c        with freestream data
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz))
+     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz),
+     .             nou,bou,nbuf,ibufdim,0)
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
@@ -1634,7 +1647,8 @@ c        call the noninertial initization to speed convergence
          end if
          call init(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .             w(ltj0),w(ltk0),w(lti0),w(lvol),w(lvolj0),
-     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz))
+     .             w(lvolk0),w(lvoli0),nummem,w(lx),w(ly),w(lz),
+     .             nou,bou,nbuf,ibufdim,1)
 c        call the noninertial initization to speed convergence
          if (noninflag.gt.0) then
            call initnonin(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),

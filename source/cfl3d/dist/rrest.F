@@ -783,6 +783,57 @@ c
          end if
 #endif
       end if
+      ivmxold=max(iv1,iv2)
+      ivmxold=max(ivmxold,iv3)
+      iread = 1
+      if (ivmxold.ne.ivmx) iread=0
+      if ((ivmxold.ge.6.and.ivmxold.le.15) .and.
+     .     (ivmx.ge.6.and.ivmx.le.15)) iread = 1
+      if ((ivmxold.eq.4 .and. ivmx.eq.25) .or.
+     .    (ivmxold.eq.25.and. ivmx.eq. 4)) iread=1
+c
+c   Note: if you try to allow restarts that change to/from type 30,
+c   it may screw up the restart for time accurate: see rrestg.F
+      if (ivmxold.eq.30 .and. ivmx.ne.30) then
+        write(11,*) ' old ivisc=30; new must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      if (ivmxold.ne.30 .and. ivmx.eq.30) then
+        write(11,*) ' new ivisc=30; old must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+c   Note: if you try to allow restarts that change to/from type 40,
+c   it may screw up the restart for time accurate: see rrestg.F
+      if (ivmxold.eq.40 .and. ivmx.ne.40) then
+        write(11,*) ' old ivisc=40; new must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+      if (ivmxold.ne.40 .and. ivmx.eq.40) then
+        write(11,*) ' new ivisc=40; old must also be... stopping'
+        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+c   Need special checks when ivisc=72 is involved:
+      if (iread .eq. 0) then
+        if(ivmx==72) then
+c         Note: this will only work if not time-accurate: see rrestg.F
+          if (ivmxold/=6 .and. ivmxold/=7 .and. ivmxold/=8 .and.
+     +        ivmxold/=12.and. ivmxold/=14) then
+            write(11,*)"cannot restart ivisc=72 from turb model ",
+     +        ivmxold
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'('' ERROR: cannot restart ivisc=72'',
+     +        '' from turb model'',i6)') ivmxold
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+          end if
+        end if
+        if(ivmxold==72 .and. ivmx/=72) then
+          write(11,*)"cannot restart from turb model 72"
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'('' ERROR: cannot restart'',
+     +      '' from turb model 72'')')
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+        end if
+      end if
 c     
 c     Turbulence model convergence data
 c     
@@ -843,35 +894,6 @@ c
          end if
       end if
 c     
-      ivmxold=max(iv1,iv2)
-      ivmxold=max(ivmxold,iv3)
-c   Note: if you try to allow restarts that change to/from type 30,
-c   it may screw up the restart for time accurate: see rrestg.F
-      if (ivmxold.eq.30 .and. ivmx.ne.30) then
-        write(11,*) ' old ivisc=30; new must also be... stopping'
-        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-      end if
-      if (ivmxold.ne.30 .and. ivmx.eq.30) then
-        write(11,*) ' new ivisc=30; old must also be... stopping'
-        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-      end if
-c   Note: if you try to allow restarts that change to/from type 40,
-c   it may screw up the restart for time accurate: see rrestg.F
-      if (ivmxold.eq.40 .and. ivmx.ne.40) then
-        write(11,*) ' old ivisc=40; new must also be... stopping'
-        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-      end if
-      if (ivmxold.ne.40 .and. ivmx.eq.40) then
-        write(11,*) ' new ivisc=40; old must also be... stopping'
-        call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-      end if
-c
-      iread = 1
-      if (ivmxold.ne.ivmx) iread=0
-      if ((ivmxold.ge.6.and.ivmxold.le.15) .and.
-     .     (ivmx.ge.6.and.ivmx.le.15)) iread = 1
-      if ((ivmxold.eq.4 .and. ivmx.eq.25) .or.
-     .    (ivmxold.eq.25.and. ivmx.eq. 4)) iread=1
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 #if defined CGNS
          call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
@@ -1207,6 +1229,33 @@ c     Limit new epsilon to handle extremes
                      enddo
                   enddo
                end if
+               if ((ivisc(1).eq.72.or.ivisc(2).eq.72.or.
+     $              ivisc(3).eq.72)
+     .              .and.(iv1.eq.6.or.iv2.eq.6.or.iv3.eq.6.or.
+     .              iv1.eq.7.or.iv2.eq.7.or.iv3.eq.7)) then
+                  do i=1,idim1
+                     do k=1,kdim1
+                        do j=1,jdim1
+                           tursav(j,k,i,7)=tursav(j,k,i,1)
+                           tursav(j,k,i,1)=-tursav(j,k,i,2)*2./3.
+                        enddo
+                     enddo
+                  enddo
+               end if
+               if ((ivisc(1).eq.72.or.ivisc(2).eq.72.or.
+     $              ivisc(3).eq.72)
+     .              .and.(iv1.eq.8.or.iv2.eq.8.or.iv3.eq.8.or.
+     .              iv1.eq.12.or.iv2.eq.12.or.iv3.eq.12.or.
+     .              iv1.eq.14.or.iv2.eq.14.or.iv3.eq.14)) then
+                  do i=1,idim1
+                     do k=1,kdim1
+                        do j=1,jdim1
+                           tursav(j,k,i,7)=tursav(j,k,i,1)/0.09
+                           tursav(j,k,i,1)=-tursav(j,k,i,2)*2./3.
+                        enddo
+                     enddo
+                  enddo
+               end if
 #if defined DIST_MPI
 c     
 c     end host section for tursav
@@ -1224,6 +1273,12 @@ c
               jk8   = jdim*kdim*16
               ki8   = kdim*idim1*16
               ji8   = jdim*idim1*16
+            end if
+            if (iv1.eq.72.or.iv2.eq.72.or.iv3.eq.72) then
+              jki2  = 7*jki
+              jk8   = jdim*kdim*28
+              ki8   = kdim*idim1*28
+              ji8   = jdim*idim1*28
             end if
             mytag = itag_qt + nbl
             if (myid .eq. myhost) then
