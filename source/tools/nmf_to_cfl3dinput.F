@@ -234,7 +234,9 @@ c       write(6,'('' namex='',a10)') namex
           if (nameb .eq. "WALL" .or. nameb .eq. "wall") then
             ibctype(ig,nbc(ig))=2004
           else if (nameb .eq. "FARFIELD" .or. 
-     +             nameb .eq. "farfield") then
+     +             nameb .eq. "farfield" .or.
+     +             nameb .eq. "INFLOW"   .or.
+     +             nameb .eq. "OUTFLOW" ) then
             ibctype(ig,nbc(ig))=1003
           else if (nameb .eq. "SYMMETRY" .or.
      +             nameb .eq. "symmetry" .or.
@@ -245,6 +247,10 @@ c       write(6,'('' namex='',a10)') namex
      +             nameb .eq. "SYMMETRY-Z" .or.
      +             nameb .eq. "symmetry-z") then
             ibctype(ig,nbc(ig))=1001
+          else if (nameb .eq. "BC72" ) then
+            ibctype(ig,nbc(ig))=1011
+          else if (nameb .eq. "BC71") then
+            ibctype(ig,nbc(ig))=1013
           else
             write(6,'('' BC type not known'')')
             write(6,'(a16)') nameb
