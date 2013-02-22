@@ -124,7 +124,7 @@ c
       real, dimension(:,:), allocatable :: riskp,rjskp,rkskp
       integer, dimension(:,:), allocatable :: iskipt,jskipt,kskipt
 c
-      common /avgdata/ xnumavg,iteravg
+      common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /cfl/ dt0,dtold
       common /complx/ xmach_img,alpha_img,beta_img,reue_img,tinf_img,
      .                geom_img,surf_img,xrotrate_img,yrotrate_img,
@@ -156,7 +156,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sminn/ isminc,ismincforce
       common /twod/ i2d
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /wallfun/ iwf(3)
       common /wrbl/ nwrest
       common /wrestq/ irest,irest2

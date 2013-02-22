@@ -94,7 +94,7 @@ c
      .        isar,crot,isarc3d
       common /sourceterm/ xdir_only_source
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /des/ cdes,ides
+      common /des/ cdes,ides,cddes
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
 c

@@ -625,8 +625,8 @@ CONTAINS
     integer :: i2d
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
-    COMMON /unst/ time,cfltau,ntstep,ita,iunst
-    REAL :: time, cfltau
+    COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+    REAL :: time, cfltau, cfltau0,cfltauMax
     INTEGER ::ntstep,ita,iunst
     COMMON /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),&
          tur10(7)
@@ -2171,8 +2171,8 @@ CONTAINS
     COMMON /turbconv/ cflturb(7)
     real :: cflturb
 
-    COMMON /unst/ time,cfltau,ntstep,ita,iunst
-    REAL :: time, cfltau
+    COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+    REAL :: time, cfltau, cfltau0,cfltauMax
     INTEGER ::ntstep,ita,iunst
 
 
@@ -2407,8 +2407,8 @@ CONTAINS
     
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
-    COMMON /unst/ time,cfltau,ntstep,ita,iunst
-    REAL :: time, cfltau
+    COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+    REAL :: time, cfltau, cfltau0,cfltauMax
     INTEGER ::ntstep,ita,iunst
    
    
@@ -2472,8 +2472,8 @@ CONTAINS
 
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     real :: title,rkap,xmach,alpha__,beta__,dt,fmax
-    COMMON /unst/ time,cfltau,ntstep,ita,iunst
-    REAL :: time, cfltau
+    COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+    REAL :: time, cfltau, cfltau0,cfltauMax
     INTEGER ::ntstep,ita,iunst
 
     INTEGER :: i,j,k,m

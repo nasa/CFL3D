@@ -1309,7 +1309,7 @@ c
       common /twod/ i2d
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt
-      common /unst/ time,cfltau,ntstep,ita,iunst
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax 
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie 
 c
 c     allocate memory
