@@ -39,6 +39,7 @@ c
 c
 #if defined DIST_MPI
 #     include "mpif.h"
+      dimension istat(MPI_STATUS_SIZE)
 #   ifdef P3D_SINGLE
 #     define MY_MPI_REAL MPI_REAL
 #   else
