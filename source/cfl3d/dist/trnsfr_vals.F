@@ -133,7 +133,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -524,6 +525,7 @@ c
          work(nlast+141)= istrongturbdis
          work(nlast+142)= ieasm_type
          work(nlast+143)= ipatch1st
+         work(nlast+144)= isst2003
          nlast = nlast+nkey
       end if
 c
@@ -847,6 +849,7 @@ c
          istrongturbdis= int(work(nlast+141))
          ieasm_type= int(work(nlast+142))
          ipatch1st= int(work(nlast+143))
+         isst2003= int(work(nlast+144))
       end if
 c
 c**************************

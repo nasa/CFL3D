@@ -56,7 +56,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d

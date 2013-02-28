@@ -45,7 +45,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),

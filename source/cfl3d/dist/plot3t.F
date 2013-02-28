@@ -96,7 +96,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /plot3dtyp/ ifunct
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type

@@ -55,7 +55,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /easmlim/ cmulim
@@ -245,6 +246,14 @@ c
      .         '' term'')')
            end if
         end if
+        if(ivmx .eq. 7 .and. isst2003 .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     k-omega SST-2003 (Menter)'')')
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''       ignores ikoprod,isstdenom'',
+     .       '' (these will ALWAYS be on)'')')
+        end if
+        if(isst2003 .ne. 1) then
         if(ivmx .eq. 7 .and. i_bsl .ne. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''     k-omega SST (Menter)'')')
@@ -288,6 +297,7 @@ c
              write(bou(nou(1),1),'(''     approx (vort) production'',
      .         '' term'')')
            end if
+        end if
         end if
         if(ivmx .eq. 8) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -733,8 +743,9 @@ c  alp1 (constant in omega or epsilon production term):
       if(ivmx.eq.6 .and. i_wilcox98.eq.1)           alp1 = 13./25.
       if(ivmx.eq.6 .and. i_wilcox98.ne.1)           alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
-      if(ivmx.eq.7)                                 alp1 =
+      if(ivmx.eq.7 .and. isst2003.ne.1)             alp1 =
      +    beta1/cmuc1 - sigo1*vk*vk/sqrt(cmuc1)
+      if(ivmx.eq.7 .and. isst2003.eq.1)             alp1 = 5./9.
       if(ivmx.eq.10)                                alp1 =1.45
       if(ivmx.eq.11 .or. ivmx.eq.12)                alp1 =
      +    beta1 - vk*vk*sigo1/sqrt(cmuc1)
@@ -767,6 +778,9 @@ c Constants for Set 2 (2-layer SST model and Wilcox06 only):
         sigo2=0.856
         sigk2=1.00
         alp2 =beta2/cmuc2 - sigo2*vk*vk/sqrt(cmuc2)
+        if (isst2003 .eq. 1) then
+          alp2=0.44
+        end if
       end if
 c
 c Set up some other needed parameters
@@ -1267,6 +1281,8 @@ c   for Wilcox98, damp1 only active if it is positive
         end if
 c   get blend = F1 factor
         if (ivmx .eq. 7) then
+        small = 1.e-20
+        if (isst2003 .eq. 1) small = 1.e-10
         do k=1,kdim-1
           do i=1,idim-1
             do j=1,jdim-1
@@ -1275,7 +1291,7 @@ c   get blend = F1 factor
               arg2=500.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re*re*
      +          smin(j,k,i)*turre(j,k,i,1))
               arga=ccmax(arg1,arg2)
-              temp=ccmaxcr(damp1(j,k,i)*re,1.e-20)
+              temp=ccmaxcr(damp1(j,k,i)*re,small)
               argb=4.*sigo2*turre(j,k,i,2)/(temp*smin(j,k,i)*
      +             smin(j,k,i))
               arg=ccmin(arga,argb)
@@ -2306,6 +2322,8 @@ c
       end if
 c  Source terms for k-omega (Wilcox & SST):
       if (ivmx .eq. 6 .or. ivmx .eq. 7) then
+        pklimtermset=pklimterm
+        if (isst2003 .eq. 1) pklimtermset=10.
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2329,7 +2347,8 @@ c            (Note if want traceless must set prod2d3dtrace=0.5 (2D)
 c            or 0.33333 (3D))
               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1) .or.
      +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
-     +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1) then
+     +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1 .or.
+     +            isst2003 .eq. 1) then
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
@@ -2418,23 +2437,13 @@ c               f4=blend(j,k,i)*f4 + 1.0 - blend(j,k,i)
                 fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
                 f5 = f5*fd + (1.0-fd)
               end if
-              if (ikoprod .eq. 1) then
-                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +           2.*xis*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2
-     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+c   Get Pk and Dk:
+              if (ikoprod .eq. 1 .or. isst2003 .eq. 1) then
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
-c   if desired, subtract off 2/3k term
-c   (can only do this if ikoprod=1):
                 if (i_turbprod_kterm .eq. 1) then
-                  rhside(j,k,i,1)=rhside(j,k,i,1)-(cutoff*2./3.*alp/
-     +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*w06mult*
-     +              (s11+s22+s33))
                   pk=pk-(2./3.*turre(j,k,i,2)*(s11+s22+s33))
                 end if
               else
-                rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*alp/re*
-     +          vor(j,k,i)**2*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2
-     +          +(1.-blend(j,k,i))*damp1(j,k,i)
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
               if (ides .ne. 0) then
@@ -2442,8 +2451,18 @@ c   (can only do this if ikoprod=1):
               else
                 dk=re*cmuc*turre(j,k,i,1)*turre(j,k,i,2)
               end if
-              pk=ccmin(pk,(pklimterm*dk))
-              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
+              pklimit=ccmin(pk,(pklimtermset*dk))
+c   Get Pw and Dw:
+              if (isst2003 .eq. 1) then
+                pw=alp*pklimit*q(j,k,i,1)/vist3d(j,k,i)*w06mult
+              else
+                pw=alp*pk*q(j,k,i,1)/vist3d(j,k,i)*w06mult
+              end if
+              dw=f5*f4*re*betax*turre(j,k,i,1)**2
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*pw-dw
+     +           +(1.-blend(j,k,i))*damp1(j,k,i)
+              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pklimit-dk
+c   Correct if using keepambient
               rhside(j,k,i,1)=rhside(j,k,i,1) + keepambient*
      +         re*betax*tur10(1)*tur10(1)
               rhside(j,k,i,2)=rhside(j,k,i,2) + keepambient*
@@ -4370,7 +4389,7 @@ c            Determine Sij values:
      +       smin(j,k,i)*turre(j,k,i,1))
             arg2=ccmax(denom1,denom2)
             f2=cctanh(arg2*arg2)
-            if (isstdenom .eq. 1) then
+            if (isstdenom .eq. 1 .or. isst2003 .eq. 1) then
 c            Determine Sij values:
               s11 = ux(j,k,i,1)
               s22 = ux(j,k,i,5)

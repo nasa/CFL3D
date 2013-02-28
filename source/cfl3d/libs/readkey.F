@@ -63,7 +63,8 @@ c
       common /konew/ ikoprod,isstdenom,pklimterm,ibeta8kzeta,i_bsl,
      .        keepambient,re_thetat0,i_wilcox06,i_wilcox06_chiw,
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
-     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw
+     .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
+     .        isst2003
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
       common /fullns/ ifullns
       common /maxiv/ ivmx
@@ -857,6 +858,14 @@ c     2=LRR-QI type
 c
 c     ipatch1st=1 forces patching interpolation to be 1st order (default=0)
       ipatch1st= 0
+      nkey     = nkey + 1
+c
+c     isst2003=1 when ivisc=7 forces SST-2003 model, Menter, F. R., Kuntz, M., 
+c     and Langtry, R., "Ten Years of Industrial Experience with the SST 
+c     Turbulence Model," Turbulence, Heat and Mass Transfer 4, 
+c     ed: K. Hanjalic, Y. Nagano, and M. Tummers, Begell House, Inc., 2003, 
+c     pp. 625 - 632. 
+      isst2003=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1728,6 +1737,10 @@ c
       else if (inpstr(lc1:lc2).eq.'ipatch1st') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) ipatch1st
+c
+      else if (inpstr(lc1:lc2).eq.'isst2003') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) isst2003
 c
       else
 c
