@@ -79,7 +79,7 @@ c
       dimension nou(nbuf)
       dimension qp(jdimp,kdimp,idimp,5),qrotj(2,kdimp,idimp,5),
      .          qrotk(jdimp,2,idimp,5),qroti(jdimp,kdimp,2,5)
-      dimension vp(jdimp,kdimp,idimp),tp(jdimp,kdimp,idimp,2)
+      dimension vp(jdimp,kdimp,idimp),tp(jdimp,kdimp,idimp,nummem)
       dimension q(jdim,kdim,idim,5), qi0(jdim,kdim,5,4),
      .          qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4)
       dimension bcdata(mdim,ndim,2,12)
