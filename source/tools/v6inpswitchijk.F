@@ -571,7 +571,5 @@ c
      + '' to '',a80)') file2
       write(6,'(/,'' MOST FILE NAMES IN NEW INPUT DECK ARE UNCHANGED'',
      + '' - BE SURE TO ALTER THEM IF DESIRED'')')
-      write(6,'('' NOTE: IFORCE likely incorrect... please check it'',
-     + ''/fix it'')')
       stop
       end
