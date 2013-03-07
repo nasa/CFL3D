@@ -61,7 +61,7 @@ c     check status of allocate call
            write(6,13) n_words, n_bytes
          end if
         write(6,14) memuse
-         call my_flush(6)
+c        call my_flush(6)
 #ifdef DIST_MPI
          call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
 #else

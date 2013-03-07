@@ -73,6 +73,8 @@ SOURCE17 = v6_ronnie_mod.F90
 SOURCE18 = cfl3d_to_nmf.F
 SOURCE19 = cfl3dinp_to_FVBND.F
 SOURCE20 = nmf_to_cfl3dinput.F
+SOURCE21 = gridswitchijk.F
+SOURCE22 = v6inpswitchijk.F
 
 OBJECT1  = $(SOURCE1:.F=.o)
 OBJECT2  = $(SOURCE2:.F=.o)
@@ -94,6 +96,8 @@ OBJECT17 = $(SOURCE17:.F90=.o)
 OBJECT18 = $(SOURCE18:.F=.o)
 OBJECT19 = $(SOURCE19:.F=.o)
 OBJECT20 = $(SOURCE20:.F=.o)
+OBJECT21 = $(SOURCE21:.F=.o)
+OBJECT22 = $(SOURCE22:.F=.o)
 
 $(OBJECT1):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
@@ -135,6 +139,10 @@ $(OBJECT19):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 $(OBJECT20):
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+$(OBJECT21):
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
+$(OBJECT22):
+	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 
 
 EXEC1  = grid_perturb_cmplx
@@ -157,6 +165,8 @@ EXEC17 = v6_ronnie_mod
 EXEC18 = cfl3d_to_nmf
 EXEC19 = cfl3dinp_to_FVBND
 EXEC20 = nmf_to_cfl3dinput
+EXEC21 = gridswitchijk
+EXEC22 = v6inpswitchijk
 
 $(EXEC1): $(SOURCE1) $(OBJECT1) $(LIBS)
 	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC1) $(OBJECT1) $(LIBS) $(LLIBS)
@@ -218,9 +228,16 @@ $(EXEC19): $(SOURCE19)  $(OBJECT19) $(LIBS)
 $(EXEC20): $(SOURCE20)  $(OBJECT20) $(LIBS)
 	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC20) $(OBJECT20) $(LIBS) $(LLIBS)
 
+$(EXEC21): $(SOURCE21)  $(OBJECT21) $(LIBS)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC21) $(OBJECT21) $(LIBS) $(LLIBS)
+
+$(EXEC22): $(SOURCE22)  $(OBJECT22) $(LIBS)
+	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC22) $(OBJECT22) $(LIBS) $(LLIBS)
+
 $(EXEC): $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
 	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14) \
-         $(EXEC15) $(EXEC16) $(EXEC17) $(EXEC18) $(EXEC19) $(EXEC20)
+         $(EXEC15) $(EXEC16) $(EXEC17) $(EXEC18) $(EXEC19) $(EXEC20) \
+         $(EXEC21) $(EXEC22)
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -248,6 +265,8 @@ $(EXEC): $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
 	@ echo "                      $(DIR)/$(EXEC18)                        "
 	@ echo "                      $(DIR)/$(EXEC19)                        "
 	@ echo "                      $(DIR)/$(EXEC20)                        "
+	@ echo "                      $(DIR)/$(EXEC21)                        "
+	@ echo "                      $(DIR)/$(EXEC22)                        "
 	@ echo "                                                              "
 	@ echo "=============================================================="
 	@ echo "                                                              "
@@ -268,7 +287,8 @@ cleano:
 cleane:
 	-rm -f $(EXEC1) $(EXEC2) $(EXEC3) $(EXEC4) $(EXEC5) $(EXEC6) $(EXEC7) \
 	 $(EXEC8) $(EXEC9) $(EXEC10) $(EXEC11) $(EXEC12) $(EXEC13) $(EXEC14) \
-         $(EXEC15) $(EXEC16) $(EXEC17) $(EXEC18) $(EXEC19) $(EXEC20)
+         $(EXEC15) $(EXEC16) $(EXEC17) $(EXEC18) $(EXEC19) $(EXEC20) \
+         $(EXEC21) $(EXEC22)
 
 cleanf:
 	@touch temp.f
