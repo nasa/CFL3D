@@ -102,7 +102,7 @@ FSRC_LIBS = \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
         sijrate3d.F    foureqn.F      bc2026.F
-F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 
+F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 module_stm_2005.F90
 
 FSRC_SPEC = addx.F
 
@@ -122,6 +122,10 @@ initvist.o: module_kwstm.o
 resid.o: module_kwstm.o
 init.o:  module_kwstm.o
 module_kwstm.o: module_profileout.o
+bc2005.o: module_stm_2005.o
+bc2005i_d.o: module_stm_2005.o
+bc2005j_d.o: module_stm_2005.o
+bc2005k_d.o: module_stm_2005.o
 
 $(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
 	$(CSRC_LIBS) $(COBJ_LIBS) $(F90OBJ_LIBS)

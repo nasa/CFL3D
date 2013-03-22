@@ -1,7 +1,8 @@
       subroutine bc2005i_d(jdim,kdim,idim,datai0,ista,iend,jsta,jend,
      .                  ksta,kend,nface,mdim,ndim,bcdata,filname,
      .                  jdimp,kdimp,idimp,datapi,nbl,nblp,ldim,
-     .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
+     .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,iflag)
+      use module_stm_2005, only: stm2k5_get_rotmat, stm2k5_bc
 c
 c     $Id$
 c
@@ -13,6 +14,7 @@ c     blnb   = block number of periodic face
 c     dthtx  = angle about line parallel with x-axis
 c     dthty  = angle about line parallel with y-axis
 c     dthtz  = angle about line parallel with z-axis
+c     iflag  = 0 for Qs, 1 for vist3d, 2 for turbulence quantities
 c       (NOTE:  only one of the 3 angles can be used at a time; i.e.,
 c               2 of them must be identically zero)
 c       The angles should be measured using the right-hand rule; i.e.,
@@ -78,6 +80,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /conversion/ radtodeg
       common /igrdtyp/ ip3dgrd,ialph
+      real :: rn(3,3), rnt(3,3) ! rotation matrix and its transpose
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -90,6 +93,14 @@ c
 c     this bc makes use of only one plane of data    
 c
       ip    = 1
+      dthtx = bcdata(1,1,ip,2)/radtodeg
+      if (ialph.eq.0) then
+         dthty = bcdata(1,1,ip,3)/radtodeg
+         dthtz = bcdata(1,1,ip,4)/radtodeg
+      else
+         dthty = -bcdata(1,1,ip,4)/radtodeg
+         dthtz =  bcdata(1,1,ip,3)/radtodeg
+      end if
 c
 c            * * * * * * * * * * * * * * * * * * * * * *
 c            * standard boundary condition bctype=2005 *
@@ -101,41 +112,17 @@ c******************************************************************************
 c
       if (nface.eq.1) then
 c
-      if (ldim.eq.5) then
+      if (iflag.eq.0) then
 c
 c        rotate datapk values before setting datak0 values if data
 c        corresponds to q
 c
          if (idimp .eq. 2) then
-            dthtx = bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = bcdata(1,1,ip,3)/radtodeg
-               dthtz = bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -bcdata(1,1,ip,4)/radtodeg
-               dthtz =  bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,1,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
-            dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,2,2,jsta,jend1,
-     .                   ksta,kend1,dthtx,dthty,dthtz)
+     .                   ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
          else
-            dthtx = bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = bcdata(1,1,ip,3)/radtodeg
-               dthtz = bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -bcdata(1,1,ip,4)/radtodeg
-               dthtz =  bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
          end if
@@ -149,7 +136,7 @@ c
 c
       end if
 c
-      if (ldim.eq.1) then
+      if (iflag.eq.1) then
 c
          if (ivisc(3).ge.2 .or. ivisc(2).ge.2 .or. ivisc(1).ge.2) then
            do 591 k=ksta,kend1
@@ -161,18 +148,36 @@ c
 c
       end if
 c
-      if (ldim.eq.2) then
+      if (iflag.eq.2) then
 c
 c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
-            if(ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4)then
+            if(ivisc(3).ge.70 .or. ivisc(2).ge.70.or.ivisc(1).ge.70)then
+               call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn,rnt)
+               do k=ksta,kend1
+                  do  j=jsta,jend1
+                 
+                     call stm2k5_bc(datapi(j,k,1,1:7),rn,rnt, 
+     $                              datai0(j,k,1:7,1))
+                     if(idimp==2) then
+                     call stm2k5_bc(datai0(j,k,1:7,1),rn,rnt, 
+     $                              datai0(j,k,1:7,2))
+                     else
+                     call stm2k5_bc(datapi(j,k,2,1:7),rn,rnt, 
+     $                              datai0(j,k,1:7,2))
+                     endif 
+                    
+                  enddo
+               enddo
+               
+            elseif(ivisc(3).ge.4.or.ivisc(2).ge.4.or.ivisc(1).ge.4)then
+
                do 501 k=ksta,kend1
                do 501 j=jsta,jend1
-                 datai0(j,k,1,1) = datapi(j,k,1,1)
-                 datai0(j,k,2,1) = datapi(j,k,1,2)
-                 datai0(j,k,1,2) = 0.
-                 datai0(j,k,2,2) = 0.
+               do 501 l=1,ldim
+                  datai0(j,k,l,1) = datapi(j,k,1,l)
+                  datai0(j,k,l,2) = datapi(j,k,2,l)
   501          continue
             end if
          end if
@@ -187,41 +192,17 @@ c******************************************************************************
 c
       if (nface.eq.2) then
 c
-      if (ldim.eq.5) then
+      if (iflag.eq.0) then
 c
 c        rotate datapk values before setting datak0 values if data
 c        corresponds to q
 c
          if (idimp .eq. 2) then
-            dthtx = bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = bcdata(1,1,ip,3)/radtodeg
-               dthtz = bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -bcdata(1,1,ip,4)/radtodeg
-               dthtz =  bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,1,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
-            dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,2,2,jsta,jend1,
-     .                   ksta,kend1,dthtx,dthty,dthtz)
+     .                   ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
          else
-            dthtx = bcdata(1,1,ip,2)/radtodeg
-            if (ialph.eq.0) then
-               dthty = bcdata(1,1,ip,3)/radtodeg
-               dthtz = bcdata(1,1,ip,4)/radtodeg
-            else
-               dthty = -bcdata(1,1,ip,4)/radtodeg
-               dthtz =  bcdata(1,1,ip,3)/radtodeg
-            end if
             call rotateq(jdimp,kdimp,2,datapi,datapi,1,2,jsta,jend1,
      .                   ksta,kend1,dthtx,dthty,dthtz)
           end if
@@ -235,7 +216,7 @@ c
 c
       end if
 c
-      if (ldim.eq.1) then
+      if (iflag.eq.1) then
 c
          if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
             do 691 k=ksta,kend1
@@ -247,18 +228,32 @@ c
 c
       end if
 c
-      if (ldim.eq.2) then
+      if (iflag.eq.2) then
 c
 c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
-            if(ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4)then
+            if(ivisc(3).ge.70 .or. ivisc(2).ge.70.or.ivisc(1).ge.70)then
+               call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn,rnt)
+               do k=ksta,kend1
+               do j=jsta,jend1
+                  call stm2k5_bc(datapi(j,k,1,1:7),rn, rnt,
+     $                           datai0(j,k,1:7,3))
+                  if(idimp==2) then
+                  call stm2k5_bc(datai0(j,k,1:7,3),rn, rnt,
+     $                           datai0(j,k,1:7,4))
+                  else
+                  call stm2k5_bc(datapi(j,k,2,1:7),rn, rnt,
+     $                           datai0(j,k,1:7,4))
+                  endif
+               enddo
+               enddo
+            elseif(ivisc(3).ge.4.or.ivisc(2).ge.4.or.ivisc(1).ge.4)then
                do 601 k=ksta,kend1
                do 601 j=jsta,jend1
-                 datai0(j,k,1,3) = datapi(j,k,1,1)
-                 datai0(j,k,2,3) = datapi(j,k,1,2)
-                 datai0(j,k,1,4) = 0.
-                 datai0(j,k,2,4) = 0.
+               do 601 l=1,ldim
+                 datai0(j,k,l,3) = datapi(j,k,1,l)
+                 datai0(j,k,l,4) = datapi(j,k,2,l)
   601          continue
             end if
          end if

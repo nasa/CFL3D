@@ -4036,6 +4036,16 @@ c
             end if
          end if
 c
+         if (im(5).lt.0 .or. im(8).lt.0 .or. im(11).lt.0) then
+           write(iunit11,'('' input error: inc < 0'')')
+           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+         end if
+         if (im(3) .gt. im(4) .or. im(6) .gt. im(7) .or.
+     .       im(9) .gt. im(10)) then
+           write(iunit11,'('' input error: end > start'')')
+           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+         end if
+c
          if (iflag.ne.0) then
             im(1) = ipl3dtmp(1,n)
             im(2) = iptyp

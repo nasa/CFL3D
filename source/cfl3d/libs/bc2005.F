@@ -5,6 +5,7 @@
      .                  jdimp,kdimp,idimp,qrotj,qrotk,qroti,nbl,
      .                  nblp,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  nummem)
+      USE module_stm_2005, ONLY: stm2k5_bc, stm2k5_get_rotmat
 c
 c     $Id$
 c
@@ -94,6 +95,7 @@ c
       common /sklton/ isklton
       common /conversion/ radtodeg
       common /igrdtyp/ ip3dgrd,ialph
+      real :: rn(3,3), rnt(3,3)
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -106,6 +108,14 @@ c
 c     this bc makes use of only one plane of data    
 c
       ip    = 1
+      dthtx = bcdata(1,1,ip,2)/radtodeg
+      if (ialph.eq.0) then
+         dthty = bcdata(1,1,ip,3)/radtodeg
+         dthtz = bcdata(1,1,ip,4)/radtodeg
+      else
+         dthty = -bcdata(1,1,ip,4)/radtodeg
+         dthtz =  bcdata(1,1,ip,3)/radtodeg
+      end if
 c
 c            * * * * * * * * * * * * * * * * * * * * * *
 c            * standard boundary condition bctype=2005 *
@@ -127,35 +137,11 @@ c   Load qp values into qrotX array:
  2389 continue
 c   Rotate qrotX values
       if (jdimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,1,1,
      .               ksta,kend1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,2,2,
-     .               ksta,kend1,dthtx,dthty,dthtz)
+     .               ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,1,2,
      .               ksta,kend1,dthtx,dthty,dthtz)
       end if
@@ -178,7 +164,27 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do i=ista,iend1
+            do k=ksta,kend1
+               
+               call stm2k5_bc(tp(jdimp-1,k,i,1:7), rn, rnt,
+     $              tj0(k,i,1:7,1))
+               if(jdimp==2) then
+                  CALL stm2k5_bc(tj0(k,i,1:7,1), rn, rnt,
+     $                 tj0(k,i,1:7,2))
+               else
+                  call stm2k5_bc(tp(jdimp-2,k,i,1:7), rn, rnt, 
+     $                 tj0(k,i,1:7,2))
+
+               endif
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         jdm2=max(jdimp-2,1)
         do l=1,nummem
         do 101 i=ista,iend1
@@ -208,35 +214,11 @@ c   Load qp values into qrotX array:
  3389 continue
 c   Rotate qrotX values
       if (jdimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,1,1,
      .               ksta,kend1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,2,2,
-     .               ksta,kend1,dthtx,dthty,dthtz)
+     .               ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(2,kdimp,idimp,qrotj,qrotj,ista,iend1,1,2,
      .               ksta,kend1,dthtx,dthty,dthtz)
       end if
@@ -259,7 +241,26 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         ! obtain the rotation matrix and its transpose
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do i=ista,iend1
+            do k=ksta,kend1
+
+               call stm2k5_bc(tp(1,k,i,1:7), rn, rnt, 
+     $              tj0(k,i,1:7,3))
+               if(jdimp==2) then
+                 call stm2k5_bc(tj0(k,i,1:7,3), rn, rnt,
+     $                tj0(k,i,1:7,4))
+               else
+                 call stm2k5_bc(tp(2,k,i,1:7), rn, rnt,
+     $                tj0(k,i,1:7,4))
+               endif
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         jdp2=min(2,jdimp-1)
         do l=1,nummem
         do 201 i=ista,iend1
@@ -289,35 +290,11 @@ c   Load qp values into qrotX array:
  4389 continue
 c   Rotate qrotX values
       if (kdimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
      .               1,1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
-     .               2,2,dthtx,dthty,dthtz)
+     .               2,2,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
      .               1,2,dthtx,dthty,dthtz)
       end if
@@ -340,7 +317,27 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         ! obtain the rotation matrix and its transpose
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do i=ista,iend1
+            do j=jsta,jend1
+               call stm2k5_bc(tp(j,kdimp-1,i,1:7), rn, rnt, 
+     $              tk0(j,i,1:7,1))
+               if(kdimp==2) then
+                  call stm2k5_bc(tk0(j,i,1:7,1), rn, rnt, 
+     $                 tk0(j,i,1:7,2))
+            
+               else
+                  call stm2k5_bc(tp(j,kdimp-2,i,1:7), rn, rnt, 
+     $                 tk0(j,i,1:7,2))
+               endif
+
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         kdm2=max(kdimp-2,1)
         do l=1,nummem
         do 301 i=ista,iend1
@@ -370,35 +367,11 @@ c   Load qp values into qrotX array:
  5389 continue
 c   Rotate qrotX values
       if (kdimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
      .               1,1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
-     .               2,2,dthtx,dthty,dthtz)
+     .               2,2,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,2,idimp,qrotk,qrotk,ista,iend1,jsta,jend1,
      .               1,2,dthtx,dthty,dthtz)
       end if
@@ -421,7 +394,27 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         ! obtain the rotation matrix and its transpose
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do i=ista,iend1
+            do j=jsta,jend1
+
+               call stm2k5_bc(tp(j,1,i,1:7), rn, rnt, 
+     $              tk0(j,i,1:7,3))
+               if(kdimp==2) then
+                  call stm2k5_bc(tk0(j,i,1:7,3), rn, rnt, 
+     $                 tk0(j,i,1:7,4))
+               else
+                  call stm2k5_bc(tp(j,2,i,1:7), rn, rnt, 
+     $                 tk0(j,i,1:7,4))
+               endif
+
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         kdp2=min(2,kdimp-1)
         do l=1,nummem
         do 401 i=ista,iend1
@@ -451,35 +444,11 @@ c   Load qp values into qrotX array:
  6389 continue
 c   Rotate qrotX values
       if (idimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,1,1,jsta,jend1,
      .               ksta,kend1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,2,2,jsta,jend1,
-     .               ksta,kend1,dthtx,dthty,dthtz)
+     .               ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,1,2,jsta,jend1,
      .               ksta,kend1,dthtx,dthty,dthtz)
       end if
@@ -502,7 +471,27 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         ! obtain the rotation matrix and its transpose
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do k=ksta,kend1
+            do j=jsta,jend1
+
+               call stm2k5_bc(tp(j,k,idimp-1,1:7), rn, rnt,
+     $              ti0(j,k,1:7,1))
+               if(idimp==2) then
+                  call stm2k5_bc(ti0(j,k,1:7,1), rn, rnt,
+     $                 ti0(j,k,1:7,2))
+               else      
+                  call stm2k5_bc(tp(j,k,idimp-2,1:7), rn, rnt,
+     $                 ti0(j,k,1:7,2))
+               endif
+
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         idm2=max(idimp-2,1)
         do l=1,nummem
         do 501 k=ksta,kend1
@@ -532,35 +521,11 @@ c   Load qp values into qrotX array:
  7389 continue
 c   Rotate qrotX values
       if (idimp .eq. 2) then
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,1,1,jsta,jend1,
      .               ksta,kend1,dthtx,dthty,dthtz)
-        dthtx = 2.*bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = 2.*bcdata(1,1,ip,3)/radtodeg
-           dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -2.*bcdata(1,1,ip,4)/radtodeg
-           dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,2,2,jsta,jend1,
-     .               ksta,kend1,dthtx,dthty,dthtz)
+     .               ksta,kend1,2.*dthtx,2.*dthty,2.*dthtz)
       else
-        dthtx = bcdata(1,1,ip,2)/radtodeg
-        if (ialph.eq.0) then
-           dthty = bcdata(1,1,ip,3)/radtodeg
-           dthtz = bcdata(1,1,ip,4)/radtodeg
-        else
-           dthty = -bcdata(1,1,ip,4)/radtodeg
-           dthtz =  bcdata(1,1,ip,3)/radtodeg
-        end if
         call rotateq(jdimp,kdimp,2,qroti,qroti,1,2,jsta,jend1,
      .               ksta,kend1,dthtx,dthty,dthtz)
       end if
@@ -583,7 +548,27 @@ c
       end if
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
-      if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
+      if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+         ! obtain the rotation matrix and its transpose
+         call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
+
+         ! rotate the stress tensors
+         do k=ksta,kend1
+            do j=jsta,jend1
+
+               call stm2k5_bc(tp(j,k,1,1:7), rn, rnt,
+     $              ti0(j,k,1:7,3))
+               if(idimp==2) then
+                  call stm2k5_bc(ti0(j,k,1:7,3), rn, rnt,
+     $                 ti0(j,k,1:7,4))
+               else 
+                  call stm2k5_bc(tp(j,k,2,1:7), rn, rnt,
+     $                 ti0(j,k,1:7,4))
+               endif
+
+            enddo
+         enddo
+      elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         idp2=min(2,idimp-1)
         do l=1,nummem
         do 601 k=ksta,kend1

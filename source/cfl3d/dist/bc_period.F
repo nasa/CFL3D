@@ -743,12 +743,14 @@ c
                   if (index_ar(nnn) .eq. keep_trac(n,4)) then
                      ldim = 5
                      kqintl = keep_trac(n,3)
+                     iflag=0
                      call bc2005k_d(jdim,kdim,idim,w(lqk0),
      .                              ista,iend,jsta,jend,ksta,kend,
      .                              nface,mdim,ndim,w(ldata),
      .                              filname,jdimp,kdimp,idimp,
      .                              wk(kqintl),nbll,nblp,ldim,nou,
-     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
+     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
+     .                              iflag)
                   end if
 c
 c                 set vist3d data
@@ -757,13 +759,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,6)) then
                         ldim = 1
                         kqintl = keep_trac(n,5)
+                        iflag=1
                         call bc2005k_d(jdim,kdim,idim,w(lvk0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
 c
@@ -773,13 +776,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
                         ldim = nummem
                         kqintl = keep_trac(n,7)
+                        iflag=2
                         call bc2005k_d(jdim,kdim,idim,w(ltk0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
                end if
@@ -808,12 +812,14 @@ c
                   if (index_ar(nnn) .eq. keep_trac(n,4)) then
                      ldim = 5
                      kqintl = keep_trac(n,3)
+                     iflag=0
                      call bc2005j_d(jdim,kdim,idim,w(lqj0),
      .                              ista,iend,jsta,jend,ksta,kend,
      .                              nface,mdim,ndim,w(ldata),
      .                              filname,jdimp,kdimp,idimp,
      .                              wk(kqintl),nbll,nblp,ldim,nou,
-     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
+     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
+     .                              iflag)
                   end if
 c
 c                 set vist3d data
@@ -822,13 +828,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,6)) then
                         ldim = 1
                         kqintl = keep_trac(n,5)
+                        iflag=1
                         call bc2005j_d(jdim,kdim,idim,w(lvj0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
 c
@@ -838,13 +845,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
                         ldim = nummem
                         kqintl = keep_trac(n,7)
+                        iflag=2
                         call bc2005j_d(jdim,kdim,idim,w(ltj0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
                end if
@@ -873,12 +881,14 @@ c
                   if (index_ar(nnn) .eq. keep_trac(n,4)) then
                      ldim = 5
                      kqintl = keep_trac(n,3)
+                     iflag=0
                      call bc2005i_d(jdim,kdim,idim,w(lqi0),
      .                              ista,iend,jsta,jend,ksta,kend,
      .                              nface,mdim,ndim,w(ldata),
      .                              filname,jdimp,kdimp,idimp,
      .                              wk(kqintl),nbll,nblp,ldim,nou,
-     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
+     .                              bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
+     .                              iflag)
                   end if
 c
 c                 set vist3d data
@@ -887,13 +897,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,6)) then
                         ldim = 1
                         kqintl = keep_trac(n,5)
+                        iflag=1
                         call bc2005i_d(jdim,kdim,idim,w(lvi0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
 c
@@ -903,13 +914,14 @@ c
                      if (index_ar(nnn) .eq. keep_trac(n,8)) then
                         ldim = nummem
                         kqintl = keep_trac(n,7)
+                        iflag=2
                         call bc2005i_d(jdim,kdim,idim,w(lti0),
      .                                 ista,iend,jsta,jend,ksta,kend,
      .                                 nface,mdim,ndim,w(ldata),
      .                                 filname,jdimp,kdimp,idimp,
      .                                 wk(kqintl),nbll,nblp,ldim,nou,
      .                                 bou,nbuf,ibufdim,myid,mblk2nd,
-     .                                 maxbl)
+     .                                 maxbl,iflag)
                      end if
                   end if
                end if
