@@ -52,7 +52,10 @@ CONTAINS
   END SUBROUTINE stm2k5_bc
 
   ! rotate the tensor.
-  ! Tout = Rt *  Tin  * R
+  ! Tout = R *  Tin  * R_t  
+  ! which is not the same as that in the symmetry bc
+  ! Here we rotate the tensor itself, not the reference frame.
+  
   SUBROUTINE tensor_rotate(tin, rn, rnt, tout)
     implicit none
     REAL, INTENT(in) :: tin(6),rn(3,3),rnt(3,3)
@@ -72,13 +75,13 @@ CONTAINS
     t33(3,2)= t33(2,3)
     t33(3,1)= t33(1,3)
 
-    s(:,1) = t33(:,1)*rn(1,1) + t33(:,2)*rn(2,1) + t33(:,3)*rn(3,1)
-    s(:,2) = t33(:,1)*rn(1,2) + t33(:,2)*rn(2,2) + t33(:,3)*rn(3,2)
-    s(:,3) = t33(:,1)*rn(1,3) + t33(:,2)*rn(2,3) + t33(:,3)*rn(3,3)
+    s(:,1) = t33(:,1)*rnt(1,1) + t33(:,2)*rnt(2,1) + t33(:,3)*rnt(3,1)
+    s(:,2) = t33(:,1)*rnt(1,2) + t33(:,2)*rnt(2,2) + t33(:,3)*rnt(3,2)
+    s(:,3) = t33(:,1)*rnt(1,3) + t33(:,2)*rnt(2,3) + t33(:,3)*rnt(3,3)
 
-    v(:,1) = rnt(:,1)*s(1,1) + rnt(:,2)*s(2,1) + rnt(:,3)*s(3,1)
-    v(:,2) = rnt(:,1)*s(1,2) + rnt(:,2)*s(2,2) + rnt(:,3)*s(3,2)
-    v(:,3) = rnt(:,1)*s(1,3) + rnt(:,2)*s(2,3) + rnt(:,3)*s(3,3)
+    v(:,1) = rn(:,1)*s(1,1) + rn(:,2)*s(2,1) + rn(:,3)*s(3,1)
+    v(:,2) = rn(:,1)*s(1,2) + rn(:,2)*s(2,2) + rn(:,3)*s(3,2)
+    v(:,3) = rn(:,1)*s(1,3) + rn(:,2)*s(2,3) + rn(:,3)*s(3,3)
 
     tout(1) = v(1,1)
     tout(2) = v(2,2)
