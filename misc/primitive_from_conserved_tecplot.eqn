@@ -1,0 +1,19 @@
+#!MC 1000
+$!ALTERDATA 
+  EQUATION = '{u} = {RHO-U}/{RHO}' 
+$!ALTERDATA 
+  EQUATION = '{v} = {RHO-V}/{RHO}' 
+$!ALTERDATA 
+  EQUATION = '{w} = {RHO-W}/{RHO}' 
+$!ALTERDATA 
+  EQUATION = '{vel} = sqrt({u}*{u} + {v}*{v} + {w}*{w})' 
+$!ALTERDATA 
+  EQUATION = '{gamma} = 1.4' 
+$!ALTERDATA 
+  EQUATION = '{p/pinf} = ({gamma}-1.0)*({E} - 0.5*{RHO}*{vel}*{vel})*{gamma}' 
+$!ALTERDATA 
+  EQUATION = '{dp/pinf} = {p/pinf}-1' 
+$!ALTERDATA 
+  EQUATION = '{c} = sqrt({p/pinf}/{RHO})' 
+$!ALTERDATA 
+  EQUATION = '{mach} = {vel}/{c}' 
