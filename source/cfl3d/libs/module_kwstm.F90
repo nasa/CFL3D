@@ -679,7 +679,8 @@ CONTAINS
     REAL :: phi(6)
     REAL :: prd_real(jdim)
     ! -- for omega equation --
-    REAL :: tsum, kcur, x_w, f_beta, kdotw, sd_term
+    REAL :: tsum,  x_w, f_beta, kdotw, sd_term
+    INTEGER:: kcur
     integer,save:: ivisited=0
     ! -- for time step --
     real :: dtmp,cutoff
