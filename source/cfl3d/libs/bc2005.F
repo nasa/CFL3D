@@ -5,7 +5,10 @@
      .                  jdimp,kdimp,idimp,qrotj,qrotk,qroti,nbl,
      .                  nblp,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  nummem)
-      USE module_stm_2005, ONLY: stm2k5_bc, stm2k5_get_rotmat
+#   ifdef CMPLX
+#   else
+      use module_stm_2005, only: stm2k5_get_rotmat, stm2k5_bc
+#   endif
 c
 c     $Id$
 c
@@ -166,6 +169,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
          
+#   ifdef CMPLX
+#   else
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
          ! rotate the stress tensors
@@ -184,6 +189,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                endif
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         jdm2=max(jdimp-2,1)
         do l=1,nummem
@@ -242,6 +248,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          ! obtain the rotation matrix and its transpose
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
@@ -260,6 +269,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                endif
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         jdp2=min(2,jdimp-1)
         do l=1,nummem
@@ -318,6 +328,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          ! obtain the rotation matrix and its transpose
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
@@ -337,6 +350,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
 
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         kdm2=max(kdimp-2,1)
         do l=1,nummem
@@ -395,6 +409,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          ! obtain the rotation matrix and its transpose
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
@@ -414,6 +431,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
 
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         kdp2=min(2,kdimp-1)
         do l=1,nummem
@@ -472,6 +490,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          ! obtain the rotation matrix and its transpose
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
@@ -491,6 +512,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
 
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         idm2=max(idimp-2,1)
         do l=1,nummem
@@ -549,6 +571,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70.or. ivisc(2).ge.70.or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          ! obtain the rotation matrix and its transpose
          call stm2k5_get_rotmat(dthtx, dthty, dthtz, rn,rnt)
 
@@ -568,6 +593,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
 
             enddo
          enddo
+#   endif
       elseif (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         idp2=min(2,idimp-1)
         do l=1,nummem

@@ -2,7 +2,10 @@
      .                  ksta,kend,nface,mdim,ndim,bcdata,filname,
      .                  jdimp,kdimp,idimp,datapi,nbl,nblp,ldim,
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,iflag)
+#   ifdef CMPLX
+#   else
       use module_stm_2005, only: stm2k5_get_rotmat, stm2k5_bc
+#   endif
 c
 c     $Id$
 c
@@ -154,6 +157,9 @@ c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
             if(ivisc(3).ge.70 .or. ivisc(2).ge.70.or.ivisc(1).ge.70)then
+
+#   ifdef CMPLX
+#   else
                call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn,rnt)
                do k=ksta,kend1
                   do  j=jsta,jend1
@@ -170,7 +176,7 @@ c
                     
                   enddo
                enddo
-               
+#   endif
             elseif(ivisc(3).ge.4.or.ivisc(2).ge.4.or.ivisc(1).ge.4)then
 
                do 501 k=ksta,kend1
@@ -234,6 +240,9 @@ c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
             if(ivisc(3).ge.70 .or. ivisc(2).ge.70.or.ivisc(1).ge.70)then
+
+#   ifdef CMPLX
+#   else
                call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn,rnt)
                do k=ksta,kend1
                do j=jsta,jend1
@@ -248,6 +257,7 @@ c
                   endif
                enddo
                enddo
+#   endif
             elseif(ivisc(3).ge.4.or.ivisc(2).ge.4.or.ivisc(1).ge.4)then
                do 601 k=ksta,kend1
                do 601 j=jsta,jend1

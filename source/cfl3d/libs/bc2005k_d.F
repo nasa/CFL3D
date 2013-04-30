@@ -2,7 +2,10 @@
      .                  ksta,kend,nface,mdim,ndim,bcdata,filname,
      .                  jdimp,kdimp,idimp,datapk,nbl,nblp,ldim,
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,iflag)
-      use module_stm_2005, only:stm2k5_bc, stm2k5_get_rotmat
+#   ifdef CMPLX
+#   else
+      use module_stm_2005, only: stm2k5_get_rotmat, stm2k5_bc
+#   endif
 c
 c     $Id$
 c
@@ -154,6 +157,9 @@ c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
             if(ivisc(3)>=70.or.ivisc(2)>=70.or.ivisc(1)>=70) then 
+
+#   ifdef CMPLX
+#   else
                call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn, rnt)
                do i=ista,iend1
                do j=jsta,jend1
@@ -168,6 +174,7 @@ c
                   endif
                enddo
                enddo 
+#   endif
             elseif(ivisc(3)>=4.or.ivisc(2)>=4.or.ivisc(1)>=4)then
                do 301 i=ista,iend1
                do 301 j=jsta,jend1
@@ -230,6 +237,9 @@ c        only need to do advanced model turbulence B.C.s on finest grid
 c
          if (level .ge. lglobal) then
             if(ivisc(3)>=70.or.ivisc(2)>=70.or.ivisc(1)>=70) then 
+
+#   ifdef CMPLX
+#   else
                call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn, rnt)
                do i=ista,iend1
                do j=jsta,jend1
@@ -244,6 +254,7 @@ c
                   endif
                enddo
                enddo 
+#   endif
             elseif(ivisc(3)>=4.or.ivisc(2)>=4.or.ivisc(1)>=4)then
               do 401 i=ista,iend1
               do 401 j=jsta,jend1

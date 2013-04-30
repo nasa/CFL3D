@@ -91,6 +91,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if(ivisc(3).ge.70.or.ivisc(2).ge.70.or.ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
         do i=ista,iend1
            do k=ksta,kend1
 ! rn is the rotational matrix
@@ -113,6 +116,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
               tj0(k,i,7,2)   = tursav(2,k,i,7) 
            enddo
         enddo   
+#   endif
       elseif(ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         do l=1,nummem
         do 101 i=ista,iend1
@@ -168,6 +172,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if(ivisc(3)>=70.or.ivisc(2)>=70.or.ivisc(1)>=70) then
+
+#   ifdef CMPLX
+#   else
          DO i=ista,iend1
             DO k=ksta,kend1
                ! get local orthogonal coordinate system of sym-plane
@@ -199,7 +206,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                tj0(k,i,7,4)   = tursav(JDIM-2,k,i,7) 
             ENDDO
          ENDDO
-         
+#   endif
       else if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4)then
         do l=1,nummem
         do 201 i=ista,iend1
@@ -255,6 +262,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if(ivisc(3)>=70.or.ivisc(2)>=70.or.ivisc(1)>=70) then
+
+#   ifdef CMPLX
+#   else
          DO i=ista,iend1
             DO j= jsta, jend1
                ! get local orthogonal coordinate system of sym-plane
@@ -284,6 +294,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                tk0(j,i,7,2)   = tursav(j,2,i,7) 
             ENDDO
          ENDDO
+#   endif
       ELSE IF (ivisc(3).GE.4 .OR. ivisc(2).GE.4 .OR. ivisc(1).GE.4) THEN
         do l=1,nummem
         do 301 i=ista,iend1
@@ -339,6 +350,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if(ivisc(3)>=70.or.ivisc(2)>=70.or.ivisc(1)>=70) then
+
+#   ifdef CMPLX
+#   else
          DO i=ista,iend1
             DO j= jsta, jend1
                ! get local orthogonal coordinate system of sym-plane
@@ -370,6 +384,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                tk0(j,i,7,4)   = tursav(j,kdim-2,i,7) 
             ENDDO
          ENDDO
+#   endif
       ELSE if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         do l=1,nummem
         do 401 i=ista,iend1
@@ -427,6 +442,8 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70 .or. ivisc(2).ge.70 .or. ivisc(1).ge.70) then
+#   ifdef CMPLX
+#   else
          DO k=ksta,kend1
             DO j=jsta,jend1
                ! get local orthogonal coordinate system of sym-plane
@@ -456,7 +473,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                ti0(j,k,7,2)   = tursav(j,k,i2,7) 
             ENDDO
          ENDDO
-
+#   endif
       else if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         do l=1,nummem
         do 501 k=ksta,kend1
@@ -515,6 +532,9 @@ c
 c   only need to do advanced model turbulence B.C.s on finest grid
       if (level .ge. lglobal) then
       if (ivisc(3).ge.70 .or. ivisc(2).ge.70 .or. ivisc(1).ge.70) then
+
+#   ifdef CMPLX
+#   else
          DO k=ksta,kend1
             DO j=jsta,jend1
                ! get local orthogonal coordinate system of sym-plane
@@ -546,6 +566,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                ti0(j,k,7,4)   = tursav(j,k,i2,7)
             ENDDO
          ENDDO
+#   endif
       else if (ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         do l=1,nummem
         do 601 k=ksta,kend1
@@ -559,6 +580,8 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       return
+#   ifdef CMPLX
+#   else
       contains
 
       SUBROUTINE get_n1n2n3(x1,x2,x3, rn)
@@ -654,5 +677,6 @@ c
       return
 
       end subroutine
+#   endif
       end
             
