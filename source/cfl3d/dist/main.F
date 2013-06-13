@@ -459,7 +459,10 @@ c
 c     NOTE: this assumes the cfl3d input file contains lines of no
 c           more than 80 characters!!!
 c 
-      do n=1,9999
+      !do n=1,9999
+c     use the the do-while loop to handle input files with
+c     more than 9999 lines
+      do while(.true.) 
          read(5,'(a80)',end=999) inpstring
          write(iunit5,'(a80)') inpstring
       end do

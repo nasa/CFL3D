@@ -808,7 +808,10 @@ case $FARCH in LINUX)
 
   if [ $linux_compiler_flags = Intel ]; then
      CFLAG=""
-     FFLAG="-O2 -w -ip -fno-alias -xHost -traceback"
+     FFLAG="-O2 -w -ip -fno-alias -xHost -traceback -fpe0"
+     if [ $do_no_opt = yes ]; then
+        FFLAG="-O0 -w -ip -fno-alias -xHost -traceback -fpe0"
+     fi
      CURLIB=`pwd`
      FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
      FFLAG_SPEC="$FFLAG"

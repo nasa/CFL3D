@@ -625,7 +625,7 @@ c         RSM not working in complex mode
                     tj0(k,i,iv,3) = -tursav(j,k,i,iv)
                     tj0(k,i,iv,4) = 2*tj0(k,i,iv,3) - tursav(j,k,i,iv)
                  enddo
-                 tt=gamma*q(k,j,i,5)/q(j,k,i,1)
+                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
                  tj0(k,i,7,3) = 

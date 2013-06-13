@@ -2360,7 +2360,7 @@ CONTAINS
        !i-direction
        DO j=1,jdim-1
           DO k=1,kdim-1
-             DO i=1,kdim-1
+             DO i=1,idim-1
                 qc(1:5,i) = q(j,k,i,1:5)
              ENDDO
              qc(1:5,0) = qi0(j,k,1:5,1)
