@@ -1041,8 +1041,7 @@ c       search thru all the 1-to-1 connections
               iend=max(ips(n,nn,1),ips(n,nn,4))
               ksta=min(ips(n,nn,3),ips(n,nn,6))
               kend=max(ips(n,nn,3),ips(n,nn,6))
-              if (ibctype(n,nn) .eq. BCFarfield .or.
-     +            ibctype(n,nn) .eq. BCInflow) then
+              if (ibctype(n,nn) .eq. 1003) then
                 ibctyp=1003
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
