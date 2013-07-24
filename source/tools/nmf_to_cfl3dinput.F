@@ -233,6 +233,9 @@ c       write(6,'('' namex='',a10)') namex
           end if
           if (nameb .eq. "WALL" .or. nameb .eq. "wall") then
             ibctype(ig,nbc(ig))=2004
+          else if (nameb .eq. "INVISCID" .or. 
+     +             nameb .eq. "inviscid" ) then 
+            ibctype(ig,nbc(ig))=1005
           else if (nameb .eq. "FARFIELD" .or. 
      +             nameb .eq. "farfield" .or.
      +             nameb .eq. "INFLOW"   .or.
@@ -741,6 +744,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
      +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
+     +            kend,ndata
               else if (ibctype(n,nn) .eq. 1006) then
                 ibctyp=1006
                 ndata=0
@@ -843,6 +851,11 @@ c       search thru all the 1-to-1 connections
      +            kend,ndata
               else if (ibctype(n,nn) .eq. 1002) then
                 ibctyp=1002
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
+     +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
      +            kend,ndata
@@ -951,6 +964,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
      +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
+     +            kend,ndata
               else if (ibctype(n,nn) .eq. 1006) then
                 ibctyp=1006
                 ndata=0
@@ -1041,8 +1059,7 @@ c       search thru all the 1-to-1 connections
               iend=max(ips(n,nn,1),ips(n,nn,4))
               ksta=min(ips(n,nn,3),ips(n,nn,6))
               kend=max(ips(n,nn,3),ips(n,nn,6))
-              if (ibctype(n,nn) .eq. BCFarfield .or.
-     +            ibctype(n,nn) .eq. BCInflow) then
+              if (ibctype(n,nn) .eq. 1003) then
                 ibctyp=1003
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
@@ -1054,6 +1071,11 @@ c       search thru all the 1-to-1 connections
      +            kend,ndata
               else if (ibctype(n,nn) .eq. 1002) then
                 ibctyp=1002
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
+     +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
      +            kend,ndata
@@ -1162,6 +1184,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
      +            jend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
+     +            jend,ndata
               else if (ibctype(n,nn) .eq. 1006) then
                 ibctyp=1006
                 ndata=0
@@ -1264,6 +1291,11 @@ c       search thru all the 1-to-1 connections
      +            jend,ndata
               else if (ibctype(n,nn) .eq. 1002) then
                 ibctyp=1002
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
+     +            jend,ndata
+              else if (ibctype(n,nn) .eq. 1005) then
+                ibctyp=1005
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
      +            jend,ndata
