@@ -904,7 +904,7 @@ CONTAINS
                 ENDDO
              ENDDO
 
-             x_w = xma_re **3 *ABS( tsum/(beta_star*turre(j,k,i,7)**3))
+             x_w = xma_re **3 *ABS( tsum/((beta_star*turre(j,k,i,7))**3))
 
              f_beta  = (1. + 85.*x_w)/(1.+100.*x_w)
 
