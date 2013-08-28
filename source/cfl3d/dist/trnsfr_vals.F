@@ -211,6 +211,7 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
+      common /reystressmodel/ issglrrw2012
 #if defined DIST_MPI
 c
 c***********************
@@ -526,6 +527,7 @@ c
          work(nlast+142)= ieasm_type
          work(nlast+143)= ipatch1st
          work(nlast+144)= isst2003
+         work(nlast+145)= issglrrw2012
          nlast = nlast+nkey
       end if
 c
@@ -850,6 +852,7 @@ c
          ieasm_type= int(work(nlast+142))
          ipatch1st= int(work(nlast+143))
          isst2003= int(work(nlast+144))
+         issglrrw2012= int(work(nlast+145))
       end if
 c
 c**************************

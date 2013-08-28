@@ -98,6 +98,7 @@ c
       common /des/ cdes,ides,cddes
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /reystressmodel/ issglrrw2012
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -841,7 +842,7 @@ c          RSM not working in complex mode
      $        tj0,tk0,ti0,xib,
      $        ux,
      $        sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
-     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl)
+     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl,issglrrw2012)
 #   endif
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics

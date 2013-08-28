@@ -91,6 +91,7 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
+      common /reystressmodel/ issglrrw2012
 c
       ititr = 0
       nkey  = 0
@@ -866,6 +867,11 @@ c     Turbulence Model," Turbulence, Heat and Mass Transfer 4,
 c     ed: K. Hanjalic, Y. Nagano, and M. Tummers, Begell House, Inc., 2003, 
 c     pp. 625 - 632. 
       isst2003=0
+      nkey     = nkey + 1
+c
+c     issglrrw2012=1 when using ivisc=72 and want SSG/LRR-RSM-w2012 instead
+c     of WilcoxRSM-w2006
+      issglrrw2012=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1741,6 +1747,10 @@ c
       else if (inpstr(lc1:lc2).eq.'isst2003') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isst2003
+c
+      else if (inpstr(lc1:lc2).eq.'issglrrw2012') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) issglrrw2012
 c
       else
 c
