@@ -2150,7 +2150,7 @@ c              in_blk is neighbor (from) block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*2
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*4
+     .                  itemp = itemp + maxdims*7*2
                      if (ivmx .ge. 1)
 c                       for cell volumes
      .                  itemp = itemp + maxdims*2
@@ -2183,7 +2183,7 @@ c              in_blk is neighbor (from) block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*2
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*4
+     .                  itemp = itemp + maxdims*7*2
                      if (ivmx .ge. 1)
 c                       for cell volumes
      .                  itemp = itemp + maxdims*2
@@ -2230,7 +2230,7 @@ c           ifb is "from" block
                         if (ivmx .ge. 2)
      .                     itemp = itemp + jmax1*kmax1*1*2
                         if (ivmx .ge. 4)
-     .                     itemp = itemp + jmax1*kmax1*2*2
+     .                     itemp = itemp + jmax1*kmax1*7*2
                      end if
                   end if
                end do
@@ -2264,7 +2264,7 @@ c                          k=const. patch
                         if (ivmx .ge. 2)
      .                     itemp = itemp + jmax1*kmax1*1*2
                         if (ivmx .ge. 4)
-     .                     itemp = itemp + jmax1*kmax1*2*2
+     .                     itemp = itemp + jmax1*kmax1*7*2
                      end if
                   end if
                end do
@@ -2330,7 +2330,7 @@ c           nblp is periodic block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*2
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*4
+     .                  itemp = itemp + maxdims*7*2
                   end if
                end if
             end do
@@ -2365,7 +2365,7 @@ c           nblp is periodic block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*2
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*4
+     .                  itemp = itemp + maxdims*7*2
                   end if
                end if
             end do
@@ -2403,7 +2403,7 @@ c           nblc is coarser block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*3
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*6
+     .                  itemp = itemp + maxdims*7*3
                   end if
                end if
             end do
@@ -2435,7 +2435,7 @@ c           nblc is coarser block
                      if (ivmx .ge. 2)
      .                  itemp = itemp + maxdims*3
                      if (ivmx .ge. 4)
-     .                  itemp = itemp + maxdims*6
+     .                  itemp = itemp + maxdims*7*3
                   end if
                end if
             end do
