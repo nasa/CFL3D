@@ -101,6 +101,7 @@ c
       common /plot3dtyp/ ifunct
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
+      common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
 #if defined DIST_MPI
 c     set baseline tag values
@@ -600,17 +601,17 @@ c
       r12=0.
       r13=0.
       r23=0.
-c   currently unused printout to fort.50 (specifically for k-line)
-      ifort50write=0
+c   optional printout to fort.50 (specifically for k-line; k=1 must be body)
+c   writes "plus" turbulent values; to be used only for single block runs
+c   (if multiple blocks, you will only get the last one (others get overwritten))
       if (ifort50write .eq. 1) then
       write(50,'(''variables="y","uuplus","wwplus","vvplus","uwplus",'',
      + ''"uvplus","vwplus","u_scaled","kplus","yplus","uplus",'',
      + ''"mu_turbulent/mu_lam_ref","eplus","cmu"'')')
-      jloc=49
-      iloc=1
       write(50,'(''#'',i5,''  CFL3D scaled turb results along k-line'',
-     + '' at j,i='',2i4, '' x='',f16.6)') k2-k1+1,jloc,iloc,
-     +  0.5*(x(jloc,1,iloc)+x(jloc+1,1,iloc))
+     + '' at j,i='',2i4, '' x='',f16.6)') k2-k1+1,j_ifort50write,
+     +  i_ifort50write,0.5*(x(j_ifort50write,1,i_ifort50write)+
+     +  x(j_ifort50write+1,1,i_ifort50write))
       write(50,'(''# NOTE: eplus applies to k-eps models only'')')
       end if
 c
@@ -964,9 +965,11 @@ c            certain circumstances). Default to vorticity-type:
             end if
             pk=pk*cutoff
 c
-c   currently unused printout to fort.50 (specifically for k-line)
+c   optional printout to fort.50 (specifically for k-line; k=1 must be body)
+c   writes "plus" turbulent values; to be used only for single block runs
+c   (if multiple blocks, you will only get the last one (others get overwritten))
       if (ifort50write .eq. 1) then
-      if (j .eq. jloc .and. i .eq. iloc) then
+      if (j .eq. j_ifort50write .and. i .eq. i_ifort50write) then
         yget=ccabs(smin(j,k,i))
         qset=sqrt(q(j,1,i,2)**2+q(j,1,i,3)**2+q(j,1,i,4)**2)
         tt=gamma*q(j,1,i,5)/q(j,1,i,1)
@@ -982,9 +985,9 @@ c   currently unused printout to fort.50 (specifically for k-line)
         uuplus=abs(t11)/(re*utau*utau)
         vvplus=abs(t22)/(re*utau*utau)
         wwplus=abs(t33)/(re*utau*utau)
-        uwplus=-t13/(re*utau*utau)
-        vwplus=-t23/(re*utau*utau)
-        uvplus=-t12/(re*utau*utau)
+        uwplus=t13/(re*utau*utau)
+        vwplus=t23/(re*utau*utau)
+        uvplus=t12/(re*utau*utau)
         uloc=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)/xmach
         ttx=gamma*q(j,k,i,5)/q(j,k,i,1)
         fnu=c2bp*ttx*sqrt(ttx)/(c2b+ttx)
@@ -1330,8 +1333,9 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.19) xw(jw,kw,iw,19) = real(r11)
          if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
          if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
-         if (ifunct .ge.22) xw(jw,kw,iw,22) = real(turre(j,k,i,3))
-         if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,4))
+         if (ifunct .ge.22) xw(jw,kw,iw,22) = real(vvprime)
+         if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,3))
+         if (ifunct .ge.24) xw(jw,kw,iw,24) = real(turre(j,k,i,4))
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1359,9 +1363,10 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.19) xw(jw,kw,iw,19) = imag(r11)/real(delh)
          if (ifunct .ge.20) xw(jw,kw,iw,20) = imag(r33)/real(delh)
          if (ifunct .ge.21) xw(jw,kw,iw,21) = imag(r13)/real(delh)
-         if (ifunct .ge.22) xw(jw,kw,iw,22) = imag(turre(j,k,i,3))/
+         if (ifunct .ge.22) xw(jw,kw,iw,22) = imag(vvprime)/real(delh)
+         if (ifunct .ge.23) xw(jw,kw,iw,23) = imag(turre(j,k,i,3))/
      +     real(delh)
-         if (ifunct .ge.23) xw(jw,kw,iw,23) = imag(turre(j,k,i,4))/
+         if (ifunct .ge.24) xw(jw,kw,iw,24) = imag(turre(j,k,i,4))/
      +     real(delh)
       end if
 #     else
@@ -1387,8 +1392,9 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.19) xw(jw,kw,iw,19) = real(r11)
       if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
       if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
-      if (ifunct .ge.22) xw(jw,kw,iw,22) = real(turre(j,k,i,3))
-      if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,4))
+      if (ifunct .ge.22) xw(jw,kw,iw,22) = real(vvprime)
+      if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,3))
+      if (ifunct .ge.24) xw(jw,kw,iw,24) = real(turre(j,k,i,4))
 #     endif
  4000 continue
 c

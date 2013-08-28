@@ -212,6 +212,7 @@ c
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012
+      common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 #if defined DIST_MPI
 c
 c***********************
@@ -528,6 +529,9 @@ c
          work(nlast+143)= ipatch1st
          work(nlast+144)= isst2003
          work(nlast+145)= issglrrw2012
+         work(nlast+146)= ifort50write
+         work(nlast+147)= j_ifort50write
+         work(nlast+148)= i_ifort50write
          nlast = nlast+nkey
       end if
 c
@@ -853,6 +857,9 @@ c
          ipatch1st= int(work(nlast+143))
          isst2003= int(work(nlast+144))
          issglrrw2012= int(work(nlast+145))
+         ifort50write= int(work(nlast+146))
+         j_ifort50write= int(work(nlast+147))
+         i_ifort50write= int(work(nlast+148))
       end if
 c
 c**************************

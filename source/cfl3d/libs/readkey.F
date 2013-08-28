@@ -92,6 +92,7 @@ c
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012
+      common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
       ititr = 0
       nkey  = 0
@@ -872,6 +873,17 @@ c
 c     issglrrw2012=1 when using ivisc=72 and want SSG/LRR-RSM-w2012 instead
 c     of WilcoxRSM-w2006
       issglrrw2012=0
+      nkey     = nkey + 1
+c
+c   optional printout to fort.50 (specifically for k-line; k=1 must be body)
+c   writes "plus" turbulent values
+c   iptype must=2 in the PLOT3D output section of the input file
+c   if multiple blocks, you will get multiple parts in the same file
+      ifort50write=0
+      nkey     = nkey + 1
+      j_ifort50write=49
+      nkey     = nkey + 1
+      i_ifort50write=1
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1751,6 +1763,18 @@ c
       else if (inpstr(lc1:lc2).eq.'issglrrw2012') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) issglrrw2012
+c
+      else if (inpstr(lc1:lc2).eq.'ifort50write') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) ifort50write
+c
+      else if (inpstr(lc1:lc2).eq.'j_ifort50write') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) j_ifort50write
+c
+      else if (inpstr(lc1:lc2).eq.'i_ifort50write') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_ifort50write
 c
       else
 c
