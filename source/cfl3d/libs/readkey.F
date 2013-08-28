@@ -876,9 +876,8 @@ c     of WilcoxRSM-w2006
       nkey     = nkey + 1
 c
 c   optional printout to fort.50 (specifically for k-line; k=1 must be body)
-c   writes "plus" turbulent values
+c   writes "plus" turbulent values; for use with single-block cases only
 c   iptype must=2 in the PLOT3D output section of the input file
-c   if multiple blocks, you will get multiple parts in the same file
       ifort50write=0
       nkey     = nkey + 1
       j_ifort50write=49
