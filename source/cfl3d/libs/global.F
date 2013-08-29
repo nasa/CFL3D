@@ -190,6 +190,7 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
+      common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
       pi = 4.0*atan(1.0)
 c
@@ -3833,6 +3834,13 @@ c
              write(iunit11,*)'stopping...inappropriate value',
      .       ' for iptyp for plot3d data'
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+         end if
+c
+         if (ifort50write .ne. 0 .and. 
+     +       (ngrid .gt. 1 .or. iptyp .ne. 2)) then
+            write(iunit11,*)'stopping...ifort50write must',
+     .         ' have ngrid=+-1 and iptyp=2'
+               call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
          end if
 c
          igrid = im(1)

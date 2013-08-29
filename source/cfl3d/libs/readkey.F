@@ -880,7 +880,7 @@ c   writes "plus" turbulent values; for use with single-block cases only
 c   iptype must=2 in the PLOT3D output section of the input file
       ifort50write=0
       nkey     = nkey + 1
-      j_ifort50write=49
+      j_ifort50write=1
       nkey     = nkey + 1
       i_ifort50write=1
       nkey     = nkey + 1
