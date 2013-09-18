@@ -835,8 +835,13 @@ c          RSM not working in complex mode
 #   else
          if (isklton.eq.1) then
             nou(1) = min(nou(1)+1,ibufdim)
+            if (issglrrw2012 .eq. 1) then
+            write(bou(nou(1),1),'('' Computing turbulence using '',
+     +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM, block='',i5)') nbl
+            else
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Wilcox Stress-Omega 7-eqn RSM, block='',i5)') nbl
+            end if
          end if
          call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
      $        tj0,tk0,ti0,xib,

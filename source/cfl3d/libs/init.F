@@ -201,7 +201,7 @@ c    turbintensity_inf_percent and/or eddy_visc_inf (see readkey.F)
           tu=sqrt(tke/1.5)/xmach
           xnu_ratio=tke/tur10(7)
           nou(1) = min(nou(1)+1,ibufdim)
-          write(bou(nou(1),1),'('' For Wilcox Stress-Omega RSM'',
+          write(bou(nou(1),1),'('' For Stress-Omega RSM'',
      .      '', ivisc=72 (all blocks):'')')
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'('' initial Tu ='',es12.5)') tu
