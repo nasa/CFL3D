@@ -483,9 +483,9 @@ c
         sjety = sjety/sjet
         sjetz = sjetz/sjet
       else
-        sjetx = sj(jdim,k,i,1)
-        sjety = sj(jdim,k,i,2)
-        sjetz = sj(jdim,k,i,3)
+        sjetx = -sj(jdim,k,i,1)
+        sjety = -sj(jdim,k,i,2)
+        sjetz = -sj(jdim,k,i,3)
       endif
 
 c     add directional components of surface jet
@@ -1053,9 +1053,9 @@ c
         sjety = sjety/sjet
         sjetz = sjetz/sjet
       else
-        sjetx = sk(j,kdim,i,1)
-        sjety = sk(j,kdim,i,2)
-        sjetz = sk(j,kdim,i,3)
+        sjetx = -sk(j,kdim,i,1)
+        sjety = -sk(j,kdim,i,2)
+        sjetz = -sk(j,kdim,i,3)
       endif
 
 c     add directional components of surface jet
@@ -1623,9 +1623,9 @@ c
         sjety = sjety/sjet
         sjetz = sjetz/sjet
       else
-        sjetx = si(j,k,idim,1)
-        sjety = si(j,k,idim,2)
-        sjetz = si(j,k,idim,3)
+        sjetx = -si(j,k,idim,1)
+        sjety = -si(j,k,idim,2)
+        sjetz = -si(j,k,idim,3)
       endif
 
 c     add directional components of surface jet
