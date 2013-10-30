@@ -838,6 +838,10 @@ c          RSM not working in complex mode
             if (issglrrw2012 .eq. 1) then
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM, block='',i5)') nbl
+            else if (issglrrw2012 .eq. 2) then
+            write(bou(nou(1),1),'('' Computing turbulence using '',
+     +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM with F1=1'',
+     +        '', block='',i5)') nbl
             else
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Wilcox Stress-Omega 7-eqn RSM, block='',i5)') nbl

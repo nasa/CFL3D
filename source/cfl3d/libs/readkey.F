@@ -871,7 +871,9 @@ c     pp. 625 - 632.
       nkey     = nkey + 1
 c
 c     issglrrw2012=1 when using ivisc=72 and want SSG/LRR-RSM-w2012 instead
-c     of WilcoxRSM-w2006
+c     of WilcoxRSM-w2006; 
+c     issglrrw2012=2 if want SSG/LRR-RSM-w2012 with F1 (blend) forced 
+c     to be 1.0, resulting in essentially WilcoxRSM-w1988
       issglrrw2012=0
       nkey     = nkey + 1
 c

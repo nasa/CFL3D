@@ -570,7 +570,7 @@ CONTAINS
             smin,issglrrw2012)
 
        al = 0;ar= 0;bl = 0; br=0
-       if (issglrrw2012==1) then
+       if (issglrrw2012>=1) then
          ! generalized gradient-diffusion
          CALL get_diff_gen(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,&
               sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br,issglrrw2012)
@@ -719,11 +719,17 @@ CONTAINS
     REAL :: c1_use, alpha_use, beta_use, sigma_d_use, delta_hat_use, sigma_hat_use
     REAL :: as_term, ws_term, sij_term
     ! -- for omega equation --
-    REAL :: tsum,  x_w, f_beta, kdotw, sd_term
+    REAL :: tsum,  x_w, f_beta, kdotw, sd_term, xmultfac
     INTEGER:: kcur
     integer,save:: ivisited=0
     ! -- for time step --
     real :: dtmp,cutoff
+
+    if (issglrrw2012>=1) then
+      xmultfac=1.0
+    else
+      xmultfac=0.0
+    end if
 
     coef_i=1.
     if(i2d==1) coef_i = 0
@@ -950,18 +956,18 @@ CONTAINS
                   aik_term = aik_term - aklakl/3.
                 endif
                 ! terms in front of basis tensors of pi_ij:
-                c1_use        =issglrrw2012*(blend(j,k,i)*c1_o + &
+                c1_use        =xmultfac*(blend(j,k,i)*c1_o + &
                                (1.-blend(j,k,i))*c1_e) + &
-                               (1.-issglrrw2012)*c1
-                alpha_hat_use =issglrrw2012*(blend(j,k,i)*c4_o+(1.-blend(j,k,i))*c4_e) + &
-                               (1.-issglrrw2012)*(alpha_hat+beta_hat)
-                beta_hat_use  =issglrrw2012*(blend(j,k,i)*c5_o+(1.-blend(j,k,i))*c5_e) + &
-                               (1.-issglrrw2012)*(alpha_hat-beta_hat)
-                gamma_hat_use =issglrrw2012*(blend(j,k,i)*(c3_o-c3star_o*sqrt(aklakl))+ &
+                               (1.-xmultfac)*c1
+                alpha_hat_use =xmultfac*(blend(j,k,i)*c4_o+(1.-blend(j,k,i))*c4_e) + &
+                               (1.-xmultfac)*(alpha_hat+beta_hat)
+                beta_hat_use  =xmultfac*(blend(j,k,i)*c5_o+(1.-blend(j,k,i))*c5_e) + &
+                               (1.-xmultfac)*(alpha_hat-beta_hat)
+                gamma_hat_use =xmultfac*(blend(j,k,i)*(c3_o-c3star_o*sqrt(aklakl))+ &
                                (1.-blend(j,k,i))*(c3_e-c3star_e*sqrt(aklakl)))+ &
-                               (1.-issglrrw2012)*(4./3.*(alpha_hat+beta_hat)-gamma_hat)
-                delta_hat_use =issglrrw2012*(blend(j,k,i)*c1star_o+(1.-blend(j,k,i))*c1star_e)
-                sigma_hat_use =issglrrw2012*(blend(j,k,i)*c2_o+(1.-blend(j,k,i))*c2_e)
+                               (1.-xmultfac)*(4./3.*(alpha_hat+beta_hat)-gamma_hat)
+                delta_hat_use =xmultfac*(blend(j,k,i)*c1star_o+(1.-blend(j,k,i))*c1star_e)
+                sigma_hat_use =xmultfac*(blend(j,k,i)*c2_o+(1.-blend(j,k,i))*c2_e)
 
                 ! pi_ij (pressure-strain) components
                 c1term = re_xma*c1_use*turre(j,k,i,7)*bbij(m)*beta_star
@@ -996,12 +1002,12 @@ CONTAINS
           ! omega-equation source term
           DO j=1,jdim-1
 
-             alpha_use        =issglrrw2012*(blend(j,k,i)*alpha_o      + (1.-blend(j,k,i))*alpha_e) &
-                              +(1.-issglrrw2012)*alpha
-             beta_use         =issglrrw2012*(blend(j,k,i)*beta_o       + (1.-blend(j,k,i))*beta_e) &
-                              +(1.-issglrrw2012)*beta_0
-             sigma_d_use      =issglrrw2012*(blend(j,k,i)*sigma_d_o    + (1.-blend(j,k,i))*sigma_d_e) &
-                              +(1.-issglrrw2012)*sigma_d0
+             alpha_use        =xmultfac*(blend(j,k,i)*alpha_o      + (1.-blend(j,k,i))*alpha_e) &
+                              +(1.-xmultfac)*alpha
+             beta_use         =xmultfac*(blend(j,k,i)*beta_o       + (1.-blend(j,k,i))*beta_e) &
+                              +(1.-xmultfac)*beta_0
+             sigma_d_use      =xmultfac*(blend(j,k,i)*sigma_d_o    + (1.-blend(j,k,i))*sigma_d_e) &
+                              +(1.-xmultfac)*sigma_d0
              prod   = alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)
              tsum = 0
              DO icur = 1,3
@@ -1018,7 +1024,7 @@ CONTAINS
 
              f_beta  = (1. + 85.*x_w)/(1.+100.*x_w)
 
-             beta = issglrrw2012*beta_use + (1.-issglrrw2012)*beta_use * f_beta
+             beta = xmultfac*beta_use + (1.-xmultfac)*beta_use * f_beta
 
              dissip = Re_xma * beta * turre(j,k,i,7)**2
 
@@ -3421,8 +3427,8 @@ CONTAINS
     INTEGER,parameter :: m2i(6)=(/1,2,3,1,2,1/),m2j(6)=(/1,2,3,2,3,3/)
     INTEGER,parameter :: ij2m(3,3)=RESHAPE((/1,4,6,4,2,5,6,5,3/),(/3,3/))
 
-    if (issglrrw2012 /= 1) then
-      stop "get_diff_gen must use issglrrw2012=1"
+    if (issglrrw2012 /= 1 .and. issglrrw2012 /= 2) then
+      stop "get_diff_gen must use issglrrw2012=1 or 2"
     end if
     xma_re= xmach/reue
     ! diffusion terms in the j-direction
