@@ -196,6 +196,9 @@ c      bc2009 - nozzle total BCs: set ndata =4 and specify
 c               total pressure ratio (Ptotal/pinf), total temperature ratio
 c               (Ttotal/tinf), and flow directions (alpe and betae, in degrees)
 c               at the inlet; pressure is extrapolated from the interior.
+c      bc2019 - nozzle total BCs: set ndata =2 and specify
+c               Ptotal/Ptotal_inf and Ttotal/Ttotal_inf
+c               (this BC is taken from OVERFLOW).
 c      bc2102 - pressure ratio specified as a sinusoidal function of time; 
 c               rho,u,v,w extrapolated from inside the computational domain.
 c               set ndata=4, and the desired baseline (steady) pressure ratio 
@@ -556,6 +559,14 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,nummem)
 c
+      if (ibcinfo(nbl,nseg,1,1).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,1,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
       if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .    abs(ibcinfo(nbl,nseg,1,1)).eq.2014)
      .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -791,6 +802,14 @@ c
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2009)
      .  call bc2009(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,2,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
      .  ista,iend,jsta,jend,ksta,kend,2,
      .  w(lxib),w(ltj0),w(ltk0),w(lti0),
@@ -1038,6 +1057,14 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,nummem)
 c
+      if (jbcinfo(nbl,nseg,1,1).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,3,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
       if (abs(jbcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .    abs(jbcinfo(nbl,nseg,1,1)).eq.2014)
      .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1273,6 +1300,14 @@ c
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2009)
      .  call bc2009(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,4,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
      .  ista,iend,jsta,jend,ksta,kend,4,
      .  w(lxib),w(ltj0),w(ltk0),w(lti0),
@@ -1520,6 +1555,14 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,nummem)
 c
+      if (kbcinfo(nbl,nseg,1,1).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,5,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
       if (abs(kbcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .    abs(kbcinfo(nbl,nseg,1,1)).eq.2014)
      .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1755,6 +1798,14 @@ c
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2009)
      .  call bc2009(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  ista,iend,jsta,jend,ksta,kend,6,
+     .  w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nou,bou,nbuf,ibufdim,myid,nummem)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2019)
+     .  call bc2019(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
      .  ista,iend,jsta,jend,ksta,kend,6,
      .  w(lxib),w(ltj0),w(ltk0),w(lti0),

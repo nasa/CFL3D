@@ -47,6 +47,17 @@ c
          end if
       end if
 c
+      if (ibctyp.eq.2019) then
+         datahdr(1)  = '  pt/ptinf'
+         datahdr(2)  = '  tt/ttinf'
+         if (abs(ndata).gt.2) then
+            datahdr(3)  = '     turb1'
+         end if
+         if (abs(ndata).gt.3) then
+            datahdr(4)  = '     turb2'
+         end if
+      end if
+c
       if (abs(ibctyp).eq.2004) then
          datahdr(1)  = '   tw/tinf'
          datahdr(2)  = '        cq'
