@@ -794,7 +794,7 @@ c
 c
 c   Note: if you try to allow restarts that change to/from type 30,
 c   it may screw up the restart for time accurate: see rrestg.F
-      if (dt .gt. 0.) then
+      if (real(dt) .gt. 0.) then
       if (ivmxold.eq.30 .and. ivmx.ne.30) then
         write(11,*) ' old ivisc=30; new must also be... stopping'
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -806,7 +806,7 @@ c   it may screw up the restart for time accurate: see rrestg.F
       end if
 c   Note: if you try to allow restarts that change to/from type 40,
 c   it may screw up the restart for time accurate: see rrestg.F
-      if (dt .gt. 0.) then
+      if (real(dt) .gt. 0.) then
       if (ivmxold.eq.40 .and. ivmx.ne.40) then
         write(11,*) ' old ivisc=40; new must also be... stopping'
         call termn8(myid,-1,ibufdim,nbuf,bou,nou)

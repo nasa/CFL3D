@@ -95,7 +95,8 @@ FSRC_LIBS = \
         pltmode.F      bcnonin.F      initnonin.F    resnonin.F \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
-        histout_img.F  sijrate3d.F    foureqn.F      bc2026.F
+        histout_img.F  sijrate3d.F    foureqn.F      bc2026.F \
+        bc2019.F
 
 FSRC_SPEC = addx.F
 

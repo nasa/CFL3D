@@ -144,14 +144,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun
@@ -299,14 +299,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun
@@ -452,14 +452,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun
@@ -607,14 +607,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun
@@ -760,14 +760,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun
@@ -915,14 +915,14 @@ c   flow angle
         tan2p1=1.e20
       else
         tan2p1 = uut2/uun**2+1.
-        tan2p1 = min(tan2p1,1.e20)
+        tan2p1 = ccmincr(tan2p1,1.e20)
       end if
 c   find speed of sound
       aterm = 1.+tan2p1/gm1h
       hbtrmm= tan2p1*r2
       cterm = hbtrmm*gm1h*r2 - t0gr
       sqterm= hbtrmm**2 - aterm*cterm
-      c     = (hbtrmm + sqrt(max(sqterm,0.)))/aterm
+      c     = (hbtrmm + sqrt(ccmaxcr(sqterm,0.)))/aterm
       c2    = c**2
 c   final values for setting BC
       uunold = uun

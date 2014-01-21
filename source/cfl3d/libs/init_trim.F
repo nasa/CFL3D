@@ -39,7 +39,7 @@ c
       r44     = 0.
 c
       dtr     = tp(1,1)*tp(2,2)-tp(1,2)*tp(2,1)
-      dtr     = dtr + sign(1e-30,dtr)
+      dtr     = dtr + ccsignrc(1e-30,dtr)
       fp(1,1) = tp(2,2)/dtr
       fp(1,2) =-tp(1,2)/dtr
       fp(2,1) =-tp(2,1)/dtr
