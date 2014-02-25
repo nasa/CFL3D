@@ -570,7 +570,7 @@ CONTAINS
             smin,issglrrw2012)
 
        al = 0;ar= 0;bl = 0; br=0
-       if (issglrrw2012>=1) then
+       if (issglrrw2012==1 .or. issglrrw2012==2) then
          ! generalized gradient-diffusion
          CALL get_diff_gen(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,&
               sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br,issglrrw2012)
@@ -1152,8 +1152,9 @@ CONTAINS
     REAL :: xmu,flux(max(jdim,kdim,idim),nummem)
     REAL :: xcoef(max(jdim,kdim,idim),nummem)
 
-    if (issglrrw2012 /= 0) then
-      stop "get_diffusion must use issglrrw2012=0"
+    if (issglrrw2012 /= 0 .and. issglrrw2012 /= 3 .and. &
+        issglrrw2012 /= 4) then
+      stop "get_diffusion must use issglrrw2012=0, 3, or 4"
     end if
     xma_re= xmach/reue
     ! diffusion terms in the j-direction
@@ -2213,7 +2214,7 @@ CONTAINS
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
 
-    if (issglrrw2012 == 1) then
+    if (issglrrw2012 == 1 .or. issglrrw2012 == 3) then
     re_xma = reue/xmach
     coef_i=1.
     if(i2d==1) coef_i = 0
