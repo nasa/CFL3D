@@ -11,7 +11,7 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
-      character*10 datahdr(10)
+      character*10 datahdr(11)
 c
       do 1 m=1,10
     1 datahdr(m)  = '          '

@@ -651,6 +651,11 @@ c
      .  '('' in which it is embedded for coarser levels)'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
+      if (ncg .gt. 4) then
+        write(iunit11,
+     .  '('' known bug: ncg must not exceed 4'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
 c
       if(ivisc(1).eq.-2 .or. ivisc(2).eq.-2 .or. ivisc(3).eq.-2) then
         write(iunit11,'('' NOTICE:  ivisc=-2 is no longer B-L with '',
