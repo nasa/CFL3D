@@ -42,6 +42,8 @@ c
      .          volk0(jdim,idim-1,4),voli0(jdim,kdim,4)
       dimension vormax(maxbl),ivmax(maxbl),jvmax(maxbl),kvmax(maxbl)
 c
+      common /twod/ i2d
+c
       ifi=1
       ifj=1
       ifk=1
@@ -182,7 +184,7 @@ c
       if(ifi .gt. 0) then
 c      cycle through interfaces
 c
-      if(idim .gt. 2) then
+      if(i2d .eq. 0) then
       do 1700 i=2,idim1
       do 1700 k=1,kdim1
       do 1700 j=1,jdim1
