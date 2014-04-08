@@ -1067,9 +1067,9 @@ c
             nblz  = nblf+1
             call lead(nblf,lw,lw2,maxbl0)
             iwk1  = 1
-            iwk2  = iwk1+jdim*kdim*idim*5
-            iwk3  = iwk2+jj2*kk2*ii2*5
-            itemp = iwk3 + jdim*kk2*ii2*5
+            iwk2  = iwk1+jdim*kdim*idim*7
+            iwk3  = iwk2+jj2*kk2*ii2*7
+            itemp = iwk3 + jdim*kk2*ii2*7
             need  = max(need,itemp)
             ii = mblk2nd(nblf)
             mem_req_node(ii) = max(mem_req_node(ii),itemp)
@@ -1095,8 +1095,8 @@ c
          kk2   = kdimg(nblc)
          ii2   = idimg(nblc)
          iwk1  = 1
-         iwk2  = iwk1 + jdim*kdim*idim*5
-         iwk3  = iwk2 + jj2*kk2*ii2*5
+         iwk2  = iwk1 + jdim*kdim*idim*7
+         iwk3  = iwk2 + jj2*kk2*ii2*7
          iwk4  = iwk3 + jdim*kk2*ii2
          itemp = iwk4 + jdim*kdim*ii2
          need  = max(need,itemp)

@@ -104,14 +104,14 @@ c
 c
          call lead(nblf,lw,lw2,maxbl)
          iwk1  = 1
-         iwk2  = iwk1+jdim*kdim*idim*5
-         iwk3  = iwk2+jj2*kk2*ii2*5
+         iwk2  = iwk1+jdim*kdim*idim*7
+         iwk3  = iwk2+jj2*kk2*ii2*7
          lqc   = lw( 1,nblz)
          lq1c  = lw(16,nblz)
          lturc = lw(19,nblz)
          lvisc = lw(13,nblz)
          nroom = nwork-iwk3
-         mdim  = jdim*kk2*ii2*5
+         mdim  = jdim*kk2*ii2*7
          if (nroom.lt.mdim) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),220)
@@ -245,8 +245,8 @@ c        embeded mesh nbl; coarser mesh nblc
          lturc = lw(19,nblc)
          lvisc = lw(13,nblc)
          iwk1  = 1
-         iwk2  = iwk1+jdim*kdim*idim*5
-         iwk3  = iwk2+jj2*kk2*ii2*5
+         iwk2  = iwk1+jdim*kdim*idim*7
+         iwk3  = iwk2+jj2*kk2*ii2*7
          iwk4  = iwk3+jdim*kk2*ii2
          nroom = nwork-iwk4
          mdim  = jdim*kdim*ii2

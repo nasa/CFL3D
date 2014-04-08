@@ -34,6 +34,7 @@ MODULE module_kwstm
        c4_o = 0.97091, &
        c5_o = 0.57818, &
        d_o = 0.0675, &
+       d_sd_o = 0.5, &
        alpha_e = 0.44, &
        beta_e = 0.0828, &
        sigma_w_e = 0.856, &
@@ -45,7 +46,8 @@ MODULE module_kwstm
        c3star_e = 0.65, &
        c4_e = 0.625, &
        c5_e = 0.2, &
-       d_e = 0.22
+       d_e = 0.22, &
+       d_sd_e = 1.62963
   
   REAL :: alpha_hat, beta_hat, gamma_hat
 
@@ -1151,16 +1153,28 @@ CONTAINS
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
     REAL :: xmu,flux(max(jdim,kdim,idim),nummem)
     REAL :: xcoef(max(jdim,kdim,idim),nummem)
+    REAL :: d_use, sigma_w_use, d_rsm, d_omega
 
     if (issglrrw2012 /= 0 .and. issglrrw2012 /= 3 .and. &
         issglrrw2012 /= 4) then
       stop "get_diffusion must use issglrrw2012=0, 3, or 4"
     end if
     xma_re= xmach/reue
+    if (issglrrw2012 == 0) then
+!     this is the Wilcox model; note blend=1 in this case
+      d_rsm = sigma_star
+      d_omega = sigma
+    else
+!     this is the blended SSG/LRR model; when issglrrw2012=4, blend = 1
+      d_rsm = d_sd_o
+      d_omega = sigma_w_o
+    end if
     ! diffusion terms in the j-direction
     DO i=1,idim-1
        DO k=1,kdim-1
           DO j=1,jdim
+             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
+             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j-1,k,i))
              IF(j==1) THEN
                 rho_ave = 0.5*(qj0(k,i,1,1)+q(j,k,i,1))
@@ -1184,11 +1198,11 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             xmu = xmu_ave+xmut(j)*sigma_star
+             xmu = xmu_ave+xmut(j)*d_use
              flux(j,1:6) = diff(j,1:6)*sj(j,k,i,4)**2*rvol*xmu
              xcoef(j,1) = sj(j,k,i,4)**2*rvol*xmu 
 
-             xmu = xmu_ave+xmut(j)*sigma
+             xmu = xmu_ave+xmut(j)*sigma_w_use
              flux(j,7) = diff(j,7)*sj(j,k,i,4)**2*rvol*xmu
              xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu 
           ENDDO
@@ -1214,6 +1228,8 @@ CONTAINS
     DO i=1,idim-1
        DO j=1,jdim-1
           DO k=1,kdim
+             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
+             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k-1,i))
              IF(k==1) THEN
                 rho_ave = 0.5*(qk0(j,i,1,1)+q(j,k,i,1))
@@ -1237,7 +1253,7 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             xmu = xmu_ave+xmut(k)*sigma_star
+             xmu = xmu_ave+xmut(k)*d_use
              flux(k,1:6) = diff(k,1:6)*sk(j,k,i,4)**2*rvol*xmu
              xcoef(k,1) = sk(j,k,i,4)**2*rvol*xmu 
              ! c5 term
@@ -1247,7 +1263,7 @@ CONTAINS
              !flux(k,4:6) = flux(k,4:6)+ 0.5*(turre(j,k,i,4:6)-turre(j,k-1,i,4:6))*sk(j,k,i,4)**2*rvol*xmu
              !xcoef(k,1) = xcoef(k,1) + sk(j,k,i,4)**2*rvol*xmu
 
-             xmu = xmu_ave+xmut(k)*sigma
+             xmu = xmu_ave+xmut(k)*sigma_w_use
              flux(k,7) = diff(k,7)*sk(j,k,i,4)**2*rvol*xmu
              xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu 
           ENDDO
@@ -1274,6 +1290,8 @@ CONTAINS
     DO k=1,kdim-1
        DO j=1,jdim-1
           DO i=1,idim
+             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
+             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k,i-1))
              IF(i==1) THEN
                 rho_ave = 0.5*(qi0(j,k,1,1)+q(j,k,i,1))
@@ -1298,10 +1316,10 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             xmu = xmu_ave+xmut(i)*sigma_star
+             xmu = xmu_ave+xmut(i)*d_use
              flux(i,1:6) = diff(i,1:6)*si(j,k,i,4)**2*rvol*xmu
              xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu 
-             xmu = xmu_ave+xmut(i)*sigma
+             xmu = xmu_ave+xmut(i)*sigma_w_use
              flux(i,7) = diff(i,7)*si(j,k,i,4)**2*rvol*xmu
              xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu 
           ENDDO
