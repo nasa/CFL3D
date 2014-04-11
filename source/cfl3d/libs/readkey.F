@@ -877,6 +877,8 @@ c     to be 1.0, resulting in essentially WilcoxRSM-w1988 (with generalized
 c     gradient diffusion)
 c     issglrrw2012=3 if want SSG/LRR-RSM-w2012 with simple diffusion
 c     issglrrw2012=4 if want SSG/LRR-RSM-w2012 with F1=1 and simple diffusion
+c     issglrrw2012=5 if want SSG/LRR-RSM-w2012 with Wilcox simple diffusion
+c     (non-blended)
       issglrrw2012=0
       nkey     = nkey + 1
 c

@@ -1161,28 +1161,32 @@ CONTAINS
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
     REAL :: xmu,flux(max(jdim,kdim,idim),nummem)
     REAL :: xcoef(max(jdim,kdim,idim),nummem)
-    REAL :: d_use, sigma_w_use, d_rsm, d_omega
+    REAL :: d_use, sigma_w_use, d1_rsm, d1_omega, d2_rsm, d2_omega
 
     if (issglrrw2012 /= 0 .and. issglrrw2012 /= 3 .and. &
-        issglrrw2012 /= 4) then
-      stop "get_diffusion must use issglrrw2012=0, 3, or 4"
+        issglrrw2012 /= 4 .and. issglrrw2012 /= 5) then
+      stop "get_diffusion must use issglrrw2012=0, 3, 4, or 5"
     end if
     xma_re= xmach/reue
-    if (issglrrw2012 == 0) then
-!     this is the Wilcox model; note blend=1 in this case
-      d_rsm = sigma_star
-      d_omega = sigma
+    if (issglrrw2012 == 0 .or. issglrrw2012 == 5) then
+!     this is the Wilcox model; note blend has no effect
+      d1_rsm = sigma_star
+      d1_omega = sigma
+      d2_rsm = sigma_star
+      d2_omega = sigma
     else
 !     this is the blended SSG/LRR model; when issglrrw2012=4, blend = 1
-      d_rsm = d_sd_o
-      d_omega = sigma_w_o
+      d1_rsm = d_sd_o
+      d1_omega = sigma_w_o
+      d2_rsm = d_sd_e
+      d2_omega = sigma_w_e
     end if
     ! diffusion terms in the j-direction
     DO i=1,idim-1
        DO k=1,kdim-1
           DO j=1,jdim
-             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
-             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
+             d_use       = blend(j,k,i)*d1_rsm + (1.-blend(j,k,i))*d2_rsm
+             sigma_w_use = blend(j,k,i)*d1_omega + (1.-blend(j,k,i))*d2_omega
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j-1,k,i))
              IF(j==1) THEN
                 rho_ave = 0.5*(qj0(k,i,1,1)+q(j,k,i,1))
@@ -1236,8 +1240,8 @@ CONTAINS
     DO i=1,idim-1
        DO j=1,jdim-1
           DO k=1,kdim
-             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
-             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
+             d_use       = blend(j,k,i)*d1_rsm + (1.-blend(j,k,i))*d2_rsm
+             sigma_w_use = blend(j,k,i)*d1_omega + (1.-blend(j,k,i))*d2_omega
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k-1,i))
              IF(k==1) THEN
                 rho_ave = 0.5*(qk0(j,i,1,1)+q(j,k,i,1))
@@ -1298,8 +1302,8 @@ CONTAINS
     DO k=1,kdim-1
        DO j=1,jdim-1
           DO i=1,idim
-             d_use       = blend(j,k,i)*d_rsm + (1.-blend(j,k,i))*d_sd_e
-             sigma_w_use = blend(j,k,i)*d_omega + (1.-blend(j,k,i))*sigma_w_e
+             d_use       = blend(j,k,i)*d1_rsm + (1.-blend(j,k,i))*d1_rsm
+             sigma_w_use = blend(j,k,i)*d1_omega + (1.-blend(j,k,i))*d2_omega
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k,i-1))
              IF(i==1) THEN
                 rho_ave = 0.5*(qi0(j,k,1,1)+q(j,k,i,1))
@@ -2240,7 +2244,8 @@ CONTAINS
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
 
-    if (issglrrw2012 == 1 .or. issglrrw2012 == 3) then
+    if (issglrrw2012 == 1 .or. issglrrw2012 == 3 .or.   &
+        issglrrw2012 == 5) then
     re_xma = reue/xmach
     coef_i=1.
     if(i2d==1) coef_i = 0
