@@ -915,7 +915,7 @@ CONTAINS
                 ENDDO
                 prdij(m) = prdij(m)*cutoff 
              enddo
-             prd_real(j) = (prdij(1)+prdij(2)+prdij(3))*0.5*cutoff
+             prd_real(j) = (prdij(1)+prdij(2)+prdij(3))*0.5
 
              bbij(1:6)=turre(j,k,i,1:6)
              bbij(1:3)=bbij(1:3) + 2./3.*tke(j,k,i)
@@ -981,7 +981,7 @@ CONTAINS
 
                 ! pi_ij (pressure-strain) term
                 pi_ij = (c1term + sij_term + as_term + ws_term + &
-                         pkk_aij_term + eps_aikakj_term)
+                         pkk_aij_term + eps_aikakj_term)*cutoff
 
                 ! form source term
                 dissip = 2./3 *re_xma*eps(j)*krndelta(icur,jcur)
@@ -1003,6 +1003,14 @@ CONTAINS
           enddo
           ! omega-equation source term
           DO j=1,jdim-1
+             if ((i.ge.ilamlo .and. i.lt.ilamhi .and. &
+                  j.ge.jlamlo .and. j.lt.jlamhi .and. &
+                  k.ge.klamlo .and. k.lt.klamhi) .or. &
+                  real(smin(j,k,i)) .lt. 0.) then
+                cutoff=0.
+             else
+                cutoff=1.
+             endif
 
              alpha_use        =xmultfac*(blend(j,k,i)*alpha_o      + (1.-blend(j,k,i))*alpha_e) &
                               +(1.-xmultfac)*alpha
@@ -1010,7 +1018,7 @@ CONTAINS
                               +(1.-xmultfac)*beta_0
              sigma_d_use      =xmultfac*(blend(j,k,i)*sigma_d_o    + (1.-blend(j,k,i))*sigma_d_e) &
                               +(1.-xmultfac)*sigma_d0
-             prod   = alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)
+             prod   = alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)*cutoff
              tsum = 0
              DO icur = 1,3
                 DO jcur = 1,3
