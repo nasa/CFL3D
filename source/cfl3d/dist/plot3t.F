@@ -1334,8 +1334,10 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
          if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
          if (ifunct .ge.22) xw(jw,kw,iw,22) = real(vvprime)
-         if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,3))
-         if (ifunct .ge.24) xw(jw,kw,iw,24) = real(turre(j,k,i,4))
+         if (ifunct .ge.23) xw(jw,kw,iw,23) = real(uvprime)
+         if (ifunct .ge.24) xw(jw,kw,iw,24) = real(vwprime)
+         if (ifunct .ge.25) xw(jw,kw,iw,25) = real(turre(j,k,i,3))
+         if (ifunct .ge.26) xw(jw,kw,iw,26) = real(turre(j,k,i,4))
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1364,9 +1366,11 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.20) xw(jw,kw,iw,20) = imag(r33)/real(delh)
          if (ifunct .ge.21) xw(jw,kw,iw,21) = imag(r13)/real(delh)
          if (ifunct .ge.22) xw(jw,kw,iw,22) = imag(vvprime)/real(delh)
-         if (ifunct .ge.23) xw(jw,kw,iw,23) = imag(turre(j,k,i,3))/
+         if (ifunct .ge.23) xw(jw,kw,iw,23) = imag(uvprime)/real(delh)
+         if (ifunct .ge.24) xw(jw,kw,iw,24) = imag(vwprime)/real(delh)
+         if (ifunct .ge.25) xw(jw,kw,iw,25) = imag(turre(j,k,i,3))/
      +     real(delh)
-         if (ifunct .ge.24) xw(jw,kw,iw,24) = imag(turre(j,k,i,4))/
+         if (ifunct .ge.26) xw(jw,kw,iw,26) = imag(turre(j,k,i,4))/
      +     real(delh)
       end if
 #     else
@@ -1393,8 +1397,10 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.20) xw(jw,kw,iw,20) = real(r33)
       if (ifunct .ge.21) xw(jw,kw,iw,21) = real(r13)
       if (ifunct .ge.22) xw(jw,kw,iw,22) = real(vvprime)
-      if (ifunct .ge.23) xw(jw,kw,iw,23) = real(turre(j,k,i,3))
-      if (ifunct .ge.24) xw(jw,kw,iw,24) = real(turre(j,k,i,4))
+      if (ifunct .ge.23) xw(jw,kw,iw,23) = real(uvprime)
+      if (ifunct .ge.24) xw(jw,kw,iw,24) = real(vwprime)
+      if (ifunct .ge.25) xw(jw,kw,iw,25) = real(turre(j,k,i,3))
+      if (ifunct .ge.26) xw(jw,kw,iw,26) = real(turre(j,k,i,4))
 #     endif
  4000 continue
 c
