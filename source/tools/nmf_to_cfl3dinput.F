@@ -13,9 +13,9 @@ c
 c
 c  Read nmf file
       write(6,'('' input name of nmf file to read'')')
-      write(6,'('' NOTE: names in .nmf file cannot be longer than 16'',
+      write(6,'('' NOTE: names in .nmf file cannot be longer than 20'',
      +  '' characters (incl quotes)'')')
-      write(6,'('' and numbers MUST start after the 16th column!'')')
+      write(6,'('' and numbers MUST start after the 20th column!'')')
       read(5,'(a80)') file1
       open(3,file=file1,form='formatted',status='old')
 c
@@ -81,7 +81,7 @@ c
 c
       dimension i_one_to(num1to1),i_one_from(num1to1)
 c
-      character*16 nameo,nameb
+      character*20 nameo,nameb
       character*10 namex
       character*5 rev(num1to1)
 c
@@ -231,7 +231,9 @@ c       write(6,'('' namex='',a10)') namex
             write(6,'('' Error. numbcperzone not big enough.'')')
             stop
           end if
-          if (nameb .eq. "WALL" .or. nameb .eq. "wall") then
+          if (nameb .eq. "WALL" .or. nameb .eq. "wall" .or.
+     +        nameb .eq. "VISCOUS_SOLID" .or. 
+     +        nameb .eq. "viscous_solid") then
             ibctype(ig,nbc(ig))=2004
           else if (nameb .eq. "INVISCID" .or. 
      +             nameb .eq. "inviscid" ) then 
@@ -244,12 +246,30 @@ c       write(6,'('' namex='',a10)') namex
           else if (nameb .eq. "SYMMETRY" .or.
      +             nameb .eq. "symmetry" .or.
      +             nameb .eq. "SYMMETRY-X" .or.
+     +             nameb .eq. "SYMMETRY_X" .or.
+     +             nameb .eq. "SYMMETRY_X_STRONG" .or.
      +             nameb .eq. "symmetry-x" .or.
+     +             nameb .eq. "symmetry_x" .or.
+     +             nameb .eq. "symmetry_x_strong" .or.
      +             nameb .eq. "SYMMETRY-Y" .or.
+     +             nameb .eq. "SYMMETRY_Y" .or.
+     +             nameb .eq. "SYMMETRY_Y_STRONG" .or.
      +             nameb .eq. "symmetry-y" .or.
+     +             nameb .eq. "symmetry_y" .or.
+     +             nameb .eq. "symmetry_y_strong" .or.
      +             nameb .eq. "SYMMETRY-Z" .or.
-     +             nameb .eq. "symmetry-z") then
+     +             nameb .eq. "SYMMETRY_Z" .or.
+     +             nameb .eq. "SYMMETRY_Z_STRONG" .or.
+     +             nameb .eq. "symmetry-z" .or.
+     +             nameb .eq. "symmetry_z" .or.
+     +             nameb .eq. "symmetry_z_strong") then
             ibctype(ig,nbc(ig))=1001
+          else if (nameb .eq. "BACK_PRESSURE" .or.
+     +             nameb .eq. "back_pressure") then
+            ibctype(ig,nbc(ig))=1002
+          else if (nameb .eq. "SUBSONIC_INFLOW_PT" .or.
+     +             nameb .eq. "subsonic_inflow_pt") then
+            ibctype(ig,nbc(ig))=2009
           else if (nameb .eq. "BC72" ) then
             ibctype(ig,nbc(ig))=1011
           else if (nameb .eq. "BC71") then
