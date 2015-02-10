@@ -3307,11 +3307,11 @@ CONTAINS
           if(nummem/=0) then
              WRITE(1235,'(20(1x,es12.5))') &
                   q(j,1,i,1)*ABS(smin(j,k,i))*utau(j)*re/fnu(j), &
-                  vel/utau(j),smin(j,k,i)/deltabl,q(j,k,i,1:5),turre(j,k,i,1:nummem),vist3d(j,k,i),smin(j,k,i)
+                  vel/(utau(j)+1.e-20),smin(j,k,i)/deltabl,q(j,k,i,1:5),turre(j,k,i,1:nummem),vist3d(j,k,i),smin(j,k,i)
           else
              WRITE(1235,'(20(1x,es12.5))') &
                   q(j,1,i,1)*ABS(smin(j,k,i))*utau(j)*re/fnu(j), &
-                  vel/utau(j),smin(j,k,i)/deltabl,q(j,k,i,1:5),(0.0, m=1,8),smin(j,k,i)
+                  vel/(utau(j)+1.e-20),smin(j,k,i)/deltabl,q(j,k,i,1:5),(0.0, m=1,8),smin(j,k,i)
           endif
        ENDDO
        close(1235)
