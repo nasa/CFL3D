@@ -33,6 +33,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /maxiv/ ivmx
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
 c
 c     write(15,904)nbl
   904 format(29h initial conditions for block,i3)
@@ -192,7 +193,11 @@ c         set them anyway for safety:
           if (real(tur10(4)) .eq. -1.) tur10(4)=0.
           if (real(tur10(5)) .eq. -1.) tur10(5)=0.
           if (real(tur10(6)) .eq. -1.) tur10(6)=0.
-          if (real(tur10(7)) .eq. -1.) tur10(7)=1.e-6
+          if (issglrrw2012 .eq. 6) then
+            if (real(tur10(7)) .eq. -1.) tur10(7)=1.0/sqrt(1.e-6)
+          else
+            if (real(tur10(7)) .eq. -1.) tur10(7)=1.e-6
+          end if
 c    Write out some diagnostic info:
 c    CFL3D has default tur10 values; can be overridden via
 c    turbintensity_inf_percent and/or eddy_visc_inf (see readkey.F)

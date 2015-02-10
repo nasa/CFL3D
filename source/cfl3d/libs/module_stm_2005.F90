@@ -21,11 +21,11 @@ CONTAINS
     real, intent(in) :: thx, thy, thz
     real, intent(out) :: rn(3,3),rnt(3,3)
 
-    if(thx>0) then
+    if(abs(thx)>0) then
        rn(:,1) = (/1., 0., 0./)
        rn(:,2) = (/0., cos(thx), sin(thx)/)
        rn(:,3) = (/0.,-sin(thx), cos(thx)/)
-    else if(thy>0) then
+    else if(abs(thy)>0) then
        rn(:,1) = (/cos(thy), 0. , -sin(thy)/)
        rn(:,2) = (/0.,  1.0,  0./)
        rn(:,3) = (/sin(thy), 0. ,  cos(thy)/)

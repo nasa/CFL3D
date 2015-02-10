@@ -75,6 +75,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /wallfun/ iwf(3)
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
 c  
 c..  data statement (for use with wall functions)
       data a0/2.354039, 0.1179840, -4.2899192e-04, 2.0404148e-06,
@@ -317,7 +318,7 @@ c         RSM not working in complex mode
                  tj0(k,i,7,2) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do i=ista,iend1
               do k=ksta,kend1
                  do iv=1,6
@@ -331,6 +332,15 @@ c         RSM not working in complex mode
      $                   2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,7)
                  tj0(k,i,7,2) = 2*tj0(k,i,7,1) - tursav(j,k,i,7) 
+              enddo
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,7
+                    tj0(k,i,iv,1) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,2) = 2*tj0(k,i,iv,1) - tursav(j,k,i,iv)
+                 enddo
               enddo
            enddo
 #   endif
@@ -618,7 +628,7 @@ c         RSM not working in complex mode
                  tj0(k,i,7,4) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do i=ista,iend1
               do k=ksta,kend1
                  do iv=1,6
@@ -632,6 +642,15 @@ c         RSM not working in complex mode
      $                  2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                  tursav(j,k,i,7)
                  tj0(k,i,7,4) = 2*tj0(k,i,7,3) - tursav(j,k,i,7)
+              enddo
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do i=ista,iend1
+              do k=ksta,kend1
+                 do iv=1,7
+                    tj0(k,i,iv,3) = -tursav(j,k,i,iv)
+                    tj0(k,i,iv,4) = 2*tj0(k,i,iv,3) - tursav(j,k,i,iv)
+                 enddo
               enddo
            enddo
 #   endif
@@ -919,7 +938,7 @@ c         RSM not working in complex mode
                  tk0(j,i,7,2) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do i=ista,iend1
               do j=jsta,jend1
                  do iv=1,6
@@ -934,6 +953,15 @@ c         RSM not working in complex mode
      +               tursav(j,k,i,7)
                  tk0(j,i,7,2) = 2*tk0(j,i,7,1) - tursav(j,k,i,7)
               enddo 
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,7
+                    tk0(j,i,iv,1) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,2) = 2*tk0(j,i,iv,1) - tursav(j,k,i,iv)
+                 enddo
+              enddo
            enddo
 #   endif
         else if(ivmx.eq.25) then
@@ -1220,7 +1248,7 @@ c         RSM not working in complex mode
                  tk0(j,i,7,4) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do i=ista,iend1
               do j=jsta,jend1
                  do iv=1,6
@@ -1234,6 +1262,15 @@ c         RSM not working in complex mode
      $                 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                 tursav(j,k,i,7)
                  tk0(j,i,7,4) = 2*tk0(j,i,7,3)- tursav(j,k,i,7)
+              enddo
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do i=ista,iend1
+              do j=jsta,jend1
+                 do iv=1,7
+                    tk0(j,i,iv,3) = -tursav(j,k,i,iv)
+                    tk0(j,i,iv,4) = 2*tk0(j,i,iv,3)- tursav(j,k,i,iv)
+                 enddo
               enddo
            enddo
 #   endif
@@ -1521,7 +1558,7 @@ c         RSM not working in complex mode
                  ti0(j,k,7,2) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do k=ksta,kend1
               do j=jsta,jend1
                  do iv=1,6
@@ -1535,6 +1572,15 @@ c         RSM not working in complex mode
      $               2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,7)
                  ti0(j,k,7,2) = 2.*ti0(j,k,7,1)-tursav(j,k,i,7)
+              enddo
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,7
+                    ti0(j,k,iv,1) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,2) = 2.*ti0(j,k,iv,1)-tursav(j,k,i,iv)
+                 enddo
               enddo
            enddo
 #   endif
@@ -1822,7 +1868,7 @@ c         RSM not working in complex mode
                  ti0(j,k,7,4) = 0.0
               enddo
            enddo
-        else if(ivmx.eq.72) then
+        else if(ivmx.eq.72 .and. issglrrw2012.ne.6) then
            do k=ksta,kend1
               do j=jsta,jend1
                  do iv=1,6
@@ -1836,6 +1882,15 @@ c         RSM not working in complex mode
      $                2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                 tursav(j,k,i,7)
                  ti0(j,k,7,4) = 2.*ti0(j,k,7,3) - tursav(j,k,i,7)
+              enddo
+           enddo
+        else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
+           do k=ksta,kend1
+              do j=jsta,jend1
+                 do iv=1,7
+                    ti0(j,k,iv,3) = -tursav(j,k,i,iv)
+                    ti0(j,k,iv,4) = 2.*ti0(j,k,iv,3) - tursav(j,k,i,iv)
+                 enddo
               enddo
            enddo
 #   endif

@@ -2,7 +2,7 @@
      .                  vist3d,blank,x,y,z,res,wk0,vmuk,vmuj,vmui,wk,
      .                  nwork,nbl,iover,vk0,bcj,bck,bci,nou,bou,nbuf,
      .                  ibufdim,myid,mblk2nd,maxbl,volk0,tursav,
-     .                  tk0,cmuv,iadvance,nummem)
+     .                  tk0,cmuv,iadvance,nummem,ux)
 c
 c     $Id$
 c
@@ -34,18 +34,20 @@ c
       dimension iadvance(maxbl)
       dimension tursav(jdim,kdim,idim,nummem),tk0(jdim,idim-1,nummem,4),
      .          cmuv(idim-1,kdim-1,idim-1)
+      dimension ux(jdim-1,kdim-1,idim-1,9)
 c
       common /chk/ ichk
       common /sklton/ isklton
       common /twod/ i2d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
       idim1 = idim-1
 c
       term  = 1.0
-      if (i2d.eq.1) term = 0.0
+      if (i2d.eq.1 .or. iforcev0.eq.1) term = 0.0
 c
       alpq = -0.2
       phiq = 1./0.5
@@ -64,7 +66,7 @@ c
       call af3f(nbl,jdim,kdim,idim,q,vol,qj0,qk0,qi0,dtj,sj,sk,si,
      .          res,vist3d,x,y,z,blank,vmuk,resd,wk,nwork,wk0,1,iover,
      .          vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
-     .          volk0,tursav,tk0,cmuv,iadvance,nummem)
+     .          volk0,tursav,tk0,cmuv,iadvance,nummem,ux)
 c
 c      update 3-d solution
 c

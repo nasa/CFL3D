@@ -98,7 +98,7 @@ c
       common /des/ cdes,ides,cddes
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim
-      common /reystressmodel/ issglrrw2012
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
 c
       jdim1 = jdim-1
       kdim1 = kdim-1
@@ -834,36 +834,56 @@ c allocate for DES and DDES
 c          RSM not working in complex mode
 #   else
          if (isklton.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
             if (issglrrw2012 .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM, block='',i5)') nbl
             else if (issglrrw2012 .eq. 2) then
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM with F1=1'',
      +        '', block='',i5)') nbl
             else if (issglrrw2012 .eq. 3) then
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM with simple '',
      +        ''diffusion model, block='',i5)') nbl
             else if (issglrrw2012 .eq. 4) then
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM with F1=1 and '',
      +        ''simple diffusion model, block='',i5)') nbl
             else if (issglrrw2012 .eq. 5) then
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Eisfeld SSG/LRR-RSM-w2012 7-eqn RSM with Wilcox '',
      +        ''simple diffusion (non-blended), block='',i5)') nbl
+            else if (issglrrw2012 .eq. 6) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'('' Computing turbulence using '',
+     +        ''Eisfeld SSG/LRR-RSM-w2012-g 7-eqn RSM,'',
+     +        '' block='',i5)') nbl
             else
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Computing turbulence using '',
      +        ''Wilcox Stress-Omega 7-eqn RSM, block='',i5)') nbl
+            end if
+            if (i_sas_rsm .eq. 1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   ...adding SAS-like term '',
+     +        ''(AIAA-2014-0586)'')')
+            else if (i_sas_rsm .eq. -1) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),'(''   ...subtracting SAS-like term '',
+     +        ''(AIAA-2014-0586)'')')
             end if
          end if
          call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
      $        tj0,tk0,ti0,xib,
      $        ux,
      $        sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
-     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl,issglrrw2012)
+     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl,issglrrw2012,
+     $        i_sas_rsm)
 #   endif
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics

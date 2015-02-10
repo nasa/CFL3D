@@ -42,7 +42,8 @@ c
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+      common /saneg/ i_saneg
 c
 
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -71,6 +72,12 @@ c
      + ux(jdim-1,kdim-1,idim-1,9),vx(0:jdim,0:kdim,idim-1,isarcnum)
 c
       if(isklton .gt. 0) then
+c   ***rumsey
+        if (i_saneg .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   Using SA-neg form'')')
+        end if
+c   ***rumsey
         if (iexact_trunc .ne. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
          if (iexact_trunc .eq. 1) then
@@ -480,8 +487,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               byy=-ccmaxcr(cdm+cam,0.)
               cyy=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dyy=-ccmaxcr(cdp+cap,0.)
@@ -535,8 +553,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               byy=-ccmaxcr(cdm+cam,0.)
               cyy=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dyy=-ccmaxcr(cdp+cap,0.)
@@ -589,8 +618,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               byy=-ccmaxcr(cdm+cam,0.)
               cyy=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dyy=-ccmaxcr(cdp+cap,0.)
@@ -693,8 +733,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bxx=-ccmaxcr(cdm+cam,0.)
               cxx=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dxx=-ccmaxcr(cdp+cap,0.)
@@ -747,8 +798,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bxx=-ccmaxcr(cdm+cam,0.)
               cxx=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dxx=-ccmaxcr(cdp+cap,0.)
@@ -800,8 +862,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bxx=-ccmaxcr(cdm+cam,0.)
               cxx=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dxx=-ccmaxcr(cdp+cap,0.)
@@ -905,8 +978,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bzz=-ccmaxcr(cdm+cam,0.)
                 czz=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dzz=-ccmaxcr(cdp+cap,0.)
@@ -960,8 +1044,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bzz=-ccmaxcr(cdm+cam,0.)
                 czz=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dzz=-ccmaxcr(cdp+cap,0.)
@@ -1014,8 +1109,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bzz=-ccmaxcr(cdm+cam,0.)
                 czz=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dzz=-ccmaxcr(cdp+cap,0.)
@@ -1226,14 +1332,18 @@ c
               fv1=chi**3/(chi**3+cv1**3)
               fv2=1.-(chi/(1.+chi*fv1))
               sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
+c   ***rumsey
+            if (i_saneg .ne. 1) then
               sst=ccmax(sst,xminn)
+            else
 c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
-c             sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
-c             if (sbar .ge. -0.7*ss) then
-c               sst=ss+sbar
-c             else
-c               sst=ss+(ss*(0.7*0.7*ss+0.9*sbar)/((0.9-2.*0.7)*ss-sbar))
-c             end if
+              sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
+              if (sbar .ge. -0.7*ss) then
+                sst=ss+sbar
+              else
+                sst=ss+(ss*(0.7*0.7*ss+0.9*sbar)/((0.9-2.*0.7)*ss-sbar))
+              end if
+            end if
 c   *********
               rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
               rr=ccmincr(rr,10.)
@@ -1247,8 +1357,15 @@ c             term1=cb1*(1.-ft2)*ss
 c   Because we split up sst between term1 and term2, need to limit ss >= 0
 c   for case when using isar=1 (for which ss itself may be negative).
 c   Normally, with ss=vor, it is always non-negative.
-              term1=cb1*(1.-ft2)*ccmaxrc(0.,ss)
-              term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+                term1=cb1*(1.-ct3)*ss
+                term2=cw1
+              else
+                term1=cb1*(1.-ft2)*ccmaxrc(0.,ss)
+                term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
+              end if
+c   ***rumsey
 c             For SARC, note that fr1 multiplies the production term
 c             cb1*Stilde*nuwiggle, as specified in AIAA J 38(5):784,2000,
 c             where Stilde=vort+nuwiggle*fv2/(kappa^2*d^2)
@@ -1308,9 +1425,14 @@ c             fix for single prec. via TLNS3D via FUN3D vi Tim Barth
      .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
               dfw=dfw*dgg
 c old         dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
-              damp1(j,k,i)=damp1(j,k,i)+
-     +             dist2i*(turre(j,k,i)**2)*(cb1/(akarman**2)*
-     +             (dfv2-ft2*dfv2-fv2*dft2+dft2)-cw1*dfw)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+                continue
+              else
+                damp1(j,k,i)=damp1(j,k,i)+
+     +               dist2i*(turre(j,k,i)**2)*(cb1/(akarman**2)*
+     +               (dfv2-ft2*dfv2-fv2*dft2+dft2)-cw1*dfw)
+              end if
 c            Add to RHS:
               vist3d(j,k,i)=vist3d(j,k,i)+tt
             enddo
@@ -1467,8 +1589,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               by(j,k)=-ccmaxcr(cdm+cam,0.)
               cy(j,k)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dy(j,k)=-ccmaxcr(cdp+cap,0.)
@@ -1553,8 +1686,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               by(j,k)=-ccmaxcr(cdm+cam,0.)
               cy(j,k)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dy(j,k)=-ccmaxcr(cdp+cap,0.)
@@ -1638,8 +1782,19 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               by(j,k)=-ccmaxcr(cdm+cam,0.)
               cy(j,k)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dy(j,k)=-ccmaxcr(cdp+cap,0.)
@@ -1742,8 +1897,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bx(k,j)=-ccmaxcr(cdm+cam,0.)
               cx(k,j)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dx(k,j)=-ccmaxcr(cdp+cap,0.)
@@ -1817,8 +1983,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bx(k,j)=-ccmaxcr(cdm+cam,0.)
               cx(k,j)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dx(k,j)=-ccmaxcr(cdp+cap,0.)
@@ -1891,8 +2068,19 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-              cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
               bx(k,j)=-ccmaxcr(cdm+cam,0.)
               cx(k,j)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
               dx(k,j)=-ccmaxcr(cdp+cap,0.)
@@ -1985,8 +2173,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bz(k,i)=-ccmaxcr(cdm+cam,0.)
                 cz(k,i)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dz(k,i)=-ccmaxcr(cdp+cap,0.)
@@ -2060,8 +2259,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bz(k,i)=-ccmaxcr(cdm+cam,0.)
                 cz(k,i)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dz(k,i)=-ccmaxcr(cdp+cap,0.)
@@ -2134,8 +2344,19 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                cdp=(fnup+(1.+cb2)*anutp)*ttp/(sigma*re)
-                cdm=(fnum+(1.+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
+              if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+               chi_p=anutp/fnup
+               chi_m=anutm/fnum
+               diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
+               diff_facm=(16.+chi_m*chi_m*chi_m)/(16.-chi_m*chi_m*chi_m)
+              else
+               diff_facp=1.0
+               diff_facm=1.0
+              end if
+              cdp=(fnup+(diff_facp+cb2)*anutp)*ttp/(sigma*re)
+              cdm=(fnum+(diff_facm+cb2)*anutm)*ttm/(sigma*re)
+c   ***rumsey
                 bz(k,i)=-ccmaxcr(cdm+cam,0.)
                 cz(k,i)=ccmaxcr(cdp+cap,0.) + ccmaxcr(cdm+cam,0.)
                 dz(k,i)=-ccmaxcr(cdp+cap,0.)
@@ -2199,10 +2420,17 @@ c    Update TURRE
         do i=1,idim-1
           do k=1,kdim-1
             do j=1,jdim-1
-              if((real(turre(j,k,i)+vist3d(j,k,i))) .lt. 1.e-12) then
+c   ***rumsey
+              if(i_saneg .ne. 1 .and.
+     +          (real(turre(j,k,i)+vist3d(j,k,i))) .lt. 1.e-12) then
+c   ***rumsey
                 negn=negn+1
                 turre(j,k,i)=1.e-12
                 vist3d(j,k,i)=0.
+              else if (i_saneg .eq. 1 .and.
+     +          (real(turre(j,k,i)+vist3d(j,k,i))) .lt. 0.) then
+                negn=negn+1
+                turre(j,k,i)=turre(j,k,i)+vist3d(j,k,i)
               else
                 turre(j,k,i)=turre(j,k,i)+vist3d(j,k,i)
               end if
@@ -2235,9 +2463,14 @@ c Update VIST3D and save TURRE in TURSAV
       do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            chi=turre(j,k,i)/fnu(j,k,i)
-            fv1=chi**3/(chi**3+cv1**3)
-            vist3d(j,k,i)=fv1*turre(j,k,i)*q(j,k,i,1)
+c   ***rumsey
+            if (i_saneg .eq. 1 .and. turre(j,k,i) .lt. 0.) then
+              vist3d(j,k,i)=0.d0
+            else
+              chi=turre(j,k,i)/fnu(j,k,i)
+              fv1=chi**3/(chi**3+cv1**3)
+              vist3d(j,k,i)=fv1*turre(j,k,i)*q(j,k,i,1)
+            end if
             if( ides .ge. 4 .and. real(fd(j,k,i)) .gt. real(cddes)) then
                vist3d(j,k,i) = vist3d(j,k,i)
      $              * (1.d0 - fd(j,k,i))/(1.d0-cddes)

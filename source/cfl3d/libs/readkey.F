@@ -65,7 +65,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
      .        isst2003
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /fullns/ ifullns
       common /maxiv/ ivmx
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
@@ -91,8 +91,9 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
-      common /reystressmodel/ issglrrw2012
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
+      common /saneg/ i_saneg
 c
       ititr = 0
       nkey  = 0
@@ -879,6 +880,8 @@ c     issglrrw2012=3 if want SSG/LRR-RSM-w2012 with simple diffusion
 c     issglrrw2012=4 if want SSG/LRR-RSM-w2012 with F1=1 and simple diffusion
 c     issglrrw2012=5 if want SSG/LRR-RSM-w2012 with Wilcox simple diffusion
 c     (non-blended)
+c     issglrrw2012=6 same as 1, except uses g-eqn (=1/sqrt(omega))
+c     instead of omega
       issglrrw2012=0
       nkey     = nkey + 1
 c
@@ -890,6 +893,20 @@ c   iptype must=2 in the PLOT3D output section of the input file
       j_ifort50write=1
       nkey     = nkey + 1
       i_ifort50write=1
+      nkey     = nkey + 1
+c
+c   i_sas_rsm adds/subtracts SAS-like term to RSM omega eqn (AIAA-2014-0586)
+c   Set to 1 to make it MORE like SAS
+c   Set to -1 to keep the RANS character, adding more eddy visc in shear layers
+      i_sas_rsm=0
+      nkey     = nkey + 1
+c
+c   iforcev0=1 forces v=0 on update
+      iforcev0=0
+      nkey     = nkey + 1
+c
+c   i_saneg=1 uses SA-neg version
+      i_saneg=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1781,6 +1798,18 @@ c
       else if (inpstr(lc1:lc2).eq.'i_ifort50write') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_ifort50write
+c
+      else if (inpstr(lc1:lc2).eq.'i_sas_rsm') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_sas_rsm
+c
+      else if (inpstr(lc1:lc2).eq.'iforcev0') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iforcev0
+c
+      else if (inpstr(lc1:lc2).eq.'i_saneg') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_saneg
 c
       else
 c

@@ -60,7 +60,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /easmlim/ cmulim
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)

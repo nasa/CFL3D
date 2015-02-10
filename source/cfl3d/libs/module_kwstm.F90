@@ -52,7 +52,7 @@ MODULE module_kwstm
   REAL :: alpha_hat, beta_hat, gamma_hat
 
   INTEGER,save :: nsubit = 1
-  REAL,SAVE :: factor=1.0,factor1,factor2
+  REAL,SAVE :: factor=1.0
   INTEGER, save :: irealizability=1
   REAL,save :: pdratio=10.0
   integer :: nfreq = 100000
@@ -417,7 +417,7 @@ CONTAINS
        ux, &    ! velocity gradients
        sj,sk,si,vol,vj0,vk0,vi0, &         ! metrics
        q,qj0,qk0,qi0,dtj,vist3d,level,icyc,sumn,negn, &
-       zksav2,smin,x,y,z,nbl,issglrrw2012)
+       zksav2,smin,x,y,z,nbl,issglrrw2012,i_sas_rsm)
 
     ! --- input ---
     INTEGER,INTENT(in) :: jdim,kdim,idim,myid,myhost,nummem
@@ -436,7 +436,7 @@ CONTAINS
          vi0(jdim,kdim,4)
     REAL,INTENT(in) :: x(jdim,kdim,idim),y(jdim,kdim,idim), &
          z(jdim,kdim,idim)
-    INTEGER,intent(in) :: nbl,issglrrw2012
+    INTEGER,intent(in) :: nbl,issglrrw2012,i_sas_rsm
 
     REAL, INTENT(inout)::turb(jdim,kdim,idim,nummem),vist3d(jdim,kdim,idim),&
          zksav2(jdim,kdim,idim,2*nummem), smin(jdim-1,kdim-1,idim-1)
@@ -468,7 +468,7 @@ CONTAINS
     REAL, SAVE, ALLOCATABLE:: omega(:,:,:,:) !vorticity vector
     REAL, SAVE, ALLOCATABLE:: bij(:,:,:,:)
     REAL, SAVE, ALLOCATABLE:: fmu(:,:,:)! laminar dynamic viscosity(with density units)
-    REAL, SAVE, ALLOCATABLE:: timestep(:,:,:)
+    REAL, SAVE, ALLOCATABLE:: timestep(:,:,:,:)
     REAL, SAVE, allocatable:: d(:,:,:,:,:) ! source term Jacobian
     REAL, SAVE, ALLOCATABLE,DIMENSION(:,:,:,:):: al,ar,bl,br
     REAL, SAVE, ALLOCATABLE,DIMENSION(:,:,:,:,:) :: dbijdx,dbijdxx
@@ -539,7 +539,7 @@ CONTAINS
     ! fmu array
     ALLOCATE(fmu(0:jdim,0:kdim,0:idim))
 
-    ALLOCATE(timestep(jdim-1,kdim-1,idim-1))
+    ALLOCATE(timestep(jdim-1,kdim-1,idim-1,nummem))
     
     ! derivatives for c5 terms
     ALLOCATE(dbijdx (jdim-1,kdim-1,idim-1,6,3))
@@ -549,9 +549,10 @@ CONTAINS
 
     ! copy inner cell data from turb array to the turre
 
+!   note: omega (here) is vorticity!
     CALL fill_omega(jdim,kdim,idim, ux,omega)
     CALL fill_fmu(jdim,kdim,idim,q,qj0,qk0,qi0,fmu)
-    CALL get_timestep(jdim,kdim,idim,dtj,vol,timestep,icyc)
+    CALL get_timestep(jdim,kdim,idim,dtj,vol,timestep,icyc,nummem)
        
     IF(icyc==1) THEN
        CALL save_lasttimestep(jdim,kdim,idim,nummem, turb,&
@@ -569,10 +570,10 @@ CONTAINS
        call kws_dbij_dxx(jdim,kdim,idim,nummem,dbijdx,sj,sk,si,vol,dbijdxx)
        CALL get_source(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,bij,omega,&
             sj,sk,si,vol,vj0,vk0,vi0,ux,fmu,source,rhs,d,zksav2,timestep,dbijdxx,&
-            smin,issglrrw2012)
+            smin,issglrrw2012,x,y,z,nbl,icyc,ncyc1,i_sas_rsm)
 
        al = 0;ar= 0;bl = 0; br=0
-       if (issglrrw2012==1 .or. issglrrw2012==2) then
+       if (issglrrw2012==1 .or. issglrrw2012==2 .or. issglrrw2012==6) then
          ! generalized gradient-diffusion
          CALL get_diff_gen(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,&
               sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br,issglrrw2012)
@@ -594,18 +595,21 @@ CONTAINS
           DO i=1,idim-1
              DO k=1,kdim-1
                 DO j=1,jdim-1
-                   rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i)
+                   rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i,m)
                 ENDDO
              ENDDO
           ENDDO
        ENDDO
-          CALL afsolver_k(jdim,kdim,idim,nummem,turre,q,qk0,fmu,tke,sk,vol,vk0,timestep,source,rhs)
-          CALL afsolver_j(jdim,kdim,idim,nummem,turre,q,qj0,fmu,tke,sj,vol,vj0,timestep,source,rhs)
-          CALL afsolver_i(jdim,kdim,idim,nummem,turre,q,qi0,fmu,tke,si,vol,vi0,timestep,source,rhs)
-          CALL update(jdim,kdim,idim,nummem,rhs,turre,q,fmu, turb,vist3d,sumn,negn,ux)
+          CALL afsolver_k(jdim,kdim,idim,nummem,turre,q,qk0,fmu,tke,sk,vol,vk0,timestep,source,rhs, &
+                          issglrrw2012)
+          CALL afsolver_j(jdim,kdim,idim,nummem,turre,q,qj0,fmu,tke,sj,vol,vj0,timestep,source,rhs, &
+                          issglrrw2012)
+          CALL afsolver_i(jdim,kdim,idim,nummem,turre,q,qi0,fmu,tke,si,vol,vi0,timestep,source,rhs, &
+                          issglrrw2012)
+          CALL update(jdim,kdim,idim,nummem,rhs,turre,q,fmu, turb,vist3d,sumn,negn,ux,issglrrw2012)
        ELSE
           CALL sgs_solver_2d(jdim,kdim,idim,nummem, timestep, d,al,ar,bl,br,rhs)
-          CALL update(jdim,kdim,idim,nummem,rhs,turre,q,fmu, turb,vist3d,sumn,negn,ux)
+          CALL update(jdim,kdim,idim,nummem,rhs,turre,q,fmu, turb,vist3d,sumn,negn,ux,issglrrw2012)
        ENDIF
 
     ENDDO
@@ -631,8 +635,8 @@ CONTAINS
        qj0,qk0,qi0, &
        turre,tke,blend,bb,omega,&
        sj,sk,si,vol,vj0,vk0,vi0,ux,fmu,source,rhs,d,zksav,timestep,dbijdxx,&
-       smin,issglrrw2012)
-    INTEGER,INTENT(in) :: jdim,kdim,idim,nummem,issglrrw2012
+       smin,issglrrw2012,x,y,z,nbl,icyc,ncyc1,i_sas_rsm)
+    INTEGER,INTENT(in) :: jdim,kdim,idim,nummem,issglrrw2012,nbl,icyc,ncyc1(5),i_sas_rsm
     real, intent(in) :: smin(jdim-1,kdim-1,idim-1)
     REAL,INTENT(in) :: q(jdim,kdim,idim,5),&
          omega(0:jdim,0:kdim,0:idim,3), &
@@ -644,8 +648,9 @@ CONTAINS
          vi0(jdim,kdim,4), &
          ux(jdim-1,kdim-1,idim-1,9),fmu(0:jdim,0:kdim,0:idim),&
          zksav(jdim,kdim,idim,nummem),&
-         timestep(jdim-1,kdim-1,idim-1),&
-         dbijdxx(jdim-1,kdim-1,idim-1,6,3)
+         timestep(jdim-1,kdim-1,idim-1,nummem),&
+         dbijdxx(jdim-1,kdim-1,idim-1,6,3),&
+         x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim)
 
     real,intent(inout) :: &
          bb(0:jdim,0:kdim,0:idim,6), &
@@ -660,6 +665,8 @@ CONTAINS
     REAL :: reue,tinf
     COMMON /twod/ i2d
     integer :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
     COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
@@ -695,8 +702,10 @@ CONTAINS
     REAL :: mu_t(jdim)    ! turbulent eddyviscosity
     REAL:: dpdi,dpdk,dpdj
     REAL,DIMENSION(jdim,3):: dpdx,dtkedx,dwdx
+!   REAL,DIMENSION(jdim,3):: dsqwdx
     REAL :: drdi,drdk,drdj,dtkedi,dtkedj,dtkedk,&
          dwdi,dwdj,dwdk
+!   REAL :: dsqwdi,dsqwdj,dsqwdk
     REAL,DIMENSION(jdim,3):: drdx
     REAL :: dodi(3),dodj(3),dodk(3)
     REAL,DIMENSION(3,3,jdim) :: dodx
@@ -721,11 +730,42 @@ CONTAINS
     REAL :: c1_use, alpha_use, beta_use, sigma_d_use, delta_hat_use, sigma_hat_use
     REAL :: as_term, ws_term, sij_term
     ! -- for omega equation --
-    REAL :: tsum,  x_w, f_beta, kdotw, sd_term, xmultfac
+    REAL :: tsum,  x_w, f_beta, kdotw, sd_term, xmultfac, sd_term1, sd_term2
     INTEGER:: kcur
     integer,save:: ivisited=0
     ! -- for time step --
     real :: dtmp,cutoff
+
+    ! velocity 2nd derivatives
+    REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: vx
+    REAL, ALLOCATABLE, DIMENSION(:,:,:) :: psas
+    REAL :: xis,ell,delsquared_u,ellvk,psas1,term1,term2,psas2,psas_star
+    REAL :: xmid,zmid,psas_c1,psas_c2,psas_c3,psas_c4,psas_c5,psas_c6,psas_n
+    REAL :: sigma_w_use,xmu,g_basic,g_mod,g_use
+
+    ! for storing omega (which is 1/g**2 for issglrrw2012=6)
+    REAL, ALLOCATABLE, DIMENSION(:,:,:) :: omega_var
+
+    ALLOCATE(omega_var(jdim-1,kdim-1,idim-1))
+
+!   store actual omega_var, to make easier coding when doing g-eqn
+    if (issglrrw2012 == 6) then
+      DO i=1,idim-1
+         DO k=1,kdim-1
+            DO j=1,jdim-1
+               omega_var(j,k,i)=1.0/(turre(j,k,i,7)**2)
+            ENDDO
+         ENDDO
+      ENDDO
+    else
+      DO i=1,idim-1
+         DO k=1,kdim-1
+            DO j=1,jdim-1
+               omega_var(j,k,i)=turre(j,k,i,7)
+            ENDDO
+         ENDDO
+      ENDDO
+    end if
 
     if (issglrrw2012>=1) then
       xmultfac=1.0
@@ -735,6 +775,7 @@ CONTAINS
 
     coef_i=1.
     if(i2d==1) coef_i = 0
+    if(iaxi2planeturb==1) coef_i = 0
 
     xma_re = xmach/reue
     re_xma = reue/xmach
@@ -762,6 +803,39 @@ CONTAINS
 #endif
     endif
 
+    if (i_sas_rsm == 1 .or. i_sas_rsm == -1) then
+!     only for special SAS term, get vel 2nd derivs (put in vx(1-9))
+      ALLOCATE(vx(jdim-1,kdim-1,idim-1,9))
+      call vel2ndderiv(idim,jdim,kdim,ux,vol,si,sj,sk,vx)
+!     also need to allocate space for psas term
+      ALLOCATE(psas(jdim-1,kdim-1,idim-1))
+!     constants associated with i_sas_rsm:
+!     Menter & Egorov:
+!     psas_c1 = 1.0
+!     psas_c2 = 3.51
+!     psas_c3 = 6.0
+!     psas_c4 = 1.0
+!     psas_c5 = 1.0
+!     psas_c6 = 0.09**0.25
+!     psas_n  = 2.0
+!     Jakirlic & Maduta (AIAA-2014-0586):
+!     psas_c1 = .0055
+!     psas_c2 = 2.3713
+!     psas_c3 = 60.0
+!     psas_c4 = 1.0
+!     psas_c5 = 1.0
+!     psas_c6 = 1.0
+!     psas_n  = 0.5
+!     New from Vamshi
+!     psas_c1 = .0055/.09
+      psas_c1 = 0.2
+      psas_c2 = 1.755/sqrt(.09)
+      psas_c3 = 60.0
+      psas_c4 = 1.0
+      psas_c5 = 1.0
+      psas_c6 = 0.09**0.25
+      psas_n  = 0.5
+    end if
 
     DO i=1,idim-1
        DO k=1,kdim-1
@@ -819,6 +893,10 @@ CONTAINS
              dwdj = 0.5*(turre(j+1,k,i,7)-turre(j-1,k,i,7))
              dwdk = 0.5*(turre(j,k+1,i,7)-turre(j,k-1,i,7))
 
+!            dsqwdi = 0.5*(sqrt(turre(j,k,i+1,7))-sqrt(turre(j,k,i-1,7)))*coef_i
+!            dsqwdj = 0.5*(sqrt(turre(j+1,k,i,7))-sqrt(turre(j-1,k,i,7)))
+!            dsqwdk = 0.5*(sqrt(turre(j,k+1,i,7))-sqrt(turre(j,k-1,i,7)))
+
              siave(1:3)=0.5*(si(j,k,i,1:3)*si(j,k,i,4)+si(j,k,i+1,1:3)*si(j,k,i+1,4))
              sjave(1:3)=0.5*(sj(j,k,i,1:3)*sj(j,k,i,4)+sj(j+1,k,i,1:3)*sj(j+1,k,i,4))
              skave(1:3)=0.5*(sk(j,k,i,1:3)*sk(j,k,i,4)+sk(j,k+1,i,1:3)*sk(j,k+1,i,4))
@@ -832,8 +910,9 @@ CONTAINS
 
              dtkedx(j,:) = siave*dtkedi+sjave*dtkedj+skave*dtkedk
              dwdx(j,:) =   siave*  dwdi+sjave*  dwdj+skave*  dwdk
+!            dsqwdx(j,:) = siave*dsqwdi+sjave*dsqwdj+skave*dsqwdk
 
-             mu_t(j) = q(j,k,i,1)*tke(j,k,i)/turre(j,k,i,7)
+             mu_t(j) = q(j,k,i,1)*tke(j,k,i)/omega_var(j,k,i)
              im=1;ip=1;jm=1;jp=1;km=1;kp=1
              IF(i==1) im = 0 !.AND.turre(j,k,i-2,1) == 1e20) im = 0
              IF(i==idim-1) ip = 0 !.AND.turre(j,k,i+2,1) == 1e20) ip = 0
@@ -858,7 +937,7 @@ CONTAINS
              sij(j,5) = 0.5*(ux(j,k,i,6) + ux(j,k,i,8)) ! s23=0.5*(vz + wy)
              sij(j,6) = 0.5*(ux(j,k,i,3) + ux(j,k,i,7)) ! s13=0.5*(uz + wx)
              sij0(j,:) = sij(j,:)
-             eps(j)   = beta_star*turre(j,k,i,7)*tke(j,k,i)
+             eps(j)   = beta_star*omega_var(j,k,i)*tke(j,k,i)
              divg     = ux(j,k,i,1)+ux(j,k,i,5)+ux(j,k,i,9)
              sij(j,1) = sij(j,1) - 1./3.*divg 
              sij(j,2) = sij(j,2) - 1./3.*divg 
@@ -972,7 +1051,7 @@ CONTAINS
                 sigma_hat_use =xmultfac*(blend(j,k,i)*c2_o+(1.-blend(j,k,i))*c2_e)
 
                 ! pi_ij (pressure-strain) components
-                c1term = re_xma*c1_use*turre(j,k,i,7)*bbij(m)*beta_star
+                c1term = re_xma*c1_use*omega_var(j,k,i)*bbij(m)*beta_star
                 as_term  = alpha_hat_use*tke(j,k,i)*as_tensor(m)
                 ws_term  = beta_hat_use*tke(j,k,i)*aw_tensor(m)
                 sij_term = gamma_hat_use * tke(j,k,i)*sij(j,m)
@@ -1018,7 +1097,11 @@ CONTAINS
                               +(1.-xmultfac)*beta_0
              sigma_d_use      =xmultfac*(blend(j,k,i)*sigma_d_o    + (1.-blend(j,k,i))*sigma_d_e) &
                               +(1.-xmultfac)*sigma_d0
-             prod   = alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)*cutoff
+             if (issglrrw2012 == 6) then
+               prod   = -0.5*alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)*cutoff
+             else
+               prod   = alpha_use *turre(j,k,i,7)/tke(j,k,i)*prd_real(j)*cutoff
+             end if
              tsum = 0
              DO icur = 1,3
                 DO jcur = 1,3
@@ -1036,13 +1119,54 @@ CONTAINS
 
              beta = xmultfac*beta_use + (1.-xmultfac)*beta_use * f_beta
 
-             dissip = Re_xma * beta * turre(j,k,i,7)**2
-
              kdotw = dtkedx(j,1)*dwdx(j,1) + dtkedx(j,2)*dwdx(j,2) + dtkedx(j,3)*dwdx(j,3)
-
-             sd_term  = sigma_d_use *xma_re /turre(j,k,i,7) *max(0., kdotw)
+             if (issglrrw2012 == 6) then
+               dissip = -0.5*re_xma * beta / turre(j,k,i,7)
+               sigma_w_use = blend(j,k,i)*sigma_w_o + (1.-blend(j,k,i))*sigma_w_e
+               xmu = (fmu(j,k,i)+mu_t(j)*sigma_w_use)/q(j,k,i,1)
+               g_basic = 3./turre(j,k,i,7)*xmu*(dwdx(j,1)*dwdx(j,1) + dwdx(j,2)*dwdx(j,2) +   &
+                          dwdx(j,3)*dwdx(j,3))
+!              in this case g_mod is identical to g_basic:
+               g_mod = 12./(4.*turre(j,k,i,7))*xmu*(dwdx(j,1)*dwdx(j,1) + dwdx(j,2)*dwdx(j,2) +   &
+                          dwdx(j,3)*dwdx(j,3))
+!              the following causes complete relaminarization; don't know why:
+!              g_mod = 12.*xmu*(dsqwdx(j,1)*dsqwdx(j,1) + dsqwdx(j,2)*dsqwdx(j,2) +   &
+!                         dsqwdx(j,3)*dsqwdx(j,3))
+               g_use = blend(j,k,i)*g_basic + (1.0-blend(j,k,i))*g_mod
+               sd_term1 = sigma_d_use *xma_re *turre(j,k,i,7)**2 *min(0., kdotw)
+               sd_term2 = g_use*xma_re
+               sd_term  = sd_term1 - sd_term2
+             else
+               dissip = re_xma * beta * turre(j,k,i,7)**2
+               sd_term  = sigma_d_use *xma_re /turre(j,k,i,7) *max(0., kdotw)
+             end if
 
              source(j,k,i,7)=(prod - dissip + sd_term )!*q(j,k,i,1)
+
+             if (i_sas_rsm == 1 .or. i_sas_rsm == -1) then
+               xis = sij0(j,1)*sij0(j,1) + sij0(j,2)*sij0(j,2) + sij0(j,3)*sij0(j,3) +  &
+                      2.*sij0(j,4)*sij0(j,4) + 2.*sij0(j,5)*sij0(j,5) + 2.*sij0(j,6)*sij0(j,6)
+               ell = sqrt(tke(j,k,i))/(psas_c6*omega_var(j,k,i))
+               delsquared_u = sqrt(                             &
+                 (vx(j,k,i,1)+vx(j,k,i,2)+vx(j,k,i,3))**2 +     &
+                 (vx(j,k,i,4)+vx(j,k,i,5)+vx(j,k,i,6))**2 +     &
+                 (vx(j,k,i,7)+vx(j,k,i,8)+vx(j,k,i,9))**2 )
+               ellvk = 0.41*sqrt(2.*xis)/delsquared_u
+               psas1 = psas_c2*0.41*2.*xis*(ell/ellvk*xma_re)**psas_n
+               if (issglrrw2012 == 6) then
+                 term1 = 4.0*psas_c4*(dwdx(j,1)*dwdx(j,1) + dwdx(j,2)*dwdx(j,2) +   &
+                          dwdx(j,3)*dwdx(j,3)) / turre(j,k,i,7)**2
+               else
+                 term1 = psas_c4*(dwdx(j,1)*dwdx(j,1) + dwdx(j,2)*dwdx(j,2) +   &
+                          dwdx(j,3)*dwdx(j,3)) / turre(j,k,i,7)**2
+               end if
+               term2 = psas_c5*(dtkedx(j,1)*dtkedx(j,1) + dtkedx(j,2)*dtkedx(j,2) +   &
+                        dtkedx(j,3)*dtkedx(j,3)) / tke(j,k,i)**2
+               psas2 = psas_c3*tke(j,k,i)*max(term1,term2)
+               psas_star = (psas1-psas2)*xma_re
+               psas(j,k,i) = psas_c1*max(psas_star,0.)
+               source(j,k,i,7)=source(j,k,i,7)+psas(j,k,i)*float(i_sas_rsm)
+             end if
           ENDDO
        ENDDO
     ENDDO
@@ -1054,6 +1178,7 @@ CONTAINS
              !source(j,k,i,1:nummem)*timestep(j,k,i)*(cfl_loc+cfl_psd)/cfl_psd
              !d(1:6,:,j,k,i) = 0
              d(7,:,j,k,i) = 0
+             ! the d matrix does not appear to be used:
              d(7,7,j,k,i) = 0.5*(rhs(j,k,i,7) - ABS(rhs(j,k,i,7)))/(turre(j,k,i,7))
           ENDDO
        ENDDO
@@ -1066,7 +1191,7 @@ CONTAINS
                 DO k=1,kdim-1
                    DO j=1,jdim-1
                       if(ildts==1) then
-                         dtmp = timestep(j,k,i)*(cfl_loc+cfl_psd)/cfl_psd
+                         dtmp = timestep(j,k,i,m)*(cfl_loc+cfl_psd)/cfl_psd
                       else
                          dtmp = dt
                       endif
@@ -1090,6 +1215,38 @@ CONTAINS
        ENDIF
     ENDIF
     !#endif
+
+    if (i_sas_rsm == 1 .or. i_sas_rsm == -1) then
+    if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. icyc.eq.ncyc1(3) &
+       .or. icyc.eq.ncyc1(4) .or. icyc.eq.ncyc1(5)) then
+    if (nbl <= 16) then
+    if (nbl == 1 .or. nbl == 2 .or. nbl == 3 .or. nbl == 4) then
+      OPEN(1234,file='psas1.plt')
+    else if (nbl == 5 .or. nbl == 6 .or. nbl == 7 .or. nbl == 8) then
+      OPEN(1234,file='psas2.plt')
+    else if (nbl == 9 .or. nbl ==10 .or. nbl ==11 .or. nbl ==12) then
+      OPEN(1234,file='psas3.plt')
+    else if (nbl ==13 .or. nbl ==14 .or. nbl ==15 .or. nbl ==16) then
+      OPEN(1234,file='psas4.plt')
+    end if
+    WRITE(1234,'(''Variables="x","z","psas"'')')
+    WRITE(1234,*)'Zone I=',jdim-1, " J=", kdim-1
+    DO k=1,kdim-1
+       DO j=1,jdim-1
+          xmid=0.25*(x(j,k,1)+x(j+1,k,1)+x(j,k+1,1)+x(j+1,k+1,1))
+          zmid=0.25*(z(j,k,1)+z(j+1,k,1)+z(j,k+1,1)+z(j+1,k+1,1))
+          WRITE(1234,"(3e18.5)")xmid, zmid, psas(j,k,1)
+       ENDDO
+    ENDDO
+    close(1234)
+    end if
+    end if
+!     IF(mylevel==level_o.AND.MOD(myicyc,icyc_o)==0) THEN
+!       CALL dump_tecplot(jdim-1, kdim-1, idim-1, 1,jdim-1,1,kdim-1,1, psas(1,1,1), "psas","psas.plt")
+!     ENDIF
+      DEALLOCATE(vx,psas)
+    end if
+    DEALLOCATE(omega_var)
 
 #ifdef CRAP
     IF(mylevel==level_o.AND.MOD(myicyc,icyc_o)==0) THEN
@@ -1147,6 +1304,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 
     !local variables
     INTEGER :: i,j,k,m
@@ -1297,7 +1456,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    IF(i2d/=1) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
        DO j=1,jdim-1
@@ -1386,6 +1545,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 
     !local variables
     INTEGER :: i,j,k,m
@@ -1511,7 +1672,7 @@ CONTAINS
        ENDDO
     ENDDO
     
-    IF(i2d/=1) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
        DO j=1,jdim-1
@@ -1590,8 +1751,9 @@ CONTAINS
         xmut(i) = SIGN(MAX(ABS(xmut(i)),0.01),xmut(i))!min(xmut(i),10.) 
      enddo 
   end subroutine
-  SUBROUTINE afsolver_i(jdim,kdim,idim,nummem,turre,q,qi0,fmu,tke,si,vol,vi0,timestep,source,rhs)
-    INTEGER, INTENT(in)::jdim,kdim,idim,nummem
+  SUBROUTINE afsolver_i(jdim,kdim,idim,nummem,turre,q,qi0,fmu,tke,si,vol,vi0,timestep,source,rhs, &
+                        issglrrw2012)
+    INTEGER, INTENT(in)::jdim,kdim,idim,nummem,issglrrw2012
     REAL,INTENT(in) :: q(jdim,kdim,idim,5), &
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem), &
          si(jdim,kdim,idim,5),&
@@ -1599,7 +1761,7 @@ CONTAINS
          vi0(jdim,kdim,4),&
          qi0(jdim,kdim,5,4),&
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
-         timestep(jdim-1,kdim-1,idim-1),tke(0:jdim,0:kdim,0:idim)
+         timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
     
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
@@ -1610,6 +1772,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     integer :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     
     ! three diagonal terms
     REAL :: rlow(idim-1,nummem),diag(idim-1,nummem),rup(idim-1,nummem),rcol(idim-1)
@@ -1624,6 +1788,7 @@ CONTAINS
     REAL :: xlc,xrc,xmu_l, xmu_r, tll, trr, tcc,amul,amur
 
     if(i2d==1) return 
+    if(iaxi2planeturb==1) return
     xma_re = xmach/reue
     DO j=1,jdim-1
        DO k=1,kdim-1
@@ -1661,7 +1826,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j,k,i,1)+q(j,k,i-1,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j,k,i-1))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k,i-1,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j,k,i-1,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k,i-1,7))
+             end if
              xmut(i) = MAX(0.,rho_ave*tke_ave/ome_ave)
           ENDDO
 
@@ -1720,9 +1889,9 @@ CONTAINS
 
           DO m=1,nummem
              DO i=1,idim-1
-                rlow(i,m) = rlow(i,m)*timestep(j,k,i)
-                rup(i,m) = rup(i,m)*timestep(j,k,i)
-                diag(i,m) = diag(i,m)*timestep(j,k,i) + 1.
+                rlow(i,m) = rlow(i,m)*timestep(j,k,i,m)
+                rup(i,m) = rup(i,m)*timestep(j,k,i,m)
+                diag(i,m) = diag(i,m)*timestep(j,k,i,m) + 1.
              ENDDO
           ENDDO
           
@@ -1740,8 +1909,9 @@ CONTAINS
   END SUBROUTINE afsolver_i
 
   ! tri-diagonal solver in the j direction
-  SUBROUTINE afsolver_j(jdim,kdim,idim,nummem,turre,q,qj0,fmu,tke,sj,vol,vj0,timestep,source,rhs)
-    INTEGER, INTENT(in)::jdim,kdim,idim,nummem
+  SUBROUTINE afsolver_j(jdim,kdim,idim,nummem,turre,q,qj0,fmu,tke,sj,vol,vj0,timestep,source,rhs, &
+                        issglrrw2012)
+    INTEGER, INTENT(in)::jdim,kdim,idim,nummem,issglrrw2012
     REAL,INTENT(in) :: q(jdim,kdim,idim,5), &
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem), &
          sj(jdim,kdim,idim-1,5),&
@@ -1753,7 +1923,7 @@ CONTAINS
          !vk0(jdim,idim-1,4),&
          !vi0(jdim,kdim,4), &
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
-         timestep(jdim-1,kdim-1,idim-1),tke(0:jdim,0:kdim,0:idim)
+         timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
     
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
@@ -1801,7 +1971,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j-1,k,i,1)+q(j,k,i,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j-1,k,i))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j-1,k,i,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j-1,k,i,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j-1,k,i,7))
+             end if
              xmut(j) = MAX(0.0,rho_ave*tke_ave/ome_ave)
           ENDDO
 
@@ -1870,9 +2044,9 @@ CONTAINS
           
           DO m=1,nummem
              DO j=1,jdim-1
-                rlow(j,m) = rlow(j,m)*timestep(j,k,i)
-                rup(j,m) = rup(j,m)*timestep(j,k,i)
-                diag(j,m) = diag(j,m)*timestep(j,k,i) + 1.
+                rlow(j,m) = rlow(j,m)*timestep(j,k,i,m)
+                rup(j,m) = rup(j,m)*timestep(j,k,i,m)
+                diag(j,m) = diag(j,m)*timestep(j,k,i,m) + 1.
              ENDDO
           ENDDO
           DO m=1,nummem
@@ -1912,8 +2086,9 @@ CONTAINS
   END SUBROUTINE afsolver_j
 
   ! tri-diagonal solver in the k direction
-  SUBROUTINE afsolver_k(jdim,kdim,idim,nummem,turre,q,qk0,fmu,tke,sk,vol,vk0,timestep,source,rhs)
-    INTEGER, INTENT(in)::jdim,kdim,idim,nummem
+  SUBROUTINE afsolver_k(jdim,kdim,idim,nummem,turre,q,qk0,fmu,tke,sk,vol,vk0,timestep,source,rhs, &
+                        issglrrw2012)
+    INTEGER, INTENT(in)::jdim,kdim,idim,nummem,issglrrw2012
     REAL,INTENT(in) :: q(jdim,kdim,idim,5), &
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem), &
          sk(jdim,kdim,idim-1,5),&
@@ -1924,7 +2099,7 @@ CONTAINS
          !vk0(jdim,idim-1,4),&
          !vi0(jdim,kdim,4), &
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
-         timestep(jdim-1,kdim-1,idim-1),tke(0:jdim,0:kdim,0:idim)
+         timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
     
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
@@ -1984,7 +2159,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j,k,i,1)+q(j,k-1,i,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j,k-1,i))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k-1,i,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j,k-1,i,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k-1,i,7))
+             end if
              xmut(k) = MAX(0.0,rho_ave*tke_ave/ome_ave)
           ENDDO
           DO k=1,kdim-1
@@ -2043,17 +2222,26 @@ CONTAINS
           ENDDO
 
           do k=1,kdim-1
-             do m=1,3  ! no special treatment for the shear stresses(12,23,13)
-                diag(k,m) = diag(k,m) +2./3.*beta_star*re_xma*turre(j,k,i,7) ! - 0.5*(source(j,k,i,m)+abs(source(j,k,i,m)))/turre(j,k,i,m)
-             enddo
-             diag(k,7) = diag(k,7) +2.*beta_0*re_xma*turre(j,k,i,7)!- 0.5*(source(j,k,i,7) - abs(source(j,k,i,7)))/turre(j,k,i,7)
+            if (issglrrw2012 == 6) then
+              do m=1,3  ! no special treatment for the shear stresses(12,23,13)
+                 diag(k,m) = diag(k,m) +2./3.*beta_star*re_xma/turre(j,k,i,7)**2
+              enddo
+              diag(k,7) = diag(k,7) + 0.5*re_xma*beta_0/(turre(j,k,i,7)**2)
+            else
+              do m=1,3  ! no special treatment for the shear stresses(12,23,13)
+                 ! - 0.5*(source(j,k,i,m)+abs(source(j,k,i,m)))/turre(j,k,i,m)
+                 diag(k,m) = diag(k,m) +2./3.*beta_star*re_xma*turre(j,k,i,7)
+              enddo
+              ! - 0.5*(source(j,k,i,7) - abs(source(j,k,i,7)))/turre(j,k,i,7)
+              diag(k,7) = diag(k,7) +2.*beta_0*re_xma*turre(j,k,i,7)
+            end if
           enddo 
 
           DO m=1,nummem
              DO k=1,kdim-1
-                rlow(k,m) = rlow(k,m)*timestep(j,k,i)!source(j,k,i,m)
-                rup(k,m)  = rup(k,m) *timestep(j,k,i)!source(j,k,i,m)
-                diag(k,m) = diag(k,m)*timestep(j,k,i)+1.!source(j,k,i,m) + 1.
+                rlow(k,m) = rlow(k,m)*timestep(j,k,i,m)!source(j,k,i,m)
+                rup(k,m)  = rup(k,m) *timestep(j,k,i,m)!source(j,k,i,m)
+                diag(k,m) = diag(k,m)*timestep(j,k,i,m)+1.!source(j,k,i,m) + 1.
              ENDDO
           ENDDO
           DO m=1,nummem
@@ -2092,8 +2280,8 @@ CONTAINS
     REAL,INTENT(out) :: turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem)
     REAL,INTENT(inout) :: turb(jdim,kdim,idim,nummem),tj0(kdim,idim-1,nummem,4),&
          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
-    COMMON /twod/ i2d
-    integer :: i2d
+!   COMMON /twod/ i2d
+!   integer :: i2d
     
 
     INTEGER :: i,j,k,iv
@@ -2241,14 +2429,17 @@ CONTAINS
     REAL :: reue,tinf
     COMMON /twod/ i2d
     integer :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
 
     if (issglrrw2012 == 1 .or. issglrrw2012 == 3 .or.   &
-        issglrrw2012 == 5) then
+        issglrrw2012 == 5 .or. issglrrw2012 == 6) then
     re_xma = reue/xmach
     coef_i=1.
     if(i2d==1) coef_i = 0
+    if(iaxi2planeturb==1) coef_i = 0
     DO i=1,idim-1
        DO k=1,kdim-1
           DO j=1,jdim-1
@@ -2274,20 +2465,37 @@ CONTAINS
 
           ENDDO
 
-          DO j=1,jdim-1
-            kdotw = dtkedx(j,1)*dwdx(j,1) + dtkedx(j,2)*dwdx(j,2) + dtkedx(j,3)*dwdx(j,3)
-            sd_term  = sigma_d_e /turre(j,k,i,7) *max(0., kdotw)
-            arg1=sqrt(tke(j,k,i))/(.09*re_xma*turre(j,k,i,7)* &
-              abs(smin(j,k,i)))
-            arg2=500.*fmu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re_xma*re_xma* &
-              smin(j,k,i)*turre(j,k,i,7))
-            arga=max(arg1,arg2)
-            small=1.e-20
-            temp=max(sd_term,small)
-            argb=4.*sigma_w_e*tke(j,k,i)/(temp*smin(j,k,i)*smin(j,k,i))
-            arg=min(arga,argb)
-            blend(j,k,i)=tanh(arg*arg*arg*arg)
-          ENDDO
+          if (issglrrw2012 == 6) then
+            DO j=1,jdim-1
+              kdotw = dtkedx(j,1)*dwdx(j,1) + dtkedx(j,2)*dwdx(j,2) + dtkedx(j,3)*dwdx(j,3)
+              sd_term  = 2.0*sigma_d_e /turre(j,k,i,7) *max(0., -kdotw)
+              arg1=sqrt(tke(j,k,i))*turre(j,k,i,7)**2/(.09*re_xma* &
+                abs(smin(j,k,i)))
+              arg2=500.*fmu(j,k,i)*turre(j,k,i,7)**2/(q(j,k,i,1)*smin(j,k,i)*re_xma*re_xma* &
+                smin(j,k,i))
+              arga=max(arg1,arg2)
+              small=1.e-20
+              temp=max(sd_term,small)
+              argb=4.*sigma_w_e*tke(j,k,i)/(temp*smin(j,k,i)*smin(j,k,i))
+              arg=min(arga,argb)
+              blend(j,k,i)=tanh(arg*arg*arg*arg)
+            ENDDO
+          else
+            DO j=1,jdim-1
+              kdotw = dtkedx(j,1)*dwdx(j,1) + dtkedx(j,2)*dwdx(j,2) + dtkedx(j,3)*dwdx(j,3)
+              sd_term  = sigma_d_e /turre(j,k,i,7) *max(0., kdotw)
+              arg1=sqrt(tke(j,k,i))/(.09*re_xma*turre(j,k,i,7)* &
+                abs(smin(j,k,i)))
+              arg2=500.*fmu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re_xma*re_xma* &
+                smin(j,k,i)*turre(j,k,i,7))
+              arga=max(arg1,arg2)
+              small=1.e-20
+              temp=max(sd_term,small)
+              argb=4.*sigma_w_e*tke(j,k,i)/(temp*smin(j,k,i)*smin(j,k,i))
+              arg=min(arga,argb)
+              blend(j,k,i)=tanh(arg*arg*arg*arg)
+            ENDDO
+          end if
       ENDDO
     ENDDO
     else
@@ -2386,10 +2594,10 @@ CONTAINS
   END SUBROUTINE fill_fmu
 
 
-  SUBROUTINE get_timestep(jdim,kdim,idim,dtj,vol,timestep,icyc)
-    INTEGER,INTENT(in) :: jdim,kdim,idim,icyc
+  SUBROUTINE get_timestep(jdim,kdim,idim,dtj,vol,timestep,icyc,nummem)
+    INTEGER,INTENT(in) :: jdim,kdim,idim,icyc,nummem
     REAL,INTENT(in) :: dtj(jdim,kdim,idim-1),vol(jdim,kdim,idim-1)
-    REAL,INTENT(out) :: timestep(jdim-1,kdim-1,idim-1)
+    REAL,INTENT(out) :: timestep(jdim-1,kdim-1,idim-1,nummem)
 
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax,nit,ntt, &
          idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag, &
@@ -2405,38 +2613,54 @@ CONTAINS
 
     COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
     REAL :: time, cfltau, cfltau0,cfltauMax
-    INTEGER ::ntstep,ita,iunst
+    INTEGER ::ntstep,ita,iunst,factorx(nummem),m
 
 
     INTEGER :: i,j,k
     integer,save :: iflag=0
     REAL :: rmax,rmin
 
-    factor1=factor
-    factor2=factor
+    do m=1,nummem
+      factorx(m)=factor
+    end do
     !
     ! Overwrite factors with keyword value "cflturb()" if nonzero
     !
     IF (real(cflturb(1)).NE.0.) THEN
-       factor1 = cflturb(1)
+       factorx(1) = cflturb(1)
     END IF
     IF (real(cflturb(2)).NE.0.) THEN
-       factor2 = cflturb(2)
+       factorx(2) = cflturb(2)
     END IF
-    !factor2 is set relative to factor1
-    factor2=factor2/factor1
+    IF (real(cflturb(3)).NE.0.) THEN
+       factorx(3) = cflturb(3)
+    END IF
+    IF (real(cflturb(4)).NE.0.) THEN
+       factorx(4) = cflturb(4)
+    END IF
+    IF (real(cflturb(5)).NE.0.) THEN
+       factorx(5) = cflturb(5)
+    END IF
+    IF (real(cflturb(6)).NE.0.) THEN
+       factorx(6) = cflturb(6)
+    END IF
+    IF (real(cflturb(7)).NE.0.) THEN
+       factorx(7) = cflturb(7)
+    END IF
     !
     ! Timestep for turb model
     !
      
     IF (real(dt).LT.0) THEN
+       DO m=1,nummem
        DO i=1,idim-1
           DO k=1,kdim-1
              DO j=1,jdim-1
-                timestep(j,k,i)=factor1*vol(j,k,i)/dtj(j,k,i)
-                timestep(j,k,i)=min(timestep(j,k,i),100.)
+                timestep(j,k,i,m)=factorx(m)*vol(j,k,i)/dtj(j,k,i)
+                timestep(j,k,i,m)=min(timestep(j,k,i,m),100.)
              ENDDO
           ENDDO
+       ENDDO
        ENDDO
        iflag =1  
     ELSE
@@ -2444,34 +2668,39 @@ CONTAINS
        !(pseudo-time term NOT included, even for tau-TS in mean-
        !flow equations, since multigrid is not used for turb. eq.)
        IF(ita>0) THEN
+          DO m=1,nummem
           DO i=1,idim-1
              DO k=1,kdim-1
                 DO j=1,jdim-1
-                   timestep(j,k,i)=dt
-                   factor2=1.
+                   timestep(j,k,i,m)=dt
                 ENDDO
              ENDDO
           ENDDO
+          ENDDO
        ELSE
+          DO m=1,nummem
           DO i=1,idim-1
              DO k=1,kdim-1
                 DO j=1,jdim-1
-                   timestep(j,k,i)=factor1*vol(j,k,i)/dtj(j,k,i)
-                   timestep(j,k,i)=MIN(timestep(j,k,i),100.)
+                   timestep(j,k,i,m)=factorx(m)*vol(j,k,i)/dtj(j,k,i)
+                   timestep(j,k,i,m)=MIN(timestep(j,k,i,m),100.)
                 ENDDO
              ENDDO
+          ENDDO
           ENDDO
        END IF
        IF(MOD(ntt,50)==0.AND.icyc==1) THEN
           rmax = 0
           rmin = huge(rmin)
+          DO m=1,nummem
           DO i=1,idim-1
              DO k=1,kdim-1
                 DO j=1,jdim-1
-                   rmax=max(dt/timestep(j,k,i),rmax)
-                   rmin=min(dt/timestep(j,k,i),rmin)
+                   rmax=max(dt/timestep(j,k,i,m),rmax)
+                   rmin=min(dt/timestep(j,k,i,m),rmin)
                 ENDDO
              ENDDO
+          ENDDO
           ENDDO
           
        ENDIF
@@ -2492,6 +2721,8 @@ CONTAINS
 
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     COMMON /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze, &
          iwarneddy,itime2read,itaturb,tur1cut,tur2cut,& 
          iturbord,tur1cutlev,tur2cutlev
@@ -2587,7 +2818,7 @@ CONTAINS
        ENDDO
     ENDDO
 
-    IF(i2d==0) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
        !i-direction
        DO j=1,jdim-1
           DO k=1,kdim-1
@@ -2631,7 +2862,7 @@ CONTAINS
   ! use fractional approach to update the source term
   SUBROUTINE fractional(jdim,kdim,idim,nummem,rhs,turre,timestep,d,zksav) 
     INTEGER,INTENT(in) :: jdim,kdim,idim,nummem
-    REAL,INTENT(in) :: timestep(jdim-1,kdim-1,idim-1),zksav(jdim,kdim,idim,nummem)
+    REAL,INTENT(in) :: timestep(jdim-1,kdim-1,idim-1,nummem),zksav(jdim,kdim,idim,nummem)
     REAL, intent(inout) :: rhs(jdim-1,kdim-1,idim-1,nummem),d(nummem,nummem, jdim,kdim,idim),&
         turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem)
     integer :: i,j,k,m
@@ -2648,8 +2879,8 @@ CONTAINS
        DO i=1,idim-1
           DO k=1,kdim-1
              DO j=1,jdim-1
-                rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i)
-                d(:,m,j,k,i) = -d(:,m,j,k,i)*timestep(j,k,i)
+                rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i,m)
+                d(:,m,j,k,i) = -d(:,m,j,k,i)*timestep(j,k,i,m)
                 d(m,m,j,k,i) = 1+ d(m,m,j,k,i)
              ENDDO
           enddo
@@ -2692,7 +2923,7 @@ CONTAINS
   SUBROUTINE preprocess_rhs(jdim,kdim,idim,nummem,q,turre,timestep,source, rhs,d,iopt,zksav)
     INTEGER,INTENT(in) :: jdim,kdim,idim,nummem
     REAL,INTENT(in) :: q(jdim,kdim,idim,5),turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem),&
-         timestep(jdim-1,kdim-1,idim-1),zksav(jdim,kdim,idim,nummem)
+         timestep(jdim-1,kdim-1,idim-1,nummem),zksav(jdim,kdim,idim,nummem)
     REAL, intent(inout) :: source(jdim-1,kdim-1,idim-1,nummem),&
          rhs(jdim-1,kdim-1,idim-1,nummem),d(nummem,nummem, jdim,kdim,idim)
     integer, intent(in) :: iopt
@@ -2718,7 +2949,7 @@ CONTAINS
           DO i=1,idim-1
              DO k=1,kdim-1
                 DO j=1,jdim-1
-                   d(:,m,j,k,i) = -d(:,m,j,k,i)*timestep(j,k,i)
+                   d(:,m,j,k,i) = -d(:,m,j,k,i)*timestep(j,k,i,m)
                    d(m,m,j,k,i) = 1+ d(m,m,j,k,i)
                 ENDDO
              ENDDO
@@ -2730,7 +2961,7 @@ CONTAINS
        DO i=1,idim-1
           DO k=1,kdim-1
              DO j=1,jdim-1
-                rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i)
+                rhs(j,k,i,m) = rhs(j,k,i,m)*timestep(j,k,i,m)
              ENDDO
           ENDDO
        ENDDO
@@ -2782,8 +3013,8 @@ CONTAINS
     RETURN
   END SUBROUTINE preprocess_rhs
 
-  SUBROUTINE update(jdim,kdim,idim,nummem,rhs,turre,rho,fmu, turb,vist3d,sumn,negn,ux)
-    INTEGER,INTENT(in):: jdim,kdim,idim,nummem
+  SUBROUTINE update(jdim,kdim,idim,nummem,rhs,turre,rho,fmu, turb,vist3d,sumn,negn,ux,issglrrw2012)
+    INTEGER,INTENT(in):: jdim,kdim,idim,nummem,issglrrw2012
     REAL, INTENT(in) :: rhs(jdim-1,kdim-1,idim-1,nummem),&
          rho(jdim,kdim,idim),fmu(0:jdim,0:kdim,0:idim),ux(jdim-1,kdim-1,idim-1,9)
     REAL,INTENT(out) :: turb(jdim,kdim,idim,nummem),&
@@ -2867,7 +3098,11 @@ CONTAINS
                 sumn(m) = sumn(m) + (turb(j,k,i,m)-turre(j,k,i,m))**2
                 turre(j,k,i,m) = turb(j,k,i,m)
                 tke =-0.5*(turb(j,k,i,1)+turb(j,k,i,2)+turb(j,k,i,3))
-                vist3d(j,k,i) = MIN(edvislim,rho(j,k,i)*tke/turre(j,k,i,7))
+                if (issglrrw2012 == 6) then
+                  vist3d(j,k,i) = MIN(edvislim,rho(j,k,i)*tke*turre(j,k,i,7)**2)
+                else
+                  vist3d(j,k,i) = MIN(edvislim,rho(j,k,i)*tke/turre(j,k,i,7))
+                end if
              ENDDO
           ENDDO
        ENDDO
@@ -3197,7 +3432,7 @@ CONTAINS
      REAL, INTENT(inout) :: &
           al(2,jdim,kdim,idim),ar(2,jdim,kdim,idim),&
           bl(2,jdim,kdim,idim),br(2,jdim,kdim,idim)
-     REAL,INTENT(in) :: timestep(jdim-1,kdim-1,idim-1)
+     REAL,INTENT(in) :: timestep(jdim-1,kdim-1,idim-1,nummem)
      REAL, INTENT(inout) :: rhs(jdim-1,kdim-1,idim-1,nummem),d(nummem,nummem, jdim,kdim,idim)
 
      INTEGER :: j,k,m
@@ -3211,13 +3446,13 @@ CONTAINS
               !rhs(j,k,i,:) = rhs(j,k,i,:)!*timestep(j,k,i)
               d(:,:,j,k,i) = -d(:,:,j,k,i)!*timestep(j,k,i)
               do m=1,nummem
-                 d(m,m,j,k,i) = 1./timestep(j,k,i) + d(m,m,j,k,i)
+                 d(m,m,j,k,i) = 1./timestep(j,k,i,m) + d(m,m,j,k,i)
               enddo
 #ifdef CRAP
-              al(:,j,k,i) = al(:,j,k,i)*timestep(j,k,i)
-              ar(:,j,k,i) = ar(:,j,k,i)*timestep(j,k,i)
-              bl(:,j,k,i) = bl(:,j,k,i)*timestep(j,k,i)
-              br(:,j,k,i) = br(:,j,k,i)*timestep(j,k,i)
+              al(:,j,k,i) = al(:,j,k,i)*timestep(j,k,i,1)
+              ar(:,j,k,i) = ar(:,j,k,i)*timestep(j,k,i,1)
+              bl(:,j,k,i) = bl(:,j,k,i)*timestep(j,k,i,1)
+              br(:,j,k,i) = br(:,j,k,i)*timestep(j,k,i,1)
 #endif
            ENDDO
         ENDDO
@@ -3440,6 +3675,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
@@ -3459,8 +3696,8 @@ CONTAINS
     INTEGER,parameter :: m2i(6)=(/1,2,3,1,2,1/),m2j(6)=(/1,2,3,2,3,3/)
     INTEGER,parameter :: ij2m(3,3)=RESHAPE((/1,4,6,4,2,5,6,5,3/),(/3,3/))
 
-    if (issglrrw2012 /= 1 .and. issglrrw2012 /= 2) then
-      stop "get_diff_gen must use issglrrw2012=1 or 2"
+    if (issglrrw2012 /= 1 .and. issglrrw2012 /= 2 .and. issglrrw2012 /= 6) then
+      stop "get_diff_gen must use issglrrw2012=1, 2, or 6"
     end if
     xma_re= xmach/reue
     ! diffusion terms in the j-direction
@@ -3478,7 +3715,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j-1,k,i,1)+q(j,k,i,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j-1,k,i))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j-1,k,i,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j-1,k,i,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j-1,k,i,7))
+             end if
              xmut(j) = MAX(0.0,rho_ave*tke_ave/ome_ave)
              diff(j,:) =turre(j,k,i,:) -  turre(j-1,k,i,:)
              IF(j==1) THEN
@@ -3558,7 +3799,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j,k,i,1)+q(j,k-1,i,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j,k-1,i))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k-1,i,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j,k-1,i,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k-1,i,7))
+             end if
              xmut(k) = max(0.0,rho_ave*tke_ave/ome_ave)
              diff(k,:) =turre(j,k,i,:) -  turre(j,k-1,i,:)
              IF(k==1) THEN
@@ -3626,7 +3871,7 @@ CONTAINS
        ENDDO
     ENDDO
 
-    IF(i2d/=1) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
        DO j=1,jdim-1
@@ -3642,7 +3887,11 @@ CONTAINS
                 rho_ave  = 0.5*(q(j,k,i,1)+q(j,k,i-1,1))
              ENDIF
              tke_ave = 0.5*(tke(j,k,i)+tke(j,k,i-1))
-             ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k,i-1,7))
+             if (issglrrw2012 == 6) then
+               ome_ave = 1.0/(0.5*(turre(j,k,i,7)+turre(j,k,i-1,7)))**2
+             else
+               ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k,i-1,7))
+             end if
              xmut(i) = max(0.,rho_ave*tke_ave/ome_ave)
 
              diff(i,:) =turre(j,k,i,:) -  turre(j,k,i-1,:)
@@ -3741,6 +3990,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
@@ -3933,7 +4184,7 @@ CONTAINS
        ENDDO
     ENDDO
 
-    IF(i2d/=1) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
        DO j=1,jdim-1
@@ -4014,6 +4265,8 @@ CONTAINS
     REAL::title,rkap,xmach
     COMMON /twod/ i2d
     INTEGER :: i2d
+    COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+    integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
@@ -4193,7 +4446,7 @@ CONTAINS
        ENDDO
     ENDDO
 
-    IF(i2d/=1) THEN
+    IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
        DO j=1,jdim-1
@@ -4614,4 +4867,319 @@ CONTAINS
 
      
    END SUBROUTINE kws_dbij_dxx
+   SUBROUTINE vel2ndderiv(idim,jdim,kdim,ux,vol,si,sj,sk,vx)
+!
+!***********************************************************************
+!     Purpose:  Compute 2nd derivs of velocity
+!     this routine works with
+!     the ux() velocity derivatives already obtained at cell centers,
+!     taking central differences of them.  As a result of this,
+!     at boundaries, one-sided differencing is employed 
+!     (i.e., unlike sijrate2d, this routine
+!     does NOT account for BC information, so the derivatives are
+!     lower order at all block boundaries).  If the index in any 
+!     direction is 2, such as would occur for 2-D, then the derivative 
+!     in that index direction is set to zero.
+!       vx(1)=d2u/dx2, vx(2)=d2u/dy2, vx(3)=d2u/dz2
+!       vx(4)=d2v/dx2, vx(5)=d2v/dy2, vx(6)=d2v/dz2
+!       vx(7)=d2w/dx2, vx(8)=d2w/dy2, vx(9)=d2w/dz2
+!***********************************************************************
+!
+      REAL,INTENT(in) :: vol(jdim,kdim,idim-1),si(jdim,kdim,idim,5), &
+        sj(jdim,kdim,idim-1,5),sk(jdim,kdim,idim-1,5),               &
+        ux(jdim-1,kdim-1,idim-1,9)
+      REAL,INTENT(out) :: vx(jdim-1,kdim-1,idim-1,9)
+      INTEGER,INTENT(in) :: idim,jdim,kdim
+      INTEGER :: m,i,j,k
+      REAL :: fac,xc,yc,zc
+      REAL :: uxp,uyp,uzp,uxm,uym,uzm
+      REAL :: vxp,vyp,vzp,vxm,vym,vzm
+      REAL :: wxp,wyp,wzp,wxm,wym,wzm
+!
+!     initialize
+      do m=1,9
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              vx(j,k,i,m)=0.
+            enddo
+          enddo
+        enddo
+      enddo
+!     j-direction:
+        if (jdim .gt. 2) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                xc=0.5*(sj(j  ,k  ,i  ,1)*sj(j  ,k  ,i  ,4)+   &
+                        sj(j+1,k  ,i  ,1)*sj(j+1,k  ,i  ,4))/  &
+                        vol(j,k,i)
+                yc=0.5*(sj(j  ,k  ,i  ,2)*sj(j  ,k  ,i  ,4)+   &
+                        sj(j+1,k  ,i  ,2)*sj(j+1,k  ,i  ,4))/  &
+                        vol(j,k,i)
+                zc=0.5*(sj(j  ,k  ,i  ,3)*sj(j  ,k  ,i  ,4)+   &
+                        sj(j+1,k  ,i  ,3)*sj(j+1,k  ,i  ,4))/  &
+                        vol(j,k,i)
+!               tc=0.5*(sj(j  ,k  ,i  ,5)*sj(j  ,k  ,i  ,4)+   &
+!                       sj(j+1,k  ,i  ,5)*sj(j+1,k  ,i  ,4))/  &
+!                       vol(j,k,i)
+                if (j .ge. 2 .and. j .le. jdim-2) then
+                  fac=2.
+                  uxp = ux(j+1,k  ,i  ,1)
+                  uyp = ux(j+1,k  ,i  ,2)
+                  uzp = ux(j+1,k  ,i  ,3)
+                  vxp = ux(j+1,k  ,i  ,4)
+                  vyp = ux(j+1,k  ,i  ,5)
+                  vzp = ux(j+1,k  ,i  ,6)
+                  wxp = ux(j+1,k  ,i  ,7)
+                  wyp = ux(j+1,k  ,i  ,8)
+                  wzp = ux(j+1,k  ,i  ,9)
+                  uxm = ux(j-1,k  ,i  ,1)
+                  uym = ux(j-1,k  ,i  ,2)
+                  uzm = ux(j-1,k  ,i  ,3)
+                  vxm = ux(j-1,k  ,i  ,4)
+                  vym = ux(j-1,k  ,i  ,5)
+                  vzm = ux(j-1,k  ,i  ,6)
+                  wxm = ux(j-1,k  ,i  ,7)
+                  wym = ux(j-1,k  ,i  ,8)
+                  wzm = ux(j-1,k  ,i  ,9)
+                else if (j .eq. 1) then
+                  fac=1.
+                  uxp = ux(j+1,k  ,i  ,1)
+                  uyp = ux(j+1,k  ,i  ,2)
+                  uzp = ux(j+1,k  ,i  ,3)
+                  vxp = ux(j+1,k  ,i  ,4)
+                  vyp = ux(j+1,k  ,i  ,5)
+                  vzp = ux(j+1,k  ,i  ,6)
+                  wxp = ux(j+1,k  ,i  ,7)
+                  wyp = ux(j+1,k  ,i  ,8)
+                  wzp = ux(j+1,k  ,i  ,9)
+                  uxm = ux(j  ,k  ,i  ,1)
+                  uym = ux(j  ,k  ,i  ,2)
+                  uzm = ux(j  ,k  ,i  ,3)
+                  vxm = ux(j  ,k  ,i  ,4)
+                  vym = ux(j  ,k  ,i  ,5)
+                  vzm = ux(j  ,k  ,i  ,6)
+                  wxm = ux(j  ,k  ,i  ,7)
+                  wym = ux(j  ,k  ,i  ,8)
+                  wzm = ux(j  ,k  ,i  ,9)
+                else if (j .eq. jdim-1) then
+                  fac=1.
+                  uxp = ux(j  ,k  ,i  ,1)
+                  uyp = ux(j  ,k  ,i  ,2)
+                  uzp = ux(j  ,k  ,i  ,3)
+                  vxp = ux(j  ,k  ,i  ,4)
+                  vyp = ux(j  ,k  ,i  ,5)
+                  vzp = ux(j  ,k  ,i  ,6)
+                  wxp = ux(j  ,k  ,i  ,7)
+                  wyp = ux(j  ,k  ,i  ,8)
+                  wzp = ux(j  ,k  ,i  ,9)
+                  uxm = ux(j-1,k  ,i  ,1)
+                  uym = ux(j-1,k  ,i  ,2)
+                  uzm = ux(j-1,k  ,i  ,3)
+                  vxm = ux(j-1,k  ,i  ,4)
+                  vym = ux(j-1,k  ,i  ,5)
+                  vzm = ux(j-1,k  ,i  ,6)
+                  wxm = ux(j-1,k  ,i  ,7)
+                  wym = ux(j-1,k  ,i  ,8)
+                  wzm = ux(j-1,k  ,i  ,9)
+                end if
+                vx(j,k,i,1)=vx(j,k,i,1)+xc*(uxp-uxm)/fac
+                vx(j,k,i,2)=vx(j,k,i,2)+yc*(uyp-uym)/fac
+                vx(j,k,i,3)=vx(j,k,i,3)+zc*(uzp-uzm)/fac
+                vx(j,k,i,4)=vx(j,k,i,4)+xc*(vxp-vxm)/fac
+                vx(j,k,i,5)=vx(j,k,i,5)+yc*(vyp-vym)/fac
+                vx(j,k,i,6)=vx(j,k,i,6)+zc*(vzp-vzm)/fac
+                vx(j,k,i,7)=vx(j,k,i,7)+xc*(wxp-wxm)/fac
+                vx(j,k,i,8)=vx(j,k,i,8)+yc*(wyp-wym)/fac
+                vx(j,k,i,9)=vx(j,k,i,9)+zc*(wzp-wzm)/fac
+              enddo
+            enddo
+          enddo
+        end if
+!     k-direction:
+        if (kdim .gt. 2) then
+          do i=1,idim-1
+            do j=1,jdim-1
+              do k=1,kdim-1
+                xc=0.5*(sk(j  ,k  ,i  ,1)*sk(j  ,k  ,i  ,4)+  &
+                        sk(j  ,k+1,i  ,1)*sk(j  ,k+1,i  ,4))/ &
+                        vol(j,k,i)
+                yc=0.5*(sk(j  ,k  ,i  ,2)*sk(j  ,k  ,i  ,4)+  &
+                        sk(j  ,k+1,i  ,2)*sk(j  ,k+1,i  ,4))/ &
+                        vol(j,k,i)
+                zc=0.5*(sk(j  ,k  ,i  ,3)*sk(j  ,k  ,i  ,4)+  &
+                        sk(j  ,k+1,i  ,3)*sk(j  ,k+1,i  ,4))/ &
+                        vol(j,k,i)
+!               tc=0.5*(sk(j  ,k  ,i  ,5)*sk(j  ,k  ,i  ,4)+  &
+!                       sk(j  ,k+1,i  ,5)*sk(j  ,k+1,i  ,4))/ &
+!                       vol(j,k,i)
+                if (k .ge. 2 .and. k .le. kdim-2) then
+                  fac=2.
+                  uxp = ux(j  ,k+1,i  ,1)
+                  uyp = ux(j  ,k+1,i  ,2)
+                  uzp = ux(j  ,k+1,i  ,3)
+                  vxp = ux(j  ,k+1,i  ,4)
+                  vyp = ux(j  ,k+1,i  ,5)
+                  vzp = ux(j  ,k+1,i  ,6)
+                  wxp = ux(j  ,k+1,i  ,7)
+                  wyp = ux(j  ,k+1,i  ,8)
+                  wzp = ux(j  ,k+1,i  ,9)
+                  uxm = ux(j  ,k-1,i  ,1)
+                  uym = ux(j  ,k-1,i  ,2)
+                  uzm = ux(j  ,k-1,i  ,3)
+                  vxm = ux(j  ,k-1,i  ,4)
+                  vym = ux(j  ,k-1,i  ,5)
+                  vzm = ux(j  ,k-1,i  ,6)
+                  wxm = ux(j  ,k-1,i  ,7)
+                  wym = ux(j  ,k-1,i  ,8)
+                  wzm = ux(j  ,k-1,i  ,9)
+                else if (k .eq. 1) then
+                  fac=1.
+                  uxp = ux(j  ,k+1,i  ,1)
+                  uyp = ux(j  ,k+1,i  ,2)
+                  uzp = ux(j  ,k+1,i  ,3)
+                  vxp = ux(j  ,k+1,i  ,4)
+                  vyp = ux(j  ,k+1,i  ,5)
+                  vzp = ux(j  ,k+1,i  ,6)
+                  wxp = ux(j  ,k+1,i  ,7)
+                  wyp = ux(j  ,k+1,i  ,8)
+                  wzp = ux(j  ,k+1,i  ,9)
+                  uxm = ux(j  ,k  ,i  ,1)
+                  uym = ux(j  ,k  ,i  ,2)
+                  uzm = ux(j  ,k  ,i  ,3)
+                  vxm = ux(j  ,k  ,i  ,4)
+                  vym = ux(j  ,k  ,i  ,5)
+                  vzm = ux(j  ,k  ,i  ,6)
+                  wxm = ux(j  ,k  ,i  ,7)
+                  wym = ux(j  ,k  ,i  ,8)
+                  wzm = ux(j  ,k  ,i  ,9)
+                else if (k .eq. kdim-1) then
+                  fac=1.
+                  uxp = ux(j  ,k  ,i  ,1)
+                  uyp = ux(j  ,k  ,i  ,2)
+                  uzp = ux(j  ,k  ,i  ,3)
+                  vxp = ux(j  ,k  ,i  ,4)
+                  vyp = ux(j  ,k  ,i  ,5)
+                  vzp = ux(j  ,k  ,i  ,6)
+                  wxp = ux(j  ,k  ,i  ,7)
+                  wyp = ux(j  ,k  ,i  ,8)
+                  wzp = ux(j  ,k  ,i  ,9)
+                  uxm = ux(j  ,k-1,i  ,1)
+                  uym = ux(j  ,k-1,i  ,2)
+                  uzm = ux(j  ,k-1,i  ,3)
+                  vxm = ux(j  ,k-1,i  ,4)
+                  vym = ux(j  ,k-1,i  ,5)
+                  vzm = ux(j  ,k-1,i  ,6)
+                  wxm = ux(j  ,k-1,i  ,7)
+                  wym = ux(j  ,k-1,i  ,8)
+                  wzm = ux(j  ,k-1,i  ,9)
+                end if
+                vx(j,k,i,1)=vx(j,k,i,1)+xc*(uxp-uxm)/fac
+                vx(j,k,i,2)=vx(j,k,i,2)+yc*(uyp-uym)/fac
+                vx(j,k,i,3)=vx(j,k,i,3)+zc*(uzp-uzm)/fac
+                vx(j,k,i,4)=vx(j,k,i,4)+xc*(vxp-vxm)/fac
+                vx(j,k,i,5)=vx(j,k,i,5)+yc*(vyp-vym)/fac
+                vx(j,k,i,6)=vx(j,k,i,6)+zc*(vzp-vzm)/fac
+                vx(j,k,i,7)=vx(j,k,i,7)+xc*(wxp-wxm)/fac
+                vx(j,k,i,8)=vx(j,k,i,8)+yc*(wyp-wym)/fac
+                vx(j,k,i,9)=vx(j,k,i,9)+zc*(wzp-wzm)/fac
+              enddo
+            enddo
+          enddo
+        end if
+!     i-direction:
+        if (idim .gt. 2) then
+          do k=1,kdim-1
+            do j=1,jdim-1
+              do i=1,idim-1
+                xc=0.5*(si(j  ,k  ,i  ,1)*si(j  ,k  ,i  ,4)+  &
+                        si(j  ,k  ,i+1,1)*si(j  ,k  ,i+1,4))/ &
+                        vol(j,k,i)
+                yc=0.5*(si(j  ,k  ,i  ,2)*si(j  ,k  ,i  ,4)+  &
+                        si(j  ,k  ,i+1,2)*si(j  ,k  ,i+1,4))/ &
+                        vol(j,k,i)
+                zc=0.5*(si(j  ,k  ,i  ,3)*si(j  ,k  ,i  ,4)+  &
+                        si(j  ,k  ,i+1,3)*si(j  ,k  ,i+1,4))/ &
+                        vol(j,k,i)
+!               tc=0.5*(si(j  ,k  ,i  ,5)*si(j  ,k  ,i  ,4)+  &
+!                       si(j  ,k  ,i+1,5)*si(j  ,k  ,i+1,4))/ &
+!                       vol(j,k,i)
+                if (i .ge. 2 .and. i .le. idim-2) then
+                  fac=2.
+                  uxp = ux(j  ,k  ,i+1,1)
+                  uyp = ux(j  ,k  ,i+1,2)
+                  uzp = ux(j  ,k  ,i+1,3)
+                  vxp = ux(j  ,k  ,i+1,4)
+                  vyp = ux(j  ,k  ,i+1,5)
+                  vzp = ux(j  ,k  ,i+1,6)
+                  wxp = ux(j  ,k  ,i+1,7)
+                  wyp = ux(j  ,k  ,i+1,8)
+                  wzp = ux(j  ,k  ,i+1,9)
+                  uxm = ux(j  ,k  ,i-1,1)
+                  uym = ux(j  ,k  ,i-1,2)
+                  uzm = ux(j  ,k  ,i-1,3)
+                  vxm = ux(j  ,k  ,i-1,4)
+                  vym = ux(j  ,k  ,i-1,5)
+                  vzm = ux(j  ,k  ,i-1,6)
+                  wxm = ux(j  ,k  ,i-1,7)
+                  wym = ux(j  ,k  ,i-1,8)
+                  wzm = ux(j  ,k  ,i-1,9)
+                else if (i .eq. 1) then
+                  fac=1.
+                  uxp = ux(j  ,k  ,i+1,1)
+                  uyp = ux(j  ,k  ,i+1,2)
+                  uzp = ux(j  ,k  ,i+1,3)
+                  vxp = ux(j  ,k  ,i+1,4)
+                  vyp = ux(j  ,k  ,i+1,5)
+                  vzp = ux(j  ,k  ,i+1,6)
+                  wxp = ux(j  ,k  ,i+1,7)
+                  wyp = ux(j  ,k  ,i+1,8)
+                  wzp = ux(j  ,k  ,i+1,9)
+                  uxm = ux(j  ,k  ,i  ,1)
+                  uym = ux(j  ,k  ,i  ,2)
+                  uzm = ux(j  ,k  ,i  ,3)
+                  vxm = ux(j  ,k  ,i  ,4)
+                  vym = ux(j  ,k  ,i  ,5)
+                  vzm = ux(j  ,k  ,i  ,6)
+                  wxm = ux(j  ,k  ,i  ,7)
+                  wym = ux(j  ,k  ,i  ,8)
+                  wzm = ux(j  ,k  ,i  ,9)
+                else if (i .eq. idim-1) then
+                  fac=1.
+                  uxp = ux(j  ,k  ,i  ,1)
+                  uyp = ux(j  ,k  ,i  ,2)
+                  uzp = ux(j  ,k  ,i  ,3)
+                  vxp = ux(j  ,k  ,i  ,4)
+                  vyp = ux(j  ,k  ,i  ,5)
+                  vzp = ux(j  ,k  ,i  ,6)
+                  wxp = ux(j  ,k  ,i  ,7)
+                  wyp = ux(j  ,k  ,i  ,8)
+                  wzp = ux(j  ,k  ,i  ,9)
+                  uxm = ux(j  ,k  ,i-1,1)
+                  uym = ux(j  ,k  ,i-1,2)
+                  uzm = ux(j  ,k  ,i-1,3)
+                  vxm = ux(j  ,k  ,i-1,4)
+                  vym = ux(j  ,k  ,i-1,5)
+                  vzm = ux(j  ,k  ,i-1,6)
+                  wxm = ux(j  ,k  ,i-1,7)
+                  wym = ux(j  ,k  ,i-1,8)
+                  wzm = ux(j  ,k  ,i-1,9)
+                end if
+                vx(j,k,i,1)=vx(j,k,i,1)+xc*(uxp-uxm)/fac
+                vx(j,k,i,2)=vx(j,k,i,2)+yc*(uyp-uym)/fac
+                vx(j,k,i,3)=vx(j,k,i,3)+zc*(uzp-uzm)/fac
+                vx(j,k,i,4)=vx(j,k,i,4)+xc*(vxp-vxm)/fac
+                vx(j,k,i,5)=vx(j,k,i,5)+yc*(vyp-vym)/fac
+                vx(j,k,i,6)=vx(j,k,i,6)+zc*(vzp-vzm)/fac
+                vx(j,k,i,7)=vx(j,k,i,7)+xc*(wxp-wxm)/fac
+                vx(j,k,i,8)=vx(j,k,i,8)+yc*(wyp-wym)/fac
+                vx(j,k,i,9)=vx(j,k,i,9)+zc*(wzp-wzm)/fac
+              enddo
+            enddo
+          enddo
+        end if
+!
+      return
+   END SUBROUTINE vel2ndderiv
 END MODULE module_kwstm

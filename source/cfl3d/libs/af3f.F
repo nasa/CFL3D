@@ -2,7 +2,7 @@
      .                res,vist3d,x,y,z,blank,vmuk,resid,wk,nwork,wk0,
      .                nwk0,iover,vk0,bcj,bck,bci,nou,bou,nbuf,ibufdim,
      .                myid,mblk2nd,maxbl,volk0,tursav,tk0,cmuv,
-     .                iadvance,nummem)
+     .                iadvance,nummem,ux)
 c
 c     $Id$
 c
@@ -33,6 +33,7 @@ c
       dimension iadvance(nbl)
       dimension tursav(jdim,kdim,idim,nummem),tk0(jdim,idim-1,nummem,4),
      .          cmuv(idim-1,kdim-1,idim-1)
+      dimension ux(jdim-1,kdim-1,idim-1,9)
 c
       common /fvfds/ rkap0(3),ifds(3)
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
@@ -189,7 +190,7 @@ c        Call viscous LHS.
          call hfluxv(i,npl,jdim,kdim,idim,1,wk(iwka),wk(iwkb),wk(iwkc),
      .               res,q,qk0,sk,vol,wk(iwkd),nvtq,wk0,vist3d,vmuk,
      .               vk0,bck,tursav,tk0,cmuv,
-     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem)
+     .               volk0,nou,bou,nbuf,ibufdim,iadvance(nbl),nummem,ux)
       end if
 c
       if (iover.eq.1) call abckz(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),

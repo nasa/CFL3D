@@ -20,6 +20,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /initfac/ scal_ic
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
 c
 c   scaling factor for distance-based I.C.s:
       if (scal_ic .eq. 0.) then
@@ -135,6 +136,23 @@ c         do nothing
           enddo
           continue
         elseif(ivisc(1).eq.72.or.ivisc(2).eq.72.or.ivisc(3).eq.72) then
+          if (issglrrw2012 .eq. 6) then
+          do i=1,idim-1
+            do k=1,kdim-1
+              do j=1,jdim-1
+                tursav(j,k,i,1)=tur10(1)
+                tursav(j,k,i,2)=tur10(2)
+                tursav(j,k,i,3)=tur10(3)
+                tursav(j,k,i,4)=tur10(4)
+                tursav(j,k,i,5)=tur10(5)
+                tursav(j,k,i,6)=tur10(6)
+                tursav(j,k,i,7)=tur10(7)
+                zkinf=-(tur10(1)+tur10(2)+tur10(3))/2.
+                vist3d(j,k,i)=rho0*zkinf*(tur10(7)**2)
+              enddo
+            enddo
+          enddo
+          else
           do i=1,idim-1
             do k=1,kdim-1
               do j=1,jdim-1
@@ -150,6 +168,7 @@ c         do nothing
               enddo
             enddo
           enddo
+          end if
         else
           const1=45.8
           const2=1.68

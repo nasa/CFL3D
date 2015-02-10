@@ -36,7 +36,7 @@ c
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
 c
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
      + sk(jdim,kdim,idim-1,5),si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)

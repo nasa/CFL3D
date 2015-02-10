@@ -135,7 +135,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
      .        isst2003
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt 
@@ -211,8 +211,9 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
-      common /reystressmodel/ issglrrw2012
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
+      common /saneg/ i_saneg
 #if defined DIST_MPI
 c
 c***********************
@@ -532,6 +533,9 @@ c
          work(nlast+146)= ifort50write
          work(nlast+147)= j_ifort50write
          work(nlast+148)= i_ifort50write
+         work(nlast+149)= i_sas_rsm
+         work(nlast+150)= iforcev0
+         work(nlast+151)= i_saneg
          nlast = nlast+nkey
       end if
 c
@@ -860,6 +864,9 @@ c
          ifort50write= int(work(nlast+146))
          j_ifort50write= int(work(nlast+147))
          i_ifort50write= int(work(nlast+148))
+         i_sas_rsm= int(work(nlast+149))
+         iforcev0 = int(work(nlast+150))
+         i_saneg = int(work(nlast+151))
       end if
 c
 c**************************

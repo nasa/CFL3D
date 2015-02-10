@@ -180,7 +180,7 @@ c
      .        i_turbprod_kterm,i_catris_kw,prod2d3dtrace,
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
      .        isst2003
-      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis
+      common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /fullns/ ifullns
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
@@ -191,6 +191,7 @@ c
      .        tur10(7)
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
+      common /saneg/ i_saneg
 c
       pi = 4.0*atan(1.0)
 c
@@ -495,6 +496,10 @@ c   Check for SARC & EASMCC models
       end if
       if (isarc3d .eq. 1 .and. isarc2d .eq. 1) then
         write(iunit11,'('' ERROR: cannot have isarc3d and isarc2d=1'')')
+        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if ((isarc2d.eq.1 .or. isarc3d.eq.1) .and. i_saneg.ne.0) then
+        write(iunit11,'('' ERROR: cannot have SARC on and SA-neg'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -990,25 +995,25 @@ c     Need to check for keywords that do not work for ivmx=72:
      .      '' for ivisc=72'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
-        if (iaxi2planeturb .ne. 0) then
-          write(iunit11,'('' ERROR: iaxi2planeturb not implemented'',
-     .      '' for ivisc=72'')')
-          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-        end if
+c       if (iaxi2planeturb .ne. 0) then
+c         write(iunit11,'('' ERROR: iaxi2planeturb not implemented'',
+c    .      '' for ivisc=72'')')
+c         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+c       end if
         if (istrongturbdis .ne. 0) then
           write(iunit11,'('' ERROR: istrongturbdis not implemented'',
      .      '' for ivisc=72'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
-        if (cflturb(2) .ne. 0. .or. cflturb(3) .ne. 0. .or.
-     .      cflturb(4) .ne. 0. .or. cflturb(5) .ne. 0. .or.
-     .      cflturb(6) .ne. 0. .or. cflturb(7) .ne. 0.) then
-          write(iunit11,'('' ERROR: cflturb2...cflturb7 not'',
-     .      '' implemented for ivisc=72'')')
-          write(iunit11,'(''  ... use cflturb1 to set CFL for all'',
-     .      '' seven turb equations'')')
-          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-        end if
+c       if (cflturb(2) .ne. 0. .or. cflturb(3) .ne. 0. .or.
+c    .      cflturb(4) .ne. 0. .or. cflturb(5) .ne. 0. .or.
+c    .      cflturb(6) .ne. 0. .or. cflturb(7) .ne. 0.) then
+c         write(iunit11,'('' ERROR: cflturb2...cflturb7 not'',
+c    .      '' implemented for ivisc=72'')')
+c         write(iunit11,'(''  ... use cflturb1 to set CFL for all'',
+c    .      '' seven turb equations'')')
+c         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+c       end if
         if (tur1cut .ne. 1.e-20 .or. tur2cut .ne. 1.e-20) then
           write(iunit11,'('' ERROR: tur1cut, tur2cut not implemented'',
      .      '' for ivisc=72'')')
