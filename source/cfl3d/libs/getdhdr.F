@@ -110,6 +110,14 @@ c
          datahdr(4) = '      lref'
       end if
 c
+      if (ibctyp.eq.2103) then
+         datahdr(1) = '    p/pinf'
+         datahdr(2) = '   dp/pinf'
+         datahdr(3) = '    rfreqp'
+         datahdr(4) = '      lref'
+         datahdr(5) = '    phioff'
+      end if
+c
       if (ibctyp.eq.2008 .or. ibctyp.eq.2038) then
          datahdr(1)  = '       rho'
          datahdr(2)  = '         u'

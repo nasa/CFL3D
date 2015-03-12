@@ -256,7 +256,12 @@ c
       if (ibcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (ibcinfo(nbl,nseg,1,1).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   802 continue
 c
@@ -435,7 +440,12 @@ c
       if (ibcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   803 continue
 c
@@ -614,7 +624,12 @@ c
       if (jbcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   804 continue
 c
@@ -793,7 +808,12 @@ c
       if (jbcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   805 continue
 c
@@ -972,7 +992,12 @@ c
       if (kbcinfo(nbl,nseg,1,1).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (kbcinfo(nbl,nseg,1,1).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   806 continue
 c
@@ -1151,7 +1176,12 @@ c
       if (kbcinfo(nbl,nseg,1,2).eq.2102)
      .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
-     .  maxbl)
+     .  maxbl,0)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2103)
+     .  call out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,1)
 c
   807 continue
 c
@@ -8673,7 +8703,7 @@ c
       end
       subroutine out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
-     .                  filname,myid,mblk2nd,maxbl)
+     .                  filname,myid,mblk2nd,maxbl,iflag)
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -8701,11 +8731,17 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
+      if (iflag .eq. 0) then
+        l_set=4
+      else
+        l_set=5
+      end if
+c
       if (nface.eq.3) then
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 1 l=1,4
+         do 1 l=1,l_set
          do 1 ipp=1,2
          do 1 i=ista,iend1
          ii = i-ista+1
@@ -8714,8 +8750,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
    1     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8726,10 +8767,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1001)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1001)ista,iend,ksta,kend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3001)ista,iend,ksta,kend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8737,9 +8788,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) 
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2001)ista,iend,ksta,kend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2001)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4001)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8752,7 +8812,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 2 l=1,4
+         do 2 l=1,l_set
          do 2 ipp=1,2
          do 2 i=ista,iend1
          ii = i-ista+1
@@ -8761,8 +8821,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(kk,ii,ipp,l)) .lt. -1.e10) iflg = 1
    2     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8773,10 +8838,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1002)ista,iend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1002)ista,iend,ksta,kend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3002)ista,iend,ksta,kend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8784,9 +8859,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2002)ista,iend,ksta,kend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2002)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4002)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8799,7 +8883,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 3 l=1,4
+         do 3 l=1,l_set
          do 3 ipp=1,2
          do 3 i=ista,iend1
          ii = i-ista+1
@@ -8808,8 +8892,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
    3     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8820,10 +8909,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1003)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1003)ista,iend,jsta,jend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3003)ista,iend,jsta,jend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8831,9 +8930,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2003)ista,iend,jsta,jend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2003)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4003)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8846,7 +8954,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 4 l=1,4
+         do 4 l=1,l_set
          do 4 ipp=1,2
          do 4 i=ista,iend1
          ii = i-ista+1
@@ -8855,8 +8963,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(jj,ii,ipp,l)) .lt. -1.e10) iflg = 1
    4     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8867,10 +8980,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1004)ista,iend,jsta,jend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1004)ista,iend,jsta,jend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3004)ista,iend,jsta,jend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8878,9 +9001,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2004)ista,iend,jsta,jend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2004)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4004)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8893,7 +9025,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 5 l=1,4
+         do 5 l=1,l_set
          do 5 ipp=1,2
          do 5 k=ksta,kend1
          kk = k-ksta+1
@@ -8902,8 +9034,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
    5     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8914,10 +9051,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1005)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1005)jsta,jend,ksta,kend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3005)jsta,jend,ksta,kend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8925,9 +9072,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2005)jsta,jend,ksta,kend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2005)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4005)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8940,7 +9096,7 @@ c
 c
 c        check that the required auxiliary data has been set
          iflg = 0
-         do 6 l=1,4
+         do 6 l=1,l_set
          do 6 ipp=1,2
          do 6 k=ksta,kend1
          kk = k-ksta+1
@@ -8949,8 +9105,13 @@ c        check that the required auxiliary data has been set
          if (real(bcdata(jj,kk,ipp,l)) .lt. -1.e10) iflg = 1
    6     continue
          if (iflg.eq.1) then
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2102:'
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)'  Stopping in bc2103:'
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
@@ -8961,10 +9122,20 @@ c
             deltap = bcdata(1,1,1,2)
             rfreqp = bcdata(1,1,1,3)
             lref   = bcdata(1,1,1,4)
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1006)jsta,jend,ksta,kend
-            nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007)
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1006)jsta,jend,ksta,kend
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),3006)jsta,jend,ksta,kend
+            end if
+            if (iflag .eq. 0) then
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1007)
+            else
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1012)
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1008) real(pratio)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8972,9 +9143,18 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1010) 
      .            real(twopi)*real(rfreqp)/real(lref)
+            if (iflag .eq. 1) then
+              phioff = bcdata(1,1,1,5)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1011) real(phioff)
+            end if
          else
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),2006)jsta,jend,ksta,kend
+            if (iflag .eq. 0) then
+              write(bou(nou(1),1),2006)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),4006)ista,iend,ksta,kend
+            end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),2007)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -8999,6 +9179,8 @@ c
  1008 format(11x,'P1         = ',f8.4)
  1009 format(11x,'eps        = ',f8.4)
  1010 format(11x,'k          = ',f8.4)
+ 1011 format(11x,'phioff(deg)= ',f8.4)
+ 1012 format(11x,'P(t)/Pinf  = P1 + eps*sin(k*t+phioff)')
 c
  2001 format(' ','  j=   1  time-varying pressure          type 2102')
  2002 format(' ','  j=jdim  time-varying pressure          type 2102')
@@ -9008,6 +9190,26 @@ c
  2006 format(' ','  i=idim  time-varying pressure          type 2102')
  2007 format(11x,'P(t)/Pinf set from file:')
  2008 format('           ',a60)
+c
+ 3001 format(' ','  j=   1  time-varying pressure          type 2103',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 3002 format(' ','  j=jdim  time-varying pressure          type 2103',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 3003 format(' ','  k=   1  time-varying pressure          type 2103',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 3004 format(' ','  k=kdim  time-varying pressure          type 2103',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 3005 format(' ','  i=   1  time-varying pressure          type 2103',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 3006 format(' ','  i=idim  time-varying pressure          type 2103',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+c
+ 4001 format(' ','  j=   1  time-varying pressure          type 2103')
+ 4002 format(' ','  j=jdim  time-varying pressure          type 2103')
+ 4003 format(' ','  k=   1  time-varying pressure          type 2103')
+ 4004 format(' ','  k=kdim  time-varying pressure          type 2103')
+ 4005 format(' ','  i=   1  time-varying pressure          type 2103')
+ 4006 format(' ','  i=idim  time-varying pressure          type 2103')
 c
       return 
       end

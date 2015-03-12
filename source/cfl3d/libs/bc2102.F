@@ -3,7 +3,7 @@
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,mdim,ndim,bcdata,
      .                  filname,iuns,nbl,nou,bou,nbuf,ibufdim,myid,
-     .                  nummem)
+     .                  nummem,iflag)
 c
 c     $Id$
 c
@@ -86,7 +86,12 @@ c
       deltap = bcdata(kk,ii,ip,2)
       rfreqp = bcdata(kk,ii,ip,3)
       lref   = bcdata(kk,ii,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(kk,ii,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qj0(k,i,5,1) = pset
       qj0(k,i,5,2) = pset
   102 continue
@@ -132,7 +137,12 @@ c
       deltap = bcdata(kk,ii,ip,2)
       rfreqp = bcdata(kk,ii,ip,3)
       lref   = bcdata(kk,ii,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(kk,ii,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qj0(k,i,5,3) = pset
       qj0(k,i,5,4) = pset
   202 continue
@@ -178,7 +188,12 @@ c
       deltap = bcdata(jj,ii,ip,2)
       rfreqp = bcdata(jj,ii,ip,3)
       lref   = bcdata(jj,ii,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(jj,ii,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qk0(j,i,5,1) = pset
       qk0(j,i,5,2) = pset
   302 continue
@@ -224,7 +239,12 @@ c
       deltap = bcdata(jj,ii,ip,2)
       rfreqp = bcdata(jj,ii,ip,3)
       lref   = bcdata(jj,ii,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(jj,ii,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qk0(j,i,5,3) = pset
       qk0(j,i,5,4) = pset
   402 continue
@@ -270,7 +290,12 @@ c
       deltap = bcdata(jj,kk,ip,2)
       rfreqp = bcdata(jj,kk,ip,3)
       lref   = bcdata(jj,kk,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(jj,kk,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qi0(j,k,5,1) = pset
       qi0(j,k,5,2) = pset
   502 continue
@@ -316,7 +341,12 @@ c
       deltap = bcdata(jj,kk,ip,2)
       rfreqp = bcdata(jj,kk,ip,3)
       lref   = bcdata(jj,kk,ip,4)
-      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time))*p0
+      if (iflag .eq. 0) then
+        phioff=0.
+      else
+        phioff=bcdata(jj,kk,ip,5)/57.2957795
+      end if
+      pset   = (pratio + deltap*sin(twopi*rfreqp/lref*time+phioff))*p0
       qi0(j,k,5,3) = pset
       qi0(j,k,5,4) = pset
   602 continue

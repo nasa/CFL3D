@@ -170,7 +170,8 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                        ibcinfo(nbl,nseg,1,1).eq.2006.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.2007.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.2008.or.
-     .                        ibcinfo(nbl,nseg,1,1).eq.2102) then
+     .                        ibcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                        ibcinfo(nbl,nseg,1,1).eq.2103) then
                             if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
      .                        and.j.le.jend.and.k.ge.ksta.and.k.le.kend)
      .                         then 
@@ -201,7 +202,8 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                        ibcinfo(nbl,nseg,1,2).eq.2006.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.2007.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.2008.or.
-     .                        ibcinfo(nbl,nseg,1,2).eq.2102) then
+     .                        ibcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                        ibcinfo(nbl,nseg,1,2).eq.2103) then
                             if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
      .                        and.j.le.jend.and.k.ge.ksta.and.k.le.kend)
      .                         then 
@@ -234,6 +236,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      jbcinfo(nbl,nseg,1,1).eq.2007.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.2008.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                      jbcinfo(nbl,nseg,1,1).eq.2103.or.
      .                     (jbcinfo(nbl,nseg,1,1).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -267,6 +270,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      jbcinfo(nbl,nseg,1,2).eq.2007.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.2008.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                      jbcinfo(nbl,nseg,1,2).eq.2103.or.
      .                     (jbcinfo(nbl,nseg,1,2).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -300,6 +304,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      kbcinfo(nbl,nseg,1,1).eq.2007.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.2008.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                      kbcinfo(nbl,nseg,1,1).eq.2103.or.
      .                     (kbcinfo(nbl,nseg,1,1).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -333,6 +338,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      kbcinfo(nbl,nseg,1,2).eq.2007.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.2008.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                      kbcinfo(nbl,nseg,1,2).eq.2103.or.
      .                     (kbcinfo(nbl,nseg,1,2).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -436,7 +442,8 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                        ibcinfo(nbl,nseg,1,1).eq.2006.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.2007.or.
      .                        ibcinfo(nbl,nseg,1,1).eq.2008.or.
-     .                        ibcinfo(nbl,nseg,1,1).eq.2102) then
+     .                        ibcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                        ibcinfo(nbl,nseg,1,1).eq.2103) then
                             if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
      .                        and.j.le.jend.and.k.ge.ksta.and.k.le.kend)
      .                         then 
@@ -467,7 +474,8 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                        ibcinfo(nbl,nseg,1,2).eq.2006.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.2007.or.
      .                        ibcinfo(nbl,nseg,1,2).eq.2008.or.
-     .                        ibcinfo(nbl,nseg,1,2).eq.2102) then
+     .                        ibcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                        ibcinfo(nbl,nseg,1,2).eq.2103) then
                             if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
      .                        and.j.le.jend.and.k.ge.ksta.and.k.le.kend)
      .                         then 
@@ -500,6 +508,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      jbcinfo(nbl,nseg,1,1).eq.2007.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.2008.or.
      .                      jbcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                      jbcinfo(nbl,nseg,1,1).eq.2103.or.
      .                     (jbcinfo(nbl,nseg,1,1).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -533,6 +542,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      jbcinfo(nbl,nseg,1,2).eq.2007.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.2008.or.
      .                      jbcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                      jbcinfo(nbl,nseg,1,2).eq.2103.or.
      .                     (jbcinfo(nbl,nseg,1,2).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -566,6 +576,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      kbcinfo(nbl,nseg,1,1).eq.2007.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.2008.or.
      .                      kbcinfo(nbl,nseg,1,1).eq.2102.or.
+     .                      kbcinfo(nbl,nseg,1,1).eq.2103.or.
      .                     (kbcinfo(nbl,nseg,1,1).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.
@@ -599,6 +610,7 @@ c           if (myid.eq.mblk2nd(nbl)) then
      .                      kbcinfo(nbl,nseg,1,2).eq.2007.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.2008.or.
      .                      kbcinfo(nbl,nseg,1,2).eq.2102.or.
+     .                      kbcinfo(nbl,nseg,1,2).eq.2103.or.
      .                     (kbcinfo(nbl,nseg,1,2).eq.1013.and.   
      .                      idim.eq.2)) then
                           if(i.ge.ista.and.i.le.iend.and.j.ge.jsta.

@@ -206,6 +206,8 @@ c               (p/pinf), the  amplitude of the pressure oscillation
 c               (deltap/pinf), the reduced frequency of the pressure
 c               oscillation (rfreqp), and the "grid equivalent" length of the
 c               dimensional reference length used to define rfreqp
+c      bc2013 - same as bc2102, except also includes a phioff angle (in deg)
+c               so that pset=p0(pratio+deltap*sin(2*pi*kr*t + phioff/57.2957795)
 c      bc9999 - exact solution
 c
 c
@@ -541,7 +543,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (ibcinfo(nbl,nseg,1,1).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (ibcinfo(nbl,nseg,1,1).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -790,7 +800,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (ibcinfo(nbl,nseg,1,2).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1039,7 +1057,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (jbcinfo(nbl,nseg,1,1).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (jbcinfo(nbl,nseg,1,1).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1288,7 +1314,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (jbcinfo(nbl,nseg,1,2).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1537,7 +1571,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (kbcinfo(nbl,nseg,1,1).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (kbcinfo(nbl,nseg,1,1).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1786,7 +1828,15 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
-     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem)
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,0)
+c
+      if (kbcinfo(nbl,nseg,1,2).eq.2103)
+     .  call bc2102(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
+     .  nbl,nou,bou,nbuf,ibufdim,myid,nummem,1)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2003)
      .  call bc2003(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
