@@ -898,7 +898,7 @@ c
      .  '' unless ivisc=6,7,8,12, or 14 used'')')
       end if
 c
-      if (isstrc .eq. 1 .and. (ivmx.ne.6 .and. ivmx.ne.7)) then
+      if (isstrc .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7)) then
         write(iunit11,'('' WARNING: isstrc not active'',
      .  '' unless ivisc=6 or 7'')')
       end if

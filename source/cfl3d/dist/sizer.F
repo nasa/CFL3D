@@ -1345,6 +1345,8 @@ c allocate for gradients of vorticity and turbulence - k-zeta only:
 c allocate for easmcc2d
                if (ieasmcc2d .eq. 1) then
                  inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+               else if (isstrc .eq. 2) then
+                 inmx=(jdim+1)*(kdim+1)*(idim-1)*6
                else
                  inmx=0
                end if

@@ -13,7 +13,7 @@
      + dkdj,dkdk,dkdi,dzdj,dzdk,dzdi,dw1dj,dw1dk,dw1di,
      + dw2dj,dw2dk,dw2di,dw3dj,dw3dk,dw3di,drdj,drdk,drdi,
      + dpdj,dpdk,dpdi,
-     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem)
+     + w1,w2,w3,srce,vx,xlscale,fdsav,nummem,iccnum)
 c
 c     $Id$
 c
@@ -117,7 +117,7 @@ c
      +          w2(0:jdim,0:kdim,0:idim),
      +          w3(0:jdim,0:kdim,0:idim)
       dimension srce(0:jdim,0:kdim,0:idim,2)
-      dimension vx(0:jdim,0:kdim,idim-1,4)
+      dimension vx(0:jdim,0:kdim,idim-1,iccnum)
       dimension xlscale(jdim-1,kdim-1,idim-1),
      +          fdsav(jdim-1,kdim-1,idim-1)
 c
@@ -553,6 +553,11 @@ c
              write(bou(nou(1),1),'(''     SSTRC-type curvature'',
      .       '' correction employed (AIAA 98-2554), sstrc_crc='',f5.2)')
      .       sstrc_crc
+           end if
+           if (isstrc .eq. 2) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     SSTRC-type curvature'',
+     .       '' correction employed (Smirnov & Menter)'')')
            end if
            if (isstsf .eq. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
@@ -2324,6 +2329,14 @@ c  Source terms for k-omega (Wilcox & SST):
       if (ivmx .eq. 6 .or. ivmx .eq. 7) then
         pklimtermset=pklimterm
         if (isst2003 .eq. 1) pklimtermset=10.
+c
+        if (isstrc .eq. 2) then
+c   Newer generalized 3-D SSTRC (Smirnov & Menter)
+c   Get vx(1)=DS11/Dt, vx(2)=DS12/Dt, vx(3)=DS13/Dt,
+c   Get vx(4)=DS22/Dt, vx(5)=DS23/Dt, vx(6)=DS33/Dt:
+          call sijrate3d(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
+        end if
+c
         do i=1,idim-1
           do j=1,jdim-1
             do k=1,kdim-1
@@ -2348,7 +2361,7 @@ c            or 0.33333 (3D))
               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1) .or.
      +            (ivmx .eq. 6 .and. i_wilcox98 .eq. 1)
      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1 .or.
-     +            isst2003 .eq. 1) then
+     +            isstrc .eq. 2 .or. isst2003 .eq. 1) then
                 s11 = ux(j,k,i,1)
                 s22 = ux(j,k,i,5)
                 s33 = ux(j,k,i,9)
@@ -2364,6 +2377,29 @@ c            or 0.33333 (3D))
                 w12 = 0.5*(ux(j,k,i,2) - ux(j,k,i,4))
                 w13 = 0.5*(ux(j,k,i,3) - ux(j,k,i,7))
                 w23 = 0.5*(ux(j,k,i,6) - ux(j,k,i,8))
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+              end if
+              if (isstrc .eq. 2) then
+                ss=sqrt(2.*wis)
+                ss=ccmax(ss,xminn)
+                xisabs=sqrt(2.*xis)
+                rstar=xisabs/ss
+                ddd=ccmax(xisabs, 0.3*turre(j,k,i,1)*re)
+                rtilde=2./(ddd*ddd*ddd*ss)*
+     +            ( -w12*vx(j,k,i,2)*(s11-s22)
+     +              -w13*vx(j,k,i,3)*(s11-s33)
+     +              -w23*vx(j,k,i,5)*(s22-s33)
+     +              +s12*(-w12*(vx(j,k,i,4)-vx(j,k,i,1))
+     +                    -w13*vx(j,k,i,5)-w23*vx(j,k,i,3))
+     +              +s13*(-w13*(vx(j,k,i,6)-vx(j,k,i,1))
+     +                    -w12*vx(j,k,i,5)+w23*vx(j,k,i,2))
+     +              +s23*(-w23*(vx(j,k,i,6)-vx(j,k,i,4))
+     +                    +w12*vx(j,k,i,3)+w13*vx(j,k,i,2)) )
+                fr1=4.*rstar/(1.+rstar)*(1.-ccatan(2.*rtilde))-1.
+                fr1=ccmincr(fr1,1.25)
+                fr1=ccmaxcr(fr1,0.0)
+              else
+                fr1=1.0
               end if
 c  the following forces use of omega rather than omegatilde in
 c  omega production term for Wilcox06
@@ -2446,6 +2482,7 @@ c   Get Pk and Dk:
               else
                 pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
               end if
+              pk=pk*fr1
               if (ides .ne. 0) then
                 dk=(turre(j,k,i,2)**1.5)/xlscale(j,k,i)
               else

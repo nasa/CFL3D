@@ -754,8 +754,9 @@ c     default=0.0
       cs_vreman = 0.0
       nkey     = nkey + 1
 c
-c     isstrc turns on curvature correction for ivmx=6 or 7
-c     AIAA (98-2554)
+c     isstrc =1 turns on curvature correction for ivmx=6 or 7 (AIAA 98-2554)
+c     isstrc =2 turns on CC for ivmx=6 or 7 (Smirnov & Menter, ASME
+c               JoTurbomachinery, Vol 131, 2009, 041010)
 c     default=0
       isstrc = 0
       nkey     = nkey + 1

@@ -262,7 +262,7 @@ c
      .    ikoprod.eq.1) .or. 
      .    (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .    (ivmx.eq.7 .and. isst2003.eq.1) .or.
-     .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.eq.1) .or.
+     .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.gt.0) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
      .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
      .    ((ivmx.eq.5) .and. isarc3d.eq.1) .or. 
@@ -572,10 +572,15 @@ c allocate for gradients of vorticity and turbulence - k-zeta only
       inmx=0
       end if
       iwk80=iwk79+inmx
-c allocate for easmcc2d 
+c allocate for easmcc2d and certain isstrc
       if (ieasmcc2d .eq. 1) then
+        iccnum=4
         inmx=(jdim+1)*(kdim+1)*(idim-1)*4
+      else if (isstrc .eq. 2) then
+        iccnum=6
+        inmx=(jdim+1)*(kdim+1)*(idim-1)*6
       else
+        iccnum=1
         inmx=0
       end if
       iwk81=iwk80+inmx
@@ -622,7 +627,7 @@ c allocate for DES and DDES
      + wk(iwk67),wk(iwk68),wk(iwk69),wk(iwk70),wk(iwk71),wk(iwk72),
      + wk(iwk73),wk(iwk74),wk(iwk75),
      + wk(iwk76),wk(iwk77),wk(iwk78),wk(iwk79),wk(iwk80),wk(iwk81),
-     + wk(iwk82),nummem)
+     + wk(iwk82),nummem,iccnum)
       else if (ivmx .eq. 30) then
 c   three-equation turb model
       iwk1=1
