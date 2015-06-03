@@ -154,6 +154,10 @@ c   For field eqn turbulence models:
      .           ivisc(3).eq.14) then
           if (real(tur10(1)) .lt. 0.) tur10(1)=9.e-8
           if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
+        else if (ivisc(1).eq.16 .or. ivisc(2).eq.16 .or.
+     .           ivisc(3).eq.16) then
+          if (real(tur10(1)) .lt. 0.) tur10(1)=1.5589e-6
+          if (real(tur10(2)) .lt. 0.) tur10(2)=9.e-9
         else if (ivisc(1).eq.25 .or. ivisc(2).eq.25 .or.
      .           ivisc(3).eq.25) then
 c         tur10 and tur20 not used for model 25, but we

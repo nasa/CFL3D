@@ -794,6 +794,7 @@ c
          ns = 0
          if (lowmem_ux .eq. 1) then
            if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
+     .         ivmx.eq.16 .or.
      .        ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) .and.
      .        ikoprod.eq.1) .or.
      .        (ivmx.eq.7 .and. isstdenom.eq.1) .or.

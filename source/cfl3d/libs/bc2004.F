@@ -298,6 +298,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,2) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tj0(k,i,1,1) = -tursav(j,k,i,1)
+          tj0(k,i,2,1) = -tursav(j,k,i,2)
+          tj0(k,i,1,2) = 0.
+          tj0(k,i,2,2) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -355,6 +364,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 102 i=ista,iend1
         do 102 k=ksta,kend1
           tt=gamma*qj0(k,i,5,1)/qj0(k,i,1,1)
@@ -608,6 +618,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,2,4) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do i=ista,iend1
+        do k=ksta,kend1
+          tj0(k,i,1,3) = -tursav(j,k,i,1)
+          tj0(k,i,2,3) = -tursav(j,k,i,2)
+          tj0(k,i,1,4) = 0.
+          tj0(k,i,2,4) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -665,6 +684,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 202 i=ista,iend1
         do 202 k=ksta,kend1
           tt=gamma*qj0(k,i,5,3)/qj0(k,i,1,3)
@@ -918,6 +938,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,2) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do i=ista,iend1
+        do j=jsta,jend1
+          tk0(j,i,1,1) = -tursav(j,k,i,1)
+          tk0(j,i,2,1) = -tursav(j,k,i,2)
+          tk0(j,i,1,2) = 0.
+          tk0(j,i,2,2) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -975,6 +1004,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 302 i=ista,iend1
         do 302 j=jsta,jend1
           tt=gamma*qk0(j,i,5,1)/qk0(j,i,1,1)
@@ -1228,6 +1258,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           tk0(j,i,2,4) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do i=ista,iend1
+        do j=jsta,jend1
+          tk0(j,i,1,3) = -tursav(j,k,i,1)
+          tk0(j,i,2,3) = -tursav(j,k,i,2)
+          tk0(j,i,1,4) = 0.
+          tk0(j,i,2,4) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -1285,6 +1324,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 402 i=ista,iend1
         do 402 j=jsta,jend1
           tt=gamma*qk0(j,i,5,3)/qk0(j,i,1,3)
@@ -1538,6 +1578,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,2) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do k=ksta,kend1
+        do j=jsta,jend1
+          ti0(j,k,1,1) = -tursav(j,k,i,1)
+          ti0(j,k,2,1) = -tursav(j,k,i,2)
+          ti0(j,k,1,2) = 0.
+          ti0(j,k,2,2) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -1595,6 +1644,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 502 k=ksta,kend1
         do 502 j=jsta,jend1
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
@@ -1848,6 +1898,15 @@ c       up making very little, if any, difference in the k-omega solution.)
           ti0(j,k,2,4) = 0.
         enddo
         enddo
+        else if(ivmx.eq.16) then
+        do k=ksta,kend1
+        do j=jsta,jend1
+          ti0(j,k,1,3) = -tursav(j,k,i,1)
+          ti0(j,k,2,3) = -tursav(j,k,i,2)
+          ti0(j,k,1,4) = 0.
+          ti0(j,k,2,4) = 0.
+        enddo
+        enddo
 #   ifdef CMPLX
 c         RSM not working in complex mode
 #   else
@@ -1905,6 +1964,7 @@ c       not used, but set anyway
         enddo
         enddo
         else
+c       all other models (ivmx=6,7,8,12,14)
         do 602 k=ksta,kend1
         do 602 j=jsta,jend1
           tt=gamma*qi0(j,k,5,3)/qi0(j,k,1,3)

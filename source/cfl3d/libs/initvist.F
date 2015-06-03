@@ -63,6 +63,15 @@ c   For field eqn turbulence models:
                 vist3d(j,k,i)=tur10(1)*(tur10(1)**3/
      .                        (tur10(1)**3+357.911))
  2001     continue
+        else if (ivisc(1).eq.16 .or. ivisc(2).eq.16 .or.
+     .           ivisc(3).eq.16) then
+          do 2011 i=1,idim-1
+            do 2011 k=1,kdim-1
+              do 2011 j=1,jdim-1
+                tursav(j,k,i,1)=tur10(1)
+                tursav(j,k,i,2)=tur10(2)
+                vist3d(j,k,i)=0.54772*tur10(1)/sqrt(tur10(2))
+ 2011     continue
         else if (ivisc(1).eq.11 .or. ivisc(2).eq.11 .or.
      .           ivisc(3).eq.11 .or.
      .           ivisc(1).eq.10 .or. ivisc(2).eq.10 .or.

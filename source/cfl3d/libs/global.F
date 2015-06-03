@@ -607,6 +607,7 @@ c              =12  turbulent - k-omega EASM-Gatski/Speziale NONLINEAR
 c              =13  turbulent - k-epsilon EASM-variable-g NONLINEAR
 c              =14  turbulent - k-omega EASM-variable-g NONLINEAR
 c              =15  turbulent - k-enstrophy model
+c              =16  turbulent - k-kL-MEAH2013 model
 c       if ivisc(m) < 0 on input, a wall function is employed.  Should only
 c                       (officially) be used for attached flow, when 1st 
 c                       gridpoint off wall is not in the sublayer (typically
@@ -671,10 +672,11 @@ c
      .  '(''     Use ivisc=3 for B-L with Degani-Schiff'')')
       end if
 c
-      if (ivisc(1).eq.-30 .or. ivisc(2).eq.-30 .or. ivisc(3).eq.-30 .or.
+      if (ivisc(1).eq.-16 .or. ivisc(2).eq.-16 .or. ivisc(3).eq.-16 .or.
+     .    ivisc(1).eq.-30 .or. ivisc(2).eq.-30 .or. ivisc(3).eq.-30 .or.
      .    ivisc(1).eq.-40 .or. ivisc(2).eq.-40 .or. ivisc(3).eq.-40)
      .    then
-        write(iunit11,'('' cannot use wall fns with ivisc 30 or 40'')')
+        write(iunit11,'('' cannot use wall fns with ivisc 16,30,40'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c   Set wall iwf, wall function parameter:
@@ -757,7 +759,7 @@ c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       end if
       iv(igrid) = max(ivisc(1),ivisc(2))
       iv(igrid) = max(ivisc(3),iv(igrid))
-      if (ivisc(1).gt.15.or. ivisc(2).gt.15.or. ivisc(3).gt.15) then
+      if (ivisc(1).gt.16.or. ivisc(2).gt.16.or. ivisc(3).gt.16) then
         if (ivisc(1).ne.25.and.ivisc(2).ne.25.and.ivisc(3).ne.25.and.
      .      ivisc(1).ne.30.and.ivisc(2).ne.30.and.ivisc(3).ne.30.and.
      .      ivisc(1).ne.40.and.ivisc(2).ne.40.and.ivisc(3).ne.40.and.
@@ -921,10 +923,10 @@ c
       end if
 c
       if (ikoprod .gt. 0 .and. (ivmx.ne.6 .and. ivmx.ne.7 .and.
-     .  ivmx.ne.10 .and. ivmx.ne.15 .and. ivmx.ne.30 .and.
-     .  ivmx.ne.40)) then
+     .  ivmx.ne.10 .and. ivmx.ne.15 .and. ivmx.ne.16 .and.
+     .  ivmx.ne.30 .and. ivmx.ne.40)) then
         write(iunit11,'('' WARNING: ikoprod not active'',
-     .  '' unless ivisc=6,7,10,15,30, or 40 used'')')
+     .  '' unless ivisc=6,7,10,15,16,30, or 40 used'')')
       end if
 c
       if (iturbprod .gt. 0 .and. (ivmx.ne.8 .and. ivmx.ne.9 .and.
@@ -960,7 +962,7 @@ c
       end if
 c
       if (ivmx .eq. 25 .or. ivmx .eq. 30 .or. ivmx .eq. 40 .or.
-     .    ivmx .eq. 72) then
+     .    ivmx .eq. 72 .or. ivmx .eq. 16) then
         write(iunit11,'('' WARNING: ivisc='',i4,'' still under'',
      .    '' development... use at your own risk!'')') ivmx
       end if

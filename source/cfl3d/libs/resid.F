@@ -257,7 +257,7 @@ c
      .    icall = 1
       if (lowmem_ux .eq. 1) then
         if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or. 
-     .      ivmx.eq.72 .or.
+     .      ivmx.eq.16 .or. ivmx.eq.72 .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10).and. 
      .    ikoprod.eq.1) .or. 
      .    (ivmx.eq.7 .and. isstdenom.eq.1) .or.
@@ -462,7 +462,7 @@ c   Spalart
      + sumn(2),negn(1),negn(2),xib2,volj0,volk0,voli0,nou,bou,nbuf,
      + ibufdim,iex,iex2,iex3,bcj,bck,bci,ux,wk(iwk19),nummem,res(1,4),
      + isarcnum)
-      else if (ivmx .ge. 6 .and. ivmx .le. 15) then
+      else if (ivmx .ge. 6 .and. ivmx .le. 16) then
 c   two-equation turb model
       iwk1=1
       if (iturbord .eq. 1) then
@@ -579,6 +579,9 @@ c allocate for easmcc2d and certain isstrc
       else if (isstrc .eq. 2) then
         iccnum=6
         inmx=(jdim+1)*(kdim+1)*(idim-1)*6
+      else if (ivmx .eq. 16) then
+        iccnum=4
+        inmx=(jdim+1)*(kdim+1)*(idim-1)*4
       else
         iccnum=1
         inmx=0

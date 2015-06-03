@@ -1347,6 +1347,8 @@ c allocate for easmcc2d
                  inmx=(jdim+1)*(kdim+1)*(idim-1)*4
                else if (isstrc .eq. 2) then
                  inmx=(jdim+1)*(kdim+1)*(idim-1)*6
+               else if (ivmx .eq. 16) then
+                 inmx=(jdim+1)*(kdim+1)*(idim-1)*4
                else
                  inmx=0
                end if

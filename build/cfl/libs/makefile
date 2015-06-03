@@ -101,7 +101,8 @@ FSRC_LIBS = \
 	pltmode.F      bcnonin.F      initnonin.F    resnonin.F \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
-        sijrate3d.F    foureqn.F      bc2026.F       bc2019.F
+        sijrate3d.F    foureqn.F      bc2026.F       bc2019.F \
+        u_doubleprime.F
 F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 module_stm_2005.F90
 
 FSRC_SPEC = addx.F

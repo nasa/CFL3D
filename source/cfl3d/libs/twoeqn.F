@@ -433,6 +433,19 @@ c
      .         '' term'')')
            end if
         end if
+        if(ivmx .eq.16) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''     k-kL-MEAH2013'')')
+           if(ikoprod .eq. 1) then
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     strain-based production'',
+     .         '' term'')')
+           else
+             nou(1) = min(nou(1)+1,ibufdim)
+             write(bou(nou(1),1),'(''     approx (vort) production'',
+     .         '' term'')')
+           end if
+        end if
 c
         if (ides .eq. 1) then
           nou(1) = min(nou(1)+1,ibufdim)
@@ -620,6 +633,7 @@ c
       if(ivmx .eq. 10 .or. ivmx .eq. 11) factor=2.
       if(ivmx .eq. 9 .or. ivmx .eq. 13) factor=5.
       if(ivmx .eq. 15) factor=10.
+      if(ivmx .eq. 16) factor=10.
       factor1=factor
       factor2=factor
 c
@@ -786,6 +800,19 @@ c Constants for Set 2 (2-layer SST model and Wilcox06 only):
         if (isst2003 .eq. 1) then
           alp2=0.44
         end if
+      end if
+c
+c For k-kL-MEAH2013, set up constants here:
+c   (note cmuc1 is the usual 0.09, vk is the usual 0.41)
+      if (ivmx .eq. 16) then
+        sigk1=1.0
+        sigo1=1.0
+        zeta1_kkl=1.2
+        zeta2_kkl=0.97
+        zeta3_kkl=0.13
+        c11_kkl=10.
+        c12_kkl=1.3
+        cd1_kkl=4.7
       end if
 c
 c Set up some other needed parameters
@@ -1091,6 +1118,14 @@ c      (6) i=idim boundary:
         end if
 c    **************
 c
+c Set default for damp1 (when not used)
+        do k=1,kdim-1
+          do i=1,idim-1
+            do j=1,jdim-1
+              damp1(j,k,i)=0.0
+            enddo
+          enddo
+        enddo
 c Get damp1 = CD = cross derivative term for SST or EASM k-o models only:
         if(ivmx .eq. 7 .or. ivmx .eq. 8 .or. ivmx .eq. 14) then
         do k=1,kdim-1
@@ -3337,6 +3372,73 @@ c
             enddo
           enddo
         enddo
+c  Source terms for k-kl-MEAH2013 model:
+      else if (ivmx .eq. 16) then
+        call u_doubleprime(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
+        do i=1,idim-1
+          do j=1,jdim-1
+            do k=1,kdim-1
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
+                cutoff=0.
+              else
+                cutoff=1.
+              end if
+              s11 = ux(j,k,i,1)
+              s22 = ux(j,k,i,5)
+              s33 = ux(j,k,i,9)
+              s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
+              s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
+              s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
+              tracepart=(s11+s22+s33)*prod2d3dtrace
+              s11t=s11-tracepart
+              s22t=s22-tracepart
+              s33t=s33-tracepart
+              xis = s11t*s11t + s22t*s22t + s33t*s33t +
+     +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+              uprime=sqrt(2.*xis)
+              uprimeprime=vx(j,k,i,1)
+              uprimeprime=ccabs(uprimeprime)
+              uprimeprime=ccmaxcr(uprimeprime,1.e-20)
+c   Get Pk and Dk:
+              if (ikoprod .eq. 1) then
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*2.*xis
+              else
+                pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
+              end if
+              dk1=(cmuc1**0.75)*(turre(j,k,i,2)**2.5)/turre(j,k,i,1)*re
+              dk2=2.*fnu(j,k,i)/q(j,k,i,1)*turre(j,k,i,2)/
+     +           (smin(j,k,i)**2)/re
+              dk=dk1+dk2
+              pk=ccmin(pk,20.*dk1)
+c   Get P(kL) and D(kL):
+              zlvk=vk*(uprime/uprimeprime)
+              xmin_kkl=turre(j,k,i,1)/(turre(j,k,i,2)*c11_kkl)/re
+              xmax_kkl=pk*turre(j,k,i,1)/
+     +                 ((cmuc1**0.75)*(turre(j,k,i,2)**2.5)*re)
+              xmax_kkl=ccmax(xmax_kkl, 0.5)
+              xmax_kkl=ccmin(xmax_kkl, 1.0)
+              xmax_kkl=c12_kkl*vk*smin(j,k,i)*xmax_kkl
+              zlvk=ccmax(zlvk,xmin_kkl)
+              zlvk=ccmin(zlvk,xmax_kkl)
+              c_phi1=zeta1_kkl-(zeta2_kkl*
+     +               (turre(j,k,i,1)/(turre(j,k,i,2)*zlvk*re))**2)
+              squig=q(j,k,i,1)*smin(j,k,i)*sqrt(0.3*turre(j,k,i,2))/
+     +              (20.*fnu(j,k,i))*re
+              f_phi=(1.+(cd1_kkl*squig))/(1.+squig**4)
+c             use damp1 array to store f_phi:
+              damp1(j,k,i)=f_phi
+              pw=c_phi1*turre(j,k,i,1)/turre(j,k,i,2)*pk
+              dw=zeta3_kkl*turre(j,k,i,2)**1.5*re+
+     +           6.*f_phi*fnu(j,k,i)/q(j,k,i,1)*turre(j,k,i,1)/
+     +           smin(j,k,i)**2/re
+              rhside(j,k,i,1)=rhside(j,k,i,1)+cutoff*pw-dw
+              rhside(j,k,i,2)=rhside(j,k,i,2)+cutoff*pk-dk
+            enddo
+          enddo
+        enddo
       end if
 c
 c    For implicit viscous terms, ignore "catris_kw" - use standard
@@ -3450,6 +3552,12 @@ c
                 cyadd = term1/turre(j,k,i,1)   
                 cy2add = term2/turre(j,k,i,2)   
 c
+              else if (ivmx .eq. 16) then
+                cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
+     +                damp1(j,k,i)/re
+                cy2add=2.5*(cmuc1**0.75)*turre(j,k,i,2)**1.5/
+     +                 turre(j,k,i,1)*re
+     +                +2.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)/re
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -3581,6 +3689,12 @@ c
      c                  - ccabs(srce(j,k,i,2)))
                 cyadd = term1/turre(j,k,i,1)   
                 cy2add = term2/turre(j,k,i,2)   
+              else if (ivmx .eq. 16) then
+                cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
+     +                damp1(j,k,i)/re
+                cy2add=2.5*(cmuc1**0.75)*turre(j,k,i,2)**1.5/
+     +                 turre(j,k,i,1)*re
+     +                +2.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)/re
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -3711,6 +3825,12 @@ c
      c                  - ccabs(srce(j,k,i,2)))
                 cyadd = term1/turre(j,k,i,1)   
                 cy2add = term2/turre(j,k,i,2)   
+              else if (ivmx .eq. 16) then
+                cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
+     +                damp1(j,k,i)/re
+                cy2add=2.5*(cmuc1**0.75)*turre(j,k,i,2)**1.5/
+     +                 turre(j,k,i,1)*re
+     +                +2.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)/re
               end if
               cy(j,k)=cy(j,k) + cyadd
               cy2(j,k)=cy2(j,k) + cy2add
@@ -4780,6 +4900,18 @@ c
         end do
         end do
 c
+      else if (ivmx .eq. 16) then
+        do i=1,idim-1
+        do k=1,kdim-1
+          do j=1,jdim-1
+            vist3d(j,k,i)=(cmuc1**0.25)*q(j,k,i,1)*turre(j,k,i,1)/
+     +                    (sqrt(turre(j,k,i,2)))
+            vist3d(j,k,i)=ccmin(vist3d(j,k,i),edvislim)
+            zksav(j,k,i,1)=turre(j,k,i,1)
+            zksav(j,k,i,2)=turre(j,k,i,2)
+          enddo
+        enddo
+        enddo
       end if
 c   for wall functions, force k & omega (or epsilon) in 1st cell off solid wall
 c     wall function in k-direction
