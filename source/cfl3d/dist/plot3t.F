@@ -663,7 +663,8 @@ c   Otherwise, use exact computed turb kinetic energy
               zk=turre(j,k,i,2)
             end if
 c
-            if ((ivmx .le. 7 .or. ivmx .eq. 10 .or. ivmx .eq. 15)
+            if ((ivmx .le. 7 .or. ivmx .eq. 10 .or. ivmx .eq. 15
+     +          .or. ivmx .eq. 16)
      +          .and. i_nonlin .eq. 0) then
               t11 = -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
               t22 = -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
@@ -925,7 +926,8 @@ c            Find nonlinear tauij values (include estimate for k!):
             end if
 c            Calculate 2-eqn-specific production term (approx form in 
 c            certain circumstances). Default to vorticity-type:
-            if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10) then
+            if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10 .or.
+     +          ivmx.eq.16) then
               if (ikoprod .eq. 1) then
                 pk=2.*vist3d(j,k,i)*xis/(q(j,k,i,1)*re)
               else
@@ -1070,6 +1072,9 @@ c      S*k/epsilon:
       else if (ivmx.eq.15) then
         ske=sqrt(2.*xis)*turre(j,k,i,2)*q(j,k,i,1)/
      +    (fnu*turre(j,k,i,1)*re)
+      else if (ivmx.eq.16) then
+        epsill=0.09**0.75*turre(j,k,i,2)**2.5/turre(j,k,i,1)
+        ske=sqrt(2.*xis)*turre(j,k,i,2)/(epsill*re)
       end if
 c      P(k)*Lr/(u_inf)**3  (where Lr is reference length corresponding to
 c      unit 1 of grid)
@@ -1092,6 +1097,9 @@ c      P(k)/epsilon:
         povere=pk/(turre(j,k,i,1)*re)
       else if (ivmx.eq.15) then
         povere=pk*q(j,k,i,1)/(fnu*turre(j,k,i,1)*re)
+      else if (ivmx.eq.16) then
+        epsill=0.09**0.75*turre(j,k,i,2)**2.5/turre(j,k,i,1)
+        povere=pk/(epsill*re)
       end if
 c      Turb Reynolds number (4/9*k^2/(nu*epsilon), from NASA-CR 198221, 1995:
       if (ivmx.eq.6 .or. ivmx.eq.7) then
@@ -1104,6 +1112,9 @@ c      Turb Reynolds number (4/9*k^2/(nu*epsilon), from NASA-CR 198221, 1995:
       else if (ivmx.eq.15) then
         turbre=4.*q(j,k,i,1)*q(j,k,i,1)*turre(j,k,i,2)**2/
      +    (9.*fnu*fnu*turre(j,k,i,1))
+      else if (ivmx.eq.16) then
+        epsill=0.09**0.75*turre(j,k,i,2)**2.5/turre(j,k,i,1)
+        turbre=4.*q(j,k,i,1)*turre(j,k,i,2)**2/(9.*fnu*epsill)
       end if
 c      Mean deformation (-1: pure solid body rotation, 0: pure shear,
 c      +1: pure strain):
@@ -1208,6 +1219,9 @@ c      unit 1 of grid)
         epsilon=turre(j,k,i,1)*re/(xmach*xmach*xmach)
       else if (ivmx.eq.15) then
         epsilon=fnu*turre(j,k,i,1)*re/q(j,k,i,1)/(xmach*xmach*xmach)
+      else if (ivmx.eq.16) then
+        epsill=0.09**0.75*turre(j,k,i,2)**2.5/turre(j,k,i,1)
+        epsilon=epsill*re/(xmach*xmach*xmach)
       end if
 c      sigma is Sk/e, using Wallin-Johansson defn of S:
       if (ivmx.eq.6 .or. ivmx.eq.7) then
@@ -1220,6 +1234,9 @@ c      sigma is Sk/e, using Wallin-Johansson defn of S:
       else if (ivmx.eq.15) then
         ske=sqrt(xis/2.)*turre(j,k,i,2)*q(j,k,i,1)/
      +    (fnu*turre(j,k,i,1)*re)
+      else if (ivmx.eq.16) then
+        epsill=0.09**0.75*turre(j,k,i,2)**2.5/turre(j,k,i,1)
+        ske=sqrt(xis/2.)*turre(j,k,i,2)/(epsill*re)
       end if
 c      pressure-strain (only applies for EASMs):
       if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.13 .or.
