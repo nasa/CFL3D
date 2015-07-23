@@ -607,7 +607,7 @@ c              =12  turbulent - k-omega EASM-Gatski/Speziale NONLINEAR
 c              =13  turbulent - k-epsilon EASM-variable-g NONLINEAR
 c              =14  turbulent - k-omega EASM-variable-g NONLINEAR
 c              =15  turbulent - k-enstrophy model
-c              =16  turbulent - k-kL-MEAH2013 model
+c              =16  turbulent - k-kL-MEAH2015 model
 c       if ivisc(m) < 0 on input, a wall function is employed.  Should only
 c                       (officially) be used for attached flow, when 1st 
 c                       gridpoint off wall is not in the sublayer (typically

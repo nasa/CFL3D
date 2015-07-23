@@ -435,7 +435,7 @@ c
         end if
         if(ivmx .eq.16) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''     k-kL-MEAH2013'')')
+           write(bou(nou(1),1),'(''     k-kL-MEAH2015'')')
            if(ikoprod .eq. 1) then
              nou(1) = min(nou(1)+1,ibufdim)
              write(bou(nou(1),1),'(''     strain-based production'',
@@ -802,7 +802,7 @@ c Constants for Set 2 (2-layer SST model and Wilcox06 only):
         end if
       end if
 c
-c For k-kL-MEAH2013, set up constants here:
+c For k-kL-MEAH2015, set up constants here:
 c   (note cmuc1 is the usual 0.09, vk is the usual 0.41)
       if (ivmx .eq. 16) then
         sigk1=1.0
@@ -3372,7 +3372,7 @@ c
             enddo
           enddo
         enddo
-c  Source terms for k-kl-MEAH2013 model:
+c  Source terms for k-kl-MEAH2015 model:
       else if (ivmx .eq. 16) then
         call u_doubleprime(idim,jdim,kdim,q,ux,vol,si,sj,sk,vx)
         do i=1,idim-1
