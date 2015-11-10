@@ -129,9 +129,9 @@ c
      +          q(jdim,kdim,idim,5), tursav(jdim,kdim,idim)
       dimension vol(jdim,kdim,idim-1), res(jdim,kdim,idim-1,5)
       dimension smin(jdim-1,kdim-1,idim-1)
-c   ***rumsey
+c   ***
 c     dimension xtemp(jdim-1,kdim-1),ztemp(jdim-1,kdim-1)
-c   ***rumsey
+c   ***
 c
       dimension f(6)
 c
@@ -353,7 +353,7 @@ c
      +         res_4_max_alone,vol_4_max_alone,
      +         res_5_max,i_res_5_max,j_res_5_max,k_res_5_max,sum_5_res,
      +         res_5_max_alone,vol_5_max_alone
-c   ***rumsey
+c   ***
 c     i=1
 c     do j=1,jdim-1
 c       do k=1,kdim-1
@@ -371,7 +371,7 @@ c     write(802,'(i5)') ngd
 c     write(802,'(3i5)') jdim-1,kdim-1,ifive
 c     write(802,'(5e15.5)') (((res(j,k,i,n),j=1,jdim-1),k=1,kdim-1),
 c    +                      n=1,ifive)
-c   ***rumsey
+c   ***
       return
       end
 c
