@@ -27,7 +27,8 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
-      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
+     .        i_lam_forcezero
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
@@ -1181,6 +1182,10 @@ c    Add source term to RHS
         write(bou(nou(1),1),'(''   i='',i5,'' to'',i5,'', j='',i5,
      .   '' to'',i5,'', k='',i5,'' to'',i5)') ilamlo,ilamhi,jlamlo,
      .   jlamhi,klamlo,klamhi
+        if (i_lam_forcezero .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''    ...forcing vist3d=0'')')
+        end if
         end if
         nou(1) = min(nou(1)+1,ibufdim)
         write(bou(nou(1),1),'(''   NOTE:  This particular model '',
@@ -2451,6 +2456,21 @@ c Update VIST3D and save TURRE in TURSAV
 c       overwrite ring of turbulence values in outer 2 rows of grid
         call exact_turb_q_ring(jdim,kdim,idim,x,y,z,tursav,smin,vist3d,
      +      iexact_trunc,iexact_disc)
+      end if
+c
+      if (i_lam_forcezero .eq. 1) then
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
+                vist3d(j,k,i)=0.
+              end if
+            enddo
+          enddo
+        enddo
       end if
 c
 c

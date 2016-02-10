@@ -147,7 +147,8 @@ c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
-      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
+     .        i_lam_forcezero
       common /maxiv/ ivmx
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /mgv/ epsssc(3),epsssr(3),issc,issr
@@ -1023,6 +1024,11 @@ c       end if
         end if
         if (tur1cutlev .ne. 0. .or. tur2cutlev .ne. 0.) then
           write(iunit11,'('' ERROR: tur1cutlev, tur2cutlev not'',
+     .      '' implemented for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (i_lam_forcezero .ne. 0) then
+          write(iunit11,'('' ERROR: i_lam_forcezero not'',
      .      '' implemented for ivisc=72'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if

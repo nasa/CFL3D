@@ -30,7 +30,8 @@ c
      .        tur10(7)
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
       common /fluid2/ pr,prt,cbar
-      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
+     .        i_lam_forcezero
       common /maxiv/ ivmx
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
@@ -1587,6 +1588,10 @@ c    * * * * * * * * * * * *
         write(bou(nou(1),1),'('' i='',i5,'' to'',i5,'', j='',i5,'' to'',
      .   i5,'', k='',i5,'' to'',i5)') ilamlo,ilamhi,jlamlo,jlamhi,
      .   klamlo,klamhi
+        if (i_lam_forcezero .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''    ...forcing vist3d=0'')')
+        end if
         end if
       end if
 c  Source terms:
@@ -2921,6 +2926,21 @@ c            Determine Sij values:
             zksav(j,k,i,3)=turre(j,k,i,3)
           enddo
         enddo
+        enddo
+      end if
+c
+      if (i_lam_forcezero .eq. 1) then
+        do i=1,idim-1
+          do k=1,kdim-1
+            do j=1,jdim-1
+              if ((i.ge.ilamlo .and. i.lt.ilamhi .and.
+     .             j.ge.jlamlo .and. j.lt.jlamhi .and.
+     .             k.ge.klamlo .and. k.lt.klamhi) .or.
+     .             real(smin(j,k,i)) .lt. 0.) then
+                vist3d(j,k,i)=0.
+              end if
+            enddo
+          enddo
         enddo
       end if
 c

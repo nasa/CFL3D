@@ -148,7 +148,8 @@ c
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
-      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
+     .        i_lam_forcezero
       common /maxiv/ ivmx
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /mgv/ epsssc(3),epsssr(3),issc,issr
@@ -536,6 +537,7 @@ c
          work(nlast+149)= i_sas_rsm
          work(nlast+150)= iforcev0
          work(nlast+151)= i_saneg
+         work(nlast+152)= i_lam_forcezero
          nlast = nlast+nkey
       end if
 c
@@ -867,6 +869,7 @@ c
          i_sas_rsm= int(work(nlast+149))
          iforcev0 = int(work(nlast+150))
          i_saneg = int(work(nlast+151))
+         i_lam_forcezero = int(work(nlast+152))
       end if
 c
 c**************************

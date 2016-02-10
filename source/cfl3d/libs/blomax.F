@@ -67,7 +67,8 @@ c
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /wallfun/ iwf(3)
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
-      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi
+      common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
+     .        i_lam_forcezero
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
