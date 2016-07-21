@@ -214,7 +214,7 @@ c
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /saneg/ i_saneg
+      common /sa_options/ i_saneg,i_sanoft2
 #if defined DIST_MPI
 c
 c***********************
@@ -537,7 +537,8 @@ c
          work(nlast+149)= i_sas_rsm
          work(nlast+150)= iforcev0
          work(nlast+151)= i_saneg
-         work(nlast+152)= i_lam_forcezero
+         work(nlast+152)= i_sanoft2
+         work(nlast+153)= i_lam_forcezero
          nlast = nlast+nkey
       end if
 c
@@ -869,7 +870,8 @@ c
          i_sas_rsm= int(work(nlast+149))
          iforcev0 = int(work(nlast+150))
          i_saneg = int(work(nlast+151))
-         i_lam_forcezero = int(work(nlast+152))
+         i_sanoft2 = int(work(nlast+152))
+         i_lam_forcezero = int(work(nlast+153))
       end if
 c
 c**************************

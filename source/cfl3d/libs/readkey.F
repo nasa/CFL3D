@@ -93,7 +93,7 @@ c
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /saneg/ i_saneg
+      common /sa_options/ i_saneg,i_sanoft2
       common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
      .        i_lam_forcezero
 c
@@ -911,6 +911,11 @@ c
 c   i_saneg=1 uses SA-neg version
       i_saneg=0
       nkey     = nkey + 1
+c
+c   i_sanoft2=1 uses SA-noft2 version
+      i_sanoft2=0
+      nkey     = nkey + 1
+c
 c   i_lam_forcezero=1 forces laminar regions to have zero vist3d (i.e.,
 c   will not convect it)
       i_lam_forcezero=0
@@ -1817,6 +1822,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_saneg') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_saneg
+c
+      else if (inpstr(lc1:lc2).eq.'i_sanoft2') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_sanoft2
 c
       else if (inpstr(lc1:lc2).eq.'i_lam_forcezero') then
          lc2 = lc2 +1

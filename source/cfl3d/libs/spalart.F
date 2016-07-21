@@ -44,7 +44,7 @@ c
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
-      common /saneg/ i_saneg
+      common /sa_options/ i_saneg,i_sanoft2
 c
 
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -76,6 +76,10 @@ c
         if (i_saneg .eq. 1) then
           nou(1) = min(nou(1)+1,ibufdim)
           write(bou(nou(1),1),'(''   Using SA-neg form'')')
+        end if
+        if (i_sanoft2 .eq. 1) then
+          nou(1) = min(nou(1)+1,ibufdim)
+          write(bou(nou(1),1),'(''   Using SA-noft2 form'')')
         end if
         if (iexact_trunc .ne. 0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -267,7 +271,11 @@ c Set up constants
       ct2=2.0
 c     ct3=1.1
 c     ct4=2.0
-      ct3=1.2
+      if (i_sanoft2 .eq. 1) then
+        ct3=0.0
+      else
+        ct3=1.2
+      end if
       ct4=0.5
 c Set up some other needed parameters
       jd2=(jdim-1)/2

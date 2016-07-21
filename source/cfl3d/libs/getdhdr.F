@@ -34,7 +34,7 @@ c
          end if
       end if
 c
-      if (ibctyp.eq.2009) then
+      if (ibctyp.eq.2009 .or. ibctyp.eq.2010) then
          datahdr(1)  = '   pt/pinf'
          datahdr(2)  = '   tt/tinf'
          datahdr(3)  = '     alpha'

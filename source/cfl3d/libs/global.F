@@ -192,7 +192,7 @@ c
      .        tur10(7)
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /saneg/ i_saneg
+      common /sa_options/ i_saneg,i_sanoft2
 c
       pi = 4.0*atan(1.0)
 c
