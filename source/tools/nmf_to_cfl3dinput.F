@@ -269,7 +269,7 @@ c       write(6,'('' namex='',a10)') namex
             ibctype(ig,nbc(ig))=1002
           else if (nameb .eq. "SUBSONIC_INFLOW_PT" .or.
      +             nameb .eq. "subsonic_inflow_pt") then
-            ibctype(ig,nbc(ig))=2009
+            ibctype(ig,nbc(ig))=2010
           else if (nameb .eq. "BC72" ) then
             ibctype(ig,nbc(ig))=1011
           else if (nameb .eq. "BC71") then
