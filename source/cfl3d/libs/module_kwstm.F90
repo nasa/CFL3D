@@ -3068,8 +3068,8 @@ CONTAINS
                 IF(m<=3) THEN
                    IF(turb(j,k,i,m)>0.) THEN
                       negn(m) = negn(m)+1
+                      turb(j,k,i,m)=MIN(turb(j,k,i,m),-1.e-20)
                    ENDIF
-                   turb(j,k,i,m)=MIN(turb(j,k,i,m),tur10(m)*1e-7)
                 ENDIF
                 if(m==4.and.irealizability==1) then
                    t1122= sqrt(turb(j,k,i,1)*turb(j,k,i,2))
