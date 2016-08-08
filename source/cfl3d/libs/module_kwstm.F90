@@ -3093,7 +3093,7 @@ CONTAINS
                    IF(turb(j,k,i,m)<0) THEN
                       negn(m) = negn(m)+1
                    ENDIF
-                   turb(j,k,i,m)=MAX(turb(j,k,i,m),tur10(7)*1e-7)
+                   turb(j,k,i,m)=MAX(turb(j,k,i,m),1.e-20)
                 ENDIF
                 sumn(m) = sumn(m) + (turb(j,k,i,m)-turre(j,k,i,m))**2
                 turre(j,k,i,m) = turb(j,k,i,m)
