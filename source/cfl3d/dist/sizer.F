@@ -1237,7 +1237,7 @@ c              Spalart
                  inmx=0
                end if
                itemp=iwk19+inmx
-            else if (ivmx .ge. 6 .and. ivmx .le. 15) then
+            else if (ivmx .ge. 6 .and. ivmx .le. 16) then
 c              Two-equation turb models
                iwk1=1
                if (iturbord .eq. 1) then
