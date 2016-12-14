@@ -173,30 +173,30 @@ c
            write(bou(nou(1),1),'(''     2nd order advection on RHS'')')
         end if
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''SA constants:'')')
+        write(bou(nou(1),1),'(''   SA constants:'')')
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   cw2='',f15.5)') sa_cw2
+        write(bou(nou(1),1),'(''     cw2='',f15.5)') sa_cw2
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   cw3='',f15.5)') sa_cw3
+        write(bou(nou(1),1),'(''     cw3='',f15.5)') sa_cw3
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   cv1='',f15.5)') sa_cv1
+        write(bou(nou(1),1),'(''     cv1='',f15.5)') sa_cv1
         if (i_sanoft2 .eq. 1) then
           nou(1) = min(nou(1)+1,ibufdim)
-          write(bou(nou(1),1),'(''   ct3=0'')')
+          write(bou(nou(1),1),'(''     ct3=0'')')
         else
           nou(1) = min(nou(1)+1,ibufdim)
-          write(bou(nou(1),1),'(''   ct3='',f15.5)') sa_ct3
+          write(bou(nou(1),1),'(''     ct3='',f15.5)') sa_ct3
         end if
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   ct4='',f15.5)') sa_ct4
+        write(bou(nou(1),1),'(''     ct4='',f15.5)') sa_ct4
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   cb1='',f15.5)') sa_cb1
+        write(bou(nou(1),1),'(''     cb1='',f15.5)') sa_cb1
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   cb2='',f15.5)') sa_cb2
+        write(bou(nou(1),1),'(''     cb2='',f15.5)') sa_cb2
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   sigma='',f15.5)') sa_sigma
+        write(bou(nou(1),1),'(''     sigma='',f15.5)') sa_sigma
         nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),'(''   akarman='',f15.5)') sa_karman
+        write(bou(nou(1),1),'(''     akarman='',f15.5)') sa_karman
       end if
       if (icyc .le. nfreeze) then
         if (isklton .gt. 0) then
