@@ -192,7 +192,12 @@ c
      .        tur10(7)
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /sa_options/ i_saneg,i_sanoft2
+      common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
+     .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
+      common /specialtop_kmax1001/ i_specialtop_kmax1001,
+     .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+      common /reystressmodel/ issglrrw2012,i_sas_rsm
 c
       pi = 4.0*atan(1.0)
 c

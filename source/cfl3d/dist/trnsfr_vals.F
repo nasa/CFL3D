@@ -214,7 +214,11 @@ c
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /sa_options/ i_saneg,i_sanoft2
+      common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
+     .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
+      common /specialtop_kmax1001/ i_specialtop_kmax1001,
+     .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
 #if defined DIST_MPI
 c
 c***********************
@@ -539,6 +543,20 @@ c
          work(nlast+151)= i_saneg
          work(nlast+152)= i_sanoft2
          work(nlast+153)= i_lam_forcezero
+         work(nlast+154)= i_specialtop_kmax1001
+         work(nlast+155)= a_specialtop_kmax1001
+         work(nlast+156)= xc_specialtop_kmax1001
+         work(nlast+157)= sig_specialtop_kmax1001
+         work(nlast+158)= vtp_specialtop_kmax1001
+         work(nlast+159)= sa_cw2
+         work(nlast+160)= sa_cw3
+         work(nlast+161)= sa_cv1
+         work(nlast+162)= sa_ct3
+         work(nlast+163)= sa_ct4
+         work(nlast+164)= sa_cb1
+         work(nlast+165)= sa_cb2
+         work(nlast+166)= sa_sigma
+         work(nlast+167)= sa_karman
          nlast = nlast+nkey
       end if
 c
@@ -872,6 +890,20 @@ c
          i_saneg = int(work(nlast+151))
          i_sanoft2 = int(work(nlast+152))
          i_lam_forcezero = int(work(nlast+153))
+         i_specialtop_kmax1001 = int(work(nlast+154))
+         a_specialtop_kmax1001 = work(nlast+155)
+         xc_specialtop_kmax1001 = work(nlast+156)
+         sig_specialtop_kmax1001 = work(nlast+157)
+         vtp_specialtop_kmax1001 = work(nlast+158)
+         sa_cw2 = work(nlast+159)
+         sa_cw3 = work(nlast+160)
+         sa_cv1 = work(nlast+161)
+         sa_ct3 = work(nlast+162)
+         sa_ct4 = work(nlast+163)
+         sa_cb1 = work(nlast+164)
+         sa_cb2 = work(nlast+165)
+         sa_sigma = work(nlast+166)
+         sa_karman = work(nlast+167)
       end if
 c
 c**************************

@@ -2,7 +2,7 @@
      .                  bci,xtbj,xtbk,xtbi,atbj,atbk,atbi,ista,iend,
      .                  jsta,jend,ksta,kend,nface,tursav,tj0,tk0,
      .                  ti0,vist3d,vj0,vk0,vi0,iuns,nou,bou,nbuf,
-     .                  ibufdim,nummem)
+     .                  ibufdim,nummem,x,z)
 c
 c     $Id$
 c
@@ -29,10 +29,17 @@ c
      .          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4),
      .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),vist3d(jdim,kdim,idim)
+      dimension x(jdim,kdim,idim),z(jdim,kdim,idim)
 c
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
+      common /specialtop_kmax1001/ i_specialtop_kmax1001,
+     .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
 
       real :: rn(3,3),rnt(3,3) ! rotational matrices for ivisc>=70 (stress models)
       real :: tloc(6), tghost(6)
@@ -314,8 +321,18 @@ c******************************************************************************
 c
       if (nface.eq.6) then
 c
+c   special for when i_specialtop_kmax=1
+      a=a_specialtop_kmax1001
+      xc=xc_specialtop_kmax1001
+      sig=sig_specialtop_kmax1001
+      vtp=vtp_specialtop_kmax1001
       do 49 i=ista,iend1
       do 49 j=jsta,jend1
+        if (i_specialtop_kmax1001 .eq. 1) then
+          xxx=0.5*(x(j,kdim,i)+x(j+1,kdim,i))
+          b=(xc-xxx)/sig
+          dz=z(j,kdim,i)-z(j,kdim-1,i)
+        end if
 c
       wcont1 =  q(j,kdim-1,i,2)*sk(j,kdim,i,1) +
      .          q(j,kdim-1,i,3)*sk(j,kdim,i,2) +
@@ -325,15 +342,30 @@ c
      .          q(j,kdim-2,i,4)*sk(j,kdim,i,3) + sk(j,kdim,i,5)
 c
       qk0(j,i,1,3) = q(j,kdim-1,i,1)
-      qk0(j,i,2,3) = q(j,kdim-1,i,2) - 2.*wcont1*sk(j,kdim,i,1)
-      qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
-      qk0(j,i,4,3) = q(j,kdim-1,i,4) - 2.*wcont1*sk(j,kdim,i,3)
-      qk0(j,i,5,3) = q(j,kdim-1,i,5)
+      if (i_specialtop_kmax1001 .eq. 1) then
+        vtop=sig*a*b*exp(0.5-(b**2))*xmach+vtp*xmach
+        dudy=a*(2.0*(b**2)-1.)*exp(0.5-(b**2))*xmach
+        qk0(j,i,2,3) = q(j,kdim-1,i,2) + dz*dudy
+        qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
+        qk0(j,i,4,3) = 2.*vtop - q(j,kdim-1,i,4)
+        qk0(j,i,5,3) = q(j,kdim-1,i,5)
+      else
+        qk0(j,i,2,3) = q(j,kdim-1,i,2) - 2.*wcont1*sk(j,kdim,i,1)
+        qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
+        qk0(j,i,4,3) = q(j,kdim-1,i,4) - 2.*wcont1*sk(j,kdim,i,3)
+        qk0(j,i,5,3) = q(j,kdim-1,i,5)
+      end if
 c
       qk0(j,i,1,4) = q(j,kdim-2,i,1)
+      if (i_specialtop_kmax1001 .eq. 1) then
+      qk0(j,i,2,4) = 2.*qk0(j,i,2,3) - q(j,kdim-1,i,2)
+      qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
+      qk0(j,i,4,4) = 2.*qk0(j,i,4,3) - q(j,kdim-1,i,4)
+      else
       qk0(j,i,2,4) = q(j,kdim-2,i,2) - 2.*wcont2*sk(j,kdim,i,1)
       qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
       qk0(j,i,4,4) = q(j,kdim-2,i,4) - 2.*wcont2*sk(j,kdim,i,3)
+      end if
       qk0(j,i,5,4) = q(j,kdim-2,i,5)
 c
       bck(j,i,2) = 0.0

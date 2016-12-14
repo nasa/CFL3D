@@ -93,9 +93,13 @@ c
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
       common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
-      common /sa_options/ i_saneg,i_sanoft2
+      common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
+     .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
       common /lam/ ilamlo,ilamhi,jlamlo,jlamhi,klamlo,klamhi,
      .        i_lam_forcezero
+      common /specialtop_kmax1001/ i_specialtop_kmax1001,
+     .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
 c
       ititr = 0
       nkey  = 0
@@ -920,6 +924,28 @@ c   i_lam_forcezero=1 forces laminar regions to have zero vist3d (i.e.,
 c   will not convect it)
       i_lam_forcezero=0
       nkey     = nkey + 1
+c
+c   i_specialtop_kmax1001=1 only for particular special BC on 1001
+c   specifying kmax wall velocity in conjunction with BC1001:
+c   v=sig*a*(xc-x)/sig*exp(0.5-((xc-x)/sig)**2)+vtp
+      i_specialtop_kmax1001=0
+      a_specialtop_kmax1001=0.
+      xc_specialtop_kmax1001=0.
+      sig_specialtop_kmax1001=0.
+      vtp_specialtop_kmax1001=0.
+      nkey     = nkey + 5
+c
+c   SA constants
+      sa_cw2=0.3
+      sa_cw3=2.0
+      sa_cv1=7.1
+      sa_ct3=1.2
+      sa_ct4=0.5
+      sa_cb1=0.1355
+      sa_cb2=0.622
+      sa_sigma=2./3.
+      sa_karman=0.41
+      nkey=nkey + 9
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -1830,6 +1856,63 @@ c
       else if (inpstr(lc1:lc2).eq.'i_lam_forcezero') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_lam_forcezero
+c
+      else if (inpstr(lc1:lc2).eq.'i_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_specialtop_kmax1001
+      else if (inpstr(lc1:lc2).eq.'a_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         a_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'xc_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xc_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sig_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sig_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'vtp_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         vtp_specialtop_kmax1001 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'sa_cw2') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_cw2 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_cw3') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_cw3 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_cv1') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_cv1 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_ct3') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_ct3 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_ct4') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_ct4 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_cb1') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_cb1 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_cb2') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_cb2 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_sigma') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_sigma = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sa_karman') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sa_karman = realval(1)
 c
       else
 c

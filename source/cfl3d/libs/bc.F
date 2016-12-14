@@ -455,7 +455,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (ibcinfo(nbl,nseg,1,1).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -720,7 +720,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (ibcinfo(nbl,nseg,1,2).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -985,7 +985,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (jbcinfo(nbl,nseg,1,1).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1250,7 +1250,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (jbcinfo(nbl,nseg,1,2).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1515,7 +1515,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (kbcinfo(nbl,nseg,1,1).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
@@ -1780,7 +1780,7 @@ c
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
      .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),iuns,nou,bou,nbuf,ibufdim,
-     .  nummem)
+     .  nummem,w(lx),w(lz))
 c
       if (kbcinfo(nbl,nseg,1,2).eq.1002)
      .  call bc1002(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),

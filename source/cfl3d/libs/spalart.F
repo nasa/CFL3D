@@ -44,7 +44,8 @@ c
      .        tur10(7)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
-      common /sa_options/ i_saneg,i_sanoft2
+      common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
+     .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
 c
 
       dimension q(jdim,kdim,idim,5),sj(jdim,kdim,idim-1,5),
@@ -259,24 +260,26 @@ c          flow equations, since multigrid is not used for turb. eq.)
 c
 c   *********
 c Set up constants
-      akarman=.41
-      cb1=.1355
-      sigma=2./3.
-      cb2=.622
+c   defaults: akarman=0.41, cb1=0.1355, sigma=2/3, cb2=0.622, cw2=0.3,
+c             cw3=2.0, cv1=7.1, ct3=1.2, ct4=0.5
+      akarman=sa_karman
+      cb1=sa_cb1
+      sigma=sa_sigma
+      cb2=sa_cb2
       cw1=cb1/akarman**2+(1.+cb2)/sigma
-      cw2=.30
-      cw3=2.0
-      cv1=7.1
-      ct1=1.0
-      ct2=2.0
+      cw2=sa_cw2
+      cw3=sa_cw3
+      cv1=sa_cv1
+c     ct1=1.0
+c     ct2=2.0
 c     ct3=1.1
 c     ct4=2.0
       if (i_sanoft2 .eq. 1) then
         ct3=0.0
       else
-        ct3=1.2
+        ct3=sa_ct3
       end if
-      ct4=0.5
+      ct4=sa_ct4
 c Set up some other needed parameters
       jd2=(jdim-1)/2
       re=reue/xmach
