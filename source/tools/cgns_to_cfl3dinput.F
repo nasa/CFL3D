@@ -146,19 +146,19 @@ c   allocate memory
 c
 c  Read CGNS file
       nblock=1
-      write(6,'('' for zone '',i8,'', idim,jdim,kdim='',3i5)')
+      write(6,'('' for zone '',i9,'', idim,jdim,kdim='',3i5)')
      +    n,idm,jdm,kdm
       call getgrd(iccg,ibase,n,idm,jdm,kdm,x,y,z)
 c
 c  Write out plot3d grid and q files:
       if (iform .eq. 1) then
 c  unformatted-type
-        write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
+        write(6,'('' block#'',i9,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
         write(2) (((x(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
      +           (((y(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
      +           (((z(i,j,k),i=1,idm),j=1,jdm),k=1,kdm)
       else
-        write(6,'('' block#'',i5,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
+        write(6,'('' block#'',i9,'': id,jd,kd='',3i5)') n,idm,jdm,kdm
         write(2,*) (((x(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
      +             (((y(i,j,k),i=1,idm),j=1,jdm),k=1,kdm),
      +             (((z(i,j,k),i=1,idm),j=1,jdm),k=1,kdm)
