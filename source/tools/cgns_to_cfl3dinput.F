@@ -146,7 +146,7 @@ c   allocate memory
 c
 c  Read CGNS file
       nblock=1
-      write(6,'('' for zone '',i4,'', idim,jdim,kdim='',3i5)')
+      write(6,'('' for zone '',i8,'', idim,jdim,kdim='',3i5)')
      +    n,idm,jdm,kdm
       call getgrd(iccg,ibase,n,idm,jdm,kdm,x,y,z)
 c
@@ -268,12 +268,12 @@ c     if (ier .ne. 0) call cg_error_exit_f
         write(6,'(''    connectname ='',a32)') connectname(n)
         write(6,'(''    znname      ='',a32)') znname(n)
         write(6,'(''    donorname   ='',a32)') donorname(n)
-        write(6,'(''    irange      ='',6i4)') irange(1,n),irange(2,n),
+        write(6,'(''    irange      ='',6i6)') irange(1,n),irange(2,n),
      +   irange(3,n),irange(4,n),irange(5,n),irange(6,n)
-        write(6,'(''    idonor_range='',6i4)') idonor_range(1,n),
+        write(6,'(''    idonor_range='',6i6)') idonor_range(1,n),
      +   idonor_range(2,n),idonor_range(3,n),idonor_range(4,n),
      +   idonor_range(5,n),idonor_range(6,n)
-        write(6,'(''    itransform  ='',3i4)') itransform(1,n),
+        write(6,'(''    itransform  ='',3i6)') itransform(1,n),
      +   itransform(2,n),itransform(3,n)
       enddo
       end if
@@ -397,7 +397,7 @@ c   the relevant info that I can use is ibocotype and ipnts(1-6)
         end if
         write(6,'('' nbc in zone '',i5,'' ='',i7)') n,nbc(n)
         do nn=1,nbc(n)
-          write(6,'('' zone='',i5,'', ibctype='',a32,6i4)') n,
+          write(6,'('' zone='',i5,'', ibctype='',a32,6i6)') n,
      +      BCTypeName(ibctype(n,nn)),ips(n,nn,1),ips(n,nn,2),
      +      ips(n,nn,3),ips(n,nn,4),ips(n,nn,5),ips(n,nn,6)
         enddo
