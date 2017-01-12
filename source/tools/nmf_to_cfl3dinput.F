@@ -107,6 +107,8 @@ c   allocate memory
       allocate( ips(nblock,numbcperzone,6), stat=stats )
       call umalloc_r(nblock*numbcperzone*6,0,'ips',memuse,stats)
 c
+      nbc(:)=0
+c
 c  Read nmf file again
       rewind 3
 c
