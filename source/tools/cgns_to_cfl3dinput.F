@@ -41,13 +41,13 @@ c  Read CGNS file
 c   Get number of zones
       call cg_nzones_f(iccg,ibase,nblock,ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(6,'('' number of zones='',i6)') nblock
+      write(6,'('' number of zones='',i9)') nblock
 c   Get and write out the grid
       call gridtop(iccg,ibase,nblock,file1)
 c   Now get 1-to-1 connectivity info
       call cg_n1to1_global_f(iccg,ibase,num1to1,ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(6,'('' total number of 1-to-1 interfaces present='',i6)')
+      write(6,'('' total number of 1-to-1 interfaces present='',i9)')
      +  num1to1
       write(6,'(''   (this reflects total number divided by 2)'')')
 c
@@ -264,16 +264,16 @@ c  Need the following commented out in case there are zero 1-to-1 connections:
 c     if (ier .ne. 0) call cg_error_exit_f
       if (n1to1_global .gt. 0) then
       do n=1,n1to1_global
-        write(6,'('' n='',i5,'':'')') n
+        write(6,'('' n='',i9,'':'')') n
         write(6,'(''    connectname ='',a32)') connectname(n)
         write(6,'(''    znname      ='',a32)') znname(n)
         write(6,'(''    donorname   ='',a32)') donorname(n)
-        write(6,'(''    irange      ='',6i6)') irange(1,n),irange(2,n),
+        write(6,'(''    irange      ='',6i7)') irange(1,n),irange(2,n),
      +   irange(3,n),irange(4,n),irange(5,n),irange(6,n)
-        write(6,'(''    idonor_range='',6i6)') idonor_range(1,n),
+        write(6,'(''    idonor_range='',6i7)') idonor_range(1,n),
      +   idonor_range(2,n),idonor_range(3,n),idonor_range(4,n),
      +   idonor_range(5,n),idonor_range(6,n)
-        write(6,'(''    itransform  ='',3i6)') itransform(1,n),
+        write(6,'(''    itransform  ='',3i7)') itransform(1,n),
      +   itransform(2,n),itransform(3,n)
       enddo
       end if
@@ -283,7 +283,7 @@ c   See if there is any BC info
         nbc(n)=0
         call cg_nbocos_f(iccg, ibase, n, nbocos, ier)
         if (ier .ne. 0) call cg_error_exit_f
-        write(6,'('' for zone '',i5,'', nbocos='',i6)') n,nbocos
+        write(6,'('' for zone '',i9,'', nbocos='',i9)') n,nbocos
         if (nbocos .gt. 0) then
           do m=1,nbocos
             call cg_boco_info_f(iccg, ibase, n, m, boconame, ibocotype, 
@@ -395,9 +395,9 @@ c   the relevant info that I can use is ibocotype and ipnts(1-6)
  333        continue
           enddo
         end if
-        write(6,'('' nbc in zone '',i5,'' ='',i7)') n,nbc(n)
+        write(6,'('' nbc in zone '',i9,'' ='',i7)') n,nbc(n)
         do nn=1,nbc(n)
-          write(6,'('' zone='',i5,'', ibctype='',a32,6i6)') n,
+          write(6,'('' zone='',i9,'', ibctype='',a32,6i7)') n,
      +      BCTypeName(ibctype(n,nn)),ips(n,nn,1),ips(n,nn,2),
      +      ips(n,nn,3),ips(n,nn,4),ips(n,nn,5),ips(n,nn,6)
         enddo
