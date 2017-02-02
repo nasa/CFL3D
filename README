@@ -1,6 +1,6 @@
 NOTE: the most up-to-date information can be found on the web at:
 
-http://cfl3d.larc.nasa.gov/Cfl3dv6/cfl3dv6.html
+http://cfl3d.larc.nasa.gov
 
 However, the information in this file is provided as a backup in case
 connection to the web site cannot be made. However, it is generally
@@ -22,7 +22,8 @@ Installation and use of CFL3DV6
              -no_opt                (to create unoptimized executables with
                                      fast compilation but slow execution)
              -noredirect            (to dissallow redirected input file;
-                                     needed for SP2)
+                                     --> THIS OPTION IS RECOMMENDED; your
+                                     input file MUST be called cfl3d.inp)
              -purify                (to compile using Rational Software's 
                                      Purify memory checker
                                      - must have a licence for Purify
