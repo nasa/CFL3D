@@ -371,10 +371,10 @@ c
      .13h PREPROCESSOR,11x,2(2h *))
       write(25,87)
       write(25,9990)
- 9990 format(2(2h *),43h   VERSION 6.X :  Computational Fluids Lab,,
+ 9990 format(2(2h *),43h   VERSION 6.7 :  Computational Fluids Lab,,
      .15h Mail Stop 128,,4x,2(2h *),
      ./2(2h *),18x,41hNASA Langley Research Center, Hampton, VA,
-     .3x,2(2h *),/2(2h *),18x,33hRelease Date:       MMM DD, YYYY.,
+     .3x,2(2h *),/2(2h *),18x,33hRelease Date:  February  1, 2017.,
      .11x,2(2h *))
       write(25,87)
       write(25,83)

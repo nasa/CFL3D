@@ -5316,7 +5316,7 @@ c   Re-read input file
       end if
       read(iunit5,'(a80)') dum
 c   Tack on this to beginning of title (18 characters):
-      extra='CFL3D V6.X code:  '
+      extra='CFL3D V6.7 code:  '
       title = extra // dum
       call cg_descriptor_write_f('CaseTitle',title,ier)
       if (ier .ne. 0) call cg_error_exit_f

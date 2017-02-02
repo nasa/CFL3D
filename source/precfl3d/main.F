@@ -7,7 +7,7 @@ c***********************************************************************
 c
 c     PRECFL3D: preprocessor to cfl3d for determining memory requirements
 c
-c     VERSION 6.X :  Computational Fluids Laboratory, Mail Stop 128,
+c     VERSION 6.7 :  Computational Fluids Laboratory, Mail Stop 128,
 c                    NASA Langley Research Center, Hampton, VA
 c
 c***********************************************************************

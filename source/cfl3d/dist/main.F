@@ -6,7 +6,7 @@ c***********************************************************************
 c     CFL3D :  Characteristic-based scheme for steady/unsteady solutions
 c              to the Euler/Navier-Stokes equations.
 c
-c     VERSION 6.X :  Computational Fluids Laboratory, Mail Stop 128,
+c     VERSION 6.7 :  Computational Fluids Laboratory, Mail Stop 128,
 c                    NASA Langley Research Center, Hampton, VA
 c
 c

@@ -325,10 +325,10 @@ c
      .   4x,2(2h *))
          write(11,87)
          write(11,9990)
- 9990    format(2(2h *),43h   VERSION 6.X :  Computational Fluids Lab,,
+ 9990    format(2(2h *),43h   VERSION 6.7 :  Computational Fluids Lab,,
      .   15h Mail Stop 128,,4x,2(2h *),
      .   /2(2h *),18x,41hNASA Langley Research Center, Hampton, VA,
-     .   3x,2(2h *),/2(2h *),18x,33hRelease Date:   MM, DD, 2007.,
+     .   3x,2(2h *),/2(2h *),18x,33hRelease Date:  February  1, 2017.,
      .   11x,2(2h *))
 #ifdef CMPLX
          write(11,87)
