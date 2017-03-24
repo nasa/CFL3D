@@ -11,7 +11,7 @@ c     (if want coarser levels, use v6inpdoubhalf.F to create corresponding
 c     coarser input file first)
 c***********************************************************************
 c
-      parameter(nn=10000)
+      parameter(nn=20000)
 c
       character*80 file1,file2
       character*80 name

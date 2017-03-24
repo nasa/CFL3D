@@ -41,7 +41,9 @@ c
       common /twod/ i2d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
+      common /iupdate/ iupdatemean
 c
+      if (iupdatemean .eq. 0) return
       jdim1 = jdim-1
       kdim1 = kdim-1
       idim1 = idim-1

@@ -100,6 +100,7 @@ c
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+      common /iupdate/ iupdatemean
 c
       ititr = 0
       nkey  = 0
@@ -946,6 +947,10 @@ c   SA constants
       sa_sigma=2./3.
       sa_karman=0.41
       nkey=nkey + 9
+c
+c   iupdatemean = 0 forces no mean flow update (turbulence still updated)
+      iupdatemean=1
+      nkey     = nkey + 1
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -1913,6 +1918,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          sa_karman = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'iupdatemean') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iupdatemean
 c
       else
 c

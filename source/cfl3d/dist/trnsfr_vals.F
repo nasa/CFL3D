@@ -219,6 +219,7 @@ c
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+      common /iupdate/ iupdatemean
 #if defined DIST_MPI
 c
 c***********************
@@ -557,6 +558,7 @@ c
          work(nlast+165)= sa_cb2
          work(nlast+166)= sa_sigma
          work(nlast+167)= sa_karman
+         work(nlast+168)= iupdatemean
          nlast = nlast+nkey
       end if
 c
@@ -904,6 +906,7 @@ c
          sa_cb2 = work(nlast+165)
          sa_sigma = work(nlast+166)
          sa_karman = work(nlast+167)
+         iupdatemean = int(work(nlast+168))
       end if
 c
 c**************************

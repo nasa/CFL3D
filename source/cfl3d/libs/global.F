@@ -198,6 +198,7 @@ c
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
       common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /iupdate/ iupdatemean
 c
       pi = 4.0*atan(1.0)
 c

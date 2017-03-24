@@ -1356,6 +1356,11 @@ c        can add more here, but only if ifunct keyword is big enough!
          if (ifunct .ge.24) xw(jw,kw,iw,24) = real(vwprime)
          if (ifunct .ge.25) xw(jw,kw,iw,25) = real(turre(j,k,i,3))
          if (ifunct .ge.26) xw(jw,kw,iw,26) = real(turre(j,k,i,4))
+         if (ifunct .ge.27) xw(jw,kw,iw,27) = real(ux(j,k,i,1))
+         if (ifunct .ge.28) xw(jw,kw,iw,28) = real(ux(j,k,i,3))
+         if (ifunct .ge.29) xw(jw,kw,iw,29) = real(ux(j,k,i,7))
+         if (ifunct .ge.30) xw(jw,kw,iw,30) = real(ux(j,k,i,9))
+         if (ifunct .ge.31) xw(jw,kw,iw,31) = real(smin(j,k,i))
       else
          xw(jw,kw,iw,1) = imag(prod)/real(delh)
          xw(jw,kw,iw,2) = imag(uwprime)/real(delh)
@@ -1390,6 +1395,16 @@ c        can add more here, but only if ifunct keyword is big enough!
      +     real(delh)
          if (ifunct .ge.26) xw(jw,kw,iw,26) = imag(turre(j,k,i,4))/
      +     real(delh)
+         if (ifunct .ge.27) xw(jw,kw,iw,27) = imag(ux(j,k,i,1))/
+     +     real(delh)
+         if (ifunct .ge.28) xw(jw,kw,iw,28) = imag(ux(j,k,i,3))/
+     +     real(delh)
+         if (ifunct .ge.29) xw(jw,kw,iw,29) = imag(ux(j,k,i,7))/
+     +     real(delh)
+         if (ifunct .ge.30) xw(jw,kw,iw,30) = imag(ux(j,k,i,9))/
+     +     real(delh)
+         if (ifunct .ge.31) xw(jw,kw,iw,31) = imag(smin(j,k,i))/
+     +     real(delh)
       end if
 #     else
       xw(jw,kw,iw,1) = real(prod)
@@ -1419,6 +1434,11 @@ c     can add more here, but only if ifunct keyword is big enough!
       if (ifunct .ge.24) xw(jw,kw,iw,24) = real(vwprime)
       if (ifunct .ge.25) xw(jw,kw,iw,25) = real(turre(j,k,i,3))
       if (ifunct .ge.26) xw(jw,kw,iw,26) = real(turre(j,k,i,4))
+      if (ifunct .ge.27) xw(jw,kw,iw,27) = real(ux(j,k,i,1))
+      if (ifunct .ge.28) xw(jw,kw,iw,28) = real(ux(j,k,i,3))
+      if (ifunct .ge.29) xw(jw,kw,iw,29) = real(ux(j,k,i,7))
+      if (ifunct .ge.30) xw(jw,kw,iw,30) = real(ux(j,k,i,9))
+      if (ifunct .ge.31) xw(jw,kw,iw,31) = real(smin(j,k,i))
 #     endif
  4000 continue
 c
