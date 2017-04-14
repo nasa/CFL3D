@@ -276,6 +276,14 @@ c       write(6,'('' namex='',a10)') namex
             ibctype(ig,nbc(ig))=1011
           else if (nameb .eq. "BC71") then
             ibctype(ig,nbc(ig))=1013
+          else if (nameb .eq. "POLE" .or.
+     +             nameb .eq. "pole") then
+            write(6,'('' Pole detected.  Input:'')')
+            write(6,'(''    1011 = half-plane'')')
+            write(6,'(''    1012 = full-plane'')')
+            write(6,'(''    1013 = partial-plane:'')')
+            read(5,*) i_pole
+            ibctype(ig,nbc(ig))=i_pole
           else
             write(6,'('' BC type not known'')')
             write(6,'(a16)') nameb
@@ -791,6 +799,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
      +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
+     +            kend,ndata
               else if (ibctype(n,nn) .eq. 1013) then
                 ibctyp=1013
                 ndata=0
@@ -898,6 +911,11 @@ c       search thru all the 1-to-1 connections
      +            kend,ndata
               else if (ibctype(n,nn) .eq. 1011) then
                 ibctyp=1011
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
+     +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,jsta,jend,ksta,
      +            kend,ndata
@@ -1011,6 +1029,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
      +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
+     +            kend,ndata
               else if (ibctype(n,nn) .eq. 1013) then
                 ibctyp=1013
                 ndata=0
@@ -1118,6 +1141,11 @@ c       search thru all the 1-to-1 connections
      +            kend,ndata
               else if (ibctype(n,nn) .eq. 1011) then
                 ibctyp=1011
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
+     +            kend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,ksta,
      +            kend,ndata
@@ -1231,6 +1259,11 @@ c       search thru all the 1-to-1 connections
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
      +            jend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
+     +            jend,ndata
               else if (ibctype(n,nn) .eq. 1013) then
                 ibctyp=1013
                 ndata=0
@@ -1338,6 +1371,11 @@ c       search thru all the 1-to-1 connections
      +            jend,ndata
               else if (ibctype(n,nn) .eq. 1011) then
                 ibctyp=1011
+                ndata=0
+                write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
+     +            jend,ndata
+              else if (ibctype(n,nn) .eq. 1012) then
+                ibctyp=1012
                 ndata=0
                 write(7,'(8i10)') n,iseg,ibctyp,ista,iend,jsta,
      +            jend,ndata

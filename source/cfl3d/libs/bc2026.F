@@ -100,15 +100,13 @@ c      j=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.3) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c
       do 400 ip=1,2
       do 400 i=ista,iend1
@@ -216,15 +214,13 @@ c      j=jdim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.4) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c
       do 800 ip=1,2
       do 800 i=ista,iend1
@@ -332,15 +328,13 @@ c      k=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.5) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c
       do 1200 ip=1,2
       do 1200 i=ista,iend1
@@ -447,15 +441,13 @@ c      k=kdim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.6) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c
       do 1400 ip=1,2
       do 1400 i=ista,iend1
@@ -563,15 +555,13 @@ c      i=1 boundary        sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.1) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c 
       do 2000 ip=1,2
       do 2000 k=ksta,kend1
@@ -679,15 +669,13 @@ c      i=idim boundary     sweeping jet                             bctype 2026
 c******************************************************************************
       if (nface.eq.2) then
 c
-c     check to see if turbulence data is input (itrflg1/2 = 1) or
-c     if freestream values are to be used (itrflg1/2 = 0); the check
+c     check to see if turbulence data is input (itrflg1 = 1) or
+c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      itrflg2 = 0
-      if (real(bcdata(1,1,ipp,10)) .ge. 0.) itrflg1 = 1
-      if (real(bcdata(1,1,ipp,11)) .ge. 0.) itrflg2 = 1
+      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
 c
       do 2400 ip=1,2
       do 2400 k=ksta,kend1

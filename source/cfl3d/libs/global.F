@@ -999,11 +999,11 @@ c     Need to check for keywords that do not work for ivmx=72:
      .      '' for ivisc=72 (default is 1st order)'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
-        if (nfreeze .ne. 0) then
-          write(iunit11,'('' ERROR: nfreeze not implemented'',
-     .      '' for ivisc=72'')')
-          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-        end if
+c       if (nfreeze .ne. 0) then
+c         write(iunit11,'('' ERROR: nfreeze not implemented'',
+c    .      '' for ivisc=72'')')
+c         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+c       end if
 c       if (iaxi2planeturb .ne. 0) then
 c         write(iunit11,'('' ERROR: iaxi2planeturb not implemented'',
 c    .      '' for ivisc=72'')')

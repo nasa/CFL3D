@@ -886,12 +886,27 @@ c          RSM not working in complex mode
      +        ''(AIAA-2014-0586)'')')
             end if
          end if
-         call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
-     $        tj0,tk0,ti0,xib,
-     $        ux,
-     $        sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
-     $        level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl,issglrrw2012,
-     $        i_sas_rsm)
+         if (icyc .le. nfreeze) then
+           if (isklton .gt. 0) then
+              nss=min(ncyc,nfreeze)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),*)
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),'('' RSM turbulence model is '',
+     +        ''frozen for '',i5,'' iterations or subits'')') nss
+           end if
+           do n=1,nummem
+             sumn(n) = 0.
+             negn(n) = 0
+           enddo
+         else
+           call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
+     $          tj0,tk0,ti0,xib,
+     $          ux,
+     $          sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
+     $          level,icyc,sumn,negn,xib2,snk0,x,y,z,nbl,issglrrw2012,
+     $          i_sas_rsm)
+         end if
 #   endif
       else if (ivmx .eq. 25) then
 c   LES-type model and diagnostics
