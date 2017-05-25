@@ -3567,7 +3567,7 @@ CONTAINS
                 '"dudx","dudy","dudz","dvdx","dvdy","dvdz","dwdx","dwdy","dwdz", '//&
                 ',"mu","mut", "omg", "tke"'
         ELSE
-           STOP"only support nummem=2 or 7,0"
+           STOP "only support nummem=2 or 7,0"
         ENDIF
         IF(i2d==1) THEN
            WRITE(iunit,'(A,i5,A,i5)')"ZONE  I=", jdim-1," J=", kdim-1
