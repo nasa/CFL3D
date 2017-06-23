@@ -476,6 +476,7 @@ CONTAINS
     INTEGER,SAVE  :: icycle = 0
     INTEGER,save :: ntt_start=0
     INTEGER :: m
+!   INTEGER :: ione
    
     if(allocated(src_k)) then   
        deallocate(src_k)
@@ -566,6 +567,19 @@ CONTAINS
        CALL fill_tke(jdim,kdim,idim, nummem, turre, tke, bij)
        CALL fill_blend(jdim,kdim,idim,blend,issglrrw2012,tke,turre,vol,si,sj,&
                         sk,smin,q,fmu,nummem)
+!      if(icyc.eq.ncyc1(1) .or. icyc.eq.ncyc1(2) .or. icyc.eq.ncyc1(3)  &
+!      .or. icyc.eq.ncyc1(4) .or. icyc.eq.ncyc1(5)) then
+!       ione=1
+!       write(8001+nbl-1,'(i5)') ione
+!       write(8001+nbl-1,'(2i5)') jdim-1,kdim-1
+!       write(8001+nbl-1,'(5e15.5)') ((0.25*(x(j,k,1)+x(j+1,k,1)+x(j,k+1,1)+x(j+1,k+1,1)), &
+!             j=1,jdim-1),k=1,kdim-1),    &
+!                              ((0.25*(z(j,k,1)+z(j+1,k,1)+z(j,k+1,1)+z(j+1,k+1,1)), &
+!             j=1,jdim-1),k=1,kdim-1)
+!       write(9001+nbl-1,'(i5)') ione
+!       write(9001+nbl-1,'(3i5)') jdim-1,kdim-1,ione
+!       write(9001+nbl-1,'(5e15.5)') ((blend(j,k,1),j=1,jdim-1),k=1,kdim-1)
+!      end if
        call kws_dbij_dx(jdim,kdim,idim,nummem, turre,tke,sj,sk,si,vol,dbijdx)
        call kws_dbij_dxx(jdim,kdim,idim,nummem,dbijdx,sj,sk,si,vol,dbijdxx)
        CALL get_source(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,bij,omega,&
@@ -735,6 +749,8 @@ CONTAINS
     integer,save:: ivisited=0
     ! -- for time step --
     real :: dtmp,cutoff
+    real :: c3_e_use,c1star_e_use
+    real :: yapterm,xle,terma
 
     ! velocity 2nd derivatives
     REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: vx
@@ -1014,6 +1030,13 @@ CONTAINS
 !  where a_ij=-R_ij/k - 2*del_ij/3  (turre(1:6) = -R_ij)
 !  1: 1,1    2: 2,2   3: 3,3   4: 1,2   5: 2,3   6: 1,3
 !
+             if (issglrrw2012==7) then
+               c3_e_use=0.45
+               c1star_e_use=0.0
+             else
+               c3_e_use=c3_e
+               c1star_e_use=c1star_e
+             end if
              DO m=1,6
                 !IF(m>3) 
                 !prd_coef = 1.0
@@ -1045,9 +1068,9 @@ CONTAINS
                 beta_hat_use  =xmultfac*(blend(j,k,i)*c5_o+(1.-blend(j,k,i))*c5_e) + &
                                (1.-xmultfac)*(alpha_hat-beta_hat)
                 gamma_hat_use =xmultfac*(blend(j,k,i)*(c3_o-c3star_o*sqrt(aklakl))+ &
-                               (1.-blend(j,k,i))*(c3_e-c3star_e*sqrt(aklakl)))+ &
+                               (1.-blend(j,k,i))*(c3_e_use-c3star_e*sqrt(aklakl)))+ &
                                (1.-xmultfac)*(4./3.*(alpha_hat+beta_hat)-gamma_hat)
-                delta_hat_use =xmultfac*(blend(j,k,i)*c1star_o+(1.-blend(j,k,i))*c1star_e)
+                delta_hat_use =xmultfac*(blend(j,k,i)*c1star_o+(1.-blend(j,k,i))*c1star_e_use)
                 sigma_hat_use =xmultfac*(blend(j,k,i)*c2_o+(1.-blend(j,k,i))*c2_e)
 
                 ! pi_ij (pressure-strain) components
@@ -1141,7 +1164,16 @@ CONTAINS
                sd_term  = sigma_d_use *xma_re /turre(j,k,i,7) *max(0., kdotw)
              end if
 
-             source(j,k,i,7)=(prod - dissip + sd_term )!*q(j,k,i,1)
+             yapterm=0.
+             if (issglrrw2012==7) then
+               xle = 6.08581*0.41*abs(smin(j,k,i))  ! 6.08581=cmu**(-0.75)
+               terma = sqrt(tke(j,k,i))*xma_re/(0.09*turre(j,k,i,7)*xle)
+               yapterm=0.83*0.09*turre(j,k,i,7)**2*re_xma*  &
+                       (terma-1.0)*terma**2
+               yapterm=max(yapterm, 0.0)
+             end if
+!            source(j,k,i,7)=(prod - dissip + sd_term )!*q(j,k,i,1)
+             source(j,k,i,7)=(prod - dissip + sd_term + yapterm)!*q(j,k,i,1)
 
              if (i_sas_rsm == 1 .or. i_sas_rsm == -1) then
                xis = sij0(j,1)*sij0(j,1) + sij0(j,2)*sij0(j,2) + sij0(j,3)*sij0(j,3) +  &
@@ -1323,8 +1355,9 @@ CONTAINS
     REAL :: d_use, sigma_w_use, d1_rsm, d1_omega, d2_rsm, d2_omega
 
     if (issglrrw2012 /= 0 .and. issglrrw2012 /= 3 .and. &
-        issglrrw2012 /= 4 .and. issglrrw2012 /= 5) then
-      stop "get_diffusion must use issglrrw2012=0, 3, 4, or 5"
+        issglrrw2012 /= 4 .and. issglrrw2012 /= 5 .and. &
+        issglrrw2012 /= 7) then
+      stop "get_diffusion must use issglrrw2012=0, 3, 4, 5, or 7"
     end if
     xma_re= xmach/reue
     if (issglrrw2012 == 0 .or. issglrrw2012 == 5) then
@@ -2435,7 +2468,8 @@ CONTAINS
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
 
     if (issglrrw2012 == 1 .or. issglrrw2012 == 3 .or.   &
-        issglrrw2012 == 5 .or. issglrrw2012 == 6) then
+        issglrrw2012 == 5 .or. issglrrw2012 == 6 .or.   &
+        issglrrw2012 == 7) then
     re_xma = reue/xmach
     coef_i=1.
     if(i2d==1) coef_i = 0
@@ -2479,6 +2513,22 @@ CONTAINS
               argb=4.*sigma_w_e*tke(j,k,i)/(temp*smin(j,k,i)*smin(j,k,i))
               arg=min(arga,argb)
               blend(j,k,i)=tanh(arg*arg*arg*arg)
+            ENDDO
+          else if (issglrrw2012 == 7) then
+!           use broader blending (arg**2 instead of arg**4)
+            DO j=1,jdim-1
+              kdotw = dtkedx(j,1)*dwdx(j,1) + dtkedx(j,2)*dwdx(j,2) + dtkedx(j,3)*dwdx(j,3)
+              sd_term  = sigma_d_e /turre(j,k,i,7) *max(0., kdotw)
+              arg1=sqrt(tke(j,k,i))/(.09*re_xma*turre(j,k,i,7)* &
+                abs(smin(j,k,i)))
+              arg2=500.*fmu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)*re_xma*re_xma* &
+                smin(j,k,i)*turre(j,k,i,7))
+              arga=max(arg1,arg2)
+              small=1.e-20
+              temp=max(sd_term,small)
+              argb=4.*sigma_w_e*tke(j,k,i)/(temp*smin(j,k,i)*smin(j,k,i))
+              arg=min(arga,argb)
+              blend(j,k,i)=tanh(arg*arg)
             ENDDO
           else
             DO j=1,jdim-1
