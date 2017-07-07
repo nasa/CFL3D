@@ -769,7 +769,7 @@ case $FARCH in LINUX)
   CURLIB=`pwd`
   FFLAG="$FFLAG -module $CURLIB/\$(CFLLIBSD)"
   FFLAG_SPEC="$FFLAG"
-  LFLAG="-z muldefs -static -xHost -traceback -fpe0"                                  
+  LFLAG="-z muldefs -xHost -traceback -fpe0"                                  
   LLIB=""
   LLIB_SEQ=$LLIB
   LLIBDIR=""
