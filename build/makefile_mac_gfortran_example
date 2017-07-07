@@ -1,0 +1,770 @@
+#     
+#     $Id$
+#
+#=============================================================================
+#
+#   This is the primary/top-level makefile: builds either the parallel or 
+#   sequential versions of CFL3D, as well as the preprocessors PRECFL3D,
+#   RONNIE, and MAGGIE and SPLITTER. Only sequential versions of
+#   of MAGGIE AND RONNIE are currently available
+#
+#
+#                          cfl3dv6.0 directory structure:
+#
+#                                    CFL3DV6.0   
+#                                        |
+#                               -------------------
+#                               |        |        |
+#                             SOURCE   BUILD   HEADER 
+#                               |
+#        --------------------------------------------
+#        |       |         |      |         |       |
+#      CFL3D  PRECFL3D  RONNIE  MAGGIE  SPLITTER  TOOLS (source code archives)
+#        |
+#     -------
+#     |     |
+#    DIST  LIBS
+#
+#
+#                        build directory structure:
+#
+#                                   BUILD (you are here)
+#                                     |
+#        ----------------------------------------------------------------
+#        |             |        |      |      |    |     |      |       |
+#       CFL        CFLCMPLX  PRECFL  PRERON  RON  MAG  TOOLS  SPLIT SPLITCMPLX
+#        |             |        |      |      |    |     |      |       |
+#    ---------    ----------    |      |      |    |     |      |       |
+#    |   |   |    |    |   |    |      |      |    |     |      |       |
+#  LIBS SEQ MPI  LIBS SEQ MPI  SEQ    SEQ    SEQ  SEQ   SEQ    SEQ     SEQ
+#
+#           (bottom level of build is the "construction" level)
+#
+#=============================================================================
+
+
+# *************** COMPILER FLAG DEFINITIONS (MACHINE SPECIFIC) ***************
+#                 (CURRENT DEFINITIONS FOR x86_64 ARCHITECTURE)
+
+FFLAG        = -O2 -fbacktrace -I ../../$(CFLLIBSD)
+FFLAG_SPEC   = -O2 -fbacktrace -I ../../$(CFLLIBSD)
+PREC         = -fdefault-real-8
+PREC_MPI     = -DDBLE_PRECSN
+LFLAG        = 
+LLIBS        =
+LLIBS_SEQ    =  
+MPI_INCDIR   =
+CGNS_INCDIR  = 
+CPP          = cpp
+CPPFLAG      = -P
+CPPOPT       =  $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
+CPPOPT_SP    = -DP3D_SINGLE -DNOREDIRECT $(PREC_MPI) $(CGNS_INCDIR)
+CPPOPT_CMPLX = -DCMPLX
+FTN          = gfortran
+CC           = gcc
+CFLAG        = 
+AROPT        = rusc
+RANLIB       = true
+INLINE       = 
+
+# ********************** EXECUTABLE NAME DEFINITIONS *************************
+
+EXEC_CFLSEQ         = cfl3d_seq
+EXEC_CFLMPI         = cfl3d_mpi
+EXEC_CFLLIBS        = cfl3d_libs
+EXEC_PRESEQ         = precfl3d
+EXEC_RONSEQ         = ronnie
+EXEC_PRERONSEQ      = preronnie
+EXEC_MAGSEQ         = maggie
+EXEC_SPLIT          = splitter
+EXEC_TOOLS          = cfl3d_tools
+
+EXEC_CFLCMPLXSEQ    = cfl3dcmplx_seq
+EXEC_CFLCMPLXMPI    = cfl3dcmplx_mpi
+EXEC_CFLCMPLXLIBS   = cfl3dcmplx_libs
+EXEC_SPLITCMPLX     = splittercmplx
+
+# ********************** DIRECTORY NAME DEFINITIONS *************************
+
+#            ALL DIRECTORY PATHS RELATIVE TO THIS DIRECTORY (BUILD)
+
+# "CONSTRUCTION" DIRECTORIES (first-level directory names on right of the
+# equal signs below must be different than the executable names above, 
+# or else make will think the executable is always up to date; e.g. if
+# EXEC_RONSEQ  = ronnie then RONSEQD = ronnie/seq is not acceptable)
+
+CFLMPID         = cfl/mpi
+CFLLIBSD        = cfl/libs
+CFLSEQD         = cfl/seq
+PRESEQD         = precfl/seq
+RONSEQD         = ron/seq
+PRERONSEQD      = preron/seq
+MAGSEQD         = mag/seq
+SPLITD          = split/seq
+TOOLSD          = tools/seq
+
+CFLCMPLXMPID    = cflcmplx/mpi
+CFLCMPLXLIBSD   = cflcmplx/libs
+CFLCMPLXSEQD    = cflcmplx/seq
+SPLITCMPLXD     = splitcmplx/seq
+
+# SOURCE-CODE DIRECTORIES - code changes must be made in these directories
+
+CFLSRC_D  = ../source/cfl3d/dist
+CFLSRC_S  = ../source/cfl3d/libs
+PRESRC    = ../source/precfl3d
+RONSRC    = ../source/ronnie
+PRERONSRC = ../source/ronnie
+MAGSRC    = ../source/maggie
+SPLITSRC  = ../source/splitter
+TOOLSSRC  = ../source/tools
+
+# HEADER-FILE DIRECTORY
+
+HEADER    = ../header
+
+# MAKEFILE OPTION - to process "if defs", use can either cpp built into the
+#                   fortran compiler or an explict call to an external cpp
+#
+# MAKEFILE  = makefile     ... use fortran cpp
+#           = makefile_cpp ... use external cpp (may need to alter path
+#                              in the "CPP = " statement under "COMPILER
+#                              FLAG DEFINITIONS" above
+
+MAKEFILE  = makefile
+
+# *********************** DEFAULT TARGET GIVES DIRECTIONS ********************
+
+default:
+	@ echo " "
+	@ echo "make $(EXEC_CFLMPI)       - build an mpi version of cfl3d"
+	@ echo " "
+	@ echo "make $(EXEC_CFLSEQ)       - build a sequential version of cfl3d"
+	@ echo " "
+	@ echo "make $(EXEC_CFLLIBS)      - build the common libraries for mpi/seq versions"
+	@ echo "                       NOTE: this is done automatically when"
+	@ echo "                       making $(EXEC_CFLMPI) or $(EXEC_CFLSEQ)"
+	@ echo " "
+	@ echo "make $(EXEC_CFLCMPLXMPI)  - build a complex mpi version of cfl3d"
+	@ echo " "
+	@ echo "make $(EXEC_CFLCMPLXSEQ)  - build a complex sequential version of cfl3d"
+	@ echo " "
+	@ echo "make $(EXEC_CFLCMPLXLIBS) - build the common libraries for complex mpi/seq versions"
+	@ echo "                       NOTE: this is done automatically when"
+	@ echo "                       making $(EXEC_CFLCMPLXMPI) or $(EXEC_CFLCMPLXSEQ)"
+	@ echo " "
+	@ echo "make $(EXEC_PRESEQ)        - build a sequential version of precfl3d"
+	@ echo " "
+	@ echo "make $(EXEC_RONSEQ)          - build a sequential version of ronnie"
+	@ echo " "
+	@ echo "make $(EXEC_PRERONSEQ)       - build a sequential version of preronnie"
+	@ echo " "	
+	@ echo "make $(EXEC_MAGSEQ)          - build a sequential version of maggie"
+	@ echo " "
+	@ echo "make $(EXEC_SPLIT)        - build a sequential version of splitter"
+	@ echo " "
+	@ echo "make $(EXEC_SPLITCMPLX)   - build a complex sequential version of splitter"
+	@ echo " "
+	@ echo "make $(EXEC_TOOLS)     - build a sequential version of some cfl3d utilities"
+	@ echo " "
+	@ echo "make scrubTARGET     - remove all files except the makefile in"
+	@ echo "                       directories related to TARGET; where"
+	@ echo "                       TARGET may be any one of the above targets"
+	@ echo "                  ---> NOTE: you will have to re-link the files"
+	@ echo "                       for TARGET before re-making TARGET"
+	@ echo " "
+	@ echo "make scruball        - remove all files except the makefile in"
+	@ echo "                       all directories"
+	@ echo "                  ---> NOTE: you will have to re-link before"
+	@ echo "                       re-making any target (see linkall below)"
+	@ echo " "
+	@ echo "make linkTARGET      - create soft-links for the construction"
+	@ echo "                       directory of TARGET"
+	@ echo "                  ---> NOTE: not needed unless you have done a"
+	@ echo "                       make with scrubTARGET"
+	@ echo " "
+	@ echo "make linkall         - create soft-links for all construction"
+	@ echo "                       directories"
+	@ echo "                  ---> NOTE: not needed unless you have done a"
+	@ echo "                       make with scruball"
+	@ echo " "
+
+# ***************************** CREATE SOFT LINKS ****************************
+
+linkall: link$(EXEC_CFLLIBS) link$(EXEC_CFLMPI) \
+	link$(EXEC_CFLSEQ) link$(EXEC_CFLCMPLXLIBS) link$(EXEC_CFLCMPLXMPI) \
+	link$(EXEC_CFLCMPLXSEQ) link$(EXEC_PRESEQ) link$(EXEC_RONSEQ) \
+	link$(EXEC_MAGSEQ) link$(EXEC_SPLIT) link$(EXEC_PRERONSEQ) \
+	link$(EXEC_TOOLS) link$(EXEC_SPLITCMPLX)
+
+link$(EXEC_CFLLIBS):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "  linking common library files for mpi/seq versions of cfl3d  "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLLIBSD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLLIBS)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_CFLMPI):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "           linking files for mpi version of cfl3d             "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLMPID); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLMPI)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_CFLSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "        linking files for sequential version of cfl3d         "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLSEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLSEQ)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_CFLCMPLXLIBS):
+	@ echo "                                                                  "
+	@ echo "=================================================================="
+	@ echo "linking common library files for complex mpi/seq versions of cfl3d"
+	@ echo "=================================================================="
+	@ echo "                                                                  "
+	( cd $(CFLCMPLXLIBSD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLCMPLXLIBS)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_CFLCMPLXMPI):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "       linking files for complex mpi version of cfl3d         "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLCMPLXMPID); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLCMPLXMPI)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_CFLCMPLXSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "    linking files for complex sequential version of cfl3d     "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLCMPLXSEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_CFLCMPLXSEQ)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_PRESEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "       linking files for sequential version of precfl3d       "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(PRESEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_PRESEQ)" \
+	PRESRC="../../$(PRESRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_RONSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "        linking files for sequential version of ronnie        "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(RONSEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_RONSEQ)" \
+	RONSRC="../../$(RONSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_PRERONSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "       linking files for sequential version of preronnie      "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(PRERONSEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_PRERONSEQ)" \
+	PRERONSRC="../../$(PRERONSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_MAGSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "        linking files for sequential version of maggie        "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(MAGSEQD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_MAGSEQ)" \
+	MAGSRC="../../$(MAGSRC)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_SPLIT):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "    linking files for sequential version of block splitter    "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(SPLITD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_SPLIT)" \
+	SPLITSRC="../../$(SPLITSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_SPLITCMPLX):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "linking files for complex sequential version of block splitter"
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(SPLITCMPLXD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_SPLITCMPLX)" \
+	SPLITSRC="../../$(SPLITSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+link$(EXEC_TOOLS):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo " linking files for sequential versions of some cfl3d utilities"
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(TOOLSD); make -f $(MAKEFILE) link \
+	EXEC="$(EXEC_TOOLS)" \
+	TOOLSSRC="../../$(TOOLSSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# *********************** BUILD MPI VERSION OF CFL3D **************************
+# note: Z is used before some target names to prevent the user from typing
+#       a seemingly valid target name, e.g. mpi, instead of the correct
+#       target name, e.g. cfl3d_mpi, and getting only a partial build (without
+#       the necessary libs target).
+
+$(EXEC_CFLLIBS): Zlibs
+
+Zlibs:
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                    compiling $(EXEC_CFLLIBS)                 "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLLIBSD); make -f $(MAKEFILE) $(EXEC_CFLLIBS) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLLIBS)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	CC="$(CC)" \
+	CFLAG="$(CFLAG)" \
+	LLIBS="$(LLIBS)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLLIBSD)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+$(EXEC_CFLMPI): Zlibs Zmpi
+
+Zmpi: 
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                    compiling $(EXEC_CFLMPI)                 "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLMPID); make -f $(MAKEFILE) $(EXEC_CFLMPI) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLMPI)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT) $(CPPOPT_SP)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLMPID)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************* BUILD COMPLEX MPI VERSION OF CFL3D **********************
+
+$(EXEC_CFLCMPLXLIBS): Zcmplxlibs
+
+Zcmplxlibs:
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                 compiling $(EXEC_CFLCMPLXLIBS)               "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLCMPLXLIBSD); make -f $(MAKEFILE) $(EXEC_CFLCMPLXLIBS) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLCMPLXLIBS)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP) $(CPPOPT_CMPLX)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	CC="$(CC)" \
+	CFLAG="$(CFLAG)" \
+	LLIBS="$(LLIBS)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLCMPLXLIBSD)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+$(EXEC_CFLCMPLXMPI): Zcmplxlibs Zcmplxmpi
+
+Zcmplxmpi:
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                 compiling $(EXEC_CFLCMPLXMPI)                "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLCMPLXMPID); make -f $(MAKEFILE) $(EXEC_CFLCMPLXMPI) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLCMPLXMPI)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT) $(CPPOPT_SP) $(CPPOPT_CMPLX)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLCMPLXMPID)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************** BUILD SEQUENTIAL VERSION OF CFL3D *********************
+
+$(EXEC_CFLSEQ): Zlibs Zseq
+
+Zseq:
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                    compiling $(EXEC_CFLSEQ)                  "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLSEQD); make -f $(MAKEFILE) $(EXEC_CFLSEQ) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLSEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLSEQD)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	HEADER="../../$(HEADER)" )
+
+# **************** BUILD COMPLEX SEQUENTIAL VERSION OF CFL3D *****************
+
+$(EXEC_CFLCMPLXSEQ): Zcmplxlibs Zcmplxseq
+
+Zcmplxseq:
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                 compiling $(EXEC_CFLCMPLXSEQ)                "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(CFLCMPLXSEQD); make -f $(MAKEFILE) $(EXEC_CFLCMPLXSEQ) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_CFLCMPLXSEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP) $(CPPOPT_CMPLX)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(CFLCMPLXSEQD)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************* BUILD SEQUENTIAL VERSION OF PRECFL3D *******************
+
+$(EXEC_PRESEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                     compiling $(EXEC_PRESEQ)                 "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(PRESEQD); make -f $(MAKEFILE) $(EXEC_PRESEQ) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_PRESEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(PRESEQD)" \
+	PRESRC="../../$(PRESRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************** BUILD SEQUENTIAL VERSION OF RONNIE ********************
+
+$(EXEC_RONSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                     compiling $(EXEC_RONSEQ)                 "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(RONSEQD); make -f $(MAKEFILE) $(EXEC_RONSEQ) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_RONSEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(RONSEQD)" \
+	RONSRC="../../$(RONSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************* BUILD SEQUENTIAL VERSION OF PRERONNIE ******************
+
+$(EXEC_PRERONSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                    compiling $(EXEC_PRERONSEQ)               "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(PRERONSEQD); make -f $(MAKEFILE) $(EXEC_PRERONSEQ) \
+	FFLAG="$(FFLAG) $(PREC) $(INLINE)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC) $(INLINE)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_PRERONSEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(PRERONSEQD)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	PRERONSRC="../../$(PRERONSRC)" \
+	HEADER="../../$(HEADER)" )
+
+# ******************** BUILD SEQUENTIAL VERSION OF MAGGIE ********************
+
+$(EXEC_MAGSEQ):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                     compiling $(EXEC_MAGSEQ)                 "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(MAGSEQD); make -f $(MAKEFILE) $(EXEC_MAGSEQ) \
+	FFLAG="$(FFLAG) $(PREC)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_MAGSEQ)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(MAGSEQD)" \
+	MAGSRC="../../$(MAGSRC)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# *************** BUILD SEQUENTIAL VERSION OF BLOCK SPLITTER ******************
+
+$(EXEC_SPLIT):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                     compiling $(EXEC_SPLIT)                  "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(SPLITD); make -f $(MAKEFILE) $(EXEC_SPLIT) \
+	FFLAG="$(FFLAG) $(PREC)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_SPLIT)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(SPLITD)" \
+	SPLITSRC="../../$(SPLITSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# *********** BUILD COMPLEX SEQUENTIAL VERSION OF BLOCK SPLITTER **************
+
+$(EXEC_SPLITCMPLX):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                  compiling $(EXEC_SPLITCMPLX)                "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(SPLITCMPLXD); make -f $(MAKEFILE) $(EXEC_SPLITCMPLX) \
+	FFLAG="$(FFLAG) $(PREC)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_SPLITCMPLX)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	FTN="$(FTN)" \
+	DIR="$(SPLITD)" \
+	SPLITSRC="../../$(SPLITSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# ************** BUILD SEQUENTIAL VERSIONS OF CFL3D UTILITIES *****************
+
+$(EXEC_TOOLS):
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                     compiling $(EXEC_TOOLS)                  "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	( cd $(TOOLSD); make -f $(MAKEFILE) $(EXEC_TOOLS) \
+	FFLAG="$(FFLAG) $(PREC)" \
+	FFLAG_SPEC="$(FFLAG_SPEC) $(PREC)" \
+	LFLAG="$(LFLAG)" \
+	EXEC="$(EXEC_TOOLS)" \
+	CPPFLAG="$(CPPFLAG)" \
+	CPPOPT="$(CPPOPT_SP)" \
+	CPP="$(CPP)" \
+	FTN="$(FTN)" \
+	DIR="$(TOOLSD)" \
+	LLIBS="$(LLIBS_SEQ)" \
+	AROPT="$(AROPT)" \
+	RANLIB="$(RANLIB)" \
+	TOOLSSRC="../../$(TOOLSRC)" \
+	CFLSRC_S="../../$(CFLSRC_S)" \
+	CFLSRC_D="../../$(CFLSRC_D)" \
+	HEADER="../../$(HEADER)" )
+
+# ********************************* SCRUB ************************************
+
+scrub$(EXEC_CFLMPI):
+	@ echo ">>> removing all files except makefile in $(CFLMPID)"
+	(cd $(CFLMPID); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLMPI)" )
+
+scrub$(EXEC_CFLLIBS):
+	@ echo ">>> removing all files except makefile in $(CFLLIBSD)"
+	(cd $(CFLLIBSD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLLIBS)" )
+
+scrub$(EXEC_CFLSEQ):
+	@ echo ">>> removing all files except makefile in $(CFLSEQD)"
+	(cd $(CFLSEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLSEQ)" )
+
+scrub$(EXEC_CFLCMPLXMPI):
+	@ echo ">>> removing all files except makefile in $(CFLCMPLXMPID)"
+	(cd $(CFLCMPLXMPID); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLCMPLXMPI)" )
+
+scrub$(EXEC_CFLCMPLXLIBS):
+	@ echo ">>> removing all files except makefile in $(CFLCMPLXLIBSD)"
+	(cd $(CFLCMPLXLIBSD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLCMPLXLIBS)" )
+
+scrub$(EXEC_CFLCMPLXSEQ):
+	@ echo ">>> removing all files except makefile in $(CFLCMPLXSEQD)"
+	(cd $(CFLCMPLXSEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_CFLCMPLXSEQ)" )
+
+scrub$(EXEC_PRESEQ):
+	@ echo ">>> removing all files except makefile in $(PRESEQD)"
+	(cd $(PRESEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_PRESEQ)" )
+
+scrub$(EXEC_RONSEQ):
+	@ echo ">>> removing all files except makefile in $(RONSEQD)"
+	(cd $(RONSEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_RONSEQ)" )
+
+scrub$(EXEC_PRERONSEQ):
+	@ echo ">>> removing all files except makefile in $(PRERONSEQD)"
+	(cd $(PRERONSEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_PRERONSEQ)" )
+
+scrub$(EXEC_MAGSEQ):
+	@ echo ">>> removing all files except makefile in $(MAGSEQD)"
+	(cd $(MAGSEQD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_MAGSEQ)" )
+
+scrub$(EXEC_SPLIT):
+	@ echo ">>> removing all files except makefile in $(SPLITD)"
+	(cd $(SPLITD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_SPLIT)" )
+
+scrub$(EXEC_SPLITCMPLX):
+	@ echo ">>> removing all files except makefile in $(SPLITCMPLXD)"
+	(cd $(SPLITCMPLXD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_SPLITCMPLX)" )
+
+scrub$(EXEC_TOOLS):
+	@ echo ">>> removing all files except makefile in $(TOOLSD)"
+	(cd $(TOOLSD); \
+	make -f $(MAKEFILE) scrub EXEC="$(EXEC_TOOLS)" )
+
+scruball: scrub$(EXEC_CFLMPI) scrub$(EXEC_CFLLIBS) \
+	scrub$(EXEC_CFLSEQ) scrub$(EXEC_PRESEQ) \
+	scrub$(EXEC_RONSEQ) scrub$(EXEC_MAGSEQ) \
+	scrub$(EXEC_SPLIT) scrub$(EXEC_PRERONSEQ) \
+	scrub$(EXEC_CFLCMPLXMPI) scrub$(EXEC_CFLCMPLXLIBS) \
+	scrub$(EXEC_CFLCMPLXSEQ) scrub$(EXEC_TOOLS) \
+	scrub$(EXEC_SPLITCMPLX)

@@ -44,24 +44,24 @@
 
 
 # *************** COMPILER FLAG DEFINITIONS (MACHINE SPECIFIC) ***************
-#                 (CURRENT DEFINITIONS FOR x86_64 ARCHITECTURE)
+#                 (CURRENT DEFINITIONS FOR LINUX ARCHITECTURE)
 
-FFLAG        = -O2 -fbacktrace -I /Users/crumsey/Documents/Work-Related/Cfl3d/cfl3d/build/$(CFLLIBSD)
-FFLAG_SPEC   = -O2 -fbacktrace -I /Users/crumsey/Documents/Work-Related/Cfl3d/cfl3d/build/$(CFLLIBSD)
-PREC         = -fdefault-real-8
+FFLAG        = -O2 -w -ip -fno-alias -xHost -traceback -module ../../$(CFLLIBSD) 
+FFLAG_SPEC   = -O2 -w -ip -fno-alias -xHost -traceback -module ../../$(CFLLIBSD)
+PREC         = -r8
 PREC_MPI     = -DDBLE_PRECSN
-LFLAG        = 
-LLIBS        =
-LLIBS_SEQ    =  
-MPI_INCDIR   =
+LFLAG        = -z muldefs -xHost -traceback -fpe0
+LLIBS        = 
+LLIBS_SEQ    = 
+MPI_INCDIR   = 
 CGNS_INCDIR  = 
 CPP          = cpp
 CPPFLAG      = -P
 CPPOPT       =  $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
-CPPOPT_SP    = -DP3D_SINGLE -DNOREDIRECT $(PREC_MPI) $(CGNS_INCDIR)
+CPPOPT_SP    = -DP3D_SINGLE -DLINUX -DINTEL -DNOREDIRECT $(PREC_MPI) $(CGNS_INCDIR)
 CPPOPT_CMPLX = -DCMPLX
-FTN          = gfortran
-CC           = gcc
+FTN          = mpif90
+CC           = mpicc
 CFLAG        = 
 AROPT        = rusc
 RANLIB       = true
