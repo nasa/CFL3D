@@ -1,7 +1,7 @@
-###### CFL3D
+## CFL3D
 
-CFL3D is a long-standing structured-grid CFD code for solving the compressible Navier-Stokes equations.
-It is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged Navier-Stokes (RANS) code. It can be run
+CFL3D 
+is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged Navier-Stokes (RANS) code. It can be run
 in parallel on multiple grid zones with point-matched, patched, overset, or embedded connectivities. Both
 multigrid and mesh sequencing are available in time-accurate or steady-state modes.
 
