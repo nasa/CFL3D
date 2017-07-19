@@ -128,7 +128,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c
       do 400 ip=1,2
       do 400 i=ista,iend1
@@ -242,7 +242,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c
       do 800 ip=1,2
       do 800 i=ista,iend1
@@ -356,7 +356,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c
       do 1200 ip=1,2
       do 1200 i=ista,iend1
@@ -469,7 +469,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c
       do 1400 ip=1,2
       do 1400 i=ista,iend1
@@ -583,7 +583,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c 
       do 2000 ip=1,2
       do 2000 k=ksta,kend1
@@ -697,7 +697,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,10)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
 c
       do 2400 ip=1,2
       do 2400 k=ksta,kend1

@@ -97,7 +97,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 300 i=ista,iend1
       ii = i-ista+1
@@ -195,7 +195,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 310 i=ista,iend1
       ii = i-ista+1
@@ -293,7 +293,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 320 i=ista,iend1
       ii = i-ista+1
@@ -391,7 +391,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 330 i=ista,iend1
       ii = i-ista+1
@@ -489,7 +489,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 340 k=ksta,kend1
       kk = k-ksta+1
@@ -587,7 +587,7 @@ c     if freestream values are to be used (itrflg1 = 0); the check
 c     assumes if the first point has been set, all points have been
 c
       itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ip,6)) .gt. -1.e10) itrflg1 = 1
 c
       do 350 k=ksta,kend1
       kk = k-ksta+1
