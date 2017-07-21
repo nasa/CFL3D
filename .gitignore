@@ -53,3 +53,5 @@ build/tools/seq/v6_ronnie_mod
 build/tools/seq/v6inpdoubhalf
 build/tools/seq/gridswitchijk
 build/tools/seq/v6inpswitchijk
+
+*.swp
