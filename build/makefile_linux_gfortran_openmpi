@@ -46,15 +46,15 @@
 # *************** COMPILER FLAG DEFINITIONS (MACHINE SPECIFIC) ***************
 #                 (CURRENT DEFINITIONS FOR LINUX ARCHITECTURE)
 
-FFLAG        = -O3 -fbacktrace -w -march=native -J/home/di/cfl3d/CFL3D/build/$(CFLLIBSD)
-FFLAG_SPEC   = -O3 -fbacktrace -w -march=native -J/home/di/cfl3d/CFL3D/build/$(CFLLIBSD)
+FFLAG        = -O3 -fbacktrace -w -march=native -J../../$(CFLLIBSD)
+FFLAG_SPEC   = -O3 -fbacktrace -w -march=native -J../../$(CFLLIBSD)
 PREC         = -fdefault-real-8
 PREC_MPI     = -DDBLE_PRECSN
 LFLAG        = -z muldefs -march=native -fbacktrace 
-LLIBS        = -L/home/di/cfl3d/cgns/lib -lcgns ../../cfl/libs/libcommon.a
-LLIBS_SEQ    = -L/home/di/cfl3d/cgns/lib -lcgns ../../cfl/libs/libcommon.a
+LLIBS        = -L../../../../cgns/lib -lcgns ../../cfl/libs/libcommon.a
+LLIBS_SEQ    = -L../../../../cgns/lib -lcgns ../../cfl/libs/libcommon.a
 MPI_INCDIR   = 
-CGNS_INCDIR  = -I/home/di/cfl3d/cgns
+CGNS_INCDIR  = -I../../../../cgns
 CPP          = cpp
 CPPFLAG      = -P
 CPPOPT       = -DFASTIO $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
