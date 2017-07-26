@@ -55,3 +55,4 @@ build/tools/seq/gridswitchijk
 build/tools/seq/v6inpswitchijk
 
 *.swp
+bin/

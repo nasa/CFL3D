@@ -11,13 +11,13 @@ link:     lncode lnhead lnlibs
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(CFLSRC_D)/*.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
+	ln -sf $(CFLSRC_D)/*.F .
+	ln -sf $(CFLSRC_S)/ccomplex.F .
 
 lnhead:
 
 lnlibs:
-	ln -s ../libs/$(COMMONLIB) .
+	ln -sf ../libs/$(COMMONLIB) .
 
 # ****************************** SUFFIX RULES ********************************
 

@@ -14,9 +14,9 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -sf $(CFLSRC_S)/*.F .
-	ln -sf $(CFLSRC_S)/*.F90 .
-	ln -sf $(CFLSRC_S)/*.c .
+	ln -sff $(CFLSRC_S)/*.F .
+	ln -sff $(CFLSRC_S)/*.F90 .
+	ln -sff $(CFLSRC_S)/*.c .
 
 lnhead:
 

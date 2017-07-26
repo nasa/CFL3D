@@ -11,15 +11,15 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s  $(PRERONSRC)/main_pre.F .
-	ln -s  $(PRERONSRC)/termn8.F .
-	ln -s  $(PRERONSRC)/usrint.F .
-	ln -s  $(PRERONSRC)/sizer.F .
-	ln -s  $(CFLSRC_D)/umalloc.F .
-	ln -s  $(CFLSRC_S)/global2.F .
-	ln -s  $(CFLSRC_S)/outbuf.F .
-	ln -s  $(CFLSRC_S)/ccomplex.F .
-	ln -s  $(CFLSRC_S)/my_flush.F .
+	ln -sf  $(PRERONSRC)/main_pre.F .
+	ln -sf  $(PRERONSRC)/termn8.F .
+	ln -sf  $(PRERONSRC)/usrint.F .
+	ln -sf  $(PRERONSRC)/sizer.F .
+	ln -sf  $(CFLSRC_D)/umalloc.F .
+	ln -sf  $(CFLSRC_S)/global2.F .
+	ln -sf  $(CFLSRC_S)/outbuf.F .
+	ln -sf  $(CFLSRC_S)/ccomplex.F .
+	ln -sf  $(CFLSRC_S)/my_flush.F .
 
 lnhead:
 

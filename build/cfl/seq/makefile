@@ -11,13 +11,13 @@ link:     lncode lnhead lnlibs
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(CFLSRC_D)/*.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
+	ln -sf $(CFLSRC_D)/*.F .
+	ln -sf $(CFLSRC_S)/ccomplex.F .
 
 lnhead:
 
 lnlibs:
-	ln -s ../libs/$(COMMONLIB) .
+	ln -sf ../libs/$(COMMONLIB) .
 
 # ****************************** SUFFIX RULES ********************************
 
@@ -82,7 +82,7 @@ $(FOBJ_MAIN): $(HEAD_MAIN)
 COMMONLIB   = libcommon.a
 
 $(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
-	-ln -s ../libs/*.o .
+	-ln -sf ../libs/*.o .
 	$(FTN) $(CPPOPT) $(LFLAG) -o $(EXEC) *.o $(LLIBS)
 	@ echo "                                                              "
 	@ echo "=============================================================="

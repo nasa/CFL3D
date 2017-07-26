@@ -11,31 +11,31 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(PRESRC)/*.F .
-	ln -s $(CFLSRC_D)/sizer.F .
-	ln -s $(CFLSRC_D)/pointers.F .
-	ln -s $(CFLSRC_D)/compg2n.F .
-	ln -s $(CFLSRC_D)/umalloc.F .
-	ln -s $(CFLSRC_D)/termn8.F .
-	ln -s $(CFLSRC_S)/outbuf.F .
-	ln -s $(CFLSRC_S)/pre_patch.F .
-	ln -s $(CFLSRC_S)/pre_blockbc.F .
-	ln -s $(CFLSRC_S)/pre_period.F .
-	ln -s $(CFLSRC_S)/getdhdr.F .
-	ln -s $(CFLSRC_S)/pre_embed.F .
-	ln -s $(CFLSRC_S)/global.F .
-	ln -s $(CFLSRC_S)/global2.F .
-	ln -s $(CFLSRC_S)/rpatch0.F .
-	ln -s $(CFLSRC_S)/getibk0.F .
-	ln -s $(CFLSRC_S)/cntsurf.F .
-	ln -s $(CFLSRC_S)/lead.F .
-	ln -s $(CFLSRC_S)/global0.F .
-	ln -s $(CFLSRC_S)/readkey.F .
-	ln -s $(CFLSRC_S)/parser.F .
-	ln -s $(CFLSRC_S)/ccomplex.F .
-	ln -s $(CFLSRC_S)/cgnstools.F .
-	ln -s $(CFLSRC_S)/setseg.F .
-	ln -s $(CFLSRC_S)/my_flush.F .
+	ln -sf $(PRESRC)/*.F .
+	ln -sf $(CFLSRC_D)/sizer.F .
+	ln -sf $(CFLSRC_D)/pointers.F .
+	ln -sf $(CFLSRC_D)/compg2n.F .
+	ln -sf $(CFLSRC_D)/umalloc.F .
+	ln -sf $(CFLSRC_D)/termn8.F .
+	ln -sf $(CFLSRC_S)/outbuf.F .
+	ln -sf $(CFLSRC_S)/pre_patch.F .
+	ln -sf $(CFLSRC_S)/pre_blockbc.F .
+	ln -sf $(CFLSRC_S)/pre_period.F .
+	ln -sf $(CFLSRC_S)/getdhdr.F .
+	ln -sf $(CFLSRC_S)/pre_embed.F .
+	ln -sf $(CFLSRC_S)/global.F .
+	ln -sf $(CFLSRC_S)/global2.F .
+	ln -sf $(CFLSRC_S)/rpatch0.F .
+	ln -sf $(CFLSRC_S)/getibk0.F .
+	ln -sf $(CFLSRC_S)/cntsurf.F .
+	ln -sf $(CFLSRC_S)/lead.F .
+	ln -sf $(CFLSRC_S)/global0.F .
+	ln -sf $(CFLSRC_S)/readkey.F .
+	ln -sf $(CFLSRC_S)/parser.F .
+	ln -sf $(CFLSRC_S)/ccomplex.F .
+	ln -sf $(CFLSRC_S)/cgnstools.F .
+	ln -sf $(CFLSRC_S)/setseg.F .
+	ln -sf $(CFLSRC_S)/my_flush.F .
 
 lnhead:
 

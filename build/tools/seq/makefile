@@ -11,17 +11,17 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(TOOLSSRC)/*.F .
-	ln -s $(TOOLSSRC)/*.F90 .
-	ln -s $(CFLSRC_D)/umalloc_r.F .
-	ln -s $(CFLSRC_D)/umalloc_c.F .
-	ln -s $(CFLSRC_S)/readkey.F .
-	ln -s $(CFLSRC_S)/global0.F .
-	ln -s $(CFLSRC_S)/parser.F .
-	ln -s $(CFLSRC_S)/outbuf.F .
-	ln -s $(CFLSRC_S)/cgnstools.F  .
-	ln -s  $(CFLSRC_S)/my_flush.F .
-	ln -s $(CFLSRC_D)/termn8.F .
+	ln -sf $(TOOLSSRC)/*.F .
+	ln -sf $(TOOLSSRC)/*.F90 .
+	ln -sf $(CFLSRC_D)/umalloc_r.F .
+	ln -sf $(CFLSRC_D)/umalloc_c.F .
+	ln -sf $(CFLSRC_S)/readkey.F .
+	ln -sf $(CFLSRC_S)/global0.F .
+	ln -sf $(CFLSRC_S)/parser.F .
+	ln -sf $(CFLSRC_S)/outbuf.F .
+	ln -sf $(CFLSRC_S)/cgnstools.F  .
+	ln -sf  $(CFLSRC_S)/my_flush.F .
+	ln -sf $(CFLSRC_D)/termn8.F .
 
 lnhead:
 

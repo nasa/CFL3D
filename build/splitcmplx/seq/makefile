@@ -11,13 +11,13 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s $(SPLITSRC)/*.F .
-	ln -s $(CFLSRC_D)/umalloc.F .
-	ln -s $(CFLSRC_D)/umalloc_c.F .
-	ln -s $(CFLSRC_S)/parser.F .
-	ln -s $(CFLSRC_S)/readkey.F .
-	ln -s $(CFLSRC_S)/outbuf.F .
-	ln -s $(CFLSRC_S)/my_flush.F .
+	ln -sf $(SPLITSRC)/*.F .
+	ln -sf $(CFLSRC_D)/umalloc.F .
+	ln -sf $(CFLSRC_D)/umalloc_c.F .
+	ln -sf $(CFLSRC_S)/parser.F .
+	ln -sf $(CFLSRC_S)/readkey.F .
+	ln -sf $(CFLSRC_S)/outbuf.F .
+	ln -sf $(CFLSRC_S)/my_flush.F .
 
 lnhead:
 

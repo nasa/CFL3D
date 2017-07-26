@@ -11,11 +11,11 @@ link: lncode lnhead
 
 lncode:
 	@ echo "         linking source code"
-	ln -s $(MAGSRC)/*.F .
+	ln -sf $(MAGSRC)/*.F .
 
 lnhead:
 	@ echo "         linking header files"
-	ln -s $(HEADER)/mag1.h .
+	ln -sf $(HEADER)/mag1.h .
 
 # ****************************** SUFFIX RULES ********************************
 

@@ -11,41 +11,41 @@ link: lncode lnhead
 
 lncode:
 	@ echo "        linking source code"
-	ln -s  $(RONSRC)/*.F .
-	ln -s  $(CFLSRC_D)/cputim.F .
-	ln -s  $(CFLSRC_D)/writ_buf.F .
-	ln -s  $(CFLSRC_D)/umalloc.F .
-	ln -s  $(CFLSRC_D)/patcher.F .
-	ln -s  $(CFLSRC_S)/lead.F .
-	ln -s  $(CFLSRC_S)/pre_patch.F .
-	ln -s  $(CFLSRC_S)/collx.F .
-	ln -s  $(CFLSRC_S)/global2.F .
-	ln -s  $(CFLSRC_S)/arc.F .
-	ln -s  $(CFLSRC_S)/avgint.F .
-	ln -s  $(CFLSRC_S)/collapse.F .
-	ln -s  $(CFLSRC_S)/diagnos.F .
-	ln -s  $(CFLSRC_S)/direct.F .
-	ln -s  $(CFLSRC_S)/dsmin.F .
-	ln -s  $(CFLSRC_S)/expand.F .
-	ln -s  $(CFLSRC_S)/extra.F .
-	ln -s  $(CFLSRC_S)/extrae.F .
-	ln -s  $(CFLSRC_S)/invert.F .
-	ln -s  $(CFLSRC_S)/loadgr.F .
-	ln -s  $(CFLSRC_S)/newfit.F .
-	ln -s  $(CFLSRC_S)/project.F .
-	ln -s  $(CFLSRC_S)/rechk.F .
-	ln -s  $(CFLSRC_S)/rp3d.F .
-	ln -s  $(CFLSRC_S)/shear.F .
-	ln -s  $(CFLSRC_S)/topol.F .
-	ln -s  $(CFLSRC_S)/topol2.F .
-	ln -s  $(CFLSRC_S)/trace.F .
-	ln -s  $(CFLSRC_S)/xe.F .
-	ln -s  $(CFLSRC_S)/xe2.F .
-	ln -s  $(CFLSRC_S)/outbuf.F .
-	ln -s  $(CFLSRC_S)/transp.F .
-	ln -s  $(CFLSRC_S)/rotatp.F .
-	ln -s  $(CFLSRC_S)/ccomplex.F .
-	ln -s  $(CFLSRC_S)/my_flush.F .
+	ln -sf  $(RONSRC)/*.F .
+	ln -sf  $(CFLSRC_D)/cputim.F .
+	ln -sf  $(CFLSRC_D)/writ_buf.F .
+	ln -sf  $(CFLSRC_D)/umalloc.F .
+	ln -sf  $(CFLSRC_D)/patcher.F .
+	ln -sf  $(CFLSRC_S)/lead.F .
+	ln -sf  $(CFLSRC_S)/pre_patch.F .
+	ln -sf  $(CFLSRC_S)/collx.F .
+	ln -sf  $(CFLSRC_S)/global2.F .
+	ln -sf  $(CFLSRC_S)/arc.F .
+	ln -sf  $(CFLSRC_S)/avgint.F .
+	ln -sf  $(CFLSRC_S)/collapse.F .
+	ln -sf  $(CFLSRC_S)/diagnos.F .
+	ln -sf  $(CFLSRC_S)/direct.F .
+	ln -sf  $(CFLSRC_S)/dsmin.F .
+	ln -sf  $(CFLSRC_S)/expand.F .
+	ln -sf  $(CFLSRC_S)/extra.F .
+	ln -sf  $(CFLSRC_S)/extrae.F .
+	ln -sf  $(CFLSRC_S)/invert.F .
+	ln -sf  $(CFLSRC_S)/loadgr.F .
+	ln -sf  $(CFLSRC_S)/newfit.F .
+	ln -sf  $(CFLSRC_S)/project.F .
+	ln -sf  $(CFLSRC_S)/rechk.F .
+	ln -sf  $(CFLSRC_S)/rp3d.F .
+	ln -sf  $(CFLSRC_S)/shear.F .
+	ln -sf  $(CFLSRC_S)/topol.F .
+	ln -sf  $(CFLSRC_S)/topol2.F .
+	ln -sf  $(CFLSRC_S)/trace.F .
+	ln -sf  $(CFLSRC_S)/xe.F .
+	ln -sf  $(CFLSRC_S)/xe2.F .
+	ln -sf  $(CFLSRC_S)/outbuf.F .
+	ln -sf  $(CFLSRC_S)/transp.F .
+	ln -sf  $(CFLSRC_S)/rotatp.F .
+	ln -sf  $(CFLSRC_S)/ccomplex.F .
+	ln -sf  $(CFLSRC_S)/my_flush.F .
 
 lnhead:
 
