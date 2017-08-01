@@ -53,7 +53,7 @@ build/tools/seq/v6_ronnie_mod
 build/tools/seq/v6inpdoubhalf
 build/tools/seq/gridswitchijk
 build/tools/seq/v6inpswitchijk
-testcase/cfl3d.larc.nasa.gov/
+testcase/
 
 *.swp
 bin/
