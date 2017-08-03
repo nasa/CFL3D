@@ -134,17 +134,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
@@ -246,17 +246,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
@@ -357,17 +357,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
@@ -470,17 +470,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
@@ -582,17 +582,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
@@ -693,17 +693,17 @@ c     Note: xmach_local should be < 1 (not checking here)
       qb = 2.*rminus
       qc = 0.5*gm1*rminus**2 - gm1*hti
       a_radical = qb**2 - 4.*qa*qc
-      if (a_radical .gt. 0.) then
+      if (real(a_radical) .gt. 0.) then
         a_plus = -qb/(2.*qa)+sqrt(a_radical)/(2.*qa)
         a_minus = -qb/(2.*qa)-sqrt(a_radical)/(2.*qa)
-      else if (a_radical .lt. 0.) then
+      else if (real(a_radical) .lt. 0.) then
         a_plus = ai
         a_minus = ai
       else
         a_plus = -qb/(2.*qa)
         a_minus = -qb/(2.*qa)
       end if
-      if (a_plus .gt. a_minus) then
+      if (real(a_plus) .gt. real(a_minus)) then
         a_new = a_plus
       else
         a_new = a_minus
