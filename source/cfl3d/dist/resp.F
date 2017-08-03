@@ -1310,7 +1310,7 @@ c
  1001 format(4x,5hsubit,3x,11hlog(subres),7x,2hcl,12x,2hcd,
      .       12x,2hcz,11x,3hcmz)
  1002 format(4x,5hsubit,3x,11hlog(subres),7x,2hcl,12x,2hcd,
-     .       12x,2hcx,12x,2hcy,12x,2hcz,11x,3hcmz,11x,3hcmy,11x,3hcmz)
+     .       12x,2hcx,12x,2hcy,12x,2hcz,11x,3hcmx,11x,3hcmy,11x,3hcmz)
  1010 format(4x,5hsubit,3x,11hlog(subres),4x,9hmass_flow,8x,4hcftp,
      .       10x,4hcftv,8x,6hcftmom)
  1020 format(3x,i6,9e14.5)
