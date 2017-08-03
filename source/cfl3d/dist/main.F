@@ -547,8 +547,8 @@ c
 c
 c     remove the stop file if there is one 
 c
-      sysfile = 'rm -f stop'
-      call system(sysfile)
+      open(unit=1234,iostat=istat1,file='stop',status='old')
+      if (istat1 == 0) close(1234, status='delete')
 c
 c***********************************************************************
 c     determine array size requirements
