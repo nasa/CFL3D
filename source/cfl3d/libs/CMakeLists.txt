@@ -87,5 +87,6 @@ addx.F
 )
 
 set(CM_SRCS ${CM_F90SRCS} ${CM_FSRCS} ${CM_FSRCS_SPEC})
-add_library("COBJ" OBJECT ${CM_CSRCS})
-add_library("common" $<TARGET_OBJECTS:COBJ> ${CM_SRCS})
+add_library(COBJ OBJECT ${CM_CSRCS})
+add_library(common $<TARGET_OBJECTS:COBJ> ${CM_SRCS})
+add_dependencies(common cgns)

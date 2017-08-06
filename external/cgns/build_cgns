@@ -1,0 +1,6 @@
+#!/bin/bash
+tar xf cgnslib_2.5-5.tar.gz
+cd cgnslib_2.5
+./configure
+make
+

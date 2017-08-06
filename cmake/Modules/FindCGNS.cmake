@@ -9,11 +9,18 @@ find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
   /usr/local/include
   /usr/include
 )
+if(CGNS_INCLUDE_DIR)
+	message(WARNING "Could locate cgnslib_f.h")
+endif(CGNS_INCLUDE_DIR)
 
 find_library(CGNS_LIBRARY NAMES libcgns.a
   /usr/local/lib
   /usr/lib
 )
+
+if(CGNS_LIBRARY)
+	message(WARNING "Could locate libcgns.a")
+endif(CGNS_LIBRARY)
 
 set(CGNS_FOUND "NO")
 if(CGNS_INCLUDE_DIR)
@@ -23,14 +30,10 @@ if(CGNS_INCLUDE_DIR)
   endif()
 endif()
 
-if(CGNS_FIND_REQUIRED AND NOT CGNS_FOUND)
-  message(SEND_ERROR "Unable to find the requested CGNS libraries.")
-endif()
-
 # handle the QUIETLY and REQUIRED arguments and set CGNS_FOUND to TRUE if
 # all listed variables are TRUE
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(CGNS DEFAULT_MSG CGNS_LIBRARY CGNS_INCLUDE_DIR)
+#include(FindPackageHandleStandardArgs)
+#find_package_handle_standard_args(CGNS DEFAULT_MSG CGNS_LIBRARY CGNS_INCLUDE_DIR)
 
 
 mark_as_advanced(

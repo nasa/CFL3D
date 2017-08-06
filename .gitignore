@@ -4,3 +4,4 @@ testcase/
 
 *.swp
 bin/
+external/cgns/cgnslib_2.5/

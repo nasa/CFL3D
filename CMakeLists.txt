@@ -6,10 +6,10 @@ SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Si
 
 ## options
 option(USE_SINGLE "use single precision? " OFF)
-option(USE_CGNS "use CGNS? " OFF)
+option(USE_CGNS "use CGNS? " ON)
 option(USE_NO_REDIRECT "use no-redirect? " OFF)
 option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " ON)
-option(BUILD_MPI "build MPI version? " OFF)
+option(BUILD_MPI "build MPI version? " ON)
 option(BUILD_CMPLX "build complex version? " OFF)
 
 ## default Build Type is Release
@@ -44,7 +44,7 @@ endif(USE_SINGLE)
 
 
 # no FindCGNS in CMake release
-# use Paraview's FindCGNS.cmake
+# using Paraview's FindCGNS.cmake
 # https://github.com/Kitware/ParaView/raw/master/CMake/FindCGNS.cmake
 # modified to find `cgnslib_f.h` and `libcgns.a`
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -55,9 +55,13 @@ if(USE_CGNS)
 		message("Found CGNS for CFL3D")
 		add_definitions(-DCGNS)
 		include_directories(${CGNS_INCLUDE_DIRS})
+		add_compile_options(-lcgns)
 	else(CGNS_FOUND)
-		message(WARNING "CGNS not found for CFL3D")
-		set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
+		message(WARNING "system CGNS not found for CFL3D")
+		message(WARNING "Trying to use cgns 2.5.5 in ./external directory")
+		message(WARNING "use ./external/cgns/build_cgns")
+		add_subdirectory("external/cgns")
+		#set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
 	endif(CGNS_FOUND)
 else(USE_CGNS)
 endif(USE_CGNS)
@@ -66,6 +70,18 @@ if(BUILD_MPI)
 	find_package(MPI 1.0 REQUIRED)
 	if(MPI_Fortran_FOUND)
 		message("Found MPI for Fortran")
+		## add mpi library
+		add_library(mpi STATIC IMPORTED)
+		set_property(TARGET mpi PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${MPI_INCLUDE_PATH})
+		set(other_elems ${MPI_Fortran_LIBRARIES})
+		list(GET other_elems 0 first_elem)
+		list(REMOVE_AT other_elems 0)
+		set_property(TARGET mpi PROPERTY IMPORTED_LOCATION ${first_elem})
+		message("TARGET mpi PROPERTY IMPORTED_LOCATION: ${first_elem}")
+		set_property(TARGET mpi PROPERTY INTERFACE_LINK_LIBRARIES ${other_elems})
+		message("TARGET mpi PROPERTY INTERFACE_LINK_LIBRARIES: ${other_elems}")
+		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "DIST_MPI")
+		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "-pthread")
 		## FAST-io
 		if(USE_FASTIO)
 			add_definitions(-DFASTIO)
@@ -76,9 +92,8 @@ if(BUILD_MPI)
 			message(WARNING "no mpi, no fast-io.")
 			set(USE_FASTIO OFF CACHE BOOL "build MPI? (not available)" FORCE) # set the fastio not available
 		endif(USE_FASTIO)
-
 		set(BUILD_MPI OFF CACHE BOOL "build MPI? (not available)" FORCE) # set the MPI not available
-	endif(MPI_FOUND)
+	endif(MPI_Fortran_FOUND)
 else(BUILD_MPI)
 endif(BUILD_MPI)
 
@@ -126,7 +141,6 @@ message("---------------------------------------------------------------------")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-# add_subdirectory(CGNS) 
 add_subdirectory(source) 
 #add_subdirectory(test) 
 
