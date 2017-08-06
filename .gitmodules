@@ -1,4 +1,0 @@
-[submodule "CGNS"]
-	path = CGNS
-	url = https://github.com/CGNS/CGNS.git
-	branch = cmake

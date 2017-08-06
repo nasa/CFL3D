@@ -5,12 +5,12 @@
 # CGNS_LIBRARIES   - List of fully qualified libraries to link against when using CGNS.
 # CGNS_FOUND       - Do not attempt to use CGNS if "no" or undefined.
 
-find_path(CGNS_INCLUDE_DIR cgnslib.h
+find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
   /usr/local/include
   /usr/include
 )
 
-find_library(CGNS_LIBRARY cgns
+find_library(CGNS_LIBRARY NAMES libcgns.a
   /usr/local/lib
   /usr/lib
 )

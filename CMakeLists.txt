@@ -6,7 +6,7 @@ SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Si
 
 ## options
 option(USE_SINGLE "use single precision? " OFF)
-option(USE_CGNS "use CGNS? " ON)
+option(USE_CGNS "use CGNS? " OFF)
 option(USE_NO_REDIRECT "use no-redirect? " OFF)
 option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " ON)
 option(BUILD_MPI "build MPI version? " OFF)
@@ -46,17 +46,17 @@ endif(USE_SINGLE)
 # no FindCGNS in CMake release
 # use Paraview's FindCGNS.cmake
 # https://github.com/Kitware/ParaView/raw/master/CMake/FindCGNS.cmake
+# modified to find `cgnslib_f.h` and `libcgns.a`
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 if(USE_CGNS)
 	find_package(CGNS 2.4 REQUIRED)
 	if(CGNS_FOUND)
-		message("Found CGNS")
+		message("Found CGNS for CFL3D")
 		add_definitions(-DCGNS)
 		include_directories(${CGNS_INCLUDE_DIRS})
-		add_compile_options("-l${CGNS_LIBRARY}")
 	else(CGNS_FOUND)
-		message(WARNING "CGNS not found, try to use https://github.com/Kitware/ParaView/raw/master/CMake/FindCGNS.cmake and place it in /cmake/Modules/")
+		message(WARNING "CGNS not found for CFL3D")
 		set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
 	endif(CGNS_FOUND)
 else(USE_CGNS)
@@ -126,6 +126,7 @@ message("---------------------------------------------------------------------")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
+# add_subdirectory(CGNS) 
 add_subdirectory(source) 
 #add_subdirectory(test) 
 
