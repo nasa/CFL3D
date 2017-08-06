@@ -6,7 +6,7 @@ SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Si
 
 ## options
 option(USE_SINGLE "use single precision? " OFF)
-option(USE_CGNS "use CGNS? " OFF)
+option(USE_CGNS "use CGNS? " ON)
 option(USE_NO_REDIRECT "use no-redirect? " OFF)
 option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " ON)
 option(BUILD_MPI "build MPI version? " OFF)
@@ -25,7 +25,7 @@ endif(USE_NO_REDIRECT)
 
 ## use options to setup flags and find libraries
 if(USE_SINGLE)
-	
+	# do nothing
 else(USE_SINGLE)
 	add_definitions(-DDBLE_PRECSN)
 
@@ -47,11 +47,14 @@ endif(USE_SINGLE)
 # use Paraview's FindCGNS.cmake
 # https://github.com/Kitware/ParaView/raw/master/CMake/FindCGNS.cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 if(USE_CGNS)
 	find_package(CGNS 2.4 REQUIRED)
 	if(CGNS_FOUND)
 		message("Found CGNS")
 		add_definitions(-DCGNS)
+		include_directories(${CGNS_INCLUDE_DIRS})
+		add_compile_options("-l${CGNS_LIBRARY}")
 	else(CGNS_FOUND)
 		message(WARNING "CGNS not found, try to use https://github.com/Kitware/ParaView/raw/master/CMake/FindCGNS.cmake and place it in /cmake/Modules/")
 		set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
@@ -59,19 +62,15 @@ if(USE_CGNS)
 else(USE_CGNS)
 endif(USE_CGNS)
 
-if(USE_NO_REDIRECT)
-	add_definitions(-DNOREDIRECT)
-endif(USE_NO_REDIRECT)
-
 if(BUILD_MPI)
 	find_package(MPI 1.0 REQUIRED)
-	if(MPI_FOUND)
-		message("Found MPI")
+	if(MPI_Fortran_FOUND)
+		message("Found MPI for Fortran")
 		## FAST-io
 		if(USE_FASTIO)
 			add_definitions(-DFASTIO)
 		endif(USE_FASTIO)
-	else(MPI_FOUND)
+	else(MPI_Fortran_FOUND)
 		## FAST-io
 		if(USE_FASTIO)
 			message(WARNING "no mpi, no fast-io.")
@@ -83,17 +82,25 @@ if(BUILD_MPI)
 else(BUILD_MPI)
 endif(BUILD_MPI)
 
-# always use LINUX
-add_definitions(-DLINUX)
+# in LINUX system
+if(UNIX AND NOT APPLE)
+	add_definitions(-DLINUX)
+	## usually the Linux OS uses `ld` as linker, so add `-z muldefs` option
+	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -z muldefs" )
+endif(UNIX AND NOT APPLE)
 
 ## compiler dependent settings
 if(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
 	add_definitions(-DINTEL)
 	add_compile_options(-xHost )
 	add_compile_options(-traceback)
-	add_compile_options(-fpe0)
+	add_compile_options(-fpe0) # 
+	#add_compile_options(-w) #bad behavior, old codes usually use common block incorrectly. However, the warning is harmless. 
+	add_compile_options(-ip) # interprocedural optimization
+	add_compile_options(-fno-alias) #gcc by default uses `-fargument-noalias-global` 
 elseif(${CMAKE_Fortran_COMPILER_ID} MATCHES GNU)
-	add_compile_options(-march=native -Wno-align-commons)
+	add_compile_options(-march=native)
+	add_compile_options(-Wno-align-commons) #suppress some warnings about the padding of commons
 	add_compile_options(-fbacktrace)
 else(${CMAKE_Fortran_COMPILER_ID} MATCHES Intel)
 	message(WARNING "Unsupported compiler iD: " ${CMAKE_Fortran_COMPILER_ID})
@@ -103,6 +110,7 @@ else(${CMAKE_Fortran_COMPILER_ID} MATCHES Intel)
 	add_compile_options(-fbacktrace)
 endif(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
 
+# it seems always use P3D_SINGLE in original Install script
 add_definitions(-DP3D_SINGLE)
 
 message("---------------------CFL3D programs summary--------------------------")
@@ -114,9 +122,10 @@ message("---------------------------------------------------------------------")
 # set output library
 # use CMAKE_XXX_OUTPUT_DIRECTORY to set the default dirs when create targets
 # set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/lib/fortran)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 add_subdirectory(source) 
+#add_subdirectory(test) 
 
