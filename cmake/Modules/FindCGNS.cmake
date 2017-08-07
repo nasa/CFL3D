@@ -4,22 +4,24 @@
 # CGNS_INCLUDE_DIR - where to find cgns.h, etc.
 # CGNS_LIBRARIES   - List of fully qualified libraries to link against when using CGNS.
 # CGNS_FOUND       - Do not attempt to use CGNS if "no" or undefined.
-
 find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
+  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5
   /usr/local/include
   /usr/include
 )
+
 if(CGNS_INCLUDE_DIR)
-	message(WARNING "Could locate cgnslib_f.h")
+	message("Could locate cgnslib_f.h in ${CGNS_INCLUDE_DIR}")
 endif(CGNS_INCLUDE_DIR)
 
 find_library(CGNS_LIBRARY NAMES libcgns.a
+  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5/LINUX
   /usr/local/lib
   /usr/lib
 )
 
 if(CGNS_LIBRARY)
-	message(WARNING "Could locate libcgns.a")
+	message("Could locate libcgns.a as ${CGNS_LIBRARY}")
 endif(CGNS_LIBRARY)
 
 set(CGNS_FOUND "NO")
