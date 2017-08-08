@@ -12,17 +12,12 @@ set(
  main.F
 )
 
-#set (SPLIT_FSRCS ${SPLIT_FSRCS}
-#../cfl3d/dist/umalloc.F 
-#../cfl3d/libs/readkey.F          ../cfl3d/libs/parser.F      ../cfl3d/libs/outbuf.F     ../cfl3d/libs/my_flush.F 
-#)
-
 add_executable(splitter ${SPLIT_FSRCS})
 target_link_libraries(splitter PUBLIC common)
 target_link_libraries(splitter PUBLIC dist)
+if(BUILD_CMPLX)
+	add_executable(splittercmplx ${SPLIT_FSRCS})
+	target_link_libraries(splittercmplx PUBLIC common_cmplx)
+	target_link_libraries(splittercmplx PUBLIC dist_cmplx)
+endif(BUILD_CMPLX)
 
-##if(BUILD_MPI)
-##	add_executable(cfl3d_mpi ${CFL3D_MAIN_FSRCS})
-##	target_link_libraries(cfl3d_mpi PUBLIC dist)
-##	target_link_libraries(cfl3d_mpi PUBLIC common)
-##endif(BUILD_MPI)

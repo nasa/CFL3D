@@ -6,11 +6,11 @@ SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Si
 
 ## options
 option(USE_SINGLE "use single precision? " OFF)
-option(USE_CGNS "use CGNS? " OFF)
+option(USE_CGNS "use CGNS? " ON)
 option(USE_NO_REDIRECT "use no-redirect? " OFF)
 option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " ON)
-option(BUILD_MPI "build MPI version? " OFF)
-option(BUILD_CMPLX "build complex version? " OFF)
+option(BUILD_MPI "build MPI version? " ON)
+option(BUILD_CMPLX "build complex version? " ON)
 
 ## default Build Type is Release
 if(NOT CMAKE_BUILD_TYPE)
@@ -60,7 +60,7 @@ if(USE_CGNS)
 		set_property(TARGET cgns PROPERTY IMPORTED_LINK_INTERFACE_LANGUAGES Fortran)
 		set_property(TARGET cgns PROPERTY INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CGNS_INCLUDE_DIR}>)
 		set_property(TARGET cgns PROPERTY INTERFACE_COMPILE_DEFINITIONS CGNS)
-		# it is required to use libhdf5.so
+		# If using libcgns.so in system lib, it is required to find and use libhdf5.so
 		#find_package(HDF5 REQUIRED)
 		#if(HDF5_FOUND)
 		#	message("HDF5_lib:${HDF5_hdf5_LIBRARY_RELEASE}")
@@ -86,11 +86,8 @@ if(BUILD_MPI)
 		list(GET other_elems 0 first_elem)
 		list(REMOVE_AT other_elems 0)
 		set_property(TARGET mpi PROPERTY IMPORTED_LOCATION ${first_elem})
-		#message("TARGET mpi PROPERTY IMPORTED_LOCATION: ${first_elem}")
 		set_property(TARGET mpi PROPERTY INTERFACE_LINK_LIBRARIES ${other_elems})
-		#message("TARGET mpi PROPERTY INTERFACE_LINK_LIBRARIES: ${other_elems}")
 		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "DIST_MPI")
-		#set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "-pthread")
 		set_property(TARGET mpi APPEND PROPERTY LINK_FLAGS "${MPI_Fortran_LINK_FLAGS}")
 		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "${MPI_Fortran_COMPILE_FLAGS}")
 		## FAST-io
