@@ -1,4 +1,0 @@
-#!/bin/bash
-echo "# add cfl3d executables to PATH">>$HOME/.bashrc
-echo "alias use_cfl3d='export PATH=$HOME/cfl3d/CFL3D/bin:\$PATH'">>$HOME/.bashrc
-alias use_cfl3d='export PATH=$HOME/cfl3d/CFL3D/bin:\$PATH'

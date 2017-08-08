@@ -48,5 +48,5 @@ make
 # or you may benefit from parallel run, try:
 # make -j`nproc`
 # There will be a lot of warnings because I do not turn off all warnings as the original CFL3D build system do.
-## When completed, the executables will be in CFL3D/bin directory.
+## When completed, the executables will be in CFL3D/build/bin directory.
 ```
