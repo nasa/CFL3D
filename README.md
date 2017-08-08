@@ -24,3 +24,29 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
 License for the specific language governing permissions and limitations 
 under the License.
+
+------------
+## About the CMake branch
+As a practice of cmake, I had ported the make system of cfl3d to CMake, a modern industry-level build system. Which is much more easy to use, understand, modify and maintain.
+
+### Usage
+```shell
+## prerequirement (tested in Ubuntu 16.04)
+sudo apt-get install libopenmpi-dev gfortran build-essential -y
+# in RHEL/CentOS, you may try this:
+# sudo yum install openmpi-devel gcc gcc-gfortran
+## download the CMake branch only 
+git clone -b CMake --single-branch https://github.com/chengdi123000/CFL3D.git
+## manually build cgns 2.5 without hdf5 and mpi
+## you can also use your own cgns library if you put your cgnslib_f.h and libcgns.a in /usr/share/include and /usr/share/lib respectively
+cd CFL3D/external/cgns
+./build_cgns
+## build out of source
+cd ../../build
+cmake ..
+make
+# or you may benefit from parallel run, try:
+# make -j`nproc`
+# There will be a lot of warnings because I do not turn off all warnings as the original CFL3D build system do.
+## When completed, the executables will be in CFL3D/bin directory.
+```
