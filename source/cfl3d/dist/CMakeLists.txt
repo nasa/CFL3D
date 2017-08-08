@@ -19,7 +19,9 @@ qout_coarse.F  qout_2d.F      plot3d_2d.F    plot3d_coarse.F
 
 add_library(dist ${DIST_FSRCS})
 target_link_libraries(dist PUBLIC common)
-target_link_libraries(dist PUBLIC cgns)
+if(USE_CGNS)
+	target_link_libraries(dist PUBLIC cgns)
+endif(USE_CGNS)
 
 set(
 CFL3D_MAIN_FSRCS
@@ -31,8 +33,18 @@ target_link_libraries(cfl3d_seq PUBLIC dist)
 if(BUILD_MPI)
 	add_library(dist_mpi ${DIST_FSRCS})
 	target_link_libraries(dist_mpi PUBLIC common)
-	target_link_libraries(dist_mpi PUBLIC cgns)
 	target_link_libraries(dist_mpi PUBLIC mpi)
 	add_executable(cfl3d_mpi ${CFL3D_MAIN_FSRCS})
 	target_link_libraries(cfl3d_mpi PUBLIC dist_mpi)
 endif(BUILD_MPI)
+
+if(BUILD_CMPLX)
+	add_library(dist_cmplx ${DIST_FSRCS})
+	target_link_libraries(dist_cmplx PUBLIC common_cmplx)
+	if(USE_CGNS)
+		target_link_libraries(dist_cmplx PUBLIC cgns)
+	endif(USE_CGNS)
+	add_executable(cfl3dcmplx_seq ${CFL3D_MAIN_FSRCS})
+	target_link_libraries(cfl3dcmplx_seq PUBLIC dist_cmplx)
+
+endif(BUILD_CMPLX)

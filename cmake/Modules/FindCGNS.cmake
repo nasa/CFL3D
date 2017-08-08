@@ -10,18 +10,22 @@ find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
   PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5
 )
 
-if(CGNS_INCLUDE_DIR)
-	message("Could locate cgnslib_f.h in ${CGNS_INCLUDE_DIR}")
-endif(CGNS_INCLUDE_DIR)
-
-find_library(CGNS_LIBRARY NAMES libcgns.so
+find_library(CGNS_LIBRARY NAMES libcgns.a
   /usr/local/lib
   /usr/lib
   PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5/LINUX
 )
-
+# if cannot find static library in system libraries
+# try to use external
 if(CGNS_LIBRARY)
-	message("Could locate libcgns.so as ${CGNS_LIBRARY}")
+	message("CANNOT find libcgns.a in system libs, trying to use external/cgns")
+	find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
+	  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5
+	)
+	
+	find_library(CGNS_LIBRARY NAMES libcgns.a
+	  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5/LINUX
+	)
 endif(CGNS_LIBRARY)
 
 set(CGNS_FOUND "NO")

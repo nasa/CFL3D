@@ -71,6 +71,9 @@ pltmode.F      bcnonin.F      initnonin.F    resnonin.F
 my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F 
 ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F 
 sijrate3d.F    foureqn.F      bc2026.F       bc2019.F 
+)
+set(
+CM_ONLY_FSRCS
 u_doubleprime.F bc2010.F
 )
 set(
@@ -86,9 +89,24 @@ CM_FSRCS_SPEC
 addx.F
 )
 
-set(CM_SRCS ${CM_F90SRCS} ${CM_FSRCS} ${CM_FSRCS_SPEC})
+set(CM_SRCS ${CM_F90SRCS} ${CM_FSRCS} ${CM_FSRCS_SPEC} ${CM_ONLY_FSRCS})
 add_library(COBJ OBJECT ${CM_CSRCS})
 add_library(common $<TARGET_OBJECTS:COBJ> ${CM_SRCS})
 if(USE_CGNS)
 	target_link_libraries(common PUBLIC cgns)
 endif(USE_CGNS)
+
+if(BUILD_CMPLX)
+	# complex version of libcommon do not contain F90 source files:  
+	# module_profileout.F90 module_contour.F90  module_kwstm.F90 module_stm_2005.F90
+	set(
+		CM_C_ONLY_FSRCS
+		histout_img.F
+	)
+	set(CM_C_SRCS ${CM_FSRCS} ${CM_FSRCS_SPEC} ${CM_ONLY_FSRCS} ${CM_C_ONLY_FSRCS})
+	add_library(common_cmplx $<TARGET_OBJECTS:COBJ> ${CM_C_SRCS})
+	target_compile_options(common_cmplx PUBLIC -DCMPLX)
+	if(USE_CGNS)
+		target_link_libraries(common_cmplx PUBLIC cgns)
+	endif(USE_CGNS)
+endif(BUILD_CMPLX)
