@@ -51,10 +51,10 @@ FFLAG_SPEC   = -O3 -fbacktrace -w -march=native -J../../$(CFLLIBSD)
 PREC         = -fdefault-real-8
 PREC_MPI     = -DDBLE_PRECSN
 LFLAG        = -z muldefs -march=native -fbacktrace 
-LLIBS        = -L../../external/cgns/lib -lcgns 
-LLIBS_SEQ    = -L../../external/cgns/lib -lcgns 
+LLIBS        = -L$(HOME)/cfl3d/CFL3D/external/cgns/lib -lcgns 
+LLIBS_SEQ    = -L$(HOME)/cfl3d/CFL3D/external/cgns/lib -lcgns 
 MPI_INCDIR   = 
-CGNS_INCDIR  = -I../../external/cgns/include
+CGNS_INCDIR  = -I$(HOME)/cfl3d/CFL3D/external/cgns/include
 CPP          = cpp
 CPPFLAG      = -P
 CPPOPT       = -DFASTIO $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
