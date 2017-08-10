@@ -1,7 +1,7 @@
-mkdir lib
-mkdir include
+#!/bin/bash
 wget "http://jaist.dl.sourceforge.net/project/cgns/cgnslib_2.5/Release 5/cgnslib_2.5-5.tar.gz" -O cgnslib_2.5-5.tar.gz
 tar xf cgnslib_2.5-5.tar.gz
 cd cgnslib_2.5
-./configure --prefix=$PWD/..
-make && make install
+./configure
+make
+
