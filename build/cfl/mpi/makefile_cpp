@@ -1,0 +1,131 @@
+#     $Id$
+#=============================================================================
+#
+#        creates the mpi executable for the parallel version of cfl3d
+#
+#=============================================================================
+
+# ***************************** CREATE LINKS *********************************
+
+link:     lncode lnhead lnlibs
+
+lncode:
+	@ echo "        linking source code"
+	ln -s $(CFLSRC_D)/*.F .
+	ln -s $(CFLSRC_S)/ccomplex.F .
+
+lnhead:
+
+lnlibs:
+	ln -s ../libs/$(COMMONLIB) .
+
+# ***************************** SUFFIX RULES***********************************
+
+#                    (to convert .F files to .f files)
+
+.SUFFIXES: .F .TMP1
+
+.F.f:
+	$(CPP) $(CPPFLAG) $(CPPOPT) $*.F > $*.TMP1
+	@grep -v '^[ ]*$$' < $*.TMP1 > $*.f
+	@chmod 600 $*.f
+	@rm $*.TMP1
+
+# **************************** CREATE LIBRARIES  *****************************
+
+#Note: fsrc_dist dependancy list must not contain development.f 
+
+FSRC_DIST = \
+	bc_blkint.f    findmin_new.f  plot3d.f       rrest.f \
+	bc_patch.f     forceout.f     plot3t.f       rrestg.f \
+	calyplus.f     pointers.f     setup.f        writ_buf.f \
+	mgblk.f        qinter.f       prntcp.f       newalpha.f \
+	cputim.f       patcher.f      qout.f         termn8.f \
+	dynptch.f      plot3c.f       resp.f         usrint.f \
+	wrest.f        wrestg.f       pre_bc.f       bc_embed.f \
+	updateg.f      compg2n.f      resetg.f       bc_period.f \
+	yplusout.f     sizer.f        cfl3d.f        trnsfr_vals.f \
+	updatedg.f     ae_corr.f      mgbl.f         setslave.f \
+	umalloc.f      reass.f        qoutavg.f      plot3davg.f \
+        qout_coarse.f  qout_2d.f      plot3d_2d.f    plot3d_coarse.f
+
+FSRC_SPEC =
+
+FOBJ_DIST = $(FSRC_DIST:.f=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
+
+DISTLIB = libdist.a
+
+$(DISTLIB): $(FSRC_DIST) $(FOBJ_DIST) $(FSRC_SPEC) $(FOBJ_SPEC)
+	ar $(AROPT) $(DISTLIB) $(FOBJ_DIST) $(FOBJ_SPEC)
+	@$(RANLIB) $(DISTLIB)
+
+HEAD_DIST = 
+
+$(FOBJ_DIST): $(HEAD_DIST)
+	$(FTN) $(FFLAG) -c $*.f
+
+$(FOBJ_SPEC): $(HEAD_DIST)
+	$(FTN) $(FFLAG_SPEC) -c $*.f
+
+# *************************** CREATE EXECUTABLE ******************************
+
+#Note: for inlining on cray, ccomplex must appear first in fsrc_main
+
+FSRC_MAIN = ccomplex.f development.f  main.f
+
+FOBJ_MAIN = $(FSRC_MAIN:.f=.o)
+
+HEAD_MAIN = 
+
+$(FOBJ_MAIN): $(HEAD_MAIN)
+	$(FTN) $(FFLAG) -c $*.f
+
+COMMONLIB   = libcommon.a
+
+$(EXEC): $(FSRC_MAIN) $(FOBJ_MAIN) $(DISTLIB) $(COMMONLIB) 
+	-ln -s ../libs/*.o .
+	$(FTN) $(LFLAG) -o $(EXEC) *.o $(LLIBS)
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	@ echo "                   DONE:  $(EXEC) created                     "
+	@ echo "                                                              "
+	@ echo "              the mpi executable can be found in:             "
+	@ echo "                                                              "
+	@ echo "                    $(DIR)/$(EXEC)                            "
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+
+# ******************************* CLEAN/SCRUB ********************************
+
+# the @touch is used to (silently) create some temp files to prevent irksome
+# warning messages are sometimes created if there are no *.whatever files and
+# one tries to remove them
+
+cleano:
+	@touch temp.o
+	-rm -f *.o
+
+cleane:
+	-rm -f $(EXEC) 
+
+cleana:
+	@touch temp.a
+	-rm -f *.a 
+
+cleanf:
+	@touch temp.f
+	-rm -f *.f
+
+cleanh:
+	@touch temp.h
+	-rm -f *.h
+
+cleang:
+	@touch temp.F
+	-rm -f *.F
+
+scrub: cleana cleano cleane cleanf cleanh cleang

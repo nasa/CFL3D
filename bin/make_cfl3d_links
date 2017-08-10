@@ -1,0 +1,41 @@
+#!/bin/sh
+## basic
+ln -s ../build/cfl/seq/cfl3d_seq
+## parallel version
+ln -s ../build/cfl/mpi/cfl3d_mpi
+## mesh block splitter
+ln -s ../build/split/seq/splitter
+## memory usage estimator
+ln -s ../build/precfl/seq/precfl3d
+## overset mesh related tool
+ln -s ../build/mag/seq/maggie
+## mesh deformation tool and its memory usage estimator
+ln -s ../build/ron/seq/ronnie
+ln -s ../build/preron/seq/preronnie
+## complex version of cfl3d which is used to compulate flight derivative
+ln -s ../build/cflcmplx/seq/cfl3dcmplx_seq
+ln -s ../build/cflcmplx/mpi/cfl3dcmplx_mpi
+ln -s ../build/splitcmplx/seq/splittercmplx
+## cfl3d_tools
+ln -s ../build/tools/seq/v6inpdoubhalf
+ln -s ../build/tools/seq/Get_FD
+ln -s ../build/tools/seq/initialize_field
+ln -s ../build/tools/seq/nmf_to_cfl3dinput
+ln -s ../build/tools/seq/cgns_to_cfl3dinput
+ln -s ../build/tools/seq/v6inpswitchijk
+ln -s ../build/tools/seq/v6_ronnie_mod
+ln -s ../build/tools/seq/moovmaker
+ln -s ../build/tools/seq/grid_perturb_cmplx
+ln -s ../build/tools/seq/v6_restart_mod
+ln -s ../build/tools/seq/gridswitchijk
+ln -s ../build/tools/seq/cfl3d_to_nmf
+ln -s ../build/tools/seq/cgns_readhist
+ln -s ../build/tools/seq/p3d_to_cfl3drst
+ln -s ../build/tools/seq/everyother_xyz
+ln -s ../build/tools/seq/p3d_to_INGRID
+ln -s ../build/tools/seq/INGRID_to_p3d
+ln -s ../build/tools/seq/grid_perturb
+ln -s ../build/tools/seq/cfl3dinp_to_FVBND
+ln -s ../build/tools/seq/cfl3d_to_pegbc
+ln -s ../build/tools/seq/plot3dg_to_cgns
+ln -s ../build/tools/seq/XINTOUT_to_ovrlp

@@ -1,0 +1,117 @@
+#     $Id$
+#=============================================================================
+#
+#                     builds the executable for precfl3d
+#
+#=============================================================================
+
+# ***************************** CREATE LINKS *********************************
+
+link: lncode lnhead
+
+lncode:
+	@ echo "        linking source code"
+	ln -s $(PRESRC)/*.F .
+	ln -s $(CFLSRC_D)/sizer.F .
+	ln -s $(CFLSRC_D)/pointers.F .
+	ln -s $(CFLSRC_D)/compg2n.F .
+	ln -s $(CFLSRC_D)/umalloc.F .
+	ln -s $(CFLSRC_D)/termn8.F .
+	ln -s $(CFLSRC_S)/outbuf.F .
+	ln -s $(CFLSRC_S)/pre_patch.F .
+	ln -s $(CFLSRC_S)/pre_blockbc.F .
+	ln -s $(CFLSRC_S)/pre_period.F .
+	ln -s $(CFLSRC_S)/getdhdr.F .
+	ln -s $(CFLSRC_S)/pre_embed.F .
+	ln -s $(CFLSRC_S)/global.F .
+	ln -s $(CFLSRC_S)/global2.F .
+	ln -s $(CFLSRC_S)/rpatch0.F .
+	ln -s $(CFLSRC_S)/getibk0.F .
+	ln -s $(CFLSRC_S)/cntsurf.F .
+	ln -s $(CFLSRC_S)/lead.F .
+	ln -s $(CFLSRC_S)/global0.F .
+	ln -s $(CFLSRC_S)/readkey.F .
+	ln -s $(CFLSRC_S)/parser.F .
+	ln -s $(CFLSRC_S)/ccomplex.F .
+	ln -s $(CFLSRC_S)/cgnstools.F .
+	ln -s $(CFLSRC_S)/setseg.F .
+	ln -s $(CFLSRC_S)/my_flush.F .
+
+lnhead:
+
+# ***************************** SUFFIX RULES***********************************
+
+#                    (to convert .F files to .f files)
+
+.SUFFIXES: .F .TMP1
+
+.F.f:
+	$(CPP) $(CPPFLAG) $(CPPOPT) $*.F > $*.TMP1
+	@grep -v '^[ ]*$$' < $*.TMP1 > $*.f
+	@chmod 600 $*.f
+	@rm $*.TMP1
+
+# **************************** CREATE EXECUTABLE *****************************
+
+SOURCE = sizer.f       get_cmd_args.f   rpatch0.f        outbuf.f \
+	 getibk0.f     global.f         global2.f        pointers.f \
+	 compg2n.f     umalloc.f        cntsurf.f \
+	 lead.f        pre_patch.f      pre_blockbc.f    pre_embed.f \
+	 pre_period.f  usrint.f         termn8.f         getdhdr.f \
+	 global0.f     readkey.f        parser.f         ccomplex.f \
+	 cgnstools.f   setseg.f         my_flush.f       main.f
+
+FSRC_SPEC =
+
+OBJECT = $(SOURCE:.f=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
+
+PRE_HEAD  = 
+
+$(OBJECT): $(PRE_HEAD)
+	$(FTN) $(FFLAG) -c $*.f
+
+$(FOBJ_SPEC): $(PRE_HEAD)
+	$(FTN) $(FFLAG_SPEC) -c $*.f
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	@ echo "                  DONE:  $(EXEC) created                      "
+	@ echo "                                                              "
+	@ echo "          the sequential executable can be found in:          "
+	@ echo "                                                              "
+	@ echo "                      $(DIR)/$(EXEC)                          "
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+
+# ****************************** CLEAN/SCRUB *********************************
+
+# the @touch is used to (silently) create some temp files to prevent irksome
+# warning messages are sometimes created if there are no *.whatever files and
+# one tries to remove them
+
+cleano:
+	@touch temp.o
+	-rm -f *.o
+
+cleane:
+	-rm -f $(EXEC)
+
+cleanf:
+	@touch temp.f
+	-rm -f *.f
+
+cleang:
+	@touch temp.F
+	-rm -f *.F
+
+cleanh:
+	@touch temp.h
+	-rm -f *.h
+
+scrub: cleano cleane cleanf cleang cleanh 

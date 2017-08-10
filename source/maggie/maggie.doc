@@ -1,0 +1,245 @@
+                   EXPLANATION OF INPUT PARAMETERS FOR MAGGIE
+
+
+
+  ****************************** LINE TYPE ONE ******************************
+
+     title describing case
+
+
+  ****************************** LINE TYPE TWO ******************************
+
+     nmesh  - number of grids
+
+     iplt3d - plot3d flag
+            = 0 no plot3d output
+            = 1 plot3d files will be output for all grids
+
+
+  ***************************** LINE TYPE THREE *****************************
+                (DATA FOR LINE TYPE THREE REPEATED NMESH TIMES)
+
+     jmax   - number of grid points in the j-direction corresponding to the
+              j-direction in CFL3D
+
+     kmax   - number of grid points in the k-direction corresponding to the
+              k-direction in CFL3D
+
+     lmax   - number of grid points in the l-direction corresponding to the
+              i-direction in CFL3D
+
+     noutr  - flag to indicate if outer boundary requires interpolated data
+            = 0 no
+            = 1 yes
+
+     nhole  - number of holes to be created
+
+     nobtyp - number of computational-coordinate planes defining outer
+              boundary points to be interpolated (zero if noutr = 0)
+
+
+  ****************************** LINE TYPE FOUR *****************************
+                (DATA FOR LINE TYPE FOUR REPEATED NMESH TIMES)
+
+     jsrs - starting index in j-direction for the search of the overlap data
+
+     jsre - ending index in j-direction for the search of the overlap data
+
+     ksrs - starting index in k-direction for the search of the overlap data
+
+     ksre - ending index in k-direction for the search of the overlap data
+
+     lsrs - starting index in l-direction for the search of the overlap data
+
+     lsre - ending index in l-direction for the search of the overlap data
+
+     NOTE:  When the above parameters are set to zero, the search range
+            will include the entire grid. (recommended)
+
+
+  ****************************** LINE TYPE FIVE *****************************
+       (LINE TYPES FIVE-EIGHT MUST BE REPEATED AS A GROUP FOR EACH HOLE)
+
+     mesh      - current mesh number
+
+     hole no.  - hole number in current mesh
+
+     ihbtyp(m) - number of computational-coordinate planes in mesh m to define
+                 hole in current mesh
+                 (m = 1,nmesh)
+
+
+  ****************************** LINE TYPE SIX ******************************
+                                     nmesh
+  (FOR LINE TYPE SIX, A TOTAL OF    SUM[IHBTYP(i)]    LINES NEED TO BE INPUT)
+                                      i=1
+
+     mesh - mesh number of mesh defining hole
+
+     jh1  - starting location in j-direction for definition of hole 
+
+     jh2  - ending location in j-direction for definition of hole
+
+     kh1  - starting location in k-direction for definition of hole
+
+     kh2  - ending location in k-direction for definition of hole
+
+     lh1  - starting location in l-direction for definition of hole
+
+     lh2  - ending location in l-direction for definition of hole
+
+     NOTES:  1) ONE pair of the three sets of indicies (jh1,jh2 or kh1,kh2 or
+                lh1,lh2) must have the same starting and ending values, since
+                this line type defines surfaces that will (approximately) define
+                the hole.
+
+             2) The pair of indicies that has the same starting and ending 
+                values should be negative if the outward pointing normal is
+                in the direction of decreasing computational coordinate.
+
+             3) the indicies are to be specified in terms of grid point
+                values - note that this is in contrast to how outer
+                boundaries are specified in line type 9.
+
+             4) A shorthand for specifying the entire range of an index
+                is to use 0 and 1 as the begining and ending values.
+
+  ***************************** LINE TYPE SEVEN *****************************
+     nlist  - total number of grids to search
+
+     lst(m) - grid number to search for target cells associated with
+              fringe points
+              (m=1,nmesh)
+
+
+  ***************************** LINE TYPE EIGHT *****************************
+     iorph  - flag to set how orphan points (if any) are handled
+            = 0  use value at nearest neighbor in donor mesh (zeroth order 
+                 interpoltion)
+            = 1  extrapolate from nearest neighbor in donor mesh
+            = 2  extrapolate from nearest neighbor in donor mesh, unless
+                 the resulting extrapolation coefficients fall outside the
+                 generally acceptable range -0.5 to 1.5. for such points
+                 the nearest neighbor is used instead (recommended)
+
+     ihole  - flag to repeat search for stencil points if the first search
+              turns up
+              a stencil which contains one or more hole points (illegal stencil)
+            = 0  do not repeat search
+            = 1  repeat search in meshes other than the one in which the illegal
+                 stencil was found. NOTE: only applicable if nlist > 1.
+            
+
+
+  ***************************** LINE TYPE NINE *****************************
+   (LINE TYPES NINE-ELEVEN MUST BE REPEATED AS A GROUP FOR EACH GRID NEEDING
+    BOUNDARY INFORMATION)
+                                     nmesh
+  (FOR LINE TYPE NINE, A TOTAL OF    SUM[NOBTYP(i)]    LINES NEED TO BE INPUT)
+                                      i=1
+
+     mesh - current mesh number
+
+     jo1  - cell center starting location in j-direction for definition of
+            outer boundary points to be interpolated
+
+     jo2  - cell center ending location in j-direction for definition of 
+            outer boundary points to be interpolated
+
+     ko1  - cell center starting location in k-direction for definition of 
+            outer boundary points to be interpolated
+
+     ko2  - cell center ending location in k-direction for definition of 
+            outer boundary points to be interpolated
+
+     lo1  - cell center starting location in l-direction for definition of 
+            outer boundary points to be interpolated
+
+     lo2  - cell center ending location in l-direction for definition of 
+            outer boundary points to be interpolated
+
+     NOTES: 1) The shorhand convention of 0,1 for specifying the full range
+            of an index, as described under line type 6, is also applicable
+            to the specification of the outer boundary.
+
+            2) The indicies specified under line type eight refer to cell-center
+            grid; indicies in all other line types refer to actual grid. If
+            the grid has (point) dimensions JDIM*KDIM*LDIM, then the
+            corresponding cell center grid has dimensions JDIM-1*KDIM-1*LDIM-1.
+            The outer boundaries created via this line type generally should 
+            extend beyond the range of cell center dimensions, e.g. for a 
+            J-boundary, the cell center boundary points should have values
+            JDIM and JDIM+1 or 0 and -1. Maggie will extrapolate x,y,z 
+            coordinates for these newly defined cell centers based on the
+            local stretching rates in the existing grid, and then attempt
+            to determine interpolation coefficients from another block based
+            on these x,y,z coordinates. There may be situations, however, where
+            the extrapolated x,y,z coordinates may be inappropriate (for example
+            they may "punch through" a nearby solid surface or symmetry plane).
+            In that case, an alternative approach is to set the indicies for
+            the outer boundaries to be  JDIM-2 and JDIM-1 or 1 and 2, as 
+            appropriate.  This alternative approach is less well tested in
+            terms of usage in CFL3D. The bottom line is that acceptable
+            outer boundary indicies are (for the J direction): -1,0 or 1,2
+            and JDIM,JDIM+1 or JDIM-2,JDIM-1.
+            
+
+            As a specific example, consider the following:
+
+            Say a particular block (say blk 2)  has (point) dimensions jxkxl =
+            33x65x17. That means the cell center indicies are 32x64x16. 
+            Furthermore, assume the outer  k-boundary (i.e. near the k=65 grid 
+            point) needs to receive data from some other block. There are 
+            already 64 cells in the k-direction, so the standard outer boundary
+            definition would be to extrapolate the grid to create 2 layers
+            of ghost cells at the outer k-boundary, with these ghost cells
+            centers having indicies k=65 and k=66. Then the maggie input would be:
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+            MESH       JO1       JO2       KO1       KO2       LO1       LO2
+               2         1        32        65        66         1        16
+
+            or using the shorthand 0/1 for the J and L directions:
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+            MESH       JO1       JO2       KO1       KO2       LO1       LO2
+               2         0         1        65        66         0         1
+
+
+            If it is necessary to connect the inner k-boundary to another grid 
+            (near the k=1 grid line), then note that the existing cell centers 
+            start at 1, so the preferred method is to specify ghost cells
+            -1 and 0. Thus
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+             MESH       JO1       JO2       KO1       KO2       LO1       LO2
+                2         1        32        -1         0         1        16
+
+            or using the shorthand 0/1 for the J and L directions (be careful
+            not to confuse the shorhand notation 0,1 with the ghost cell location
+            -1,0):
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+             MESH       JO1       JO2       KO1       KO2       LO1       LO2
+                2         0         1        -1         0         0         1
+
+      ----> NOTE THAT ON THE KMIN BOUNDARY, KO1 = -1 and KO2 = 0, NOT VICE-VERSA
+
+  ****************************** LINE TYPE TEN *****************************
+
+     nlist  - total number of grids to search
+
+     lst(m) - grid number to search for target cells associated with
+              outer boundary points
+              (m=1,nmesh)
+  ***************************** LINE TYPE ELEVEN *****************************
+     iorph  - flag to set how orphan points (if any) are handled
+            = 0  use value at nearest neighbor in donor mesh 
+                 (zeroth order interp.)
+            = 1  extrapolate from nearest neighbor in donor mesh
+
+     ihole  - flag to repeat search for stencil points if the first search
+              finds a stencil which contains one or more hole points 
+            = 0  do not repeat search
+            = 1  repeat search in meshes other than the one in which the illegal
+                 stencil was found. NOTE: only applicable if nlist > 1.

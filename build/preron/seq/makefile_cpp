@@ -1,0 +1,96 @@
+#     $Id$
+#=============================================================================
+#
+#                   builds the executable for preronnie
+#
+#=============================================================================
+
+# ***************************** CREATE LINKS *********************************
+
+link: lncode lnhead 
+
+lncode:
+	@ echo "        linking source code"
+	ln -s  $(PRERONSRC)/main_pre.F .
+	ln -s  $(PRERONSRC)/termn8.F .
+	ln -s  $(PRERONSRC)/usrint.F .
+	ln -s  $(PRERONSRC)/sizer.F .
+	ln -s  $(CFLSRC_D)/umalloc.F .
+	ln -s  $(CFLSRC_S)/global2.F .
+	ln -s  $(CFLSRC_S)/outbuf.F .
+	ln -s  $(CFLSRC_S)/ccomplex.F .
+	ln -s  $(CFLSRC_S)/my_flush.F .
+
+lnhead:
+
+# ***************************** SUFFIX RULES***********************************
+
+#                    (to convert .F files to .f files)
+
+.SUFFIXES: .F .TMP1
+
+.F.f:
+	$(CPP) $(CPPFLAG) $(CPPOPT) $*.F > $*.TMP1
+	@grep -v '^[ ]*$$' < $*.TMP1 > $*.f
+	@chmod 600 $*.f
+	@rm $*.TMP1
+
+# *************************** CREATE EXECUTABLE ******************************
+
+SOURCE = global2.f    termn8.f    usrint.f    umalloc.f \
+	 sizer.f      outbuf.f    ccomplex.f  my_flush.f \
+	 main_pre.f 
+
+FSRC_SPEC =
+
+OBJECT = $(SOURCE:.f=.o)
+
+FOBJ_SPEC = $(FSRC_SPEC:.f=.o)
+
+PRERON_HEAD  = 
+
+$(OBJECT): $(PRERON_HEAD)
+	$(FTN) $(FFLAG) -c $*.f
+
+$(FOBJ_SPEC): $(PRERON_HEAD)
+	$(FTN) $(FFLAG_SPEC) -c $*.f
+
+$(EXEC): $(SOURCE) $(OBJECT) $(FSRC_SPEC) $(FOBJ_SPEC)
+	$(FTN) $(LFLAG) -o $(EXEC) $(OBJECT) $(FOBJ_SPEC) $(LLIBS)
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                              "
+	@ echo "                  DONE:  $(EXEC) created                      "
+	@ echo "                                                              "
+	@ echo "          the sequential executable can be found in:          "
+	@ echo "                                                              "
+	@ echo "                      $(DIR)/$(EXEC)                          "
+	@ echo "                                                              "
+	@ echo "=============================================================="
+	@ echo "                                                    "
+
+# ****************************** CLEAN/SCRUB *********************************
+
+# the @touch is used to (silently) create some temp files so that irksome
+# warning messages are not created on SGI's if there are no *.whatever files
+
+cleano:
+	@touch temp.o
+	-rm -f *.o
+
+cleane:
+	-rm -f $(EXEC)
+
+cleanf:
+	@touch temp.f
+	-rm -f *.f
+
+cleang:
+	@touch temp.F
+	-rm -f *.F
+
+cleanh:
+	@touch temp.h
+	-rm -f *.h
+
+scrub: cleano cleane cleanf cleang cleanh 
