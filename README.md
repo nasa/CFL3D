@@ -29,7 +29,10 @@ under the License.
 ## About the CMake branch
 As a practice of cmake, I had ported the make system of cfl3d to CMake, a modern industry-level build system. Which is much more easy to use, understand, modify and maintain.
 
-Now the CMake branch has been merged into master
+Now the CMake branch has been merged into master, you can download the original `Intall and makefile build system` version using:
+```shell
+git clone --depth=1 --branch v6.7_gfortran_openmpi https://github.com/chengdi123000/cfl3d.git
+```
 
 ### Compilation
 ```shell
