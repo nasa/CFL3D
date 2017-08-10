@@ -92,7 +92,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 100 ip=1,2
@@ -162,10 +162,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
-c
-      itrflg1 = 0
-      if (real(bcdata(1,1,ip,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 200 ip=1,2
@@ -235,7 +232,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 300 ip=1,2
@@ -305,7 +302,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 400 ip=1,2
@@ -375,7 +372,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 500 ip=1,2
@@ -445,7 +442,7 @@ c     assumes if the first point has been set, all points have been
 c
       ipp     = 1
       itrflg1 = 0
-      if (real(bcdata(1,1,ipp,6)) .ne. 0.) itrflg1 = 1
+      if (real(bcdata(1,1,ipp,6)) .gt. -1.e10) itrflg1 = 1
 c
       if (ialph.eq.0) then
          do 600 ip=1,2
