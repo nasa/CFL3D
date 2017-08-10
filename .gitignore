@@ -54,6 +54,9 @@ build/tools/seq/v6inpdoubhalf
 build/tools/seq/gridswitchijk
 build/tools/seq/v6inpswitchijk
 testcase/
+*.orig
+*.gz
+external/
 
 *.swp
 bin/
