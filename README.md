@@ -29,6 +29,8 @@ under the License.
 ## About the CMake branch
 As a practice of cmake, I had ported the make system of cfl3d to CMake, a modern industry-level build system. Which is much more easy to use, understand, modify and maintain.
 
+Now the CMake branch has been merged into master
+
 ### Compilation
 ```shell
 ## prerequirement (tested in Ubuntu 16.04)
@@ -36,8 +38,8 @@ sudo apt-get install libopenmpi-dev gfortran build-essential git cmake -y
 # in RHEL/CentOS, you may try this:
 # sudo yum install openmpi-devel gcc gcc-gfortran git cmake
 
-## download the CMake branch only 
-git clone -b CMake --single-branch https://github.com/chengdi123000/CFL3D.git
+## download  
+git clone https://git.coding.net/chengdi123000/CFL3D.git
 
 ## manually build cgns 2.5 without hdf5 and mpi
 # you can also use your own cgns library if you put your cgnslib_f.h and libcgns.a in /usr/share/include and /usr/share/lib respectively
