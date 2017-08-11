@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0048 NEW) #used to set Version Number
 project(CFL3D VERSION 6.7)
 enable_language(Fortran C)

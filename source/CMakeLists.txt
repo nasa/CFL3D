@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0.2)
+cmake_minimum_required (VERSION 2.6)
 add_subdirectory(cfl3d)
 add_subdirectory(splitter)
 add_subdirectory(maggie)
