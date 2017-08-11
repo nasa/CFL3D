@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0048 NEW) #used to set Version Number
-project(CFL3D VERSION 6.7)
+project(CFL3D)
+set(CFL3D_VERSION_MAJOR 6)
+set(CFL3D_VERSION_MINOR 7)
 enable_language(Fortran C)
 SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Single Directory for all fortran modules.")
 
