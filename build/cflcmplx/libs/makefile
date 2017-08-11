@@ -96,7 +96,7 @@ FSRC_LIBS = \
         my_flush.F     bc2016.F       gfluxv1.F      hfluxv1.F \
         ffluxv1.F      sijrate2d.F    threeeqn.F     lesdiag.F \
         histout_img.F  sijrate3d.F    foureqn.F      bc2026.F \
-        bc2019.F
+        bc2019.F       u_doubleprime.F bc2010.F
 
 FSRC_SPEC = addx.F
 
