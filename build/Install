@@ -434,7 +434,6 @@ case $FARCH in *)
 # compilers
 
   FTN="f90"
-  CC="cc"
 
 # compile/link flags
 
@@ -715,7 +714,6 @@ case $FARCH in alpha)
 # work (e.g. you don't have mpi installed):
 # FTN="fort"
 
-  CC="gcc"                                                                              
   CPP="cpp"
 
   if [ $do_no_opt = no ]; then
@@ -776,7 +774,6 @@ case $FARCH in LINUX)
   MPI_LLIBDIR=""
   MPI_LLIB=""
   MPI_INCDIR=""
-  CC="mpicc"
   CPP="cpp"
   if [ $do_dou = yes ]; then
      PREC="-r8"
@@ -822,7 +819,6 @@ case $FARCH in LINUX)
      MPI_LLIBDIR=""
      MPI_LLIB=""
      MPI_INCDIR=""
-     CC="mpicc"
 # Alternate Intel compiler you may need if mpicc doesn't
 # work (e.g. you don't have mpi installed):
 #     CC="icc"
@@ -855,7 +851,6 @@ case $FARCH in LINUX)
      MPI_LLIBDIR=""
      MPI_LLIB=""
      MPI_INCDIR=""
-     CC="gcc"
      CPP="cpp"
      if [ $do_dou = yes ]; then
         PREC="-r8"
@@ -886,7 +881,6 @@ case $FARCH in LINUX)
      MPI_LLIBDIR=""
      MPI_LLIB=""
      MPI_INCDIR=""
-     CC="gcc"
      CPP="cpp"
      if [ $do_dou = yes ]; then
         PREC="--dbl"
@@ -917,7 +911,6 @@ case $FARCH in LINUX)
      MPI_LLIBDIR=""
      MPI_LLIB=""
      MPI_INCDIR=""
-     CC="gcc"
      CPP="cpp"
      if [ $do_dou = yes ]; then
         PREC="-r8 -fpconstant"
@@ -1017,7 +1010,6 @@ s;@LLIBDIR_SEQ@;$LLIBDIR_SEQ;g
 s;@MPI_INCDIR@;$MPI_INCDIR;g
 s;@CGNS_INCDIR@;$CGNS_INCDIR;g
 s;@FTN@;$FTN;g
-s;@CC@;$CC;g
 s;@CFLAG@;$CFLAG;g
 s;@AROPT@;$AROPT;g
 s;@RANLIB@;$RANLIB;g
