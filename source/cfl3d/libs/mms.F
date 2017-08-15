@@ -1579,7 +1579,7 @@ c     analytic_compressible not compiled if complex used
 c
 #   ifdef CMPLX
 c     do not compile all the exact routines if complex
-      continue
+c
 #   else
       subroutine analytic_compressible(x, y, z, neq, q, i_convert_q,
      +  i_forcing, i_gradient, distf, xmut, iexact_trunc, iexact_disc)
@@ -2825,5 +2825,5 @@ c
       qxz = qxz + scale*( 0.0 )
       qyz = qyz + scale*( 0.0 )
       return
-#   endif
       end
+#   endif
