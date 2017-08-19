@@ -33,15 +33,13 @@ set(TOOLS_SHARED_FSRCS
 )
 
 add_library(TOOLS_SHARED OBJECT ${TOOLS_SHARED_FSRCS})
+# add dummy target to group the tools
+add_custom_target(tools ALL)
 foreach (tool_src ${TOOLS_FSRCS})
 	get_filename_component(tool ${tool_src} NAME_WE)
 	add_executable(${tool} $<TARGET_OBJECTS:TOOLS_SHARED> ${tool_src})
 	target_link_libraries(${tool} PUBLIC dist)
 	target_link_libraries(${tool} PUBLIC common)
+	add_dependencies(tools ${tool})
 endforeach (tool_src)
 
-##if(BUILD_MPI)
-##	add_executable(cfl3d_mpi ${CFL3D_MAIN_FSRCS})
-##	target_link_libraries(cfl3d_mpi PUBLIC dist)
-##	target_link_libraries(cfl3d_mpi PUBLIC common)
-##endif(BUILD_MPI)
