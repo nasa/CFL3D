@@ -7,14 +7,14 @@
 find_path(CGNS_INCLUDE_DIR NAMES cgnslib_f.h
   /usr/local/include
   /usr/include
-  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5
-)
+  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/include
+  )
 
 find_library(CGNS_LIBRARY NAMES libcgns.a
   /usr/local/lib
   /usr/lib
-  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/cgnslib_2.5/LINUX
-)
+  PATHS ${PROJECT_SOURCE_DIR}/external/cgns/lib
+  )
 # if cannot find static library in system libraries
 # try to use external
 if(CGNS_LIBRARY)
