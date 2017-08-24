@@ -5,6 +5,9 @@ set(CFL3D_VERSION_MINOR 7)
 enable_language(Fortran C)
 SET (CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/include CACHE PATH "Single Directory for all fortran modules.")
 
+## output some information
+message("CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
+message("MSYS: ${MSYS}")
 ## options
 option(USE_SINGLE "use single precision? " OFF)
 option(USE_CGNS "use CGNS? " ON)
@@ -110,7 +113,9 @@ endif(BUILD_MPI)
 if(UNIX AND NOT APPLE)
 	add_definitions(-DLINUX)
 	## usually the Linux OS uses `ld` as linker, so add `-z muldefs` option
-	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -z muldefs" )
+	## SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -z muldefs" )
+	##SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} --allow-multiple-definition")
+	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 endif(UNIX AND NOT APPLE)
 
 ## project compiler dependent settings
