@@ -1,4 +1,4 @@
 #!/bin/bash
 echo "# add cfl3d executables to PATH">>$HOME/.bashrc
-echo "alias use_cfl3d='export PATH=$PWD:\$PATH'">>$HOME/.bashrc
-alias use_cfl3d='export PATH=$PWD:\$PATH'
+echo "alias use_cfl3d=\"export PATH=$PWD:\$PATH\"">>$HOME/.bashrc
+alias use_cfl3d="export PATH=$PWD:\$PATH"

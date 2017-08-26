@@ -86,6 +86,7 @@ if(BUILD_MPI)
 		## add mpi library
 		add_library(mpi STATIC IMPORTED)
 		set_property(TARGET mpi PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${MPI_Fortran_INCLUDE_PATH})
+		message("Choose the first element of libs: ${MPI_Fortran_LIBRARIES}")
 		set(other_elems ${MPI_Fortran_LIBRARIES})
 		list(GET other_elems 0 first_elem)
 		list(REMOVE_AT other_elems 0)
@@ -98,6 +99,19 @@ if(BUILD_MPI)
 		if(USE_FASTIO)
 			set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "FASTIO")
 		endif(USE_FASTIO)
+		## if using MinGW in Windows 
+		if(MINGW)
+			message("Using MinGW compilers, in Windows, MPICH2 1.4.1p1 is supported.")
+			get_filename_component(MPI_Fortran_LIB_DIR ${first_elem} DIRECTORY)
+			find_library(MPICH2_WIN libfmpich2g.a ${MPI_Fortran_LIB_DIR})
+			if(MPICH2_WIN)
+			message("libfmpich2g.a of mpich2 for MinGW fortran 77 is found and used: ${MPICH2_WIN}")
+			set_property(TARGET mpi PROPERTY IMPORTED_LOCATION "${MPICH2_WIN}")
+			else(MPICH2_WIN)
+			message("libfmpich2g.a of mpich2 for MinGW fortran 77 is not found, trying to use ${first_elem}")
+			endif(MPICH2_WIN)
+		endif(MINGW)
+
 	else(MPI_Fortran_FOUND)
 		## FAST-io
 		if(USE_FASTIO)
@@ -111,12 +125,16 @@ endif(BUILD_MPI)
 
 # in LINUX system
 if(UNIX AND NOT APPLE)
+	message("in Linux system")
 	add_definitions(-DLINUX)
-	## usually the Linux OS uses `ld` as linker, so add `-z muldefs` option
-	## SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -z muldefs" )
-	##SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} --allow-multiple-definition")
-	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 endif(UNIX AND NOT APPLE)
+
+
+if(MINGW)
+	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+else(MINGW)
+	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -z muldefs")
+endif(MINGW)
 
 ## project compiler dependent settings
 if(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
