@@ -171,25 +171,25 @@ add_subdirectory(source)
 enable_testing() 
 add_test(
 	NAME 2D_SEQ_FLATPLATE
-	COMMAND sh -c "splitter<split.inp_1blk && cfl3d_seq<grdflat5.inp"
+	COMMAND sh -c "$<TARGET_FILE:splitter><split.inp_1blk && $<TARGET_FILE:cfl3d_seq><grdflat5.inp"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Flatplate
 )
 
 add_test(
 	NAME 2D_RONNIE_BACKSTEP
-	COMMAND sh -c "splitter < split.inp_1blk && ronnie < ron_step_grdgen.inp && cfl3d_seq < step_grdgen.inp"
+	COMMAND sh -c "$<TARGET_FILE:splitter> < split.inp_1blk && $<TARGET_FILE:ronnie> < ron_step_grdgen.inp && $<TARGET_FILE:cfl3d_seq> < step_grdgen.inp"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Backstep
 )
 add_test(
 	NAME 2D_MAGGIE_NACA4412
-	COMMAND sh -c "splitter < split.inp_xmera && maggie < maggie.inp && cfl3d_seq < cfl3d.inp_xmera "
+	COMMAND sh -c "$<TARGET_FILE:splitter> < split.inp_xmera && $<TARGET_FILE:maggie> < maggie.inp && $<TARGET_FILE:cfl3d_seq> < cfl3d.inp_xmera"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/NACA_4412
 )
 
 if(BUILD_MPI)
 	add_test(
 		NAME 2.5D_MPI_AXIBUMP
-		COMMAND sh -c "splitter < split.inp_3blk  && ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 4 ${MPIEXEC_PREFLAGS} cfl3d_mpi ${MPIEXEC_POSTFLAGS} < bumpperiodic.inp_3blk &"
+		COMMAND sh -c "$<TARGET_FILE:splitter> < split.inp_3blk  && ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 4 ${MPIEXEC_PREFLAGS} $<TARGET_FILE:cfl3d_mpi> ${MPIEXEC_POSTFLAGS} < bumpperiodic.inp_3blk"
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Axibump
 	)
 endif(BUILD_MPI)
@@ -197,7 +197,7 @@ endif(BUILD_MPI)
 if(USE_CGNS)
 	add_test(
 		NAME 3D_SEQ_DELTA
-		COMMAND sh -c "plot3dg_to_cgns < plot3dg_to_cgns.inp && cfl3d_seq < delta_cgns.inp"
+		COMMAND sh -c "$<TARGET_FILE:plot3dg_to_cgns> < plot3dg_to_cgns.inp && $<TARGET_FILE:cfl3d_seq> < delta_cgns.inp"
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Delta_cgns
 	)
 endif(USE_CGNS)
