@@ -12,7 +12,7 @@ message("MSYS: ${MSYS}")
 option(USE_SINGLE "use single precision? " OFF)
 option(USE_CGNS "use CGNS? " ON)
 option(USE_NO_REDIRECT "use no-redirect? " OFF)
-option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " ON)
+option(USE_FASTIO "use fast-io of mpi? It is effective when mpi is found. " OFF)
 option(BUILD_MPI "build MPI version? " ON)
 option(BUILD_CMPLX "build complex version? " ON)
 
