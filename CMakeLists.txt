@@ -68,12 +68,12 @@ if(BUILD_MPI)
 		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "DIST_MPI")
 		set_property(TARGET mpi APPEND PROPERTY LINK_FLAGS "${MPI_Fortran_LINK_FLAGS}")
 		set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "${MPI_Fortran_COMPILE_FLAGS}")
-		## FAST-io
-		if(USE_FASTIO)
-			set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "FASTIO")
-		endif(USE_FASTIO)
+
 		## if using MinGW in Windows 
 		if(MINGW)
+			message(WARNING "fast-io is not available in MinGW.")
+			set(USE_FASTIO OFF CACHE BOOL "fast-io is not available in MinGW, turn it off" FORCE) # set the fastio not available
+
 			message("Using MinGW compilers, in Windows, MPICH2 1.4.1p1 is supported.")
 			get_filename_component(MPI_Fortran_LIB_DIR ${first_elem} DIRECTORY)
 			find_library(MPICH2_WIN libfmpich2g.a ${MPI_Fortran_LIB_DIR})
@@ -84,6 +84,11 @@ if(BUILD_MPI)
 			else(MPICH2_WIN)
 				message("libfmpich2g.a of mpich2 for MinGW fortran 77 is not found, trying to use ${first_elem}")
 			endif(MPICH2_WIN)
+		else(MINGW)
+			## FAST-io
+			if(USE_FASTIO)
+				set_property(TARGET mpi APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "FASTIO")
+			endif(USE_FASTIO)
 		endif(MINGW)
 
 	else(MPI_Fortran_FOUND)
@@ -98,10 +103,10 @@ else(BUILD_MPI)
 endif(BUILD_MPI)
 
 # in LINUX system
-if(UNIX OR MSYS)
+if(UNIX)
 	message("in Linux or Linux-like system")
 	add_definitions(-DLINUX)
-endif(UNIX OR MSYS)
+endif(UNIX)
 
 
 if(MINGW)
