@@ -27,25 +27,6 @@ if(USE_NO_REDIRECT)
 endif(USE_NO_REDIRECT)
 
 
-## use options to setup flags and find libraries
-if(USE_SINGLE)
-	# do nothing
-else(USE_SINGLE)
-	add_definitions(-DDBLE_PRECSN)
-
-	if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
-		message(STATUS "Using the Intel Fortran compiler")
-		add_compile_options(-r8)
-	elseif(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
-		message(STATUS "Using the GNU Fortran compiler")
-		add_compile_options(-fdefault-real-8)
-	else(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
-		message(WARNING "compiler do not match Intel/GNU! use Intel's setting instead.")
-		add_compile_options(-r8)
-	endif(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
-
-endif(USE_SINGLE)
-
 
 # no FindCGNS in CMake release
 # using Paraview's FindCGNS.cmake
@@ -64,14 +45,6 @@ if(USE_CGNS)
 		set_property(TARGET cgns PROPERTY IMPORTED_LINK_INTERFACE_LANGUAGES Fortran)
 		set_property(TARGET cgns PROPERTY INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CGNS_INCLUDE_DIR}>)
 		set_property(TARGET cgns PROPERTY INTERFACE_COMPILE_DEFINITIONS CGNS)
-		# If using libcgns.so in system lib, it is required to find and use libhdf5.so
-		#find_package(HDF5 REQUIRED)
-		#if(HDF5_FOUND)
-		#	message("HDF5_lib:${HDF5_hdf5_LIBRARY_RELEASE}")
-		#	set_property(TARGET cgns PROPERTY INTERFACE_LINK_LIBRARIES ${HDF5_hdf5_LIBRARY_RELEASE})
-		#else(HDF5_FOUND)
-		#	message(WARNING "HDF5 not found, there might be some error when linking to libcgns.so")
-		#endif(HDF5_FOUND)
 	else(CGNS_FOUND)
 		message(WARNING "system CGNS not found for CFL3D")
 		set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
@@ -105,10 +78,11 @@ if(BUILD_MPI)
 			get_filename_component(MPI_Fortran_LIB_DIR ${first_elem} DIRECTORY)
 			find_library(MPICH2_WIN libfmpich2g.a ${MPI_Fortran_LIB_DIR})
 			if(MPICH2_WIN)
-			message("libfmpich2g.a of mpich2 for MinGW fortran 77 is found and used: ${MPICH2_WIN}")
-			set_property(TARGET mpi PROPERTY IMPORTED_LOCATION "${MPICH2_WIN}")
+				message("libfmpich2g.a of mpich2 for MinGW fortran 77 is found and used: ${MPICH2_WIN}")
+				set_property(TARGET mpi PROPERTY IMPORTED_LOCATION "${MPICH2_WIN}")
+				set(MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS} "-localroot")
 			else(MPICH2_WIN)
-			message("libfmpich2g.a of mpich2 for MinGW fortran 77 is not found, trying to use ${first_elem}")
+				message("libfmpich2g.a of mpich2 for MinGW fortran 77 is not found, trying to use ${first_elem}")
 			endif(MPICH2_WIN)
 		endif(MINGW)
 
@@ -124,10 +98,10 @@ else(BUILD_MPI)
 endif(BUILD_MPI)
 
 # in LINUX system
-if(UNIX AND NOT APPLE)
-	message("in Linux system")
+if(UNIX OR MSYS)
+	message("in Linux or Linux-like system")
 	add_definitions(-DLINUX)
-endif(UNIX AND NOT APPLE)
+endif(UNIX OR MSYS)
 
 
 if(MINGW)
@@ -136,27 +110,44 @@ else(MINGW)
 	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -z muldefs")
 endif(MINGW)
 
+
+## use options to setup flags and find libraries
+if(USE_SINGLE)
+	# do nothing
+else(USE_SINGLE)
+	add_definitions(-DDBLE_PRECSN)
+	if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
+		set(CFL3D_FLAGS ${CFL3D_FLAGS} -fdefault-real-8)
+	else(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
+		set(CFL3D_FLAGS ${CFL3D_FLAGS} -r8)
+	endif(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
+endif(USE_SINGLE)
+
+
 ## project compiler dependent settings
 if(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
 	add_definitions(-DINTEL)
-	add_compile_options(-xHost )
-	add_compile_options(-traceback)
-	add_compile_options(-fpe0) # 
-	#add_compile_options(-w) #bad behavior, old codes usually use common block incorrectly. However, the warning is harmless. 
-	add_compile_options(-ip) # interprocedural optimization
-	add_compile_options(-fno-alias) #gcc by default uses `-fargument-noalias-global` 
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -xHost)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -traceback)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fpe0)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -ip)	
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fno-alias)
+	# no `-w` option, do not turn warnings off.
 elseif(${CMAKE_Fortran_COMPILER_ID} MATCHES GNU)
-	add_compile_options(-march=native)
-	add_compile_options(-Wno-align-commons) #suppress some warnings about the padding of commons
-	add_compile_options(-fbacktrace)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -march=native)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -Wno-align-commons)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fbacktrace)
 else(${CMAKE_Fortran_COMPILER_ID} MATCHES Intel)
-	message(WARNING "Unsupported compiler iD: " ${CMAKE_Fortran_COMPILER_ID})
+	message(WARNING "Untested compiler iD: " ${CMAKE_Fortran_COMPILER_ID})
 	message(WARNING "Supported compiler iD: Intel/GNU")
 	message(WARNING "Try to use GNU options")
-	add_compile_options(-march=native)
-	add_compile_options(-Wno-align-commons) #suppress some warnings about the padding of commons
-	add_compile_options(-fbacktrace)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -march=native)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -Wno-align-commons)
+	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fbacktrace)
 endif(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
+
+message("Final compile flags for fortran is: ${CFL3D_FLAGS}")
+
 
 # it seems always use P3D_SINGLE in original Install script
 add_definitions(-DP3D_SINGLE)
@@ -175,5 +166,38 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 add_subdirectory(source) 
-#add_subdirectory(testcases) 
 
+#test
+enable_testing() 
+add_test(
+	NAME 2D_SEQ_FLATPLATE
+	COMMAND sh -c "splitter<split.inp_1blk && cfl3d_seq<grdflat5.inp"
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Flatplate
+)
+
+add_test(
+	NAME 2D_RONNIE_BACKSTEP
+	COMMAND sh -c "splitter < split.inp_1blk && ronnie < ron_step_grdgen.inp && cfl3d_seq < step_grdgen.inp"
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Backstep
+)
+add_test(
+	NAME 2D_MAGGIE_NACA4412
+	COMMAND sh -c "splitter < split.inp_xmera && maggie < maggie.inp && cfl3d_seq < cfl3d.inp_xmera "
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/NACA_4412
+)
+
+if(BUILD_MPI)
+	add_test(
+		NAME 2.5D_MPI_AXIBUMP
+		COMMAND sh -c "splitter < split.inp_3blk  && ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 4 ${MPIEXEC_PREFLAGS} cfl3d_mpi ${MPIEXEC_POSTFLAGS} < bumpperiodic.inp_3blk &"
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Axibump
+	)
+endif(BUILD_MPI)
+
+if(USE_CGNS)
+	add_test(
+		NAME 3D_SEQ_DELTA
+		COMMAND sh -c "plot3dg_to_cgns < plot3dg_to_cgns.inp && cfl3d_seq < delta_cgns.inp"
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Delta_cgns
+	)
+endif(USE_CGNS)

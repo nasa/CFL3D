@@ -91,7 +91,9 @@ addx.F
 
 set(CM_SRCS ${CM_F90SRCS} ${CM_FSRCS} ${CM_FSRCS_SPEC} ${CM_ONLY_FSRCS})
 add_library(COBJ OBJECT ${CM_CSRCS})
+
 add_library(common $<TARGET_OBJECTS:COBJ> ${CM_SRCS})
+target_compile_options(common PUBLIC ${CFL3D_FLAGS})
 if(USE_CGNS)
 	target_link_libraries(common PUBLIC cgns)
 endif(USE_CGNS)
@@ -105,6 +107,8 @@ if(BUILD_CMPLX)
 	)
 	set(CM_C_SRCS ${CM_FSRCS} ${CM_FSRCS_SPEC} ${CM_ONLY_FSRCS} ${CM_C_ONLY_FSRCS})
 	add_library(common_cmplx $<TARGET_OBJECTS:COBJ> ${CM_C_SRCS})
+	
+	target_compile_options(common_cmplx PUBLIC ${CFL3D_FLAGS})
 	target_compile_options(common_cmplx PUBLIC -DCMPLX)
 	if(USE_CGNS)
 		target_link_libraries(common_cmplx PUBLIC cgns)
