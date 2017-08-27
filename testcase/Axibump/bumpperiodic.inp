@@ -1,0 +1,90 @@
+input/output files:
+bumpgrd.bin                                                 
+plot3dg.bin                                                 
+plot3dq.bin                                                 
+cfl3d.out                                                   
+cfl3d.res                                                   
+cfl3d.turres                                                
+cfl3d.blomax                                                
+cfl3d.out15                                                 
+cfl3d.prout                                                 
+cfl3d.out20                                                 
+ovrlp.bin                                                   
+patch.bin                                                   
+restart.bin                                                 
+>
+edvislim 100000.
+<
+     Axisymmetric bump flow, 3-d, using 2 planes and periodic BCs
+      Mach     alpha      beta      ReUe   Tinf,dR     ialph    ihstry
+   0.87500   0.00000   0.00000 0.266E+01 460.00000         0         0
+      sref      cref      bref       xmc       ymc       zmc
+     1.000    1.0000    1.0000    0.0000    0.0000    0.0000
+        dt     irest   iflagts      fmax     iunst   cfl_tau
+  -5.00000         0         0   5.00000         0  10.00000
+     ngrid   nplot3d    nprint    nwrest      ichk       i2d    ntstep       ita
+        -1         1         1      9999         0         0         1         1
+       ncg       iem  iadvance    iforce  ivisc(i)  ivisc(j)  ivisc(k)
+         2         0         0         1         0         0         7
+      idim      jdim      kdim
+         2       181       101
+    ilamlo    ilamhi    jlamlo    jlamhi    klamlo    klamhi
+         0         0         0         0         0         0
+     inewg    igridc        is        js        ks        ie        je        ke
+         0         0         0         0         0         0         0         0
+  idiag(i)  idiag(j)  idiag(k)  iflim(i)  iflim(j)  iflim(k)
+         1         1         1         4         4         4
+   ifds(i)   ifds(j)   ifds(k)  rkap0(i)  rkap0(j)  rkap0(k)
+         1         1         1    0.3333    0.3333    0.3333
+      grid     nbci0   nbcidim     nbcj0   nbcjdim     nbck0   nbckdim    iovrlp
+         1         1         1         1         1         1         1         0
+i0:   grid   segment    bctype      jsta      jend      ksta      kend     ndata
+         1         1      2005         1       181         1       101         4
+      nblp     dthtx     dthty     dthtz
+   1.00000  -1.00000   0.00000   0.00000
+idim: grid   segment    bctype      jsta      jend      ksta      kend     ndata
+         1         1      2005         1       181         1       101         4
+      nblp     dthtx     dthty     dthtz
+   1.00000   1.00000   0.00000   0.00000
+j0:   grid   segment    bctype      ista      iend      ksta      kend     ndata
+         1         1      1003         1         2         1       101         0
+jdim: grid   segment    bctype      ista      iend      ksta      kend     ndata
+         1         1      1003         1         2         1       101         0
+k0:   grid   segment    bctype      ista      iend      jsta      jend     ndata
+         1         1      2004         1         2         1       181         2
+   tw/tinf        cq
+   0.00000   0.00000
+kdim: grid   segment    bctype      ista      iend      jsta      jend     ndata
+         1         1      1003         1         2         1       181         0
+      mseq    mgflag    iconsf       mtt      ngam
+         3         1         0         0         2
+      issc epsssc(1) epsssc(2) epsssc(3)      issr epsssr(1) epsssr(2) epsssr(3)
+         0    0.3000    0.3000    0.3000         0    0.3000    0.3000    0.3000
+      ncyc    mglevg     nemgl     nitfo
+      2500         1         0         0
+      1000         2         0         0
+       750         3         0         0
+      mit1      mit2      mit3      mit4      mit5  ...
+         1
+         1         1
+         1         1         1
+ 1-1 blocking data:
+      nbli
+       0
+  number    grid    ista    jsta    ksta    iend    jend    kend   isva1   isva2
+  number    grid    ista    jsta    ksta    iend    jend    kend   isva1   isva2
+ patch interface data:
+    ninter
+         0
+ plot3d output:
+  grid iptyp  ista  iend  iinc  jsta  jend  jinc  ksta  kend  kinc
+     1     0     1     1     1     0     0     0     0     0     0
+ movie
+     0
+ print out:
+  grid iptyp  ista  iend  iinc  jsta  jend  jinc  ksta  kend  kinc
+     1     0     1     1     1     0     0     0     1     1     1
+ control surfaces:
+   ncs
+     0
+  grid  ista  iend  jsta  jend  ksta  kend iwall inorm
