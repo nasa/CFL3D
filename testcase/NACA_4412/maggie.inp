@@ -1,0 +1,66 @@
+INPUT/OUTPUT FILES
+4412_xmera.unf
+maggie.out
+ovrlp.bin
+plot3d.out
+    4412 case - overset "box" grids
+     NMESH    IPLT3D                                                        L-02
+        -3         1
+      JMAX      KMAX      LMAX     NOUTR     NHOLE    NOBTYP                L-03
+       225        57         2         1         0         3
+       113        73         2         1         1         4
+        49       113         2         0         1         0
+      JSRS      JSRE      KSRS      KSRE      LSRS      LSRE                L-04
+         0         0         0         0         0         0
+         0         0         0         0         0         0
+         0         0         0         0         0         0
+ HOLE DEFINITION:
+      MESH  HOLE NO. IHBTYP(1) IHBTYP(2) IHBTYP(3) IHBTYP(4) ...     NMESH  L-05
+         2        -1         3         0         0         0 
+     IMESH       JH1       JH2       KH1       KH2       LH1       LH2      L-06
+         1        -7        -7         1        51         1         2
+         1       219       219         1        51         1         2
+         1         7       219        51        51         1         2
+     SEARCH LIST FOR FRINGE POINTS ASSOCIATED WITH THIS HOLE:
+     NLIST    LST(1)   LST(2)   LST(3)   LIST(4) ...     NLIST              L-07
+         1         1
+     PROBLEM POINT OPTIONS
+     IORPH     IHOLE                                                        L-08
+         1         1
+ HOLE DEFINITION:
+      MESH  HOLE NO. IHBTYP(1) IHBTYP(2) IHBTYP(3) IHBTYP(4) ...     NMESH  L-05
+         3         1         0         4         0         0
+     IMESH       JH1       JH2       KH1       KH2       LH1       LH2      L-06
+         2       -13       -13         7        68         1         2
+         2       104       104         7        68         1         2
+         2        13       104        -7        -7         1         2
+         2        13       104        68        68         1         2
+     SEARCH LIST FOR FRINGE POINTS ASSOCIATED WITH THIS HOLE:
+     NLIST    LST(1)   LST(2)   LST(3)   LIST(4) ...     NLIST              L-07
+         1         2
+     PROBLEM POINT OPTIONS
+     IORPH     IHOLE                                                        L-08
+         1         1
+ OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+      MESH       JO1       JO2       KO1       KO2       LO1       LO2
+         1         1       224        55        56         1         1
+         1         1         2         1        56         1         1
+         1       223       224         1        56         1         1
+     SEARCH LIST FOR OUTER BOUNDARY POINTS:
+     NLIST    LST(1)   LST(2)   LST(3)   LIST(4) ...     NLIST
+         1         2        
+     PROBLEM POINT OPTIONS
+     IORPH     IHOLE
+         1         1
+ OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+      MESH       JO1       JO2       KO1       KO2       LO1       LO2
+         2         1       112        71        72         1         1
+         2         1         2         1        72         1         1
+         2       111       112         1        72         1         1
+         2         1       112         1         2         1         1
+     SEARCH LIST FOR OUTER BOUNDARY POINTS:
+     NLIST    LST(1)   LST(2)   LST(3)   LIST(4) ...     NLIST
+         1         3
+     PROBLEM POINT OPTIONS
+     IORPH     IHOLE
+         1         1

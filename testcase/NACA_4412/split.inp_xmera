@@ -1,0 +1,16 @@
+INPUT (UNSPLIT) FILES
+cfl3d.inp_xmera
+null
+4412_xmera.fmt
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         0         1
+OUTPUT (SPLIT) FILES
+null
+null
+4412_xmera.unf
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+NSPLITS
+0

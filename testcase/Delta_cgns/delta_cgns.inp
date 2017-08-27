@@ -1,0 +1,86 @@
+I/O FILES
+delta.cgns
+plot3dg.bin
+plot3dq.bin
+cfl3d.out
+cfl3d.res
+cfl3d.turres
+cfl3d.blomax
+cfl3d.out15
+cfl3d.prout
+cfl3d.out20
+ovrlp.bin
+patch.bin
+restart.bin(not-used)
+>
+icgns 1
+<
+ 75 Degree Swept Delta Wing - 37x65x65 - Laminar
+     XMACH     ALPHA      BETA  REUE,MIL   TINF,DR     IALPH     IHIST
+     0.300    20.500       0.0     0.500     460.0         0         0
+      SREF      CREF      BREF       XMC       YMC       ZMC
+    .13398   1.00000    .53590   0.25000         0.        0.
+        DT     IREST   IFLAGTS      FMAX     IUNST    CFLTAU
+     -10.0         0         0       1.0         0       10.
+     NGRID   NPLOT3D    NPRINT    NWREST      ICHK       I2D    NTSTEP       ITA
+         1         1         1      9100         0         0         1         1
+       NCG       IEM  IADVANCE    IFORCE  IVISC(I)  IVISC(J)  IVISC(K)
+         2         0         0       001         0         0         1
+    IDIM    JDIM    KDIM
+      37      65      65
+    ILAMLO    ILAMHI    JLAMLO    JLAMHI    KLAMLO    KLAMHI
+        00        00       000       000         0      0000
+     INEWG    IGRIDC        IS        JS        KS        IE        JE        KE
+         0         0         0         0         0         0         0         0
+  IDIAG(I)  IDIAG(J)  IDIAG(K)  IFLIM(I)  IFLIM(J)  IFLIM(K)
+         1         1         1         4         4         4
+   IFDS(I)   IFDS(J)   IFDS(K)  RKAP0(I)  RKAP0(J)  RKAP0(K) 
+         1         1         1    .33333    .33333    .33333
+      GRID     NBCI0   NBCIDIM     NBCJ0   NBCJDIM     NBCK0   NBCKDIM    IOVRLP
+         1         1         1         1         1         3         1         0
+I0:   GRID   SEGMENT    BCTYPE      JSTA      JEND      KSTA      KEND    NDATA
+         1         1      1003         1        65         1        65        0
+IDIM: GRID   SEGMENT    BCTYPE      JSTA      JEND      KSTA      KEND    NDATA
+         1         1      1003         1        65         1        65        0
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND    NDATA
+         1         1      1001         1        37         1        65        0
+JDIM: GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND    NDATA
+         1         1      1001         1        37         1        65        0 
+K0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      JSTA      JEND    NDATA
+         1         1      1011         1         9         1        65        0
+         1         2      2004         9        25         1        65        2
+              TWTYPE        CQ
+                 -1.        0.
+         1         3         0        25        37         1        65        0
+KDIM: GRID   SEGMENT    BCTYPE      ISTA      IEND      JSTA      JEND    NDATA
+         1         1      1003         1        37         1        65        0
+      MSEQ    MGFLAG    ICONSF       MTT      NGAM
+         1         1         1         0        02
+      ISSC EPSSSC(1) EPSSSC(2) EPSSSC(3)      ISSR EPSSSR(1) EPSSSR(2) EPSSSR(3)
+         1       0.3       0.3       0.3         0       0.3       0.3      0.3
+      NCYC    MGLEVG     NEMGL     NITFO
+       600        03        00      0000
+      MIT1      MIT2      MIT3      MIT4      MIT5      MIT6      MIT7     MIT8
+        01        01        01        01        01         1         1        1
+   1-1 BLOCKING DATA:
+      NBLI
+         1
+ NUMBER   GRID     :    ISTA   JSTA   KSTA   IEND   JEND   KEND  ISVA1  ISVA2
+      1      1            25      1      1     37     33      1      1      2
+ NUMBER   GRID     :    ISTA   JSTA   KSTA   IEND   JEND   KEND  ISVA1  ISVA2
+      1      1            25     65      1     37     33      1      1      2
+  PATCH SURFACE DATA:
+    NINTER  
+         0
+  PLOT3D OUTPUT:
+   GRID IPTYPE ISTART   IEND   IINC JSTART   JEND   JINC KSTART   KEND   KINC
+      1      0      0      0      0      0      0      0      0      0      0
+  MOVIE
+      0
+  PRINT OUT:
+   GRID IPTYPE ISTART   IEND   IINC JSTART   JEND   JINC KSTART   KEND   KINC
+      1      0      9     25      1      1      3      1      1      1      1
+  CONTROL SURFACE:
+  NCS
+    0
+   GRID ISTART   IEND   JSTART   JEND   KSTART   KEND  IWALL  INORM
