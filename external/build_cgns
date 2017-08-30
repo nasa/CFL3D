@@ -1,5 +1,5 @@
 #!/bin/bash
-if [-e cgnslib_2.5-5.tar.gz]
+if [ -e cgnslib_2.5-5.tar.gz ]
 then
 	echo "cgnslib is already downloaded."
 else
