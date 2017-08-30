@@ -127,19 +127,28 @@ c     10...bus error
 c     11...segmentation fault
 c
 #if defined IBM
-c      call signal(8,usrint)
-c      call signal(9,usrint)
-c      call signal(10,usrint)
-c      call signal(11,usrint)
-#else
-c      call signal(8,usrint,-1)
-c      call signal(9,usrint,-1)
+      call signal(8,usrint)
+      call signal(9,usrint)
+      call signal(10,usrint)
+      call signal(11,usrint)
+#elif defined __GFORTRAN__
+      call signal(8,usrint)
+      call signal(9,usrint)
 #  if defined LINUX
-c      call signal(7,usrint,-1)
+      call signal(7,usrint)
 #  else
-c      call signal(10,usrint,-1)
+      call signal(10,usrint)
 #  endif
-c      call signal(11,usrint,-1)
+      call signal(11,usrint)
+#else
+      call signal(8,usrint,-1)
+      call signal(9,usrint,-1)
+#  if defined LINUX
+      call signal(7,usrint,-1)
+#  else
+      call signal(10,usrint,-1)
+#  endif
+      call signal(11,usrint,-1)
 #endif
 c
 c***********************************************************************

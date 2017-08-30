@@ -108,13 +108,11 @@ if(UNIX)
 	add_definitions(-DLINUX)
 endif(UNIX)
 
-
 if(MINGW)
 	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 else(MINGW)
 	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -z muldefs")
 endif(MINGW)
-
 
 ## use options to setup flags and find libraries
 if(USE_SINGLE)
