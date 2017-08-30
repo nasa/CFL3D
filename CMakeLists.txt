@@ -45,11 +45,13 @@ if(USE_CGNS)
 		set_property(TARGET cgns PROPERTY IMPORTED_LINK_INTERFACE_LANGUAGES Fortran)
 		set_property(TARGET cgns PROPERTY INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CGNS_INCLUDE_DIR}>)
 		set_property(TARGET cgns PROPERTY INTERFACE_COMPILE_DEFINITIONS CGNS)
+		##add_definitions(-DCGNS)
 	else(CGNS_FOUND)
 		message(WARNING "system CGNS not found for CFL3D")
 		set(USE_CGNS OFF CACHE BOOL "use CGNS? (not available)" FORCE) # set the CGNS not available
 	endif(CGNS_FOUND)
 else(USE_CGNS)
+	message("NO CGNS for CFL3D")
 endif(USE_CGNS)
 
 if(BUILD_MPI)
@@ -199,8 +201,13 @@ endif(BUILD_MPI)
 
 if(USE_CGNS)
 	add_test(
-		NAME 3D_SEQ_DELTA
-		COMMAND sh -c "$<TARGET_FILE:plot3dg_to_cgns> < plot3dg_to_cgns.inp && $<TARGET_FILE:cfl3d_seq> < delta_cgns.inp"
+		NAME 3D_SEQ_DELTA_PLOT3D_TO_CGNS
+		COMMAND sh -c "$<TARGET_FILE:plot3dg_to_cgns> < plot3dg_to_cgns.inp"
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Delta_cgns
+	)
+	add_test(
+		NAME 3D_SEQ_DELTA_CGNS_RUN
+		COMMAND sh -c "$<TARGET_FILE:cfl3d_seq> < delta_cgns.inp"
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testcase/Delta_cgns
 	)
 endif(USE_CGNS)

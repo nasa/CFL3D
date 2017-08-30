@@ -32,16 +32,18 @@ set(TOOLS_SHARED_FSRCS
  ../cfl3d/libs/readkey.F ../cfl3d/libs/global0.F ../cfl3d/libs/cgnstools.F ../cfl3d/libs/parser.F ../cfl3d/libs/outbuf.F ../cfl3d/libs/my_flush.F
 )
 
-add_library(TOOLS_SHARED OBJECT ${TOOLS_SHARED_FSRCS})
+add_library(TOOLS_SHARED STATIC ${TOOLS_SHARED_FSRCS})
+if (USE_CGNS)
+	target_link_libraries(TOOLS_SHARED PUBLIC cgns)
+endif (USE_CGNS)
+
 # add dummy target to group the tools
 add_custom_target(tools ALL)
 foreach (tool_src ${TOOLS_FSRCS})
 	get_filename_component(tool ${tool_src} NAME_WE)
-	add_executable(${tool} $<TARGET_OBJECTS:TOOLS_SHARED> ${tool_src})
+	add_executable(${tool} ${tool_src})
+	target_link_libraries(${tool} PUBLIC TOOLS_SHARED)
 	target_link_libraries(${tool} PUBLIC dist)
-	if (USE_CGNS)
-		target_link_libraries(${tool} PUBLIC cgns)
-	endif (USE_CGNS)
 	target_link_libraries(${tool} PUBLIC common)
 	add_dependencies(tools ${tool})
 endforeach (tool_src)
