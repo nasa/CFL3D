@@ -10,7 +10,7 @@ fi
 tar xf cgnslib_2.5-5.tar.gz
 cd cgnslib_2.5
 echo "using the simplest configuration of cgns"
-./configure --enable-debug --prefix=$PWD/../cgns
+./configure --prefix=$PWD/../cgns
 make VERBOSE=1
 mkdir -p ../cgns/lib
 mkdir -p ../cgns/include
