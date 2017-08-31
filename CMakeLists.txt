@@ -130,7 +130,7 @@ endif(USE_SINGLE)
 
 
 ## project compiler dependent settings
-if(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
+if(CMake_Fortran_COMPILER_ID MATCHES "Intel")
 	add_definitions(-DINTEL)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -xHost)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -traceback)
@@ -138,18 +138,18 @@ if(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -ip)	
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fno-alias)
 	# no `-w` option, do not turn warnings off.
-elseif(${CMAKE_Fortran_COMPILER_ID} MATCHES GNU)
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -march=native)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -Wno-align-commons)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fbacktrace)
-else(${CMAKE_Fortran_COMPILER_ID} MATCHES Intel)
+else()
 	message(WARNING "Untested compiler iD: " ${CMAKE_Fortran_COMPILER_ID})
 	message(WARNING "Supported compiler iD: Intel/GNU")
 	message(WARNING "Try to use GNU options")
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -march=native)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -Wno-align-commons)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -fbacktrace)
-endif(${CMake_Fortran_COMPILER_ID} MATCHES Intel)
+endif()
 
 message("Final compile flags for fortran is: ${CFL3D_FLAGS}")
 
