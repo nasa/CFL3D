@@ -130,7 +130,7 @@ endif(USE_SINGLE)
 
 
 ## project compiler dependent settings
-if(CMake_Fortran_COMPILER_ID MATCHES "Intel")
+if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
 	add_definitions(-DINTEL)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -xHost)
 	set(CFL3D_FLAGS ${CFL3D_FLAGS} -traceback)
