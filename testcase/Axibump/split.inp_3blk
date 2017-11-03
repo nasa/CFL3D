@@ -1,0 +1,25 @@
+INPUT (UNSPLIT) FILES
+bumpperiodic.inp
+null
+bumpgrd.fmt
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         0         1
+OUTPUT (SPLIT) FILES
+null
+null
+bumpgrd.bin_3blk
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+NSPLITS
+3
+1
+2
+61
+1
+2
+121
+1
+2
+181

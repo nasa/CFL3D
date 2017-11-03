@@ -1,0 +1,23 @@
+INPUT/OUTPUT FILES
+step_grdgen.p3d
+ronnie.out
+step_grdgen.patch.bin
+IOFLAG  ITRACE
+1       -1
+sample ronnie input file using "new" input method in last section (ioflag=1)
+     NGRID 
+        -2 
+       NCG       IEM      IDIM      JDIM      KDIM
+         2         0         2        25        65
+         2         0         2       129       113 
+    NINTER  
+         2 
+ INT     IIFIT    LLIMIT    IITMAX   MMCXIE  MMCETA    IIC0  IIORPH
+   1         1         1       100        0       0       0       0
+   2         1         1       100        0       0       0       0
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB (one per int)
+      FROM   XIE1  XIE2   ETA1   ETA2       (repeat nfb times for each int)
+   1   122      0     0      0      0     1   
+       221     41   113      0      0
+   2   221     41   113      0      0     1   
+       122      0     0      0      0

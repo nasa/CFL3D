@@ -1,0 +1,18 @@
+#!/bin/bash
+if [ -e cgnslib_2.5-5.tar.gz ]
+then
+	echo "cgnslib is already downloaded."
+else
+	echo "downloading cgnslib-2.5-5 source code"
+	wget "https://github.com/CGNS/CGNS_archives/raw/master/cgnslib_2.5-5.tar.gz" -O cgnslib_2.5-5.tar.gz
+fi
+
+tar xf cgnslib_2.5-5.tar.gz
+cd cgnslib_2.5
+echo "using the simplest configuration of cgns"
+./configure --prefix=$PWD/../cgns
+make VERBOSE=1
+mkdir -p ../cgns/lib
+mkdir -p ../cgns/include
+make install
+

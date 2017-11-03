@@ -544,7 +544,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -608,7 +608,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -671,7 +671,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -784,7 +784,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -847,7 +847,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -909,7 +909,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -1023,7 +1023,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -1089,7 +1089,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -1154,7 +1154,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -1388,7 +1388,7 @@ c
               else
 c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
                 sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
-                if (real(sbar) .ge. real(-0.7*ss)) then
+                if (real(sbar) .ge. -0.7*real(ss)) then
                   sst=ss+sbar
                 else
                   sst=ss+(ss*(0.7*0.7*ss+0.9*sbar)/((0.9-2.*0.7)*ss-
@@ -1411,7 +1411,7 @@ c             term1=cb1*(1.-ft2)*ss
 c   Because we split up sst between term1 and term2, need to limit ss >= 0
 c   for case when using isar=1 (for which ss itself may be negative).
 c   Normally, with ss=vor, it is always non-negative.
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                 term1=cb1*(1.-ct3)*ss
                 term2=cw1
               else
@@ -1477,7 +1477,7 @@ c             fix for single prec. via TLNS3D via FUN3D vi Tim Barth
      .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
               dfw=dfw*dgg
 c old         dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                 continue
               else
                 damp1(j,k,i)=damp1(j,k,i)+
@@ -1640,7 +1640,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -1735,7 +1735,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -1829,7 +1829,7 @@ c
               anutm=.5*(turre(j,k-1,i)+turre(j,k,i))
               fnup=.5*(fnu(j,k+1,i)+fnu(j,k,i))
               fnum=.5*(fnu(j,k-1,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -1942,7 +1942,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -2026,7 +2026,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -2109,7 +2109,7 @@ c
               anutm=.5*(turre(j-1,k,i)+turre(j,k,i))
               fnup=.5*(fnu(j+1,k,i)+fnu(j,k,i))
               fnum=.5*(fnu(j-1,k,i)+fnu(j,k,i))
-              if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+              if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                chi_p=anutp/fnup
                chi_m=anutm/fnum
                diff_facp=(16.+chi_p*chi_p*chi_p)/(16.-chi_p*chi_p*chi_p)
@@ -2212,7 +2212,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -2298,7 +2298,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -2383,7 +2383,7 @@ c
                 anutm=.5*(turre(j,k,i-1)+turre(j,k,i))
                 fnup=.5*(fnu(j,k,i+1)+fnu(j,k,i))
                 fnum=.5*(fnu(j,k,i-1)+fnu(j,k,i))
-                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt.0.) then
+                if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
                  chi_p=anutp/fnup
                  chi_m=anutm/fnum
                  diff_facp=(16.+chi_p*chi_p*chi_p)/
@@ -2500,7 +2500,7 @@ c Update VIST3D and save TURRE in TURSAV
       do i=1,idim-1
         do k=1,kdim-1
           do j=1,jdim-1
-            if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .lt. 0.) then
+            if (i_saneg .eq. 1 .and. real(turre(j,k,i)).lt. 0.) then
               vist3d(j,k,i)=0.d0
             else
               chi=turre(j,k,i)/fnu(j,k,i)

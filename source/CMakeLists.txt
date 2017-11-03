@@ -1,0 +1,7 @@
+cmake_minimum_required (VERSION 2.6)
+add_subdirectory(cfl3d)
+add_subdirectory(splitter)
+add_subdirectory(maggie)
+add_subdirectory(precfl3d)
+add_subdirectory(ronnie)
+add_subdirectory(tools)

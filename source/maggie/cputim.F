@@ -105,6 +105,9 @@ c
 #if defined ETFLAG
       call etime_(tm)
       call itime_(ia)
+#elif defined __GFORTRAN__
+      call etime(tm(1:2),tm(3))
+      call itime(ia)
 #else
       call etime(tm)
       call itime(ia)

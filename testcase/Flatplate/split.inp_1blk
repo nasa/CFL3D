@@ -1,0 +1,16 @@
+INPUT (UNSPLIT) FILES
+grdflat5.inp
+null
+grdflat5.fmt
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         0         1
+OUTPUT (SPLIT) FILES
+null
+null
+grdflat5.bin
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+NSPLITS
+0

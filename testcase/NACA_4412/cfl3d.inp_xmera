@@ -1,0 +1,108 @@
+i/o files
+4412_xmera.unf
+plot3dg.bin_xmera
+plot3dq.bin_xmera
+cfl3d.out_xmera
+cfl3d.res_xmera
+cfl3d.turres_xmera
+cfl3d.blomax
+cfl3d.out15
+cfl3d.prout
+cfl3d.out20
+ovrlp.bin
+patch.bin
+restart.bin_xmera
+    4412 case - overset "box" grids
+     xmach     alpha      beta  reue,mil   tinf,dr     ialph     ihist
+    0.2000    13.870       0.0    01.520     460.0         0         0
+      sref      cref      bref       xmc       ymc       zmc
+   1.00000   1.00000    1.0000   0.00000      0.00      0.00
+        dt     irest   iflagts      fmax     iunst    cfltau
+    -5.000         0       000   05.0000         0       10.
+     ngrid   nplot3d    nprint    nwrest      ichk       i2d    ntstep       ita
+        -3        -1         0      9999         0         1         1         1
+       ncg       iem  iadvance    iforce  ivisc(i)  ivisc(j)  ivisc(k)
+         2         0         0         1         0         0         5
+         2         0         0         0         0         0         5
+         2         0         0         0         0         0         5
+      idim      jdim      kdim
+       002       225        57
+       002       113        73
+       002        49       113
+    ilamlo    ilamhi    jlamlo    jlamhi    klamlo    klamhi
+        00        00       000       000         0      0000
+        00        00       000       000         0      0000
+        00        00       000       000         0      0000
+     inewg    igridc        is        js        ks        ie        je        ke
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+  idiag(i)  idiag(j)  idiag(k)  iflim(i)  iflim(j)  iflim(k)
+         1         1         1         0         0         0
+         1         1         1         0         0         0
+         1         1         1         0         0         0
+   ifds(i)   ifds(j)   ifds(k)  rkap0(i)  rkap0(j)  rkap0(k) 
+         1         1         1     .3333     .3333     .3333
+         1         1         1     .3333     .3333     .3333
+         1         1         1     .3333     .3333     .3333
+      grid     nbci0   nbcidim     nbcj0   nbcjdim     nbck0   nbckdim    iovrlp 
+         1         1         1         1         1         3         1         1
+         2         1         1         1         1         1         1         1
+         3         1         1         1         1         1         1         1
+i0:   grid   segment    bctype      jsta      jend      ksta      kend    ndata
+         1         1      1002         0         0         0         0        0
+         2         1      1002         0         0         0         0        0
+         3         1      1002         0         0         0         0        0
+idim: grid   segment    bctype      jsta      jend      ksta      kend    ndata
+         1         1      1002         0         0         0         0        0
+         2         1      1002         0         0         0         0        0
+         3         1      1002         0         0         0         0        0
+j0:   grid   segment    bctype      ista      iend      ksta      kend    ndata
+         1         1         0         0         0         0         0        0
+         2         1         0         0         0         0         0        0
+         3         1      1003         0         0         0         0        0
+jdim: grid   segment    bctype      ista      iend      ksta      kend    ndata
+         1         1         0         0         0         0         0        0
+         2         1         0         0         0         0         0        0
+         3         1      1003         0         0         0         0        0
+k0:   grid   segment    bctype      ista      iend      jsta      jend    ndata
+         1         1         0         0         0         1        25        0
+         1         2      2004         0         0        25       201        2
+tw/tinf  cq
+0.0      0.0
+         1         3      1002         0         0       201       225        0
+         2         1         0         0         0         0         0        0
+         3         1      1003         0         0         0         0        0
+kdim: grid   segment    bctype      ista      iend      jsta      jend    ndata
+         1         1         0         0         0         0         0        0
+         2         1         0         0         0         0         0        0
+         3         1      1003         0         0         0         0        0
+      mseq    mgflag    iconsf       mtt      ngam
+         1         1         1         0        02
+      issc  epssc(1)  epssc(2)  epssc(3)      issr  epssr(1)  epssr(2)  epssr(3)
+         0        .3        .3        .3         0        .3        .3        .3
+      ncyc    mglevg     nemgl     nitfo
+       750        03        00       000 
+      mit1      mit2      mit3      mit4      mit5
+        01        01        01        01        01
+   1-1 blocking data:
+      nbli
+         1
+ number   grid     :    ista   jsta   ksta   iend   jend   kend  isva1  isva2
+      1      1             1      1      1      2     25      1      1      2
+ number   grid     :    ista   jsta   ksta   iend   jend   kend  isva1  isva2
+      1      1             1    225      1      2    201      1      1      2
+  patch surface data:
+    ninter  
+         0
+  plot3d output:
+   grid iptype istart   iend   iinc jstart   jend   jinc kstart   kend   kinc
+      1      0      0      0      0      0      0      0      0      0      0
+  movie
+      0
+  print out:
+   grid iptype istart   iend   iinc jstart   jend   jinc kstart   kend   kinc
+  control surface:
+  ncs
+    0
+   grid istart   iend   jstart   jend   kstart   kend  iwall  inorm

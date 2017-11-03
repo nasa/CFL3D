@@ -1,0 +1,3 @@
+#!/bin/bash
+wget -r -np -A gif,f,Z,gz -l 1 https://cfl3d.larc.nasa.gov/Cfl3dv6/cfl3dv6_testcases.html
+
