@@ -981,7 +981,7 @@ c   vvb_xaxisrot2034 is rotational velocity about x-axis with bc2034
       vvb_2034=0.
       wwb_2034=0.
       vvb_xaxisrot2034=0.
-      nkey     = nkey + 3
+      nkey     = nkey + 4
 c
 c*********************************************
 c     check for keyword-driven inputs
