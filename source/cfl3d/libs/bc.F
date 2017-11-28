@@ -135,7 +135,8 @@ c               be forced to be LAMINAR
 c      bc2024 - same as bc2004, except it includes a parameter denoting the
 c               boundary condition for intermittency
 c      bc2034 - same as bc2004, except it includes imposed wall velocity
-c               (must have keyword inputs uub_2034,vvb_2034,wwb_2034 set)
+c               (must have keyword inputs uub_2034, vvb_2034, wwb_2034,
+c               or vvb_xaxisrot2034 set)
 c      bc2006 - set pressure to satisfy the radial equilibrium equation dp/dr =
 c               rho*vtheta**2/r; extrapolate the other flow variables. in this
 c               boundary condition, the pressure ratio p/pinf is set at either

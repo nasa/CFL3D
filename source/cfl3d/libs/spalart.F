@@ -1396,7 +1396,7 @@ c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
                 fv2=1.-(chi/(1.+chi*fv1))
                 sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
                 sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
-                if (real(sbar) .ge. real(-0.7*ss)) then
+                if (real(sbar) .ge. -0.7*real(ss)) then
                   sst=ss+sbar
                 else
                   sst=ss+(ss*(0.7*0.7*ss+0.9*sbar)/((0.9-2.*0.7)*ss-
