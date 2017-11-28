@@ -32,7 +32,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Set solid wall BC (viscous wall)
-c               This same routine is used for 2004, 2014, and 2024
+c               This same routine is used for 2004, 2014, 2024, and 2034
 c               With 2 pieces of auxiliary data:
 c
 c           1) Set Twtype
@@ -98,6 +98,7 @@ c
       common /sklton/ isklton
       common /wallfun/ iwf(3)
       common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c  
 c..  data statement (for use with wall functions)
       data a0/2.354039, 0.1179840, -4.2899192e-04, 2.0404148e-06,
@@ -157,17 +158,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*sj(1,k,i,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*sj(1,k,i,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbj(k,i,1,1)
-      vvb = xtbj(k,i,2,1)
-      wwb = xtbj(k,i,3,1)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbj(k,i,1,1)
+          vvb = vvb_2034+vvb_xaxisrot2034*sj(1,k,i,3)+xtbj(k,i,2,1)
+          wwb = wwb_2034-vvb_xaxisrot2034*sj(1,k,i,2)+xtbj(k,i,3,1)
+        else
+          uub = xtbj(k,i,1,1)
+          vvb = xtbj(k,i,2,1)
+          wwb = xtbj(k,i,3,1)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -405,7 +420,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         ii = i-ista+1
         do k=ksta,kend1
         kk = k-ksta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             tj0(k,i,3,1) = tursav(j,k,i,3)
           else
@@ -477,17 +492,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*sj(jdim,k,i,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*sj(jdim,k,i,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbj(k,i,1,2)
-      vvb = xtbj(k,i,2,2)
-      wwb = xtbj(k,i,3,2)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbj(k,i,1,2)
+          vvb = vvb_2034+vvb_xaxisrot2034*sj(jdim,k,i,3)+xtbj(k,i,2,2)
+          wwb = wwb_2034-vvb_xaxisrot2034*sj(jdim,k,i,2)+xtbj(k,i,3,2)
+        else
+          uub = xtbj(k,i,1,2)
+          vvb = xtbj(k,i,2,2)
+          wwb = xtbj(k,i,3,2)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -725,7 +754,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         ii = i-ista+1
         do k=ksta,kend1
         kk = k-ksta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             tj0(k,i,3,3) = tursav(j,k,i,3)
           else
@@ -797,17 +826,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*sk(j,1,i,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*sk(j,1,i,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbk(j,i,1,1)
-      vvb = xtbk(j,i,2,1)
-      wwb = xtbk(j,i,3,1)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbk(j,i,1,1)
+          vvb = vvb_2034+vvb_xaxisrot2034*sk(j,1,i,3)+xtbk(j,i,2,1)
+          wwb = wwb_2034-vvb_xaxisrot2034*sk(j,1,i,2)+xtbk(j,i,3,1)
+        else
+          uub = xtbk(j,i,1,1)
+          vvb = xtbk(j,i,2,1)
+          wwb = xtbk(j,i,3,1)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -1045,7 +1088,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         ii = i-ista+1
         do j=jsta,jend1
         jj = j-jsta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             tk0(j,i,3,1) = tursav(j,k,i,3)
           else
@@ -1117,17 +1160,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*sk(j,kdim,i,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*sk(j,kdim,i,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbk(j,i,1,2)
-      vvb = xtbk(j,i,2,2)
-      wwb = xtbk(j,i,3,2)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbk(j,i,1,2)
+          vvb = vvb_2034+vvb_xaxisrot2034*sk(j,kdim,i,3)+xtbk(j,i,2,2)
+          wwb = wwb_2034-vvb_xaxisrot2034*sk(j,kdim,i,2)+xtbk(j,i,3,2)
+        else
+          uub = xtbk(j,i,1,2)
+          vvb = xtbk(j,i,2,2)
+          wwb = xtbk(j,i,3,2)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -1365,7 +1422,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         ii = i-ista+1
         do j=jsta,jend1
         jj = j-jsta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             tk0(j,i,3,3) = tursav(j,k,i,3)
           else
@@ -1437,17 +1494,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*si(j,k,1,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*si(j,k,1,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbi(j,k,1,1)
-      vvb = xtbi(j,k,2,1)
-      wwb = xtbi(j,k,3,1)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbi(j,k,1,1)
+          vvb = vvb_2034+vvb_xaxisrot2034*si(j,k,1,3)+xtbi(j,k,2,1)
+          wwb = wwb_2034-vvb_xaxisrot2034*si(j,k,1,2)+xtbi(j,k,3,1)
+        else
+          uub = xtbi(j,k,1,1)
+          vvb = xtbi(j,k,2,1)
+          wwb = xtbi(j,k,3,1)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -1685,7 +1756,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         kk = k-ksta+1
         do j=jsta,jend1
         jj = j-jsta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             ti0(j,k,3,1) = tursav(j,k,i,3)
           else
@@ -1757,17 +1828,31 @@ c
 c
 c     surface velocities
 c
-      uub = 0.
-      vvb = 0.
-      wwb = 0.
+      if (iuse3 .eq. 1) then
+c       for bc2034 (imposing velocity)
+        uub = uub_2034
+        vvb = vvb_2034+vvb_xaxisrot2034*si(j,k,idim,3)
+        wwb = wwb_2034-vvb_xaxisrot2034*si(j,k,idim,2)
+      else
+        uub = 0.
+        vvb = 0.
+        wwb = 0.
+      end if
 c
 c     for dynamic mesh, set velocity at wall to grid velocity at wall
 c     if irelv > 0; otherwise, set to zero
 c
       if (iuns.gt.0 .and. irelv.gt.0) then
-      uub = xtbi(j,k,1,2)
-      vvb = xtbi(j,k,2,2)
-      wwb = xtbi(j,k,3,2)
+        if (iuse3 .eq. 1) then
+c         for bc2034 (imposing velocity)
+          uub = uub_2034+xtbi(j,k,1,2)
+          vvb = vvb_2034+vvb_xaxisrot2034*si(j,k,idim,3)+xtbi(j,k,2,2)
+          wwb = wwb_2034-vvb_xaxisrot2034*si(j,k,idim,2)+xtbi(j,k,3,2)
+        else
+          uub = xtbi(j,k,1,2)
+          vvb = xtbi(j,k,2,2)
+          wwb = xtbi(j,k,3,2)
+        end if
       end if
 c
 c     add velocity components due to mass flow
@@ -2005,7 +2090,7 @@ c       for trans model, intermittency at wall is either zero flux or set by use
         kk = k-ksta+1
         do j=jsta,jend1
         jj = j-jsta+1
-          if (iuse3 .eq. 0) then
+          if (iuse3 .ne. 2) then
 c           bc2004 or 2014 -> zero flux:
             ti0(j,k,3,3) = tursav(j,k,i,3)
           else

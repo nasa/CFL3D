@@ -3753,6 +3753,7 @@ CONTAINS
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
+    INTEGER :: iii,jjj,kkk
   
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: tijm(3,6),cijk(3,6),thalf(6)
@@ -3777,8 +3778,10 @@ CONTAINS
     DO i=1,idim-1
        DO k=1,kdim-1
           DO j=1,jdim
-             d_use       = blend(j,k,i)*d_o + (1.-blend(j,k,i))*d_e
-             sigma_w_use = blend(j,k,i)*sigma_w_o + (1.-blend(j,k,i))*sigma_w_e
+             jjj=j
+             jjj=MIN(jjj,jdim-1)
+             d_use       = blend(jjj,k,i)*d_o + (1.-blend(jjj,k,i))*d_e
+             sigma_w_use = blend(jjj,k,i)*sigma_w_o + (1.-blend(jjj,k,i))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j-1,k,i))
              IF(j==1) THEN
                 rho_ave = 0.5*(qj0(k,i,1,1)+q(j,k,i,1))
@@ -3861,8 +3864,10 @@ CONTAINS
     DO i=1,idim-1
        DO j=1,jdim-1
           DO k=1,kdim
-             d_use       = blend(j,k,i)*d_o + (1.-blend(j,k,i))*d_e
-             sigma_w_use = blend(j,k,i)*sigma_w_o + (1.-blend(j,k,i))*sigma_w_e
+             kkk=k
+             kkk=MIN(kkk,kdim-1)
+             d_use       = blend(j,kkk,i)*d_o + (1.-blend(j,kkk,i))*d_e
+             sigma_w_use = blend(j,kkk,i)*sigma_w_o + (1.-blend(j,kkk,i))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k-1,i))
              IF(k==1) THEN
                 rho_ave = 0.5*(qk0(j,i,1,1)+q(j,k,i,1))
@@ -3949,8 +3954,10 @@ CONTAINS
     DO k=1,kdim-1
        DO j=1,jdim-1
           DO i=1,idim
-             d_use       = blend(j,k,i)*d_o + (1.-blend(j,k,i))*d_e
-             sigma_w_use = blend(j,k,i)*sigma_w_o + (1.-blend(j,k,i))*sigma_w_e
+             iii=i
+             iii=MIN(iii,idim-1)
+             d_use       = blend(j,k,iii)*d_o + (1.-blend(j,k,iii))*d_e
+             sigma_w_use = blend(j,k,iii)*sigma_w_o + (1.-blend(j,k,iii))*sigma_w_e
              xmu_ave = 0.5*(fmu(j,k,i)+fmu(j,k,i-1))
              IF(i==1) THEN
                 rho_ave = 0.5*(qi0(j,k,1,1)+q(j,k,i,1))

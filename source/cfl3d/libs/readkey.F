@@ -123,6 +123,7 @@ c
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
       common /iupdate/ iupdatemean
+      common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c
       ititr = 0
       nkey  = 0
@@ -973,6 +974,14 @@ c
 c   iupdatemean = 0 forces no mean flow update (turbulence still updated)
       iupdatemean=1
       nkey     = nkey + 1
+c
+c   uub_2034,vvb_2034,wwb_2034 are wall velocities used with bc2034
+c   vvb_xaxisrot2034 is rotational velocity about x-axis with bc2034
+      uub_2034=0.
+      vvb_2034=0.
+      wwb_2034=0.
+      vvb_xaxisrot2034=0.
+      nkey     = nkey + 3
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -1944,6 +1953,23 @@ c
       else if (inpstr(lc1:lc2).eq.'iupdatemean') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iupdatemean
+c
+      else if (inpstr(lc1:lc2).eq.'uub_2034') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         uub_2034 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'vvb_2034') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         vvb_2034 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'wwb_2034') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         wwb_2034 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'vvb_xaxisrot2034') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         vvb_xaxisrot2034 = realval(1)
 c
       else
 c

@@ -134,6 +134,8 @@ c      bc2014 - same as bc2004, except it indicates that the region should
 c               be forced to be LAMINAR
 c      bc2024 - same as bc2004, except it includes a parameter denoting the
 c               boundary condition for intermittency
+c      bc2034 - same as bc2004, except it includes imposed wall velocity
+c               (must have keyword inputs uub_2034,vvb_2034,wwb_2034 set)
 c      bc2006 - set pressure to satisfy the radial equilibrium equation dp/dr =
 c               rho*vtheta**2/r; extrapolate the other flow variables. in this
 c               boundary condition, the pressure ratio p/pinf is set at either
@@ -632,6 +634,16 @@ c
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
 c
+      if (abs(ibcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,1,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,ibcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
+c
       if (ibcinfo(nbl,nseg,1,1).eq.2006) then
 c       ngnew is the block number from which integration of the
 c       radial equilibrium eq. is continued into block nbl (if applicable)
@@ -896,6 +908,16 @@ c
      .  filname,iuns,ibcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
+c
+      if (abs(ibcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,2,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,ibcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
 c
       if (ibcinfo(nbl,nseg,1,2).eq.2006) then
 c       ngnew is the block number from which integration of the
@@ -1162,6 +1184,16 @@ c
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
 c
+      if (abs(jbcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,3,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,jbcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
+c
       if (jbcinfo(nbl,nseg,1,1).eq.2006) then
 c       ngnew is the block number from which integration of the
 c       radial equilibrium eq. is continued into block nbl (if applicable)
@@ -1426,6 +1458,16 @@ c
      .  filname,iuns,jbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
+c
+      if (abs(jbcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,4,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,jbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
 c
       if (jbcinfo(nbl,nseg,1,2).eq.2006) then
 c       ngnew is the block number from which integration of the
@@ -1692,6 +1734,16 @@ c
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
 c
+      if (abs(kbcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,5,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,kbcinfo(nbl,nseg,1,1),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
+c
       if (kbcinfo(nbl,nseg,1,1).eq.2006) then
 c       ngnew is the block number from which integration of the
 c       radial equilibrium eq. is continued into block nbl (if applicable)
@@ -1956,6 +2008,16 @@ c
      .  filname,iuns,kbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
      .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
      .  nummem,2)
+c
+      if (abs(kbcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call bc2004(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
+     .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
+     .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
+     .  ista,iend,jsta,jend,ksta,kend,6,w(lxib),w(ltj0),w(ltk0),w(lti0),
+     .  w(lsnk0),w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),
+     .  filname,iuns,kbcinfo(nbl,nseg,1,2),w(lsni0),w(lsnk0),w(lsni0),
+     .  ntime,w(lnbl),w(lxkb),w(lnbl),nou,bou,nbuf,ibufdim,myid,
+     .  nummem,1)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2006) then
 c       ngnew is the block number from which integration of the

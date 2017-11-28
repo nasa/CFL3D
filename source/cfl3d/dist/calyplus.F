@@ -188,6 +188,7 @@ c
          if (abs(kbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .       abs(kbcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1
@@ -652,6 +653,7 @@ c
          if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .       abs(jbcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1
@@ -1121,6 +1123,7 @@ c
          if (abs(ibcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .       abs(ibcinfo(nbl,nseg,1,m)) .eq. 2016) then
 c
             iflag = 1

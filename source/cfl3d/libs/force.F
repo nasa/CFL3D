@@ -185,6 +185,7 @@ c
       if (ivisc(3).gt.0 .and. (abs(kbcinfo(nbl,ns,1,kk)).eq.2004 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2014 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2024 .or.
+     .    abs(kbcinfo(nbl,ns,1,kk)).eq.2034 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy
@@ -315,6 +316,7 @@ c
       if (ivisc(2).gt.0 .and. (abs(jbcinfo(nbl,ns,1,jj)).eq.2004 .or.
      .    abs(jbcinfo(nbl,ns,1,jj)).eq.2014 .or.
      .    abs(jbcinfo(nbl,ns,1,jj)).eq.2024 .or.
+     .    abs(jbcinfo(nbl,ns,1,jj)).eq.2034 .or.
      .    abs(jbcinfo(nbl,ns,1,jj)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy
@@ -445,6 +447,7 @@ c
       if (ivisc(1).gt.0 .and. (abs(ibcinfo(nbl,ns,1,ii)).eq.2004 .or.
      .    abs(ibcinfo(nbl,ns,1,ii)).eq.2014 .or.
      .    abs(ibcinfo(nbl,ns,1,ii)).eq.2024 .or.
+     .    abs(ibcinfo(nbl,ns,1,ii)).eq.2034 .or.
      .    abs(ibcinfo(nbl,ns,1,ii)).eq.2016)) then
          dcxp  = dcx
          dcyp  = dcy

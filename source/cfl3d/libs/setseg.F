@@ -58,6 +58,7 @@ c
             if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.2024 .or.
+     .          abs(ibcinfo(nbl,nseg,1,1)).eq.2034 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.2016 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1006) then
@@ -77,6 +78,7 @@ c
             if (abs(ibcinfo(nbl,nseg,1,2)).eq.2004 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.2024 .or.
+     .          abs(ibcinfo(nbl,nseg,1,2)).eq.2034 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.2016 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(ibcinfo(nbl,nseg,1,2)).eq.1006) then
@@ -96,6 +98,7 @@ c
             if (abs(jbcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.2024 .or.
+     .          abs(jbcinfo(nbl,nseg,1,1)).eq.2034 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.2016 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(jbcinfo(nbl,nseg,1,1)).eq.1006) then
@@ -115,6 +118,7 @@ c
             if (abs(jbcinfo(nbl,nseg,1,2)).eq.2004 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.2024 .or.
+     .          abs(jbcinfo(nbl,nseg,1,2)).eq.2034 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.2016 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(jbcinfo(nbl,nseg,1,2)).eq.1006) then
@@ -134,6 +138,7 @@ c
             if (abs(kbcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.2014 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.2024 .or.
+     .          abs(kbcinfo(nbl,nseg,1,1)).eq.2034 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.2016 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(kbcinfo(nbl,nseg,1,1)).eq.1006) then
@@ -153,6 +158,7 @@ c
             if (abs(kbcinfo(nbl,nseg,1,2)).eq.2004 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.2014 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.2024 .or.
+     .          abs(kbcinfo(nbl,nseg,1,2)).eq.2034 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.2016 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.1005 .or.
      .          abs(kbcinfo(nbl,nseg,1,2)).eq.1006) then

@@ -202,6 +202,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
 c
+      if (abs(ibcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,1,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
+c
       if (ibcinfo(nbl,nseg,1,1).eq.2005) then
 c       ngnew is the block number of the block periodic with block nbl
         ngh = igridg(nbl)
@@ -392,6 +397,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
 c
+      if (abs(ibcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
+c
       if (ibcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
         nblnum = int(w(ldata))
@@ -580,6 +590,11 @@ c
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
+c
+      if (abs(jbcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,3,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
 c
       if (jbcinfo(nbl,nseg,1,1).eq.2005) then
         ngh = igridg(nbl)
@@ -770,6 +785,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
 c
+      if (abs(jbcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,4,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
+c
       if (jbcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
         nblnum = int(w(ldata))
@@ -959,6 +979,11 @@ c
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
 c
+      if (abs(kbcinfo(nbl,nseg,1,1)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,5,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
+c
       if (kbcinfo(nbl,nseg,1,1).eq.2005) then
         ngh = igridg(nbl)
         nblnum = int(w(ldata))
@@ -1147,6 +1172,11 @@ c
      .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
      .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
      .  maxbl,2)
+c
+      if (abs(kbcinfo(nbl,nseg,1,2)).eq.2034)
+     .  call out2004(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,6,
+     .  nou,bou,nbuf,ibufdim,mdim,ndim,w(ldata),filname,myid,mblk2nd,
+     .  maxbl,3)
 c
       if (kbcinfo(nbl,nseg,1,2).eq.2005) then
         ngh = igridg(nbl)
@@ -3209,6 +3239,7 @@ c
       dimension bcdata(mdim,ndim,2,12),mblk2nd(maxbl)
 c
       common /wallfun/ iwf(3)
+      common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c
       jend1 = jend-1
       kend1 = kend-1
@@ -3234,8 +3265,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3256,8 +3289,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1001)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1101)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1201)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1301)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3269,8 +3307,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1001)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1101)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1201)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1301)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3282,8 +3325,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1001)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1101)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1201)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1301)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3304,8 +3352,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1001)ista,iend,ksta,kend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1101)ista,iend,ksta,kend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1201)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),1301)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3336,8 +3389,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3358,8 +3413,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1002)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1102)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1202)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1302)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3371,8 +3431,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1002)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1102)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1202)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1302)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3384,8 +3449,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1002)ista,iend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1102)ista,iend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1202)ista,iend,ksta,kend
+              else
+                write(bou(nou(1),1),1302)ista,iend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3406,8 +3476,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1002)ista,iend,ksta,kend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1102)ista,iend,ksta,kend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1202)ista,iend,ksta,kend
+            else
+              write(bou(nou(1),1),1302)ista,iend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3438,8 +3513,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3460,8 +3537,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1003)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1103)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1203)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1303)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3473,8 +3555,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1003)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1103)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1203)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1303)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3486,8 +3573,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1003)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1103)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1203)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1303)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3508,8 +3600,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1003)ista,iend,jsta,jend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1103)ista,iend,jsta,jend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1203)ista,iend,jsta,jend
+            else
+              write(bou(nou(1),1),1303)ista,iend,jsta,jend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3540,8 +3637,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3562,8 +3661,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1004)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1104)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1204)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1304)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3575,8 +3679,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1004)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1104)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1204)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1304)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3588,8 +3697,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1004)ista,iend,jsta,jend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1104)ista,iend,jsta,jend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1204)ista,iend,jsta,jend
+              else
+                write(bou(nou(1),1),1304)ista,iend,jsta,jend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3610,8 +3724,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1004)ista,iend,jsta,jend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1104)ista,iend,jsta,jend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1204)ista,iend,jsta,jend
+            else
+              write(bou(nou(1),1),1304)ista,iend,jsta,jend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3642,8 +3761,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3664,8 +3785,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1005)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1105)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1205)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1305)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3677,8 +3803,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1005)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1105)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1205)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1305)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3690,8 +3821,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1005)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1105)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1205)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1305)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3712,8 +3848,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1005)jsta,jend,ksta,kend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1105)jsta,jend,ksta,kend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1205)jsta,jend,ksta,kend
+            else
+              write(bou(nou(1),1),1305)jsta,jend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3744,8 +3885,10 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),*)'  Stopping in bc2004:'
             else if (iout .eq. 1) then
               write(bou(nou(1),1),*)'  Stopping in bc2014:'
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),*)'  Stopping in bc2024:'
+            else
+              write(bou(nou(1),1),*)'  Stopping in bc2034:'
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)'  viscous wall data incorrectly set '
@@ -3766,8 +3909,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1006)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1106)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1206)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1306)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1007) real(ctemp)
@@ -3779,8 +3927,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1006)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1106)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1206)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1306)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1009)
@@ -3792,8 +3945,13 @@ c        check that the required auxiliary data has been set
                 write(bou(nou(1),1),1006)jsta,jend,ksta,kend
               else if (iout .eq. 1) then
                 write(bou(nou(1),1),1106)jsta,jend,ksta,kend
-              else
+              else if (iout .eq. 2) then
                 write(bou(nou(1),1),1206)jsta,jend,ksta,kend
+              else
+                write(bou(nou(1),1),1306)jsta,jend,ksta,kend
+                nou(1) = min(nou(1)+1,ibufdim)
+                write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
               end if
               nou(1) = min(nou(1)+1,ibufdim)
               write(bou(nou(1),1),1010)
@@ -3814,8 +3972,13 @@ c        check that the required auxiliary data has been set
               write(bou(nou(1),1),1006)jsta,jend,ksta,kend
             else if (iout .eq. 1) then
               write(bou(nou(1),1),1106)jsta,jend,ksta,kend
-            else
+            else if (iout .eq. 2) then
               write(bou(nou(1),1),1206)jsta,jend,ksta,kend
+            else
+              write(bou(nou(1),1),1306)jsta,jend,ksta,kend
+              nou(1) = min(nou(1)+1,ibufdim)
+              write(bou(nou(1),1),1999)uub_2034,vvb_2034,wwb_2034,
+     +           vvb_xaxisrot2034
             end if
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1011)
@@ -3864,6 +4027,18 @@ c
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1206 format(' ','  i=idim  viscous laminar wall           type 2024',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1301 format(' ','  j=   1  viscous wall + imposed vel     type 2034',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 1302 format(' ','  j=jdim  viscous wall + imposed vel     type 2034',
+     .       '  i=',i5,',',i5,'  k=',i5,',',i5)
+ 1303 format(' ','  k=   1  viscous wall + imposed vel     type 2034',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 1304 format(' ','  k=kdim  viscous wall + imposed vel     type 2034',
+     .       '  i=',i5,',',i5,'  j=',i5,',',i5)
+ 1305 format(' ','  i=   1  viscous wall + imposed vel     type 2034',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
+ 1306 format(' ','  i=idim  viscous wall + imposed vel     type 2034',
+     .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1007 format(11x,'Tw/Tinf    = ',f8.4)
  1008 format(11x,'C_q        = ',f8.4)
  1013 format(11x,'stopindex  = ',i8)
@@ -3872,6 +4047,7 @@ c
  1010 format(11x,'Tw/Tinf    = stagnation')
  1011 format(11x,'Twtype, C_q set from file:')
  1012 format('           ',a60)
+ 1999 format(11x,'Imposed u,v,w,vrot_about_x_axis = ',4f10.5)
 c
  3001 format(' ',10x,'Wall function employed in j-direction')
  3002 format(' ',10x,'Wall function employed in k-direction')

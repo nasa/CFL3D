@@ -4954,6 +4954,7 @@ c     wall function in k-direction
       do 9171 kset=1,kstop
         if(abs(kbcinfo(nbl,kset,1,kk)).eq.2004 .or.
      .     abs(kbcinfo(nbl,kset,1,kk)).eq.2024 .or.
+     .     abs(kbcinfo(nbl,kset,1,kk)).eq.2034 .or.
      .     abs(kbcinfo(nbl,kset,1,kk)).eq.2016) then
           ibeg=kbcinfo(nbl,kset,2,kk)
           iend=kbcinfo(nbl,kset,3,kk)-1
@@ -5012,6 +5013,7 @@ c     wall function in j-direction
       do 9172 jset=1,jstop
         if(abs(jbcinfo(nbl,jset,1,jj)).eq.2004 .or.
      .     abs(jbcinfo(nbl,jset,1,jj)).eq.2024 .or.
+     .     abs(jbcinfo(nbl,jset,1,jj)).eq.2034 .or.
      .     abs(jbcinfo(nbl,jset,1,jj)).eq.2016) then
           ibeg=jbcinfo(nbl,jset,2,jj)
           iend=jbcinfo(nbl,jset,3,jj)-1
@@ -5070,6 +5072,7 @@ c     wall function in i-direction
       do 9173 iset=1,istop
         if(abs(ibcinfo(nbl,iset,1,ii)).eq.2004 .or.
      .     abs(ibcinfo(nbl,iset,1,ii)).eq.2024 .or.
+     .     abs(ibcinfo(nbl,iset,1,ii)).eq.2034 .or.
      .     abs(ibcinfo(nbl,iset,1,ii)).eq.2016) then
           jbeg=ibcinfo(nbl,iset,2,ii)
           jend=ibcinfo(nbl,iset,3,ii)-1

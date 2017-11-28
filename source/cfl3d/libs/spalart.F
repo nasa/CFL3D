@@ -1378,15 +1378,23 @@ c
                 ss=vor(j,k,i)+crot*ccminrc(0.,xisabs-vor(j,k,i))
               end if
               chi=turre(j,k,i)/fnu(j,k,i)
-              fv1=chi**3/(chi**3+cv1**3)
-              fv2=1.-(chi/(1.+chi*fv1))
-              sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
               if (i_saneg .ne. 1) then
+                fv1=chi**3/(chi**3+cv1**3)
+                fv2=1.-(chi/(1.+chi*fv1))
+                sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
                 sst=ccmax(sst,xminn)
                 rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
                 rr=ccmincr(rr,10.)
-              else
+                gg=rr+cw2*(rr**6-rr)
+                gg=ccmax(gg,xminn)
+                fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+                ft2=ct3*exp(-ct4*chi**2)
+              else if (i_saneg .eq. 1 .and. real(turre(j,k,i)) .ge. 0.)
+     +          then 
 c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
+                fv1=chi**3/(chi**3+cv1**3)
+                fv2=1.-(chi/(1.+chi*fv1))
+                sst=ss+turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
                 sbar=turre(j,k,i)*fv2/(re*(akarman*damp1(j,k,i))**2)
                 if (real(sbar) .ge. real(-0.7*ss)) then
                   sst=ss+sbar
@@ -1400,14 +1408,11 @@ c   Alternative to clipping sst (Allmaras et al., ICCFD7-1902):
                   rr=turre(j,k,i)/(sst*re*(akarman*damp1(j,k,i))**2)
                   rr=ccmincr(rr,10.)
                 end if
+                gg=rr+cw2*(rr**6-rr)
+                gg=ccmax(gg,xminn)
+                fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+                ft2=ct3*exp(-ct4*chi**2)
               end if
-              gg=rr+cw2*(rr**6-rr)
-              gg=ccmax(gg,xminn)
-c             fix for single prec. via TLNS3D via FUN3D via Tim Barth
-              fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
-c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
-              ft2=ct3*exp(-ct4*chi**2)
-c             term1=cb1*(1.-ft2)*ss
 c   Because we split up sst between term1 and term2, need to limit ss >= 0
 c   for case when using isar=1 (for which ss itself may be negative).
 c   Normally, with ss=vor, it is always non-negative.

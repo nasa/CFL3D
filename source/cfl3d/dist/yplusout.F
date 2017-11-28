@@ -164,36 +164,42 @@ c
             if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .         abs(ibcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .         abs(ibcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .         abs(ibcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .         abs(ibcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcidim(nbl)
             if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .         abs(ibcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .         abs(ibcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .         abs(ibcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .         abs(ibcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcj0(nbl)
             if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .         abs(jbcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .         abs(jbcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .         abs(jbcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .         abs(jbcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbcjdim(nbl)
             if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .         abs(jbcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .         abs(jbcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .         abs(jbcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .         abs(jbcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbck0(nbl)
             if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .         abs(kbcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .         abs(kbcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .         abs(kbcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .         abs(kbcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
          do ns=1,nbckdim(nbl)
             if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .         abs(kbcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .         abs(kbcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .         abs(kbcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .         abs(kbcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
          enddo
 c
@@ -217,6 +223,7 @@ c
                if (abs(kbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .             abs(kbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .             abs(kbcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .             abs(kbcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .             abs(kbcinfo(nbl,nseg,1,m)) .eq. 2016) ktest = 1
  510           continue
                if (ktest.gt.0) then
@@ -240,6 +247,7 @@ c
                if (abs(jbcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .             abs(jbcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .             abs(jbcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .             abs(jbcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .             abs(jbcinfo(nbl,nseg,1,m)) .eq. 2016) jtest = 1
  530           continue
                if (jtest.gt.0) then
@@ -263,6 +271,7 @@ c
                if (abs(ibcinfo(nbl,nseg,1,m)) .eq. 2004 .or.
      .             abs(ibcinfo(nbl,nseg,1,m)) .eq. 2014 .or.
      .             abs(ibcinfo(nbl,nseg,1,m)) .eq. 2024 .or.
+     .             abs(ibcinfo(nbl,nseg,1,m)) .eq. 2034 .or.
      .             abs(ibcinfo(nbl,nseg,1,m)) .eq. 2016) itest = 1
  550           continue
                if (itest.gt.0) then
@@ -322,36 +331,42 @@ c
          if(abs(ibcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .      abs(ibcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .      abs(ibcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .      abs(ibcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .      abs(ibcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcidim(nbl)
          if(abs(ibcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .      abs(ibcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .      abs(ibcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .      abs(ibcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .      abs(ibcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcj0(nbl)
          if(abs(jbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .      abs(jbcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .      abs(jbcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .      abs(jbcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .      abs(jbcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbcjdim(nbl)
          if(abs(jbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .      abs(jbcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .      abs(jbcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .      abs(jbcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .      abs(jbcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbck0(nbl)
          if(abs(kbcinfo(nbl,ns,1,1)) .eq. 2004 .or.
      .      abs(kbcinfo(nbl,ns,1,1)) .eq. 2014 .or.
      .      abs(kbcinfo(nbl,ns,1,1)) .eq. 2024 .or.
+     .      abs(kbcinfo(nbl,ns,1,1)) .eq. 2034 .or.
      .      abs(kbcinfo(nbl,ns,1,1)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
       do ns=1,nbckdim(nbl)
          if(abs(kbcinfo(nbl,ns,1,2)) .eq. 2004 .or.
      .      abs(kbcinfo(nbl,ns,1,2)) .eq. 2014 .or.
      .      abs(kbcinfo(nbl,ns,1,2)) .eq. 2024 .or.
+     .      abs(kbcinfo(nbl,ns,1,2)) .eq. 2034 .or.
      .      abs(kbcinfo(nbl,ns,1,2)) .eq. 2016) ivv2 = ivv2 + 1
       enddo
 c

@@ -242,6 +242,7 @@ c
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
       common /iupdate/ iupdatemean
+      common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 #if defined DIST_MPI
 c
 c***********************
@@ -581,6 +582,10 @@ c
          work(nlast+166)= sa_sigma
          work(nlast+167)= sa_karman
          work(nlast+168)= iupdatemean
+         work(nlast+169)= uub_2034
+         work(nlast+170)= vvb_2034
+         work(nlast+171)= wwb_2034
+         work(nlast+172)= vvb_xaxisrot2034
          nlast = nlast+nkey
       end if
 c
@@ -929,6 +934,10 @@ c
          sa_sigma = work(nlast+166)
          sa_karman = work(nlast+167)
          iupdatemean = int(work(nlast+168))
+         uub_2034 = work(nlast+169)
+         vvb_2034 = work(nlast+170)
+         wwb_2034 = work(nlast+171)
+         vvb_xaxisrot2034 = work(nlast+172)
       end if
 c
 c**************************

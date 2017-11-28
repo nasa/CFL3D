@@ -101,7 +101,7 @@ c
       lbc = iabs(jbcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
-     .        (lbc-2024)*(lbc-2016)
+     .        (lbc-2024)*(lbc-2034)*(lbc-2016)
 c
       if (iflag.ne.0) goto 100
 c
@@ -170,7 +170,7 @@ c
       lbc = iabs(kbcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
-     .        (lbc-2024)*(lbc-2016)
+     .        (lbc-2024)*(lbc-2034)*(lbc-2016)
 c
       if (iflag.ne.0) goto 200
 c
@@ -239,7 +239,7 @@ c
       lbc = iabs(ibcinfo(nbl,ns,1,m))
 c
       iflag = (lbc-1006)*(lbc-1005)*(lbc-2004)*(lbc-2014)*
-     .        (lbc-2024)*(lbc-2016)
+     .        (lbc-2024)*(lbc-2034)*(lbc-2016)
 c
       if (iflag.ne.0) goto 300
 c

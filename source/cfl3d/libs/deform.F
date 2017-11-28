@@ -1517,6 +1517,7 @@ c
          if (abs(ibctyp).ne.2004 .and.
      .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.2024 .and.
+     .       abs(ibctyp).ne.2034 .and.
      .       abs(ibctyp).ne.2016 .and.
      .       abs(ibctyp).ne.1005 .and.
      .       abs(ibctyp).ne.1006) then 
@@ -1561,6 +1562,7 @@ c
          if (abs(ibctyp).ne.2004 .and.
      .       abs(ibctyp).ne.2014 .and.
      .       abs(ibctyp).ne.2024 .and.
+     .       abs(ibctyp).ne.2034 .and.
      .       abs(ibctyp).ne.2016 .and.
      .       abs(ibctyp).ne.1005 .and.
      .       abs(ibctyp).ne.1006) then
@@ -1684,6 +1686,7 @@ c
            if (abs(jbctyp).ne.2004 .and.
      .         abs(jbctyp).ne.2014 .and.
      .         abs(jbctyp).ne.2024 .and.
+     .         abs(jbctyp).ne.2034 .and.
      .         abs(jbctyp).ne.2016 .and.
      .         abs(jbctyp).ne.1005 .and.
      .         abs(jbctyp).ne.1006) then
@@ -1728,6 +1731,7 @@ c
            if (abs(jbctyp).ne.2004 .and.
      .         abs(jbctyp).ne.2014 .and.
      .         abs(jbctyp).ne.2024 .and.
+     .         abs(jbctyp).ne.2034 .and.
      .         abs(jbctyp).ne.2016 .and.
      .         abs(jbctyp).ne.1005 .and.
      .         abs(jbctyp).ne.1006) then
@@ -1807,6 +1811,7 @@ c
            if (abs(kbctyp).ne.2004 .and.
      .         abs(kbctyp).ne.2014 .and.
      .         abs(kbctyp).ne.2024 .and.
+     .         abs(kbctyp).ne.2034 .and.
      .         abs(kbctyp).ne.2016 .and.
      .         abs(kbctyp).ne.1005 .and.
      .         abs(kbctyp).ne.1006) then
@@ -1851,6 +1856,7 @@ c
            if (abs(kbctyp).ne.2004 .and.
      .         abs(kbctyp).ne.2014 .and.
      .         abs(kbctyp).ne.2024 .and.
+     .         abs(kbctyp).ne.2034 .and.
      .         abs(kbctyp).ne.2016 .and.
      .         abs(kbctyp).ne.1005 .and.
      .         abs(kbctyp).ne.1006) then

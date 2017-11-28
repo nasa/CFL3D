@@ -80,7 +80,7 @@ c
          end if
       end if
 c
-      if (abs(ibctyp).eq.2004) then
+      if (abs(ibctyp).eq.2004 .or. abs(ibctyp).eq.2034) then
          datahdr(1)  = '   tw/tinf'
          datahdr(2)  = '        cq'
       end if
