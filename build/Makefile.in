@@ -61,7 +61,6 @@ CPPOPT       = @CPPOPT_F@ $(MPI_INCDIR) -DDIST_MPI $(PREC_MPI)
 CPPOPT_SP    = @CPPOPT_SP@ $(PREC_MPI) $(CGNS_INCDIR)
 CPPOPT_CMPLX = -DCMPLX
 FTN          = @FTN@
-CC           = @CC@
 CFLAG        = @CFLAG@
 AROPT        = @AROPT@
 RANLIB       = @RANLIB@
@@ -383,7 +382,6 @@ Zlibs:
 	AROPT="$(AROPT)" \
 	RANLIB="$(RANLIB)" \
 	CPP="$(CPP)" \
-	CC="$(CC)" \
 	CFLAG="$(CFLAG)" \
 	LLIBS="$(LLIBS)" \
 	FTN="$(FTN)" \
@@ -437,7 +435,6 @@ Zcmplxlibs:
 	AROPT="$(AROPT)" \
 	RANLIB="$(RANLIB)" \
 	CPP="$(CPP)" \
-	CC="$(CC)" \
 	CFLAG="$(CFLAG)" \
 	LLIBS="$(LLIBS)" \
 	FTN="$(FTN)" \

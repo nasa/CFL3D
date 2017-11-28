@@ -16,19 +16,16 @@ lncode:
 	@ echo "        linking source code"
 	ln -sf $(CFLSRC_S)/*.F .
 	ln -sf $(CFLSRC_S)/*.F90 .
-	ln -sf $(CFLSRC_S)/*.c .
 
 lnhead:
 
 # ****************************** SUFFIX RULES ********************************
 .SUFFIXES:
-.SUFFIXES:.F .o .F90 .c
+.SUFFIXES:.F .o .F90
 .F.o: 
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F
 .F90.o: 
 	$(FTN) $(CPPOPT) $(FFLAG) -c $*.F90
-.c.o:
-	$(CC) $(CFLAG) -c $*.c
 
 # *************************** LIBRARY DEFINITIONS ****************************
 
@@ -107,13 +104,9 @@ F90SRC_LIBS = module_profileout.F90 module_contour.F90  module_kwstm.F90 module_
 
 FSRC_SPEC = addx.F
 
-CSRC_LIBS = bessel.c
-
 FOBJ_LIBS = $(FSRC_LIBS:.F=.o)
 
 FOBJ_SPEC = $(FSRC_SPEC:.F=.o)
-
-COBJ_LIBS = $(CSRC_LIBS:.c=.o)
 
 F90OBJ_LIBS = $(F90SRC_LIBS:.F90=.o) 
 
@@ -128,9 +121,8 @@ bc2005i_d.o: module_stm_2005.o
 bc2005j_d.o: module_stm_2005.o
 bc2005k_d.o: module_stm_2005.o
 
-$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) \
-	$(CSRC_LIBS) $(COBJ_LIBS) $(F90OBJ_LIBS)
-	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(F90OBJ_LIBS) $(FOBJ_SPEC) $(COBJ_LIBS) 
+$(COMMONLIB): $(FSRC_LIBS) $(FOBJ_LIBS) $(FSRC_SPEC) $(FOBJ_SPEC) $(F90OBJ_LIBS)
+	ar $(AROPT) $(COMMONLIB) $(FOBJ_LIBS) $(F90OBJ_LIBS) $(FOBJ_SPEC)
 	@$(RANLIB) $(COMMONLIB)
 
 $(FOBJ_LIBS): 
@@ -138,9 +130,6 @@ $(FOBJ_LIBS):
 
 $(FOBJ_SPEC):
 	$(FTN) $(CPPOPT) $(FFLAG_SPEC) -c $*.F
-
-$(COBJ_LIBS):
-	$(CC) $(CFLAG) -c $*.c
 
 $(EXEC): $(COMMONLIB)
 	@ echo "                                                              "
@@ -184,8 +173,4 @@ cleang:
 	@touch temp.F
 	-rm -f *.F *.F90 
 
-cleanc:
-	@touch temp.c
-	-rm -f *.c
-
-scrub: cleana cleano cleane cleanf cleanh cleang cleanc
+scrub: cleana cleano cleane cleanf cleanh cleang
