@@ -218,7 +218,8 @@ c
      .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
-     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
+     .        wc_specialtop_kmax1001
       common /reystressmodel/ issglrrw2012,i_sas_rsm
       common /iupdate/ iupdatemean
 c

@@ -240,7 +240,8 @@ c
      .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
-     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
+     .        wc_specialtop_kmax1001
       common /iupdate/ iupdatemean
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 #if defined DIST_MPI
@@ -572,20 +573,21 @@ c
          work(nlast+156)= xc_specialtop_kmax1001
          work(nlast+157)= sig_specialtop_kmax1001
          work(nlast+158)= vtp_specialtop_kmax1001
-         work(nlast+159)= sa_cw2
-         work(nlast+160)= sa_cw3
-         work(nlast+161)= sa_cv1
-         work(nlast+162)= sa_ct3
-         work(nlast+163)= sa_ct4
-         work(nlast+164)= sa_cb1
-         work(nlast+165)= sa_cb2
-         work(nlast+166)= sa_sigma
-         work(nlast+167)= sa_karman
-         work(nlast+168)= iupdatemean
-         work(nlast+169)= uub_2034
-         work(nlast+170)= vvb_2034
-         work(nlast+171)= wwb_2034
-         work(nlast+172)= vvb_xaxisrot2034
+         work(nlast+159)= wc_specialtop_kmax1001
+         work(nlast+160)= sa_cw2
+         work(nlast+161)= sa_cw3
+         work(nlast+162)= sa_cv1
+         work(nlast+163)= sa_ct3
+         work(nlast+164)= sa_ct4
+         work(nlast+165)= sa_cb1
+         work(nlast+166)= sa_cb2
+         work(nlast+167)= sa_sigma
+         work(nlast+168)= sa_karman
+         work(nlast+169)= iupdatemean
+         work(nlast+170)= uub_2034
+         work(nlast+171)= vvb_2034
+         work(nlast+172)= wwb_2034
+         work(nlast+173)= vvb_xaxisrot2034
          nlast = nlast+nkey
       end if
 c
@@ -924,20 +926,21 @@ c
          xc_specialtop_kmax1001 = work(nlast+156)
          sig_specialtop_kmax1001 = work(nlast+157)
          vtp_specialtop_kmax1001 = work(nlast+158)
-         sa_cw2 = work(nlast+159)
-         sa_cw3 = work(nlast+160)
-         sa_cv1 = work(nlast+161)
-         sa_ct3 = work(nlast+162)
-         sa_ct4 = work(nlast+163)
-         sa_cb1 = work(nlast+164)
-         sa_cb2 = work(nlast+165)
-         sa_sigma = work(nlast+166)
-         sa_karman = work(nlast+167)
-         iupdatemean = int(work(nlast+168))
-         uub_2034 = work(nlast+169)
-         vvb_2034 = work(nlast+170)
-         wwb_2034 = work(nlast+171)
-         vvb_xaxisrot2034 = work(nlast+172)
+         wc_specialtop_kmax1001 = work(nlast+159)
+         sa_cw2 = work(nlast+160)
+         sa_cw3 = work(nlast+161)
+         sa_cv1 = work(nlast+162)
+         sa_ct3 = work(nlast+163)
+         sa_ct4 = work(nlast+164)
+         sa_cb1 = work(nlast+165)
+         sa_cb2 = work(nlast+166)
+         sa_sigma = work(nlast+167)
+         sa_karman = work(nlast+168)
+         iupdatemean = int(work(nlast+169))
+         uub_2034 = work(nlast+170)
+         vvb_2034 = work(nlast+171)
+         wwb_2034 = work(nlast+172)
+         vvb_xaxisrot2034 = work(nlast+173)
       end if
 c
 c**************************

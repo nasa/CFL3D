@@ -121,7 +121,8 @@ c
      .        i_lam_forcezero
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
-     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
+     .        wc_specialtop_kmax1001
       common /iupdate/ iupdatemean
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c
@@ -952,12 +953,14 @@ c
 c   i_specialtop_kmax1001=1 only for particular special BC on 1001
 c   specifying kmax wall velocity in conjunction with BC1001:
 c   v=sig*a*(xc-x)/sig*exp(0.5-((xc-x)/sig)**2)+vtp
+c   and wc is for specifying crossflow
       i_specialtop_kmax1001=0
       a_specialtop_kmax1001=0.
       xc_specialtop_kmax1001=0.
       sig_specialtop_kmax1001=0.
       vtp_specialtop_kmax1001=0.
-      nkey     = nkey + 5
+      wc_specialtop_kmax1001=0.
+      nkey     = nkey + 6
 c
 c   SA constants
       sa_cw2=0.3
@@ -1912,6 +1915,10 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          vtp_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'wc_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         wc_specialtop_kmax1001 = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'sa_cw2') then
          lc2 = lc2 +1

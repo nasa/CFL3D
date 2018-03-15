@@ -1054,7 +1054,7 @@ CONTAINS
 !  1: 1,1    2: 2,2   3: 3,3   4: 1,2   5: 2,3   6: 1,3
 !
              if (issglrrw2012==7) then
-               c3_e_use=0.45
+               c3_e_use=0.53
                c1star_e_use=0.0
              else
                c3_e_use=c3_e

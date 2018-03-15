@@ -61,7 +61,8 @@ c
       common /sklton/ isklton
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
-     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001
+     .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
+     .        wc_specialtop_kmax1001
 
       real :: rn(3,3),rnt(3,3) ! rotational matrices for ivisc>=70 (stress models)
       real :: tloc(6), tghost(6)
@@ -344,10 +345,16 @@ c
       if (nface.eq.6) then
 c
 c   special for when i_specialtop_kmax=1
+c   Adds the following Vtop (in terms of Uref):
+c     = a*(xc-x)*exp[0.5-({(xc-x)/sig}**2)] + vtp
+c   with constant crossflow: wc
+c   (note wc should be negative if input beta is positive)
+c
       a=a_specialtop_kmax1001
       xc=xc_specialtop_kmax1001
       sig=sig_specialtop_kmax1001
       vtp=vtp_specialtop_kmax1001
+      wc=wc_specialtop_kmax1001
       do 49 i=ista,iend1
       do 49 j=jsta,jend1
         if (i_specialtop_kmax1001 .eq. 1) then
@@ -368,7 +375,11 @@ c
         vtop=sig*a*b*exp(0.5-(b**2))*xmach+vtp*xmach
         dudy=a*(2.0*(b**2)-1.)*exp(0.5-(b**2))*xmach
         qk0(j,i,2,3) = q(j,kdim-1,i,2) + dz*dudy
-        qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
+        if (wc .eq. 0.) then
+          qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
+        else
+          qk0(j,i,3,3) = wc*xmach
+        end if
         qk0(j,i,4,3) = 2.*vtop - q(j,kdim-1,i,4)
         qk0(j,i,5,3) = q(j,kdim-1,i,5)
       else
@@ -380,13 +391,17 @@ c
 c
       qk0(j,i,1,4) = q(j,kdim-2,i,1)
       if (i_specialtop_kmax1001 .eq. 1) then
-      qk0(j,i,2,4) = 2.*qk0(j,i,2,3) - q(j,kdim-1,i,2)
-      qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
-      qk0(j,i,4,4) = 2.*qk0(j,i,4,3) - q(j,kdim-1,i,4)
+        qk0(j,i,2,4) = 2.*qk0(j,i,2,3) - q(j,kdim-1,i,2)
+        if (wc .eq. 0.) then
+          qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
+        else
+          qk0(j,i,3,4) = wc*xmach
+        end if
+        qk0(j,i,4,4) = 2.*qk0(j,i,4,3) - q(j,kdim-1,i,4)
       else
-      qk0(j,i,2,4) = q(j,kdim-2,i,2) - 2.*wcont2*sk(j,kdim,i,1)
-      qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
-      qk0(j,i,4,4) = q(j,kdim-2,i,4) - 2.*wcont2*sk(j,kdim,i,3)
+        qk0(j,i,2,4) = q(j,kdim-2,i,2) - 2.*wcont2*sk(j,kdim,i,1)
+        qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
+        qk0(j,i,4,4) = q(j,kdim-2,i,4) - 2.*wcont2*sk(j,kdim,i,3)
       end if
       qk0(j,i,5,4) = q(j,kdim-2,i,5)
 c
