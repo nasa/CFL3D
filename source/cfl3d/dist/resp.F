@@ -28,7 +28,7 @@ c
      .                qj0,qk0,qi0,maxbl,maxgr,maxseg,rms,rmsb,
      .                rmstb,clw,cdw,cdpw,cdvw,cxw,cyw,
      .                czw,cmxw,cmyw,cmzw,n_clcd,clcd,nblocks_clcd,
-     .                blocks_clcd,hdw,swetw,fmdotw,
+     .                blocks_clcd,chdw,swetw,fmdotw,
      .                cfttotw,cftmomw,cftpw,cftvw,rmstr,
      .                nneg,ihstry,ngrid,nblg,iemg,levelg,
      .                iviscg,itrans,irotat,iforce,swett,clt,cdt,
