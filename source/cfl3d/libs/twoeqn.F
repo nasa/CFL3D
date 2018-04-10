@@ -1358,7 +1358,7 @@ c   get blend = F1 factor
               argb=4.*sigo2*turre(j,k,i,2)/(temp*smin(j,k,i)*
      +             smin(j,k,i))
               arg=ccmin(arga,argb)
-              blend(j,k,i)=cctanh(arg*arg*arg*arg)
+              blend(j,k,i)=cctanh(ccmaxcr(ccmincr(arg,4.0),-4.0)**4)
             enddo
           enddo
         enddo
