@@ -378,7 +378,7 @@ c
         if (wc .eq. 0.) then
           qk0(j,i,3,3) = q(j,kdim-1,i,3) - 2.*wcont1*sk(j,kdim,i,2)
         else
-          qk0(j,i,3,3) = wc*xmach
+          qk0(j,i,3,3) = 2.*wc*xmach - q(j,kdim-1,i,3)
         end if
         qk0(j,i,4,3) = 2.*vtop - q(j,kdim-1,i,4)
         qk0(j,i,5,3) = q(j,kdim-1,i,5)
@@ -395,7 +395,7 @@ c
         if (wc .eq. 0.) then
           qk0(j,i,3,4) = q(j,kdim-2,i,3) - 2.*wcont2*sk(j,kdim,i,2)
         else
-          qk0(j,i,3,4) = wc*xmach
+          qk0(j,i,3,4) = 2.*qk0(j,i,3,3) - q(j,kdim-1,i,3)
         end if
         qk0(j,i,4,4) = 2.*qk0(j,i,4,3) - q(j,kdim-1,i,4)
       else

@@ -208,7 +208,7 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
       common /easmlim/ cmulim
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
@@ -1077,6 +1077,26 @@ c
         write(iunit11,'('' i_nonlin cannot be used with'',
      .    '' this ivisc'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+c
+      if (i_tauijs .eq. 1) then
+        if (ivmx .eq. 11 .or. ivmx .eq. 12 .or. ivmx .eq. 13 .or.
+     .      ivmx .eq. 14) then
+          write(iunit11,'('' i_tauijs=1 cannot be used with'',
+     .    '' ivisc=11,12,13,14'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+        if (i_nonlin .ne. 0) then
+          write(iunit11,'('' i_tauijs=1 cannot be used with'',
+     .    '' i_nonlin'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
+      end if
+c
+      if (i_qcr2000 .eq. 1 .and. i_tauijs .ne. 1) then
+        write(iunit11,'('' i_qcr2000 must be used with'',
+     .    '' i_tauijs=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
       if ((ivmx .eq. 8 .or. ivmx .eq. 9 .or. ivmx .eq. 13 .or.

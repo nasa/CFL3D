@@ -230,7 +230,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
@@ -588,6 +588,8 @@ c
          work(nlast+171)= vvb_2034
          work(nlast+172)= wwb_2034
          work(nlast+173)= vvb_xaxisrot2034
+         work(nlast+174)= i_tauijs
+         work(nlast+175)= i_qcr2000
          nlast = nlast+nkey
       end if
 c
@@ -941,6 +943,8 @@ c
          vvb_2034 = work(nlast+171)
          wwb_2034 = work(nlast+172)
          vvb_xaxisrot2034 = work(nlast+173)
+         i_tauijs = int(work(nlast+174))
+         i_qcr2000 = int(work(nlast+175))
       end if
 c
 c**************************
