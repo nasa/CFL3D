@@ -122,7 +122,7 @@ c
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
      .        isst2003
       common /plot3dtyp/ ifunct
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
@@ -701,6 +701,37 @@ c
               t12 = -2.*vist3d(j,k,i)*s12
               t13 = -2.*vist3d(j,k,i)*s13
               t23 = -2.*vist3d(j,k,i)*s23
+              if (i_qcr2000 .eq. 1) then
+                denom=sqrt(ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + 
+     +                     ux(j,k,i,3)**2 + ux(j,k,i,4)**2 +
+     +                     ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
+     +                     ux(j,k,i,7)**2 + ux(j,k,i,8)**2 +
+     +                     ux(j,k,i,9)**2)+1.e-20
+                o11=0.
+                o22=0.
+                o33=0.
+                o12=2.*w12/denom
+                o13=2.*w13/denom
+                o23=2.*w23/denom
+                t11p=t11-0.3*( o11*t11+o12*t12+o13*t13+
+     +                         o11*t11+o12*t12+o13*t13)
+                t22p=t22-0.3*(-o12*t12+o22*t22+o23*t23+
+     +                        -o12*t12+o22*t22+o23*t23)
+                t33p=t33-0.3*(-o13*t13-o23*t23+o33*t33+
+     +                        -o13*t13-o23*t23+o33*t33)
+                t12p=t12-0.3*( o11*t12+o12*t22+o13*t23+
+     +                        -o12*t11+o22*t12+o23*t13)
+                t13p=t13-0.3*( o11*t13+o12*t23+o13*t33+
+     +                        -o13*t11-o23*t12+o33*t13)
+                t23p=t23-0.3*(-o12*t13+o22*t23+o23*t33+
+     +                        -o13*t12-o23*t22+o33*t23)
+                t11=t11p
+                t22=t22p
+                t33=t33p
+                t12=t12p
+                t13=t13p
+                t23=t23p
+              end if
             else if(ivmx .eq. 12) then
 c            Find nonlinear tauij values:
                 alpa1=(2.-c4)/2.*gg
