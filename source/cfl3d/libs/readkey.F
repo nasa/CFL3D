@@ -109,7 +109,7 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
@@ -985,6 +985,19 @@ c   vvb_xaxisrot2034 is rotational velocity about x-axis with bc2034
       wwb_2034=0.
       vvb_xaxisrot2034=0.
       nkey     = nkey + 4
+c
+c   i_tauijs adds turbulence via tauij terms (when set to 1)
+c   NOTE: like regular method, 2/3*rho*k term is currently ignored
+c   Also: not done accurately at boundaries for multiblock cases:
+c   currently one sided; need ux derivs from across boundaries
+c   to be truly correct
+      i_tauijs=0
+      nkey     = nkey + 1
+c
+c   i_qcr2000 turns on QCR2000 (when set to 1)
+c   only works when i_tauijs=1
+      i_qcr2000=0
+      nkey     = nkey + 1
 c
 c*********************************************
 c     check for keyword-driven inputs
@@ -1977,6 +1990,14 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          vvb_xaxisrot2034 = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'i_tauijs') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_tauijs
+c
+      else if (inpstr(lc1:lc2).eq.'i_qcr2000') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_qcr2000
 c
       else
 c

@@ -119,7 +119,7 @@ c
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /des/ cdes,ides,cddes
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
       common /reystressmodel/ issglrrw2012,i_sas_rsm
 c
       jdim1 = jdim-1
