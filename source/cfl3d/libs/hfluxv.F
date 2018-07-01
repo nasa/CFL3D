@@ -77,8 +77,8 @@ c     turbulent stress calculation for ivmx==70 (full
 c     Reynolds stress model)  - xxiao
 c
       coef_eddy = 1.0
-      if(ivisc(3)>=70) coef_eddy=0.
-      if(i_tauijs .eq. 1) coef_eddy=0.
+      if(ivisc(3)>=70 .and. idf.eq.0) coef_eddy=0.
+      if(i_tauijs .eq. 1 .and. idf.eq.0) coef_eddy=0.
 c
       kdim1 = kdim-1
       jdim1 = jdim-1

@@ -999,10 +999,15 @@ c
 c
 c     Need to check for keywords that do not work for ivmx=72:
       if (ivmx .eq. 72) then
-        write(iunit11,'('' WARNING: keyword ifullns has no effect for'',
-     .    '' ivisc=72 - it is ALWAYS full NS'')')
-        write(iunit11,'(''          (but diffusion'',
-     .    '' terms in turb eqns are still thin-layer)'')')
+c       The following was never true:
+c       write(iunit11,'('' WARNING: keyword ifullns has no effect for'',
+c    .    '' ivisc=72 - it is ALWAYS full NS'')')
+c       write(iunit11,'(''          (but diffusion'',
+c    .    '' terms in turb eqns are still thin-layer)'')')
+        if (ifullns .eq. 0) then
+          write(iunit11,'('' ERROR: ifullns must be 1 for ivisc=72'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
         if (edvislim .ne. 1.e10) then
           write(iunit11,'('' WARNING: keyword edvislim has influence'',
      .      '' only in turb heat flux in energy eqn for ivisc=72'')')
@@ -1080,6 +1085,11 @@ c
       end if
 c
       if (i_tauijs .eq. 1) then
+        if (ifullns .eq. 0) then
+          write(iunit11,'('' ERROR: ifullns must be 1 when'',
+     .      '' i_tauijs=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
         if (ivmx .eq. 11 .or. ivmx .eq. 12 .or. ivmx .eq. 13 .or.
      .      ivmx .eq. 14) then
           write(iunit11,'('' i_tauijs=1 cannot be used with'',
@@ -1144,6 +1154,8 @@ c
       end if
 c   check usage of full N-S
       if (ifullns .ne. 0) then
+        write(iunit11,'('' Note that even with ifullns=1, diffusion'',
+     .    '' terms in turb eqns are still thin-layer)'')')
         if (i2d .eq. 0 .and. idim .gt. 2 .and. (ivisc(1).eq.0 .or. 
      .      ivisc(2).eq.0 .or. ivisc(3).eq.0)) then
           write(iunit11,'('' WARNING: When using full N-S in 3-D, '',
