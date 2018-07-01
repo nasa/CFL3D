@@ -535,10 +535,6 @@ c
       rewind(66)
       rewind(99)
 
-      if (icgns .ne. 1) then
-      open(unit=1,file=grid,form='unformatted',status='old')
-      open(unit=2,file=restrt,form='unformatted',status='unknown')
-      end if
       open(unit=20,file=pplunge,form='formatted',status='unknown')
       open(unit=21,file=ovrlap,form='unformatted',status='unknown')
       open(unit=22,file=patch,form='unformatted',status='unknown')
@@ -546,14 +542,8 @@ c
 c
 c     remove the stop file if there is one 
 c
-#if defined DIST_MPI
-      if (myid.eq.myhost) then
-#endif
-        open(unit=1234,iostat=istat1,file='stop',status='old')
-        if (istat1 == 0) close(1234, status='delete')
-#if defined DIST_MPI
-      end if
-#endif
+      open(unit=1234,iostat=istat1,file='stop',status='old')
+      if (istat1 == 0) close(1234, status='delete')
 c
 c***********************************************************************
 c     determine array size requirements
@@ -578,6 +568,11 @@ c
      .             idm0,jdm0,kdm0)
 c
 c     rewind the input file so it can be read again
+c
+      if (icgns .ne. 1) then
+        open(unit=1,file=grid,form='unformatted',status='old')
+        open(unit=2,file=restrt,form='unformatted',status='unknown')
+      end if
 c
       rewind(iunit5)
 c
