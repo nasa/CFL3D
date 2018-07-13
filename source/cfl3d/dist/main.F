@@ -571,6 +571,11 @@ c
       open(unit=2,file=restrt,form='unformatted',status='unknown')
       end if
 c
+      if (icgns .ne. 1) then
+        open(unit=1,file=grid,form='unformatted',status='old')
+        open(unit=2,file=restrt,form='unformatted',status='unknown')
+      end if
+c
 c     rewind the input file so it can be read again
 c
       rewind(iunit5)
