@@ -535,6 +535,10 @@ c
       rewind(66)
       rewind(99)
 
+      if (icgns .ne. 1) then
+      open(unit=1,file=grid,form='unformatted',status='old')
+      open(unit=2,file=restrt,form='unformatted',status='unknown')
+      end if
       open(unit=20,file=pplunge,form='formatted',status='unknown')
       open(unit=21,file=ovrlap,form='unformatted',status='unknown')
       open(unit=22,file=patch,form='unformatted',status='unknown')
@@ -566,10 +570,6 @@ c
      .             ibufdim0,nbuf0,mxbcfil0,nmds0,maxaes0,
      .             maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
      .             idm0,jdm0,kdm0)
-      if (icgns .ne. 1) then
-      open(unit=1,file=grid,form='unformatted',status='old')
-      open(unit=2,file=restrt,form='unformatted',status='unknown')
-      end if
 c
 c     rewind the input file so it can be read again
 c
