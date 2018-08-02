@@ -63,7 +63,8 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /twod/ i2d
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       REAL :: coef_eddy
 c
 c******************************************************************************

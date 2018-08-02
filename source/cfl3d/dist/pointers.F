@@ -90,7 +90,8 @@ c
       common /des/ cdes,ides,cddes
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -828,7 +829,7 @@ c
      .        ((ivmx.eq.5) .and. isar.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .        (ivmx.eq.6 .and. i_wilcox98.eq.1) .or. ivmax==72 .or.
-     .        ides.ge.2 .or. i_nonlin.ne.0)
+     .        ides.ge.2 .or. i_nonlin.ne.0 .or. i_tauijs.ne.0)
      .        ns = jm1km1im1*9
          else
            ns = jm1km1im1*9

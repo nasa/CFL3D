@@ -122,7 +122,8 @@ c
      .        i_compress_correct,isstsf,i_wilcox98,i_wilcox98_chiw,
      .        isst2003
       common /plot3dtyp/ ifunct
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
@@ -138,6 +139,7 @@ c
       idim1 = idim-1
 c
       re=reue/xmach
+      ccr2=2.5
 c
 c
 c     initialize xw and xg arrays
@@ -659,6 +661,9 @@ c          Determine Sij and Wij values:
             s11 = ux(j,k,i,1)
             s22 = ux(j,k,i,5)
             s33 = ux(j,k,i,9)
+            s11star = s11 - ((s11+s22+s33)/3.)
+            s22star = s22 - ((s11+s22+s33)/3.)
+            s33star = s33 - ((s11+s22+s33)/3.)
             s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
             s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
             s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
@@ -685,13 +690,17 @@ c   (from AIAA 92-0439, where structure parameter taken as a1=0.5*(0.31))
 c   Otherwise, use exact computed turb kinetic energy
               zk=turre(j,k,i,2)
             end if
+c   If using QCR2013, then k is already added, so do not add here:
+            if (i_qcr2013 .eq. 1) then
+              zk=0.
+            end if
 c
             if ((ivmx .le. 7 .or. ivmx .eq. 10 .or. ivmx .eq. 15
      +          .or. ivmx .eq. 16)
      +          .and. i_nonlin .eq. 0) then
-              t11 = -2.*vist3d(j,k,i)*(s11 - 0.33333*(s11+s22+s33))
-              t22 = -2.*vist3d(j,k,i)*(s22 - 0.33333*(s11+s22+s33))
-              t33 = -2.*vist3d(j,k,i)*(s33 - 0.33333*(s11+s22+s33))
+              t11 = -2.*vist3d(j,k,i)*s11star
+              t22 = -2.*vist3d(j,k,i)*s22star
+              t33 = -2.*vist3d(j,k,i)*s33star
 c   Add 2/3*k to the diagonal stress terms for eddy viscosity
 c   models, for better approximation to normal stresses
               t11=t11+2.*q(j,k,i,1)*zk*re/3.
@@ -701,7 +710,7 @@ c
               t12 = -2.*vist3d(j,k,i)*s12
               t13 = -2.*vist3d(j,k,i)*s13
               t23 = -2.*vist3d(j,k,i)*s23
-              if (i_qcr2000 .eq. 1) then
+              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1) then
                 denom=sqrt(ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + 
      +                     ux(j,k,i,3)**2 + ux(j,k,i,4)**2 +
      +                     ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
@@ -731,6 +740,14 @@ c
                 t12=t12p
                 t13=t13p
                 t23=t23p
+              end if
+              if (i_qcr2013 .eq. 1) then
+                xis2013 = s11star*s11star + s22star*s22star + 
+     +                    s33star*s33star +
+     +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+                t11=t11+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
+                t22=t22+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
+                t33=t33+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
               end if
             else if(ivmx .eq. 12) then
 c            Find nonlinear tauij values:

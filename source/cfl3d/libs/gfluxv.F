@@ -59,7 +59,8 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       real :: coef_eddy
 c
 c******************************************************************************
@@ -75,6 +76,7 @@ c
       coef_eddy = 1.0
       if(ivisc(2)>=70) coef_eddy=0
       if(i_tauijs .eq. 1) coef_eddy=0.
+      ccr2=2.5
 c
       kdim1 = kdim-1
       jdim1 = jdim-1
@@ -113,6 +115,10 @@ c
          if (i_qcr2000 .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),'(''      using QCR2000'')')
+         end if
+         if (i_qcr2013 .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      using QCR2013'')')
          end if
          if (ivisc(2).eq.11 .or. ivisc(2).eq.12 .or.
      +       ivisc(2).eq.13 .or. ivisc(2).eq.14 .or.
@@ -555,6 +561,9 @@ c   Add nonlinear terms to RHS
               s11=ux1
               s22=ux5
               s33=ux9
+              s11star=s11-((s11+s22+s33)/3.)
+              s22star=s22-((s11+s22+s33)/3.)
+              s33star=s33-((s11+s22+s33)/3.)
               s12=0.5*(ux2+ux4)
               s13=0.5*(ux3+ux7)
               s23=0.5*(ux6+ux8)
@@ -562,13 +571,13 @@ c   Add nonlinear terms to RHS
               w13=0.5*(ux3-ux7)
               w23=0.5*(ux6-ux8)
 c             ignoring -2/3*rho*k*delij term
-              t11=-2.0*v3d*(s11-(s11+s22+s33)/3.)
-              t22=-2.0*v3d*(s22-(s11+s22+s33)/3.)
-              t33=-2.0*v3d*(s33-(s11+s22+s33)/3.)
+              t11=-2.0*v3d*s11star
+              t22=-2.0*v3d*s22star
+              t33=-2.0*v3d*s33star
               t12=-2.0*v3d*s12
               t13=-2.0*v3d*s13
               t23=-2.0*v3d*s23
-              if (i_qcr2000 .eq. 1) then
+              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1) then
                 denom=sqrt(ux1*ux1 + ux2*ux2 + ux3*ux3 +
      +                     ux4*ux4 + ux5*ux5 + ux6*ux6 +
      +                     ux7*ux7 + ux8*ux8 + ux9*ux9)+1.e-20
@@ -596,6 +605,14 @@ c             ignoring -2/3*rho*k*delij term
                 t12=t12p
                 t13=t13p
                 t23=t23p
+              end if
+              if (i_qcr2013 .eq. 1) then
+                xis2013 = s11star*s11star + s22star*s22star + 
+     +                    s33star*s33star +
+     +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
+                t11=t11+ccr2*v3d*sqrt(2.*xis2013)
+                t22=t22+ccr2*v3d*sqrt(2.*xis2013)
+                t33=t33+ccr2*v3d*sqrt(2.*xis2013)
               end if
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)

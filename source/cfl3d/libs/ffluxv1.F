@@ -62,7 +62,8 @@ c
       common /mgrd/ levt,kode,mode,ncyc,mtt,icyc,level,lglobal
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       REAL :: coef_eddy  ! used to turn off eddy viscosity for stress calculation
 
       coef_eddy = 1.0

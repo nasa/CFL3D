@@ -109,7 +109,8 @@ c
       common /initfac/ scal_ic
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
@@ -997,6 +998,11 @@ c
 c   i_qcr2000 turns on QCR2000 (when set to 1)
 c   only works when i_tauijs=1
       i_qcr2000=0
+      nkey     = nkey + 1
+c
+c   i_qcr2013 turns on QCR2013 (when set to 1)
+c   only works when i_tauijs=1
+      i_qcr2013=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -1998,6 +2004,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_qcr2000') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_qcr2000
+c
+      else if (inpstr(lc1:lc2).eq.'i_qcr2013') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_qcr2013
 c
       else
 c

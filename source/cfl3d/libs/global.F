@@ -208,7 +208,8 @@ c
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000
+      common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
+     .                 i_qcr2013
       common /easmlim/ cmulim
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
@@ -1106,6 +1107,20 @@ c
       if (i_qcr2000 .eq. 1 .and. i_tauijs .ne. 1) then
         write(iunit11,'('' i_qcr2000 must be used with'',
      .    '' i_tauijs=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (i_qcr2013 .eq. 1 .and. i_tauijs .ne. 1) then
+        write(iunit11,'('' i_qcr2013 must be used with'',
+     .    '' i_tauijs=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (i_qcr2000 .eq. 1 .and. i_qcr2013 .eq. 1) then
+        write(iunit11,'('' cannot have both i_qcr2000=1'',
+     .    '' and i_qcr2013=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (i_qcr2013 .eq. 1 .and. ivmx .ne. 5) then
+        write(iunit11,'('' i_qcr2013 is only usable with SA model'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c
