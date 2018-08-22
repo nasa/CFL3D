@@ -39,7 +39,7 @@ c
 c***********************************************************************
 c
 #if defined DIST_MPI
-      include 'mpif.h'
+#     include "mpif.h"
 #endif
 c
       character*120 bou(ibufdim,nbuf)

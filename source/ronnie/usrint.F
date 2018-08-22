@@ -29,8 +29,7 @@ c      Purpose: provide termination procedure in the event of a system
 c      signal
 c***********************************************************************
 #if defined DIST_MPI
-c
-      include 'mpif.h'
+#     include "mpif.h"
 #endif
 c
       character*80 errfile
