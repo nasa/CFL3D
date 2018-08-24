@@ -799,11 +799,11 @@ c   get blend = F1 factor
               argb=4.*sigo2*turre(j,k,i,2)/(temp*smin(j,k,i)*
      +             smin(j,k,i))
               arg=ccmin(arga,argb)
-              blend(j,k,i)=cctanh(arg*arg*arg*arg)
+              blend(j,k,i)=cctanh(ccmaxcr(ccmincr(arg,4.0),-4.0)**4)
               if (itrans_on .eq. 1) then
                 re_y=q(j,k,i,1)*ccabs(smin(j,k,i))*sqrt(turre(j,k,i,2))/
      +               fnu(j,k,i)*re
-                fff3=exp(-((re_y/120.)**8))
+                fff3=exp(-(ccmincr(re_y/120.,10.0)**8))
                 blend(j,k,i)=ccmax(blend(j,k,i),fff3)
               end if
             enddo
@@ -1871,7 +1871,7 @@ c             dist=ccabs(smin(j,k,i))
               re_omega=q(j,k,i,1)*dist2*turre(j,k,i,1)*re*re*
      +                 fnuinv
 c
-              f_turb=exp(-((0.25*re_t)**4))
+              f_turb=exp(-(ccmincr(0.25*re_t,1000.0)**4))
               f_sublayer=exp(-((0.005*re_omega)**2))
               if (real(turre(j,k,i,4)) .lt. 400.) then
                 f_length=39.8189-(119.27e-4)*turre(j,k,i,4)-
@@ -1901,9 +1901,9 @@ c
               f_onset1=re_v/(2.193*re_thetac)
               f_onset2=ccmax(f_onset1,f_onset1**4)
               f_onset2=ccmincr(f_onset2,2.)
-              f_onset3=ccmaxcr((1.-(0.4*re_t)**3), 0.)
+              f_onset3=ccmaxcr((1.-ccmincr(0.4*re_t,1.0)**3), 0.)
               f_onset =ccmaxcr((f_onset2-f_onset3),0.)
-              f_reattach=exp(-((0.05*re_t)**4))
+              f_reattach=exp(-(ccmincr(0.05*re_t,1000.0)**4))
 c
               uuu=sqrt(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2)
               uuu=ccmaxcr(uuu,1.e-20)
@@ -1911,7 +1911,7 @@ c
               dist_delta=q(j,k,i,1)*re*uuu**2/
      +                   (375.*vortpluseps*turre(j,k,i,4)*fnu(j,k,i))
               f_thetat1=exp(-((1.e-5*re_omega)**2))*
-     +                  exp(-(dist_delta**4))
+     +                  exp(-(ccmincr(dist_delta,1000.0)**4))
               f_thetat2=1.-(((turre(j,k,i,3)-ce2inv)/(1.-ce2inv))**2)
               f_thetat = ccmax(f_thetat1,f_thetat2)
               f_thetat = ccmincr(f_thetat,1.)
