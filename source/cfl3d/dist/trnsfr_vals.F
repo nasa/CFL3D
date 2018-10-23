@@ -235,7 +235,7 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
       common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
      .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
@@ -592,6 +592,7 @@ c
          work(nlast+174)= i_tauijs
          work(nlast+175)= i_qcr2000
          work(nlast+176)= i_qcr2013
+         work(nlast+177)= i_yapterm
          nlast = nlast+nkey
       end if
 c
@@ -948,6 +949,7 @@ c
          i_tauijs = int(work(nlast+174))
          i_qcr2000 = int(work(nlast+175))
          i_qcr2013 = int(work(nlast+176))
+         i_yapterm = int(work(nlast+177))
       end if
 c
 c**************************

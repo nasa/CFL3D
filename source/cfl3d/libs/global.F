@@ -221,7 +221,7 @@ c
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
      .        wc_specialtop_kmax1001
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /iupdate/ iupdatemean
 c
       pi = 4.0*atan(1.0)
@@ -1000,13 +1000,12 @@ c
 c
 c     Need to check for keywords that do not work for ivmx=72:
       if (ivmx .eq. 72) then
-c       The following was never true:
-c       write(iunit11,'('' WARNING: keyword ifullns has no effect for'',
-c    .    '' ivisc=72 - it is ALWAYS full NS'')')
-c       write(iunit11,'(''          (but diffusion'',
-c    .    '' terms in turb eqns are still thin-layer)'')')
-        if (ifullns .eq. 0) then
-          write(iunit11,'('' ERROR: ifullns must be 1 for ivisc=72'')')
+        write(iunit11,'('' WARNING: keyword ifullns has no effect for'',
+     .    '' ivisc=72 - it is ALWAYS full NS'')')
+        write(iunit11,'(''          (but diffusion'',
+     .    '' terms in turb eqns are still thin-layer)'')')
+        if (ifullns .ne. 0) then
+          write(iunit11,'('' ERROR: ifullns must be 0 for ivisc=72'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if
         if (edvislim .ne. 1.e10) then
@@ -1086,8 +1085,8 @@ c
       end if
 c
       if (i_tauijs .eq. 1) then
-        if (ifullns .eq. 0) then
-          write(iunit11,'('' ERROR: ifullns must be 1 when'',
+        if (ifullns .ne. 0) then
+          write(iunit11,'('' ERROR: ifullns must be 0 when'',
      .      '' i_tauijs=1'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
         end if

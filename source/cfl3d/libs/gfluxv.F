@@ -610,9 +610,14 @@ c             ignoring -2/3*rho*k*delij term
                 xis2013 = s11star*s11star + s22star*s22star + 
      +                    s33star*s33star +
      +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
-                t11=t11+ccr2*v3d*sqrt(2.*xis2013)
-                t22=t22+ccr2*v3d*sqrt(2.*xis2013)
-                t33=t33+ccr2*v3d*sqrt(2.*xis2013)
+                s_mod = sqrt(2.*xis2013)
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+c               limiting is typically necessary
+                w_mod = sqrt(2.*wis)
+                s_mod = ccmin(s_mod , 1.2*w_mod)
+                t11=t11+ccr2*v3d*s_mod
+                t22=t22+ccr2*v3d*s_mod
+                t33=t33+ccr2*v3d*s_mod
               end if
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)

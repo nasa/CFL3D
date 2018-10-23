@@ -97,7 +97,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /wallfun/ iwf(3)
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c  
 c..  data statement (for use with wall functions)

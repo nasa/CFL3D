@@ -42,7 +42,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /initfac/ scal_ic
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
 c
 c   scaling factor for distance-based I.C.s:
       if (scal_ic .eq. 0.) then

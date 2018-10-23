@@ -55,7 +55,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /maxiv/ ivmx
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
 c
 c     write(15,904)nbl
   904 format(29h initial conditions for block,i3)

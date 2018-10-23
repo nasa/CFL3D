@@ -114,7 +114,7 @@ c
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
-      common /reystressmodel/ issglrrw2012,i_sas_rsm
+      common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
       common /sa_options/ i_saneg,i_sanoft2,sa_cw2,sa_cw3,sa_cv1,sa_ct3,
      .                    sa_ct4,sa_cb1,sa_cb2,sa_sigma,sa_karman
@@ -1003,6 +1003,10 @@ c
 c   i_qcr2013 turns on QCR2013 (when set to 1)
 c   only works when i_tauijs=1
       i_qcr2013=0
+      nkey     = nkey + 1
+c
+c   i_yapterm=1 adds Yap-like term to get rid of backbending in RSM
+      i_yapterm=0
       nkey     = nkey + 1
 c
 c*********************************************
@@ -2008,6 +2012,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_qcr2013') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_qcr2013
+c
+      else if (inpstr(lc1:lc2).eq.'i_yapterm') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_yapterm
 c
       else
 c
