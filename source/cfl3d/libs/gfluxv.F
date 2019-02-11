@@ -499,6 +499,8 @@ c   Add nonlinear terms to RHS
           jkv2=(ipl-1)*kdim1
           do 1195 j=1,jdim
             jkv=(j-1)*npl*kdim1 + (ipl-1)*kdim1
+            jp1=min(j+1,jdim-1)
+            jm2=max(j-2,1)
             do 1194 k=1,kdim1
               if (j.eq.1) then
                 rho=0.5*(q(j,k,ii,1)+qj0(k,ii,1,1))*(1.-wj0(k+jkv2,5))+
@@ -509,17 +511,18 @@ c   Add nonlinear terms to RHS
      +              qj0(k,ii,3,1)*wj0(k+jkv2,5)
                 w=0.5*(q(j,k,ii,4)+qj0(k,ii,4,1))*(1.-wj0(k+jkv2,5))+
      +              qj0(k,ii,4,1)*wj0(k+jkv2,5)
-                v3d = bcj(k,ii,1)*vj0(k,ii,1,1)+
-     +               (1.-bcj(k,ii,1))*0.5*(vj0(k,ii,1,1)+vist3d(j,k,ii))
-                ux1=ux(j,k,ii,1)
-                ux2=ux(j,k,ii,2)
-                ux3=ux(j,k,ii,3)
-                ux4=ux(j,k,ii,4)
-                ux5=ux(j,k,ii,5)
-                ux6=ux(j,k,ii,6)
-                ux7=ux(j,k,ii,7)
-                ux8=ux(j,k,ii,8)
-                ux9=ux(j,k,ii,9)
+             v3d=0.5*(vist3d(j,k,ii)+vj0(k,ii,1,1))*(1.-wj0(k+jkv2,5))+
+     +              vj0(k,ii,1,1)*wj0(k+jkv2,5)
+c               use 1st order interpolation at end
+                ux1=1.5*ux(j,k,ii,1)-0.5*ux(jp1,k,ii,1)
+                ux2=1.5*ux(j,k,ii,2)-0.5*ux(jp1,k,ii,2)
+                ux3=1.5*ux(j,k,ii,3)-0.5*ux(jp1,k,ii,3)
+                ux4=1.5*ux(j,k,ii,4)-0.5*ux(jp1,k,ii,4)
+                ux5=1.5*ux(j,k,ii,5)-0.5*ux(jp1,k,ii,5)
+                ux6=1.5*ux(j,k,ii,6)-0.5*ux(jp1,k,ii,6)
+                ux7=1.5*ux(j,k,ii,7)-0.5*ux(jp1,k,ii,7)
+                ux8=1.5*ux(j,k,ii,8)-0.5*ux(jp1,k,ii,8)
+                ux9=1.5*ux(j,k,ii,9)-0.5*ux(jp1,k,ii,9)
               else if (j .eq. jdim) then
                 rho=0.5*(q(j-1,k,ii,1)+qj0(k,ii,1,3))*
      +              (1.-wj0(k+jkv2,15))+
@@ -530,18 +533,18 @@ c   Add nonlinear terms to RHS
      +              qj0(k,ii,3,3)*wj0(k+jkv2,15)
                 w=0.5*(q(j-1,k,ii,4)+qj0(k,ii,4,3))*(1.-wj0(k+jkv2,15))+
      +              qj0(k,ii,4,3)*wj0(k+jkv2,15)
-                v3d = bcj(k,ii,2)*vj0(k,ii,1,3)+
-     +               (1.-bcj(k,ii,2))*0.5*(vj0(k,ii,1,3)+
-     +               vist3d(j-1,k,ii))
-                ux1=ux(j-1,k,ii,1)
-                ux2=ux(j-1,k,ii,2)
-                ux3=ux(j-1,k,ii,3)
-                ux4=ux(j-1,k,ii,4)
-                ux5=ux(j-1,k,ii,5)
-                ux6=ux(j-1,k,ii,6)
-                ux7=ux(j-1,k,ii,7)
-                ux8=ux(j-1,k,ii,8)
-                ux9=ux(j-1,k,ii,9)
+           v3d=0.5*(vist3d(j-1,k,ii)+vj0(k,ii,1,3))*(1.-wj0(k+jkv2,15))+
+     +              vj0(k,ii,1,3)*wj0(k+jkv2,15)
+c               use 1st order interpolation at end
+                ux1=1.5*ux(j-1,k,ii,1)-0.5*ux(jm2,k,ii,1)
+                ux2=1.5*ux(j-1,k,ii,2)-0.5*ux(jm2,k,ii,2)
+                ux3=1.5*ux(j-1,k,ii,3)-0.5*ux(jm2,k,ii,3)
+                ux4=1.5*ux(j-1,k,ii,4)-0.5*ux(jm2,k,ii,4)
+                ux5=1.5*ux(j-1,k,ii,5)-0.5*ux(jm2,k,ii,5)
+                ux6=1.5*ux(j-1,k,ii,6)-0.5*ux(jm2,k,ii,6)
+                ux7=1.5*ux(j-1,k,ii,7)-0.5*ux(jm2,k,ii,7)
+                ux8=1.5*ux(j-1,k,ii,8)-0.5*ux(jm2,k,ii,8)
+                ux9=1.5*ux(j-1,k,ii,9)-0.5*ux(jm2,k,ii,9)
               else
                 rho=0.5*(q(j,k,ii,1)+q(j-1,k,ii,1))
                 u=0.5*(q(j,k,ii,2)+q(j-1,k,ii,2))

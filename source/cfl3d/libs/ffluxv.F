@@ -488,6 +488,8 @@ c  Add tau_ij's for general method:
           jiv2=(kpl-1)*jdim1
           do 1195 i=1,idim
             jiv=(i-1)*npl*jdim1 + (kpl-1)*jdim1
+            ip1=min(i+1,idim-1)
+            im2=max(i-2,1)
             do 1194 j=1,jdim1
               if (i.eq.1) then
                 rho=0.5*(q(j,kk,i,1)+qi0(j,kk,1,1))*(1.-wi0(j+jiv2,5))+
@@ -498,17 +500,18 @@ c  Add tau_ij's for general method:
      +              qi0(j,kk,3,1)*wi0(j+jiv2,5)
                 w=0.5*(q(j,kk,i,4)+qi0(j,kk,4,1))*(1.-wi0(j+jiv2,5))+
      +              qi0(j,kk,4,1)*wi0(j+jiv2,5)
-                v3d = bci(j,kk,1)*vi0(j,kk,1,1)+
-     +               (1.-bci(j,kk,1))*0.5*(vi0(j,kk,1,1)+vist3d(j,kk,i))
-                ux1=ux(j,kk,i,1)
-                ux2=ux(j,kk,i,2)
-                ux3=ux(j,kk,i,3)
-                ux4=ux(j,kk,i,4)
-                ux5=ux(j,kk,i,5)
-                ux6=ux(j,kk,i,6)
-                ux7=ux(j,kk,i,7)
-                ux8=ux(j,kk,i,8)
-                ux9=ux(j,kk,i,9)
+             v3d=0.5*(vist3d(j,kk,i)+vi0(j,kk,1,1))*(1.-wi0(j+jiv2,5))+
+     +              vi0(j,kk,1,1)*wi0(j+jiv2,5)
+c               use 1st order interpolation at end
+                ux1=1.5*ux(j,kk,i,1)-0.5*ux(j,kk,ip1,1)
+                ux2=1.5*ux(j,kk,i,2)-0.5*ux(j,kk,ip1,2)
+                ux3=1.5*ux(j,kk,i,3)-0.5*ux(j,kk,ip1,3)
+                ux4=1.5*ux(j,kk,i,4)-0.5*ux(j,kk,ip1,4)
+                ux5=1.5*ux(j,kk,i,5)-0.5*ux(j,kk,ip1,5)
+                ux6=1.5*ux(j,kk,i,6)-0.5*ux(j,kk,ip1,6)
+                ux7=1.5*ux(j,kk,i,7)-0.5*ux(j,kk,ip1,7)
+                ux8=1.5*ux(j,kk,i,8)-0.5*ux(j,kk,ip1,8)
+                ux9=1.5*ux(j,kk,i,9)-0.5*ux(j,kk,ip1,9)
               else if (i .eq. idim) then
                 rho=0.5*(q(j,kk,i-1,1)+qi0(j,kk,1,3))*
      +              (1.-wi0(j+jiv2,15))+
@@ -519,18 +522,18 @@ c  Add tau_ij's for general method:
      +              qi0(j,kk,3,3)*wi0(j+jiv2,15)
                 w=0.5*(q(j,kk,i-1,4)+qi0(j,kk,4,3))*(1.-wi0(j+jiv2,15))+
      +              qi0(j,kk,4,3)*wi0(j+jiv2,15)
-                v3d = bci(j,kk,2)*vi0(j,kk,1,3)+
-     +               (1.-bci(j,kk,2))*0.5*(vi0(j,kk,1,3)+
-     +               vist3d(j,kk,i-1))
-                ux1=ux(j,kk,i-1,1)
-                ux2=ux(j,kk,i-1,2)
-                ux3=ux(j,kk,i-1,3)
-                ux4=ux(j,kk,i-1,4)
-                ux5=ux(j,kk,i-1,5)
-                ux6=ux(j,kk,i-1,6)
-                ux7=ux(j,kk,i-1,7)
-                ux8=ux(j,kk,i-1,8)
-                ux9=ux(j,kk,i-1,9)
+           v3d=0.5*(vist3d(j,kk,i-1)+vi0(j,kk,1,3))*(1.-wi0(j+jiv2,15))+
+     +              vi0(j,kk,1,3)*wi0(j+jiv2,15)
+c               use 1st order interpolation at end
+                ux1=1.5*ux(j,kk,i-1,1)-0.5*ux(j,kk,im2,1)
+                ux2=1.5*ux(j,kk,i-1,2)-0.5*ux(j,kk,im2,2)
+                ux3=1.5*ux(j,kk,i-1,3)-0.5*ux(j,kk,im2,3)
+                ux4=1.5*ux(j,kk,i-1,4)-0.5*ux(j,kk,im2,4)
+                ux5=1.5*ux(j,kk,i-1,5)-0.5*ux(j,kk,im2,5)
+                ux6=1.5*ux(j,kk,i-1,6)-0.5*ux(j,kk,im2,6)
+                ux7=1.5*ux(j,kk,i-1,7)-0.5*ux(j,kk,im2,7)
+                ux8=1.5*ux(j,kk,i-1,8)-0.5*ux(j,kk,im2,8)
+                ux9=1.5*ux(j,kk,i-1,9)-0.5*ux(j,kk,im2,9)
               else
                 rho=0.5*(q(j,kk,i,1)+q(j,kk,i-1,1))
                 u=0.5*(q(j,kk,i,2)+q(j,kk,i-1,2))
