@@ -123,7 +123,7 @@ c
      .        isst2003
       common /plot3dtyp/ ifunct
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /writestuff/ ifort50write, j_ifort50write, i_ifort50write
 c
@@ -691,7 +691,7 @@ c   Otherwise, use exact computed turb kinetic energy
               zk=turre(j,k,i,2)
             end if
 c   If using QCR2013, then k is already added, so do not add here:
-            if (i_qcr2013 .eq. 1) then
+            if (i_qcr2013 .eq. 1 .or. i_qcr2013v .eq. 1) then
               zk=0.
             end if
 c
@@ -710,7 +710,8 @@ c
               t12 = -2.*vist3d(j,k,i)*s12
               t13 = -2.*vist3d(j,k,i)*s13
               t23 = -2.*vist3d(j,k,i)*s23
-              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1) then
+              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1 .or.
+     +            i_qcr2013v .eq. 1) then
                 denom=sqrt(ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + 
      +                     ux(j,k,i,3)**2 + ux(j,k,i,4)**2 +
      +                     ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
@@ -748,6 +749,11 @@ c
                 t11=t11+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
                 t22=t22+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
                 t33=t33+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
+              end if
+              if (i_qcr2013v .eq. 1) then
+                t11=t11+ccr2*vist3d(j,k,i)*sqrt(2.*wis)
+                t22=t22+ccr2*vist3d(j,k,i)*sqrt(2.*wis)
+                t33=t33+ccr2*vist3d(j,k,i)*sqrt(2.*wis)
               end if
             else if(ivmx .eq. 12) then
 c            Find nonlinear tauij values:

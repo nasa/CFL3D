@@ -110,7 +110,7 @@ c
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
@@ -123,7 +123,9 @@ c
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
-     .        wc_specialtop_kmax1001
+     .        wc_specialtop_kmax1001,fac_specialtop_kmax1001,
+     .        cc_specialtop_kmax1001,xerf_specialtop_kmax1001,
+     .        sigerf_specialtop_kmax1001
       common /iupdate/ iupdatemean
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 c
@@ -958,10 +960,14 @@ c   and wc is for specifying crossflow
       i_specialtop_kmax1001=0
       a_specialtop_kmax1001=0.
       xc_specialtop_kmax1001=0.
-      sig_specialtop_kmax1001=0.
+      sig_specialtop_kmax1001=1.
       vtp_specialtop_kmax1001=0.
       wc_specialtop_kmax1001=0.
-      nkey     = nkey + 6
+      fac_specialtop_kmax1001=0.
+      cc_specialtop_kmax1001=0.
+      xerf_specialtop_kmax1001=0.
+      sigerf_specialtop_kmax1001=1.
+      nkey     = nkey + 10
 c
 c   SA constants
       sa_cw2=0.3
@@ -1000,9 +1006,14 @@ c   only works when i_tauijs=1
       i_qcr2000=0
       nkey     = nkey + 1
 c
-c   i_qcr2013 turns on QCR2013 (when set to 1)
+c   i_qcr2013 turns on QCR2013 (limited) (when set to 1)
 c   only works when i_tauijs=1
       i_qcr2013=0
+      nkey     = nkey + 1
+c
+c   i_qcr2013v turns on QCR2013-V (when set to 1)
+c   only works when i_tauijs=1
+      i_qcr2013v=0
       nkey     = nkey + 1
 c
 c   i_yapterm=1 adds Yap-like term to get rid of backbending in RSM
@@ -1942,6 +1953,22 @@ c
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
          wc_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'fac_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         fac_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'cc_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         cc_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'xerf_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         xerf_specialtop_kmax1001 = realval(1)
+      else if (inpstr(lc1:lc2).eq.'sigerf_specialtop_kmax1001') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         sigerf_specialtop_kmax1001 = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'sa_cw2') then
          lc2 = lc2 +1
@@ -2012,6 +2039,10 @@ c
       else if (inpstr(lc1:lc2).eq.'i_qcr2013') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i_qcr2013
+c
+      else if (inpstr(lc1:lc2).eq.'i_qcr2013v') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) i_qcr2013v
 c
       else if (inpstr(lc1:lc2).eq.'i_yapterm') then
          lc2 = lc2 +1

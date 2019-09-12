@@ -91,7 +91,7 @@ c
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
 c
       if (icall .eq. 0) then
          ierrflg = -99

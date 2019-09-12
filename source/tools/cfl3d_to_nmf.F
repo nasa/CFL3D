@@ -121,7 +121,7 @@ c
       write(3,'('' \'')')
       write(3,'(''# ==========================================='',
      +  ''======================================== \'')')
-      write(3,'(''# Type            B1  F1  S1   E1  S2   E2   '',
+      write(3,'(''# Type                B1  F1  S1   E1  S2   E2   '',
      +  ''B2  F2   S1   E1   S2  E2  Swap \'')')
       write(3,'(''# -------------------------------------------'',
      +  ''---------------------------------------- \'')')
@@ -164,19 +164,25 @@ c  Grid i0 section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=kd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   3 '',4i6)') ig,i1,
+            write(3,'('' viscous_solid     '',i5,''   3 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   3 '',4i6)') ig,i1,
+            write(3,'('' tangency          '',i5,''   3 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   3 '',4i6)') ig,i1,
+            write(3,'('' farfield_riem     '',i5,''   3 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   3 '',4i6)') ig,i1,
+            write(3,'('' farfield_extr     '',i5,''   3 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   3 '',4i6)') ig,i1,
+            write(3,'('' symmetry          '',i5,''   3 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   3 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   3 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 0) then
             continue
@@ -204,19 +210,25 @@ c  Grid idim section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=kd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   4 '',4i6)') ig,i1,
+            write(3,'('' viscous_solid     '',i5,''   4 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   4 '',4i6)') ig,i1,
+            write(3,'('' tangency          '',i5,''   4 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   4 '',4i6)') ig,i1,
+            write(3,'('' farfield_riem     '',i5,''   4 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   4 '',4i6)') ig,i1,
+            write(3,'('' farfield_extr     '',i5,''   4 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   4 '',4i6)') ig,i1,
+            write(3,'('' symmetry          '',i5,''   4 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   4 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   4 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 0) then
             continue
@@ -244,19 +256,25 @@ c  Grid j0 section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=kd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   5 '',4i6)') ig,i3,
+            write(3,'('' viscous_solid     '',i5,''   5 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   5 '',4i6)') ig,i3,
+            write(3,'('' tangency          '',i5,''   5 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   5 '',4i6)') ig,i3,
+            write(3,'('' farfield_riem     '',i5,''   5 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   5 '',4i6)') ig,i3,
+            write(3,'('' farfield_extr     '',i5,''   5 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   5 '',4i6)') ig,i3,
+            write(3,'('' symmetry          '',i5,''   5 '',4i6)') ig,i3,
+     +        i4,i1,i2
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   5 '',4i6)') ig,i3,
+     +        i4,i1,i2
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   5 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 0) then
             continue
@@ -284,19 +302,25 @@ c  Grid jdim section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=kd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   6 '',4i6)') ig,i3,
+            write(3,'('' viscous_solid     '',i5,''   6 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   6 '',4i6)') ig,i3,
+            write(3,'('' tangency          '',i5,''   6 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   6 '',4i6)') ig,i3,
+            write(3,'('' farfield_riem     '',i5,''   6 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   6 '',4i6)') ig,i3,
+            write(3,'('' farfield_extr     '',i5,''   6 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   6 '',4i6)') ig,i3,
+            write(3,'('' symmetry          '',i5,''   6 '',4i6)') ig,i3,
+     +        i4,i1,i2
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   6 '',4i6)') ig,i3,
+     +        i4,i1,i2
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   6 '',4i6)') ig,i3,
      +        i4,i1,i2
           else if (ib .eq. 0) then
             continue
@@ -324,19 +348,25 @@ c  Grid k0 section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=jd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   1 '',4i6)') ig,i1,
+            write(3,'('' viscous_solid     '',i5,''   1 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   1 '',4i6)') ig,i1,
+            write(3,'('' tangency          '',i5,''   1 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   1 '',4i6)') ig,i1,
+            write(3,'('' farfield_riem     '',i5,''   1 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   1 '',4i6)') ig,i1,
+            write(3,'('' farfield_extr     '',i5,''   1 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   1 '',4i6)') ig,i1,
+            write(3,'('' symmetry          '',i5,''   1 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   1 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   1 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 0) then
             continue
@@ -364,19 +394,25 @@ c  Grid kdim section:
           if (i3 .eq. 0) i3=1
           if (i4 .eq. 0) i4=jd(n)
           if (ib .eq. 2004) then
-            write(3,'('' viscous_solid '',i5,''   2 '',4i6)') ig,i1,
+            write(3,'('' viscous_solid     '',i5,''   2 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1005) then
-            write(3,'('' tangency      '',i5,''   2 '',4i6)') ig,i1,
+            write(3,'('' tangency          '',i5,''   2 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1003) then
-            write(3,'('' farfield_riem '',i5,''   2 '',4i6)') ig,i1,
+            write(3,'('' farfield_riem     '',i5,''   2 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1002) then
-            write(3,'('' farfield_extr '',i5,''   2 '',4i6)') ig,i1,
+            write(3,'('' farfield_extr     '',i5,''   2 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 1001) then
-            write(3,'('' symmetry      '',i5,''   2 '',4i6)') ig,i1,
+            write(3,'('' symmetry          '',i5,''   2 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib .eq. 2002) then
+            write(3,'('' back_pressure     '',i5,''   2 '',4i6)') ig,i1,
+     +        i2,i3,i4
+          else if (ib.eq.2009 .or. ib.eq.2010 .or. ib.eq.2019) then
+            write(3,'('' subsonic_inflow_pt'',i5,''   2 '',4i6)') ig,i1,
      +        i2,i3,i4
           else if (ib .eq. 0) then
             continue

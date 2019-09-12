@@ -120,7 +120,7 @@ c
       common /des/ cdes,ides,cddes
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
 c
       jdim1 = jdim-1

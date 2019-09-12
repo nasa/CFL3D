@@ -209,7 +209,7 @@ c
      .        isar,crot,isarc3d
       common /mms/ iexact_trunc,iexact_disc,iexact_ring
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       common /easmlim/ cmulim
       common /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),
      .        tur10(7)
@@ -220,7 +220,9 @@ c
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
-     .        wc_specialtop_kmax1001
+     .        wc_specialtop_kmax1001,fac_specialtop_kmax1001,
+     .        cc_specialtop_kmax1001,xerf_specialtop_kmax1001,
+     .        sigerf_specialtop_kmax1001
       common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /iupdate/ iupdatemean
 c
@@ -1113,13 +1115,32 @@ c
      .    '' i_tauijs=1'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
+      if (i_qcr2013v .eq. 1 .and. i_tauijs .ne. 1) then
+        write(iunit11,'('' i_qcr2013v must be used with'',
+     .    '' i_tauijs=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
       if (i_qcr2000 .eq. 1 .and. i_qcr2013 .eq. 1) then
         write(iunit11,'('' cannot have both i_qcr2000=1'',
      .    '' and i_qcr2013=1'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
+      if (i_qcr2000 .eq. 1 .and. i_qcr2013v .eq. 1) then
+        write(iunit11,'('' cannot have both i_qcr2000=1'',
+     .    '' and i_qcr2013v=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (i_qcr2013 .eq. 1 .and. i_qcr2013v .eq. 1) then
+        write(iunit11,'('' cannot have both i_qcr2013=1'',
+     .    '' and i_qcr2013v=1'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
       if (i_qcr2013 .eq. 1 .and. ivmx .ne. 5) then
         write(iunit11,'('' i_qcr2013 is only usable with SA model'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+      end if
+      if (i_qcr2013v .eq. 1 .and. ivmx .ne. 5) then
+        write(iunit11,'('' i_qcr2013v is only usable with SA model'')')
           call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
 c

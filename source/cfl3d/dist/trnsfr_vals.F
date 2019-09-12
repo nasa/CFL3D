@@ -231,7 +231,7 @@ c
       common /plot3dtyp/ ifunct
       common /memry/ lowmem_ux
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       common /easmlim/ cmulim
       common /easmv/ c10,c11,c2,c3,c4,c5,sigk1,cmuc1,ieasm_type
       common /is_patch/ is_pat(5),ie_pat(5),ipatch1st
@@ -242,7 +242,9 @@ c
       common /specialtop_kmax1001/ i_specialtop_kmax1001,
      .        a_specialtop_kmax1001,xc_specialtop_kmax1001,
      .        sig_specialtop_kmax1001,vtp_specialtop_kmax1001,
-     .        wc_specialtop_kmax1001
+     .        wc_specialtop_kmax1001,fac_specialtop_kmax1001,
+     .        cc_specialtop_kmax1001,xerf_specialtop_kmax1001,
+     .        sigerf_specialtop_kmax1001
       common /iupdate/ iupdatemean
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
 #if defined DIST_MPI
@@ -575,24 +577,29 @@ c
          work(nlast+157)= sig_specialtop_kmax1001
          work(nlast+158)= vtp_specialtop_kmax1001
          work(nlast+159)= wc_specialtop_kmax1001
-         work(nlast+160)= sa_cw2
-         work(nlast+161)= sa_cw3
-         work(nlast+162)= sa_cv1
-         work(nlast+163)= sa_ct3
-         work(nlast+164)= sa_ct4
-         work(nlast+165)= sa_cb1
-         work(nlast+166)= sa_cb2
-         work(nlast+167)= sa_sigma
-         work(nlast+168)= sa_karman
-         work(nlast+169)= iupdatemean
-         work(nlast+170)= uub_2034
-         work(nlast+171)= vvb_2034
-         work(nlast+172)= wwb_2034
-         work(nlast+173)= vvb_xaxisrot2034
-         work(nlast+174)= i_tauijs
-         work(nlast+175)= i_qcr2000
-         work(nlast+176)= i_qcr2013
-         work(nlast+177)= i_yapterm
+         work(nlast+160)= fac_specialtop_kmax1001
+         work(nlast+161)= cc_specialtop_kmax1001
+         work(nlast+162)= xerf_specialtop_kmax1001
+         work(nlast+163)= sigerf_specialtop_kmax1001
+         work(nlast+164)= sa_cw2
+         work(nlast+165)= sa_cw3
+         work(nlast+166)= sa_cv1
+         work(nlast+167)= sa_ct3
+         work(nlast+168)= sa_ct4
+         work(nlast+169)= sa_cb1
+         work(nlast+170)= sa_cb2
+         work(nlast+171)= sa_sigma
+         work(nlast+172)= sa_karman
+         work(nlast+173)= iupdatemean
+         work(nlast+174)= uub_2034
+         work(nlast+175)= vvb_2034
+         work(nlast+176)= wwb_2034
+         work(nlast+177)= vvb_xaxisrot2034
+         work(nlast+178)= i_tauijs
+         work(nlast+179)= i_qcr2000
+         work(nlast+180)= i_qcr2013
+         work(nlast+181)= i_qcr2013v
+         work(nlast+182)= i_yapterm
          nlast = nlast+nkey
       end if
 c
@@ -932,24 +939,29 @@ c
          sig_specialtop_kmax1001 = work(nlast+157)
          vtp_specialtop_kmax1001 = work(nlast+158)
          wc_specialtop_kmax1001 = work(nlast+159)
-         sa_cw2 = work(nlast+160)
-         sa_cw3 = work(nlast+161)
-         sa_cv1 = work(nlast+162)
-         sa_ct3 = work(nlast+163)
-         sa_ct4 = work(nlast+164)
-         sa_cb1 = work(nlast+165)
-         sa_cb2 = work(nlast+166)
-         sa_sigma = work(nlast+167)
-         sa_karman = work(nlast+168)
-         iupdatemean = int(work(nlast+169))
-         uub_2034 = work(nlast+170)
-         vvb_2034 = work(nlast+171)
-         wwb_2034 = work(nlast+172)
-         vvb_xaxisrot2034 = work(nlast+173)
-         i_tauijs = int(work(nlast+174))
-         i_qcr2000 = int(work(nlast+175))
-         i_qcr2013 = int(work(nlast+176))
-         i_yapterm = int(work(nlast+177))
+         fac_specialtop_kmax1001 = work(nlast+160)
+         cc_specialtop_kmax1001 = work(nlast+161)
+         xerf_specialtop_kmax1001 = work(nlast+162)
+         sigerf_specialtop_kmax1001 = work(nlast+163)
+         sa_cw2 = work(nlast+164)
+         sa_cw3 = work(nlast+165)
+         sa_cv1 = work(nlast+166)
+         sa_ct3 = work(nlast+167)
+         sa_ct4 = work(nlast+168)
+         sa_cb1 = work(nlast+169)
+         sa_cb2 = work(nlast+170)
+         sa_sigma = work(nlast+171)
+         sa_karman = work(nlast+172)
+         iupdatemean = int(work(nlast+173))
+         uub_2034 = work(nlast+174)
+         vvb_2034 = work(nlast+175)
+         wwb_2034 = work(nlast+176)
+         vvb_xaxisrot2034 = work(nlast+177)
+         i_tauijs = int(work(nlast+178))
+         i_qcr2000 = int(work(nlast+179))
+         i_qcr2013 = int(work(nlast+180))
+         i_qcr2013v = int(work(nlast+181))
+         i_yapterm = int(work(nlast+182))
       end if
 c
 c**************************

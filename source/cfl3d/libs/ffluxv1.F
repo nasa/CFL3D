@@ -63,7 +63,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       REAL :: coef_eddy  ! used to turn off eddy viscosity for stress calculation
 
       coef_eddy = 1.0

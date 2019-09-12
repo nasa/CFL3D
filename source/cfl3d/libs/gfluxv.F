@@ -60,7 +60,7 @@ c
       common /reyue/ reue,tinf,ivisc(3)
       common /sklton/ isklton
       common /constit/ i_nonlin,c_nonlin,snonlin_lim,i_tauijs,i_qcr2000,
-     .                 i_qcr2013
+     .                 i_qcr2013,i_qcr2013v
       real :: coef_eddy
 c
 c******************************************************************************
@@ -118,7 +118,11 @@ c
          end if
          if (i_qcr2013 .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''      using QCR2013'')')
+           write(bou(nou(1),1),'(''      using QCR2013 (limited)'')')
+         end if
+         if (i_qcr2013v .eq. 1) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),'(''      using QCR2013-V'')')
          end if
          if (ivisc(2).eq.11 .or. ivisc(2).eq.12 .or.
      +       ivisc(2).eq.13 .or. ivisc(2).eq.14 .or.
@@ -580,7 +584,8 @@ c             ignoring -2/3*rho*k*delij term
               t12=-2.0*v3d*s12
               t13=-2.0*v3d*s13
               t23=-2.0*v3d*s23
-              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1) then
+              if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1 .or.
+     +            i_qcr2013v .eq. 1) then
                 denom=sqrt(ux1*ux1 + ux2*ux2 + ux3*ux3 +
      +                     ux4*ux4 + ux5*ux5 + ux6*ux6 +
      +                     ux7*ux7 + ux8*ux8 + ux9*ux9)+1.e-20
@@ -621,6 +626,13 @@ c               limiting is typically necessary
                 t11=t11+ccr2*v3d*s_mod
                 t22=t22+ccr2*v3d*s_mod
                 t33=t33+ccr2*v3d*s_mod
+              end if
+              if (i_qcr2013v .eq. 1) then
+                wis = 2.*w12*w12 + 2.*w13*w13 + 2.*w23*w23
+                w_mod = sqrt(2.*wis)
+                t11=t11+ccr2*v3d*w_mod
+                t22=t22+ccr2*v3d*w_mod
+                t33=t33+ccr2*v3d*w_mod
               end if
               t(k+jkv,28)=xmre*(t(k+jkv,25)*t11+t(k+jkv,26)*t12+
      +                          t(k+jkv,27)*t13)/t(k+jkv,15)
