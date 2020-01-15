@@ -1087,6 +1087,11 @@ c
       end if
 c
       if (i_tauijs .eq. 1) then
+        if (ngrid .ne. 1) then
+          write(iunit11,'('' ERROR: across-boundary BCs not correct'',
+     .      '' for i_tauijs=1; cannot use multiple zones currently'')')
+          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+        end if
         if (ifullns .ne. 0) then
           write(iunit11,'('' ERROR: ifullns must be 0 when'',
      .      '' i_tauijs=1'')')
