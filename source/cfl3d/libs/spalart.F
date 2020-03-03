@@ -1422,7 +1422,6 @@ c   Normally, with ss=vor, it is always non-negative.
               else
                 term1=cb1*(1.-ft2)*ccmaxrc(0.,ss)
                 term2=cb1*((1.-ft2)*fv2+ft2)/akarman**2-cw1*fw
-              end if
 c             For SARC, note that fr1 multiplies the production term
 c             cb1*Stilde*nuwiggle, as specified in AIAA J 38(5):784,2000,
 c             where Stilde=vort+nuwiggle*fv2/(kappa^2*d^2)
@@ -1465,6 +1464,7 @@ c               Determine Sij and Wij values:
      +             ccatan(12.*rtilde))-1.
                 term1=cb1*(fr1-ft2)*ss
                 term2=cb1*((fr1-ft2)*fv2+ft2)/akarman**2-cw1*fw
+              end if
               end if
               dist2i=1./(re*damp1(j,k,i)**2+1.e-20)
               tt=cutoff*term1*turre(j,k,i)+term2*turre(j,k,i)**2*dist2i

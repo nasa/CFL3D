@@ -531,10 +531,6 @@ c   Check for SARC & EASMCC models
         write(iunit11,'('' ERROR: cannot have isarc3d and isarc2d=1'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-      if ((isarc2d.eq.1 .or. isarc3d.eq.1) .and. i_saneg.ne.0) then
-        write(iunit11,'('' ERROR: cannot have SARC on and SA-neg'')')
-        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-      end if
 c
 c     for cfl3d type grids, set ialph = 0 regardless of input value
 c     note: if it is desired to allow ialph to be used with cfl3d 
