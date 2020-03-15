@@ -135,7 +135,7 @@ c
 c
 c     check for negative (or large) densities and pressures
 c
-      epsz = 1.0e-04
+      epsz = 1.0e-10
       epss = 1.0e+03
       do 110 i=1,idim1
       do 120 k=1,kdim
