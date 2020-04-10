@@ -346,10 +346,13 @@ c******************************************************************************
 c
       if (nface.eq.6) then
 c
-c   special for when i_specialtop_kmax=1
+c   Special for when i_specialtop_kmax1001=1
+c   All sections with i_specialtop_kmax1001=1 are undocumented,
+c   because they were inserted only for a particular application;
+c   they could be commented out or deleted in general, if desired.
 c   Adds the following Vtop (in terms of Uref):
 c     = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] + 
-c       vtp*{dd*(1-erf[(x-xerf)/sigerf])}
+c       vtp*{0.5*(1-erf[(x-xerf)/sigerf])}
 c   with constant crossflow: wc
 c   (note wc should be negative if input beta is positive)
 c
@@ -379,8 +382,6 @@ c
 c
       qk0(j,i,1,3) = q(j,kdim-1,i,1)
       if (i_specialtop_kmax1001 .eq. 1) then
-c       vtop=sig*a*b*exp(0.5-(b**2))*xmach+vtp*xmach
-c       dudy=a*(2.0*(b**2)-1.)*exp(0.5-(b**2))*xmach
         vtop=(fac*sig*a*b+(1.-fac)*a)*exp(cc-(b**2))*xmach+
      +    vtp*(0.5*(1.-erf((xxx-xerf)/sigerf)))*xmach
         dudy=fac*a*(2.0*(b**2)-1.)*exp(cc-(b**2))*xmach+

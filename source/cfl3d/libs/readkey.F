@@ -955,7 +955,8 @@ c   will not convect it)
 c
 c   i_specialtop_kmax1001=1 only for particular special BC on 1001
 c   specifying kmax wall velocity in conjunction with BC1001:
-c   v=sig*a*(xc-x)/sig*exp(0.5-((xc-x)/sig)**2)+vtp
+c   v = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] + 
+c       vtp*{0.5*(1-erf[(x-xerf)/sigerf])}
 c   and wc is for specifying crossflow
       i_specialtop_kmax1001=0
       a_specialtop_kmax1001=0.
@@ -963,10 +964,10 @@ c   and wc is for specifying crossflow
       sig_specialtop_kmax1001=1.
       vtp_specialtop_kmax1001=0.
       wc_specialtop_kmax1001=0.
-      fac_specialtop_kmax1001=0.
-      cc_specialtop_kmax1001=0.
-      xerf_specialtop_kmax1001=0.
-      sigerf_specialtop_kmax1001=1.
+      fac_specialtop_kmax1001=1.0
+      cc_specialtop_kmax1001=0.5
+      xerf_specialtop_kmax1001=100000.
+      sigerf_specialtop_kmax1001=1.e-9
       nkey     = nkey + 10
 c
 c   SA constants
