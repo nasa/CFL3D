@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -82,7 +82,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Main routine of cfl3d; drives mesh sequencing and
-c     multigrid solutions to steady/unsteady Euler/Navier-Stokes 
+c     multigrid solutions to steady/unsteady Euler/Navier-Stokes
 c     (thin layer form) equations
 c***********************************************************************
 c
@@ -285,7 +285,7 @@ c
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
 
       allocatable :: rmstr(:,:)
       allocatable :: nneg(:,:)
@@ -783,12 +783,12 @@ c
          call cputim(+1,nnodes,string,myhost,myid,mycomm,11)
 c
          nwork1 = nwork - maxbl
-         if (nwork1.le.0) then 
+         if (nwork1.le.0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'(''stopping...not enough '',
      .           ''work space for subroutine mgblk'')')
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-         end if 
+         end if
          iwk1 = 1
          iwk2 = iwk1 + maxbl*7*3
          iwk3 = iwk2 + maxbl*8
@@ -882,7 +882,7 @@ c
 c        best attempt at correct wall time for > 24  hour runs:
 c        the problem seems to be that tim(3,2), supposedly the wall
 c        time, gets reset after 24 hours. have to creative in the case
-c        the total time - system+user - is not *quite* 24 hours and 
+c        the total time - system+user - is not *quite* 24 hours and
 c        the true wall time is just over 24 hours, so that ndays=0
 c        but tim(3,2) is small. in that case use the total time as
 c        the wall time.
@@ -915,7 +915,7 @@ c
 c        output solution (plot3d and printout files)
 c
          if (real(dt).lt.0. .or. (real(dt).gt.0..and.movie.eq.0)) then
-	    iflag = 0 
+	    iflag = 0
 	    if (iseq.eq.mseq) iflag = 1
 	    if (iseq.lt.mseq .and. ncyc1(iseq+1).eq.0) iflag = 1
 	    if (iflag.gt.0) then

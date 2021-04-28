@@ -7,21 +7,21 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine qout_2d(iseq,lw,lw2,w,mgwk,wk,nwork,nplots,         
-     .                iovrlp,iibg,                                       
+      subroutine qout_2d(iseq,lw,lw2,w,mgwk,wk,nwork,nplots,
+     .                iovrlp,iibg,
      .                kkbg,jjbg,ibcg,lbg,ibpntsg,qb,lwdat,nbci0,
      .                nbcj0,nbck0,nbcidim,nbcjdim,nbckdim,jbcinfo,
      .                kbcinfo,ibcinfo,bcfilei,bcfilej,bcfilek,
@@ -38,7 +38,7 @@ c
      .                lbcprd,lbcemb,
      .                dthetxx,dthetyy,dthetzz,nblcg,lfgm,istat2_bl,
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
-     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf, 
+     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,
      .                nt,mov_2d,iinc_2d,jinc_2d,kinc_2d,nummem)
 c     Using existing plot3d machinery involves arrays ip3ddim(..,nplots)
 c             and, therefore, nplots needs to be .ge. number of blocks
@@ -46,7 +46,7 @@ c             Also, iinc, jinc, etc. are global constants, ie, same for all blks
 c             Except, we halve it for blocks where that incr is not permissible
 c             => increments should be multiples of 2
 c
-c     NOTE: pass through inpl3d uotouched to plot3d; this will result in a 
+c     NOTE: pass through inpl3d uotouched to plot3d; this will result in a
 c           duplicate message of the type "plot3dg file written as grid points"
 c           But, that's probably acceptable
 c
@@ -137,20 +137,20 @@ c
 c
 c***********************************************************************
 c     write output file in PLOT3D format
-c     in this routine, iptype = inpl3d(n,2), where n is the block number 
-c     iptype = 0...output q at grid points 
-c              1...output q cell centers 
+c     in this routine, iptype = inpl3d(n,2), where n is the block number
+c     iptype = 0...output q at grid points
+c              1...output q cell centers
 c              2...turbulence data at cell centers, output in place of
-c                  the standard plot3d q vector 
-c              3...smin at cell centers 
-c              4...vist3d at cell centers 
-c              5...cp at cell centers 
-c             -5...cp at grid points 
-c              6...p/pinf at cell centers 
-c             -6...p/pinf at grid points 
+c                  the standard plot3d q vector
+c              3...smin at cell centers
+c              4...vist3d at cell centers
+c              5...cp at cell centers
+c             -5...cp at grid points
+c              6...p/pinf at cell centers
+c             -6...p/pinf at grid points
 c***********************************************************************
 c
-      !if (nplot3d.gt.0 .or. nprint.gt.0) then                       
+      !if (nplot3d.gt.0 .or. nprint.gt.0) then
       if (1.gt.0) then                !  do this regardless of nplot3d
 c
 c        update all bc's for level lglobal (and above, if embeded),
@@ -210,7 +210,7 @@ c
                write(bou(nou(1),1),'(''stopping...not enough integer '',
      .                        ''work space for subroutine bc_period'')')
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),'(''have, need = '',2i12)') 
+               write(bou(nou(1),1),'(''have, need = '',2i12)')
      .         iwork,iwk6
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
@@ -324,7 +324,7 @@ c
 c
 c           update chimera boundary conditions
 c
-c           don't update interior (fringe) points if cell center data 
+c           don't update interior (fringe) points if cell center data
 c           is to be output (this is needed to get cell center output
 c           identical to version 5)
 c
@@ -352,7 +352,7 @@ c
                end if
             end do
 c
-c           call qface to install face-center values in 
+c           call qface to install face-center values in
 c           the qi0/qj0/qk0 arrays
 c
             do nbl=1,nblock
@@ -383,23 +383,23 @@ c
 c
       end if
 c
-      !if (nplot3d.le.0) go to 231                                  
+      !if (nplot3d.le.0) go to 231
 c
       ncount    = 0
-      if(i2d.eq.1)then                                                  
-         np3d      = nblock/lglobal                                     
-      elseif(i2d.eq.0)then                                              
-!         np3d      = nblock/lglobal/2                                  
+      if(i2d.eq.1)then
+         np3d      = nblock/lglobal
+      elseif(i2d.eq.0)then
+!         np3d      = nblock/lglobal/2
          if( iskip_blocks > 0 ) then
-         np3d      = nblock/lglobal/iskip_blocks                        
+         np3d      = nblock/lglobal/iskip_blocks
          else
             np3d      = abs(iskip_blocks)
          end if
                      !assume NOT spanwise split into 2 blocks for 3D case
-      else                                                              
-         write(6,*)'i2d = ',i2d; stop                                   
-      endif                                                             
-      !np3d      = nplot3d                                          
+      else
+         write(6,*)'i2d = ',i2d; stop
+      endif
+      !np3d      = nplot3d
       ifunc     = 0
 c
 c     if zone has function file output, all must, and all
@@ -407,34 +407,34 @@ c     must have the same function output
 c
       !if (abs(inpl3d(1,2)).gt.2) ifunc = inpl3d(1,2)
 c
-      do 60 n=1,np3d                                                
-      !do 60 n=1,nplot3d                                            
+      do 60 n=1,np3d
+      !do 60 n=1,nplot3d
       if (n.eq.1) then
          if (myid .eq. myhost) then
             if (ibin.eq.0) then
-               if (icall2d.eq.0) write(93,'(3i5)') np3d              
-               write(94,'(3i5)') np3d                               
+               if (icall2d.eq.0) write(93,'(3i5)') np3d
+               write(94,'(3i5)') np3d
             else
-               if (icall2d.eq.0) write(93) np3d                      
-               write(94) np3d                                       
+               if (icall2d.eq.0) write(93) np3d
+               write(94) np3d
             end if
          end if
       end if
 c
-      !nbl = inpl3d(n,1)                                                
-      if(i2d.eq.1)then                                                  
-         nbl = lglobal*(n-1)+1                                          
-      elseif(i2d.eq.0)then                                              
-!         nbl = lglobal*2*(n-1)+1                                       
+      !nbl = inpl3d(n,1)
+      if(i2d.eq.1)then
+         nbl = lglobal*(n-1)+1
+      elseif(i2d.eq.0)then
+!         nbl = lglobal*2*(n-1)+1
          if( iskip_blocks > 0 ) then
-         nbl = lglobal*iskip_blocks*(n-1)+1                             
+         nbl = lglobal*iskip_blocks*(n-1)+1
          else
-            nbl = lglobal*(n-1)+1                             
+            nbl = lglobal*(n-1)+1
          end if
                !assume NOT spanwise blocks line up one after another:1,2, etc
-      else                                                              
-         write(6,*)'i2d = ',i2d; stop                                   
-      endif                                                             
+      else
+         write(6,*)'i2d = ',i2d; stop
+      endif
 c
       if (nbl.gt.nblock) then
          if (myid .eq. myhost) then
@@ -447,29 +447,29 @@ c
 c
       ncount = ncount+1
       call lead(nbl,lw,lw2,maxbl)
-      !if incr is too large, allow 1 level of halving it any given block 
-      i1 = (idim+1)/2                               !inpl3d(n,3)     
-      i2 = (idim+1)/2                               !inpl3d(n,4)     
-      i3 = 1                                        !inpl3d(n,5)     
-      !if((iinc_2d.gt.1).and.(mod(idim-1,iinc_2d).ne.0))i3=iinc_2d/2 
-      j1 = 1                                        !inpl3d(n,6)     
-      j2 = jdim                                     !inpl3d(n,7)     
-      j3 = jinc_2d                                  !inpl3d(n,8)     
-      if((jinc_2d.gt.1).and.(mod(jdim-1,jinc_2d).ne.0))j3=jinc_2d/2  
-      k1 = 1                                        !inpl3d(n,9)     
-      k2 = kdim                                     !inpl3d(n,10)    
-      k3 = kinc_2d                                  !inpl3d(n,11)    
-      if((kinc_2d.gt.1).and.(mod(kdim-1,kinc_2d).ne.0))k3=kinc_2d/2  
+      !if incr is too large, allow 1 level of halving it any given block
+      i1 = (idim+1)/2                               !inpl3d(n,3)
+      i2 = (idim+1)/2                               !inpl3d(n,4)
+      i3 = 1                                        !inpl3d(n,5)
+      !if((iinc_2d.gt.1).and.(mod(idim-1,iinc_2d).ne.0))i3=iinc_2d/2
+      j1 = 1                                        !inpl3d(n,6)
+      j2 = jdim                                     !inpl3d(n,7)
+      j3 = jinc_2d                                  !inpl3d(n,8)
+      if((jinc_2d.gt.1).and.(mod(jdim-1,jinc_2d).ne.0))j3=jinc_2d/2
+      k1 = 1                                        !inpl3d(n,9)
+      k2 = kdim                                     !inpl3d(n,10)
+      k3 = kinc_2d                                  !inpl3d(n,11)
+      if((kinc_2d.gt.1).and.(mod(kdim-1,kinc_2d).ne.0))k3=kinc_2d/2
       !if (inpl3d(n,2).gt.0) then     ! only use grid pts for coarse movie
-c     !   cell center dimensions      
-      !   call lead(nbl,lw,lw2,maxbl) 
-      !   i2 = min(idim-1,i2)         
-      !   j2 = min(jdim-1,j2)         
-      !   k2 = min(kdim-1,k2)         
-      !   i1 = min(idim-1,i1)         
-      !   j1 = min(jdim-1,j1)         
-      !   k1 = min(kdim-1,k1)         
-      !end if                         
+c     !   cell center dimensions
+      !   call lead(nbl,lw,lw2,maxbl)
+      !   i2 = min(idim-1,i2)
+      !   j2 = min(jdim-1,j2)
+      !   k2 = min(kdim-1,k2)
+      !   i1 = min(idim-1,i1)
+      !   j1 = min(jdim-1,j1)
+      !   k1 = min(kdim-1,k1)
+      !end if
       ip3ddim(1,ncount) = (i2-i1)/i3+1
       ip3ddim(2,ncount) = (j2-j1)/j3+1
       ip3ddim(3,ncount) = (k2-k1)/k3+1
@@ -478,38 +478,38 @@ c
       if (myid .eq. myhost) then
          if (ibin.eq.0) then
             if (i2d.eq.0) then
-               if (icall2d.eq.0) 
-     .         write(93,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)      
+               if (icall2d.eq.0)
+     .         write(93,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifunc.eq.0) then
-                  write(94,'(3i5)')((ip3ddim(i,n),i=1,3),n=1,ncount)    
+                  write(94,'(3i5)')((ip3ddim(i,n),i=1,3),n=1,ncount)
                else
-                  write(94,'(3i5)')((ip3ddim(i,n),i=1,3),1,n=1,ncount)  
+                  write(94,'(3i5)')((ip3ddim(i,n),i=1,3),1,n=1,ncount)
                end if
             else
-               if (icall2d.eq.0) 
-     .         write(93,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)      
+               if (icall2d.eq.0)
+     .         write(93,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifunc.eq.0) then
-                  write(94,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)   
+                  write(94,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
                else
-                  write(94,'(3i5)') ((ip3ddim(i,n),i=2,3),1,n=1,ncount) 
+                  write(94,'(3i5)') ((ip3ddim(i,n),i=2,3),1,n=1,ncount)
                end if
             end if
          else
             if (i2d.eq.0) then
-               if (icall2d.eq.0) 
-     .         write(93) ((ip3ddim(i,n),i=1,3),n=1,ncount)              
+               if (icall2d.eq.0)
+     .         write(93) ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifunc.eq.0) then
-                  write(94) ((ip3ddim(i,n),i=1,3),n=1,ncount)           
+                  write(94) ((ip3ddim(i,n),i=1,3),n=1,ncount)
                else
-                  write(94) ((ip3ddim(i,n),i=1,3),1,n=1,ncount)         
+                  write(94) ((ip3ddim(i,n),i=1,3),1,n=1,ncount)
                end if
             else
-               if (icall2d.eq.0) 
-     .         write(93) ((ip3ddim(i,n),i=2,3),n=1,ncount)              
+               if (icall2d.eq.0)
+     .         write(93) ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifunc.eq.0) then
-                  write(94) ((ip3ddim(i,n),i=2,3),n=1,ncount)           
+                  write(94) ((ip3ddim(i,n),i=2,3),n=1,ncount)
                else
-                  write(94) ((ip3ddim(i,n),i=2,3),1,n=1,ncount)         
+                  write(94) ((ip3ddim(i,n),i=2,3),1,n=1,ncount)
                end if
             end if
          end if
@@ -520,41 +520,41 @@ c     number stored in nmap(n) for n=1,nblock
 c
       do 1097 n = 1,nblock
       nmap(n) = 1
-      do 1098 nnn = 1,np3d                                         
-      !do 1098 nnn = 1,nplot3d                                     
-!      m = 2*(lglobal*(nnn-1)+1)                                    
+      do 1098 nnn = 1,np3d
+      !do 1098 nnn = 1,nplot3d
+!      m = 2*(lglobal*(nnn-1)+1)
          if( iskip_blocks > 0 ) then
-      m = iskip_blocks*(lglobal*(nnn-1)+1)                                    
+      m = iskip_blocks*(lglobal*(nnn-1)+1)
          else
             m = (lglobal*(nnn-1)+1)
          end if
-      !m = inpl3d(nnn,1)                                           
+      !m = inpl3d(nnn,1)
       if (n.eq.m) nmap(n) = nnn
  1098 continue
- 1097 continue             
+ 1097 continue
 c
       if (myid.eq.myhost) then
          if (lhdr .gt. 0) write(11,1096)
       end if
  1096 format(1h )
 c
-      do 70 n=1,np3d                                               
-      !do 70 n=1,nplot3d                                           
+      do 70 n=1,np3d
+      !do 70 n=1,nplot3d
 c
-      !nbl = inpl3d(n,1)                                           
-      if(i2d.eq.1)then                                                  
-         nbl = lglobal*(n-1)+1                                          
-      elseif(i2d.eq.0)then                                              
-!         nbl = lglobal*2*(n-1)+1                                      
+      !nbl = inpl3d(n,1)
+      if(i2d.eq.1)then
+         nbl = lglobal*(n-1)+1
+      elseif(i2d.eq.0)then
+!         nbl = lglobal*2*(n-1)+1
          if( iskip_blocks > 0 ) then
-         nbl = lglobal*iskip_blocks*(n-1)+1                            
+         nbl = lglobal*iskip_blocks*(n-1)+1
          else
             nbl = lglobal*(n-1)+1
          end if
                !assume NOT spanwise blocks line up one after another:1,2, etc
-      else                                                              
-         write(6,*)'i2d = ',i2d; stop                                   
-      endif                                                             
+      else
+         write(6,*)'i2d = ',i2d; stop
+      endif
 c
 c
       if (nbl.gt.nblock .or. nbl.le. 0) go to 70
@@ -573,23 +573,23 @@ c
 c
       ncount = ncount+1
       call lead(nbl,lw,lw2,maxbl)
-      i1 = (idim+1)/2                              !inpl3d(n,3)     
-      i2 = (idim+1)/2                              !inpl3d(n,4)     
-      i3 = 1                                       !inpl3d(n,5)     
-      !if((iinc_2d.gt.1).and.(mod(idim-1,iinc_2d).ne.0))i3=iinc_2d/2  
-      j1 = 1                                       !inpl3d(n,6)     
-      j2 = jdim                                    !inpl3d(n,7)     
-      j3 = jinc_2d                                 !inpl3d(n,8)     
-      if((jinc_2d.gt.1).and.(mod(jdim-1,jinc_2d).ne.0))j3=jinc_2d/2 
-      k1 = 1                                       !inpl3d(n,9)     
-      k2 = kdim                                    !inpl3d(n,10)    
-      k3 = kinc_2d                                 !inpl3d(n,11)    
-      if((kinc_2d.gt.1).and.(mod(kdim-1,kinc_2d).ne.0))k3=kinc_2d/2 
+      i1 = (idim+1)/2                              !inpl3d(n,3)
+      i2 = (idim+1)/2                              !inpl3d(n,4)
+      i3 = 1                                       !inpl3d(n,5)
+      !if((iinc_2d.gt.1).and.(mod(idim-1,iinc_2d).ne.0))i3=iinc_2d/2
+      j1 = 1                                       !inpl3d(n,6)
+      j2 = jdim                                    !inpl3d(n,7)
+      j3 = jinc_2d                                 !inpl3d(n,8)
+      if((jinc_2d.gt.1).and.(mod(jdim-1,jinc_2d).ne.0))j3=jinc_2d/2
+      k1 = 1                                       !inpl3d(n,9)
+      k2 = kdim                                    !inpl3d(n,10)
+      k3 = kinc_2d                                 !inpl3d(n,11)
+      if((kinc_2d.gt.1).and.(mod(kdim-1,kinc_2d).ne.0))k3=kinc_2d/2
 c
       iflag = 1
 c
       if (0.le.0) then              ! use grid pt option for coarse movie
-      !if (inpl3d(n,2).le.0) then   
+      !if (inpl3d(n,2).le.0) then
 c
 c        grid point data
 c
@@ -640,7 +640,7 @@ c
          end if
 c
       else if (0.eq.1 .or. 0.gt.2) then    ! never use cell center here
-      !else if (inpl3d(n,2).eq.1 .or. inpl3d(n,2).gt.2) then          
+      !else if (inpl3d(n,2).eq.1 .or. inpl3d(n,2).gt.2) then
 c
 c        cell center or face center data
 c
@@ -687,7 +687,7 @@ c
          end if
 c
       elseif(0.eq.2) then    ! never write turb vars on cc
-      !else                  
+      !else
 c
 c        cell center turbulence data (plot3d q file format)
 c
@@ -798,7 +798,7 @@ c
       endif
 c
 c     for stationary grid cases, set icall2d flag to prevent output
-c     of grid to plot3d file on subsequent calls (which occur only if 
+c     of grid to plot3d file on subsequent calls (which occur only if
 c     abs(movie) > 0).  For dynamic grid cases, grid is output every
 c     time plot3d routine is is called.
 c
@@ -815,11 +815,11 @@ c     Print solution data.
 c***********************************************************************
 c
       if (0.gt.0) then       ! never write to print file here
-      !if (nprint.gt.0) then 
+      !if (nprint.gt.0) then
 c
       if (myid.eq.myhost) then
-         if (lhdr .gt. 0 .and. np3d .le. 0) write(11,1096)            
-         !if (lhdr .gt. 0 .and. nplot3d .le. 0) write(11,1096)        
+         if (lhdr .gt. 0 .and. np3d .le. 0) write(11,1096)
+         !if (lhdr .gt. 0 .and. nplot3d .le. 0) write(11,1096)
       end if
 c
       if (myid .eq. myhost) then
@@ -856,7 +856,7 @@ c
       k1 = inpr(n,9)
       k2 = inpr(n,10)
       k3 = inpr(n,11)
-c  
+c
       iflag = 2
 c
       if (inpr(n,2).eq.0) then

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -61,7 +61,7 @@ c     intmax........maximum number of patched interfaces
 c     nsub1.........maximum number of source ("from") zones
 c                   that may patch to a target ("to") zone
 c     msegt.........maximum number of entries in tlns3d map
-c                   file (currently only 20 entries are actually used) 
+c                   file (currently only 20 entries are actually used)
 c
       character*10 datahdr(10)
       character*80 gridin,plt3dg,plt3dq,output,resid,turbres,blomx,
@@ -272,7 +272,7 @@ c
       idiagg(n,2) = ivisb(23,n)
       idiagg(n,3) = ivisb(24,n)
       iflimg(n,1) = ivisb(25,n)
-      iflimg(n,2) = ivisb(26,n) 
+      iflimg(n,2) = ivisb(26,n)
       iflimg(n,3) = ivisb(27,n)
       ifdsg(n,1)  = ivisb(28,n)
       ifdsg(n,2)  = ivisb(29,n)
@@ -301,7 +301,7 @@ c     questionable data now  overwritten
 c     note that iforce(n) is later reset using
 c     bc segment information, which is correct after
 c     splitting
-c 
+c
       iforce(n)  = 0
       iemg(n)    = 0
       isg(n)     = 0
@@ -321,11 +321,11 @@ c
 c     initialize number of bc segments and force flags
 c
       nbci0(n)   = 0
-      nbcidim(n) = 0 
+      nbcidim(n) = 0
       nbcj0(n)   = 0
-      nbcjdim(n) = 0 
+      nbcjdim(n) = 0
       nbck0(n)   = 0
-      nbckdim(n) = 0 
+      nbckdim(n) = 0
       ifo1       = 0
       ifo2       = 0
       jfo1       = 0
@@ -350,7 +350,7 @@ c
 c     i0 boundary data
 c
       if (ift.eq.1) then
-c 
+c
 c        don't include duplicate bc data - duplicate data can occur
 c        when patch data is split
 c
@@ -398,7 +398,7 @@ c
       end if
 c
  6001 continue
-c     
+c
 c     idim boundary data
 c
       if (ift.eq.2) then
@@ -450,7 +450,7 @@ c
       end if
 c
  6002 continue
-c     
+c
 c     j0 boundary data
 c
       if (ift.eq.3) then
@@ -502,7 +502,7 @@ c
       end if
 c
  6003 continue
-c     
+c
 c     jdim boundary data
 c
       if (ift.eq.4) then
@@ -554,7 +554,7 @@ c
       end if
 c
  6004 continue
-c     
+c
 c     k0 boundary data
 c
       if (ift.eq.5) then
@@ -606,7 +606,7 @@ c
       end if
 c
  6005 continue
-c     
+c
 c     kdim boundary data
 c
       if (ift.eq.6) then
@@ -659,7 +659,7 @@ c
 c
  6006 continue
 c
- 1010 continue 
+ 1010 continue
 c
 c     set iforce for this block based on solid surface bc information
 c
@@ -677,9 +677,9 @@ c
       if (kfo1.eq.1 .and. kfo2.eq.1) kfo = 3
       iforce(n) = ifo*100 + jfo*10 + kfo
 c
-c     extract 1-1 data 
-c 
-c     on the first pass, check for matching partners of 
+c     extract 1-1 data
+c
+c     on the first pass, check for matching partners of
 c     1-1 segments and mark one as redundant
 c
       do iseg=1,nseg(n)
@@ -891,7 +891,7 @@ c     t = target ("to") s = source ("from")
             limblk(2,3,nbli) = i2smn
             limblk(2,6,nbli) = i2smx
             isva(2,1,nbli)   = 2
-            isva(2,2,nbli)   = 3 
+            isva(2,2,nbli)   = 3
          end if
          if (abs(ifs).eq.3) then
             limblk(2,1,nbli) = i2smn
@@ -1033,7 +1033,7 @@ c
          ichk = 0
          ichk = ichk + abs(nbt   - nbtlast)
          ichk = ichk + abs(ift   - iftlast)
-         ichk = ichk + abs(i1tmn - i1tmnlast) 
+         ichk = ichk + abs(i1tmn - i1tmnlast)
          ichk = ichk + abs(i1tmx - i1tmxlast)
          ichk = ichk + abs(i2tmn - i2tmnlast)
          ichk = ichk + abs(i2tmx - i2tmxlast)
@@ -1083,7 +1083,7 @@ c
             if (ifs.eq.2) ifrom2 = 12
 c
 c           check bounds of source zone to make sure they lie in
-c           the range of dimensions of the source zone - an early  
+c           the range of dimensions of the source zone - an early
 c           version of a tlns3d block splitter code would introduce
 c           errors in the tlns3d map file wherein some source zone
 c           interface ranges actually were larger than the source
@@ -1092,7 +1092,7 @@ c
             if (i1smx.gt.jdimg(nbs)) then
                write(6,*)'correcting error in tlns3d map file:'
                write(6,*)'i1smx>jdimg(nbs): i1smx,jdimg(nbs) = ',
-     .         i1smx,jdimg(nbs) 
+     .         i1smx,jdimg(nbs)
                i1smx = jdimg(nbs)
             end if
             if (i2smx.gt.kdimg(nbs)) then
@@ -1179,7 +1179,7 @@ c
 c
  1000 continue
 c
-c     further concatenate any applicable patches. The logic above 
+c     further concatenate any applicable patches. The logic above
 c     will concatenate patches to any target segment that have the
 c     same target ("to") index range *and* occur sequentially
 c     in the tlns3d map file. The problem arises if the patches
@@ -1188,7 +1188,7 @@ c     target is split into multiple segments, and individual segments
 c     may not be completely covered by source ("from") segments
 c
 c
-c     idebug > 0 for debugging purposes to write out patch 
+c     idebug > 0 for debugging purposes to write out patch
 c     data before elimination of split patches and to indicate
 c     which patches were determined to need concatenation
 c
@@ -1220,7 +1220,7 @@ c
          xit2n = xit2(n)
          ett1n = ett1(n)
          ett2n = ett2(n)
-         iton  = ito(n) 
+         iton  = ito(n)
          do 2100 m=1,ninter0
          if (n.ne.m) then
             xit1m = xit1(m)
@@ -1240,12 +1240,12 @@ c              patches m and n can be concatenated
                do 2110 nf = 1,nfbm
                nfb(n) = nfb(n)+1
                nfbb   = nfb(n)
-               xif1(n,nfbb)  = xif1(m,nf) 
+               xif1(n,nfbb)  = xif1(m,nf)
                xif2(n,nfbb)  = xif2(m,nf)
                etf1(n,nfbb)  = etf1(m,nf)
                etf2(n,nfbb)  = etf2(m,nf)
                ifrom(n,nfbb) = ifrom(m,nf)
- 2110          continue 
+ 2110          continue
                iconcat(m) = 1
                if (idebug.gt.0) write(21,*)' patch ',n,
      .            ' will concatenate with patch ',m
@@ -1301,7 +1301,7 @@ c
                do iseg=1,ns
                   jtest1 = (ibcinfo(igrid,iseg,2,m)-1)/2**nnn + 1
                   jtest2 = (ibcinfo(igrid,iseg,3,m)-1)/2**nnn + 1
-                  ktest1 = (ibcinfo(igrid,iseg,4,m)-1)/2**nnn + 1 
+                  ktest1 = (ibcinfo(igrid,iseg,4,m)-1)/2**nnn + 1
                   ktest2 = (ibcinfo(igrid,iseg,5,m)-1)/2**nnn + 1
                   if ((jtest1/2*2 .eq. jtest1) .or.
      .                (ktest1/2*2 .eq. ktest1) .or.
@@ -1391,7 +1391,7 @@ c
       ncgmax = min(ncgmax,ncgmax2)
 c
       write(*,'("from block segment dimensions and ",
-     .          "overall block dimensions, ncgmax = ",i2)') 
+     .          "overall block dimensions, ncgmax = ",i2)')
      .          ncgmax
       icgflg = 0
       do igrd=1,ngrid
@@ -1519,7 +1519,7 @@ c
       else
          write(7,22)
    22    format(6x,4hMach,5x,5halpha,6x,4hbeta,6x,4hReUe,3x,7hTinf,dR,
-     .   5x,5hialph,4x,6hihstry) 
+     .   5x,5hialph,4x,6hihstry)
          write(7,23) xmach,alpha,beta,reue,tinf,ialph,ihstry
    23    format(3f10.5,e10.3,f10.5,i10,i10,i10)
       end if
@@ -1561,9 +1561,9 @@ c
       ngridout = ngrid
       if (ip3dgrd .gt. 0) ngridout = -ngrid
 c
-c     in version 4.1, assume no plot3d files are output; 
+c     in version 4.1, assume no plot3d files are output;
 c     in version 6/5 and 4.1hp, output solid sufaces to the
-c     plot3d files; don't output print files in any version 
+c     plot3d files; don't output print files in any version
 c
       if (iver.eq.4 .and. ipar.eq.0) then
          nplot3d = 0
@@ -1680,7 +1680,7 @@ c
          ibcinfo(igrid,iseg,1,m) = 2004
          ibcinfo(igrid,iseg,7,m) = 2
          bcvali(igrid,iseg,1,m)  = twall
-         bcvali(igrid,iseg,2,m)  = 0. 
+         bcvali(igrid,iseg,2,m)  = 0.
       end if
       write(7,36) igrid,mseg,ibcinfo(igrid,iseg,1,m),
      .                       ibcinfo(igrid,iseg,2,m),
@@ -1810,7 +1810,7 @@ c
          kbcinfo(igrid,iseg,1,m) = 2004
          kbcinfo(igrid,iseg,7,m) = 2
          bcvalk(igrid,iseg,1,m)  = twall
-         bcvalk(igrid,iseg,2,m)  = 0. 
+         bcvalk(igrid,iseg,2,m)  = 0.
       end if
       write(7,36) igrid,mseg,kbcinfo(igrid,iseg,1,m),
      .                       kbcinfo(igrid,iseg,2,m),
@@ -1841,7 +1841,7 @@ c
      .               6x,4hiend,6x,4hjsta,6x,4hjend,5x,5hndata)
 c
 c     check to see if ncg has been lowered due to the splitting
-c     process, and, if so, see if mseq, mgflag, etc. need to be 
+c     process, and, if so, see if mseq, mgflag, etc. need to be
 c     altered
 c
       if (icgflg .ne. 0) then
@@ -1874,7 +1874,7 @@ c             set mglevg to upper limit consistant with new ncg
            else
               do mm = 1,mseq
                  mglev(mm) = 1
-                 mitl(1,mm) = 1 
+                 mitl(1,mm) = 1
               end do
            end if
         end if
@@ -1882,7 +1882,7 @@ c             set mglevg to upper limit consistant with new ncg
 c
       if (iver .eq. 4) then
          write(7,130)
-  130    format(6x,4hmseq,4x,6hmgflag,4x,6hiconsf,7x,3hmtt,6x,4hngam)     
+  130    format(6x,4hmseq,4x,6hmgflag,4x,6hiconsf,7x,3hmtt,6x,4hngam)
          write(7,36) mseq,mgflag,iconsf,mtt,ngam
       else
          if (iprecon .eq. 0) then
@@ -1930,7 +1930,7 @@ c
             do 150 n=1,nbli
             write(7,36)nblon(n),(nblk(ib,n),ib=1,2)
   150       continue
-         end if 
+         end if
 c
          write(7,152)
   152    format(6x,4hista,6x,4hjsta,6x,4hksta,
@@ -2004,7 +2004,7 @@ c
   162 format(2x,4hgrid,1x,5hiptyp,2x,4hista,
      .2x,4hiend,2x,4hiinc,2x,4hjsta,2x,4hjend,2x,
      .4hjinc,2x,4hksta,2x,4hkend,2x,4hkinc)
-      if (iver.eq.4 .and. ipar.gt.0 .and. 
+      if (iver.eq.4 .and. ipar.gt.0 .and.
      .   abs(nplot3d).gt.0) then
          write(7,76) 1,iplt3dtyp,0,0,0,0,0,0,0,0,0
    76    format(11i6)
@@ -2074,7 +2074,7 @@ c
             do igd=1,ngrid
                itrans = xmap( 8,1,igd)
                rfreqt = xmap( 9,1,igd)
-               xmag   = xmap(10,1,igd) 
+               xmag   = xmap(10,1,igd)
                ymag   = xmap(11,1,igd)
                zmag   = xmap(12,1,igd)
                if (itrans.gt.0) then
@@ -2189,7 +2189,7 @@ c
       do 410 int=1,ninter
       write(9,201) int,iifit(int),llimit(int),iitmax(int),mmcxie(int),
      .mmceta(int),iic0(int),iiorph(int)
-  410 continue 
+  410 continue
 c
       if (ioflag .eq. 0) then
          write(9,210)

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -74,7 +74,7 @@ c
       if (isklton.gt.0) then
         if (abs(ita).eq.2) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),1011) 
+           write(bou(nou(1),1),1011)
         else
            nou(1) = min(nou(1)+1,ibufdim)
            write(bou(nou(1),1),1012)
@@ -110,7 +110,7 @@ c
       do 250 i=1,idim1,nplq
       if( i+npl-1.gt.idim1) npl = idim1-i+1
 c
-      nvtq = npl*jdim*kdim 
+      nvtq = npl*jdim*kdim
       iwka = nvtq*20+1
       iwkb = nvtq*45+1
       iwkc = nvtq*70+1
@@ -137,7 +137,7 @@ c
      .               wk(iwkc),wk(iwkd),wk(iwke))
       end if
   702 format(' periodic matrix equation in J-direction')
-c     
+c
       call swafj(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),wk(iwkc),
      .           wk,nvtq,res,iperd,wk(iwkd),wk(iwke))
   250 continue
@@ -218,7 +218,7 @@ c
       if (iover.eq.1) call abckz(i,npl,jdim,kdim,idim,wk(iwka),wk(iwkb),
      .                           wk(iwkc),blank)
 c
-      imw = 0 
+      imw = 0
       nvmax = npl*(jdim-1)/(imw+1)
       nrec  = kdim1*(imw+1)
       call vlutr(nvmax,nvmax,nrec,1,nrec,wk(iwka),wk(iwkb),wk(iwkc),
@@ -274,7 +274,7 @@ c
       do 350 k=1,kdim1,nplq
       if (k+npl-1.gt.kdim1) npl = kdim1-k+1
 c
-      nvtq = npl*jdim*idim 
+      nvtq = npl*jdim*idim
       iwka = nvtq*20+1
       iwkb = nvtq*45+1
       iwkc = nvtq*70+1

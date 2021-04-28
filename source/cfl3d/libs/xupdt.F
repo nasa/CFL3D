@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,10 +28,10 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Update fringe points of overlapped grids with boundary
-c     values which have been interpolated from other grids to provide 
-c     the mechanism for coupling the various grids. 
+c     values which have been interpolated from other grids to provide
+c     the mechanism for coupling the various grids.
 c
-c     int_updt = 0 prevents interior (fringe) points from being 
+c     int_updt = 0 prevents interior (fringe) points from being
 c                  updated. this switch was needed with the new qout
 c                  routine of version 6 in order to match cell-center
 c                  output data with version 5
@@ -59,7 +59,7 @@ c
       isklt_sav = isklton
       isklton   = 0
 c
-c   Set index for loading into appropriate qb array 
+c   Set index for loading into appropriate qb array
 c        (1 for q, 2 for vk0,vj0,vi0, 3 for tj0,tk0,ti0)
       if (ldim .eq. 5) then
         iset=1
@@ -83,7 +83,7 @@ c
          lend = lsta+ibpntsg(nbl,1)-1
          do 11 l=lsta,lend
          do 10 ll=1,ldim
-         q(jjbg(l),kkbg(l),iibg(l),ll) = qb(ibcg(l),ll,iset) 
+         q(jjbg(l),kkbg(l),iibg(l),ll) = qb(ibcg(l),ll,iset)
    10    continue
    11    continue
          if (isklton.eq.1) then
@@ -196,4 +196,4 @@ c
  1606 format(' ','  k=kdim  chimera grid interpolation     type    0')
 c
       return
-      end 
+      end

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose: Compute diagnostics for LES-type runs.  If a 
+c     Purpose: Compute diagnostics for LES-type runs.  If a
 c     Smagorinsky-type SGS model is being used, the appropriate eddy
 c     viscosity is computed and set here.
 c     Output goes to files fort.50x, depending on myid (i.e., if 8
@@ -71,7 +71,7 @@ c
       dimension nou(nbuf)
 c
 c     les_model controls whether or not a model is used (0=no model)
-c     (for les_model=1,2,3, this can also be achieved by setting 
+c     (for les_model=1,2,3, this can also be achieved by setting
 c     corresponding cs=0 - e.g., cs_smagorinsky=0 for les_model=1)
 c     les_wallscale controls whether the Delta is scaled by van Driest near walls
 c     (Smagorinsky model only)
@@ -95,7 +95,7 @@ c
            write(bou(nou(1),1),'(''      no subgrid model'')')
          else if (les_model .eq. 1) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''      Smag model, Cs='',f10.5)') 
+           write(bou(nou(1),1),'(''      Smag model, Cs='',f10.5)')
      .      cs_smagorinsky
          else if (les_model .eq. 2) then
            nou(1) = min(nou(1)+1,ibufdim)
@@ -210,19 +210,19 @@ c             WALE model (Flow, Turb, & Combust 62:183-200 1999)
               g12=0.5*(ux(j,k,i,1)*ux(j,k,i,2) +
      +                 ux(j,k,i,2)*ux(j,k,i,5) +
      +                 ux(j,k,i,3)*ux(j,k,i,8) +
-     +                 ux(j,k,i,4)*ux(j,k,i,1) + 
+     +                 ux(j,k,i,4)*ux(j,k,i,1) +
      +                 ux(j,k,i,5)*ux(j,k,i,4) +
      +                 ux(j,k,i,6)*ux(j,k,i,7))
               g13=0.5*(ux(j,k,i,1)*ux(j,k,i,3) +
      +                 ux(j,k,i,2)*ux(j,k,i,6) +
      +                 ux(j,k,i,3)*ux(j,k,i,9) +
-     +                 ux(j,k,i,7)*ux(j,k,i,1) + 
+     +                 ux(j,k,i,7)*ux(j,k,i,1) +
      +                 ux(j,k,i,8)*ux(j,k,i,4) +
      +                 ux(j,k,i,9)*ux(j,k,i,7))
               g23=0.5*(ux(j,k,i,4)*ux(j,k,i,3) +
      +                 ux(j,k,i,5)*ux(j,k,i,6) +
      +                 ux(j,k,i,6)*ux(j,k,i,9) +
-     +                 ux(j,k,i,7)*ux(j,k,i,2) + 
+     +                 ux(j,k,i,7)*ux(j,k,i,2) +
      +                 ux(j,k,i,8)*ux(j,k,i,5) +
      +                 ux(j,k,i,9)*ux(j,k,i,8))
               g11=g11-0.3333333*(g11+g22+g33)

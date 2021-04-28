@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -136,18 +136,18 @@ c   only need to do advanced model turbulence B.C.s on finest grid
               call tensor_rotate(tursav(1,k,i,1:6),rn, rnt,tloc)
               call tensor_sym(tloc, tghost)
               call tensor_rotate(tghost,rnt,rn,tloc)
-              
+
               tj0(k,i,1:6,1) = tloc(1:6)
-              tj0(k,i,7,1)   = tursav(1,k,i,7) 
-              
+              tj0(k,i,7,1)   = tursav(1,k,i,7)
+
               call tensor_rotate(tursav(2,k,i,1:6),rn, rnt,tloc)
               call tensor_sym(tloc, tghost)
               call tensor_rotate(tghost,rnt,rn,tloc)
-              
+
               tj0(k,i,1:6,2) = tloc(1:6)
-              tj0(k,i,7,2)   = tursav(2,k,i,7) 
+              tj0(k,i,7,2)   = tursav(2,k,i,7)
            enddo
-        enddo   
+        enddo
 #   endif
       elseif(ivisc(3).ge.4 .or. ivisc(2).ge.4 .or. ivisc(1).ge.4) then
         do l=1,nummem
@@ -211,14 +211,14 @@ c   only need to do advanced model turbulence B.C.s on finest grid
             DO k=ksta,kend1
                ! get local orthogonal coordinate system of sym-plane
                ! i.e., the rotational matrix, rn
-               CALL get_n1n2n3(sj(jdim,k,i,1), 
+               CALL get_n1n2n3(sj(jdim,k,i,1),
      $                         sj(jdim,k,i,2),
      $                         sj(jdim,k,i,3),rn)
                ! rnt: the transpose of rn
                rnt(:,1) = rn(1,:)
                rnt(:,2) = rn(2,:)
                rnt(:,3) = rn(3,:)
-               
+
                ! rotate the stress tensor to the local coordinate system
                ! tloc = RNT * T  * RN
                CALL tensor_rotate(tursav(JDIM-1,k,i,1:6),rn, rnt,tloc)
@@ -226,16 +226,16 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                CALL tensor_sym(tloc, tghost)
                ! rotate the tensor back the current coordinate system
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tj0(k,i,1:6,3) = tloc(1:6)
-               tj0(k,i,7,3)   = tursav(JDIM-1,k,i,7) 
-               
+               tj0(k,i,7,3)   = tursav(JDIM-1,k,i,7)
+
                CALL tensor_rotate(tursav(JDIM-2,k,i,1:6),rn, rnt,tloc)
                CALL tensor_sym(tloc, tghost)
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tj0(k,i,1:6,4) = tloc(1:6)
-               tj0(k,i,7,4)   = tursav(JDIM-2,k,i,7) 
+               tj0(k,i,7,4)   = tursav(JDIM-2,k,i,7)
             ENDDO
          ENDDO
 #   endif
@@ -306,7 +306,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                rnt(:,1) = rn(1,:)
                rnt(:,2) = rn(2,:)
                rnt(:,3) = rn(3,:)
-               
+
                ! rotate the stress tensor to the local coordinate system
                ! tloc = RNT * T  * RN
                CALL tensor_rotate(tursav(j,1,i,1:6),rn, rnt,tloc)
@@ -314,16 +314,16 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                CALL tensor_sym(tloc, tghost)
                ! rotate the tensor back the current coordinate system
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tk0(j,i,1:6,1) = tloc(1:6)
-               tk0(j,i,7,1)   = tursav(j,1,i,7) 
-               
+               tk0(j,i,7,1)   = tursav(j,1,i,7)
+
                CALL tensor_rotate(tursav(j,2,i,1:6),rn, rnt,tloc)
                CALL tensor_sym(tloc, tghost)
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tk0(j,i,1:6,2) = tloc(1:6)
-               tk0(j,i,7,2)   = tursav(j,2,i,7) 
+               tk0(j,i,7,2)   = tursav(j,2,i,7)
             ENDDO
          ENDDO
 #   endif
@@ -351,7 +351,7 @@ c   All sections with i_specialtop_kmax1001=1 are undocumented,
 c   because they were inserted only for a particular application;
 c   they could be commented out or deleted in general, if desired.
 c   Adds the following Vtop (in terms of Uref):
-c     = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] + 
+c     = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] +
 c       vtp*{0.5*(1-erf[(x-xerf)/sigerf])}
 c   with constant crossflow: wc
 c   (note wc should be negative if input beta is positive)
@@ -375,7 +375,7 @@ c
 c
       wcont1 =  q(j,kdim-1,i,2)*sk(j,kdim,i,1) +
      .          q(j,kdim-1,i,3)*sk(j,kdim,i,2) +
-     .          q(j,kdim-1,i,4)*sk(j,kdim,i,3) + sk(j,kdim,i,5) 
+     .          q(j,kdim-1,i,4)*sk(j,kdim,i,3) + sk(j,kdim,i,5)
       wcont2 =  q(j,kdim-2,i,2)*sk(j,kdim,i,1) +
      .          q(j,kdim-2,i,3)*sk(j,kdim,i,2) +
      .          q(j,kdim-2,i,4)*sk(j,kdim,i,3) + sk(j,kdim,i,5)
@@ -383,7 +383,7 @@ c
       qk0(j,i,1,3) = q(j,kdim-1,i,1)
       if (i_specialtop_kmax1001 .eq. 1) then
         vtop=(fac*sig*a*b+(1.-fac)*a)*exp(cc-(b**2))*xmach+
-     +    vtp*(0.5*(1.-erf((xxx-xerf)/sigerf)))*xmach
+     +    vtp*(0.5*(1.-ccerf((xxx-xerf)/sigerf)))*xmach
         dudy=fac*a*(2.0*(b**2)-1.)*exp(cc-(b**2))*xmach+
      +    (1.-fac)*a*2.0/sig*b*exp(cc-(b**2))*xmach
         qk0(j,i,2,3) = q(j,kdim-1,i,2) + dz*dudy
@@ -445,7 +445,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                rnt(:,1) = rn(1,:)
                rnt(:,2) = rn(2,:)
                rnt(:,3) = rn(3,:)
-               
+
                ! rotate the stress tensor to the local coordinate system
                ! tloc = RNT * T  * RN
                CALL tensor_rotate(tursav(j,kdim-1,i,1:6),rn, rnt,tloc)
@@ -453,16 +453,16 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                CALL tensor_sym(tloc, tghost)
                ! rotate the tensor back the current coordinate system
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tk0(j,i,1:6,3) = tloc(1:6)
-               tk0(j,i,7,3)   = tursav(j,kdim-1,i,7) 
-               
+               tk0(j,i,7,3)   = tursav(j,kdim-1,i,7)
+
                CALL tensor_rotate(tursav(j,kdim-2,i,1:6),rn, rnt,tloc)
                CALL tensor_sym(tloc, tghost)
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                tk0(j,i,1:6,4) = tloc(1:6)
-               tk0(j,i,7,4)   = tursav(j,kdim-2,i,7) 
+               tk0(j,i,7,4)   = tursav(j,kdim-2,i,7)
             ENDDO
          ENDDO
 #   endif
@@ -534,7 +534,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                rnt(:,1) = rn(1,:)
                rnt(:,2) = rn(2,:)
                rnt(:,3) = rn(3,:)
-               
+
                ! rotate the stress tensor to the local coordinate system
                ! tloc = RNT * T  * RN
                CALL tensor_rotate(tursav(j,k,1,1:6),rn, rnt,tloc)
@@ -542,16 +542,16 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                CALL tensor_sym(tloc, tghost)
                ! rotate the tensor back the current coordinate system
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                ti0(j,k,1:6,1) = tloc(1:6)
-               ti0(j,k,7,1)   = tursav(j,k,1,7) 
-               
+               ti0(j,k,7,1)   = tursav(j,k,1,7)
+
                CALL tensor_rotate(tursav(j,k,i2,1:6),rn, rnt,tloc)
                CALL tensor_sym(tloc, tghost)
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                ti0(j,k,1:6,2) = tloc(1:6)
-               ti0(j,k,7,2)   = tursav(j,k,i2,7) 
+               ti0(j,k,7,2)   = tursav(j,k,i2,7)
             ENDDO
          ENDDO
 #   endif
@@ -620,14 +620,14 @@ c   only need to do advanced model turbulence B.C.s on finest grid
             DO j=jsta,jend1
                ! get local orthogonal coordinate system of sym-plane
                ! i.e., the rotational matrix, rn
-               CALL get_n1n2n3(si(j,k,idim-1,1), 
+               CALL get_n1n2n3(si(j,k,idim-1,1),
      $                         si(j,k,idim-1,2),
      $                         si(j,k,idim-1,3),rn)
                ! rnt: the transpose of rn
                rnt(:,1) = rn(1,:)
                rnt(:,2) = rn(2,:)
                rnt(:,3) = rn(3,:)
-               
+
                ! rotate the stress tensor to the local coordinate system
                ! tloc = RNT * T  * RN
                CALL tensor_rotate(tursav(j,k,idim-1,1:6),rn, rnt,tloc)
@@ -635,14 +635,14 @@ c   only need to do advanced model turbulence B.C.s on finest grid
                CALL tensor_sym(tloc, tghost)
                ! rotate the tensor back the current coordinate system
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                ti0(j,k,1:6,3) = tloc(1:6)
-               ti0(j,k,7,3)   = tursav(j,k,idim-1,7) 
-               
+               ti0(j,k,7,3)   = tursav(j,k,idim-1,7)
+
                CALL tensor_rotate(tursav(j,k,i2,1:6),rn, rnt,tloc)
                CALL tensor_sym(tloc, tghost)
                CALL tensor_rotate(tghost,rnt,rn,tloc)
-               
+
                ti0(j,k,1:6,4) = tloc(1:6)
                ti0(j,k,7,4)   = tursav(j,k,i2,7)
             ENDDO
@@ -669,11 +669,11 @@ c
       implicit none
       real, intent(in) :: x1,x2,x3
       real, intent(out) :: rn(3,3)
-      
+
       real :: dv1(3), dv2(3), dv3(3)
       real :: rm,rmin
       integer :: i_min,i
-      
+
       rn(1:3,1) = (/x1,x2,x3/)
       rm = sqrt(rn(1,1)**2+rn(2,1)**2+rn(3,1)**2)
       rn(1:3,1) = rn(1:3,1)/rm
@@ -684,7 +684,7 @@ c
             i_min = i
          endif
       enddo
-      
+
       rn(1:3,3) = 0
       rn(i_min,3) = 1.
       call cross(rn(1,1),rn(1,3),rn(1,2))
@@ -700,11 +700,11 @@ c
       implicit none
       real, intent(in) ::v1(3), v2(3)
       real, intent(out) :: v3(3)
-      
+
       v3(1) = v1(2)*v2(3) - v1(3)*v2(2)
       v3(2) = v1(3)*v2(1) - v1(1)*v2(3)
       v3(3) = v1(1)*v2(2) - v1(2)*v2(1)
-      
+
       return
       end subroutine
 
@@ -714,7 +714,7 @@ c
       real, intent(out) :: tloc(6)
 
       real :: t33(3,3),s(3,3),v(3,3)
-      
+
       t33(1,1)= t(1)
       t33(2,2)= t(2)
       t33(3,3)= t(3)
@@ -734,7 +734,7 @@ c
       v(:,1) = rnt(:,1)*s(1,1) + rnt(:,2)*s(2,1) + rnt(:,3)*s(3,1)
       v(:,2) = rnt(:,1)*s(1,2) + rnt(:,2)*s(2,2) + rnt(:,3)*s(3,2)
       v(:,3) = rnt(:,1)*s(1,3) + rnt(:,2)*s(2,3) + rnt(:,3)*s(3,3)
-      
+
       tloc(1) = v(1,1)
       tloc(2) = v(2,2)
       tloc(3) = v(3,3)
@@ -743,12 +743,12 @@ c
       tloc(6) = v(1,3)
       return
       end subroutine
-      
+
       subroutine tensor_sym(tloc, tghost)
       implicit none
       real, intent(in) :: tloc(6)
       real, intent(out):: tghost(6)
-      
+
       tghost(1) = tloc(1)
       tghost(2) = tloc(2)
       tghost(3) = tloc(3)
@@ -760,4 +760,4 @@ c
       end subroutine
 #   endif
       end
-            
+

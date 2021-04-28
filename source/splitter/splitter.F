@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose: split grid and input files
-c***********************************************************************     
+c***********************************************************************
 c
       character*120 bou(ibufdim,nbuf)
 c
@@ -656,7 +656,7 @@ c     input files without also splitting cfl3d input file
          call termn8(0,-2,ibufdim,nbuf,bou,nou)
       end if
       if (roninp.eq.'null')   ronout    = 'null'
-      if (gridin.eq.'null')   gridout   = 'null' 
+      if (gridin.eq.'null')   gridout   = 'null'
       if (sdgridin.eq.'null') then
          sdgridout = 'null'
          dovrlap   = 'null'
@@ -689,7 +689,7 @@ c
           icflin = abs(icflin)
       end if
       if (abs(icflout) .gt. 4) then
-          icflout = abs(icflout) 
+          icflout = abs(icflout)
       end if
 c
 c     open files
@@ -741,7 +741,7 @@ c           call asnfile (gridout, '-F f77 -N ieee' , IER)
          else
             open(50,file=sdgridin,form="formatted")
          end if
-         rewind 50 
+         rewind 50
       end if
       if (sdgridout .ne. 'null') then
          if (isdout .eq. 1) then
@@ -752,7 +752,7 @@ c           call asnfile (gridout, '-F f77 -N ieee' , IER)
          rewind 60
       end if
 c
-c     convert cfl3d input file (and ronnie input file, if 
+c     convert cfl3d input file (and ronnie input file, if
 c     applicable) to a tlns3d map file
 c
       write(*,'("converting unsplit cfl3d input file to ",
@@ -939,7 +939,7 @@ c     shortcut to split all blocks the same as the single block input
      .             "the dimensioned value (",i3,")")') nbl,mbloc
          call termn8(0,-3,ibufdim,nbuf,bou,nou)
       endif
-      write(*,'("  split  block  coord  index")') 
+      write(*,'("  split  block  coord  index")')
       do 500 no=1,nout
 c
       isbloc = isblocin(no)
@@ -1001,12 +1001,12 @@ c
             end if
             jdtest = (jln(n)-1)/2**nn + 1
             kdtest = (kln(n)-1)/2**nn + 1
-            if ((idtest/2*2 .eq. idtest) .or. 
+            if ((idtest/2*2 .eq. idtest) .or.
      .          (jdtest/2*2 .eq. jdtest) .or.
      .          (kdtest/2*2 .eq. kdtest)) then
                 iflg = 0
             end if
-         end do 
+         end do
          if (iflg .ne. 0) ncgmax = ncgmax + 1
       end do
 c
@@ -1028,7 +1028,7 @@ c
                if (iln(n) .gt. 2) then
                   if (idtest .le. 2) iflg = 0
                end if
-               if (jdtest .le. 2 .or. kdtest .le. 2) iflg = 0 
+               if (jdtest .le. 2 .or. kdtest .le. 2) iflg = 0
             end do
             if (iflg .ne. 0) ncgmax1 = ncgmax1 + 1
          end do
@@ -1049,14 +1049,14 @@ c
       if (gridout .ne. 'null') then
          if (ibout.eq.0) then
 c
-            if (ip3dgrd.gt.0) then   
+            if (ip3dgrd.gt.0) then
                write(40,'(i5)') nblk
                write(40,'(3i5)') (iln(n),jln(n),kln(n),n=1,nblk)
             end if
             do 130 n=1,nblk
             if (ip3dgrd.eq.0) then
                 write(40,'(3i5)') jln(n),kln(n),iln(n)
-            end if 
+            end if
             isk = iskp(n)
             jsk = jskp(n)
             ksk = kskp(n)
@@ -1205,8 +1205,8 @@ c
 c           read grid sensitivity derivatives for (unsplit) block nn
 c
                rewind(50)
-               if (isdin .eq. 0) then 
-                  read(50,*) 
+               if (isdin .eq. 0) then
+                  read(50,*)
                   read(50,*)
                   read(50,*)
                else
@@ -1221,7 +1221,7 @@ c
                   klos = klosd(mm)
                   do idv=1,ndv
                      if (isdin .eq. 0) then
-                        read(50,*) 
+                        read(50,*)
      .                  (((xdum0,i=1,ilos),j=1,jlos),k=1,klos),
      .                  (((ydum0,i=1,ilos),j=1,jlos),k=1,klos),
      .                  (((zdum0,i=1,ilos),j=1,jlos),k=1,klos)
@@ -1233,7 +1233,7 @@ c
                      end if
                   end do
                else
-                  do idv=1,ndv 
+                  do idv=1,ndv
                      if (isdin .eq. 0) then
                         read(50,*)
      .                  (x(i),i=ibeg(nn),ibeg(nn)+npts(nn)-1),

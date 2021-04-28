@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Check for branch cuts 
+c     Purpose:  Check for branch cuts
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -45,26 +45,26 @@ c
 c
       dimension x1(mdim1,ndim1),y1(mdim1,ndim1),z1(mdim1,ndim1)
       dimension jimage(msub1,mdim1,ndim1),kimage(msub1,mdim1,ndim1)
-c      
+c
 c jimage(l,j,k)...array for "from" block l (local block numbering)
 c                   which contains the j-index for the image of
 c                   the point j,k
-c kimage(l,j,k)...array for "from" block l which contains the k-index for 
+c kimage(l,j,k)...array for "from" block l which contains the k-index for
 c                   the image of the point j,k
 c
 c   The indicies of the image points found in this subroutine anticipate
-c   that 1) the (sub)grid(s) is(are) eventually to be expanded and 
-c        2) the indicies need to point to the lower left hand corner 
-c           of the image cell 
+c   that 1) the (sub)grid(s) is(are) eventually to be expanded and
+c        2) the indicies need to point to the lower left hand corner
+c           of the image cell
 c
-c     default to no branch cuts 
+c     default to no branch cuts
 c
       do 5 j=1,jmax1+1
       do 5 k=1,kmax1+1
       jimage(l,j,k) = j
-    5 kimage(l,j,k) = k  
+    5 kimage(l,j,k) = k
 c
-c     check for C-grid type branch cut on k=1 and k=kmax1 boundaries 
+c     check for C-grid type branch cut on k=1 and k=kmax1 boundaries
 c
 c     branch cuts occur only on block edges, so if search range does not
 c     include block edges, don't bother to check for cuts
@@ -75,7 +75,7 @@ c
       kcheck = 0
       do 1711 js=xie1,xie2-1
       do 1712 jq=js+1,xie2
-      delxyz = ccabs( x1(js,k)-x1(jq,k) ) 
+      delxyz = ccabs( x1(js,k)-x1(jq,k) )
      .       + ccabs( y1(js,k)-y1(jq,k) )
      .       + ccabs( z1(js,k)-z1(jq,k) )
       if (real(delxyz).lt.real(eps)) then
@@ -95,10 +95,10 @@ c
       end if
  1712 continue
  1711 continue
-      if (kcheck.eq.0) go to 10 
+      if (kcheck.eq.0) go to 10
       if (k.eq.1) then
 c
-c     correction for border points between start/end 
+c     correction for border points between start/end
 c     of branch cuts on the boundary
 c
       do 1811 j=xie1+1,xie2-1
@@ -124,7 +124,7 @@ c
 c
       if (k.eq.kmax1) then
 c
-c     correction for border points between start/end 
+c     correction for border points between start/end
 c     of branch cuts on the boundary
 c
       do 1812 j=xie1+1,xie2-1
@@ -162,7 +162,7 @@ c
       jcheck = 0
       do 2712 ks=eta1,eta2-1
       do 2711 kq=ks+1,eta2
-      delxyz = ccabs( x1(j,ks)-x1(j,kq) ) 
+      delxyz = ccabs( x1(j,ks)-x1(j,kq) )
      .       + ccabs( y1(j,ks)-y1(j,kq) )
      .       + ccabs( z1(j,ks)-z1(j,kq) )
       if (real(delxyz).lt.real(eps)) then
@@ -186,7 +186,7 @@ c
       if (jcheck.eq.0) go to 20
       if (j.eq.1) then
 c
-c     correction for border points between start/end 
+c     correction for border points between start/end
 c     of branch cuts on the boundary
 c
       do 2811 k=eta1+1,eta2-1
@@ -212,7 +212,7 @@ c
 c
       if (j.eq.jmax1) then
 c
-c     correction for border points between start/end 
+c     correction for border points between start/end
 c     of branch cuts on the boundary
 c
       do 2812 k=eta1+1,eta2-1
@@ -249,7 +249,7 @@ c
       if (eta1.gt.1 .and. eta2.lt.kmax1) go to 31
 c
       do 30 j=xie1,xie2
-      delxyz = ccabs( x1(j,1)-x1(j,kmax1) ) 
+      delxyz = ccabs( x1(j,1)-x1(j,kmax1) )
      .       + ccabs( y1(j,1)-y1(j,kmax1) )
      .       + ccabs( z1(j,1)-z1(j,kmax1) )
       if (real(delxyz).lt.real(eps)) jcount = jcount+1
@@ -269,10 +269,10 @@ c
          jimage(l,j,kmax1+1) = j
          kimage(l,j,kmax1+1) = 2
    35    continue
-      end if  
+      end if
 c
-   31 continue    
-c     
+   31 continue
+c
 c     check for O-grid type branch cut on j=1 and j=jmax1 boundaries
 c
       kcount = 0
@@ -283,7 +283,7 @@ c
       if (xie1.gt.1 .and. xie2.lt.jmax1) go to 41
 c
       do 40 k=eta1,eta2
-      delxyz = ccabs( x1(1,k)-x1(jmax1,k) ) 
+      delxyz = ccabs( x1(1,k)-x1(jmax1,k) )
      .       + ccabs( y1(1,k)-y1(jmax1,k) )
      .       + ccabs( z1(1,k)-z1(jmax1,k) )
       if (real(delxyz).lt.real(eps)) kcount = kcount+1
@@ -303,7 +303,7 @@ c
          jimage(l,jmax1+1,k) = 2
          kimage(l,jmax1+1,k) = k
    45    continue
-      end if      
+      end if
 c
    41 continue
 c
@@ -320,7 +320,7 @@ c
       do 52 k=eta1+1,eta2
       if (jimage(l,j,k).eq.j .or. kimage(l,j,k).ne.k) iflago = 1
    52 continue
-      if (iflag.ne.0 .and. iflago.eq.0 .and. isklt1.gt.0) then 
+      if (iflag.ne.0 .and. iflago.eq.0 .and. isklt1.gt.0) then
          nou(4) = min(nou(4)+1,ibufdim)
          write(bou(nou(4),4),101)jpr
       end if
@@ -349,11 +349,11 @@ c
       end if
   201 format(' ','     k=',i3,' is an O-type (periodic)',
      .       ' branch cut boundary')
-      if (iflag.ne.0 .and. iflago.ne.0 .and. isklt1.gt.0) then 
+      if (iflag.ne.0 .and. iflago.ne.0 .and. isklt1.gt.0) then
          nou(4) = min(nou(4)+1,ibufdim)
          write(bou(nou(4),4),202) kpr
       end if
   202 format(' ','     k=',i3,' is a C-type branch cut boundary')
    60 continue
       return
-      end 
+      end

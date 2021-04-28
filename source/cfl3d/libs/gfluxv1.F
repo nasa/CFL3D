@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,8 +28,8 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Calculate right-hand residual contributions in the 
-c     J-direction due to the viscous terms missing in the thin-layer 
+c     Purpose:  Calculate right-hand residual contributions in the
+c     J-direction due to the viscous terms missing in the thin-layer
 c     formulation.
 c***********************************************************************
 c
@@ -114,14 +114,14 @@ c
       do 10 ipl=1,npl
       ii  = i+ipl-1
       do 50 j=1,jdim1
-      jkv = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
+      jkv = (j-1)*npl*kdim1 + (ipl-1)*kdim1
 cdir$ ivdep
       do 1002 k=1,kdim1
       t(k+jkv,22) = q(j,k,ii,1)
       t(k+jkv,18) = q(j,k,ii,2)
       t(k+jkv,19) = q(j,k,ii,3)
       t(k+jkv,20) = q(j,k,ii,4)
-      t(k+jkv,16) = q(j,k,ii,5) 
+      t(k+jkv,16) = q(j,k,ii,5)
  1002 continue
    50 continue
    10 continue
@@ -169,8 +169,8 @@ cdir$ ivdep
       do 7005 izz=1,n
       t(izz,17) = 0.5e0*(t(izz,18)*t(izz,18)
      .                  +t(izz,19)*t(izz,19)
-     .                  +t(izz,20)*t(izz,20)) 
-      t(izz,1)  = 1.e0/t(izz,22) 
+     .                  +t(izz,20)*t(izz,20))
+      t(izz,1)  = 1.e0/t(izz,22)
       t(izz,16) = gpr*t(izz,16)*t(izz,1)/gm1
  7005 continue
       do 2121 m=0,10,10
@@ -179,7 +179,7 @@ cdir$ ivdep
       wj0(izz,m+7) = 0.5e0*(wj0(izz,m+8)*wj0(izz,m+8)
      .                     +wj0(izz,m+9)*wj0(izz,m+9)
      .                     +wj0(izz,m+10)*wj0(izz,m+10))
-      wj0(izz,m+1)  = 1.e0/wj0(izz,m+12) 
+      wj0(izz,m+1)  = 1.e0/wj0(izz,m+12)
       wj0(izz,m+6) = gpr*wj0(izz,m+6)*wj0(izz,m+1)/gm1
  1005 continue
  2121 continue
@@ -194,7 +194,7 @@ c
 cdir$ ivdep
       do 1006 izz=1,n
       t5       = gm1pr*t(izz,16)
-      t6       = sqrt(t5) 
+      t6       = sqrt(t5)
       t(izz,7) = c2bp*t5*t6/(c2b+t5)
  1006 continue
 c
@@ -214,12 +214,12 @@ cdir$ ivdep
       ab=1.+wj0(izz,5)
       bb=1.-wj0(izz,5)
       wj05        = gm1pr*0.5*(ab*wj0(izz,6)+bb*t(izz,16))
-      wj06        = sqrt(wj05) 
+      wj06        = sqrt(wj05)
       t(izz,14)   = c2bp*wj05*wj06/(c2b+wj05)
       ab=1.+wj0(izz,15)
       bb=1.-wj0(izz,15)
       wj05        = gm1pr*0.5*(ab*wj0(izz,16)+bb*t(izz+n-kv,16))
-      wj06        = sqrt(wj05) 
+      wj06        = sqrt(wj05)
       t(izz+n,14) = c2bp*wj05*wj06/(c2b+wj05)
  1008 continue
 c
@@ -232,20 +232,20 @@ c
       do 200 ipl=1,npl
       ii  = i+ipl-1
       do 200 j=1,jdim
-      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
-      if (j.eq.1) then 
+      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1
+      if (j.eq.1) then
 c     inverse volume at j=0 interface
-         do 7013 k=1,kdim1 
+         do 7013 k=1,kdim1
          t(k+jkv,15) = 2./(volj0(k,ii,1)+vol(1,k,ii))
  7013    continue
-      else if (j.eq.jdim) then 
+      else if (j.eq.jdim) then
 c     inverse volume at j=jdim interface
-         do 7113 k=1,kdim1 
+         do 7113 k=1,kdim1
          t(k+jkv,15) = 2./(volj0(k,ii,3)+vol(jdim1,k,ii))
  7113    continue
       else
 c     inverse volume at interior interfaces
-         do 1013 k=1,kdim1 
+         do 1013 k=1,kdim1
          t(k+jkv,15) = 2./(vol(j,k,ii)+vol(j-1,k,ii))
  1013    continue
       end if
@@ -258,8 +258,8 @@ c  t(25) : d(eta)/dx
 c  t(26) : d(eta)/dy
 c  t(27) : d(eta)/dz
 c
-       do 1014 k=1,kdim1 
-       t1          =  sj(j,k,ii,4)*t(k+jkv,15) 
+       do 1014 k=1,kdim1
+       t1          =  sj(j,k,ii,4)*t(k+jkv,15)
        t(k+jkv,25) =  sj(j,k,ii,1)*t1
        t(k+jkv,26) =  sj(j,k,ii,2)*t1
        t(k+jkv,27) =  sj(j,k,ii,3)*t1
@@ -267,9 +267,9 @@ c
   200 continue
 c
 c t(28)  - t(30) : Components of grad (zeta)
-c grad(zeta) = 1/4 [(sk(j,k,i,l)*sk(j,k,i,4) + sk(j-1,k,i,l)*sk(j-1,k,i,4) + 
+c grad(zeta) = 1/4 [(sk(j,k,i,l)*sk(j,k,i,4) + sk(j-1,k,i,l)*sk(j-1,k,i,4) +
 c sk(j,k+1,i,l)*sk(j,k+1,i,4) + sk(j-1,k+1,i,l)*sk(j-1,k+1,i,4)] /V_int,
-c j=1,jdim , k=1,kdim1, i=1,npl, l =1,3.  At the boundaries in j, 
+c j=1,jdim , k=1,kdim1, i=1,npl, l =1,3.  At the boundaries in j,
 c since we don't have sk's, we assume that them to be equal to the interior one.
 c
 c Note: the code for j=1 is obtained from the general case by substituting
@@ -278,8 +278,8 @@ c
       do 210 ipl=1,npl
       ii  = i+ipl-1
       do 210 j=1,jdim
-      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
-      if (j.eq.1) then 
+      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1
+      if (j.eq.1) then
        do 204 k = 1,kdim1
         t(jkv+k,28) = 0.25*t(k+jkv,15)*(sk(j,k,ii,1)*sk(j,k,ii,4)
      .              + sk(j,k,ii,1)*sk(j,k,ii,4)
@@ -333,7 +333,7 @@ c
 c t(31),t(32),t(2)  : Components of grad (xie)
 c grad(xie) = 1/4 [(si(j,k,i,l)*si(j,k,i,4) + si(j-1,k,i,l)*si(j-1,k,i,4) +
 c si(j,k,i+1,l)*si(j,k,i+1,4) + si(j-1,k,i+1,l)*si(j-1,k,i+1,4)] /V_int,
-c j=1,jdim , k=1,kdim1, i=1,npl,l = 1,3.  At the boundaries in j, 
+c j=1,jdim , k=1,kdim1, i=1,npl,l = 1,3.  At the boundaries in j,
 c since we don't have si's, we assume that them to be equal to the interior one.
 c
 c Note: the code for j=1 is obtained from the general case by substituting
@@ -342,8 +342,8 @@ c
       do 220 ipl=1,npl
       ii  = i+ipl-1
       do 220 j=1,jdim
-      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
-      if (j.eq.1) then 
+      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1
+      if (j.eq.1) then
        do 214 k = 1,kdim1
         t(jkv+k,31) = 0.25*t(k+jkv,15)*(si(j,k,ii,1)*si(j,k,ii,4)
      .              + si(j,k,ii,1)*si(j,k,ii,4)
@@ -397,7 +397,7 @@ c
 c
 c******************************************************************************
 c
-c   gradients at cell interfaces (needed for full ns terms). Note that 
+c   gradients at cell interfaces (needed for full ns terms). Note that
 c  we don't need derivatives in eta direction, because they have already
 c  been accounted for in gfluxv.
 c  Recall bck=0 => cell data, bck=1 => face data
@@ -417,13 +417,13 @@ c
 c
       if (j.eq.1) then
 c
-c replace (j-1) data by boundary data 
+c replace (j-1) data by boundary data
 c for missing data at corners use one-sided differencing of known boundary values
 c
         do 225 k = 1,kdim1
           if (k. eq. 1) then
 c
-c replace (k-1) data by boundary data 
+c replace (k-1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       q(j,k+1,ii,5)/q(j,k+1,ii,1) -
@@ -463,7 +463,7 @@ c
 
           else if (k .eq. kdim1) then
 c
-c replace (k+1) data by boundary data 
+c replace (k+1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,5,3)/qk0(j,ii,1,3) -
@@ -482,7 +482,7 @@ c
      .       2.*bcj(k,ii,1)*q(j,k,ii,2) -
      .       2.*(1.+bcj(k-1,ii,1))*qj0(k-1,ii,2,1) +
      .       2.*bcj(k-1,ii,1)*q(j,k-1,ii,2) )
- 
+
            t(jkv+k,5) = 0.25*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,3,3) -
      .       bck(j,ii,2)*q(j,k,ii,3) -
@@ -500,7 +500,7 @@ c
      .       2.*bcj(k,ii,1)*q(j,k,ii,4) -
      .       2.*(1.+bcj(k-1,ii,1))*qj0(k-1,ii,4,1) +
      .       2.*bcj(k-1,ii,1)*q(j,k-1,ii,4) )
- 
+
           else
 c
 c-- general case for j = 1
@@ -547,7 +547,7 @@ c
         do 227 k = 1,kdim1
           if (k. eq. 1) then
 c
-c replace (k-1) data by boundary data 
+c replace (k-1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       2.*(1.+bcj(k+1,ii,2))*qj0(k+1,ii,5,3)/qj0(k+1,ii,1,3) -
@@ -575,7 +575,7 @@ c
      .       q(j-1,k+1,ii,3) -
      .       (1.+bck(j-1,ii,1))*qk0(j-1,ii,3,1) +
      .       bck(j-1,ii,1)*q(j-1,k,ii,3) )
- 
+
            t(jkv+k,6) = 0.25*(
      .       2.*(1.+bcj(k+1,ii,2))*qj0(k+1,ii,4,3) -
      .       2.*bcj(k+1,ii,2)*q(j-1,k+1,ii,4) -
@@ -587,7 +587,7 @@ c
 
           else if (k .eq. kdim1) then
 c
-c replace (k+1) data by boundary data 
+c replace (k+1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       2.*(1.+bcj(k,ii,2))*qj0(k,ii,5,3)/qj0(k,ii,1,3) -
@@ -606,7 +606,7 @@ c
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,2,3) -
      .       bck(j-1,ii,2)*q(j-1,k,ii,2) -
      .       q(j-1,k-1,ii,2) )
- 
+
            t(jkv+k,5) = 0.25*(
      .       2.*(1.+bcj(k,ii,2))*qj0(k,ii,3,3) -
      .       2.*bcj(k,ii,2)*q(j-1,k,ii,3) -
@@ -615,7 +615,7 @@ c
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,3,3) -
      .       bck(j-1,ii,2)*q(j-1,k,ii,3) -
      .       q(j-1,k-1,ii,3) )
- 
+
            t(jkv+k,6) = 0.25*(
      .       2.*(1.+bcj(k,ii,2))*qj0(k,ii,4,3) -
      .       2.*bcj(k,ii,2)*q(j-1,k,ii,4) -
@@ -624,7 +624,7 @@ c
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,4,3) -
      .       bck(j-1,ii,2)*q(j-1,k,ii,4) -
      .       q(j-1,k-1,ii,4) )
- 
+
           else
 c
 c-- general case for j = jdim
@@ -636,7 +636,7 @@ c
      .       bcj(k-1,ii,2)*q(j-1,k-1,ii,5)/q(j-1,k-1,ii,1) +
      .       q(j-1,k+1,ii,5)/q(j-1,k+1,ii,1)-
      .       q(j-1,k-1,ii,5)/q(j-1,k-1,ii,1) )
- 
+
            t(jkv+k,4) = 0.25*(
      .       (1.+bcj(k+1,ii,2))*qj0(k+1,ii,2,3) -
      .       bcj(k+1,ii,2)*q(j-1,k+1,ii,2) -
@@ -652,7 +652,7 @@ c
      .       bcj(k-1,ii,2)*q(j-1,k-1,ii,3) +
      .       q(j-1,k+1,ii,3)-
      .       q(j-1,k-1,ii,3) )
- 
+
            t(jkv+k,6) = 0.25*(
      .       (1.+bcj(k+1,ii,2))*qj0(k+1,ii,4,3) -
      .       bcj(k+1,ii,2)*q(j-1,k+1,ii,4) -
@@ -669,7 +669,7 @@ c
         do 229 k = 1,kdim1
           if (k. eq. 1) then
 c
-c replace (k-1) data by boundary data 
+c replace (k-1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       q(j,k+1,ii,5)/q(j,k+1,ii,1) -
@@ -678,7 +678,7 @@ c
      .       q(j-1,k+1,ii,5)/ q(j-1,k+1,ii,1) -
      .       (1.+bck(j-1,ii,1))*qk0(j-1,ii,5,1)/qk0(j-1,ii,1,1) +
      .       bck(j-1,ii,1)*q(j-1,k,ii,5)/q(j-1,k,ii,1) )
- 
+
            t(jkv+k,4) = 0.25*(
      .       q(j,k+1,ii,2) -
      .       (1.+bck(j,ii,1))*qk0(j,ii,2,1) +
@@ -705,38 +705,38 @@ c
 
           else if (k .eq. kdim1) then
 c
-c replace (k+1) data by boundary data 
+c replace (k+1) data by boundary data
 c
            t(jkv+k,3) = 0.25*gprgm1*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,5,3)/qk0(j,ii,1,3) -
-     .       bck(j,ii,2)*q(j,k,ii,5)/q(j,k,ii,1) - 
+     .       bck(j,ii,2)*q(j,k,ii,5)/q(j,k,ii,1) -
      .       q(j,k-1,ii,5)/ q(j,k-1,ii,1)  +
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,5,3)/qk0(j-1,ii,1,3) -
-     .       bck(j-1,ii,2)*q(j-1,k,ii,5)/q(j-1,k,ii,1) - 
+     .       bck(j-1,ii,2)*q(j-1,k,ii,5)/q(j-1,k,ii,1) -
      .       q(j-1,k-1,ii,5)/q(j-1,k-1,ii,1) )
 
            t(jkv+k,4) = 0.25*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,2,3) -
-     .       bck(j,ii,2)*q(j,k,ii,2) - 
+     .       bck(j,ii,2)*q(j,k,ii,2) -
      .       q(j,k-1,ii,2) +
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,2,3) -
-     .       bck(j-1,ii,2)*q(j-1,k,ii,2) - 
+     .       bck(j-1,ii,2)*q(j-1,k,ii,2) -
      .       q(j-1,k-1,ii,2) )
 
            t(jkv+k,5) = 0.25*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,3,3) -
-     .       bck(j,ii,2)*q(j,k,ii,3) - 
+     .       bck(j,ii,2)*q(j,k,ii,3) -
      .       q(j,k-1,ii,3)  +
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,3,3) -
-     .       bck(j-1,ii,2)*q(j-1,k,ii,3) - 
+     .       bck(j-1,ii,2)*q(j-1,k,ii,3) -
      .       q(j-1,k-1,ii,3) )
 
            t(jkv+k,6) = 0.25*(
      .       (1.+bck(j,ii,2))*qk0(j,ii,4,3) -
-     .       bck(j,ii,2)*q(j,k,ii,4) - 
+     .       bck(j,ii,2)*q(j,k,ii,4) -
      .       q(j,k-1,ii,4)  +
      .       (1.+bck(j-1,ii,2))*qk0(j-1,ii,4,3) -
-     .       bck(j-1,ii,2)*q(j-1,k,ii,4) - 
+     .       bck(j-1,ii,2)*q(j-1,k,ii,4) -
      .       q(j-1,k-1,ii,4) )
           else
 c
@@ -759,14 +759,14 @@ c
             t(jkv+k,6) = 0.25*(
      .        q(j,k+1,ii,4)   - q(j,k-1,ii,4) +
      .        q(j-1,k+1,ii,4) - q(j-1,k-1,ii,4) )
- 
+
           end if
   229   continue
       end if
   230 continue
 c******************************************************************************
 c
-c   gradients at cell interfaces (needed for full ns terms). Note that 
+c   gradients at cell interfaces (needed for full ns terms). Note that
 c  we don't need derivatives in eta direction, because they have already
 c  been accounted for in gfluxv.
 c  Recall bci=0 => cell data, bci=1 => face data
@@ -1200,7 +1200,7 @@ c
 cdir$ ivdep
       do 1022 izz=1,l0
 c  ratio of turbulent to laminar viscosity
-      t25       = t(izz,24)/t(izz,14) 
+      t25       = t(izz,24)/t(izz,14)
       t24       = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
@@ -1255,7 +1255,7 @@ cdir$ ivdep
       do 1026 izz=1,l0
 c
 c-- form ux, uy, uz, vx, vy, vz, wx, wy, wz, tx, ty and tz
-c   excluding contributions in j/eta direction (already accounted for in 
+c   excluding contributions in j/eta direction (already accounted for in
 c   thin-layer approximation. Note that t = c*c/(gm1*pr)
 c
        ux = t(izz,4)*t(izz,28) + t(izz,8)*t(izz,31)
@@ -1274,30 +1274,30 @@ c
        ty = t(izz,3)*t(izz,29) + t(izz,7)*t(izz,32)
        tz = t(izz,3)*t(izz,30) + t(izz,7)*t(izz,2)
 c
-c--  Note lambda = -2/3 mu, lambda + 2 mu = 4/3 mu 
-c--  u-momentum flux 
-c 
+c--  Note lambda = -2/3 mu, lambda + 2 mu = 4/3 mu
+c--  u-momentum flux
+c
       t(izz,16)      = t(izz,14)*(  t(izz,25)*(4./3.*ux-2./3.*(vy + wz))
-     .                            + t(izz,26)*(uy + vx) 
-     .                            + t(izz,27)*(uz + wx)) 
+     .                            + t(izz,26)*(uy + vx)
+     .                            + t(izz,27)*(uz + wx))
 
 c
-c--  v-momentum flux 
+c--  v-momentum flux
 c
       t(izz,17)      = t(izz,14)*(  t(izz,25)*(vx + uy)
      .                            + t(izz,26)*(4./3.*vy-2./3.*(ux + wz))
-     .                            + t(izz,27)*(vz + wy)) 
+     .                            + t(izz,27)*(vz + wy))
 
 c
-c--  w-momentum flux 
-c 
+c--  w-momentum flux
+c
       t(izz,18)      = t(izz,14)*(  t(izz,25)*(wx+uz)
      .                            + t(izz,26)*(wy+vz)
      .                            + t(izz,27)*(4./3.*wz-2./3.*(vy+ux)))
 c
 c--  energy flux
-c 
-      t(izz,19) = t(izz,14)*( 
+c
+      t(izz,19) = t(izz,14)*(
      .              t(izz,25)*((4./3.*ux - 2./3*(vy+wz))*t(izz,11) +
      .                         (uy+vx)*t(izz,12) + (uz+wx)*t(izz,13)) +
      .              t(izz,26)*((vx+uy)*t(izz,11) + (vz+wy)*t(izz,13) +
@@ -1305,7 +1305,7 @@ c
      .              t(izz,27)*((wx+uz)*t(izz,11) + (wy+vz)*t(izz,12) +
      .                         (4./3.*wz - 2./3*(ux+vy))*t(izz,13))  +
      .          t(izz,23)*(t(izz,25)*tx + t(izz,26)*ty + t(izz,27)*tz))
-c   
+c
  1026 continue
 c  (-)viscous flux =  Gv(j-1/2)-Gv(j+1/2)
 cdir$ ivdep
@@ -1337,4 +1337,4 @@ cdir$ ivdep
  1030 continue
   400 continue
       return
-      end 
+      end

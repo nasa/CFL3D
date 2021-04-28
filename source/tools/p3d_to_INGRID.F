@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -39,7 +39,7 @@ c
 c
 c     set file defaults:
 c
-c     input grid file(s) is plot3d type 
+c     input grid file(s) is plot3d type
       ip3d = 0
 c
 c     input grid file(s) is unformatted
@@ -57,7 +57,7 @@ c
       write(6,'(''do you wish to use these defaults (y/n)?'')')
       write(6,'(''   (alternate options include formatted'')')
       write(6,'(''   files and cfl3d-type input grid files)'')')
-      read(5,'(a1)') yesno 
+      read(5,'(a1)') yesno
       if (yesno .eq. 'n' .or. yesno .eq. 'N') then
          write(6,*)
          write(6,'(''enter 0 to convert plot3d-type grids'')')
@@ -119,7 +119,7 @@ c
      .             ''can be converted at a time'')')
       end if
       read(5,*) nfiles
-      if (iouttyp.eq.1 .and. nfiles.gt.1) then 
+      if (iouttyp.eq.1 .and. nfiles.gt.1) then
          write(6,'(''sorry...will only process 1 file'')')
          nfiles = 1
       end if
@@ -157,7 +157,7 @@ c
             write(6,'(''enter 1 if a multiple-grid plot3d file'')')
             read(5,*) img
          else
-            if (ibin_in .eq. 0) then 
+            if (ibin_in .eq. 0) then
                write(6,'(''input name of unformatted cfl3d grid '',
      .                   ''file to read (up to 80 characters)'')')
             else
@@ -344,7 +344,7 @@ c
          if (ibin_out .eq. 0) then
             write(2) ngrid
             if (iswap .eq. 0) then
-               if (i2d .eq. 0) then 
+               if (i2d .eq. 0) then
                   write(2) (ldim(n)+iadd,jdim(n)+iadd,kdim(n)+iadd,
      .                      n=1,ngrid)
                else
@@ -465,13 +465,13 @@ c
 c
 c           create augmented cell-center grid
 c
-c           irind = 0...augmented "rind" cells correspond to 
+c           irind = 0...augmented "rind" cells correspond to
 c                       cell-face centers on original block boundaries.
 c                       this implies that the physical domain of the
-c                       augmented grid is exactly the same as the 
+c                       augmented grid is exactly the same as the
 c                       original grid.
-c                   1...augmented "rind" cells are extrapolated from 
-c                       interior cell centers, and therefore extend 
+c                   1...augmented "rind" cells are extrapolated from
+c                       interior cell centers, and therefore extend
 c                       outside of the original block boundaries.
 c                       this is the method used on PEGSUS 4.2, but
 c                       Stu Rogers and I decided that this could lead
@@ -496,7 +496,7 @@ c
                   end do
                end do
             end do
-               
+
          end if
 c
          jd1 = jd+iadd
@@ -504,7 +504,7 @@ c
          ld1 = ld+iadd
 c
          if (iouttyp .eq. 0) then
-            write(6,'(''writing zone '',i4,'' with name '',a40)') 
+            write(6,'(''writing zone '',i4,'' with name '',a40)')
      .      n,string
          else
             write(6,'(''writing zone '',i4)') n
@@ -572,7 +572,7 @@ c
 c
       subroutine cellcen(x,y,z,xcc,ycc,zcc,lmax,jmax,kmax,
      .                   jd,kd,ld,irind)
-c***************************************************************** 
+c*****************************************************************
 c     Purpose: find the cell centers (xcc,ycc,zcc) of the grid
 c     (x,y,z) and augment those with a "rind" layer of cells that
 c     corresponds either to cell-face centers or cell centers
@@ -581,7 +581,7 @@ c
 c     irind = 0...rind layer is cell-face center
 c             1...rind layer is extrapolated from interior
 c                 cell-centers
-c***************************************************************** 
+c*****************************************************************
 c
       dimension x(lmax,jmax,kmax),y(lmax,jmax,kmax),
      .          z(lmax,jmax,kmax),
@@ -589,8 +589,8 @@ c
      .          zcc(lmax,jmax,kmax)
 c
 c     interior cell centers
-c 
-      do k=1,kd-1 
+c
+      do k=1,kd-1
          kk = k+1
          do j=1,jd-1
             jj = j+1
@@ -865,7 +865,7 @@ c
                   l2 = 2
                   if (l.eq.ld+1) then
                      l1 = -1
-                     l2 = -2 
+                     l2 = -2
                   end if
                   dx1 = xcc(l,j+j1,k) - xcc(l,j+j2,k)
                   dy1 = ycc(l,j+j1,k) - ycc(l,j+j2,k)
@@ -946,7 +946,7 @@ c
                   if (l.eq.ld+1) then
                      l1 = -1
                      l2 = -2
-                  end if         
+                  end if
                   dx1 = xcc(l+l1,j,k) - xcc(l+l2,j,k)
                   dy1 = ycc(l+l1,j,k) - ycc(l+l2,j,k)
                   dz1 = zcc(l+l1,j,k) - zcc(l+l2,j,k)
@@ -974,5 +974,5 @@ c
 c
       end if
 c
-      return 
+      return
       end

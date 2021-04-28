@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -33,19 +33,19 @@ c***********************************************************************
 c     Purpose:  Compute turbulent viscosity distributions using
 c     Baldwin-Lomax two-layer eddy-viscosity model.
 c***********************************************************************
-c 
-c     coding history  :  V.N.Vatsa of Langley (June-1984) 
+c
+c     coding history  :  V.N.Vatsa of Langley (June-1984)
 c                        J.L. Thomas          (Dec -1987)
-c 
-c      input arrays   : 
+c
+c      input arrays   :
 c       q             : primitive variables at cell centers
 c                       (rho,u,v,w,p)
 c       vor           : vorticity magnitude at cell centers
-c       snj0,snjm     : directed distance from j=0,max wall 
+c       snj0,snjm     : directed distance from j=0,max wall
 c                        of cell-centers
-c       snk0,snkm     : directed distance from k=0,max wall 
+c       snk0,snkm     : directed distance from k=0,max wall
 c                        of cell-centers
-c       sni0,snim     : directed distance from i=0,max wall 
+c       sni0,snim     : directed distance from i=0,max wall
 c                       of cell-centers
 c      output arrays  :
 c       vist3d        : total eddy viscosity at cell centers
@@ -77,8 +77,8 @@ c      one-dimensional scratch arrays
 c
       dimension eomui(inmx),fbl(inmx),rhon(inmx),amun(inmx),vortn(inmx),
      .           disn(inmx),utot(inmx),eomuo(inmx),damp(inmx)
-c 
-      data aplus/26.e0/,ccp/1.6e0/,ckleb/.3e0/,cwk/1.0e0/,vk/.4e0/, 
+c
+      data aplus/26.e0/,ccp/1.6e0/,ckleb/.3e0/,cwk/1.0e0/,vk/.4e0/,
      .          clauser/.0168e0/
 c
       common /degshf/ ideg(3)
@@ -114,20 +114,20 @@ c                           =0 none
 c                           =1 print length scale parameters
 c                           =2 print above and profile data
 c
-c      ilfreq1, ilfreq2   : frequency at which length scales are output 
+c      ilfreq1, ilfreq2   : frequency at which length scales are output
 c                           in each of the two tangential directions
 c
-c      ipfreq1, ipfreq2   : frequency at which profile data are output 
+c      ipfreq1, ipfreq2   : frequency at which profile data are output
 c                           in each of the two tangential directions
 c
 c                           where 1,2 denote: j,i  for k=0 viscous layer
-c                          
+c
 c                                             k,i  for j=0 viscous layer
-c             
+c
 c                                             j,k  for i=0 viscous layer
 c
 c                           e.q. for k=0 viscous layer, ilfreq1=1,ilfreq2=5,
-c                           ipfreq1=10 ipfreq2=20 will print length scales 
+c                           ipfreq1=10 ipfreq2=20 will print length scales
 c                           for all j stations at i=5,10,15,20..., and velocity
 c                           profiles for every tenth j station at i=20,40,60...
 c
@@ -144,8 +144,8 @@ c
       kdim1 = kdim-1
       idim1 = idim-1
 c
-      aplusi = 1.e0/aplus 
-      xmi    = 1.e0/xmach 
+      aplusi = 1.e0/aplus
+      xmi    = 1.e0/xmach
       ckout  = reue*xmi*clauser*ccp
       c2b    = cbar/tinf
       c2bp   = c2b+1.e0
@@ -157,7 +157,7 @@ c
 c     ifit  = 1 for curve fit of f near infmax to improve fmax location
 c     ifit  = 0 take fmax as largest descrete value of f(in) (no curve fit)
       ifit  = 0
-c 
+c
 c   determine which walls to use, based on bcj,bck,bci
       ibcjmin=0
       ibcjmax=0
@@ -184,10 +184,10 @@ c   determine which walls to use, based on bcj,bck,bci
       enddo
       enddo
       if (ivisc(3) .gt. 1) then
-c*************************************************************** 
-c      evaluate turbulent viscosity along normal to k=0 wall 
-c***************************************************************  
-c 
+c***************************************************************
+c      evaluate turbulent viscosity along normal to k=0 wall
+c***************************************************************
+c
 c   defaults to using min face for distance if neither min nor max contains wall
       if (ibckmin.eq.1 .or. ibckmax.eq.0) then
 c
@@ -208,7 +208,7 @@ c
  1526 format(34h   Degani-Schiff option turned off)
 c
 c      loop through i stations
-c 
+c
       if (inmx.lt.kdim) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),9)inmx,kdim
@@ -220,11 +220,11 @@ c
       do 1000 i=1,idim1
 c
 c      loop through j stations
-c 
+c
       do 1000 j=1,jdim1
-c 
+c
 c     create working arrays in K-direction
-c 
+c
 c      bound turbulent region
 c
       kloop  = .80*kdim
@@ -242,7 +242,7 @@ c
 c
 c     Chimera scheme modification....limit upper bound of search region to
 c     the lower edge of a hole.  If hole extends to lower search bound, set
-c     eddy viscosity to zero at all points this station.  
+c     eddy viscosity to zero at all points this station.
 c
       if (iover.eq.1) then
          if (real(blank(j,in1,i)) .eq. 0.) then
@@ -254,7 +254,7 @@ c
                if (ihead.eq.0) then
                   nou(3) = min(nou(3)+1,ibufdim)
                   write(bou(nou(3),3),1409)
-               end if   
+               end if
                nou(3) = min(nou(3)+1,ibufdim)
                write(bou(nou(3),3),1408) j,i
  1408          format(i9,i5,5x,34hskipping eddy viscosity evaluation,
@@ -270,15 +270,15 @@ c
          in21 = in
  1523    continue
  1524    continue
-         in2 = in21    
-      end if 
+         in2 = in21
+      end if
 c
-c      viscosity thru sutherland relation at cell centers 
+c      viscosity thru sutherland relation at cell centers
 c
 cdir$ ivdep
       do 9108 k=1,kloop1
       t5         =  gamma*q(j,k,i,5)/q(j,k,i,1)
-      t6         =  sqrt(t5) 
+      t6         =  sqrt(t5)
       amun (k+1) =  c2bp*t5*t6/(c2b+t5)
  9108 continue
 cdir$ ivdep
@@ -312,13 +312,13 @@ c
 c
       vortn(1) = (utot(2)-utot(1))/disn(2)
       end if
-c 
+c
 c     convenient groupings and initial values at k=1
-c 
-      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) ) 
-      yplusoy = sqrt(yplusoy)*aplusi 
+c
+      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) )
+      yplusoy = sqrt(yplusoy)*aplusi
       yplus   = yplusoy*disn(2)*aplus*2.0
-c 
+c
       if (real(bck(j,i,1)) .eq. 0.) then
 c        wake damping
          term     = 1.-exp(-50.e0)
@@ -326,7 +326,7 @@ c        wake damping
          damp(in) = term
  9111    continue
       else
-c        wall damping 
+c        wall damping
          do 9112 in=2,inmax
          if (iwall .eq. 0) then
             term = yplusoy*disn(in)*sqrt(rhon(in)/rhon(1))*
@@ -334,7 +334,7 @@ c        wall damping
          else
             term = yplusoy*disn(in)
          end if
-         damp(in) = 1.0e0 -exp(-term) 
+         damp(in) = 1.0e0 -exp(-term)
  9112    continue
       end if
 c
@@ -343,14 +343,14 @@ c
       do 9113 in=2,inmax
       fbl(in)   = vortn(in)*disn(in)*damp(in)
       amixl     = vk*disn(in)*damp(in)
-      eomui(in) = reue*xmi*rhon(in)*vortn(in)* 
+      eomui(in) = reue*xmi*rhon(in)*vortn(in)*
      .            amixl*amixl
  9113 continue
 c
       utmax = q8smax(inmax,utot(1))
       utmin = q8smin(inmax,utot(1))
       if (real(bck(j,i,1)) .eq. 1.) utmin = utot(1)
-c 
+c
 c     locate max value and location of fbl
 c
       fblmax = 1.e-10
@@ -375,14 +375,14 @@ c
             dfp = fbl(infmax) - fbl(infmax+1)
             if (real(fbl(infmax-1)).lt.real(fbl(infmax+1))) then
                if (real(dfm).gt.0.) then
-                  ymax = disn(infmax) + 0.5*(disn(infmax+1) - 
+                  ymax = disn(infmax) + 0.5*(disn(infmax+1) -
      .                                 disn(infmax))*(1.-dfp/dfm)
                else
                   ymax = disn(infmax)
                end  if
             else
                if (real(dfp).gt.0.) then
-                  ymax = disn(infmax) - 0.5*(disn(infmax) - 
+                  ymax = disn(infmax) - 0.5*(disn(infmax) -
      .                                 disn(infmax-1))*(1.-dfm/dfp)
                else
                   ymax = disn(infmax)
@@ -390,16 +390,16 @@ c
             end if
          end if
       else
-         ymax   = disn(infmax) 
+         ymax   = disn(infmax)
       end if
 c
       ymax   = ccmaxcr(ymax,1.e-20)
-      udif   = utmax - utmin 
-      fwake  = ymax*fblmax 
-      fwake2 = cwk*udif*udif*ymax/fblmax 
+      udif   = utmax - utmin
+      fwake  = ymax*fblmax
+      fwake2 = cwk*udif*udif*ymax/fblmax
       fwake  = ccmin(fwake2,fwake)
 c
-      do 9116 in=2,inmax 
+      do 9116 in=2,inmax
       eomuo(in) = 1.e0/(1.e0+5.5e0*(ckleb*disn(in)/ymax)**6)
       eomuo(in) = ckout*eomuo(in)*rhon(in)*fwake
  9116 continue
@@ -413,7 +413,7 @@ c
       eomui(in) = eomuo(in)
  9118 continue
 c
-c      fill eomu array corresponding to k=0 wall 
+c      fill eomu array corresponding to k=0 wall
 c
       do 900 k=1,kloop1
       vist3d(j,k,i) = eomui(k+1)
@@ -714,7 +714,7 @@ c     for k=1 & k=kdim walls
    90 continue
 c
       else
-c  
+c
 c     for k=kdim wall only
       do k=kdim1,kloop1,-1
          vist3d(j,k,i) = eomui(k)
@@ -793,10 +793,10 @@ c  end if on (ivisc(3) .gt. 1):
       end if
 c
       if (ivisc(2) .gt. 1) then
-c*************************************************************** 
-c      evaluate turbulent viscosity along normal to j=0 wall  
-c*************************************************************** 
-c 
+c***************************************************************
+c      evaluate turbulent viscosity along normal to j=0 wall
+c***************************************************************
+c
 c   defaults to using min face for distance if neither min nor max contains wall
       if (ibcjmin.eq.1 .or. ibcjmax.eq.0) then
 c
@@ -813,9 +813,9 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),1526)
       end if
-c 
+c
 c      loop through i stations
-c 
+c
       if (inmx.lt.jdim) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),39)inmx,jdim
@@ -827,11 +827,11 @@ c
       do 7000 i=1,idim1
 c
 c      loop through k stations
-c 
+c
       do 7000 k=1,kdim1
-c 
+c
 c     create working arrays in J-direction (normal to j=0 wall)
-c 
+c
 c      bound turbulent region
 c
       jloop  = .80*jdim
@@ -849,18 +849,18 @@ c
 c
 c     Chimera scheme modification....limit upper bound of search region to
 c     the lower edge of a hole.  If hole extends to lower search bound, set
-c     eddy viscosity to zero at all points this station.  
+c     eddy viscosity to zero at all points this station.
 c
       if (iover.eq.1) then
          if (real(blank(in1,k,i)) .eq. 0.) then
             do 1619 j=1,jdim1
             eoms(j,k,i) = 0.e0
- 1619       continue                                                  
+ 1619       continue
             if (iprint.ge.1) then
             if (k.eq.k/ilfreq1*ilfreq1.and.i.eq.i/ilfreq2*ilfreq2) then
                if (ihead.eq.0) then
                   nou(3) = min(nou(3)+1,ibufdim)
-                  write(bou(nou(3),3),1409)                           
+                  write(bou(nou(3),3),1409)
                end if
                nou(3) = min(nou(3)+1,ibufdim)
                write(bou(nou(3),3),1408) k,i
@@ -874,16 +874,16 @@ c
          if (real(blank(in,k,i)) .eq. 0.) go to 1624
          in21 = in
  1623    continue
- 1624    continue    
+ 1624    continue
          in2 = in21
-      end if 
+      end if
 c
-c      viscosity thru sutherland relation at cell centers 
+c      viscosity thru sutherland relation at cell centers
 c
 cdir$ ivdep
       do 6108 j=1,jloop1
       t5         = gamma*q(j,k,i,5)/q(j,k,i,1)
-      t6         = sqrt(t5) 
+      t6         = sqrt(t5)
       amun (j+1) = c2bp*t5*t6/(c2b+t5)
  6108 continue
 cdir$ ivdep
@@ -917,11 +917,11 @@ c
 c
       vortn(1) = (utot(2)-utot(1))/disn(2)
       end if
-c 
+c
 c     convenient groupings and initial values at j=1
-c 
-      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) ) 
-      yplusoy = sqrt(yplusoy)*aplusi 
+c
+      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) )
+      yplusoy = sqrt(yplusoy)*aplusi
       yplus   = yplusoy*disn(2)*aplus*2.0
 c
       if (real(bcj(k,i,1)) .eq. 0.) then
@@ -931,7 +931,7 @@ c        wake damping
          damp(in) = term
  6111    continue
       else
-c        wall damping 
+c        wall damping
          do 6112 in=2,inmax
          if (iwall .eq. 0) then
             term = yplusoy*disn(in)*sqrt(rhon(in)/rhon(1))*
@@ -939,7 +939,7 @@ c        wall damping
          else
             term = yplusoy*disn(in)
          end if
-         damp(in) = 1.0e0 -exp(-term) 
+         damp(in) = 1.0e0 -exp(-term)
  6112    continue
       end if
 c
@@ -948,14 +948,14 @@ c
       do 6113 in=2,inmax
       fbl(in)   = vortn(in)*disn(in)*damp(in)
       amixl     = vk*disn(in)*damp(in)
-      eomui(in) = reue*xmi*rhon(in)*vortn(in)* 
+      eomui(in) = reue*xmi*rhon(in)*vortn(in)*
      .            amixl*amixl
  6113 continue
 c
       utmax = q8smax(inmax,utot(1))
       utmin = q8smin(inmax,utot(1))
       if (real(bcj(k,i,1)) .eq. 1.) utmin = utot(1)
-c 
+c
 c     locate max value and location of fbl
 c
       fblmax = 1.e-10
@@ -999,12 +999,12 @@ c
       end if
 c
       ymax  = ccmaxcr(ymax,1.e-20)
-      udif  = utmax - utmin 
-      fwake = ymax*fblmax 
-      fwake2= cwk*udif*udif*ymax/fblmax 
+      udif  = utmax - utmin
+      fwake = ymax*fblmax
+      fwake2= cwk*udif*udif*ymax/fblmax
       fwake = ccmin(fwake2,fwake)
 c
-      do 6116 in=2,inmax 
+      do 6116 in=2,inmax
       eomuo(in) = 1.e0/(1.e0+5.5e0*(ckleb*disn(in)/ymax)**6)
       eomuo(in) = ckout*eomuo(in)*rhon(in)*fwake
  6116 continue
@@ -1018,7 +1018,7 @@ c
       eomui(in) = eomuo(in)
  6118 continue
 c
-c      fill eomu array corresponding to j=0 wall 
+c      fill eomu array corresponding to j=0 wall
 c
       do 600 j=1,jloop1
       eoms(j,k,i) = eomui(j+1)
@@ -1028,7 +1028,7 @@ c
          eoms(j,k,i) = 0.
  1607    continue
       end if
-c 
+c
       if (iprint.ge.1) then
       if (k.eq.(k/ilfreq1)*ilfreq1 .and. i.eq.(i/ilfreq2)*ilfreq2) then
 c
@@ -1320,7 +1320,7 @@ c     for j=1 & j=jdim walls
   790 continue
 c
       else
-c  
+c
 c     for j=jdim wall only
       do j=jdim1,jloop1,-1
          eoms(j,k,i) = eomui(j)
@@ -1377,7 +1377,7 @@ c   end if on j=jdim face:
 c
       if (ivisc(3).gt.1) then
 c     form the composite eddy-viscosity from k & j walls
-c 
+c
       do 150 i=1,idim1
       do 150 k=1,kdim1
       do 150 j=1,jdim1
@@ -1402,7 +1402,7 @@ c
 c
 c      smooth interior values
 c
-      nsmurf = 3 
+      nsmurf = 3
       if (nsmurf.eq.0) return
 c
       do 185 nnn=1,nsmurf
@@ -1419,7 +1419,7 @@ c
       vist3d(j,k,i) = .125e0* ( eoms(j+1,k-1,i-1)+ eoms(j-1,k-1,i-1)
      .               +          eoms(j+1,k+1,i-1)+ eoms(j-1,k+1,i-1)
      .               +          eoms(j+1,k-1,i+1)+ eoms(j-1,k-1,i+1)
-     .               +          eoms(j+1,k+1,i+1)+ eoms(j-1,k+1,i+1)) 
+     .               +          eoms(j+1,k+1,i+1)+ eoms(j-1,k+1,i+1))
   176 continue
   185 continue
 c
@@ -1459,12 +1459,12 @@ c
 c
       return
 c  end if on (ivisc(2) .gt. 1):
-      end if      
+      end if
 c
       if (ivisc(1) .le. 1) return
-c***************************************************************  
-c      evaluate turbulent viscosity along normal to i=0 wall 
-c***************************************************************  
+c***************************************************************
+c      evaluate turbulent viscosity along normal to i=0 wall
+c***************************************************************
 c
 c   defaults to using min face for distance if neither min nor max contains wall
       if (ibcimin.eq.1 .or. ibcimax.eq.0) then
@@ -1484,7 +1484,7 @@ c
       end if
 c
 c      loop through k stations
-c 
+c
       ihead = 0
 c
       if (inmx.lt.idim) then
@@ -1497,11 +1497,11 @@ c
       do 2000 k=1,kdim1
 c
 c      loop through j stations
-c 
+c
       do 2000 j=1,jdim1
-c 
-c     create working arrays in I-direction 
-c 
+c
+c     create working arrays in I-direction
+c
 c      bound turbulent region
 c
       iloop  = .80*idim
@@ -1519,18 +1519,18 @@ c
 c
 c     chimera scheme modification....limit upper bound of search region to
 c     the lower edge of a hole.  if hole extends to lower search bound, set
-c     eddy viscosity to zero at all points this station.  
+c     eddy viscosity to zero at all points this station.
 c
       if (iover.eq.1) then
         if(real(blank(j,k,in1)) .eq. 0.) then
           do 1719 i=1,idim1
           eoms(j,k,i) = 0.e0
-1719      continue                                                  
+1719      continue
           if (iprint.ge.1) then
             if (j.eq.j/ilfreq1*ilfreq1.and.k.eq.k/ilfreq2*ilfreq2) then
               if (ihead.eq.0) then
                  nou(3) = min(nou(3)+1,ibufdim)
-                 write(bou(nou(3),3),1409)                           
+                 write(bou(nou(3),3),1409)
               end if
               nou(3) = min(nou(3)+1,ibufdim)
               write(bou(nou(3),3),1408) j,k
@@ -1544,16 +1544,16 @@ c
         if(real(blank(j,k,in)) .eq. 0.) go to 1724
         in21 = in
 1723    continue
-1724    continue    
+1724    continue
         in2  = in21
-      end if 
+      end if
 c
-c      viscosity thru sutherland relation at cell centers 
+c      viscosity thru sutherland relation at cell centers
 c
 cdir$ ivdep
       do 8108 i=1,iloop1
       t5         =  gamma*q(j,k,i,5)/q(j,k,i,1)
-      t6         =  sqrt(t5) 
+      t6         =  sqrt(t5)
       amun (i+1) =  c2bp*t5*t6/(c2b+t5)
  8108 continue
 cdir$ ivdep
@@ -1587,11 +1587,11 @@ c
 c
       vortn(1) = (utot(2)-utot(1))/disn(2)
       end if
-c 
+c
 c     convenient groupings and initial values at i=1
-c 
-      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) ) 
-      yplusoy = sqrt(yplusoy)*aplusi 
+c
+      yplusoy = ccabs(rhon(1)*vortn(1)*reue*xmi/amun(1) )
+      yplusoy = sqrt(yplusoy)*aplusi
       yplus   = yplusoy*disn(2)*aplus*2.0
 c
       if (real(bci(j,k,1)) .eq. 0.) then
@@ -1601,7 +1601,7 @@ c        wake damping
          damp(in) = term
  8111    continue
       else
-c        wall damping 
+c        wall damping
          do 8112 in=2,inmax
          if (iwall .eq. 0) then
             term = yplusoy*disn(in)*sqrt(rhon(in)/rhon(1))*
@@ -1609,7 +1609,7 @@ c        wall damping
          else
             term = yplusoy*disn(in)
          end if
-         damp(in) = 1.0e0 -exp(-term) 
+         damp(in) = 1.0e0 -exp(-term)
  8112    continue
       end if
 c
@@ -1618,14 +1618,14 @@ c
       do 8113 in=2,inmax
       fbl(in)   = vortn(in)*disn(in)*damp(in)
       amixl     = vk*disn(in)*damp(in)
-      eomui(in) = reue*xmi*rhon(in)*vortn(in)* 
+      eomui(in) = reue*xmi*rhon(in)*vortn(in)*
      .            amixl*amixl
  8113 continue
 c
       utmax = q8smax(inmax,utot(1))
       utmin = q8smin(inmax,utot(1))
       if (real(bci(j,k,1)) .eq. 1.) utmin = utot(1)
-c 
+c
 c     locate max value and location of fbl
 c
       fblmax = 1.e-10
@@ -1669,12 +1669,12 @@ c
       end if
 c
       ymax   = ccmaxcr(ymax,1.e-20)
-      udif   = utmax - utmin 
-      fwake  = ymax*fblmax 
-      fwake2 = cwk*udif*udif*ymax/fblmax 
+      udif   = utmax - utmin
+      fwake  = ymax*fblmax
+      fwake2 = cwk*udif*udif*ymax/fblmax
       fwake  = ccmin(fwake2,fwake)
 c
-      do 8116 in=2,inmax 
+      do 8116 in=2,inmax
       eomuo(in) = 1.e0/(1.e0+5.5e0*(ckleb*disn(in)/ymax)**6)
       eomuo(in) = ckout*eomuo(in)*rhon(in)*fwake
  8116 continue
@@ -1688,7 +1688,7 @@ c
       eomui(in) =  eomuo(in)
  8118 continue
 c
-c      fill eomu array corresponding to i=0 wall 
+c      fill eomu array corresponding to i=0 wall
 c
       do 1900 i=1,iloop1
       eoms(j,k,i) = eomui(i+1)
@@ -1743,9 +1743,9 @@ c
 c
 c   end if on i=0 face
       end if
-c***************************************************************  
-c      evaluate turbulent viscosity along normal to i=idim wall 
-c***************************************************************  
+c***************************************************************
+c      evaluate turbulent viscosity along normal to i=idim wall
+c***************************************************************
 c
       if (ibcimax .eq. 1) then
 c
@@ -1764,7 +1764,7 @@ c
       end if
 c
 c      loop through k stations
-c 
+c
       if (inmx.lt.idim) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),19)inmx,idim
@@ -1776,11 +1776,11 @@ c
       do 2007 k=1,kdim1
 c
 c      loop through j stations
-c 
+c
       do 2007 j=1,jdim1
-c 
-c     create working arrays in I-direction 
-c 
+c
+c     create working arrays in I-direction
+c
 c      bound turbulent region
 c
       iloop  = .80*idim
@@ -1806,18 +1806,18 @@ c
 c
 c     chimera scheme modification....limit upper bound of search region to
 c     the lower edge of a hole.  if hole extends to lower search bound, set
-c     eddy viscosity to zero at all points this station.  
+c     eddy viscosity to zero at all points this station.
 c
       if (iover.eq.1) then
         if(real(blank(j,k,in1)) .eq. 0.) then
           do 6719 i=1,idim1
           eoms(j,k,i) = 0.e0
-6719      continue                                                  
+6719      continue
           if (iprint.ge.1) then
             if (j.eq.j/ilfreq1*ilfreq1.and.k.eq.k/ilfreq2*ilfreq2) then
               if (ihead.eq.0) then
                  nou(3) = min(nou(3)+1,ibufdim)
-                 write(bou(nou(3),3),1409)                           
+                 write(bou(nou(3),3),1409)
               end if
               nou(3) = min(nou(3)+1,ibufdim)
               write(bou(nou(3),3),1408) j,k
@@ -1831,16 +1831,16 @@ c
         if(real(blank(j,k,in)) .eq. 0.) go to 6724
         in21 = in
 6723    continue
-6724    continue    
+6724    continue
         in2=in21
-      end if 
+      end if
 c
-c      viscosity thru sutherland relation at cell centers 
+c      viscosity thru sutherland relation at cell centers
 c
 cdir$ ivdep
       do 8158 i=idim1,iloop1,-1
       t5         =  gamma*q(j,k,i,5)/q(j,k,i,1)
-      t6         =  sqrt(t5) 
+      t6         =  sqrt(t5)
       amun (i) =  c2bp*t5*t6/(c2b+t5)
  8158 continue
 cdir$ ivdep
@@ -1874,11 +1874,11 @@ c
 c
       vortn(idim) = (utot(idim1)-utot(idim))/disn(idim1)
       end if
-c 
+c
 c     convenient groupings and initial values at i=1
-c 
-      yplusoy = ccabs(rhon(idim)*vortn(idim)*reue*xmi/amun(idim) ) 
-      yplusoy = sqrt(yplusoy)*aplusi 
+c
+      yplusoy = ccabs(rhon(idim)*vortn(idim)*reue*xmi/amun(idim) )
+      yplusoy = sqrt(yplusoy)*aplusi
       yplus   = yplusoy*disn(idim1)*aplus*2.0
 c
       if (real(bci(j,k,2)) .eq. 0.) then
@@ -1888,7 +1888,7 @@ c        wake damping
          damp(in) = term
  8171    continue
       else
-c        wall damping 
+c        wall damping
          do 8172 in=idim1,inmax1,-1
          if (iwall .eq. 0) then
             term = yplusoy*disn(in)*sqrt(rhon(in)/rhon(idim))*
@@ -1896,7 +1896,7 @@ c        wall damping
          else
             term = yplusoy*disn(in)
          end if
-         damp(in) = 1.0e0 -exp(-term) 
+         damp(in) = 1.0e0 -exp(-term)
  8172    continue
       end if
 c
@@ -1905,14 +1905,14 @@ c
       do 8173 in=idim1,inmax1,-1
       fbl(in)   = vortn(in)*disn(in)*damp(in)
       amixl     = vk*disn(in)*damp(in)
-      eomui(in) = reue*xmi*rhon(in)*vortn(in)* 
+      eomui(in) = reue*xmi*rhon(in)*vortn(in)*
      .            amixl*amixl
  8173 continue
 c
       utmax = q8smax(inmaxt1,utot(inmax1))
       utmin = q8smin(inmaxt1,utot(inmax1))
       if (real(bci(j,k,2)) .eq. 1.) utmin = utot(idim)
-c 
+c
 c     locate max value and location of fbl
 c
       fblmax = 1.e-10
@@ -1956,9 +1956,9 @@ c
       end if
 c
       ymax   = ccmaxcr(ymax,1.e-20)
-      udif   = utmax - utmin 
-      fwake  = ymax*fblmax 
-      fwake2 = cwk*udif*udif*ymax/fblmax 
+      udif   = utmax - utmin
+      fwake  = ymax*fblmax
+      fwake2 = cwk*udif*udif*ymax/fblmax
       fwake  = ccmin(fwake2,fwake)
 c
       do 8176 in=idim1,inmax1,-1
@@ -1975,7 +1975,7 @@ c
       eomui(in) =  eomuo(in)
  8178 continue
 c
-c      fill eomu array corresponding to i=idim wall 
+c      fill eomu array corresponding to i=idim wall
 c
       if (ibcimin.eq.1) then
 c
@@ -2046,9 +2046,9 @@ c   end if on i=idim face
       end if
 c
       if (ivisc(3).gt.1) then
-c 
+c
 c     form the composite eddy-viscosity from k & i walls
-c 
+c
       do 6250 i=1,idim1
       do 6250 k=1,kdim1
       do 6250 j=1,jdim1
@@ -2073,7 +2073,7 @@ c
 c
 c      smooth interior values
 c
-      nsmurf = 3 
+      nsmurf = 3
       if (nsmurf.eq.0) return
 c
       do 6285 nnn=1,nsmurf
@@ -2090,7 +2090,7 @@ c
       vist3d(j,k,i) = .125e0* ( eoms(j+1,k-1,i-1)+ eoms(j-1,k-1,i-1)
      .               +          eoms(j+1,k+1,i-1)+ eoms(j-1,k+1,i-1)
      .               +          eoms(j+1,k-1,i+1)+ eoms(j-1,k-1,i+1)
-     .               +          eoms(j+1,k+1,i+1)+ eoms(j-1,k+1,i+1)) 
+     .               +          eoms(j+1,k+1,i+1)+ eoms(j-1,k+1,i+1))
 6276  continue
 6285  continue
 c
@@ -2128,4 +2128,4 @@ c
         vist3d(j,k,i)=0.
  7897 continue
       return
-      end 
+      end

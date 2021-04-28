@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -36,11 +36,11 @@ c
 #   endif
 c
       dimension aesrfdat(5,maxaes),perturb(nmds,maxaes,4),
-     .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes) 
+     .          xs(2*nmds,maxaes),xxn(2*nmds,maxaes)
 c
       common /elastic/ ndefrm,naesrf
       common /zero/ iexp
-      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax 
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
      .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
      .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -49,7 +49,7 @@ c
       common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
-     .              tp(4,4),zlfct,epstr,relax,ittrst 
+     .              tp(4,4),zlfct,epstr,relax,ittrst
       common /trim1/ dcl(5000),ddclda(5000),ddcmda(5000),r33,r44,ittr
      .              ,dcm(5000),dd(5000),da(5000),a11,a12,a22,r11,r22
       common /motionmc/ xmc0,ymc0,zmc0,utransmc,vtransmc,wtransmc,
@@ -116,10 +116,10 @@ c
      .             then
                   xs(2*nm-1,iaes) = 0.
                   xs(2*nm,iaes)   = 0.
-               else if (real(times).gt.real(t0-dts/2.) .and. 
-     .                  real(times).lt.real(t0+dts/2.)) then 
+               else if (real(times).gt.real(t0-dts/2.) .and.
+     .                  real(times).lt.real(t0+dts/2.)) then
                   xs(2*nm-1,iaes) = amp
-                  xs(2*nm,iaes)   = amp/dts 
+                  xs(2*nm,iaes)   = amp/dts
                else
                   xs(2*nm-1,iaes) = amp
                   xs(2*nm,iaes)   = 0.
@@ -158,7 +158,7 @@ c
      .                        (qinfrb*areat*grefl*grefl))
                   if ((abs(real(dlcln)).lt.real(trtol)) .and.
      .                    (abs(real(dmtrmn)).lt.real(trtol))) return
- 
+
                   alf1   =alf0  +relax*(-fp(1,1)*dlcln-fp(1,2)*dmtrmn)
                   ddtrm1 =ddtrm0+relax*(-fp(2,1)*dlcln-fp(2,2)*dmtrmn)
                   if(real(ddtrm1).gt.real(dtrmsmx)) ddtrm1 = dtrmsmx
@@ -190,10 +190,10 @@ c
       subroutine sqrtcumm(ittr,dcl,dcm,ddclda,ddcmda,da,dd
      .                    ,dlcln,dmtrmn,tp,fp,a11,a12,a22
      .                    ,r11,r22,r33,r44,alf1,alf0,ddtrm1
-     .                    ,ddtrm0) 
+     .                    ,ddtrm0)
       dimension dcl(5000),ddclda(5000),ddcmda(5000)
      .         ,dcm(5000),dd(5000),da(5000),tp(4,4),fp(4,4)
-      dcl(ittr) = dlcln 
+      dcl(ittr) = dlcln
       dcm(ittr) = dmtrmn
       if(ittr.eq.1) then
         da(ittr) = 0.
@@ -203,7 +203,7 @@ c
         dd(ittr) = ddtrm1-ddtrm0
         ddclda(ittr) = (dcl(ittr)-dcl(ittr-1))
         ddcmda(ittr) = (dcm(ittr)-dcm(ittr-1))
-        a1  = da(ittr-1)*da(ittr-1) 
+        a1  = da(ittr-1)*da(ittr-1)
         a2  = da(ittr-1)*dd(ittr-1)
         a3  = dd(ittr-1)*dd(ittr-1)
         r1  = ddclda(ittr)*da(ittr-1)

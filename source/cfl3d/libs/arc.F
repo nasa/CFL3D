@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -66,7 +66,7 @@ c     arc lengths for (unexpanded) "from" grid(s)
 c
       do 601 l=1,lmax1
       jmax1 = jjmax1(l)
-      kmax1 = kkmax1(l) 
+      kmax1 = kkmax1(l)
       do 603 j=2,jmax1-1
       seta(j-1,1,l) = 0.
       do 604 k=3,kmax1-1
@@ -108,7 +108,7 @@ c
 c
 c     try arc length correction near eta=0
 c
-c     Arc length in eta direction now replaces the 
+c     Arc length in eta direction now replaces the
 c     physical coordinates x,y,z from which computational
 c     coordinates away from the boundaries are to be found.
 c     The current xie values are assumed correct.
@@ -139,7 +139,7 @@ c
       kmax = kkmax1(lp)
       if (k.eq.k21) then
          kp = 1
-      else 
+      else
          kp = eta2s(j,k-1)+1
       end if
       eta   = kp
@@ -151,7 +151,7 @@ c
       eta2s(j,k) = etat
  6900 continue
 c
-c     Blend arc length corrected and uncorrected computational 
+c     Blend arc length corrected and uncorrected computational
 c     coordinates of "to" grid...arc length correction for k .le. kup,
 c     uncorrected for k .ge. kup2, and linear interpolation of corrected
 c     and uncorrected values in between.
@@ -170,7 +170,7 @@ c
       end if
 c
 c     check for monotonicity of corrected coordinates
-c     
+c
       do 557 k=k21+1,km
       ll = (j22-j21)*(k-k21) + (j-j21+1)
       ll1 = (j22-j21)*(k-1-k21) + (j-j21+1)
@@ -187,7 +187,7 @@ c
 c
 c     try arc length correction near xie=0
 c
-c     Arc length in xie direction now replaces the 
+c     Arc length in xie direction now replaces the
 c     physical coordinates x,y,z from which computational
 c     coordinates away from the boundaries are to be found.
 c     The current eta values are assumed correct.
@@ -218,7 +218,7 @@ c
       kmax = kkmax1(lp)
       if (j.eq.j21) then
          jp = 1
-      else 
+      else
          jp = xie2s(j-1,k)+1
       end if
       xie   = jp
@@ -230,7 +230,7 @@ c
       xie2s(j,k) = xiet
  7900 continue
 c
-c     Blend arc length corrected and uncorrected computational 
+c     Blend arc length corrected and uncorrected computational
 c     coordinates of "to" grid...arc length correction for j .le. jup,
 c     uncorrected for j .ge. jup2, and linear interpolation of corrected
 c     and uncorrected values in between.
@@ -247,7 +247,7 @@ c
  2556 continue
 c
 c     check for monotonicity of corrected coordinates
-c     
+c
       do 3557 j=j21+1,jm
       ll = (j22-j21)*(k-k21) + (j-j21+1)
       ll1 = (j22-j21)*(k-k21) + (j-1-j21+1)

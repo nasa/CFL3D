@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -56,17 +56,17 @@ c***********************************************************************
 c
 c     maxgr    - maximum number of grids
 c     maxbl    - maximum number of blocks
-c     nplots   - maximum number of data sets to output via PLOT3D or 
+c     nplots   - maximum number of data sets to output via PLOT3D or
 c                print options
 c     mxbli    - maximum number of 1-1 interfaces (incl. coarser blocks!)
 c     maxseg   - maximum number of segments on a boundary
-c     maxsegdg - maximum number of segments on a deforming 
+c     maxsegdg - maximum number of segments on a deforming
 c     ncycmax  - maximum number of time-steps/cycles
 c     intmax   - maximum number of block interpolations
-c     nsub1    - maximum number of blocks a single patch face 
+c     nsub1    - maximum number of blocks a single patch face
 c                may be interpolated from
-c     mxbcfil  - maximum number (less one) of auxiliary files that may 
-c                be specified for 2000 series bc's 
+c     mxbcfil  - maximum number (less one) of auxiliary files that may
+c                be specified for 2000 series bc's
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -194,7 +194,7 @@ c
      .                  dthxmxmc,dthymxmc,dthzmxmc,rfreqtmc,
      .                  rfreqrmc,itransmc,irotatmc,time2mc
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
@@ -233,7 +233,7 @@ c
       nfiles = 1
 c
 c     set error flag to -99 if this routine is called during
-c     array sizing step 
+c     array sizing step
 c
       if (icall .eq. 0) then
          ierrflg = -99
@@ -255,7 +255,7 @@ c     free-form alphanumeric title
             title(i) = realval(i)
          end do
       end if
-   10 format(20a4)   
+   10 format(20a4)
       write(iunit11,11)(real(title(i)),i=1,20)
    11 format(/1h ,20a4)
 c
@@ -264,7 +264,7 @@ c     alpha  - angle of attack
 c     beta   - side-slip angle
 c     reue   - freestream Reynolds number per unit length (millions)
 c     tinf   - freestream temperature (degrees Rankine)
-c     ialph  - determines how angle of attack is measured in plot3d 
+c     ialph  - determines how angle of attack is measured in plot3d
 c              type grids (ngrid <0) :
 c            = 0 alpha measured in x-z plane (z "up"), i.e. alpha = 90 deg.
 c              would give a freestream velocity vector in the +z direction
@@ -290,7 +290,7 @@ c
       read(iunit5,*) (realval(i),i=1,5),ialph,ihstry
 #   ifdef CMPLX
 c
-c     complex perturbations are set by keyword input, with defaults = 0 
+c     complex perturbations are set by keyword input, with defaults = 0
 c
       xmach = cmplx(realval(1),real(xmach_img))
       alpha = cmplx(realval(2),real(alpha_img))
@@ -314,7 +314,7 @@ c
 c
       write(iunit11,20) real(xmach),real(alpha),real(beta),real(reue),
      .                  real(tinf),ialph,ihstry
-   20 format(3f10.5,e10.3,f10.5,i10,2i10)      
+   20 format(3f10.5,e10.3,f10.5,i10,2i10)
       if (cltarg.ne.99999.0) then
          write(iunit11,'('' Note: will adjust alpha to reach cltarg ='',
      .                  f12.7)') cltarg
@@ -328,7 +328,7 @@ c
      .   9hTinf_i,dR)
          write(iunit11,'(10e10.3)') real(xmach_img),real(alpha_img),
      .                              real(beta_img),real(reue_img),
-     .                              real(tinf_img) 
+     .                              real(tinf_img)
       else
          write(iunit11,'(4x,6hgeom_i)')
          write(iunit11,'(e10.3)') real(geom_img)
@@ -356,7 +356,7 @@ c
       bref = realval(3)
       xmc  = realval(4)
       ymc  = realval(5)
-      zmc  = realval(6) 
+      zmc  = realval(6)
 c
       if (real(sref).eq.0.) sref = 1.
       if (real(cref).le.0.) cref = 1.
@@ -379,9 +379,9 @@ c
 c
 c     dt      - time step
 c             < 0  local time stepping, CFL=abs(dt)
-c             > 0  constant time step  (=dt)        
+c             > 0  constant time step  (=dt)
 c     irest   = 0   start from freestream conditions
-c             > 0   restart from previous solution 
+c             > 0   restart from previous solution
 c             < 0   restart from previous solution, but do not save
 c                   previous history information
 c     iflagts = 0  constant dt
@@ -429,12 +429,12 @@ c
    98   format(/,47h when irest=0, iteravg=2 starts running-average,
      .   31h from scratch (as if iteravg=1),/)
       end if
-c 
+c
       fmax   = ccabs(fmax)
 c
 c     ngrid   - number of grids input
 c             > 0  grid is cfl3d type
-c             < 0  grid is plot3d type  
+c             < 0  grid is plot3d type
 c     nplot3d - number of flowfield data sets to be written in
 c               plot3d format
 c               if nplot3d = any number < 0, then the plot3d files
@@ -455,13 +455,13 @@ c               (no field points). if nprint < 0, the same comments
 c               apply as made for nplot3d <0 above.
 c     nwrest  - number of iterations between updates of the binary
 c                restart file
-c     ichk    - checks for negative densities and/or pressures in 
-c                subroutines gfluxr, hfluxr, ffluxr, and update if 
+c     ichk    - checks for negative densities and/or pressures in
+c                subroutines gfluxr, hfluxr, ffluxr, and update if
 c                set equal to 1
 c     i2d     - 2-d flag
 c             = 0  3-d (default)
 c             = 1  2-d
-c             =-1  2-d with farfield point-vortex correction, 
+c             =-1  2-d with farfield point-vortex correction,
 c                  when bc 1003 used
 c                  (Uses xmc & zmc as location of point vortex)
 c     ntstep    - number of time steps (defaults to 1 if dt<0)
@@ -533,7 +533,7 @@ c   Check for SARC & EASMCC models
       end if
 c
 c     for cfl3d type grids, set ialph = 0 regardless of input value
-c     note: if it is desired to allow ialph to be used with cfl3d 
+c     note: if it is desired to allow ialph to be used with cfl3d
 c     type grids as well as plot3d type grids then comment out the
 c     following 5 lines (which used to read: if (ngrid.gt.0) ialph=0)
 c
@@ -588,14 +588,14 @@ c
  1524 format(1x,16hnplots too small)
 c
 c
-c     ncg  - number of coarser grids to construct for multigrid/mesh 
+c     ncg  - number of coarser grids to construct for multigrid/mesh
 c             sequencing  (=0 for embedded mesh)
 c     iem  - embedded mesh flag
 c          = 0 for global grid
 c          = l level of this embedded grid above global grid level
 c     iadvance - flag to skip any residual/update calculations
 c              >=0  proceed as usual
-c              < 0  skip residual/update calculations 
+c              < 0  skip residual/update calculations
 c     iforce  -  flag indicates where to compute forces
 c             = 3-digit integer (n1)(n2)(n3)
 c                 n1 indicates i-direction
@@ -604,14 +604,14 @@ c                 n3 indicates k-direction
 c               Set n1, n2, and n3 each to 0, 1, 2, or 3
 c                 0 = do not compute forces/moments on any faces in this
 c                     direction
-c                 1 = compute forces/moments on n=1 face in this 
+c                 1 = compute forces/moments on n=1 face in this
 c                     direction
-c                 2 = compute forces/moments on n=ndim face in this 
+c                 2 = compute forces/moments on n=ndim face in this
 c                     direction
-c                 3 = compute forces/moments on both n=1 and n=ndim faces 
+c                 3 = compute forces/moments on both n=1 and n=ndim faces
 c                     in this direction
 c                 (EXAMPLES:  000 indicates no force computed on this block
-c                             001 indicated force computed at k=1 face 
+c                             001 indicated force computed at k=1 face
 c                                 on this block, over those cells that have
 c                                 solid wall boundary conditions applied
 c                                 to them)
@@ -638,7 +638,7 @@ c              =14  turbulent - k-omega EASM-variable-g NONLINEAR
 c              =15  turbulent - k-enstrophy model
 c              =16  turbulent - k-kL-MEAH2015 model
 c       if ivisc(m) < 0 on input, a wall function is employed.  Should only
-c                       (officially) be used for attached flow, when 1st 
+c                       (officially) be used for attached flow, when 1st
 c                       gridpoint off wall is not in the sublayer (typically
 c                       y+ > 10 or more). The wall function with the
 c                       B-L model (ivisc=-2 or -3) can be particularly
@@ -648,8 +648,8 @@ c    NOTE:  The thin layer viscous terms can be included in either the
 c           J-, K-, or I-directions, separately.  The viscous (laminar)
 c           terms can be included simultaneously in all three directions.
 c
-c           For ivisc=2 or 3 (B-L), the viscous (turbulent) terms can be included 
-c           simultaneously in, at most, two directions, either J-K or I-K, 
+c           For ivisc=2 or 3 (B-L), the viscous (turbulent) terms can be included
+c           simultaneously in, at most, two directions, either J-K or I-K,
 c           for any particular grid.  It is preferable to let K be the primary
 c           viscous direction and J be the secondary viscous direction.
 c           If I is used as a primary viscous direction, it may be
@@ -802,17 +802,17 @@ c   for Degani schiff, set ideg=1 and reset ivisc=2 within code:
       else
         isminc=0
       end if
-      if (ivisc(1).gt.1 .and. ivisc(2).gt.1 .and. 
+      if (ivisc(1).gt.1 .and. ivisc(2).gt.1 .and.
      .    ivisc(1).ne.ivisc(2)) then
         write(iunit11,'('' cannot mix turbulence model types'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-      if (ivisc(1).gt.1 .and. ivisc(3).gt.1 .and. 
+      if (ivisc(1).gt.1 .and. ivisc(3).gt.1 .and.
      .    ivisc(1).ne.ivisc(3)) then
         write(iunit11,'('' cannot mix turbulence model types'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-      if (ivisc(2).gt.1 .and. ivisc(3).gt.1 .and. 
+      if (ivisc(2).gt.1 .and. ivisc(3).gt.1 .and.
      .    ivisc(2).ne.ivisc(3)) then
         write(iunit11,'('' cannot mix turbulence model types'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -831,7 +831,7 @@ c
          ncgmax   = ncg
       else
          ncgmax   = max(ncgmax,ncg)
-      end if      
+      end if
 c
       iemg(igrid)   = iem
       iadvance(nbl) = iad
@@ -1150,7 +1150,7 @@ c
      .     ivmx .eq. 14) .and. real(cmulim) .gt. .04) then
         write(iunit11,'('' error... cmulim set too high'')')
         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-      end if 
+      end if
 c
 c     grid dimensions:
 c     idim - number of points in I-direction
@@ -1193,13 +1193,13 @@ c   check usage of full N-S
       if (ifullns .ne. 0) then
         write(iunit11,'('' Note that even with ifullns=1, diffusion'',
      .    '' terms in turb eqns are still thin-layer)'')')
-        if (i2d .eq. 0 .and. idim .gt. 2 .and. (ivisc(1).eq.0 .or. 
+        if (i2d .eq. 0 .and. idim .gt. 2 .and. (ivisc(1).eq.0 .or.
      .      ivisc(2).eq.0 .or. ivisc(3).eq.0)) then
           write(iunit11,'('' WARNING: When using full N-S in 3-D, '',
      .      ''viscous terms (ivisc) usually '')')
           write(iunit11,'(''must be ON in all 3 directions'')')
         end if
-        if (i2d .eq. 0 .and. idim .eq. 2 .and. (ivisc(2).eq.0 .or. 
+        if (i2d .eq. 0 .and. idim .eq. 2 .and. (ivisc(2).eq.0 .or.
      .    ivisc(3).eq.0)) then
           write(iunit11,'('' ERROR: When using full N-S in 3-D, '',
      .      ''with idim=2, viscous terms (ivisc) must be'')')
@@ -1280,7 +1280,7 @@ c        2-d meshes
       end if
  7001 continue
 c
-c     Indices that define a region of laminar flow within each block 
+c     Indices that define a region of laminar flow within each block
 c     (if want to simulate transition) for turbulent flow computations
 c
 c     ilamlo - lower i index (0 if no laminar region)
@@ -1373,11 +1373,11 @@ c                 from coarser grids
 c     igridc - grid to which this grid connects (input 0 for global
 c              mesh(iem=0) and the grid number in which the embedded
 c              mesh fits for embedded meshes(iem>0))
-c     js,ks,is - starting indices in connecting grid for placement of 
+c     js,ks,is - starting indices in connecting grid for placement of
 c                embedded mesh (input 0 for global meshes)
-c     je,ke,ie - ending indices in connecting grid for placement of 
+c     je,ke,ie - ending indices in connecting grid for placement of
 c                embedded mesh (input 0 for global meshes)
-c     NOTE:  The embedded meshes must be a regular refinement in all 
+c     NOTE:  The embedded meshes must be a regular refinement in all
 c            directions of the grid to which it connects.
 c
 c***** repeat above for each grid, 1 through ngrid *****
@@ -1476,7 +1476,7 @@ c
 c
 c     ifds(m)  - spatial differencing parameter for Euler fluxes
 c              = 0  flux-vector splitting
-c              = 1  flux-difference splitting (Roe's scheme) 
+c              = 1  flux-difference splitting (Roe's scheme)
 c                   (recommended)
 c     rkap0(m) - spatial differencing parameter for Euler fluxes
 c              =  -1  fully upwind
@@ -1635,7 +1635,7 @@ c                  < 0...number of additional data *arrays* required for
 c                        the boundary condition on this segment
 c                  = 0...no additional data required for this segment
 c     bcvali(m)  - data values for this segment (ibcinfo(7) > 0 only)
-c     bcfilei    - pointer to name of data file containing the data 
+c     bcfilei    - pointer to name of data file containing the data
 c                  arrays for this segment (ibcinfo(7) < 0 only)
 c                  (a value of 1 points to 'null')
 c
@@ -1738,7 +1738,7 @@ c
       end if
       if (ndata.lt.0) then
          nfiles = nfiles+1
-         if (nfiles.gt.mxbcfil) then 
+         if (nfiles.gt.mxbcfil) then
             write(iunit11,*)'too many bc files specified...increase ',
      .      'parameter mxbcfil'
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -1752,7 +1752,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (ibcinfo(nbl,nseg,1,1).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -1816,7 +1816,7 @@ c
 c
 c     set boundary condition type array to 21 to allow
 c     conservative flux accumulations
-c 
+c
       if (iemg(igrid).gt.0 .and. isg(nbl).ne.1) then
 c        i=1 face of current block is embedded
          if (nbci0(nbl).gt.1) then
@@ -1845,8 +1845,8 @@ c        multigrid chimera. NOTE: at this stage, ALL interface bc's
 c        (bctype = 0) are set to extrapolation on coarser meshes. Later
 c        in subroutine bc, if any of these are 1-1 or patched interfaces,
 c        the correct interface conditions WILL be applied. For 1-1/patched
-c        interfaces, extrapolation will first be applied, THEN the 
-c        correct interface condition will be used to rewrite the bc's. 
+c        interfaces, extrapolation will first be applied, THEN the
+c        correct interface condition will be used to rewrite the bc's.
 c        This will be reflected in the main output file under the header
 c        "boundary conditions for block...". The net result is that
 c        only chimera interfaces are truly set with extrapolation bc's
@@ -2019,7 +2019,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (ibcinfo(nbl,nseg,1,2).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -2080,7 +2080,7 @@ c
 c
 c     set boundary condition type array to 21 to allow
 c     conservative flux accumulations
-c 
+c
       if (iemg(igrid).gt.0 .and. ieg(nbl).ne.idimg(nblcg(nbl))) then
 c        i=idim face of current block is embedded
          if (nbcidim(nbl).gt.1) then
@@ -2274,7 +2274,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (jbcinfo(nbl,nseg,1,1).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -2528,7 +2528,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (jbcinfo(nbl,nseg,1,2).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -2781,7 +2781,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (kbcinfo(nbl,nseg,1,1).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -3034,7 +3034,7 @@ c
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
       if (kbcinfo(nbl,nseg,1,2).ne.-99) then
-         write(iunit11,*) 
+         write(iunit11,*)
      .   ' stopping...attempting to set data for segment ',
      .   nseg,' more than once'
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -3139,7 +3139,7 @@ c
 c        reset iovrlp flag for coarser meshes
          if (iovrlp(nbl).lt.0) iovrlp(nbl) = 0
 c
-c 
+c
  1780    continue
       end if
       nblt=(igrid-1)*(ncgg(igrid)+1)+1
@@ -3168,10 +3168,10 @@ c
  1707 continue
 c
 c     if nplot3d < 0, set plot3d output to contain all solid surfaces in
-c     the grid if 3D, or all zones in 2D (do same for printed output if 
+c     the grid if 3D, or all zones in 2D (do same for printed output if
 c     nprint < 0)
 c
-      if (nplot3d.lt.0 .or. nprint.lt.0) then 
+      if (nplot3d.lt.0 .or. nprint.lt.0) then
 c        just set iptype=0 as a placeholder - overwritten later
          iptype  = 0
          nplt3dtmp = 0
@@ -3184,7 +3184,7 @@ c
 c
          if (i2d.eq.0) then
             do 4801 nseg=1,nbci0(nbl)
-            if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004 .or. 
+            if (abs(ibcinfo(nbl,nseg,1,1)).eq.2004 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1005 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.1006 .or.
      .          abs(ibcinfo(nbl,nseg,1,1)).eq.2014 .or.
@@ -3194,7 +3194,7 @@ c
                 ii = 1
                 nplt3dtmp = nplt3dtmp + 1
                 ipl3dtmp(1,nplt3dtmp)   = ng
-                ipl3dtmp(2,nplt3dtmp)   = iptype       
+                ipl3dtmp(2,nplt3dtmp)   = iptype
                 ipl3dtmp(3,nplt3dtmp)   = ii
                 ipl3dtmp(4,nplt3dtmp)   = ii
                 ipl3dtmp(5,nplt3dtmp)   = 1
@@ -3338,7 +3338,7 @@ c
 c
  4800    continue
 c
-c        make sure nplots is large enough 
+c        make sure nplots is large enough
 c
          if (nplt3dtmp.gt.nplots) then
             write(iunit11,1524)
@@ -3352,15 +3352,15 @@ c            = 1  single solution on finest grid
 c            = 2  solution on second finest grid advanced ncyc(1) cycles
 c                 followed by ncyc(2) cycles on finest grid.  The solu-
 c                 tion on the finest grid is obtained by interpolation
-c                 from the coarser grid.  If ncyc(2)=0, solution 
+c                 from the coarser grid.  If ncyc(2)=0, solution
 c                 terminated on second finest grid after ncyc(1) steps
-c                 with restart file written for second finest grid at 
+c                 with restart file written for second finest grid at
 c                 that point.
 c            > 2  sequencing from coarest to finest mesh as above
 c     mgflag - multigrid flag
 c            = 0  no multigrid
-c            = 1  multigrid on coarser global meshes 
-c            = 2  multigrid on coarser global meshes and on 
+c            = 1  multigrid on coarser global meshes
+c            = 2  multigrid on coarser global meshes and on
 c                  embedded meshes
 c     iconsf - conservation flag
 c            = 0  nonconservative flux treatment for embedded grids
@@ -3376,7 +3376,7 @@ c
       read(iunit5,10)
       read(iunit5,*) mseq,mgflag,iconsf,mtt,ngam
       write(iunit11,7832)
- 7832 format(6x,4hmseq,4x,6hmgflag,4x,6hiconsf,7x,3hmtt,6x,4hngam)     
+ 7832 format(6x,4hmseq,4x,6hmgflag,4x,6hiconsf,7x,3hmtt,6x,4hngam)
       write(iunit11,36) mseq,mgflag,iconsf,mtt,ngam
 c
       if (mseq.gt.5) then
@@ -3468,14 +3468,14 @@ c
 c     issc      - correction smoothing flag
 c               = 0  off
 c               = 1  on
-c     epsssc(m) - correction smoothing coefficient for I, J, 
-c                 and K directions 
+c     epsssc(m) - correction smoothing coefficient for I, J,
+c                 and K directions
 c                 typical values: 0.3, 0.3, 0.3
 c     issr      - residual smoothing flag
 c               = 0  off
 c               = 1  on
 c     epsssr(m) - residual smoothing coefficient for I, J,
-c                 and K directions 
+c                 and K directions
 c                 typical values: 0.3, 0.3, 0.3  (usually not used)
 c
       read(iunit5,10)
@@ -3494,13 +3494,13 @@ c
 c
 c     for each sequence 1 through mseq (coarsest to finest):
 c     ncyc1  - number of cycles
-c     mglevg - number of grids to use in multigrid cycling for 
+c     mglevg - number of grids to use in multigrid cycling for
 c              the global meshes
 c            = 1 for single grid
 c            = 2 for two levels
 c            = m for m levels
-c     nemgl  - number of embedded grid levels above the finest 
-c              global grid (=0 for global grids coarser than the 
+c     nemgl  - number of embedded grid levels above the finest
+c              global grid (=0 for global grids coarser than the
 c              finest global grid)
 c            = 0 no embedded grids
 c            = 1 one embedded grid
@@ -3629,7 +3629,7 @@ c
   121 continue
 c
 c
-c     nbli - number of 1:1 grid-point-connecting block interfaces 
+c     nbli - number of 1:1 grid-point-connecting block interfaces
 c     NOTE: If nbli is negative, then information for checking the
 c           1-1 blocking interfaces between grids is printed to
 c           fort.91 and fort.92.
@@ -3658,7 +3658,7 @@ c           < 0 off (not used)
          do 9038 n=1,abs(nbli)
            nblon(n)=0
  9038   continue
-      end if 
+      end if
 c
 c
 c     number     = 1-to-1 interface number; helpful to user only
@@ -3687,8 +3687,8 @@ c      NOTE:  On input, nblk refers to a grid index.
 c             On exit from subroutine global, nblk refers to a block
 c             index.
 c      NOTE:  On input, limblk refers to grid point indices.
-c             On exit from subroutine global, the limblk indices for 
-c             the 1:1 patching index loops in the plane refer to 
+c             On exit from subroutine global, the limblk indices for
+c             the 1:1 patching index loops in the plane refer to
 c             cell-centers
 c
 c***** repeat above nbli times *****
@@ -3766,7 +3766,7 @@ c
 c
       if (iunst.eq.0 .and. ninter.gt.0) then
 c
-c        no longer an option to do generalized patching 
+c        no longer an option to do generalized patching
 c        internally....need to run preprocessor "ronnie"
 c        only the less general case of dynamic patching
 c        is done internally
@@ -3810,7 +3810,7 @@ c
   205 continue
 c
 c     determine highest global level (levgg) and highest top
-c     level (levtt) based on input value of mseq 
+c     level (levtt) based on input value of mseq
 c     (top level > global level for embedded meshes)
 c
       levtt = levelt(mseq)
@@ -3964,7 +3964,7 @@ c
              call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
          end if
 c
-         if (ifort50write .ne. 0 .and. 
+         if (ifort50write .ne. 0 .and.
      +       (ngrid .gt. 1 .or. iptyp .ne. 2)) then
             write(iunit11,*)'stopping...ifort50write must',
      .         ' have ngrid=+-1 and iptyp=2'
@@ -3995,7 +3995,7 @@ c
             im(11) = 1
          end if
 c
-c        determine block number corresponding to igrid on highest 
+c        determine block number corresponding to igrid on highest
 c        global level actually computed on (and on embedded levels,
 c        if applicable)
 c
@@ -4038,8 +4038,8 @@ c
             id  = idimg(nbl)
 c
 c           if necessary, adjust indicies on plot3d input to correspond
-c           to the block number consistent with the highest level 
-c           actually computed 
+c           to the block number consistent with the highest level
+c           actually computed
 c
             if (levglb.lt.levgg) then
 c           (if max i-index=2, don't reduce further)
@@ -4107,7 +4107,7 @@ c
                   call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
                   endif
                enddo
-            end if 
+            end if
          end if
 c
       end if
@@ -4116,7 +4116,7 @@ c     movie - animation output flag
 c            = 0 plot3d file written only at end of computation
 c            > 0 plot3d file written every movie iterations
 c            < 0 plot3d file written at start of computation
-c                AND plot3d file written every movie iterations 
+c                AND plot3d file written every movie iterations
 c
       read(iunit5,*)
       read(iunit5,*) movie
@@ -4248,7 +4248,7 @@ c
             im(11) = 1
          end if
 c
-c        determine block number corresponding to igrid on highest 
+c        determine block number corresponding to igrid on highest
 c        global level actually computed on (and on embedded levels,
 c        if applicable)
 c
@@ -4356,11 +4356,11 @@ c    inorm  - defines the direction of the control surface outward normal
 c             relative to the grid surface normal. This is only required
 c             in the calculation of the total forces for all control
 c             surfaces to obtain the correct signs
-c             1 - the control volume outward normal is in the same 
+c             1 - the control volume outward normal is in the same
 c                 direction as the grid surface normal
 c            -1 - the control volume outward normal is in the opposite
 c                 direction to the grid surface normal
-c             0 - do not add this surface into the summation of the 
+c             0 - do not add this surface into the summation of the
 c                 total forces.  Note, if all the surfaces have inorm=0,
 c                 the totals are not calculated.
 c
@@ -4496,32 +4496,32 @@ c                   displacement
 c     idefrm  - deforming mesh flag
 c             = 0...rigid mesh
 c
-c      rfreq  = reduced frequency for sinusoidal variation 
+c      rfreq  = reduced frequency for sinusoidal variation
 c
 c      lref   = grid-equivalent of the dimensional reference length that
-c               was used to define the reduced frequency, or the 
-c               non-dimensional rotation speed input with irotat=1 
+c               was used to define the reduced frequency, or the
+c               non-dimensional rotation speed input with irotat=1
 c
 c      utrans = if itrans=1, x-component of translational velocity
 c               if itrans>1, maximum displacement in y-direction
 c
 c      vtrans = if itrans=1, y-component of translational velocity
-c               if itrans>1, maximum displacement in y-direction 
+c               if itrans>1, maximum displacement in y-direction
 c
 c      wtrans = if itrans=1, z-component of translational velocity
 c               if itrans>1, maximum displacement in z-direction
 c
-c      dxmx   = maximum x-displacement of grid before being reset to 
-c               t=0 position; if zero, then x-position of grid is 
-c               never reset 
+c      dxmx   = maximum x-displacement of grid before being reset to
+c               t=0 position; if zero, then x-position of grid is
+c               never reset
 c
-c      dymx   = maximum y-displacement of grid before being reset to 
+c      dymx   = maximum y-displacement of grid before being reset to
 c               t=0 position; if zero, then y-position of grid is
-c               never reset 
+c               never reset
 c
-c      dzmx   = maximum z-displacement of grid before being reset to 
+c      dzmx   = maximum z-displacement of grid before being reset to
 c               t=0 position; if zero, then z-position of grid is
-c               never reset 
+c               never reset
 c
 c      omegax = if irotat=1, x-component of rotational velocity
 c               if irotat>1, maximum angular rotation about the x-axis
@@ -4533,23 +4533,23 @@ c      omegaz = if irotat=1, y-component of rotational velocity
 c               if irotat>1, maximum angular rotation about the z-axis
 c
 c      dthxmx = maximum angular displacement of grid about x-axis before
-c               being reset to t=0 position; if zero, then angular 
+c               being reset to t=0 position; if zero, then angular
 c               position about the x-axis is never reset
 c
 c      dthymx = maximum angular displacement of grid about y-axis before
-c               being reset to t=0 position; if zero, then angular 
+c               being reset to t=0 position; if zero, then angular
 c               position about the y-axis is never reset
 c
 c      dthzmx = maximum angular displacement of grid about z-axis before
-c               being reset to t=0 position; if zero, then angular 
+c               being reset to t=0 position; if zero, then angular
 c               position about the z-axis is never reset
 c
-c      itransmc,irotatmc,utransmc...dthymxmc,dthzmxmc: 
+c      itransmc,irotatmc,utransmc...dthymxmc,dthzmxmc:
 c               translational/rotational parameters for the motion
 c               of the moment center, with definitions analogous
-c               to itrans,irotat,utrans...above. The moment center 
-c               motion is input in the same way as grid motion, with 
-c               grid=0 in the input deck. NOTE: moment center is 
+c               to itrans,irotat,utrans...above. The moment center
+c               motion is input in the same way as grid motion, with
+c               grid=0 in the input deck. NOTE: moment center is
 c               stationary if itransmc = irotatmc = 0. The moment center
 c               parameters are global (not block) values.
 c
@@ -4628,7 +4628,7 @@ c
       if (ncg.gt.0) then
          do 650 n=1,ncg
          nbl          = nbl+1
-         itrans(nbl)  = itrans(nbl-1) 
+         itrans(nbl)  = itrans(nbl-1)
          utrans(nbl)  = utrans(nbl-1)
          vtrans(nbl)  = vtrans(nbl-1)
          wtrans(nbl)  = wtrans(nbl-1)
@@ -4776,7 +4776,7 @@ c
          read(iunit5,*)
          read(iunit5,*) nrotat
          write(iunit11,624)
-         write(iunit11,626) 
+         write(iunit11,626)
          write(iunit11,604) nrotat
          read(iunit5,*)
          write(iunit11,606)
@@ -4801,7 +4801,7 @@ c
             do 620 igrid=1,nrotat
             read(iunit5,*) igr,irota,(realval(i),i=1,7)
             rfreq = realval(1)
-            omegx = realval(2) 
+            omegx = realval(2)
             omegy = realval(3)
             omegz = realval(4)
             xorg  = realval(5)
@@ -4909,7 +4909,7 @@ c
          end if
 c
 c        store off t=0 values of xorig,yorig,zorig, and also xmc,ymc,zmc
-c        
+c
          xmc0 = xmc
          ymc0 = ymc
          zmc0 = zmc
@@ -4946,8 +4946,8 @@ c***** input for elastic grid motion  *****
 c
 c     idefrm  - deforming mesh flag
 c             = 0...rigid mesh
-c             > 0...deforming mesh 
-c               (99 indicates deformation 
+c             > 0...deforming mesh
+c               (99 indicates deformation
 c               due to aeroelastic effects)
 c
 c******************************************
@@ -5072,7 +5072,7 @@ c
            enddo
          enddo
          do ig=1,ngrid
-            nbl     = nblg(ig) 
+            nbl     = nblg(ig)
             jdim1   = jdimg(nbl)-1
             kdim1   = kdimg(nbl)-1
             idim1   = idimg(nbl)-1
@@ -5217,7 +5217,7 @@ c
             jskip(nbl,1) = min(jskip_i,jskip_k)
             kskip(nbl,1) = min(kskip_i,kskip_j)
 c
-         end do 
+         end do
 c
 c        account for 1-1 interfaces
 c
@@ -5421,7 +5421,7 @@ c                 no deformation...output (and use) default values
             write(iunit11,'(''    grid     icsi     icsf     jcsi'',
      .                      ''     jcsf     kcsi     kcsf'')')
 c
-c           reset nsegdfrm so it can be used again for setting the 
+c           reset nsegdfrm so it can be used again for setting the
 c           index ranges. NOTE: this assumes that the motion data
 c           set above and the index range data set below are in the
 c           same order on input
@@ -5459,7 +5459,7 @@ c
 c
          else if (ndefrm.lt.0) then
 c
-c           set segment counter and index ranges to correspond to all 
+c           set segment counter and index ranges to correspond to all
 c           solid surfaces.
 c
             ndefrm0 = 0
@@ -5493,7 +5493,7 @@ c
                nbl = nblg(ig)
                ncg = ncgg(ig)
                do iseg=1,nsegdfrm(nbl)
-                  idfrmseg(nbl,iseg) = idef           
+                  idfrmseg(nbl,iseg) = idef
                   if (idef.eq.2 .or. idef.eq.3) then
 c                    deformation via rotation
                      rfrqrae(nbl,iseg) = 2.*pi*rfr/lrefdef
@@ -5787,7 +5787,7 @@ c
          read(iunit5,*)
          read(iunit5,*)
          read(iunit5,*) nskip,isktyp,realval(1),realval(2),
-     .                  realval(3),realval(4),nsprgit 
+     .                  realval(3),realval(4),nsprgit
          beta1 = realval(1)
          alpha1= realval(2)
          beta2 = realval(3)
@@ -5818,7 +5818,7 @@ c
                  write(iunit11,'(/,'' WARNING: beta this small may '',
      .        ''severely compromise fidelity of surface geometry'',/)')
               end if
- 
+
               read(iunit5,*)
               do ng = 1,nskip
                  read(iunit5,*) igr,iskp,jskp,kskp
@@ -6017,8 +6017,8 @@ c                skip value must divide evenly into dim-1 value
                enddo
              enddo
             end if
-            if(nskip.eq.0) then 
-             do ng = 1,ngrid    
+            if(nskip.eq.0) then
+             do ng = 1,ngrid
                nbl          = nblg(ng)
                ncg          = ncgg(ng)
                jdim   = jdimg(nbl)
@@ -6028,12 +6028,12 @@ c                skip value must divide evenly into dim-1 value
                nskpj1(ng)   = 2
                nskpk1(ng)   = 2
                iskip(nbl,1) = 1
-               iskip(nbl,2) = idim 
+               iskip(nbl,2) = idim
                jskip(nbl,1) = 1
-               jskip(nbl,2) = jdim 
+               jskip(nbl,2) = jdim
                kskip(nbl,1) = 1
-               kskip(nbl,2) = kdim 
-             enddo  
+               kskip(nbl,2) = kdim
+             enddo
              do n = 1,abs(nbli)
                do ii = 1,2
                 nbl    = nblg(nblk(ii,n))
@@ -6044,24 +6044,24 @@ c                skip value must divide evenly into dim-1 value
                  if(isva(ii,jj,n).eq.1) then
                    if(limblk(ii,1,n).gt.1.and.limblk(ii,1,n).lt.idim)
      .                call skordr(nbl,nskpi1(nblk(ii,n)),
-     .                            limblk(ii,1,n),iskip,maxbl) 
+     .                            limblk(ii,1,n),iskip,maxbl)
                    if(limblk(ii,4,n).gt.1.and.limblk(ii,4,n).lt.idim)
      .                call skordr(nbl,nskpi1(nblk(ii,n)),
-     .                            limblk(ii,4,n),iskip,maxbl) 
+     .                            limblk(ii,4,n),iskip,maxbl)
                  else if(isva(ii,jj,n).eq.2) then
                    if(limblk(ii,2,n).gt.1.and.limblk(ii,2,n).lt.jdim)
      .                call skordr(nbl,nskpj1(nblk(ii,n)),
-     .                            limblk(ii,2,n),jskip,maxbl) 
+     .                            limblk(ii,2,n),jskip,maxbl)
                    if(limblk(ii,5,n).gt.1.and.limblk(ii,5,n).lt.jdim)
      .                call skordr(nbl,nskpj1(nblk(ii,n)),
-     .                              limblk(ii,5,n),jskip,maxbl) 
+     .                              limblk(ii,5,n),jskip,maxbl)
                  else if(isva(ii,jj,n).eq.3) then
                    if(limblk(ii,3,n).gt.1.and.limblk(ii,3,n).lt.kdim)
      .                call skordr(nbl,nskpk1(nblk(ii,n)),
-     .                            limblk(ii,3,n),kskip,maxbl) 
+     .                            limblk(ii,3,n),kskip,maxbl)
                    if(limblk(ii,6,n).gt.1.and.limblk(ii,6,n).lt.kdim)
      .                call skordr(nbl,nskpk1(nblk(ii,n)),
-     .                            limblk(ii,6,n),kskip,maxbl) 
+     .                            limblk(ii,6,n),kskip,maxbl)
                  end if
                 enddo
                enddo
@@ -6076,17 +6076,17 @@ c
 c
 c icsi surface boundary
 c
-                 if(icsi(nbl,iseg).gt.1.and.icsi(nbl,iseg).lt.idim) 
-     .              then 
+                 if(icsi(nbl,iseg).gt.1.and.icsi(nbl,iseg).lt.idim)
+     .              then
                   call skordr(nbl,nskpi1(n),icsi(nbl,iseg)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
 c
 c          Check J0 boundary
 c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,jbcinfo,nbcj0,icsi) 
+     .                          iskip,nskpi1,jbcinfo,nbcj0,icsi)
                   end if
 c
 c          Check JDIM boundary
@@ -6094,7 +6094,7 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.jdim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsi) 
+     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsi)
                   end if
 c
 c          Check K0 boundary
@@ -6102,7 +6102,7 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,kbcinfo,nbck0,icsi) 
+     .                          iskip,nskpi1,kbcinfo,nbck0,icsi)
                   end if
 c
 c          Check KDIM boundary
@@ -6110,23 +6110,23 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.kdim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,kbcinfo,nbckdim,icsi) 
+     .                          iskip,nskpi1,kbcinfo,nbckdim,icsi)
                   end if
                  end if
 c
 c icsf surface boundary
 c
                  if(icsf(nbl,iseg).gt.1.and.icsf(nbl,iseg).lt.idim)
-     .              then 
+     .              then
                   call skordr(nbl,nskpi1(n),icsf(nbl,iseg)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
 c
 c          Check J0 boundary
 c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,jbcinfo,nbcj0,icsf) 
+     .                          iskip,nskpi1,jbcinfo,nbcj0,icsf)
                   end if
 c
 c          Check JDIM boundary
@@ -6134,7 +6134,7 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.jdim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsf) 
+     .                          iskip,nskpi1,jbcinfo,nbcjdim,icsf)
                   end if
 c
 c          Check K0 boundary
@@ -6142,7 +6142,7 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,kbcinfo,nbck0,icsf) 
+     .                          iskip,nskpi1,kbcinfo,nbck0,icsf)
                   end if
 c
 c          Check KDIM boundary
@@ -6150,23 +6150,23 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.kdim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          iskip,nskpi1,kbcinfo,nbckdim,icsf) 
+     .                          iskip,nskpi1,kbcinfo,nbckdim,icsf)
                   end if
                  end if
 c
 c jcsi surface boundary
 c
                  if(jcsi(nbl,iseg).gt.1.and.jcsi(nbl,iseg).lt.jdim)
-     .              then 
+     .              then
                   call skordr(nbl,nskpj1(n),jcsi(nbl,iseg)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
 c
 c          Check K0 boundary
 c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,kbcinfo,nbck0,jcsi) 
+     .                          jskip,nskpj1,kbcinfo,nbck0,jcsi)
                   end if
 c
 c          Check KDIM boundary
@@ -6174,7 +6174,7 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.kdim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsi) 
+     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsi)
                   end if
 c
 c          Check I0 boundary
@@ -6182,7 +6182,7 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,ibcinfo,nbci0,jcsi) 
+     .                          jskip,nskpj1,ibcinfo,nbci0,jcsi)
                   end if
 c
 c          Check IDIM boundary
@@ -6190,23 +6190,23 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.idim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsi) 
+     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsi)
                   end if
                  end if
 c
 c jcsf surface boundary
 c
                  if(jcsf(nbl,iseg).gt.1.and.jcsf(nbl,iseg).lt.jdim)
-     .              then 
+     .              then
                   call skordr(nbl,nskpj1(n),jcsf(nbl,iseg)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
 c
 c          Check K0 boundary
 c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,kbcinfo,nbck0,jcsf) 
+     .                          jskip,nskpj1,kbcinfo,nbck0,jcsf)
                   end if
 c
 c          Check KDIM boundary
@@ -6214,7 +6214,7 @@ c
                   if(kcsi(nbl,iseg).eq.kcsf(nbl,iseg).and.
      .               kcsi(nbl,iseg).eq.kdim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsf) 
+     .                          jskip,nskpj1,kbcinfo,nbckdim,jcsf)
                   end if
 c
 c          Check I0 boundary
@@ -6222,7 +6222,7 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,2,3,1,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,ibcinfo,nbci0,jcsf) 
+     .                          jskip,nskpj1,ibcinfo,nbci0,jcsf)
                   end if
 c
 c          Check IDIM boundary
@@ -6230,23 +6230,23 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.idim) then
                     call bndchk(n,nbl,iseg,2,3,2,maxbl,maxsegdg,maxseg,
-     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsf) 
+     .                          jskip,nskpj1,ibcinfo,nbcidim,jcsf)
                   end if
                  end if
 c
 c kcsi surface boundary
 c
                  if(kcsi(nbl,iseg).gt.1.and.kcsi(nbl,iseg).lt.kdim)
-     .              then 
+     .              then
                   call skordr(nbl,nskpk1(n),kcsi(nbl,iseg)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
 c
 c          Check I0 boundary
 c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,ibcinfo,nbci0,kcsi) 
+     .                          kskip,nskpk1,ibcinfo,nbci0,kcsi)
                   end if
 c
 c          Check IDIM boundary
@@ -6254,7 +6254,7 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.idim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsi) 
+     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsi)
                   end if
 c
 c          Check J0 boundary
@@ -6262,7 +6262,7 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsi) 
+     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsi)
                   end if
 c
 c          Check JDIM boundary
@@ -6270,23 +6270,23 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.jdim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsi) 
+     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsi)
                   end if
                  end if
 c
 c kcsf surface boundary
 c
                  if(kcsf(nbl,iseg).gt.1.and.kcsf(nbl,iseg).lt.kdim)
-     .              then 
+     .              then
                   call skordr(nbl,nskpk1(n),kcsf(nbl,iseg)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
 c
 c          Check I0 boundary
 c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,ibcinfo,nbci0,kcsf) 
+     .                          kskip,nskpk1,ibcinfo,nbci0,kcsf)
                   end if
 c
 c          Check IDIM boundary
@@ -6294,7 +6294,7 @@ c
                   if(icsi(nbl,iseg).eq.icsf(nbl,iseg).and.
      .               icsi(nbl,iseg).eq.idim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsf) 
+     .                          kskip,nskpk1,ibcinfo,nbcidim,kcsf)
                   end if
 c
 c          Check J0 boundary
@@ -6302,7 +6302,7 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.1) then
                     call bndchk(n,nbl,iseg,4,5,1,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsf) 
+     .                          kskip,nskpk1,jbcinfo,nbcj0,kcsf)
                   end if
 c
 c          Check JDIM boundary
@@ -6310,7 +6310,7 @@ c
                   if(jcsi(nbl,iseg).eq.jcsf(nbl,iseg).and.
      .               jcsi(nbl,iseg).eq.jdim) then
                     call bndchk(n,nbl,iseg,4,5,2,maxbl,maxsegdg,maxseg,
-     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsf) 
+     .                          kskip,nskpk1,jbcinfo,nbcjdim,kcsf)
                   end if
                  end if
                enddo
@@ -6322,111 +6322,111 @@ c
                idim   = idimg(nbl)
                do iseg=1,nbci0(nbl)
                  if   (ibcinfo(nbl,iseg,2,1).gt.1.
-     .             and.ibcinfo(nbl,iseg,2,1).lt.jdim) 
+     .             and.ibcinfo(nbl,iseg,2,1).lt.jdim)
      .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,2,1)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (ibcinfo(nbl,iseg,3,1).gt.1.
-     .             and.ibcinfo(nbl,iseg,3,1).lt.jdim) 
+     .             and.ibcinfo(nbl,iseg,3,1).lt.jdim)
      .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,3,1)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (ibcinfo(nbl,iseg,4,1).gt.1.
-     .             and.ibcinfo(nbl,iseg,4,1).lt.kdim) 
+     .             and.ibcinfo(nbl,iseg,4,1).lt.kdim)
      .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,4,1)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                  if   (ibcinfo(nbl,iseg,5,1).gt.1.
-     .             and.ibcinfo(nbl,iseg,5,1).lt.kdim) 
+     .             and.ibcinfo(nbl,iseg,5,1).lt.kdim)
      .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,5,1)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                enddo
                do iseg=1,nbcidim(nbl)
                  if   (ibcinfo(nbl,iseg,2,2).gt.1.
-     .             and.ibcinfo(nbl,iseg,2,2).lt.jdim) 
+     .             and.ibcinfo(nbl,iseg,2,2).lt.jdim)
      .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,2,2)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (ibcinfo(nbl,iseg,3,2).gt.1.
-     .             and.ibcinfo(nbl,iseg,3,2).lt.jdim) 
+     .             and.ibcinfo(nbl,iseg,3,2).lt.jdim)
      .             call skordr(nbl,nskpj1(n),ibcinfo(nbl,iseg,3,2)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (ibcinfo(nbl,iseg,4,2).gt.1.
-     .             and.ibcinfo(nbl,iseg,4,2).lt.kdim) 
+     .             and.ibcinfo(nbl,iseg,4,2).lt.kdim)
      .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,4,2)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                  if   (ibcinfo(nbl,iseg,5,2).gt.1.
-     .             and.ibcinfo(nbl,iseg,5,2).lt.kdim) 
+     .             and.ibcinfo(nbl,iseg,5,2).lt.kdim)
      .             call skordr(nbl,nskpk1(n),ibcinfo(nbl,iseg,5,2)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                enddo
                do iseg=1,nbcj0(nbl)
                  if   (jbcinfo(nbl,iseg,2,1).gt.1.
-     .             and.jbcinfo(nbl,iseg,2,1).lt.idim) 
+     .             and.jbcinfo(nbl,iseg,2,1).lt.idim)
      .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,2,1)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (jbcinfo(nbl,iseg,3,1).gt.1.
-     .             and.jbcinfo(nbl,iseg,3,1).lt.idim) 
+     .             and.jbcinfo(nbl,iseg,3,1).lt.idim)
      .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,3,1)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (jbcinfo(nbl,iseg,4,1).gt.1.
-     .             and.jbcinfo(nbl,iseg,4,1).lt.kdim) 
+     .             and.jbcinfo(nbl,iseg,4,1).lt.kdim)
      .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,4,1)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                  if   (jbcinfo(nbl,iseg,5,1).gt.1.
-     .             and.jbcinfo(nbl,iseg,5,1).lt.kdim) 
+     .             and.jbcinfo(nbl,iseg,5,1).lt.kdim)
      .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,5,1)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                enddo
                do iseg=1,nbcjdim(nbl)
                  if   (jbcinfo(nbl,iseg,2,2).gt.1.
-     .             and.jbcinfo(nbl,iseg,2,2).lt.idim) 
+     .             and.jbcinfo(nbl,iseg,2,2).lt.idim)
      .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,2,2)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (jbcinfo(nbl,iseg,3,2).gt.1.
-     .             and.jbcinfo(nbl,iseg,3,2).lt.idim) 
+     .             and.jbcinfo(nbl,iseg,3,2).lt.idim)
      .             call skordr(nbl,nskpi1(n),jbcinfo(nbl,iseg,3,2)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (jbcinfo(nbl,iseg,4,2).gt.1.
-     .             and.jbcinfo(nbl,iseg,4,2).lt.kdim) 
+     .             and.jbcinfo(nbl,iseg,4,2).lt.kdim)
      .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,4,2)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                  if   (jbcinfo(nbl,iseg,5,2).gt.1.
-     .             and.jbcinfo(nbl,iseg,5,2).lt.kdim) 
+     .             and.jbcinfo(nbl,iseg,5,2).lt.kdim)
      .             call skordr(nbl,nskpk1(n),jbcinfo(nbl,iseg,5,2)
-     .                        ,kskip,maxbl) 
+     .                        ,kskip,maxbl)
                enddo
                do iseg=1,nbck0(nbl)
                  if   (kbcinfo(nbl,iseg,2,1).gt.1.
-     .             and.kbcinfo(nbl,iseg,2,1).lt.idim) 
+     .             and.kbcinfo(nbl,iseg,2,1).lt.idim)
      .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,2,1)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (kbcinfo(nbl,iseg,3,1).gt.1.
-     .             and.kbcinfo(nbl,iseg,3,1).lt.idim) 
+     .             and.kbcinfo(nbl,iseg,3,1).lt.idim)
      .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,3,1)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (kbcinfo(nbl,iseg,4,1).gt.1.
-     .             and.kbcinfo(nbl,iseg,4,1).lt.jdim) 
+     .             and.kbcinfo(nbl,iseg,4,1).lt.jdim)
      .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,4,1)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (kbcinfo(nbl,iseg,5,1).gt.1.
-     .             and.kbcinfo(nbl,iseg,5,1).lt.jdim) 
+     .             and.kbcinfo(nbl,iseg,5,1).lt.jdim)
      .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,5,1)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                enddo
                do iseg=1,nbckdim(nbl)
                  if   (kbcinfo(nbl,iseg,2,2).gt.1.
-     .             and.kbcinfo(nbl,iseg,2,2).lt.idim) 
+     .             and.kbcinfo(nbl,iseg,2,2).lt.idim)
      .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,2,2)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (kbcinfo(nbl,iseg,3,2).gt.1.
-     .             and.kbcinfo(nbl,iseg,3,2).lt.idim) 
+     .             and.kbcinfo(nbl,iseg,3,2).lt.idim)
      .             call skordr(nbl,nskpi1(n),kbcinfo(nbl,iseg,3,2)
-     .                        ,iskip,maxbl) 
+     .                        ,iskip,maxbl)
                  if   (kbcinfo(nbl,iseg,4,2).gt.1.
-     .             and.kbcinfo(nbl,iseg,4,2).lt.jdim) 
+     .             and.kbcinfo(nbl,iseg,4,2).lt.jdim)
      .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,4,2)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                  if   (kbcinfo(nbl,iseg,5,2).gt.1.
-     .             and.kbcinfo(nbl,iseg,5,2).lt.jdim) 
+     .             and.kbcinfo(nbl,iseg,5,2).lt.jdim)
      .             call skordr(nbl,nskpj1(n),kbcinfo(nbl,iseg,5,2)
-     .                        ,jskip,maxbl) 
+     .                        ,jskip,maxbl)
                enddo
              enddo
             end if
@@ -6435,7 +6435,7 @@ c
               nskpsmn = 0
               itcpadd = itcpadd + 1
               do n = 1,ngrid
-                nskpsmo = nskpsmo+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+                nskpsmo = nskpsmo+nskpi1(n)+nskpj1(n)+nskpk1(n)
               enddo
               do n = 1,abs(nbli)
                nbl1   = nblg(nblk(1,n))
@@ -6445,23 +6445,23 @@ c
                nbl2   = nblg(nblk(2,n))
                jdim2  = jdimg(nbl2)
                kdim2  = kdimg(nbl2)
-               idim2  = idimg(nbl2) 
-               do jj = 1,2    
-                if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.1) then 
+               idim2  = idimg(nbl2)
+               do jj = 1,2
+                if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.1) then
                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
      .                       limblk(1,1,n),limblk(1,4,n),limblk(2,1,n),
      .                       limblk(2,4,n),nskpi1(nblk(1,n)),
-     .                       iskip(nbl1,1:500),nskpi1(nblk(2,n)), 
+     .                       iskip(nbl1,1:500),nskpi1(nblk(2,n)),
      .                       iskip(nbl2,1:500),maxbl,idim1,idim2,1,1)
-                else          
-     .          if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.2) then 
+                else
+     .          if(isva(1,jj,n).eq.1.and.isva(2,jj,n).eq.2) then
                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
      .                       limblk(1,1,n),limblk(1,4,n),limblk(2,2,n),
      .                       limblk(2,5,n),nskpi1(nblk(1,n)),
-     .                       iskip(nbl1,1:500),nskpj1(nblk(2,n)), 
+     .                       iskip(nbl1,1:500),nskpj1(nblk(2,n)),
      .                       jskip(nbl2,1:500),maxbl,idim1,jdim2,1,2)
-                else          
-     .          if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.1) then 
+                else
+     .          if(isva(1,jj,n).eq.2.and.isva(2,jj,n).eq.1) then
                   call cpadd(nbl1,nbl2,nblk(1,n),nblk(2,n),
      .                       limblk(1,2,n),limblk(1,5,n),limblk(2,1,n),
      .                       limblk(2,4,n),nskpj1(nblk(1,n)),
@@ -6513,12 +6513,12 @@ c
                enddo
               enddo
               do n = 1,ngrid
-                nskpsmn = nskpsmn+nskpi1(n)+nskpj1(n)+nskpk1(n) 
+                nskpsmn = nskpsmn+nskpi1(n)+nskpj1(n)+nskpk1(n)
               enddo
               if(nskpsmn.eq.nskpsmo) goto 378
             enddo
-378         continue 
-            do n = 1,ngrid    
+378         continue
+            do n = 1,ngrid
               nbl   = nblg(n)
               do jj = 1,nskpi1(n)
                 iskipt(nbl,jj) = iskip(nbl,jj)
@@ -6603,14 +6603,14 @@ c
                     do ii = 1,nskpi1(ng)
                       iskip(nbl,ii) = (iskip(nbl-1,ii)-1)/2 + 1
                       iskipt(nbl,ii)= iskip(nbl,ii)
-                      riskp(nbl,ii) = .5*real(iskip(nbl-1,ii)-1) + 1.0  
+                      riskp(nbl,ii) = .5*real(iskip(nbl-1,ii)-1) + 1.0
                     end do
-                    do ii = 2,nskpi1(ng)-1  
+                    do ii = 2,nskpi1(ng)-1
                       if(iskip(nbl,ii).ge.iskip(nbl,ii+1).and.
-     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii)) 
+     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii))
      .                    iskip(nbl,ii) = iskip(nbl,ii)-1
                       if(iskip(nbl,ii).le.iskip(nbl,ii-1).and.
-     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii))  
+     .                   real(iskip(nbl,ii)).ne.riskp(nbl,ii))
      .                    iskip(nbl,ii) = iskip(nbl,ii)+1
                     enddo
                     do ii = 1,nskpi1(ng)
@@ -6627,7 +6627,7 @@ c
                       iskipt(nbl,ii)= iskip(nbl,ii)
                     enddo
                   enddo
-                end if 
+                end if
                 nbl = nblg(ng)
                 do ii = 1,nskpj1(ng)
                   jskipt(nbl,ii)= jskip(nbl,ii)
@@ -6763,9 +6763,9 @@ c
           enddo
          end if
 c
-c        for all blocks that have not yet been identified as 
-c        deforming, set idefrm flag to 999...indicating the mesh 
-c        deforms, but only through interaction with other blocks 
+c        for all blocks that have not yet been identified as
+c        deforming, set idefrm flag to 999...indicating the mesh
+c        deforms, but only through interaction with other blocks
 c        containing moving solid surfaces. also set index ranges
 c        to include entire block
 c
@@ -6785,7 +6785,7 @@ c
          end do
 c
 c        multi-mode grid movement data - used to couple rigid and
-c        deforming grid motions, or deforming translation plus 
+c        deforming grid motions, or deforming translation plus
 c        deforming rotation.
 c
          read(iunit5,*)
@@ -6827,7 +6827,7 @@ c
                    do n=1,ncg
                       nblslav = nblslav + 1
                       if (nblmast.gt.0) then
-                         nblmast = nblmast + 1 
+                         nblmast = nblmast + 1
                          xorig(nblmast) = xorig(nblmast-1)
                          yorig(nblmast) = yorig(nblmast-1)
                          zorig(nblmast) = zorig(nblmast-1)
@@ -6872,7 +6872,7 @@ c
                    do n=1,ncg
                       nblslav = nblslav + 1
                       if (nblmast.gt.0) then
-                         nblmast = nblmast + 1 
+                         nblmast = nblmast + 1
                          xorig(nblmast) = xorig(nblmast-1)
                          yorig(nblmast) = yorig(nblmast-1)
                          zorig(nblmast) = zorig(nblmast-1)
@@ -6950,7 +6950,7 @@ c
                   write(iunit11,'('' stopping...at least one index'',
      .                           '' must be constant on a deforming'',
      .                           '' surface'')')
-               end if 
+               end if
                isum = iok + jok + kok + lconst
                if (isum.ne.4) then
                   write(iunit11,'(''   segment'',i3,'' block '',
@@ -7113,7 +7113,7 @@ c
       do 114 nbl=1,nblock
       if (levelc.ne.levelg(nbl)) go to 114
       igrid = igridg(nbl)
-      ncell(levelc) = ncell(levelc) 
+      ncell(levelc) = ncell(levelc)
      .              + (jdimg(nbl)-1)*(kdimg(nbl)-1)*(idimg(nbl)-1)
       write(iunit11,7)levelg(nbl),igrid,nbl
   114 continue
@@ -7147,7 +7147,7 @@ c
  7227 format(/,26h SUMMARY OF GRID SEQUENCES)
       write(iunit11,9)
     9 format(2x,8hsequence,3x,14hstarting level,5x,12hending level,
-     .       2x,28hcells(finest global+embeded)) 
+     .       2x,28hcells(finest global+embeded))
       do 19 m=1,mseq
       if (nemgl(m).eq.0) then
          ncellseq = ncell(levelt(m))
@@ -7213,19 +7213,19 @@ c
 c    check to see if the limblk values are valid
 c
          do 9025 ib = 1, 2
-         ntblk = nblg(nblk(ib,n)) 
+         ntblk = nblg(nblk(ib,n))
          iflag = 0
-         if (limblk(ib,1,n).lt.1 .or. 
+         if (limblk(ib,1,n).lt.1 .or.
      .       limblk(ib,1,n).gt.idimg(ntblk)) iflag = 1
-         if (limblk(ib,2,n).lt.1 .or. 
+         if (limblk(ib,2,n).lt.1 .or.
      .       limblk(ib,2,n).gt.jdimg(ntblk)) iflag = 1
-         if (limblk(ib,3,n).lt.1 .or. 
+         if (limblk(ib,3,n).lt.1 .or.
      .       limblk(ib,3,n).gt.kdimg(ntblk)) iflag = 1
-         if (limblk(ib,4,n).lt.1 .or. 
+         if (limblk(ib,4,n).lt.1 .or.
      .       limblk(ib,4,n).gt.idimg(ntblk)) iflag = 1
-         if (limblk(ib,5,n).lt.1 .or. 
+         if (limblk(ib,5,n).lt.1 .or.
      .       limblk(ib,5,n).gt.jdimg(ntblk)) iflag = 1
-         if (limblk(ib,6,n).lt.1 .or. 
+         if (limblk(ib,6,n).lt.1 .or.
      .       limblk(ib,6,n).gt.kdimg(ntblk)) iflag = 1
          if (iflag.eq.1) then
             write(iunit11,9550) ib,n
@@ -7265,12 +7265,12 @@ c
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
          end if
          n1   = nblk(1,n)
-         n2   = nblg(nblk(1,n))  
+         n2   = nblg(nblk(1,n))
 c        if (i1b1+i2b1.eq.3) write(15,9650) '1','  k',n,n1,n2
 c        if (i1b1+i2b1.eq.4) write(15,9650) '1','  j',n,n1,n2
 c        if (i1b1+i2b1.eq.5) write(15,9650) '1','n i',n,n1,n2
          n1   = nblk(2,n)
-         n2   = nblg(nblk(2,n))  
+         n2   = nblg(nblk(2,n))
 c        if (i1b2+i2b2.eq.3) write(15,9650) '2','  k',n,n1,n2
 c        if (i1b2+i2b2.eq.4) write(15,9650) '2','  j',n,n1,n2
 c        if (i1b2+i2b2.eq.5) write(15,9650) '2','n i',n,n1,n2
@@ -7301,7 +7301,7 @@ c           write(15,9800)
             itest1 = (limblk(ib,l,lpoint) - 1)/2 + 1
             itest2 = limblk(ib,l,lpoint)/2 + 1
             if (itest1 .ne. itest2 .and. itest1.ne.1) then
-              write(iunit11,9850) ib 
+              write(iunit11,9850) ib
               write(iunit11,*) itest1,itest2
               write(iunit11,*) limblk(ib,l,lpoint)
                call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
@@ -7381,7 +7381,7 @@ c
 c
       return
       end
- 
+
        subroutine blocking_skip(nskip1,nskip2,nskipt1,nskipt2)
 c
 c      This subroutine checks if the iskip,jskip,kskip
@@ -7418,7 +7418,7 @@ c
          enddo
         end if
        end if
- 
+
        return
        end
        subroutine skordr(nbl,nskp,i1,ijkskip,maxbl)
@@ -7426,47 +7426,47 @@ c
        do ii1 = nskp,1,-1
          if(ijkskip(nbl,ii1).eq.i1) return
        enddo
-       nskp = nskp + 1 
-       ijkskip(nbl,nskp) = ijkskip(nbl,nskp-1) 
+       nskp = nskp + 1
+       ijkskip(nbl,nskp) = ijkskip(nbl,nskp-1)
        do ii1 = nskp-1,2,-1
          if(ijkskip(nbl,ii1-1).lt.i1) then
            ijkskip(nbl,ii1) = i1
-           return 
+           return
          else
-           ijkskip(nbl,ii1) = ijkskip(nbl,ii1-1) 
+           ijkskip(nbl,ii1) = ijkskip(nbl,ii1-1)
          end if
        enddo
        return
        end
        subroutine bndchk(n,nbl,iseg,n1,n2,n3,maxbl,maxsegdg,maxseg,
-     .                   ijkskip,nskpijk1,nbcinfo,nbc,ncs) 
+     .                   ijkskip,nskpijk1,nbcinfo,nbc,ncs)
        dimension nbcinfo(maxbl,maxseg,7,2),ijkskip(maxbl,500)
        dimension nskpijk1(maxbl),nbc(maxbl)
        dimension ncs(maxbl,maxsegdg)
 c
        do nseg=1,nbc(nbl)
-        if(nbcinfo(nbl,nseg,1,n3).eq.2004.or. 
-     .     nbcinfo(nbl,nseg,1,n3).eq.1005.or. 
+        if(nbcinfo(nbl,nseg,1,n3).eq.2004.or.
+     .     nbcinfo(nbl,nseg,1,n3).eq.1005.or.
      .     nbcinfo(nbl,nseg,1,n3).eq.1006.or.
      .     nbcinfo(nbl,nseg,1,n3).eq.2014.or.
      .     nbcinfo(nbl,nseg,1,n3).eq.2024.or.
      .     nbcinfo(nbl,nseg,1,n3).eq.2034.or.
      .     nbcinfo(nbl,nseg,1,n3).eq.2016) then
-           if(nbcinfo(nbl,nseg,n1,n3).lt.ncs(nbl,iseg).and.      
-     .        nbcinfo(nbl,nseg,n2,n3).ge.ncs(nbl,iseg)) 
+           if(nbcinfo(nbl,nseg,n1,n3).lt.ncs(nbl,iseg).and.
+     .        nbcinfo(nbl,nseg,n2,n3).ge.ncs(nbl,iseg))
      .        call skordr(nbl,nskpijk1(n),ncs(nbl,iseg)-1
-     .                    ,ijkskip,maxbl) 
-           if(nbcinfo(nbl,nseg,n1,n3).le.ncs(nbl,iseg).and.      
-     .        nbcinfo(nbl,nseg,n2,n3).gt.ncs(nbl,iseg)) 
+     .                    ,ijkskip,maxbl)
+           if(nbcinfo(nbl,nseg,n1,n3).le.ncs(nbl,iseg).and.
+     .        nbcinfo(nbl,nseg,n2,n3).gt.ncs(nbl,iseg))
      .        call skordr(nbl,nskpijk1(n),ncs(nbl,iseg)+1
-     .                    ,ijkskip,maxbl) 
-        end if  
+     .                    ,ijkskip,maxbl)
+        end if
        enddo
        return
        end
        subroutine cpadd(nbl1,nbl2,nblk1,nblk2,lmblk11,lmblk12,
      .                  lmblk21,lmblk22,nskp1,ijkskip1,nskp2,
-     .                  ijkskip2,maxbl,ijkdim1,ijkdim2,icrd1,icrd2) 
+     .                  ijkskip2,maxbl,ijkdim1,ijkdim2,icrd1,icrd2)
        dimension ijkskip1(500),ijkskip2(500)
        dimension ijkskpt1(maxbl,500),ijkskpt2(maxbl,500)
 c
@@ -7489,164 +7489,164 @@ c
        if((nblk1.eq.nblk2).and.(icrd1.eq.icrd2)) then
          if(lmblk11.lt.lmblk12) then
            if(lmblk21.lt.lmblk22) then
-             do n1 = lmskp11,lmskp12   
+             do n1 = lmskp11,lmskp12
                itst1 = ijkskip1(n1) - lmblk11 + lmblk21
-               do n2 = lmskp21,lmskp22   
+               do n2 = lmskp21,lmskp22
                  if(ijkskip2(n2).eq.itst1) goto 100
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 100            continue
              enddo
-             do n2 = lmskp21,lmskp22   
+             do n2 = lmskp21,lmskp22
                itst1 = ijkskip2(n2) - lmblk21 + lmblk11
-               do n1 = lmskp11,lmskp12   
+               do n1 = lmskp11,lmskp12
                  if(itst1.eq.ijkskip1(n1)) goto 200
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 200            continue
              enddo
            else
-             do n1 = lmskp11,lmskp12   
+             do n1 = lmskp11,lmskp12
                itst1 = lmblk12 - ijkskip1(n1) + lmblk22
-               do n2 = lmskp22,lmskp21   
+               do n2 = lmskp22,lmskp21
                  if(ijkskip2(n2).eq.itst1) goto 300
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 300            continue
              enddo
-             do n2 = lmskp22,lmskp21   
-               itst1 = lmblk21 - ijkskip2(n2) + lmblk11  
-               do n1 = lmskp11,lmskp12   
+             do n2 = lmskp22,lmskp21
+               itst1 = lmblk21 - ijkskip2(n2) + lmblk11
+               do n1 = lmskp11,lmskp12
                  if(itst1.eq.ijkskip1(n1)) goto 400
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 400            continue
              enddo
-           end if 
+           end if
          else
            if(lmblk21.lt.lmblk22) then
-             do n1 = lmskp12,lmskp11   
+             do n1 = lmskp12,lmskp11
                itst1 = lmblk11 - ijkskip1(n1) + lmblk21
-               do n2 = lmskp21,lmskp22   
+               do n2 = lmskp21,lmskp22
                  if(ijkskip2(n2).eq.itst1) goto 500
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 500            continue
              enddo
-             do n2 = lmskp21,lmskp22   
+             do n2 = lmskp21,lmskp22
                itst1 = lmblk22 - ijkskip2(n2) + lmblk12
-               do n1 = lmskp12,lmskp11   
+               do n1 = lmskp12,lmskp11
                  if(itst1.eq.ijkskip1(n1)) goto 600
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 600            continue
-             enddo 
+             enddo
            else
-             do n1 = lmskp12,lmskp11   
+             do n1 = lmskp12,lmskp11
                itst1 = ijkskip1(n1) - lmblk12 + lmblk22
-               do n2 = lmskp22,lmskp21   
+               do n2 = lmskp22,lmskp21
                  if(ijkskip2(n2).eq.itst1) goto 700
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 700            continue
              enddo
-             do n2 = lmskp22,lmskp21   
+             do n2 = lmskp22,lmskp21
                itst1 = ijkskip2(n2) - lmblk22 + lmblk12
-               do n1 = lmskp12,lmskp11   
+               do n1 = lmskp12,lmskp11
                  if(itst1.eq.ijkskip1(n1)) goto 800
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 800            continue
              enddo
-           end if 
+           end if
          end if
          nskp1 = nskp2
          do n = 1,nskp1
            ijkskip1(n) = ijkskpt2(nbl2,n)
-         enddo 
+         enddo
          do n = 1,nskp2
            ijkskip2(n) = ijkskpt2(nbl2,n)
-         enddo 
-       else 
+         enddo
+       else
          if(lmblk11.lt.lmblk12) then
            if(lmblk21.lt.lmblk22) then
-             do n1 = lmskp11,lmskp12   
+             do n1 = lmskp11,lmskp12
                itst1 = ijkskip1(n1) - lmblk11 + lmblk21
-               do n2 = lmskp21,lmskp22   
+               do n2 = lmskp21,lmskp22
                  if(ijkskip2(n2).eq.itst1) goto 1100
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 1100           continue
              enddo
-             do n2 = lmskp21,lmskp22   
+             do n2 = lmskp21,lmskp22
                itst1 = ijkskip2(n2) - lmblk21 + lmblk11
-               do n1 = lmskp11,lmskp12   
+               do n1 = lmskp11,lmskp12
                  if(itst1.eq.ijkskip1(n1)) goto 1200
                enddo
                call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
 1200           continue
              enddo
            else
-             do n1 = lmskp11,lmskp12   
+             do n1 = lmskp11,lmskp12
                itst1 = lmblk12 - ijkskip1(n1) + lmblk22
-               do n2 = lmskp22,lmskp21   
+               do n2 = lmskp22,lmskp21
                  if(ijkskip2(n2).eq.itst1) goto 1300
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 1300           continue
              enddo
-             do n2 = lmskp22,lmskp21   
-               itst1 = lmblk21 - ijkskip2(n2) + lmblk11  
-               do n1 = lmskp11,lmskp12   
+             do n2 = lmskp22,lmskp21
+               itst1 = lmblk21 - ijkskip2(n2) + lmblk11
+               do n1 = lmskp11,lmskp12
                  if(itst1.eq.ijkskip1(n1)) goto 1400
                enddo
                call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
 1400           continue
              enddo
-           end if 
+           end if
          else
            if(lmblk21.lt.lmblk22) then
-             do n1 = lmskp12,lmskp11   
+             do n1 = lmskp12,lmskp11
                itst1 = lmblk11 - ijkskip1(n1) + lmblk21
-               do n2 = lmskp21,lmskp22   
+               do n2 = lmskp21,lmskp22
                  if(ijkskip2(n2).eq.itst1) goto 1500
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 1500           continue
              enddo
-             do n2 = lmskp21,lmskp22   
+             do n2 = lmskp21,lmskp22
                itst1 = lmblk22 - ijkskip2(n2) + lmblk12
-               do n1 = lmskp12,lmskp11   
+               do n1 = lmskp12,lmskp11
                  if(itst1.eq.ijkskip1(n1)) goto 1600
                enddo
                call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
 1600           continue
-             enddo 
+             enddo
            else
-             do n1 = lmskp12,lmskp11   
+             do n1 = lmskp12,lmskp11
                itst1 = ijkskip1(n1) - lmblk12 + lmblk22
-               do n2 = lmskp22,lmskp21   
+               do n2 = lmskp22,lmskp21
                  if(ijkskip2(n2).eq.itst1) goto 1700
                enddo
                call skordr(nbl2,nskp2,itst1,ijkskpt2,maxbl)
 1700           continue
              enddo
-             do n2 = lmskp22,lmskp21   
+             do n2 = lmskp22,lmskp21
                itst1 = ijkskip2(n2) - lmblk22 + lmblk12
-               do n1 = lmskp12,lmskp11   
+               do n1 = lmskp12,lmskp11
                  if(itst1.eq.ijkskip1(n1)) goto 1800
                enddo
                call skordr(nbl1,nskp1,itst1,ijkskpt1,maxbl)
 1800           continue
              enddo
-           end if 
+           end if
          end if
          do n = 1,nskp1
            ijkskip1(n) = ijkskpt1(nbl1,n)
-         enddo 
+         enddo
          do n = 1,nskp2
            ijkskip2(n) = ijkskpt2(nbl2,n)
-         enddo 
+         enddo
        end if
        return
        end

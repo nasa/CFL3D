@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -49,10 +49,10 @@ c     maxbl   - maximum number of blocks
 c     intmx   - maximum number of block interpolations
 c     mptch   - maximum dim. of any block face involved in a dynamic
 c               patch interface
-c     mxxe    - size of 1-d array used to store interpolation 
+c     mxxe    - size of 1-d array used to store interpolation
 c               coefficients for all dynamic patch interfaces,
 c               including those on coarser blocks
-c     msub1   - maximum number of blocks a single dynamic patch face 
+c     msub1   - maximum number of blocks a single dynamic patch face
 c               may be interpolated from
 c
 #   ifdef CMPLX
@@ -152,24 +152,24 @@ c
       write(iunit25,36)nintr
 c
 c     NOTE:  A patched grid with two-way communciation between
-c            the grids on either side of the patch requires at 
+c            the grids on either side of the patch requires at
 c            least 2 block interpolations.
 c
 c      int   - patch interpolation number
 c      iifit - type of fit
 c            = 1 bi-linear fit
 c            = 2 serendipity (degenerate) bi-quadratic fit
-c            = 3 quadratic fit in xie, linear fit in eta 
+c            = 3 quadratic fit in xie, linear fit in eta
 c            = 4 linear fit in xie, quadratic fit in eta
 c     llimit - maximum step size to find cell centers (Newton iteration)
 c     iitmax - maximum number of iterations for the above
 c     mmcxie - percent (0-100) of the total number of points on xie=0
-c              "to" boundary which may be found to be not coincident 
+c              "to" boundary which may be found to be not coincident
 c              with the "from" xie=0 boundary before the entire
-c              boundary is assumed not to be coincident. 
+c              boundary is assumed not to be coincident.
 c              If mmcxie > 100, then the boundaries are assumed to be
 c              coincident regardless of the number of individual points
-c              found not to be coincident, and steps are taken to 
+c              found not to be coincident, and steps are taken to
 c              render them coincident in computational space
 c     mmceta - same as mmcxie, but for eta=0 boundary
 c
@@ -185,11 +185,11 @@ c      ifrom - block number/topology of "from" surface(s)
 c
 c     NOTE:  The general form is ifrom (or ito) = Nmn,
 c            where N  indicates the global block number of the block
-c                  m  indicates the generalized coodinate which is 
+c                  m  indicates the generalized coodinate which is
 c                     constant along the patch surface (m=1 implies
 c                     i=const, m=2 implies j=const,
 c                     and m=3 implies k=const)
-c                  n  indicates on which of the two possible 
+c                  n  indicates on which of the two possible
 c                     m=constant surfaces the patch occurs on
 c                     (n=1 implies the patch occurs on m=1,
 c                     while n=2 implies the patch occurs on m=mmax)
@@ -244,7 +244,7 @@ c
          if (iic0(int).gt.0) then
             if (iifit(int) .ge. 0) then
                iifit(int)  = 1
-            else 
+            else
                iifit(int)  = -1
             end if
             mmcxie(int) = 0
@@ -258,11 +258,11 @@ c
      .      mmcxie(int),mmceta(int),iic0(int),iiorph(int)
          end if
  7031    continue
-      end if 
+      end if
 c
       nfbmax = 0
       do 1702 n=1,nintr
-      iindx(n,1) = -99 
+      iindx(n,1) = -99
 1702  continue
 c
  8146 format(3x,3hint,4x,2hto,2x,4hxie1,2x,4hxie2,2x,4heta1,
@@ -282,7 +282,7 @@ c
           write(iunit25,8147)
           write(iunit25,8149)
       end if
-c 
+c
       do 1703 n=1,nintr
       if (ioflag.eq.2) then
          read(iunit5,*)
@@ -458,7 +458,7 @@ c
             write(iunit25,*)' incorrect xie range input on ',
      .      'this i=constant "to" face'
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-         end if 
+         end if
          if (xi2.lt.1 .or. xi2.gt.jdimg(nbl)) then
             write(iunit25,*)' incorrect xie range input on ',
      .      'this i=constant "to" face'
@@ -468,7 +468,7 @@ c
             write(iunit25,*)' incorrect xie range input on ',
      .      'this i=constant "to" face'
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-         end if 
+         end if
          if (et1.lt.1 .or. et1.gt.kdimg(nbl)) then
             write(iunit25,*)' incorrect eta range input on ',
      .      'this i=constant "to" face'
@@ -492,7 +492,7 @@ c
             write(iunit25,*)' incorrect xie range input on ',
      .      'this j=constant "to" face'
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-         end if   
+         end if
          if (xi2.lt.1 .or. xi2.gt.kdimg(nbl)) then
             write(iunit25,*)' incorrect xie range input on ',
      .      'this j=constant "to" face'
@@ -526,7 +526,7 @@ c
             write(iunit25,*)' incorrect xie range input on ',
      .      'this k=constant "to" face'
             call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
-         end if   
+         end if
          if (xi2.lt.1 .or. xi2.gt.jdimg(nbl)) then
             write(iunit25,*)' incorrect xie range input on ',
      .      'this k=constant "to" face'
@@ -820,7 +820,7 @@ c
          mmcxie(ntemp)        = mmcxie(n)
          mmceta(ntemp)        = mmceta(n)
          do 8201 l=1,nfb
-         dx(ntemp,l)          = dx(n,l) 
+         dx(ntemp,l)          = dx(n,l)
          dy(ntemp,l)          = dy(n,l)
          dz(ntemp,l)          = dz(n,l)
          dthetx(ntemp,l)      = dthetx(n,l)
@@ -832,7 +832,7 @@ c
          iindx(ntemp,nfb+3)   = iindx(n,nfb+3)
          iindx(ntemp,2*nfb+3) = iindx(n,2*nfb+3)
          nfb1                  = iindx(lprev,1)
-         nbl                   = iindx(ntemp,nfb+2)      
+         nbl                   = iindx(ntemp,nfb+2)
 c
          xi1 = iindx(n,2*nfb+6)
          xi2 = iindx(n,2*nfb+7)
@@ -849,7 +849,7 @@ c        2-d meshes
      .      iindx(ntemp,2*nfb+6) = iindx(n,2*nfb+6)
          if (iindx(n,2*nfb+7).le. 2)
      .      iindx(ntemp,2*nfb+7) = iindx(n,2*nfb+7)
-         if (iindx(n,2*nfb+8).le. 2) 
+         if (iindx(n,2*nfb+8).le. 2)
      .      iindx(ntemp,2*nfb+8) = iindx(n,2*nfb+8)
          if (iindx(n,2*nfb+9).le. 2)
      .      iindx(ntemp,2*nfb+9) = iindx(n,2*nfb+9)
@@ -881,9 +881,9 @@ c        2-d meshes
      .      iindx(ntemp,5*nfb+9+l) = iindx(n,5*nfb+9+l)
 8202     continue
 c
-         iindx(ntemp,2*nfb+4) = (xi2-xi1)*(et2-et1) 
+         iindx(ntemp,2*nfb+4) = (xi2-xi1)*(et2-et1)
          iindx(ntemp,2*nfb+5) = iindx(lprev,2*nfb1+4) +
-     .                           iindx(lprev,2*nfb1+5) 
+     .                           iindx(lprev,2*nfb1+5)
          mxxchk = iindx(ntemp,2*nfb+4)+iindx(ntemp,2*nfb+5)-1
 c
          if (icall .gt. 0) then
@@ -899,7 +899,7 @@ c
          do 8100 i=1,nfb
          iindx(ntemp,i+1)     = nblg(iindx(n,i+1)) + m
          iindx(ntemp,nfb+i+2) = iindx(n,nfb+i+2)
-         if (ncgg(iindx(n,i+1)) .lt. m) 
+         if (ncgg(iindx(n,i+1)) .lt. m)
      .       iindx(ntemp,i+1) = nblg(iindx(n,i+1)) +
      .                           ncgg(iindx(n,i+1))
              ifrom(i) = (iindx(ntemp,i+1)*100) + iindx(ntemp,i+nfb+2)
@@ -944,7 +944,7 @@ c
      .         /,11x,43h         * ---> coarser level interpolation,/)
       nintr = ntemp
 c
-c     check parameter sizes, multigridability 
+c     check parameter sizes, multigridability
 c
       mpa = 0
       do 1713 n=1,nintr
@@ -968,7 +968,7 @@ c
       if (itop .eq. 3) then
          mpa = max(id2,jd2,mpa)
       end if
-      iindx(n,2*nfb+4) = (xi2-xi1)*(et2-et1) 
+      iindx(n,2*nfb+4) = (xi2-xi1)*(et2-et1)
       do 1714 l=1,nfb
       mbl  = iindx(n,l+1)
       mbl  = iindx(n,l+1)
@@ -1001,7 +1001,7 @@ c
       if (n.eq.1) then
          iindx(n,2*nfb+5)  = 1
       else
-         iindx(n,2*nfb+5)  = iindx(n-1,2*nfb1+4)+iindx(n-1,2*nfb1+5)    
+         iindx(n,2*nfb+5)  = iindx(n-1,2*nfb1+4)+iindx(n-1,2*nfb1+5)
       end if
       mxxchk = iindx(nintr,2*nfb+4)+iindx(nintr,2*nfb+5)-1
  1713 continue
@@ -1065,7 +1065,7 @@ c           et1=1 and et2=2 if 2d)
          write(iunit25,'('' stopping'')')
          call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
       end if
-c 
+c
       ichk = 0
       if(ichk.gt.0) then
 c

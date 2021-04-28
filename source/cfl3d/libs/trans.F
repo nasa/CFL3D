@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -36,7 +36,7 @@ c              =  2 sinusoidal variation of displacement
 c              =  3 smooth increase in displacement, asypmtotically
 c                   reaching a fixed displacement
 c              = 99 modulation driven external to this routine: on
-c                   input xorg,yorg,zorg already contain new 
+c                   input xorg,yorg,zorg already contain new
 c                   translational displacements, and utran,vtran,wtran
 c                   already contain new rotational rates.
 c
@@ -44,7 +44,7 @@ c     iupdat..flag to update grid position
 c             = 0 don't update position
 c             > 0 update position
 c
-c     t   is a temp array for storage of grid point velocities 
+c     t   is a temp array for storage of grid point velocities
 c     tti is a temp array for storage of i-boundary point accelerations
 c     ttj is a temp array for storage of j-boundary point accelerations
 c     ttk is a temp array for storage of k-boundary point accelerations
@@ -128,7 +128,7 @@ c
    11 continue
 c
 c**************************************************
-c     calculate increment to acceleration of grid 
+c     calculate increment to acceleration of grid
 c     points on the block boundaries due to trans-
 c     lation and add to current values
 c     tti(1)=d2x/dt2 tti(2)=d2y/dt2 tti(3)=d2z/dt2
@@ -143,13 +143,13 @@ c
 c     neglect acceleration for now
 c     tti(izz,1,ii) = tti(izz,1,ii) + d2xdt2
 c     tti(izz,2,ii) = tti(izz,2,ii) + d2ydt2
-c     tti(izz,3,ii) = tti(izz,3,ii) + d2zdt2  
+c     tti(izz,3,ii) = tti(izz,3,ii) + d2zdt2
       tti(izz,1,ii) = tti(izz,1,ii) + 0.0
       tti(izz,2,ii) = tti(izz,2,ii) + 0.0
       tti(izz,3,ii) = tti(izz,3,ii) + 0.0
  1002 continue
       i = i + idim - 1
-   12 continue   
+   12 continue
 c
 c     j0/jdim boundaries
 c

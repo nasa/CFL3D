@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -35,16 +35,16 @@ c     d(z)/d(DV) of the grid, for each of the ndv design variables. The
 c     user chooses one of the design variables and a step size, eps. The
 c     new grid is created by adding a component to the input grid via:
 c
-c             (x,y,z) = (x,y,z) +eps*d(x,y,z)/d(DV) 
+c             (x,y,z) = (x,y,z) +eps*d(x,y,z)/d(DV)
 c
 c     by generating two such perturbed grids, one using +eps, the other
 c     using -eps, and running cfl3d for the two grids, solution
 c     derivatives may be obtained using finite differences. The code
-c     Get_FD may be used with the two restart files to determine 
-c     d(Cl)/d(DV), d(Cd)/d(DV), etc. (restart files are recommended 
+c     Get_FD may be used with the two restart files to determine
+c     d(Cl)/d(DV), d(Cd)/d(DV), etc. (restart files are recommended
 c     over the residual history file cfl3d.res because of the limited
 c     precision in cfl3d.res)
-c*********************************************************************** 
+c***********************************************************************
 c
       real reps
 c
@@ -146,7 +146,7 @@ c
 c
       stop
       end
-c 
+c
       subroutine sizeijk(maxbl,imax,jmax,kmax,iginform)
 c***********************************************************************
 c     Purpose: determine max i,j,k dimensions needed for this case
@@ -257,7 +257,7 @@ c
 c
 c     open files
 c
-      if (iginform.eq.0) then 
+      if (iginform.eq.0) then
          open(unit=10,file=gfilein,form='unformatted',status='old')
       else
          open(unit=10,file=gfilein,form='formatted',status='old')
@@ -320,7 +320,7 @@ c
           stop
       end if
 c
-c     read sensitivity file dimensions and make sure they match the 
+c     read sensitivity file dimensions and make sure they match the
 c     grid dimensions
 c
       if (isdform.eq.0) then
@@ -328,7 +328,7 @@ c
       else
          read(11,*) ngrdsd
       end if
-      if (ngrd.ne.ngrdsd) then 
+      if (ngrd.ne.ngrdsd) then
          write(6,*)'stopping...grid and SD files contain ',
      .             'different number of zones'
          write(6,*)'zones in grid file: ',ngrd
@@ -354,7 +354,7 @@ c
       end do
 c
 c     write dimensions for perturbed grid file
-c 
+c
       if (igoutform.eq.0) then
          write(12) ngrd
          write(12) (idim(n),jdim(n),kdim(n),n=1,ngrd)

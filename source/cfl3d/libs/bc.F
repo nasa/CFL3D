@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -88,7 +88,7 @@ c
 c      I - Physical Boundary Conditions:
 c
 c      the 1000 series bc's have ndata=0...no auxiliary data required
-c 
+c
 c      bc1000 - freestream
 c      bc1001 - symmetry plane
 c      bc1002 - extrapolation from inside the computational domain
@@ -107,20 +107,20 @@ c      the 2000 series bc's *require* auxiliary data, ndata>0
 c
 c      bc2002 - pressure ratio (p/pinf) specified; rho,u,v,w extrapolated
 c               from inside the computational domain. set ndata=1, and
-c               specify the desired pressure ratio 
+c               specify the desired pressure ratio
 c      bc2003 - engine inflow: set ndata =5 and specify (estimated) mach number,
 c               total pressure ratio (Ptotal/pinf), total temperature ratio
 c               (Ttotal/tinf), and flow directions (alpe and betae, in degrees)
-c               at the inlet; these are then used as the external state in a 1D 
+c               at the inlet; these are then used as the external state in a 1D
 c               characteristic boundary condition.
 c      bc2004 - viscous surface (set ndata=2)
-c               Twtype is specified 
+c               Twtype is specified
 c                            if > 0 sets Tw/Tinf = Twtype,
 c                            if = 0 sets adiabatic wall,
 c                            if < 0 sets Tw at stagnation temperature;
-c               also mass-flow coefficient c_q is specified 
+c               also mass-flow coefficient c_q is specified
 c                            if < 0 suction if min. surface,
-c                                   blowing if max. surface 
+c                                   blowing if max. surface
 c                            if = 0 solid wall,
 c                            if > 0 blowing if min. surface,
 c                                   suction if max surface)
@@ -145,10 +145,10 @@ c               dp/dr is integrated in either increasing or decreasing radial
 c               direction, so that the pressure is specified over the entire
 c               block face. this boundary condition is useful in turbomachinery
 c               applications where there is a significant swirling flow.
-c               set ndata=4, and specify grid FROM which the integration of 
-c               pressure is continued (ngridc; if integration is not continued 
+c               set ndata=4, and specify grid FROM which the integration of
+c               pressure is continued (ngridc; if integration is not continued
 c               from another block, set ngridc=0), the pressure at either the
-c               min or max radius in the current block (p/pinf, used if 
+c               min or max radius in the current block (p/pinf, used if
 c               ngridc = 0), the direction in which integration is to proceed
 c               (int dir = +/- 1, 2, or 3 for +/- i, j, or k directions), and
 c               the physical direction along which the radial axis lies
@@ -212,10 +212,10 @@ c              1.  input direction numbers do not have to be normalized
 c              2.  rfreq = freq*lref/a_inf where freq is frequency in Hertz,
 c                  lref is reference length, and a_inf is speed of sound
 c      bc2018 - specify T, rhou, rhov, and rhow; extrapolate p from interior.
-c      bc2028 - specify freq, rhoumax, rhovmax, and rhowmax; extrapolate rho 
+c      bc2028 - specify freq, rhoumax, rhovmax, and rhowmax; extrapolate rho
 c               and p from interior.
 c      bc2038 - same as 2008, except add pseudo-random number to density and
-c               velocity components, based on max +-5% of set local level, only 
+c               velocity components, based on max +-5% of set local level, only
 c               for values for which u-vel component is less than 85% of xmach.
 c      bc2009 - nozzle total BCs: set ndata =4 and specify
 c               total pressure ratio (Ptotal/pinf), total temperature ratio
@@ -228,9 +228,9 @@ c               at the inlet; pressure is extrapolated from the interior.
 c      bc2019 - nozzle total BCs: set ndata =2 and specify
 c               Ptotal/Ptotal_inf and Ttotal/Ttotal_inf
 c               (this BC is taken from OVERFLOW).
-c      bc2102 - pressure ratio specified as a sinusoidal function of time; 
+c      bc2102 - pressure ratio specified as a sinusoidal function of time;
 c               rho,u,v,w extrapolated from inside the computational domain.
-c               set ndata=4, and the desired baseline (steady) pressure ratio 
+c               set ndata=4, and the desired baseline (steady) pressure ratio
 c               (p/pinf), the  amplitude of the pressure oscillation
 c               (deltap/pinf), the reduced frequency of the pressure
 c               oscillation (rfreqp), and the "grid equivalent" length of the
@@ -248,7 +248,7 @@ c           0 - 1-1 blocking (C-0 continuous),
 c           0 - patched grid interpolation (point mismatch, no overlap),
 c           0 - chimera grid interpolation (point overlap)
 c           0 - embeded mesh (regular refinement of coarse mesh)
-c 
+c
 c
 c      NOTE: block interface type conditions (if set) will supercede
 c            physical boundary conditions
@@ -268,7 +268,7 @@ c
 c       The boundary condition type is either:
 c
 c           (a) cell-center type, BCI/BCJ/BCK = 0.0 (DEFAULT)
-c     
+c
 c           or
 c
 c           (b) interface type,   BCI/BCJ/BCK = 1.0
@@ -364,7 +364,7 @@ c        check storage for bc1003
          do 306 nseg=1,nbckdim(nbl)
          if (kbcinfo(nbl,nseg,1,2).eq.1003) iflg = 1
  306     continue
-         if (iflg.gt.0) then  
+         if (iflg.gt.0) then
             jvchk = ixwk + jvdim*23 - 1
             if (jvchk.gt.nwork) then
                nou(1) = min(nou(1)+1,ibufdim)
@@ -394,7 +394,7 @@ c        check storage for bc2003
          do 316 nseg=1,nbckdim(nbl)
          if (kbcinfo(nbl,nseg,1,2).eq.2003) iflg = 1
  316     continue
-         if (iflg.gt.0) then   
+         if (iflg.gt.0) then
             jvchk = ixwk + jvdim*25 - 1
             if (jvchk.gt.nwork) then
                nou(1) = min(nou(1)+1,ibufdim)
@@ -523,7 +523,7 @@ c
      .  nummem)
 c
       if (ibcinfo(nbl,nseg,1,1).eq.1011) then
-        if(isklt_sav.gt.0) 
+        if(isklt_sav.gt.0)
      .  call chksym(nbl,nbci0,nbcidim,nbcj0,nbcjdim,nbck0,nbckdim,
      .  ibcinfo,jbcinfo,kbcinfo,1,idim,jdim,kdim,
      .  maxbl,maxseg,ista,iend,jsta,jend,ksta,kend,isym,
@@ -686,7 +686,7 @@ c
      .  w(lvis),w(lvj0),w(lvk0),w(lvi0),mdim,ndim,w(ldata),filname,iuns,
      .  nou,bou,nbuf,ibufdim,myid,ibcinfo(nbl,nseg,1,1),nummem)
 c
-      if (ibcinfo(nbl,nseg,1,1).eq.2016) 
+      if (ibcinfo(nbl,nseg,1,1).eq.2016)
      .  call bc2016(jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),w(lqi0),
      .  w(lsj),w(lsk),w(lsi),w(lbcj),w(lbck),w(lbci),
      .  w(lxtbj),w(lxtbk),w(lxtbi),w(latbj),w(latbk),w(latbi),
@@ -1266,7 +1266,7 @@ c
       ista = jbcinfo(nbl,nseg,2,2)
       iend = jbcinfo(nbl,nseg,3,2)
       jsta = jdim
-      jend = jdim 
+      jend = jdim
       ksta = jbcinfo(nbl,nseg,4,2)
       kend = jbcinfo(nbl,nseg,5,2)
       ldata= lwdat(nbl,nseg,4)

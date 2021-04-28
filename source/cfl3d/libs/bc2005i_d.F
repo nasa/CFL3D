@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -32,7 +32,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Set periodic boundary conditions, given angular rotation 
+c     Purpose:  Set periodic boundary conditions, given angular rotation
 c               angle to the periodic face and its block number
 c
 c     blnb   = block number of periodic face
@@ -44,10 +44,10 @@ c       (NOTE:  only one of the 3 angles can be used at a time; i.e.,
 c               2 of them must be identically zero)
 c       The angles should be measured using the right-hand rule; i.e.,
 c       point your right thumb in the direction of the +N axis (for rotation
-c       about N-axis, where N = x, y, or z) - 
+c       about N-axis, where N = x, y, or z) -
 c       the direction of finger curl is the direction
 c       of positive angle.  If you are setting the angle for a particular
-c       face (e.g., the i0 face), set the angle = the angle you 
+c       face (e.g., the i0 face), set the angle = the angle you
 c       have to move the PERIODIC FACE through to get to this face.
 c
 c     NOTE:  Currently, it is assumed that the current block and the
@@ -55,15 +55,15 @@ c            block it is periodic with are 1-to-1 at the corresponding
 c            faces after rotation through the specified angle dthtN.
 c            Also, the 2 blocks are assumed to be aligned similarly.
 c            In other  words, i,j, and k must each run in the same
-c            directions, respectively.  Therefore, if the periodic BC 
-c            is being applied (on the current block) on the KMAX face, it 
-c            is implicitly assumed that the corresponding surface it is 
-c            periodic with is KMIN, with i and j running in the same 
-c            directions as on the current block.  Also, therefore, the 2 
+c            directions, respectively.  Therefore, if the periodic BC
+c            is being applied (on the current block) on the KMAX face, it
+c            is implicitly assumed that the corresponding surface it is
+c            periodic with is KMIN, with i and j running in the same
+c            directions as on the current block.  Also, therefore, the 2
 c            remaining dimensions on the periodic face (2 of idim, jdim, kdim)
 c            of the current block must be identical to the same 2 dimensions
 c            of the periodic block.
-c            
+c
 c            This periodic BC also works for a 1-cell-in-the-periodic-dimension
 c            grid that is periodic with itself.  Note, however, that if a
 c            particular block is periodic with a DIFFERENT block, then
@@ -115,7 +115,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data    
+c     this bc makes use of only one plane of data
 c
       ip    = 1
       dthtx = bcdata(1,1,ip,2)/radtodeg
@@ -185,17 +185,17 @@ c
                call stm2k5_get_rotmat(dthtx, dthty, dthtz,rn,rnt)
                do k=ksta,kend1
                   do  j=jsta,jend1
-                 
-                     call stm2k5_bc(datapi(j,k,1,1:7),rn,rnt, 
+
+                     call stm2k5_bc(datapi(j,k,1,1:7),rn,rnt,
      $                              datai0(j,k,1:7,1))
                      if(idimp==2) then
-                     call stm2k5_bc(datai0(j,k,1:7,1),rn,rnt, 
+                     call stm2k5_bc(datai0(j,k,1:7,1),rn,rnt,
      $                              datai0(j,k,1:7,2))
                      else
-                     call stm2k5_bc(datapi(j,k,2,1:7),rn,rnt, 
+                     call stm2k5_bc(datapi(j,k,2,1:7),rn,rnt,
      $                              datai0(j,k,1:7,2))
-                     endif 
-                    
+                     endif
+
                   enddo
                enddo
 #   endif

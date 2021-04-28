@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -39,7 +39,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Update a deforming grid to a new shape, and obtain 
+c     Purpose:  Update a deforming grid to a new shape, and obtain
 c     corresponding grid-boundary velocities for use in the boundary
 c     conditions. Also collocate new grid position to coarser levels
 c     levels and obtain grid-boundary velocities on coarser levels.
@@ -271,13 +271,13 @@ c
                wk(lll) = 1.
             end do
 c
-c           update segment origin in case forced deformation is 
+c           update segment origin in case forced deformation is
 c           coupled to either forced motion of block origin or
 c           if deforming rotation is coupled to deforming translation
 c
             do is = 1,nsegdfrm(nbl)
                if (icouple(nbl,is) .ne. 0) then
-                  if (idfrmseg(nbl,is).gt.0 .and. 
+                  if (idfrmseg(nbl,is).gt.0 .and.
      .               idfrmseg(nbl,is).lt.99) then
                      if (icouple(nbl,is) .ne. 0) then
                         nblmast = icouple(nbl,is)
@@ -334,7 +334,7 @@ c
                wk(lll) = 1.
             end do
 c
-c           aeroelastic surface 
+c           aeroelastic surface
 c
             call aesurf(nbl,jdim,kdim,idim,w(ldeltj),w(ldeltk),
      .                  w(ldelti),w(lxmdj),w(lxmdk),w(lxmdi),
@@ -441,12 +441,12 @@ c
 c     get a list of all points on deforming solid surfaces. the
 c     list structure is as folllows: each successive 9 entries
 c     in the list give, in order, the x, y, z, deltx, delty, deltz,
-c     xnm1, ynm1, znm1 values for the surface point (where xnm1, 
+c     xnm1, ynm1, znm1 values for the surface point (where xnm1,
 c     etc. are the points at time n-1); these 9 data are repeated
 c     for each solid surface point that undergoes deformation. Thus,
 c     if there are a total of nsurf solid surface points that undergo
 c     deformation, the list will be of dimension 9*nsurf
-c 
+c
       nsurf = 0
       do nbl = 1,nblock
          iwk(nbl) = 0
@@ -478,7 +478,7 @@ c
                    numdat  = 9*iwk(nbl)
                    if (myid.eq.mblk2nd(nbl)) then
                       call MPI_Send(wk,numdat,MY_MPI_REAL,
-     .                              myhost,mytag,mycomm,ierr) 
+     .                              myhost,mytag,mycomm,ierr)
                    else if (myid.eq.myhost) then
                       ns = 9*nsurf+1
                       call MPI_Recv(wk(ns),numdat,MY_MPI_REAL,
@@ -494,12 +494,12 @@ c
       end do
 c
 #if defined DIST_MPI
-      call MPI_Bcast (nsurf,1,MPI_INTEGER,myhost,mycomm,ierr) 
+      call MPI_Bcast (nsurf,1,MPI_INTEGER,myhost,mycomm,ierr)
       call MPI_Bcast (wk,nsurf*9,MY_MPI_REAL,myhost,
      .                mycomm,ierr)
 #endif
       if (iunst.gt.1 .or. idef_ss.gt.0) then
- 
+
          do 150 nbl = 1,nblock
          if (myid.eq.mblk2nd(nbl) .and. (levelg(nbl).ge.lglobal .and.
      .       levelg(nbl).le.levelt(iseqr))) then
@@ -525,7 +525,7 @@ c
                lt1wk = jdim*idim*3*2+lacck
                lt2wk = jdim*kdim*idim*3+lt1wk
                lt3wk = jdim*kdim*6+lt2wk
-               lt4wk = jdim*kdim*idim*5+lt3wk 
+               lt4wk = jdim*kdim*idim*5+lt3wk
 c
                mdim  = jdim*kdim*idim*3
                if (nwork.lt.mdim) then
@@ -568,15 +568,15 @@ c
           nbl   = nblelst(nn,1)
           n1    = nblelst(nn,2)
           n2    = nblelst(nn+1,2)
-          nstrt = 3*(n1-1) + 1  
-          nend  = 3*(n2-1) + 1  
+          nstrt = 3*(n1-1) + 1
+          nend  = 3*(n2-1) + 1
           ndata = nend - nstrt
-          if (myid .eq. mblk2nd(nbl)) then 
+          if (myid .eq. mblk2nd(nbl)) then
             mytag   = mblk2nd(nbl)
             nd_dest = myhost
             call MPI_Send (ue(nstrt),ndata,MY_MPI_REAL,
      .                     nd_dest,mytag,mycomm,ierr)
-          else if (myid .eq. myhost) then 
+          else if (myid .eq. myhost) then
             mytag   = mblk2nd(nbl)
             nd_srce = mblk2nd(nbl)
             call MPI_Recv (ue(nstrt),ndata,MY_MPI_REAL,
@@ -594,23 +594,23 @@ c     difference old and new grid positions to get new grid velocities
 c     (velocities stored in work array, at position lvel)
 c
       if (iunst.gt.1 .or. idef_ss.gt.0) then
- 
+
            do n = 1,nslave
              nbl = islavept(n,9,iseqr)
              ll  = islavept(n,1,iseqr)
              if (myid .eq. mblk2nd(nbl)) then
                call lead(nbl,lw,lw2,maxbl)
-               xst(n) = w(lx+ll)  
-               yst(n) = w(ly+ll)  
-               zst(n) = w(lz+ll)  
+               xst(n) = w(lx+ll)
+               yst(n) = w(ly+ll)
+               zst(n) = w(lz+ll)
              end if
            enddo
 #if defined DIST_MPI
            do nn = 1,maxbl
              if(nblelst(nn,1).ne.0) then
                nbl   = nblelst(nn,1)
-               nstrt = nblelst(nn,2) 
-               nend  = nblelst(nn+1,2) 
+               nstrt = nblelst(nn,2)
+               nend  = nblelst(nn+1,2)
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
                    mytag   = mblk2nd(nbl)
@@ -630,8 +630,8 @@ c
            do nn = 1,maxbl
              if(nblelst(nn,1).ne.0) then
                nbl   = nblelst(nn,1)
-               nstrt = nblelst(nn,2) 
-               nend  = nblelst(nn+1,2) 
+               nstrt = nblelst(nn,2)
+               nend  = nblelst(nn+1,2)
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
                    mytag   = mblk2nd(nbl)
@@ -651,8 +651,8 @@ c
            do nn = 1,maxbl
              if(nblelst(nn,1).ne.0) then
                nbl   = nblelst(nn,1)
-               nstrt = nblelst(nn,2) 
-               nend  = nblelst(nn+1,2) 
+               nstrt = nblelst(nn,2)
+               nend  = nblelst(nn+1,2)
                ndata = nend - nstrt
                if (myid .eq. mblk2nd(nbl)) then
                    mytag   = mblk2nd(nbl)
@@ -707,7 +707,7 @@ c
                lt1wk = jdim*idim*3*2+lacck
                lt2wk = jdim*kdim*idim*3+lt1wk
                lt3wk = jdim*kdim*6+lt2wk
-               lt4wk = jdim*kdim*idim*5+lt3wk 
+               lt4wk = jdim*kdim*idim*5+lt3wk
 c
                mdim  = jdim*kdim*idim*3
                if (nwork.lt.mdim) then
@@ -794,7 +794,7 @@ c
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),430)
                   nou(1) = min(nou(1)+1,ibufdim)
-                  write(bou(nou(1),1),431) mdim - nroom 
+                  write(bou(nou(1),1),431) mdim - nroom
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
   430          format(45h not enough work space for subroutine cellvol)
@@ -858,7 +858,7 @@ c
      .                        w(lsk),w(lsi),w(lvol),wk(lt4wk),nou,bou,
      .                        nbuf,ibufdim,myid,mblk2nd,maxbl,nbl,
      .                        1,iflagv,imin,imax,jmin,jmax,kmin,kmax)
-               end if 
+               end if
 c
 c              coarser levels
 c
@@ -1129,7 +1129,7 @@ c
         t(6,4) = t11*t32+t12*t31
         t(6,5) = t12*t33+t13*t32
         t(6,6) = t11*t33+t31*t13
- 
+
 c
 c  The inverse must be used:
 c
@@ -1178,8 +1178,8 @@ c
        term11= xiz(n)  *xiy(n)  +etaz(n) *etay(n) +zetaz(n)*zetay(n)
        term12= xiy(n)  *etaz(n) +xiy(n)  *zetaz(n)+xiz(n)  *etay(n)
      .        +zetaz(n)*etay(n) +xiz(n)  *zetay(n)+etaz(n) *zetay(n)
- 
- 
+
+
        term13 = c2*term1+c1*term2
        term14 = c2*term3+c1*term4
        term15 = c2*term5+c1*term6
@@ -1210,7 +1210,7 @@ c
      .             +(c(6,5)+c(5,6))*term16
      .             +(c(3,5)+c(5,3))*term18
      .             +(c(3,6)+c(6,3))*term17
-  
+
        term13= -c2*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
      .         +c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
        term14= -c2*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
@@ -1268,7 +1268,7 @@ c
      .             +(c(4,6)+c(1,5))*term16+(c(4,6)-c(1,5))*term17
      .             +(c(6,6)+c(1,3))*term18+(c(6,6)-c(1,3))*term19
      .             +(c(6,5)+c(4,3))*term20+(c(6,5)-c(4,3))*term21
-  
+
        term13=  c4*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
      .         +c3*  xix(n)* etax(n)-c2*zetax(n)*zetax(n)
        term14=  c4*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
@@ -1667,7 +1667,7 @@ c
      .             +(c(6,5)+c(5,6))*term16
      .             +(c(3,6)+c(6,3))*term17
      .             +(c(3,5)+c(5,3))*term18
-  
+
        term13= -c4*xix(n)  *  xix(n)+c6* etax(n) *etax(n)
      .         +c1*  xix(n)*zetax(n)-c4*zetax(n)*zetax(n)
        term14= -c4*xiy(n)  *  xiy(n)+c6* etay(n) *etay(n)
@@ -1725,7 +1725,7 @@ c
      .             +(c(4,6)+c(1,5))*term16+(c(1,5)-c(4,6))*term17
      .             +(c(6,6)+c(1,3))*term18+(c(1,3)-c(6,6))*term19
      .             +(c(6,5)+c(4,3))*term20+(c(4,3)-c(6,5))*term21
- 
+
        term13=  c4*xix(n)  *  xix(n)+c4* etax(n) *etax(n)
      .         -c3*  xix(n)* etax(n)-c2*zetax(n)*zetax(n)
        term14=  c4*xiy(n)  *  xiy(n)+c4* etay(n) *etay(n)
@@ -2076,7 +2076,7 @@ c
      .             +(c(4,6)+c(1,5))*term16
      .             +(c(6,6)+c(1,3))*term18
      .             +(c(6,5)+c(4,3))*term20
- 
+
        term13= -c2*  xix(n)*  xix(n)+c4* etax(n) *etax(n)
      .         -c3*zetax(n)* etax(n)+c4*zetax(n)*zetax(n)
        term14= -c2*  xiy(n)*  xiy(n)+c4* etay(n) *etay(n)
@@ -3348,7 +3348,7 @@ c
         enddo
         end if
 200    continue
- 
+
        return
        end
        subroutine s_gwrite(nbl,idim,jdim,kdim,ista,iend,jsta,jend,ksta,
@@ -3365,7 +3365,7 @@ c
       write(5000+nbl,'(5e21.12)') (((z(j,k,i),i=ista,iend),j=jsta,jend),
      .                               k=ksta,kend)
        close(5000+nbl)
- 
+
        return
        end
       subroutine s_gread(nbl,idim,jdim,kdim,ista,iend,jsta,jend,ksta,

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Compute residual contributions for the 
+c     Purpose:  Compute residual contributions for the
 c     right-hand-side in the K-direction from the inviscid terms.
 c***********************************************************************
 c
@@ -318,7 +318,7 @@ c
      .20hdifference splitting)
 c
       call fhat(sk(1,i,1),sk(1,i,2),sk(1,i,3),sk(1,i,4),sk(1,i,5),
-     .          t(1,31),t(1,26),t(1,21),n,nvtq) 
+     .          t(1,31),t(1,26),t(1,21),n,nvtq)
 c
       else
 c
@@ -411,33 +411,33 @@ c
 cdir$ ivdep
          do 1016 izz=1,nr
          t(izz,41) = -(sk(izz+jdim,i,5)*sk(izz+jdim,i,4)
-     .             - sk(izz,i,5)*sk(izz,i,4))                     
+     .             - sk(izz,i,5)*sk(izz,i,4))
  1016    continue
          do 1018 ii = i,i+npl-1
-         ijk2  = (ii-i+1)*jdim*kdim-jdim  
+         ijk2  = (ii-i+1)*jdim*kdim-jdim
 cdir$ ivdep
-         do 1017 izz=1,jdim  
+         do 1017 izz=1,jdim
            t(izz+ijk2,41) = -(sk(izz+ijk2,i,5)*sk(izz+ijk2,i,4)
-     .            - sk(izz+ijk2-jdim,i,5)*sk(izz+ijk2-jdim,i,4))                     
+     .            - sk(izz+ijk2-jdim,i,5)*sk(izz+ijk2-jdim,i,4))
  1017    continue
- 1018    continue 
-         do 1019 izz=1,nr    
-         t(izz,36) = q(izz,1,i,1) 
-         t(izz,37) = q(izz,1,i,1)*q(izz,1,i,2) 
-         t(izz,38) = q(izz,1,i,1)*q(izz,1,i,3) 
-         t(izz,39) = q(izz,1,i,1)*q(izz,1,i,4) 
+ 1018    continue
+         do 1019 izz=1,nr
+         t(izz,36) = q(izz,1,i,1)
+         t(izz,37) = q(izz,1,i,1)*q(izz,1,i,2)
+         t(izz,38) = q(izz,1,i,1)*q(izz,1,i,3)
+         t(izz,39) = q(izz,1,i,1)*q(izz,1,i,4)
          t(izz,40) = q(izz,1,i,5)*oogmo
      .             + 0.5*q(izz,1,i,1)*(q(izz,1,i,2)*q(izz,1,i,2)
      .             + q(izz,1,i,3)*q(izz,1,i,3)
-     .             + q(izz,1,i,4)*q(izz,1,i,4)) 
- 1019    continue 
+     .             + q(izz,1,i,4)*q(izz,1,i,4))
+ 1019    continue
          do 452 l=1,5
 cdir$ ivdep
          do 1020 izz=1,nr
-         res(izz,1,i,l) = res(izz,1,i,l) + t(izz,35+l)*t(izz,41) 
+         res(izz,1,i,l) = res(izz,1,i,l) + t(izz,35+l)*t(izz,41)
  1020    continue
   452    continue
-      end if 
+      end if
 c
 c      store finer-grid fluxes for enforcing conservation on coarser meshes
 c
@@ -461,7 +461,7 @@ c
       jk = jk+1
       qk0(j,ii,l,2) = t(jk,30+l)
   333 continue
-      end if      
+      end if
       if (kbctyp(2).eq.21) then
 c
       if (isklton.gt.0) then

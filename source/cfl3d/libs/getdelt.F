@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,7 +29,7 @@ c
 c***********************************************************************
 c     Purpose:  Calculate the displacements between the new surface
 c     (stored in deltj/deltk,delti when the routine is entered) and
-c     the current one, and store the displacements in the 
+c     the current one, and store the displacements in the
 c     deltj/deltk,delti arrays.
 c***********************************************************************
 c
@@ -62,11 +62,11 @@ c
           if (is .eq. idim) mm = 2
           do k=ks,ke
              do j=js,je
-                delti(j,k,1,mm) = delti(j,k,1,mm) 
+                delti(j,k,1,mm) = delti(j,k,1,mm)
      .                          - x(j,k,is)*wki(j,k,mm)
-                delti(j,k,2,mm) = delti(j,k,2,mm) 
+                delti(j,k,2,mm) = delti(j,k,2,mm)
      .                          - y(j,k,is)*wki(j,k,mm)
-                delti(j,k,3,mm) = delti(j,k,3,mm) 
+                delti(j,k,3,mm) = delti(j,k,3,mm)
      .                          - z(j,k,is)*wki(j,k,mm)
                 wki(j,k,mm)     = 0.
              end do
@@ -76,11 +76,11 @@ c
           if (js .eq. jdim) mm = 2
           do i=is,ie
              do k=ks,ke
-                deltj(k,i,1,mm) = deltj(k,i,1,mm) 
+                deltj(k,i,1,mm) = deltj(k,i,1,mm)
      .                          - x(js,k,i)*wkj(k,i,mm)
-                deltj(k,i,2,mm) = deltj(k,i,2,mm) 
+                deltj(k,i,2,mm) = deltj(k,i,2,mm)
      .                          - y(js,k,i)*wkj(k,i,mm)
-                deltj(k,i,3,mm) = deltj(k,i,3,mm) 
+                deltj(k,i,3,mm) = deltj(k,i,3,mm)
      .                          - z(js,k,i)*wkj(k,i,mm)
                 wkj(k,i,mm)     = 0.
              end do
@@ -90,11 +90,11 @@ c
           if (ks .eq. kdim) mm = 2
           do i=is,ie
              do j=js,je
-                deltk(j,i,1,mm) = deltk(j,i,1,mm) 
+                deltk(j,i,1,mm) = deltk(j,i,1,mm)
      .                          - x(j,ks,i)*wkk(j,i,mm)
-                deltk(j,i,2,mm) = deltk(j,i,2,mm) 
+                deltk(j,i,2,mm) = deltk(j,i,2,mm)
      .                          - y(j,ks,i)*wkk(j,i,mm)
-                deltk(j,i,3,mm) = deltk(j,i,3,mm) 
+                deltk(j,i,3,mm) = deltk(j,i,3,mm)
      .                          - z(j,ks,i)*wkk(j,i,mm)
                 wkk(j,i,mm)     = 0.
              end do

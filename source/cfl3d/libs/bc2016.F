@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -45,10 +45,10 @@ c
 c           2) cq  = steady component of surface jet
 c           3) cqu = unsteady component of surface jet
 c
-c              Set surface jet boundary conditions via mass-flow 
+c              Set surface jet boundary conditions via mass-flow
 c              coefficient:
 c                                                    (rho * u)_jet
-c              mass-flow coefficient (cq + cqu)  = ------------------ 
+c              mass-flow coefficient (cq + cqu)  = ------------------
 c                                                  (rho * u)_infinity
 c
 c           4) sjetx = direction number for surface jet (x-direction)
@@ -69,7 +69,7 @@ c                  lref is reference length, and a_inf is speed of sound
 c              4.  For rfreq < 0: ramp the mass flow coefficient from zero to
 c                  a terminal value where
 c                  cq  = terminal mass flow coefficient value
-c                  cqu = constant rate of change 
+c                  cqu = constant rate of change
 c
 c
 c           When wall functions are employed (iwf=1, resulting when ivisc
@@ -119,7 +119,7 @@ c
       common /sklton/ isklton
       common /wallfun/ iwf(3)
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
-c  
+c
 c..  data statement (for use with wall functions)
       data a0/2.354039, 0.1179840, -4.2899192e-04, 2.0404148e-06,
      1       -5.1775775e-09, 6.2687308e-12, -2.916958e-15/
@@ -137,7 +137,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data    
+c     this bc makes use of only one plane of data
 c
       ip    = 1
 c
@@ -247,7 +247,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qj0(k,i,1,2) = z1*q(1,k,i,1) + z2*q(j2,k,i,1) + z3*qj0(k,i,1,1)
@@ -345,7 +345,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         j=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq. 9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -541,7 +541,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qj0(k,i,1,4) = z1*q(jdim1,k,i,1)+z2*q(j2,k,i,1)+z3*qj0(k,i,1,3)
@@ -639,7 +639,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         j=jdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -655,7 +655,7 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,4) = 2.*tj0(k,i,1,3)-tursav(jdim-1,k,i,1)
           tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  812    continue
-        else if(ivmx.eq.15) then 
+        else if(ivmx.eq.15) then
         do i=ista,iend1
         do k=ksta,kend1
           tt=gamma*q(j,k,i,5)/q(j,k,i,1)
@@ -743,7 +743,7 @@ c
 c
       do 1100 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,ii,ip,2) 
+      cq            = bcdata(jj,ii,ip,2)
       cqu           = bcdata(jj,ii,ip,3)
       sjetx         = bcdata(jj,ii,ip,4)
       sjety         = bcdata(jj,ii,ip,5)
@@ -835,7 +835,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qk0(j,i,1,2) = z1*q(j,1,i,1) + z2*q(j,k2,i,1) + z3*qk0(j,i,1,1)
@@ -933,7 +933,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         k=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1031,13 +1031,13 @@ c******************************************************************************
 c      k=kdim boundary     viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.6) then
-c 
+c
       do 1600 i=ista,iend1
       ii = i-ista+1
 c
       do 1500 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,ii,ip,2) 
+      cq            = bcdata(jj,ii,ip,2)
       cqu           = bcdata(jj,ii,ip,3)
       sjetx         = bcdata(jj,ii,ip,4)
       sjety         = bcdata(jj,ii,ip,5)
@@ -1129,7 +1129,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qk0(j,i,1,4) = z1*q(j,kdim1,i,1)+z2*q(j,k2,i,1)+z3*qk0(j,i,1,3)
@@ -1227,7 +1227,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         k=kdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1325,13 +1325,13 @@ c******************************************************************************
 c      i=1 boundary        viscous wall with T & cq specified       bctype 2016
 c******************************************************************************
       if (nface.eq.1) then
-c 
+c
       do 2000 k=ksta,kend1
       kk = k-ksta+1
 c
       do 1900 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,kk,ip,2) 
+      cq            = bcdata(jj,kk,ip,2)
       cqu           = bcdata(jj,kk,ip,3)
       sjetx         = bcdata(jj,kk,ip,4)
       sjety         = bcdata(jj,kk,ip,5)
@@ -1423,7 +1423,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1 =   2.0 +1.5*f23
-      z2 =       -0.5*f23   
+      z2 =       -0.5*f23
       z3 = -(2.0 +    f23)
 c
       qi0(j,k,1,2) = z1*q(j,k,1,1) + z2*q(j,k,i2,1) + z3*qi0(j,k,1,1)
@@ -1521,7 +1521,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         i=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1717,7 +1717,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1 =  -2.0 -1.5*f23
-      z2 =       +0.5*f23   
+      z2 =       +0.5*f23
       z3 = +(2.0 +    f23)
 c
       qi0(j,k,1,4) = z1*q(j,k,idim1,1)+z2*q(j,k,i2,1)+z3*qi0(j,k,1,3)
@@ -1815,7 +1815,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         i=idim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -30,7 +30,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Set pressure ratio as a function of time; extrapolate 
+c     Purpose:  Set pressure ratio as a function of time; extrapolate
 c     other quantities
 c***********************************************************************
 c
@@ -79,7 +79,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data    
+c     this bc makes use of only one plane of data
 c
       ip    = 1
 c
@@ -141,7 +141,7 @@ c
 c******************************************************************************
 c      j=jdim boundary         set p(time), extrapolate others      bctype 2102
 c******************************************************************************
-c 
+c
       if (nface.eq.4) then
 c
       do 200 l=1,4
@@ -393,5 +393,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
-      return 
+      return
       end

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -40,11 +40,11 @@ c                  Twtype > 0 ... fixed wall temperature Tw/Tinf = Twtype
 c                  Twtype = 0 ... adiabatic wall
 c                  Twtype < 0 ... fixed wall temperature = stagnation temp
 c
-c           2) Set suction/blowing boundary conditions via mass-flow 
+c           2) Set suction/blowing boundary conditions via mass-flow
 c              coefficient
 c
 c                                                  (rho * u)
-c                  mass-flow coefficient c_q = ------------------ 
+c                  mass-flow coefficient c_q = ------------------
 c                                              (rho * u)_infinity
 c
 c                  c_q = 0...standard solid wall B.C, no flow thru wall
@@ -99,7 +99,7 @@ c
       common /wallfun/ iwf(3)
       common /reystressmodel/ issglrrw2012,i_sas_rsm,i_yapterm
       common /wallvel_2034/ uub_2034,vvb_2034,wwb_2034,vvb_xaxisrot2034
-c  
+c
 c..  data statement (for use with wall functions)
       data a0/2.354039, 0.1179840, -4.2899192e-04, 2.0404148e-06,
      1       -5.1775775e-09, 6.2687308e-12, -2.916958e-15/
@@ -116,7 +116,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data    
+c     this bc makes use of only one plane of data
 c
       ip    = 1
 c
@@ -207,7 +207,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qj0(k,i,1,2) = z1*q(1,k,i,1) + z2*q(j2,k,i,1) + z3*qj0(k,i,1,1)
@@ -307,7 +307,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         j=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq. 9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -359,7 +359,7 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j+1,k,i,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 tj0(k,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+                 tj0(k,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2
      $                - tursav(j,k,i,7)
                  tj0(k,i,7,2) = 0.0
               enddo
@@ -374,10 +374,10 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 tj0(k,i,7,1) = 
+                 tj0(k,i,7,1) =
      $                   2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,7)
-                 tj0(k,i,7,2) = 2*tj0(k,i,7,1) - tursav(j,k,i,7) 
+                 tj0(k,i,7,2) = 2*tj0(k,i,7,1) - tursav(j,k,i,7)
               enddo
            enddo
         else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
@@ -541,7 +541,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qj0(k,i,1,4) = z1*q(jdim1,k,i,1)+z2*q(j2,k,i,1)+z3*qj0(k,i,1,3)
@@ -641,7 +641,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         j=jdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -657,7 +657,7 @@ c       up making very little, if any, difference in the k-omega solution.)
           tj0(k,i,1,4) = 2.*tj0(k,i,1,3)-tursav(jdim-1,k,i,1)
           tj0(k,i,2,4) = 2.*tj0(k,i,2,3)-tursav(jdim-1,k,i,2)
  812    continue
-        else if(ivmx.eq.15) then 
+        else if(ivmx.eq.15) then
         do i=ista,iend1
         do k=ksta,kend1
           tt=gamma*q(j,k,i,5)/q(j,k,i,1)
@@ -693,7 +693,7 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j-1,k,i,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 tj0(k,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
+                 tj0(k,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2
      $                - tursav(j,k,i,7)
                  tj0(k,i,7,4) = 0.0
               enddo
@@ -708,7 +708,7 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 tj0(k,i,7,3) = 
+                 tj0(k,i,7,3) =
      $                  2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                  tursav(j,k,i,7)
                  tj0(k,i,7,4) = 2*tj0(k,i,7,3) - tursav(j,k,i,7)
@@ -802,7 +802,7 @@ c
 c
       do 1100 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,ii,ip,2) 
+      cq            = bcdata(jj,ii,ip,2)
       pb            = q(j,1,i,5)
       dpb           = q(j,2,i,5)-q(j,1,i,5)
       pb            = pb - dpb/2.0
@@ -875,7 +875,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qk0(j,i,1,2) = z1*q(j,1,i,1) + z2*q(j,k2,i,1) + z3*qk0(j,i,1,1)
@@ -975,7 +975,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         k=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1027,7 +1027,7 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j,k+1,i,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 tk0(j,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+                 tk0(j,i,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2
      $                - tursav(j,k,i,7)
                  tk0(j,i,7,2) = 0.0
               enddo
@@ -1042,11 +1042,11 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 tk0(j,i,7,1) = 
+                 tk0(j,i,7,1) =
      $               2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +               tursav(j,k,i,7)
                  tk0(j,i,7,2) = 2*tk0(j,i,7,1) - tursav(j,k,i,7)
-              enddo 
+              enddo
            enddo
         else if(ivmx.eq.72 .and. issglrrw2012.eq.6) then
            do i=ista,iend1
@@ -1130,13 +1130,13 @@ c******************************************************************************
 c      k=kdim boundary     viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.6) then
-c 
+c
       do 1600 i=ista,iend1
       ii = i-ista+1
 c
       do 1500 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,ii,ip,2) 
+      cq            = bcdata(jj,ii,ip,2)
       pb            = q(j,kdim1,i,5)
       dpb           = q(j,kdim1,i,5)-q(j,kdim1-1,i,5)
       pb            = pb + dpb/2.0
@@ -1209,7 +1209,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qk0(j,i,1,4) = z1*q(j,kdim1,i,1)+z2*q(j,k2,i,1)+z3*qk0(j,i,1,3)
@@ -1309,7 +1309,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         k=kdim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1361,8 +1361,8 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j,k-1,i,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 tk0(j,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
-     $                - tursav(j,k,i,7) 
+                 tk0(j,i,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2
+     $                - tursav(j,k,i,7)
                  tk0(j,i,7,4) = 0.0
               enddo
            enddo
@@ -1376,7 +1376,7 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 tk0(j,i,7,3) = 
+                 tk0(j,i,7,3) =
      $                 2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                 tursav(j,k,i,7)
                  tk0(j,i,7,4) = 2*tk0(j,i,7,3)- tursav(j,k,i,7)
@@ -1464,13 +1464,13 @@ c******************************************************************************
 c      i=1 boundary        viscous wall with T & cq specified       bctype 2004
 c******************************************************************************
       if (nface.eq.1) then
-c 
+c
       do 2000 k=ksta,kend1
       kk = k-ksta+1
 c
       do 1900 j=jsta,jend1
       jj = j-jsta+1
-      cq            = bcdata(jj,kk,ip,2) 
+      cq            = bcdata(jj,kk,ip,2)
       pb            = q(j,k,1,5)
       dpb           = q(j,k,2,5)-q(j,k,1,5)
       pb            = pb - dpb/2.0
@@ -1543,7 +1543,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1 =   2.0 +1.5*f23
-      z2 =       -0.5*f23   
+      z2 =       -0.5*f23
       z3 = -(2.0 +    f23)
 c
       qi0(j,k,1,2) = z1*q(j,k,1,1) + z2*q(j,k,i2,1) + z3*qi0(j,k,1,1)
@@ -1643,7 +1643,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         i=1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -1695,7 +1695,7 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j,k,i+1,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 ti0(j,k,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2 
+                 ti0(j,k,7,1) = 2.0*dkdy/(re*smin(j,k,i))**2
      $                - tursav(j,k,i,7)
                  ti0(j,k,7,2) = 0.0
               enddo
@@ -1710,7 +1710,7 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 ti0(j,k,7,1) = 
+                 ti0(j,k,7,1) =
      $               2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                   tursav(j,k,i,7)
                  ti0(j,k,7,2) = 2.*ti0(j,k,7,1)-tursav(j,k,i,7)
@@ -1877,7 +1877,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1 =  -2.0 -1.5*f23
-      z2 =       +0.5*f23   
+      z2 =       +0.5*f23
       z3 = +(2.0 +    f23)
 c
       qi0(j,k,1,4) = z1*q(j,k,idim1,1)+z2*q(j,k,i2,1)+z3*qi0(j,k,1,3)
@@ -1977,7 +1977,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         end if
         i=idim-1
 c       (Note:  linearly interpolates eps & omega BC to ghost cell.  Previous
-c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell 
+c       versions of k-omega simply put 60*mu/(rho*beta*smin**2) at ghost cell
 c       rather than at wall, where it "officially" belongs.  However, this ends
 c       up making very little, if any, difference in the k-omega solution.)
         if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
@@ -2029,8 +2029,8 @@ c         RSM not working in complex mode
                  tke1 = -0.5*sum(tursav(j,k,i,1:3))
                  tke2 = -0.5*sum(tursav(j,k,i-1,1:3))
                  dkdy=0.5*(tke1+tke2)/3.*0.5
-                 ti0(j,k,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2 
-     $                - tursav(j,k,i,7) 
+                 ti0(j,k,7,3) = 2.0*dkdy/(re*smin(j,k,i))**2
+     $                - tursav(j,k,i,7)
                  ti0(j,k,7,4) = 0.0
               enddo
            enddo
@@ -2044,7 +2044,7 @@ c         RSM not working in complex mode
                  tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                  fnu=c2bp*tt*sqrt(tt)/(c2b+tt)
                  dist=ccabs(smin(j,k,i))
-                 ti0(j,k,7,3) = 
+                 ti0(j,k,7,3) =
      $                2.*(60.*fnu/(re**2*q(j,k,i,1)*beta1*dist**2))-
      +                 tursav(j,k,i,7)
                  ti0(j,k,7,4) = 2.*ti0(j,k,7,3) - tursav(j,k,i,7)

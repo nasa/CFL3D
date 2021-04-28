@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -26,17 +26,17 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose: initialize aeroelastic data, and calculate the stm, 
+c     Purpose: initialize aeroelastic data, and calculate the stm,
 c              stmi, and bmat arrays used for the solution to the
 c              modal equations, where stm is the state transition
 c              matrix, stmi is the integral of the stm, and bmat
 c              is the array containing the generalized masses. These
-c              arrays depend only on the structural properties and time 
+c              arrays depend only on the structural properties and time
 c              step, so need only to be calculated once, at the start
 c              of a calculation. Note that ainf=uinf/xmach is used for
 c              the non-dimensionalization of time in the structural
 c              equations of motion.
-c              
+c
 c        Reference: Cunningham, H.J., Batina, J.T., and Bennett, R.M,
 c                  "Modern Wing Flutter Analysis by Computational Fluid
 c                   Dynamics Methods," J. Aircraft, Vol. 25, No. 10,
@@ -97,7 +97,7 @@ c
             stm(i+1, i ,iaes)  = -(aa*aa+bb*bb)*es/bb
             stm(i+1,i+1,iaes)  =   ec +aa*es/bb
 c
-            stmi( i , i ,iaes) = (2.0*aa*(ec-1.) 
+            stmi( i , i ,iaes) = (2.0*aa*(ec-1.)
      .                         + (bb - aa*aa/bb)*es)
      .                         / (aa*aa + bb*bb)
             stmi( i ,i+1,iaes) = (aa*es/bb - ec + 1.)
@@ -116,7 +116,7 @@ c
             do i=1,2*nmodes
                temp(i,j) = 0.
                do k=1,2*nmodes
-                  temp(i,j) = temp(i,j) 
+                  temp(i,j) = temp(i,j)
      .                      + stmi(i,k,iaes)*bmat(k,j,iaes)
                end do
             end do

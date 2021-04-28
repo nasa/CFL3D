@@ -7,21 +7,21 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine plot3davg(jdim,kdim,idim,                               
-     .                  i1,i2,i3,j1,j2,j3,k1,k2,k3,q,                    
+      subroutine plot3davg(jdim,kdim,idim,
+     .                  i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
      .                  qi0,qj0,qk0,x,y,z,xw,blank2,blank,xg,iflag,
      .                  vist3d,iover,nblk,nmap,bcj,bck,bci,
      .                  vj0,vk0,vi0,ifunc,iplot,jdw,kdw,idw,
@@ -30,7 +30,7 @@ c
      .                  maxxe,nblkk,nbli,limblk,isva,nblon,mxbli,
      .                  thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                  mblk2nd,inpl3d,nblock,nblkpt,xv,
-     .                  sj,sk,si,vol,nset,qavg,q2avg,nt,movabs)          
+     .                  sj,sk,si,vol,nset,qavg,q2avg,nt,movabs)
 c
 c     $Id$
 c
@@ -87,12 +87,12 @@ c
      .          nblcg(maxbl),jsg(maxbl),ksg(maxbl),isg(maxbl),
      .          jeg(maxbl),keg(maxbl),ieg(maxbl),
      .          iindex(intmax,6*nsub1+9),nblkpt(maxxe),nblkk(2,mxbli),
-     .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli), 
+     .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli),
      .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
-      dimension qavg(jdim,kdim,idim,5)                                   
-      dimension q2avg(jdim,kdim,idim,5)                                  
+      dimension qavg(jdim,kdim,idim,5)
+      dimension q2avg(jdim,kdim,idim,5)
 c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
@@ -157,10 +157,10 @@ c
       ldw = 5
 c
       call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
-     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw) 
+     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
 c
-c   get iteration-averaged Q values                                
-c   note: the qavg values are kept as primitive variables          
+c   get iteration-averaged Q values
+c   note: the qavg values are kept as primitive variables
 
 
 c     ! maxnum contains the max vals of each of the variables
@@ -172,34 +172,34 @@ c     ! maxpos contains the indices of the maximum vals (4 is block #)
       maxpos = 0
       minpos = 0
 
-      do i=1,idim                                                  
-        do j=1,jdim                                                
-          do k=1,kdim                                              
-            qavg(j,k,i,1)=(qavg(j,k,i,1)*(xnumavg-1.)+             
-     +        xv(j,k,i,1))/xnumavg                                 
-            qavg(j,k,i,2)=(qavg(j,k,i,2)*(xnumavg-1.)+             
-     +        xv(j,k,i,2))/xnumavg                                 
-            qavg(j,k,i,3)=(qavg(j,k,i,3)*(xnumavg-1.)+             
-     +        xv(j,k,i,3))/xnumavg                                 
-            qavg(j,k,i,4)=(qavg(j,k,i,4)*(xnumavg-1.)+             
-     +        xv(j,k,i,4))/xnumavg                                 
-            qavg(j,k,i,5)=(qavg(j,k,i,5)*(xnumavg-1.)+             
-     +        xv(j,k,i,5))/xnumavg                                 
+      do i=1,idim
+        do j=1,jdim
+          do k=1,kdim
+            qavg(j,k,i,1)=(qavg(j,k,i,1)*(xnumavg-1.)+
+     +        xv(j,k,i,1))/xnumavg
+            qavg(j,k,i,2)=(qavg(j,k,i,2)*(xnumavg-1.)+
+     +        xv(j,k,i,2))/xnumavg
+            qavg(j,k,i,3)=(qavg(j,k,i,3)*(xnumavg-1.)+
+     +        xv(j,k,i,3))/xnumavg
+            qavg(j,k,i,4)=(qavg(j,k,i,4)*(xnumavg-1.)+
+     +        xv(j,k,i,4))/xnumavg
+            qavg(j,k,i,5)=(qavg(j,k,i,5)*(xnumavg-1.)+
+     +        xv(j,k,i,5))/xnumavg
 
-            q2avg(j,k,i,1)=(q2avg(j,k,i,1)*(xnumavg2-1.)+          
-     +        xv(j,k,i,1)**2)/xnumavg2                             
-            q2avg(j,k,i,2)=(q2avg(j,k,i,2)*(xnumavg2-1.)+          
-     +        xv(j,k,i,2)**2)/xnumavg2                             
-            q2avg(j,k,i,3)=(q2avg(j,k,i,3)*(xnumavg2-1.)+          
-     +        xv(j,k,i,3)**2)/xnumavg2                             
-            q2avg(j,k,i,4)=(q2avg(j,k,i,4)*(xnumavg2-1.)+          
-     +        xv(j,k,i,4)**2)/xnumavg2                             
-            q2avg(j,k,i,5)=(q2avg(j,k,i,5)*(xnumavg2-1.)+          
-     +        xv(j,k,i,5)**2)/xnumavg2                             
+            q2avg(j,k,i,1)=(q2avg(j,k,i,1)*(xnumavg2-1.)+
+     +        xv(j,k,i,1)**2)/xnumavg2
+            q2avg(j,k,i,2)=(q2avg(j,k,i,2)*(xnumavg2-1.)+
+     +        xv(j,k,i,2)**2)/xnumavg2
+            q2avg(j,k,i,3)=(q2avg(j,k,i,3)*(xnumavg2-1.)+
+     +        xv(j,k,i,3)**2)/xnumavg2
+            q2avg(j,k,i,4)=(q2avg(j,k,i,4)*(xnumavg2-1.)+
+     +        xv(j,k,i,4)**2)/xnumavg2
+            q2avg(j,k,i,5)=(q2avg(j,k,i,5)*(xnumavg2-1.)+
+     +        xv(j,k,i,5)**2)/xnumavg2
 
-          enddo                                                    
-        enddo                                                      
-      enddo                                                        
+          enddo
+        enddo
+      enddo
 
       return
       end

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -70,7 +70,7 @@ c
      .          xorig(maxbl),yorig(maxbl),zorig(maxbl),xorig0(maxbl),
      .          yorig0(maxbl),zorig0(maxbl),thetax(maxbl),
      .          thetay(maxbl),thetaz(maxbl),time2(maxbl),idefrm(maxbl)
-      dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg) 
+      dimension nsegdfrm(maxbl),idfrmseg(maxbl,maxsegdg)
       dimension xorgae(maxbl,maxsegdg),yorgae(maxbl,maxsegdg),
      .          zorgae(maxbl,maxsegdg),thtxae(maxbl,maxsegdg),
      .          thtyae(maxbl,maxsegdg),thtzae(maxbl,maxsegdg)
@@ -184,7 +184,7 @@ c
                lxnm2c  = lw(56,nblz)
                lynm2c  = lw(57,nblz)
                lznm2c  = lw(58,nblz)
-               ldeltjc = lw(59,nblz) 
+               ldeltjc = lw(59,nblz)
                ldeltkc = lw(60,nblz)
                ldeltic = lw(61,nblz)
                call xyzintr(jdim,kdim,idim,jj2,kk2,ii2,w(lx),
@@ -197,7 +197,7 @@ c
      .                      w(ldeltkc),w(ldeltic))
             end if
 c
-c           update position of finer mesh to current position of 
+c           update position of finer mesh to current position of
 c           coarser mesh to account for rigid grid motion
 c
             if (itrans(nblf).gt.0 .or. irotat(nblf).gt.0) then
@@ -283,7 +283,7 @@ c
          nd_srce = mblk2nd(nblc)
 c
          if (nd_dest.ne.nd_srce) then
-c        
+c
 c        embedded and coarser block reside on different processors
 c
          jki   = jj2*kk2*ii2
@@ -385,7 +385,7 @@ c
      .              js,ks,is,je,ke,ie,ipass,nbl,nblc,
      .              nou,bou,nbuf,ibufdim,5,myid)
          if (ivmx.ge.4) then
-            nou(1) = min(nou(1)+1,ibufdim)  
+            nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),300)
             call add2x(w(lxib),w(lturc),jdim,kdim,idim,jj2,kk2,ii2,
      .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
@@ -406,7 +406,7 @@ c
          iuns = max(itrans(nbl),irotat(nbl),idefrm(nbl))
          if (iuns.gt.0) then
 c
-c           update position of embeded mesh to current position of 
+c           update position of embeded mesh to current position of
 c           coarser (global) mesh
 c
 #if defined DIST_MPI

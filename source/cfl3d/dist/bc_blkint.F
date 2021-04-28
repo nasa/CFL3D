@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -95,7 +95,7 @@ c               = 0, do not set boundary volumes from neighboring block
 c               = 1, set boundary volumes from neighboring block
 c                 (0 is same as previous versions)
 c
-      if (ntime.gt.0 .and. abs(nbli).gt.0) then 
+      if (ntime.gt.0 .and. abs(nbli).gt.0) then
 c
 c***********************************************************************
 c        First Case: all data needed to set 1-1 bc lies on the
@@ -149,14 +149,14 @@ c
                   lwzr = lw(12,in_blk)
 c
 c                 set pointers for current block (note: lwt has
-c                 already been set above, and corresponds to 
+c                 already been set above, and corresponds to
 c                 qi0, qj0, or qk0, depending on the interface)
 c
                   lwxt = lw(10,ic_blk)
                   lwyt = lw(11,ic_blk)
                   lwzt = lw(12,ic_blk)
 c
-c                 k = constant interface 
+c                 k = constant interface
 c
                   if (jside.eq.3) then
 c
@@ -194,8 +194,8 @@ c
                      end if
                      if (ivmx.ge.4) then
                         ldim = nummem
-                        lwst = lw(19,in_blk)    
-                        lwtt = lw(24,ic_blk)    
+                        lwst = lw(19,in_blk)
+                        lwtt = lw(24,ic_blk)
                         if (limblk(it,3,n).ne.1) then
                            lwtt   = lwtt + jdimc*(idimc-1)*2*nummem
                         end if
@@ -246,8 +246,8 @@ c                    interpolate turbulent quantities
 c
                      if (ivmx.ge.2) then
                         ldim = 1
-                        lwst = lw(13,in_blk)    
-                        lwtt = lw(28,ic_blk)     
+                        lwst = lw(13,in_blk)
+                        lwtt = lw(28,ic_blk)
                         if (limblk(it,2,n).ne.1) then
                            lwtt   = lwtt + kdimc*(idimc-1)*1*2
                         end if
@@ -258,8 +258,8 @@ c
                      end if
                      if (ivmx.ge.4) then
                         ldim = nummem
-                        lwst = lw(19,in_blk)    
-                        lwtt = lw(23,ic_blk)     
+                        lwst = lw(19,in_blk)
+                        lwtt = lw(23,ic_blk)
                         if (limblk(it,2,n).ne.1) then
                            lwtt   = lwtt + kdimc*(idimc-1)*2*nummem
                         end if
@@ -310,8 +310,8 @@ c                    interpolate turbulent quantities
 c
                      if (ivmx.ge.2) then
                         ldim = 1
-                        lwst = lw(13,in_blk)    
-                        lwtt = lw(30,ic_blk)     
+                        lwst = lw(13,in_blk)
+                        lwtt = lw(30,ic_blk)
                         if (limblk(it,1,n).ne.1) then
                            lwtt   = lwtt + jdimc*kdimc*1*2
                         end if
@@ -322,8 +322,8 @@ c
                      end if
                      if (ivmx.ge.4) then
                         ldim = nummem
-                        lwst = lw(19,in_blk)    
-                        lwtt = lw(25,ic_blk)     
+                        lwst = lw(19,in_blk)
+                        lwtt = lw(25,ic_blk)
                         if (limblk(it,1,n).ne.1) then
                            lwtt   = lwtt + jdimc*kdimc*2*nummem
                         end if
@@ -357,7 +357,7 @@ c
          end do
 c
 c***********************************************************************
-c        Second Case: data needed to set 1-1 bc lies on another 
+c        Second Case: data needed to set 1-1 bc lies on another
 c                     processor
 c***********************************************************************
 #if defined DIST_MPI
@@ -500,7 +500,7 @@ c
                      kqintl = kcheck
                   end if
                end if
-            end if 
+            end if
             end if
          end do
 c
@@ -559,8 +559,8 @@ c
                      end if
                      if (jside.eq.3) then
                         call pre_cblkk (idimn, jdimn, kdimn,
-     .                                 limblk(1,1,n), isva(1,1,n), it, 
-     .                                 ir, w(lwxr), w(lwyr), w(lwzr), 
+     .                                 limblk(1,1,n), isva(1,1,n), it,
+     .                                 ir, w(lwxr), w(lwyr), w(lwzr),
      .                                 wk(ktl), maxdims, nval1,myid,
      .                                 ibufdim,nbuf,bou,nou)
                      else if (jside.eq.4) then
@@ -630,22 +630,22 @@ c
                      end if
                      if (jside.eq.3) then
                         call pre_blockk (idimn, jdimn, kdimn,
-     .                                  limblk(1,1,n), isva(1,1,n), 
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  limblk(1,1,n), isva(1,1,n),
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
                      else if (jside.eq.4) then
                         call pre_blockj (idimn, jdimn, kdimn,
-     .                                  limblk(1,1,n), isva(1,1,n), 
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  limblk(1,1,n), isva(1,1,n),
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
                      else
                         call pre_blocki (idimn, jdimn, kdimn,
-     .                                  limblk(1,1,n), isva(1,1,n), 
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  limblk(1,1,n), isva(1,1,n),
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
@@ -665,27 +665,27 @@ c
                      if (kcheck.gt.nwork) then
                         nou(1) = min(nou(1)+1,ibufdim)
                         write(bou(nou(1),1),*)' stopping in bc_blkint',
-     .                  '...work array insufficient',kcheck             
+     .                  '...work array insufficient',kcheck
                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                      end if
                      if (jside.eq.3) then
                         call pre_blockk (idimn, jdimn, kdimn,
-     .                                  limblk(1,1,n), isva(1,1,n), 
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  limblk(1,1,n), isva(1,1,n),
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
                      else if (jside.eq.4) then
                         call pre_blockj (idimn, jdimn, kdimn,
      .                                  limblk(1,1,n), isva(1,1,n),
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
                      else
                         call pre_blocki (idimn, jdimn, kdimn,
-     .                                  limblk(1,1,n), isva(1,1,n), 
-     .                                  it, ir, w(lwst), wk(ktl), 
+     .                                  limblk(1,1,n), isva(1,1,n),
+     .                                  it, ir, w(lwst), wk(ktl),
      .                                  maxdims, ldim, nval2,0,
      .                                  myid,mblk2nd,maxbl,
      .                                  bou,ibufdim,nbuf,nou)
@@ -743,7 +743,7 @@ c
             end if
          end do
 c
-c        set 1-1 interface bc's 
+c        set 1-1 interface bc's
 c
          ndone  = 0
 c
@@ -800,14 +800,14 @@ c
                lwzr = lw(12,in_blk)
 c
 c              set pointers for current block (note: lwt has
-c              already been set above, and corresponds to 
+c              already been set above, and corresponds to
 c              qi0, qj0, or qk0, depending on the interface)
 c
                lwxt = lw(10,ic_blk)
                lwyt = lw(11,ic_blk)
                lwzt = lw(12,ic_blk)
 c
-c              k = constant interface 
+c              k = constant interface
 c
                if (jside.eq.3) then
 c
@@ -968,8 +968,8 @@ c
                   if (isklton.eq.1) then
                      if (index_ar(nnn) .eq. keep_trac(n,2)) then
                         kqintl = keep_trac(n,1)
-                        call cblki_d(nbli,idimn,jdimn,kdimn,idimc,jdimc,     
-     .                               kdimc,limblk(1,1,n),isva(1,1,n),        
+                        call cblki_d(nbli,idimn,jdimn,kdimn,idimc,jdimc,
+     .                               kdimc,limblk(1,1,n),isva(1,1,n),
      .                               it,ir,iedge,wk(kqintl),maxdims,
      .                               w(lwxt),w(lwyt),w(lwzt),iti,lcnt,
      .                               geom_miss,mxbli)

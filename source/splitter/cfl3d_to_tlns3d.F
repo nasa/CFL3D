@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -43,18 +43,18 @@ c
 c***********************************************************************
 c
 c     Purpose: convert a cfl3d input file (and ronnie input file, if
-c              a patched case) to a tlns3d map file 
+c              a patched case) to a tlns3d map file
 c
 c     initial coding by m.d.sanetrik (6/95)
 c
 c     modications by r.t.biedron (3/97):
 c
-c       1) add ability to read zero-range shortcut in cfl3d input file 
+c       1) add ability to read zero-range shortcut in cfl3d input file
 c       2) change read order for input bc indices i,k on j-const. faces
 c       3) add ability to read non-zero ndata input in cfl3d input file
 c       4) add ability to handle a non-patched case
 c       5) add option for version 4 or version 5 cfl3d input file
-c       6) add description of "type 1 or type 2 patch input file" 
+c       6) add description of "type 1 or type 2 patch input file"
 c          during prompt
 c       7) added ability to handle a mesh-sequenced case
 c       8) changed '(a40)' read of input file names to be '(a60)'
@@ -64,9 +64,9 @@ c          cfl3d input file to set ivisb(1-3,mbloc)
 c      10) changed the order of writing the source and target data
 c          when patching to preserve the target data from the ronnie file
 c      11) added checks for parameters msegn and mbloc
-c      12) set tlns3d bc type variable typ = 0 for an inner cut that 
+c      12) set tlns3d bc type variable typ = 0 for an inner cut that
 c          maps to same block, in accordance with the tlns3d standard
-c      13) eliminated double counting of 1-1 interfaces 
+c      13) eliminated double counting of 1-1 interfaces
 c      14) for baldwin-lomax cases, set non-zero search ranges
 c
 c     modications by r.t.biedron (1/98):
@@ -83,25 +83,25 @@ c          indicies get swapped if imap(8,..,..) is negative
 c
 c     NOTES (known conversion limitations):
 c
-c       1) there seems to be no universal way to go from the cfl3d 
+c       1) there seems to be no universal way to go from the cfl3d
 c          "ilamlo, ilamhi..." specification of a laminar region
 c          in a field-equation turb. model to the  tlns3d "itrb1,itrb2..."
 c          specification of a turbulent region. Thus, this code
 c          outputs the "itrb1,itrb2..." as corresponding to the
 c          entire index range, and uses the tlns3d convention of
-c          zeros for both the starting and ending range to do that 
+c          zeros for both the starting and ending range to do that
 c       2) when using the type 1 ronnie input, the index range of
 c          the source zone(s) is set to the entire range, since any
 c          other info is not available from the ronnie input file;
 c          this can lead to some discrepancy if converting from a
-c          tlns3d map file to a cfl3d/ronnie input file and back 
+c          tlns3d map file to a cfl3d/ronnie input file and back
 c          again. this *should* not be a problem, since tlns3d allows
 c          for overspecification of the source range, but....
 c       3) in tlns3d there is provision for specifying search parameters
 c          for the baldwin-lomax turb. model; the cfl3d input file does
 c          not have the corresponding information, so if balwin-lomax
 c          is used, the the entire segment is assume turbulent, and
-c          the search range is set from 3 to max dim. 
+c          the search range is set from 3 to max dim.
 c
 c**********************************************************************
 c
@@ -183,11 +183,11 @@ c      imap(5 , ) : specifies beginning of direction 2
 c      imap(6 , ) : specifies end       of direction 2
 c
 c      imap(8,  ) : if the boundary type is symmetry
-c                   takes the value 1,2 or 3 to indicate symmetry 
+c                   takes the value 1,2 or 3 to indicate symmetry
 c                   about x, y or z = constant planes, respectively
-c 
+c
 c  if the boundary type is a cut/interface
-c  additional information described below is required 
+c  additional information described below is required
 c
 c      imap(7 , ) : specifies block no. of source segment
 c     |imap(8 , )|: specifies face no. of source segment
@@ -204,7 +204,7 @@ c      imap(11, ) : specifies beginning of direction 2 of source segment
 c      imap(12, ) : specifies end       of direction 2 of source segment
 c
 c      turbulence/transitional related information
-c    
+c
 c      imap(13, ) : specifies if there is turbulent flow on this segment
 c                   1  corresponds to turbulent flow
 c                   0  corresponds to laminar   flow
@@ -212,11 +212,11 @@ c      imap(14, ) : begining index in direction 1 for turbulent flow
 c      imap(15, ) : ending   index in direction 1 for turbulent flow
 c      imap(16, ) : begining index in direction 2 for turbulent flow
 c      imap(17, ) : ending   index in direction 2 for turbulent flow
-c      imap(18, ) : begining index in normal direction for fmax 
-c      imap(19, ) : ending   index in normal direction for fmax 
-c      imap(20, ) : ending   index in normal direction for turb. flow 
+c      imap(18, ) : begining index in normal direction for fmax
+c      imap(19, ) : ending   index in normal direction for fmax
+c      imap(20, ) : ending   index in normal direction for turb. flow
 c
-c      the following items are added to facilitate the splitting of 
+c      the following items are added to facilitate the splitting of
 c      the cfl3d input files, and are not part of the standard tlns3d
 c      imap array
 c
@@ -251,8 +251,8 @@ c      xmap(24, ) : thxmax
 c      xmap(25, ) : thymax
 c      xmap(26, ) : thzmax
 c
-c      the following additions apply to blocks; ivisb(1-3, ) pertain 
-c      to the turb model in the i,j,k directions, as before. 
+c      the following additions apply to blocks; ivisb(1-3, ) pertain
+c      to the turb model in the i,j,k directions, as before.
 c      ivisb( 4, ) : ncg
 c      ivisb( 5, ) : iem
 c      ivisb( 6, ) : iadvance
@@ -347,7 +347,7 @@ c
    10 format(20a4)
 c
       read(10,*)
-      if(iver.eq.4) then 
+      if(iver.eq.4) then
          if(ipar.eq.0) then
          read(10,*) xmach,alpha,beta,reue,tinf,isnd,c2spe
          else
@@ -358,7 +358,7 @@ c
       end if
 c
 c     versions 4.1 and 6/5 have different ways of triggering the
-c     Cl-specified option...v4.1 uses the sign on Mach no. as a 
+c     Cl-specified option...v4.1 uses the sign on Mach no. as a
 c     trigger, whereas v6 uses the sign on Sref (in v6, the sign
 c     on Mach no. is used to trigger the preconditioning option;
 c     there is no preconditioning option in v4.1). The location
@@ -456,8 +456,8 @@ c
       ivisb(10,ibloc) = jlamlo
       ivisb(11,ibloc) = jlamhi
       ivisb(12,ibloc) = klamlo
-      ivisb(13,ibloc) = klamhi 
-      isum = isum + ilamlo+ilamhi+jlamlo+jlamhi+klamlo+klamhi 
+      ivisb(13,ibloc) = klamhi
+      isum = isum + ilamlo+ilamhi+jlamlo+jlamhi+klamlo+klamhi
   120 continue
       if (isum .gt.0 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: laminar regions specified...these '',
@@ -567,7 +567,7 @@ c
       if (ibct(ibloc,iface,iseg).eq.2005 .and. cflout .ne. 'null') then
          write(6,'(''WARNING: periodic bc data specified...these '',
      .             ''are NOT preserved during splitting'')')
-      else if (ibct(ibloc,iface,iseg).eq.2006 
+      else if (ibct(ibloc,iface,iseg).eq.2006
      .         .and. cflout .ne. 'null') then
          write(6,'(''WARNING: radial equilibrium bc data specified'',
      .             ''...these MAY NOT be preserved during splitting'')')
@@ -867,14 +867,14 @@ c
          read(10,*) ifoo,ibif1(iptpif),ibif2(iptpif)
   210    continue
 c
-         read(10,*) 
+         read(10,*)
          do 220 iptpif=1,nptpif
          read(10,*) nbi1(iptpif),nbj1(iptpif),nbk1(iptpif),
      &              nei1(iptpif),nej1(iptpif),nek1(iptpif),
      &              nd11(iptpif),nd21(iptpif)
   220    continue
 c
-         read(10,*) 
+         read(10,*)
          do 225 iptpif=1,nptpif
          read(10,*) nbi2(iptpif),nbj2(iptpif),nbk2(iptpif),
      &              nei2(iptpif),nej2(iptpif),nek2(iptpif),
@@ -1315,8 +1315,8 @@ c
 c
 c        identify those segments that are redundant, and
 c        flag them with iredundant() = 1
-c        idebug > 0 for debugging purposes to write out 1-1 
-c        data before elimination of iredundant 
+c        idebug > 0 for debugging purposes to write out 1-1
+c        data before elimination of iredundant
 c
          idebug  = 0
          do is = 1,msegn
@@ -1350,7 +1350,7 @@ c
                   im211 = imap(11,is2,ibloc)
                   im212 = imap(12,is2,ibloc)
                   if (is2 .ne. is1) then
-                     if ((im11.eq.im21)   .and. (im12.eq.im22)   .and. 
+                     if ((im11.eq.im21)   .and. (im12.eq.im22)   .and.
      .                   (im12.eq.im22)   .and. (im13.eq.im23)   .and.
      .                   (im13.eq.im23)   .and. (im14.eq.im24)   .and.
      .                   (im15.eq.im25)   .and. (im16.eq.im26)   .and.
@@ -1370,7 +1370,7 @@ c
                end if
             end do
          end do
-      end do 
+      end do
 c
 c     read remainder of input file
 c
@@ -1416,7 +1416,7 @@ c        sensitivity data
          read(10,'(a60)') dresid
  8989    continue
 c
-      else 
+      else
 c
 c        patch data
          read(10,*)
@@ -1498,7 +1498,7 @@ c
                read(10,*) igd,irotat,rfreqr,thxmag,thymag,thzmag,
      .                    xorig,yorig,zorig
                do iseg=1,msegn
-                  xmap(16,iseg,igd) = irotat 
+                  xmap(16,iseg,igd) = irotat
                   xmap(17,iseg,igd) = rfreqr
                   xmap(18,iseg,igd) = thxmag
                   xmap(19,iseg,igd) = thymag
@@ -1532,7 +1532,7 @@ c
       if (ipatch .ne. 0) then
 c
       read(15,*)
-      read(15,*) 
+      read(15,*)
       read(15,'(a60)') rout
       read(15,*)
       if(iptyp .gt.0) then
@@ -1543,11 +1543,11 @@ c
       end if
       read(15,10) (titleron(i),i=1,20)
       read(15,*)
-      read(15,*) 
-      read(15,*) 
+      read(15,*)
+      read(15,*)
 c
       do 300 ibloc=1,nbloc
-      read(15,*) 
+      read(15,*)
   300 continue
 c
       read(15,*)
@@ -1578,7 +1578,7 @@ c
          else if(iijkt .eq. 2) then
             ift = 3
             if(imnmxt .eq. 2) ift = 4
-         else 
+         else
             ift = 5
             if(imnmxt .eq. 2) ift = 6
          end if
@@ -1649,7 +1649,7 @@ c
          else if(iijks .eq. 2) then
             ifs = 3
             if(imnmxs .eq. 2) ifs = 4
-         else 
+         else
             ifs = 5
             if(imnmxs .eq. 2) ifs = 6
          end if
@@ -1727,7 +1727,7 @@ c
          else if(iijkt .eq. 2) then
             ift = 3
             if(imnmxt .eq. 2) ift = 4
-         else 
+         else
             ift = 5
             if(imnmxt .eq. 2) ift = 6
          end if
@@ -1798,7 +1798,7 @@ c
          else if(iijks .eq. 2) then
             ifs = 3
             if(imnmxs .eq. 2) ifs = 4
-         else 
+         else
             ifs = 5
             if(imnmxs .eq. 2) ifs = 6
          end if
@@ -1907,7 +1907,7 @@ c
             if(imap(2,it,iblt) .le. 2) idir = 1
             if(imap(2,it,iblt) .ge. 5) idir = 3
 c
-            if (imap(1,it,iblt).eq.3 .and. 
+            if (imap(1,it,iblt).eq.3 .and.
      .         (abs(ivisb(idir,iblt)).ge.2 .or.
      .         abs(ivisb(idir,iblt)).le.3)) then
                imap(13,it,iblt) = 1
@@ -1954,15 +1954,15 @@ c
       end do
 c
 c    check for block faces that have not been set; note that in
-c    most cases this would be an error in the cfl3d or ronnie input 
+c    most cases this would be an error in the cfl3d or ronnie input
 c    files. however, if this translator is being used solely to set
 c    up input to paul pao's patcher, then there may be certain cases
 c    where not all patch boundaries are set in the ronnie input deck
 c    used to set up pao's patcher input. If not all block faces are
-c    explicitly set in the tlns3d map file, pao's patcher seems to 
-c    run into problems. so, query if the user wants to fill in the 
+c    explicitly set in the tlns3d map file, pao's patcher seems to
+c    run into problems. so, query if the user wants to fill in the
 c    missing faces with extrapolation, which don't affect the patch
-c    data. 
+c    data.
 c
       do ibloc = 1,nbloc
 c        ifchkn .ne. if at least one segment on face n has been set
@@ -1979,23 +1979,23 @@ c        ifchkn .ne. if at least one segment on face n has been set
             if (imap(2,iseg,ibloc) .eq. 4) ifchk4 = 1
             if (imap(2,iseg,ibloc) .eq. 5) ifchk5 = 1
             if (imap(2,iseg,ibloc) .eq. 6) ifchk6 = 1
-         enddo 
-         if (ifchk1 .eq. 0) 
+         enddo
+         if (ifchk1 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face imin, has no bc data'
-         if (ifchk2 .eq. 0) 
+         if (ifchk2 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face imax, has no bc data'
-         if (ifchk3 .eq. 0) 
+         if (ifchk3 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face jmin, has no bc data'
-         if (ifchk4 .eq. 0) 
+         if (ifchk4 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face jmax, has no bc data'
-         if (ifchk5 .eq. 0) 
+         if (ifchk5 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face kmin, has no bc data'
-         if (ifchk6 .eq. 0) 
+         if (ifchk6 .eq. 0)
      .      write(6,*)'WARNING: block ',ibloc,
      .                ' face kmax, has no bc data'
 c
@@ -2106,7 +2106,7 @@ c
      &           " iturbb itrb1 itrb2 jtrb1 jtrb2 ktrb1 ktrb2")')
       write(20,'(2i7,10i6)')  nseg1(ibloc),(ivisb(n,ibloc),n=1,3)
      &        , iturbb(ibloc),itrb1(ibloc),itrb2(ibloc),jtrb1(ibloc)
-     &        ,               jtrb2(ibloc),ktrb1(ibloc),ktrb2(ibloc) 
+     &        ,               jtrb2(ibloc),ktrb1(ibloc),ktrb2(ibloc)
       write(20,'("begin non-standard map data")')
       write(20,'(12i6)') (ivisb(n,ibloc),n=4,15)
       write(20,'(12i6)') (ivisb(n,ibloc),n=16,27)
@@ -2135,7 +2135,7 @@ c
          write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=6,10)
          write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=11,15)
          write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=16,20)
-         write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=21,25) 
+         write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=21,25)
          write(20,'(15x,5f10.4)') (xmap(n,iseg,ibloc),n=26,26)
          write(20,'(15x,8i5)') (imap(n,iseg,ibloc),n=21,23)
          write(20,'(15x,"end non-standard map data")')

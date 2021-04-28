@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -32,8 +32,8 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Driver routine for calculation of yplus at first gridpoint 
-c               above solid walls 
+c     Purpose:  Driver routine for calculation of yplus at first gridpoint
+c               above solid walls
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -91,7 +91,7 @@ c             y+, eddy viscosity and normal spacing at first gridpoint. For 2d
 c             cases, a single file is output in column format, with
 c             headers between different segments.
 c             above all viscous walls
-c           = 0 do not output function files 
+c           = 0 do not output function files
 c           > 0 output function files
 c
       ifunc = 0
@@ -130,7 +130,7 @@ c        - the associated turb. viscosity file is written to iunit+3
 c          (fast only alows one scalar variable per function file)
 c        - in 2d, only one file is written, to iunit, containing
 c          x,z (y if ialph>0),y+,dn and turb. viscosity, in column format.
-c      
+c
 c
          if (i2d.eq.0) then
             open(unit=iunit,file='surf_xyz.fmt',form='formatted',
@@ -229,7 +229,7 @@ c
                if (ktest.gt.0) then
                   ncount = ncount+1
                   idf(ncount) = idim
-                  if (i2d.eq.1) idf(ncount) = 1 
+                  if (i2d.eq.1) idf(ncount) = 1
                   jdf(ncount) = jdim
                   kdf(ncount) = 1
                end if
@@ -285,7 +285,7 @@ c
 c
          end if
 c
- 600     continue 
+ 600     continue
 c
          if (ncount.gt.0) then
             if (i2d.eq.0) then
@@ -324,7 +324,7 @@ c     determine if yplus statistics should be output: block should
 c     be turbulent *and* have at least one solid surface
 c
       ivv1 = 0
-      if (ivisc(3).gt.1 .or. ivisc(2).gt.1 .or. ivisc(1).gt.1) ivv1=1 
+      if (ivisc(3).gt.1 .or. ivisc(2).gt.1 .or. ivisc(1).gt.1) ivv1=1
 c
       ivv2 = 0
       do ns=1,nbci0(nbl)
@@ -377,7 +377,7 @@ c
 c
 c     output statistics on global and embedded levels
 c
-      if (levg.ge.lglobal .and. levg.le.levt 
+      if (levg.ge.lglobal .and. levg.le.levt
      .    .and. ncyc1(iseq).gt.0 .and. ivv.gt.0) then
 c
          if (myid.eq.myhost) then
@@ -484,11 +484,11 @@ c
             write(11,104)
             write(11,107) real(dnmaxt),idnmaxt,jdnmaxt,kdnmaxt,
      .                    nbdnmaxt,igridg(nbdnmaxt)
-            write(11,105) 
+            write(11,105)
             write(11,107) real(dnmint),idnmint,jdnmint,kdnmint,
      .                    nbdnmint,igridg(nbdnmint)
             write(11,106) int(real(ypchk))
-            write(11,108) real(ypavt),real(ypstdt),nypchkt,nptst 
+            write(11,108) real(ypavt),real(ypstdt),nypchkt,nptst
             if (real(ypavt) .gt. 2.5) then
                write(11,114)
             end if

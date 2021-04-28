@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -151,7 +151,7 @@ c
       b6  = 0.
       end if
 c
-c     newton iteration to invert  for xie and eta (using two 
+c     newton iteration to invert  for xie and eta (using two
 c     of the three equations defining the surface patch)
 c
       if(iretry.eq.0) then
@@ -167,13 +167,13 @@ c
       iter  = 0
       itry  = 0
 c
-c     convergence criterion for Newton iteration...require 4 orders of 
-c     reduction to starting error=abs(f1)+abs(f2) 
+c     convergence criterion for Newton iteration...require 4 orders of
+c     reduction to starting error=abs(f1)+abs(f2)
 c
       f1 = x1 + a3*eta + eta*( a7*eta + a8*xie*eta )
-     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )- xc  
+     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )- xc
       f2 = y1 + b3*eta + eta*( b7*eta + b8*xie*eta )
-     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )- yc  
+     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )- yc
       error0 = ccabs(f1)+ccabs(f2)
       epsf   = 1.0e-4*error0
 c     10.**(-iexp) is machine zero
@@ -182,15 +182,15 @@ c     10.**(-iexp) is machine zero
 c
       errm1 = error0
       error = error0
-    2 continue 
+    2 continue
 c
       errm2 = errm1
       errm1 = error
 c
       f1 = x1 + a3*eta + eta*( a7*eta + a8*xie*eta )
-     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )- xc  
+     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )- xc
       f2 = y1 + b3*eta + eta*( b7*eta + b8*xie*eta )
-     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )- yc  
+     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )- yc
 c
 c d(f1)/d(xie)
 c
@@ -198,7 +198,7 @@ c
 c
 c d(f1)/d(eta)
 c
-      a3b = a3 + xie*( a4 + a6*xie ) + 2.*eta*( a7 + a8*xie ) 
+      a3b = a3 + xie*( a4 + a6*xie ) + 2.*eta*( a7 + a8*xie )
 c
 c d(f2)/d(xie)
 c

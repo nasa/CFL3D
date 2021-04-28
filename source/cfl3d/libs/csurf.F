@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -36,7 +36,7 @@ c     Purpose:  Integrate control surface mass flow and momemtum/forces
 c               Original coding by R. Cedar, GE Aircraft Engines
 c
 c               Modified 3/01 by R. Biedron to use either cell-face
-c               values or cell-center values at zonal boundaries, 
+c               values or cell-center values at zonal boundaries,
 c               depending on bc flag (bcj/bck/bci).
 c***********************************************************************
 c
@@ -44,7 +44,7 @@ c
       implicit complex(a-h,o-z)
 #   endif
 c
-      dimension icsinfo(maxcs,9) 
+      dimension icsinfo(maxcs,9)
       dimension ub(jdim,kdim,idim),vb(jdim,kdim,idim),wb(jdim,kdim,idim)
       dimension vmuk(jdim-1,idim-1,2),vol(jdim,kdim,idim-1),
      .          vmuj(kdim-1,idim-1,2),vmui(jdim-1,kdim-1,2)
@@ -113,10 +113,10 @@ c
       xmav   = 0.e0
       fmdot  = 0.e0
       cfxp   = 0.e0
-      cfyp   = 0.e0 
+      cfyp   = 0.e0
       cfzp   = 0.e0
       cfxv   = 0.e0
-      cfyv   = 0.e0 
+      cfyv   = 0.e0
       cfzv   = 0.e0
       cfxmom = 0.e0
       cfymom = 0.e0
@@ -149,11 +149,11 @@ c
          end if
 c
          if (k.eq.1 .and. iwall.eq.1) then
-            kk   = 1     
+            kk   = 1
          end if
 c
          if (k.eq.kdim .and. iwall.eq.1) then
-            kk   = 2   
+            kk   = 2
          end if
 c
          do 10 i=ist,ifn
@@ -187,7 +187,7 @@ c
                aa = 1. +  bck(j,i,m)
                bb = 1. -  bck(j,i,m)
                q1 = 0.5*(aa*qk0(j,i,1,mm)
-     .                        +      bb*q(j,kc,i,1)) 
+     .                        +      bb*q(j,kc,i,1))
                q2 = 0.5*(aa*qk0(j,i,2,mm)
      .                        +      bb*q(j,kc,i,2)) / xmach
                q3 = 0.5*(aa*qk0(j,i,3,mm)
@@ -251,7 +251,7 @@ c
             tav  = 0.e0
             ttav = 0.e0
             xmav = 0.e0
-         else            
+         else
             pav   = pav  / fmdot
             ptav  = ptav / fmdot
             tav   = tav  / fmdot
@@ -307,11 +307,11 @@ c
          end if
 c
          if (j.eq.1 .and. iwall.eq.1) then
-            jj   = 1     
+            jj   = 1
          end if
 c
          if (j.eq.jdim .and. iwall.eq.1) then
-            jj   = 2   
+            jj   = 2
          end if
 c
          do 20 i=ist,ifn
@@ -410,7 +410,7 @@ c
             tav  = 0.e0
             ttav = 0.e0
             xmav = 0.e0
-         else            
+         else
             pav   = pav  / fmdot
             ptav  = ptav / fmdot
             tav   = tav  / fmdot
@@ -561,7 +561,7 @@ c
             tav  = 0.e0
             ttav = 0.e0
             xmav = 0.e0
-         else            
+         else
             pav   = pav  / fmdot
             ptav  = ptav / fmdot
             tav   = tav  / fmdot
@@ -607,4 +607,4 @@ c
       cfltot  =-cfxtot*sina*cosb-cfytot*sina*sinb+cfztot*cosa
 c
       return
-      end 
+      end

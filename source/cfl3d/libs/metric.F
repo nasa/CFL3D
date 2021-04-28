@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -68,23 +68,23 @@ c
 c  notes:
 c        1) the normal to a cell face is determined via the cross product
 c           of two diagonal vectors connecting oposite corners of the cell
-c           face. 
-c        2) a unit normal is obtained by dividing by the magnitude 
-c           of the inner product. 
-c        3) The area of the cell face is given by  one-half the magnitude 
+c           face.
+c        2) a unit normal is obtained by dividing by the magnitude
+c           of the inner product.
+c        3) The area of the cell face is given by  one-half the magnitude
 c           of the cross product of the two diagonal vectors
-c        4) in a jdim*kdim*idim grid there are really only 
+c        4) in a jdim*kdim*idim grid there are really only
 c                   idim*(jdim-1)*(kdim-1) i-faces
 c                   jdim*(idim-1)*(kdim-1) j-faces
 c                   kdim*(idim-1)*(jdim-1) k-faces
 c           however the metric arrays are dimensioned larger than this -
-c           for efficient vectorization, loops throughout the code run 
-c           over these fictitious faces. thus, for safety, the metrics 
-c           for these fictitious faces are set to the corresponding metrics 
+c           for efficient vectorization, loops throughout the code run
+c           over these fictitious faces. thus, for safety, the metrics
+c           for these fictitious faces are set to the corresponding metrics
 c           for the neighboring face.
 c
 c        5) unsteady metric terms si(5), sj(5), sk(5) are set to zero
-c           here, and must be reset elsewhere if the mesh is actually 
+c           here, and must be reset elsewhere if the mesh is actually
 c           in motion
 c
 c        6) tolerance to automatically detect collapsed (singular) metrics
@@ -136,7 +136,7 @@ c     due to the ordering in izz, the cross product above is incorrect
 c     at the fictitious interfaces izz=k*jdim (k=1...kdim-1), and may
 c     have a zero value. for safety in the loop below, first set these
 c     fictitious interface values to temporary safe values.
-c 
+c
       do 1055 k=1,kdim1
       izz = k*jdim
       si(izz,i,1) = 0.
@@ -229,7 +229,7 @@ c
               end if
            end if
         end if
-c  
+c
         izzndx = i-(2*m)+3
         do 1030 j=js,je
         do 1030 k=ks,ke
@@ -274,7 +274,7 @@ c     set metrics at jdim
       si(izz,i,3) = si(izz1,i,3)
       si(izz,i,4) = si(izz1,i,4)
       si(izz,i,5) = si(izz1,i,5)
- 1080 continue  
+ 1080 continue
 c     set metrics at kdim
 cdir$ ivdep
       do 1090 j=1,jdim
@@ -334,7 +334,7 @@ c   indicating problem with the grid
       do k=1,kdim-1
       do j=1,jdim-1
         izz=(k-1)*jdim+j
-        do i=1,idim-1 
+        do i=1,idim-1
           delta1 = ccabs(si(izz,i+1,1)-si(izz,i,1))
           delta2 = ccabs(si(izz,i+1,2)-si(izz,i,2))
           delta3 = ccabs(si(izz,i+1,3)-si(izz,i,3))
@@ -345,7 +345,7 @@ c   indicating problem with the grid
             write(bou(nou(1),1),'(''   FATAL si grid normal direction'',
      +       '' change near j,k,i,i+1='',4i5)')
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),'(''     ... suspect bad grid'',4i5)') 
+            write(bou(nou(1),1),'(''     ... suspect bad grid'',4i5)')
      +       j,k,i,i+1
           else if(real(delta1).gt.1.5 .or. real(delta2).gt.1.5 .or.
      +       real(delta3).gt.1.5) then
@@ -355,7 +355,7 @@ c   indicating problem with the grid
                 write(bou(nou(1),1),'(''   WARNING: Dramatic si grid'',
      +          '' norm direction change (>120deg)'')')
                 nou(1) = min(nou(1)+1,ibufdim)
-                write(bou(nou(1),1),'(''     near j,k,i,i+1='',4i5)') 
+                write(bou(nou(1),1),'(''     near j,k,i,i+1='',4i5)')
      +          j,k,i,i+1
              else if (icnt.eq.icntmax+1) then
                 nou(1) = min(nou(1)+1,ibufdim)
@@ -376,10 +376,10 @@ c***********************************************************************
 c
 c     *** interior faces ***
 c
-c     note: interior metrics for j=constant surfaces are initially 
-c           calculated with a reordered izz index (compared to si and  
+c     note: interior metrics for j=constant surfaces are initially
+c           calculated with a reordered izz index (compared to si and
 c           sk metrics) to permit vectorization and yet skip over j=1/jdim,
-c           which may have collapsed metrics. after the metrics are 
+c           which may have collapsed metrics. after the metrics are
 c           evaluated, the proper order is reset.
 c
       do 2035 i=1,idim
@@ -429,7 +429,7 @@ c
       sj(izz,i,4) = 4.
  2055 continue
 c
-c     store temporary metrics (these are not in correct order): 
+c     store temporary metrics (these are not in correct order):
       do 2060 izz=ns,ne
       t1(izz,i,4) = 1.e0/sqrt(sj(izz,i,4))
       t1(izz,i,1) = sj(izz,i,1)*t1(izz,i,4)
@@ -501,7 +501,7 @@ c
 c
  2020 continue
 c
-      asum = 0.5*asum 
+      asum = 0.5*asum
       if (real(asum) .lt. real(atol)) then
 c
 c       collapsed metrics
@@ -604,7 +604,7 @@ c   indicating problem with the grid
                 write(bou(nou(1),1),'(''   WARNING: Dramatic sj grid'',
      +          '' norm direction change (>120deg)'')')
                 nou(1) = min(nou(1)+1,ibufdim)
-                write(bou(nou(1),1),'(''     near j,j+1,k,i='',4i5)') 
+                write(bou(nou(1),1),'(''     near j,j+1,k,i='',4i5)')
      +          j,j+1,k,i
              else if (icnt.eq.icntmax+1) then
                 nou(1) = min(nou(1)+1,ibufdim)
@@ -746,7 +746,7 @@ c
               end if
            end if
         end if
-c 
+c
         do 3030 i=is,ie
         do 3030 j=js,je
         izz = (k-1)*jdim+j
@@ -825,7 +825,7 @@ c   indicating problem with the grid
                 write(bou(nou(1),1),'(''   WARNING: Dramatic sk grid'',
      +          '' norm direction change (>120deg)'')')
                 nou(1) = min(nou(1)+1,ibufdim)
-                write(bou(nou(1),1),'(''     near j,k,k+1,i='',4i5)') 
+                write(bou(nou(1),1),'(''     near j,k,k+1,i='',4i5)')
      +          j,k,k+1,i
              else if (icnt.eq.icntmax+1) then
                 nou(1) = min(nou(1)+1,ibufdim)
@@ -838,7 +838,7 @@ c   indicating problem with the grid
       enddo
       end if
 c
-  101 format(3x,'singular metrics: i=1   ', 
+  101 format(3x,'singular metrics: i=1   ',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)
   102 format(3x,'singular metrics: i=idim',
      .       '  j=',i3,',',i3,'  k=',i3,',',i3)

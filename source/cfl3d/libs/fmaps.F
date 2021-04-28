@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -53,7 +53,7 @@ c
       eps4 = 0.e0
 c
 cdir$ ivdep
-      do 1000 i=1,n 
+      do 1000 i=1,n
 c
 c     ------------------------------------------------------------------
 c     left/right density, velocity, pressure, enthalpy and sound speed
@@ -88,7 +88,7 @@ c
 c
       q_l   = (vx_l * nx(i) + vy_l * ny(i) + vz_l * nz(i))
       q_r   = (vx_r * nx(i) + vy_r * ny(i) + vz_r * nz(i))
-c      
+c
       m_l    = q_l / c_av
       m_r    = q_r / c_av
 c
@@ -131,7 +131,7 @@ c
       p_av  = 0.5*(p_r+p_l)
       p_ds  = 0.5*(p_r*sm_r - p_l*sm_l)
       p_12  = p_av - b_p*p_ds
-c                                    
+c
 c     ------------------------------------------------------------------
 c     compute flux through cell face (maps scheme)
 c     ------------------------------------------------------------------
@@ -184,16 +184,16 @@ c     q_maxp = q_max*(1.-alp)
 c     q_minp = q_maxp
 c     c_maxp = sqrt(qs*qs * alp*alp + qref2)
 c     c_minp = c_maxp
-c 
+c
 c     if (no preconditioning) then (var, ...) else (varp, ...) */
-c     (globals.precond.preconditioning == 0) ? 
+c     (globals.precond.preconditioning == 0) ?
 c     (q_max = q_max , q_min = q_min , c_max = c_max , c_min = c_min ) :
-c     (q_max = q_maxp, q_min = q_minp, c_max = c_maxp, c_min = c_minp) 
+c     (q_max = q_maxp, q_min = q_minp, c_max = c_maxp, c_min = c_minp)
 c
       rc    = 1.0/c_max
       m_max = q_max/c_min
       m_0   = ccmincr(m_max, 1.0)
-c     m_m1  = 2.0*ccmaxcr(0.5-m_0, 0.0) 
+c     m_m1  = 2.0*ccmaxcr(0.5-m_0, 0.0)
       m_m1  = ccmaxcr(1.0-m_0, 0.0)
 c
       p_scal = 0.5 * rc  * m_m1         * p_d

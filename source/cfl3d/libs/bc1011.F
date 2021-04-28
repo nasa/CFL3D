@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -195,28 +195,28 @@ c
 c
         vcont1 =  q(jdim-1,kend-k,i,2)*sk(jdim-1,kend,i,1) +
      .            q(jdim-1,kend-k,i,3)*sk(jdim-1,kend,i,2) +
-     .            q(jdim-1,kend-k,i,4)*sk(jdim-1,kend,i,3) + 
+     .            q(jdim-1,kend-k,i,4)*sk(jdim-1,kend,i,3) +
      .                                 sk(jdim-1,kend,i,5)
         vcont2 =  q(jdim-2,kend-k,i,2)*sk(jdim-2,kend,i,1) +
      .            q(jdim-2,kend-k,i,3)*sk(jdim-2,kend,i,2) +
-     .            q(jdim-2,kend-k,i,4)*sk(jdim-2,kend,i,3) + 
+     .            q(jdim-2,kend-k,i,4)*sk(jdim-2,kend,i,3) +
      .                                 sk(jdim-2,kend,i,5)
 c
         qj0(k,i,1,3) = q(jdim-1,kend-k,i,1)
-        qj0(k,i,2,3) = q(jdim-1,kend-k,i,2) 
+        qj0(k,i,2,3) = q(jdim-1,kend-k,i,2)
      .               - 2.*vcont1*sk(jdim-1,kend,i,1)
-        qj0(k,i,3,3) = q(jdim-1,kend-k,i,3) 
+        qj0(k,i,3,3) = q(jdim-1,kend-k,i,3)
      .               - 2.*vcont1*sk(jdim-1,kend,i,2)
-        qj0(k,i,4,3) = q(jdim-1,kend-k,i,4) 
+        qj0(k,i,4,3) = q(jdim-1,kend-k,i,4)
      .               - 2.*vcont1*sk(jdim-1,kend,i,3)
         qj0(k,i,5,3) = q(jdim-1,kend-k,i,5)
 c
         qj0(k,i,1,4) = q(jdim-2,kend-k,i,1)
-        qj0(k,i,2,4) = q(jdim-2,kend-k,i,2) 
+        qj0(k,i,2,4) = q(jdim-2,kend-k,i,2)
      .               - 2.*vcont2*sk(jdim-2,kend,i,1)
-        qj0(k,i,3,4) = q(jdim-2,kend-k,i,3) 
+        qj0(k,i,3,4) = q(jdim-2,kend-k,i,3)
      .               - 2.*vcont2*sk(jdim-2,kend,i,2)
-        qj0(k,i,4,4) = q(jdim-2,kend-k,i,4) 
+        qj0(k,i,4,4) = q(jdim-2,kend-k,i,4)
      .               - 2.*vcont2*sk(jdim-2,kend,i,3)
         qj0(k,i,5,4) = q(jdim-2,kend-k,i,5)
 c
@@ -253,28 +253,28 @@ c
 c
         vcont1 =  q(jdim-1,k,iend-i,2)*si(jdim-1,k,iend,1) +
      .            q(jdim-1,k,iend-i,3)*si(jdim-1,k,iend,2) +
-     .            q(jdim-1,k,iend-i,4)*si(jdim-1,k,iend,3) + 
+     .            q(jdim-1,k,iend-i,4)*si(jdim-1,k,iend,3) +
      .                                 si(jdim-1,k,iend,5)
         vcont2 =  q(jdim-2,k,iend-i,2)*si(jdim-2,k,iend,1) +
      .            q(jdim-2,k,iend-i,3)*si(jdim-2,k,iend,2) +
-     .            q(jdim-2,k,iend-i,4)*si(jdim-2,k,iend,3) + 
+     .            q(jdim-2,k,iend-i,4)*si(jdim-2,k,iend,3) +
      .                                 si(jdim-2,k,iend,5)
 c
         qj0(k,i,1,3) = q(jdim-1,k,iend-i,1)
-        qj0(k,i,2,3) = q(jdim-1,k,iend-i,2) 
+        qj0(k,i,2,3) = q(jdim-1,k,iend-i,2)
      .               - 2.*vcont1*si(jdim-1,k,iend,1)
-        qj0(k,i,3,3) = q(jdim-1,k,iend-i,3) 
+        qj0(k,i,3,3) = q(jdim-1,k,iend-i,3)
      .               - 2.*vcont1*si(jdim-1,k,iend,2)
-        qj0(k,i,4,3) = q(jdim-1,k,iend-i,4) 
+        qj0(k,i,4,3) = q(jdim-1,k,iend-i,4)
      .               - 2.*vcont1*si(jdim-1,k,iend,3)
         qj0(k,i,5,3) = q(jdim-1,k,iend-i,5)
 c
         qj0(k,i,1,4) = q(jdim-2,k,iend-i,1)
-        qj0(k,i,2,4) = q(jdim-2,k,iend-i,2) 
+        qj0(k,i,2,4) = q(jdim-2,k,iend-i,2)
      .               - 2.*vcont2*si(jdim-2,k,iend,1)
-        qj0(k,i,3,4) = q(jdim-2,k,iend-i,3) 
+        qj0(k,i,3,4) = q(jdim-2,k,iend-i,3)
      .               - 2.*vcont2*si(jdim-2,k,iend,2)
-        qj0(k,i,4,4) = q(jdim-2,k,iend-i,4) 
+        qj0(k,i,4,4) = q(jdim-2,k,iend-i,4)
      .               - 2.*vcont2*si(jdim-2,k,iend,3)
         qj0(k,i,5,4) = q(jdim-2,k,iend-i,5)
 c
@@ -429,28 +429,28 @@ c
 c
         wcont1 =  q(jend-j,kdim-1,i,2)*sj(jend,kdim-1,i,1) +
      .            q(jend-j,kdim-1,i,3)*sj(jend,kdim-1,i,2) +
-     .            q(jend-j,kdim-1,i,4)*sj(jend,kdim-1,i,3) + 
-     .                                 sj(jend,kdim-1,i,5) 
+     .            q(jend-j,kdim-1,i,4)*sj(jend,kdim-1,i,3) +
+     .                                 sj(jend,kdim-1,i,5)
         wcont2 =  q(jend-j,kdim-2,i,2)*sj(jend,kdim-2,i,1) +
      .            q(jend-j,kdim-2,i,3)*sj(jend,kdim-2,i,2) +
-     .            q(jend-j,kdim-2,i,4)*sj(jend,kdim-2,i,3) + 
+     .            q(jend-j,kdim-2,i,4)*sj(jend,kdim-2,i,3) +
      .                                 sj(jend,kdim-2,i,5)
 c
         qk0(j,i,1,3) = q(jend-j,kdim-1,i,1)
-        qk0(j,i,2,3) = q(jend-j,kdim-1,i,2) 
+        qk0(j,i,2,3) = q(jend-j,kdim-1,i,2)
      .               - 2.*wcont1*sj(jend,kdim-1,i,1)
-        qk0(j,i,3,3) = q(jend-j,kdim-1,i,3) 
+        qk0(j,i,3,3) = q(jend-j,kdim-1,i,3)
      .               - 2.*wcont1*sj(jend,kdim-1,i,2)
-        qk0(j,i,4,3) = q(jend-j,kdim-1,i,4) 
+        qk0(j,i,4,3) = q(jend-j,kdim-1,i,4)
      .               - 2.*wcont1*sj(jend,kdim-1,i,3)
         qk0(j,i,5,3) = q(jend-j,kdim-1,i,5)
 c
         qk0(j,i,1,4) = q(jend-j,kdim-2,i,1)
-        qk0(j,i,2,4) = q(jend-j,kdim-2,i,2) 
+        qk0(j,i,2,4) = q(jend-j,kdim-2,i,2)
      .               - 2.*wcont2*sj(jend,kdim-2,i,1)
-        qk0(j,i,3,4) = q(jend-j,kdim-2,i,3) 
+        qk0(j,i,3,4) = q(jend-j,kdim-2,i,3)
      .               - 2.*wcont2*sj(jend,kdim-2,i,2)
-        qk0(j,i,4,4) = q(jend-j,kdim-2,i,4) 
+        qk0(j,i,4,4) = q(jend-j,kdim-2,i,4)
      .               - 2.*wcont2*sj(jend,kdim-2,i,3)
         qk0(j,i,5,4) = q(jend-j,kdim-2,i,5)
 c
@@ -488,28 +488,28 @@ c
 c
         wcont1 =  q(j,kdim-1,iend-i,2)*si(j,kdim-1,iend,1) +
      .            q(j,kdim-1,iend-i,3)*si(j,kdim-1,iend,2) +
-     .            q(j,kdim-1,iend-i,4)*si(j,kdim-1,iend,3) + 
+     .            q(j,kdim-1,iend-i,4)*si(j,kdim-1,iend,3) +
      .                                 si(j,kdim-1,iend,5)
         wcont2 =  q(j,kdim-2,iend-i,2)*si(j,kdim-2,iend,1) +
      .            q(j,kdim-2,iend-i,3)*si(j,kdim-2,iend,2) +
-     .            q(j,kdim-2,iend-i,4)*si(j,kdim-2,iend,3) + 
+     .            q(j,kdim-2,iend-i,4)*si(j,kdim-2,iend,3) +
      .                                 si(j,kdim-2,iend,5)
 c
         qk0(j,i,1,3) = q(j,kdim-1,iend-i,1)
-        qk0(j,i,2,3) = q(j,kdim-1,iend-i,2) 
+        qk0(j,i,2,3) = q(j,kdim-1,iend-i,2)
      .               - 2.*wcont1*si(j,kdim-1,iend,1)
-        qk0(j,i,3,3) = q(j,kdim-1,iend-i,3) 
+        qk0(j,i,3,3) = q(j,kdim-1,iend-i,3)
      .               - 2.*wcont1*si(j,kdim-1,iend,2)
-        qk0(j,i,4,3) = q(j,kdim-1,iend-i,4) 
+        qk0(j,i,4,3) = q(j,kdim-1,iend-i,4)
      .               - 2.*wcont1*si(j,kdim-1,iend,3)
         qk0(j,i,5,3) = q(j,kdim-1,iend-i,5)
 c
         qk0(j,i,1,4) = q(j,kdim-2,iend-i,1)
-        qk0(j,i,2,4) = q(j,kdim-2,iend-i,2) 
+        qk0(j,i,2,4) = q(j,kdim-2,iend-i,2)
      .               - 2.*wcont2*si(j,kdim-2,iend,1)
-        qk0(j,i,3,4) = q(j,kdim-2,iend-i,3) 
+        qk0(j,i,3,4) = q(j,kdim-2,iend-i,3)
      .               - 2.*wcont2*si(j,kdim-2,iend,2)
-        qk0(j,i,4,4) = q(j,kdim-2,iend-i,4) 
+        qk0(j,i,4,4) = q(j,kdim-2,iend-i,4)
      .               - 2.*wcont2*si(j,kdim-2,iend,3)
         qk0(j,i,5,4) = q(j,kdim-2,iend-i,5)
 c
@@ -669,28 +669,28 @@ c
 c
         ucont1 =  q(jend-j,k,idim-1,2)*sj(jend,k,idim-1,1) +
      .            q(jend-j,k,idim-1,3)*sj(jend,k,idim-1,2) +
-     .            q(jend-j,k,idim-1,4)*sj(jend,k,idim-1,3) + 
+     .            q(jend-j,k,idim-1,4)*sj(jend,k,idim-1,3) +
      .                                 sj(jend,k,idim-1,5)
         ucont2 =  q(jend-j,k,i2,2)*sj(jend,k,i2,1) +
      .            q(jend-j,k,i2,3)*sj(jend,k,i2,2) +
-     .            q(jend-j,k,i2,4)*sj(jend,k,i2,3) + 
+     .            q(jend-j,k,i2,4)*sj(jend,k,i2,3) +
      .                             sj(jend,k,i2,5)
 c
         qi0(j,k,1,3) = q(jend-j,k,idim-1,1)
-        qi0(j,k,2,3) = q(jend-j,k,idim-1,2) 
+        qi0(j,k,2,3) = q(jend-j,k,idim-1,2)
      .               - 2.*ucont1*sj(jend,k,idim-1,1)
-        qi0(j,k,3,3) = q(jend-j,k,idim-1,3) 
+        qi0(j,k,3,3) = q(jend-j,k,idim-1,3)
      .               - 2.*ucont1*sj(jend,k,idim-1,2)
-        qi0(j,k,4,3) = q(jend-j,k,idim-1,4) 
+        qi0(j,k,4,3) = q(jend-j,k,idim-1,4)
      .               - 2.*ucont1*sj(jend,k,idim-1,3)
         qi0(j,k,5,3) = q(jend-j,k,idim-1,5)
 c
         qi0(j,k,1,4) = q(jend-j,k,i2,1)
-        qi0(j,k,2,4) = q(jend-j,k,i2,2) 
+        qi0(j,k,2,4) = q(jend-j,k,i2,2)
      .               - 2.*ucont2*sj(jend,k,i2,1)
-        qi0(j,k,3,4) = q(jend-j,k,i2,3) 
+        qi0(j,k,3,4) = q(jend-j,k,i2,3)
      .               - 2.*ucont2*sj(jend,k,i2,2)
-        qi0(j,k,4,4) = q(jend-j,k,i2,4) 
+        qi0(j,k,4,4) = q(jend-j,k,i2,4)
      .               - 2.*ucont2*sj(jend,k,i2,3)
         qi0(j,k,5,4) = q(jend-j,k,i2,5)
 c
@@ -728,28 +728,28 @@ c
 c
         ucont1 =  q(j,kend-k,idim-1,2)*sk(j,kend,idim-1,1) +
      .            q(j,kend-k,idim-1,3)*sk(j,kend,idim-1,2) +
-     .            q(j,kend-k,idim-1,4)*sk(j,kend,idim-1,3) + 
+     .            q(j,kend-k,idim-1,4)*sk(j,kend,idim-1,3) +
      .                                 sk(j,kend,idim-1,5)
         ucont2 =  q(j,kend-k,i2,2)*sk(j,kend,i2,1) +
      .            q(j,kend-k,i2,3)*sk(j,kend,i2,2) +
-     .            q(j,kend-k,i2,4)*sk(j,kend,i2,3) + 
+     .            q(j,kend-k,i2,4)*sk(j,kend,i2,3) +
      .                             sk(j,kend,i2,5)
 c
         qi0(j,k,1,3) = q(j,kend-k,idim-1,1)
-        qi0(j,k,2,3) = q(j,kend-k,idim-1,2) 
+        qi0(j,k,2,3) = q(j,kend-k,idim-1,2)
      .               - 2.*ucont1*sk(j,kend,idim-1,1)
-        qi0(j,k,3,3) = q(j,kend-k,idim-1,3) 
+        qi0(j,k,3,3) = q(j,kend-k,idim-1,3)
      .               - 2.*ucont1*sk(j,kend,idim-1,2)
-        qi0(j,k,4,3) = q(j,kend-k,idim-1,4) 
+        qi0(j,k,4,3) = q(j,kend-k,idim-1,4)
      .               - 2.*ucont1*sk(j,kend,idim-1,3)
         qi0(j,k,5,3) = q(j,kend-k,idim-1,5)
 c
         qi0(j,k,1,4) = q(j,kend-k,i2,1)
-        qi0(j,k,2,4) = q(j,kend-k,i2,2) 
+        qi0(j,k,2,4) = q(j,kend-k,i2,2)
      .               - 2.*ucont2*sk(j,kend,i2,1)
-        qi0(j,k,3,4) = q(j,kend-k,i2,3) 
+        qi0(j,k,3,4) = q(j,kend-k,i2,3)
      .               - 2.*ucont2*sk(j,kend,i2,2)
-        qi0(j,k,4,4) = q(j,kend-k,i2,4) 
+        qi0(j,k,4,4) = q(j,kend-k,i2,4)
      .               - 2.*ucont2*sk(j,kend,i2,3)
         qi0(j,k,5,4) = q(j,kend-k,i2,5)
 c

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -59,7 +59,7 @@ c
       dimension lw(65,maxbl),lwdat(maxbl,maxseg,6),lw2(43,maxbl)
       dimension levelg(maxbl),igridg(maxbl),iviscg(maxbl,3),
      .          jdimg(maxbl),kdimg(maxbl),idimg(maxbl),nblcg(maxbl),
-     .          itrans(maxbl),irotat(maxbl),idefrm(maxbl), 
+     .          itrans(maxbl),irotat(maxbl),idefrm(maxbl),
      .          nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),nbcjdim(maxbl),
      .          nbck0(maxbl),nbckdim(maxbl),ibcinfo(maxbl,maxseg,7,2),
      .          jbcinfo(maxbl,maxseg,7,2),kbcinfo(maxbl,maxseg,7,2)
@@ -112,7 +112,7 @@ c      lembed  : levels of embedment above finest global grids
 c      lglobal : level of finest global grids
 c            1 : level of coarsest global grids
 c
-c     starting locations for data in w are stored in 
+c     starting locations for data in w are stored in
 c     lw(i,n) where i is type of data and n is block number
 c
 c     Note: for the parallel code, the pointers for the host node
@@ -334,7 +334,7 @@ c
       end if
 c
       if (iaug.gt.0) then
-c 
+c
 c........q(jdim,kdim,idim,5)
 c        flow variables at cell centers
 c
@@ -383,7 +383,7 @@ c
          lw(8,nbl) = lw(7,nbl) + ns
          ns = jmkmim1
 c
-c........dtj(jdim,kdim,idim-1)    
+c........dtj(jdim,kdim,idim-1)
 c        cell time step
 c
          lw(9,nbl) = lw(8,nbl) + ns
@@ -425,7 +425,7 @@ c
      .   ns = jm1km1im1
 c
 c........sni0/snj0/xjb(jdim-1,kdim-1,idim-1)
-c        directed distance to nearest i-surface or j-surface in 
+c        directed distance to nearest i-surface or j-surface in
 c        current block (B-L turb model); j-location of the nearest
 c        surface point (B-B turb model or LES#25)
 c
@@ -444,7 +444,7 @@ c........q1(jdim,kdim,idim,5)
 c        cell center flow variables restricted from finer grid
 c
 c        global grids with multigrid:
-c          q1 level i stored at level i except 
+c          q1 level i stored at level i except
 c          for finest level of global grids
 c
 c        embedded grids with multigrid :
@@ -488,7 +488,7 @@ c
          ns = jmkmim
 c
 c........xib/tursav(jdim,kdim,idim,2)
-c        Baldwin-Barth, Spalart, k-omega or SST turbulence model 
+c        Baldwin-Barth, Spalart, k-omega or SST turbulence model
 c        parameters (for B-B & LES#25, the second half of storage is used
 c        for k-index of nearest surface point; for Spalart, the
 c        second half of storage is allocated but unused)
@@ -852,7 +852,7 @@ c
          lw(49,nbl) = lw(48,nbl) + ns
          ns = 0
          if(ivmx.ge.1) ns =kmim1*1*4
-         
+
 c
 c        volk0(jdim,idim-1,1,4)
 c........cell volumes at k-boundary
@@ -966,8 +966,8 @@ c
             end if
          end if
 c
-c        memblock is the memory need to store the w array for this 
-c        block; it is used in precfl3d to determine the memory 
+c        memblock is the memory need to store the w array for this
+c        block; it is used in precfl3d to determine the memory
 c        requirement for each node
 c
          memblock(nbl) = lw(65,nbl) + ns - lw(1,nbl) + 1

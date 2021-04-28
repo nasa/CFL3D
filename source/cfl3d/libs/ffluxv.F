@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Calculate right-hand residual contributions in the 
+c     Purpose:  Calculate right-hand residual contributions in the
 c     I-direction due to the viscous terms.
 c***********************************************************************
 c
@@ -154,7 +154,7 @@ c
       t(j+jiv-1,18) = q(j,kk,i,2)
       t(j+jiv-1,19) = q(j,kk,i,3)
       t(j+jiv-1,20) = q(j,kk,i,4)
-      t(j+jiv-1,16) = q(j,kk,i,5) 
+      t(j+jiv-1,16) = q(j,kk,i,5)
  1002 continue
    50 continue
    10 continue
@@ -184,8 +184,8 @@ c
       wi0(jc,m+12) = qi0(jj,kk,1,mm)
       wi0(jc,m+8)  = qi0(jj,kk,2,mm)
       wi0(jc,m+9)  = qi0(jj,kk,3,mm)
-      wi0(jc,m+10) = qi0(jj,kk,4,mm) 
-      wi0(jc,m+6)  = qi0(jj,kk,5,mm) 
+      wi0(jc,m+10) = qi0(jj,kk,4,mm)
+      wi0(jc,m+6)  = qi0(jj,kk,5,mm)
 c     m+5 flag indicates whether ghost cell or interface values stored in wi0
       wi0(jc,m+5)  = bci(jj,kk,mb)
  6120 continue
@@ -202,9 +202,9 @@ c
       do 7005 j=1,n
       t(j,17) = 0.5e0*( t(j,18)*t(j,18)
      .                + t(j,19)*t(j,19)
-     .                + t(j,20)*t(j,20) ) 
-      t(j,21) = t(j,17)*t(j,22)+t(j,16)/gm1 
-      t(j,1)  = 1.e0/t(j,22) 
+     .                + t(j,20)*t(j,20) )
+      t(j,21) = t(j,17)*t(j,22)+t(j,16)/gm1
+      t(j,1)  = 1.e0/t(j,22)
       t(j,16) = gpr*t(j,16)*t(j,1)/gm1
  7005 continue
       do 2121 m=0,10,10
@@ -212,8 +212,8 @@ c
       wi0(j,m+7) = 0.5e0*( wi0(j,m+8)*wi0(j,m+8)
      .                  + wi0(j,m+9)*wi0(j,m+9)
      .                  + wi0(j,m+10)*wi0(j,m+10) )
-      wi0(j,m+11) = wi0(j,m+7)*wi0(j,m+12)+wi0(j,m+6)/gm1 
-      wi0(j,m+1)  = 1.e0/wi0(j,m+12) 
+      wi0(j,m+11) = wi0(j,m+7)*wi0(j,m+12)+wi0(j,m+6)/gm1
+      wi0(j,m+1)  = 1.e0/wi0(j,m+12)
       wi0(j,m+6) = gpr*wi0(j,m+6)*wi0(j,m+1)/gm1
  1005 continue
  2121 continue
@@ -227,7 +227,7 @@ c
 c
       do 1006 j=1,n
       t5     =  gm1pr*t(j,16)
-      t6     =  sqrt(t5) 
+      t6     =  sqrt(t5)
       t(j,7) =  c2bp*t5*t6/(c2b+t5)
  1006 continue
 c
@@ -246,13 +246,13 @@ cdir$ ivdep
       ab=1.+wi0(izz,5)
       bb=1.-wi0(izz,5)
       wi05        = gm1pr*0.5*(ab*wi0(izz,6)+bb*t(izz,16))
-      wi06        = sqrt(wi05) 
-      t(izz,14)   = c2bp*wi05*wi06/(c2b+wi05) 
+      wi06        = sqrt(wi05)
+      t(izz,14)   = c2bp*wi05*wi06/(c2b+wi05)
       ab=1.+wi0(izz,15)
       bb=1.-wi0(izz,15)
       wi05        = gm1pr*0.5*(ab*wi0(izz,16)+bb*t(izz+n-jv,16))
-      wi06        = sqrt(wi05) 
-      t(izz+n,14) = c2bp*wi05*wi06/(c2b+wi05) 
+      wi06        = sqrt(wi05)
+      t(izz+n,14) = c2bp*wi05*wi06/(c2b+wi05)
  1008 continue
 c
 c******************************************************************************
@@ -264,21 +264,21 @@ c
       do 200 kpl=1,npl
       kk  = k+kpl-1
       do 200 i=1,idim
-      jiv = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
-      ji  = (i-1)*jdim 
-      if (i.eq.1) then 
+      jiv = (i-1)*npl*jdim1 + (kpl-1)*jdim1
+      ji  = (i-1)*jdim
+      if (i.eq.1) then
 c     inverse volume at i=0 interface
-        do 7013 j=1,jdim1 
+        do 7013 j=1,jdim1
         t(j+jiv,15) = 2./(voli0(j,kk,1)+vol(j,kk,1))
  7013   continue
-      else if (i.eq.idim) then 
+      else if (i.eq.idim) then
 c     inverse volume at i=idim interface
-        do 7113 j=1,jdim1 
+        do 7113 j=1,jdim1
         t(j+jiv,15) = 2./(voli0(j,kk,3)+vol(j,kk,idim1))
  7113   continue
       else
 c     inverse volume at interior interfaces
-        do 1013 j=1,jdim1 
+        do 1013 j=1,jdim1
         t(j+jiv,15) = 2./(vol(j,kk,i)+vol(j,kk,i-1))
  1013   continue
       end if
@@ -291,8 +291,8 @@ c  t(25) : d(xie)/dx
 c  t(26) : d(xie)/dy
 c  t(27) : d(xie)/dz
 c
-      do 1014 j=1,jdim1 
-      t1         =  si(j,kk,i,4)*t(j+jiv,15) 
+      do 1014 j=1,jdim1
+      t1         =  si(j,kk,i,4)*t(j+jiv,15)
       t(j+jiv,25) =  si(j,kk,i,1)*t1
       t(j+jiv,26) =  si(j,kk,i,2)*t1
       t(j+jiv,27) =  si(j,kk,i,3)*t1
@@ -363,7 +363,7 @@ c     laminar
 c
       do 1022 j=1,l0
 c  ratio of turbulent to laminar viscosity
-      t25     = t(j,24)/t(j,14) 
+      t25     = t(j,24)/t(j,14)
       t24     = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
@@ -604,7 +604,7 @@ c             ignoring -2/3*rho*k*delij term
                 t23=t23p
               end if
               if (i_qcr2013 .eq. 1) then
-                xis2013 = s11star*s11star + s22star*s22star + 
+                xis2013 = s11star*s11star + s22star*s22star +
      +                    s33star*s33star +
      +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 s_mod = sqrt(2.*xis2013)
@@ -872,7 +872,7 @@ c
      +          +t(j+jiv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(j+jiv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jiv,15)*(t(j+jiv,14)*
      +          t(j+jiv,15)/xmre-t(j+jiv,24)+sigk1*t(j+jiv,24))*
@@ -975,7 +975,7 @@ c
      +          +t(j+jiv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(j+jiv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jiv,15)*(t(j+jiv,14)*
      +          t(j+jiv,15)/xmre-t(j+jiv,24)+sigk1*t(j+jiv,24))*
@@ -1071,7 +1071,7 @@ c
      +                       +0.5*(q(j,kk,i,3)+q(j,kk,i-1,3))*t23
      +                       +0.5*(q(j,kk,i,4)+q(j,kk,i-1,4))*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jiv,15)*(t(j+jiv,14)*
      +          t(j+jiv,15)/xmre-t(j+jiv,24)+sigk1*t(j+jiv,24))*
@@ -1450,7 +1450,7 @@ c   to get mulam, need mulam=t14*t15/xmre-t24
             end if
  1285     continue
  1286   continue
-      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and. 
+      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and.
      +        level .ge. lglobal) then
         re=reue/xmach
 c   Add nonlinear terms to RHS

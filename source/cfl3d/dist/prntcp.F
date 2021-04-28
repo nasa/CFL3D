@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -85,12 +85,12 @@ c
       idim1 = idim-1
       jdim1 = jdim-1
       kdim1 = kdim-1
-c 
+c
 c     pressures on i0 segments
 c
       if (nbci0(nbl).gt.0) then
          do 10 ns=1,nbci0(nbl)
-         if (abs(ibcinfo(nbl,ns,1,1)).eq.1005 .or. 
+         if (abs(ibcinfo(nbl,ns,1,1)).eq.1005 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2004 .or.
      .       abs(ibcinfo(nbl,ns,1,1)).eq.2014 .or.
@@ -108,7 +108,7 @@ c
                 do 11 j=jst,jfn
                 jj   = jj+1
                 kk   = 0
-                do 12 k=kst,kfn 
+                do 12 k=kst,kfn
                 kk   = kk+1
                 izz  = (kk-1)*jlen + jj
                 cpi(izz) = (q(j,k,1,5)/p0-1.e0)*cpc
@@ -125,7 +125,7 @@ c
                 itrnsfr(1) = jlen
                 itrnsfr(2) = klen
                 call MPI_Send(itrnsfr,2,MPI_INTEGER,myhost,
-     .                        mytag1,mycomm,ierr) 
+     .                        mytag1,mycomm,ierr)
              end if
              if (myid.eq.myhost) then
                 call MPI_Recv(itrnsfr,2,MPI_INTEGER,nd_srce,
@@ -155,12 +155,12 @@ c
          end if
    10    continue
       end if
-c 
+c
 c     pressures on idim segments
 c
       if (nbcidim(nbl).gt.0) then
          do 20 ns=1,nbcidim(nbl)
-         if (abs(ibcinfo(nbl,ns,1,2)).eq.1005 .or. 
+         if (abs(ibcinfo(nbl,ns,1,2)).eq.1005 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.1006 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2004 .or.
      .       abs(ibcinfo(nbl,ns,1,2)).eq.2014 .or.

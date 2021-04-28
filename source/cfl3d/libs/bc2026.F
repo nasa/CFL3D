@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -101,7 +101,7 @@ c
       common /wallfun/ iwf(3)
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /conversion/ radtodeg
-c  
+c
 c
       twopi = 2.0*acos(-1.0)
       jdim1 = jdim-1
@@ -364,7 +364,7 @@ c
 c
       do 1100 j=jsta,jend1
       jj = j-jsta+1
-      vmag          = bcdata(jj,ii,ip,1) 
+      vmag          = bcdata(jj,ii,ip,1)
       rfreq         = bcdata(jj,ii,ip,2)
       sideangj      = bcdata(jj,ii,ip,3)/radtodeg
       sxa           = bcdata(jj,ii,ip,4)
@@ -584,7 +584,7 @@ c
       ipp     = 1
       itrflg1 = 0
       if (real(bcdata(1,1,ipp,10)) .gt. -1.e10) itrflg1 = 1
-c 
+c
       do 2000 ip=1,2
       do 2000 k=ksta,kend1
       kk = k-ksta+1

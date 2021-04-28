@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -170,16 +170,16 @@ c      turre - working values of 2 turb quantities in this subroutine
 c      damp1 - for SST=CD (cross-derivative) term; for others, sometimes used
 c              as storage for linearizations of production terms for addition
 c              to LHS diagonal elements
-c      blend - blending term for 2-layer models (just SST right now); 
+c      blend - blending term for 2-layer models (just SST right now);
 c              =0 Wilcox06
 c              =1 otherwise
 c      timestp - time step array delta t
 c      fnu - laminar viscosity (from Sutherland's law), nondim by mulamref
-c      bx,bx2,cx,cx2,dx,dx2,fx,fx2 - sub, diag, superdiag, & RHS in 
+c      bx,bx2,cx,cx2,dx,dx2,fx,fx2 - sub, diag, superdiag, & RHS in
 c                                    eta direction
-c      by,by2,cy,cy2,dy,dy2,fy,fy2 - sub, diag, superdiag, & RHS in 
+c      by,by2,cy,cy2,dy,dy2,fy,fy2 - sub, diag, superdiag, & RHS in
 c                                    xi direction
-c      bz,bz2,cz,cz2,dz,dz2,fz,fz2 - sub, diag, superdiag, & RHS in 
+c      bz,bz2,cz,cz2,dz,dz2,fz,fz2 - sub, diag, superdiag, & RHS in
 c                                    zeta direction
 c      workx,worky,workz - work arrays for tridiagonal solvers
 c      ntime - time counter
@@ -197,7 +197,7 @@ c                    go negative, the values are artificially limited to be
 c                    > 0.  When these numbers are large, it indicates that
 c                    the solution is probably going to blow up.  Check your
 c                    grid for excessive grid stretching, or try lowering CFL.
-c      ux - 9 components of velocity derivative: ux,uy,uz,vx,vy,vz,wx,wy,wz 
+c      ux - 9 components of velocity derivative: ux,uy,uz,vx,vy,vz,wx,wy,wz
 c           at cell centers.  Used for nonlinear models only.
 c      rhside - right-hand-side terms for 2 eqns
 c      v3dtmp - temporary storage for vist3d (needed for nonlinear models,
@@ -713,8 +713,8 @@ c     SSG (linearized... not fn of bij^2; Sij coeff simplified):
         if(ivmx .eq. 8 .or. ivmx .eq. 14) cmuc1=0.0895
 c       Note: c1 = 2*c10; c5 and gg only used for ivmx=11,12
 c       Note: the following choices (other than ieasm_type=0) are NOT
-c       official models (they are experimental only), because only 
-c       pressure-strain is changed, and not other constants in the 
+c       official models (they are experimental only), because only
+c       pressure-strain is changed, and not other constants in the
 c       k-eps or k-omega eqns
         if (ieasm_type .eq. 1) then
 c         Wallin-Johansson type pressure-strain (close to LRR-QI)
@@ -1407,11 +1407,11 @@ c       Interior points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1440,7 +1440,7 @@ c
               rhside(j,k,i,1)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,1)
      +          -cyy*turre(j,k,i,1) -dyy*turre(j,k+1,i,1)) +
      +          catris_kw*(-byy*sqrt(q(j,k-1,i,1))*turre(j,k-1,i,1)
-     +          -cyy*sqrt(q(j,k,i,1))*turre(j,k,i,1) 
+     +          -cyy*sqrt(q(j,k,i,1))*turre(j,k,i,1)
      +          -dyy*sqrt(q(j,k+1,i,1))*turre(j,k+1,i,1))
               rhop=(1.0-catris_kw) +
      +             catris_kw*.5*(q(j,k+1,i,1)+q(j,k,i,1))
@@ -1454,7 +1454,7 @@ c
               rhside(j,k,i,2)=(1.0-catris_kw)*(-byy*turre(j,k-1,i,2)
      +          -cyy*turre(j,k,i,2) -dyy*turre(j,k+1,i,2)) +
      +          catris_kw*(-byy*q(j,k-1,i,1)*turre(j,k-1,i,2)
-     +          -cyy*q(j,k,i,1)*turre(j,k,i,2) 
+     +          -cyy*q(j,k,i,1)*turre(j,k,i,2)
      +          -dyy*q(j,k+1,i,1)*turre(j,k+1,i,2))
             enddo
           enddo
@@ -1486,11 +1486,11 @@ c       K0 boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1564,11 +1564,11 @@ c       KDIM points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1702,11 +1702,11 @@ c       Interior points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1736,7 +1736,7 @@ c
      +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,1)
      +          -cxx*turre(j,k,i,1) -dxx*turre(j+1,k,i,1)) +
      +          catris_kw*(-bxx*sqrt(q(j-1,k,i,1))*turre(j-1,k,i,1)
-     +          -cxx*sqrt(q(j,k,i,1))*turre(j,k,i,1) 
+     +          -cxx*sqrt(q(j,k,i,1))*turre(j,k,i,1)
      +          -dxx*sqrt(q(j+1,k,i,1))*turre(j+1,k,i,1))
               rhop=(1.0-catris_kw) +
      +             catris_kw*.5*(q(j+1,k,i,1)+q(j,k,i,1))
@@ -1751,7 +1751,7 @@ c
      +          (1.0-catris_kw)*(-bxx*turre(j-1,k,i,2)
      +          -cxx*turre(j,k,i,2) -dxx*turre(j+1,k,i,2)) +
      +          catris_kw*(-bxx*q(j-1,k,i,1)*turre(j-1,k,i,2)
-     +          -cxx*q(j,k,i,1)*turre(j,k,i,2) 
+     +          -cxx*q(j,k,i,1)*turre(j,k,i,2)
      +          -dxx*q(j+1,k,i,1)*turre(j+1,k,i,2))
             enddo
           enddo
@@ -1783,11 +1783,11 @@ c       J0 boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1863,11 +1863,11 @@ c       JDIM boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -2004,11 +2004,11 @@ c         Interior points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -2085,11 +2085,11 @@ c         I0 boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -2139,7 +2139,7 @@ c
               enddo
             enddo
 c
-c         IDIM boundary points 
+c         IDIM boundary points
             i=idim-1
             il=max(1,idim-2)
             iu=idim-1
@@ -2165,11 +2165,11 @@ c         IDIM boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -2280,8 +2280,8 @@ c       2nd order upwind; LHS remains 1st order everywhere
         end if
 c
 c   Curvature terms for EASMCC
-        if ((ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.11 .or. 
-     .       ivmx.eq.12.or. ivmx.eq.13.or. ivmx.eq.14) .and. 
+        if ((ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.eq.11 .or.
+     .       ivmx.eq.12.or. ivmx.eq.13.or. ivmx.eq.14) .and.
      .       ieasmcc2d .eq. 1) then
 c   Note EASMCC currently only set up for curvature in x-z plane, with
 c   y direction (necessarily) in the i-direction
@@ -2407,7 +2407,7 @@ c
      .             k.ge.klamlo .and. k.lt.klamhi) .or.
      .             real(smin(j,k,i)) .lt. 0.) then
                 cutoff=0.
-              else if( ides .eq. 3 .and. 
+              else if( ides .eq. 3 .and.
      .         real(fdsav(j,k,i)) .gt. real(cddes) ) then
                 cutoff = (1.d0 - fdsav(j,k,i))/(1.d0-cddes)
               else
@@ -2474,7 +2474,7 @@ c  the following modifies betax via the vortex-stretching parameter
 c  (default is currently i_wilcox06_chiw = 1)
               if (ivmx .eq. 6 .and. (i_wilcox06 .eq. 1 .or.
      +            i_wilcox98 .eq. 1)) then
-c  in 2-D with x-z plane, the following reduces to: 
+c  in 2-D with x-z plane, the following reduces to:
 c  -w13*w13*[(s11-trace2d)+(s33-trace2d)] = 0
 c  for this term, the "tracepart" is always fixed at 0.5*dui/dxi
                 tracepart=0.5*(s11+s22+s33)
@@ -2654,7 +2654,7 @@ c            Calculate production term:
      +              (q(j,k,i,1)*re)
               pk=ccabs(pk)
 c---clr
-c   alternate 
+c   alternate
 c             pk=vist3d(j,k,i)/(q(j,k,i,1)*re)*vor(j,k,i)**2
 c---clr
 c            Add to RHS:
@@ -3104,7 +3104,7 @@ c ---- define constants
 c
         cmu = 0.09
         rcmu = 1./cmu
-        alpha3 = 0.35  
+        alpha3 = 0.35
         beta4 = 0.42
         beta5 = 2.37
         beta6 = 0.10
@@ -3127,8 +3127,8 @@ c
         wt1 = 1.0
         wt2 = (1.-wt1)
 c
-        wlim = 1.e-6  
-        slim = 1.e-6  
+        wlim = 1.e-6
+        slim = 1.e-6
 c
         do i=1,idim-1
           do k=1,kdim-1
@@ -3200,13 +3200,13 @@ c
               dzdi(j)=ti*(turre(j,k,i+ip,1)-turre(j,k,i-im,1))
 c
               dw1dk(j)=tk*(w1(j,k+kp,i)-w1(j,k-km,i))
-              dw1di(j)=ti*(w1(j,k,i+ip)-w1(j,k,i-im)) 
+              dw1di(j)=ti*(w1(j,k,i+ip)-w1(j,k,i-im))
 c
               dw2dk(j)=tk*(w2(j,k+kp,i)-w2(j,k-km,i))
-              dw2di(j)=ti*(w2(j,k,i+ip)-w2(j,k,i-im)) 
+              dw2di(j)=ti*(w2(j,k,i+ip)-w2(j,k,i-im))
 c
               dw3dk(j)=tk*(w3(j,k+kp,i)-w3(j,k-km,i))
-              dw3di(j)=ti*(w3(j,k,i+ip)-w3(j,k,i-im)) 
+              dw3di(j)=ti*(w3(j,k,i+ip)-w3(j,k,i-im))
 c
               dpdk(j)=tk*(q(j,k+kp,i,5)-q(j,k-km,i,5))
               dpdi(j)=ti*(q(j,k,i+ip,5)-q(j,k,i-im,5))
@@ -3220,7 +3220,7 @@ c
               rvol = 1.0/vol(j,k,i)
               sj4=sj(j,k,i,4)
               sj4p=sj(j+1,k,i,4)
-              xjp=0.5*(sj(j,k,i,1)*sj4+sj(j+1,k,i,1)*sj4p) 
+              xjp=0.5*(sj(j,k,i,1)*sj4+sj(j+1,k,i,1)*sj4p)
               yjp=0.5*(sj(j,k,i,2)*sj4+sj(j+1,k,i,2)*sj4p)
               zjp=0.5*(sj(j,k,i,3)*sj4+sj(j+1,k,i,3)*sj4p)
 c
@@ -3270,22 +3270,22 @@ c
               fnut=vist3d(j,k,i)
 c
 c ----- determine strain and vorticity values
-c               
+c
               s11 = ux(j,k,i,1)
               s22 = ux(j,k,i,5)
               s33 = ux(j,k,i,9)
-              divv = s11 + s22 + s33   
+              divv = s11 + s22 + s33
 c
               s12 = 0.5*(ux(j,k,i,2) + ux(j,k,i,4))
               s13 = 0.5*(ux(j,k,i,3) + ux(j,k,i,7))
               s23 = 0.5*(ux(j,k,i,6) + ux(j,k,i,8))
-              wis = w1(j,k,i)**2 + w2(j,k,i)**2 + w3(j,k,i)**2 
+              wis = w1(j,k,i)**2 + w2(j,k,i)**2 + w3(j,k,i)**2
               omemag = sqrt(wis)
               xis = s11*s11 + s22*s22 + s33*s33 +
      +              2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
      +            + slim
 c
-c ----- compute tau_i,j 
+c ----- compute tau_i,j
 c
               t11 = 2.*q(j,k,i,1)*turre(j,k,i,2)*re/3.
      +             -2.*fnut*(s11 - 0.33333*divv)
@@ -3303,7 +3303,7 @@ c
 c ---- calculate enstrophy production terms
 c
               p3 = 2.0*fnut*alpha3*turre(j,k,i,1)*(xis-slim)
-     +           / turre(j,k,i,2) 
+     +           / turre(j,k,i,2)
      +           + 2.0*q(j,k,i,1)*re*turre(j,k,i,1)*divv/3.
 c
               p8 = -2.0*beta8/turre(j,k,i,2)/(xis+0.5*wis)*
@@ -3313,9 +3313,9 @@ c
      +           *(dkdy(j)*dzdz(j)-dkdz(j)*dzdy(j)) +
      +           (w1(j,k,i)*t12+w2(j,k,i)*t22+w3(j,k,i)*t23)
      +           *(dkdz(j)*dzdx(j)-dkdx(j)*dzdz(j)))
-c         
-              wiwjtauij =   
-     +            w1(j,k,i)**2*t11 + w2(j,k,i)**2*t22 + w3(j,k,i)**2*t33 
+c
+              wiwjtauij =
+     +            w1(j,k,i)**2*t11 + w2(j,k,i)**2*t22 + w3(j,k,i)**2*t33
      +      + 2.*(w1(j,k,i)*w2(j,k,i)*t12 + w1(j,k,i)*w3(j,k,i)*t13
      +      + w2(j,k,i)*w3(j,k,i)*t23)
 c
@@ -3324,8 +3324,8 @@ c
      +             *wiwjtauij/turre(j,k,i,2)
 c
               p7 = beta7*re*q(j,k,i,1)*turre(j,k,i,1)*
-     +           (w1(j,k,i)**2*s11 + w2(j,k,i)**2*s22 + w3(j,k,i)**2*s33 
-     +      + 2.*(w1(j,k,i)*w2(j,k,i)*s12 + w1(j,k,i)*w3(j,k,i)*s13 
+     +           (w1(j,k,i)**2*s11 + w2(j,k,i)**2*s22 + w3(j,k,i)**2*s33
+     +      + 2.*(w1(j,k,i)*w2(j,k,i)*s12 + w1(j,k,i)*w3(j,k,i)*s13
      +      + w2(j,k,i)*w3(j,k,i)*s23))
      +          /(wis+wlim)
 c
@@ -3338,15 +3338,15 @@ c ---- calculate enstrophy destruction term (already divided by density)
 c
               xnu = fnu(j,k,i)/q(j,k,i,1)
               rt = (turre(j,k,i,2)/xnu)**2/turre(j,k,i,1)
-              ft = 1.90*(1. + 
+              ft = 1.90*(1. +
      +        (beta5/1.90-1.)*cctanh(turre(j,k,i,1)/tur10(1)))/beta5
               ft= 1.0
               d5 = re*beta5*ft*turre(j,k,i,1)**1.5/(sqrt(rt)+delta)
 c
 c ---- calculate compressibility terms for k-equation
 c
-              ct1 = -fnut*(drdx(j)*dpdx(j) + drdy(j)*dpdy(j) 
-     +            + drdz(j)*dpdz(j))/(re*ck*q(j,k,i,1)**3)  
+              ct1 = -fnut*(drdx(j)*dpdx(j) + drdy(j)*dpdy(j)
+     +            + drdz(j)*dpdz(j))/(re*ck*q(j,k,i,1)**3)
               rtaurho = sqrt(turre(j,k,i,2)*(drdx(j)**2 + drdy(j)**2 +
      +                                       drdz(j)**2))/q(j,k,i,1)
               ct2 = -c1*turre(j,k,i,2)*rtaurho
@@ -3357,13 +3357,13 @@ c
      +               q(j,k,i,4)*dpdz(j)
 
               termn = (q(j,k,i,1)*turre(j,k,i,2)*omemag)/
-     +                (xnu*q(j,k,i,5)*sigp)   
+     +                (xnu*q(j,k,i,5)*sigp)
               termd = 1. + sigrho*rtaurho*sqrt(rt/turre(j,k,i,1))/re
               ct3 = ccmaxcr(termn*DpDt/termd,0.)
               ct4 = -czeta1*fnut*omemag*turre(j,k,i,1)*rtaurho
      +             /turre(j,k,i,2)
               ct5 = -2.0*re*q(j,k,i,1)*turre(j,k,i,1)*divv
-c                     
+c
 c ---- calculate source terms for k-equation
 c
               if (ikoprod .eq. 2) then
@@ -3386,14 +3386,14 @@ c
               pklim = ccmin(pk,pklimterm*dk)
               pk = pklim
 c
-              srce(j,k,i,2) = pk + ct1 + ct2 - dk 
+              srce(j,k,i,2) = pk + ct1 + ct2 - dk
               rhside(j,k,i,2) = rhside(j,k,i,2)
      +       + srce(j,k,i,2)
 c
-              srce(j,k,i,1) = 
+              srce(j,k,i,1) =
      +        (p3+p4p6 + p5 + p7 + p8 + ct3 + ct4 + ct5)
      +        /(q(j,k,i,1)*re) - d5
-              rhside(j,k,i,1) = rhside(j,k,i,1) 
+              rhside(j,k,i,1) = rhside(j,k,i,1)
      +       + srce(j,k,i,1)
 c
             enddo
@@ -3496,11 +3496,11 @@ c         Interior points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -3572,12 +3572,12 @@ c      diagonal dominance)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
               else if (ivmx .eq.  15) then
 c
-                term1 = -0.5*(srce(j,k,i,1) 
+                term1 = -0.5*(srce(j,k,i,1)
      c                  - ccabs(srce(j,k,i,1)))
-                term2 = -0.5*(srce(j,k,i,2) 
+                term2 = -0.5*(srce(j,k,i,2)
      c                  - ccabs(srce(j,k,i,2)))
-                cyadd = term1/turre(j,k,i,1)   
-                cy2add = term2/turre(j,k,i,2)   
+                cyadd = term1/turre(j,k,i,1)
+                cy2add = term2/turre(j,k,i,2)
 c
               else if (ivmx .eq. 16) then
                 cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
@@ -3634,11 +3634,11 @@ c         K0 boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -3710,12 +3710,12 @@ c      diagonal dominance)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
               else if (ivmx .eq.  15) then
 c
-                term1 = -0.5*(srce(j,k,i,1) 
+                term1 = -0.5*(srce(j,k,i,1)
      c                  - ccabs(srce(j,k,i,1)))
-                term2 = -0.5*(srce(j,k,i,2) 
+                term2 = -0.5*(srce(j,k,i,2)
      c                  - ccabs(srce(j,k,i,2)))
-                cyadd = term1/turre(j,k,i,1)   
-                cy2add = term2/turre(j,k,i,2)   
+                cyadd = term1/turre(j,k,i,1)
+                cy2add = term2/turre(j,k,i,2)
               else if (ivmx .eq. 16) then
                 cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
      +                damp1(j,k,i)/re
@@ -3770,11 +3770,11 @@ c         KDIM boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -3846,12 +3846,12 @@ c      diagonal dominance)
                 cy2add=2.*re*turre(j,k,i,1)/turre(j,k,i,2)
               else if (ivmx .eq.  15) then
 c
-                term1 = -0.5*(srce(j,k,i,1) 
+                term1 = -0.5*(srce(j,k,i,1)
      c                  - ccabs(srce(j,k,i,1)))
-                term2 = -0.5*(srce(j,k,i,2) 
+                term2 = -0.5*(srce(j,k,i,2)
      c                  - ccabs(srce(j,k,i,2)))
-                cyadd = term1/turre(j,k,i,1)   
-                cy2add = term2/turre(j,k,i,2)   
+                cyadd = term1/turre(j,k,i,1)
+                cy2add = term2/turre(j,k,i,2)
               else if (ivmx .eq. 16) then
                 cyadd=6.*fnu(j,k,i)/(q(j,k,i,1)*smin(j,k,i)**2)*
      +                damp1(j,k,i)/re
@@ -3932,11 +3932,11 @@ c         Interior points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -4021,11 +4021,11 @@ c         J0 boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -4109,11 +4109,11 @@ c         JDIM boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -4224,11 +4224,11 @@ c           Interior points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -4313,11 +4313,11 @@ c           I0 boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -4401,11 +4401,11 @@ c           IDIM boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -4499,7 +4499,7 @@ c    Update TURRE
           do k=1,kdim-1
             do j=1,jdim-1
               sumno=sumno+rhside(j,k,i,1)**2
-              if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le. 
+              if((real(turre(j,k,i,1)+rhside(j,k,i,1))) .le.
      +          real(tur1cutlev)) then
                 negno=negno+1
                 if (real(tur1cut).gt.0.) turre(j,k,i,1)=tur1cut
@@ -4507,7 +4507,7 @@ c    Update TURRE
                 turre(j,k,i,1)=turre(j,k,i,1)+rhside(j,k,i,1)
               end if
               sumnk=sumnk+rhside(j,k,i,2)**2
-              if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le. 
+              if((real(turre(j,k,i,2)+rhside(j,k,i,2))) .le.
      +          real(tur2cutlev)) then
                 negnk=negnk+1
                 if (real(tur2cut).gt.0.) turre(j,k,i,2)=tur2cut
@@ -5187,7 +5187,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5195,7 +5195,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5203,7 +5203,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5211,7 +5211,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5219,7 +5219,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5227,7 +5227,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo
@@ -5235,7 +5235,7 @@ c
       write(91,'(i5,'' jset='',i5,''  -uv/uinf**2,y  x='',e15.5
      + )') kdim-1,jset,real(0.5*(x(jset,1,1)+x(jset+1,1,1)))
       do k=1,kdim-1
-        write(91,'(2e15.5)') 
+        write(91,'(2e15.5)')
      +  real(vist3d(jset,k,1)*vor(jset,k,1)/q(jset,k,1,1)/(reue*xmach)),
      +  real(ccabs(smin(jset,k,1)))
       enddo

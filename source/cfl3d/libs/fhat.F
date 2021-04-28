@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -55,9 +55,9 @@ c     terms
 c
 c     below (and on LHS), rather than using |ubar|+c, we use
 c     (|u| + |v| + |w| + c), which should add a bit more dissipation.
-c     this is slighly different from the implementation in LAURA, 
+c     this is slighly different from the implementation in LAURA,
 c     where (|ubar| + |vbar| + |wbar| + c) is used.
-c     
+c
 c     take LHS limiter = 2 x RHS limiter
 c
 c     10.**(-iexp) is machine zero
@@ -72,7 +72,7 @@ c
 c
       if (real(cprec) .eq. 0.) then
 cdir$ ivdep
-         do 1000 i=1,n 
+         do 1000 i=1,n
          t1 = qr(i,1)-ql(i,1)
          t2 = qr(i,2)-ql(i,2)
          t3 = qr(i,3)-ql(i,3)
@@ -83,17 +83,17 @@ c
          t16     = 1.e0/qr(i,1)
          t5      = qr(i,5)
          qr(i,5) = x1*qr(i,5)*t16+.5e0*(qr(i,2)*qr(i,2)+qr(i,3)*qr(i,3)
-     .                                 +qr(i,4)*qr(i,4)) 
+     .                                 +qr(i,4)*qr(i,4))
 c
          t15     = 1.e0/ql(i,1)
-         t19     = ql(i,5) 
+         t19     = ql(i,5)
          ql(i,5) = x1*ql(i,5)*t15+.5e0*(ql(i,2)*ql(i,2)+ql(i,3)*ql(i,3)
-     .                                 +ql(i,4)*ql(i,4)) 
+     .                                 +ql(i,4)*ql(i,4))
 c
 c         unsplit contributions  f(r)+f(l)
 c
-         t18 = ax(i)*qr(i,2)+ay(i)*qr(i,3)+az(i)*qr(i,4)+at(i) 
-         t17 = ax(i)*ql(i,2)+ay(i)*ql(i,3)+az(i)*ql(i,4)+at(i) 
+         t18 = ax(i)*qr(i,2)+ay(i)*qr(i,3)+az(i)*qr(i,4)+at(i)
+         t17 = ax(i)*ql(i,2)+ay(i)*ql(i,3)+az(i)*ql(i,4)+at(i)
          t6  = t18*qr(i,1)
          t7  = t17*ql(i,1)
          f1  = t6+t7
@@ -101,7 +101,7 @@ c
          f3  = t6*qr(i,3)+t7*ql(i,3)
          f4  = t6*qr(i,4)+t7*ql(i,4)
          f5  = t6*qr(i,5)+t7*ql(i,5)
-         t8  = t5+t19 
+         t8  = t5+t19
          f2  = f2+ax(i)*t8
          f3  = f3+ay(i)*t8
          f4  = f4+az(i)*t8
@@ -110,8 +110,8 @@ c
 c         roe averaged variables
 c
          t6 = qr(i,1)*t15
-         t7 = sqrt(t6) 
-         t6 = 1.e0/(1.e0+t7) 
+         t7 = sqrt(t6)
+         t6 = 1.e0/(1.e0+t7)
          t8 = t7*t6
 c
 c        average density
@@ -121,15 +121,15 @@ c
 c         u,v,w,h average
 c
          t9  = ql(i,2)*t6+qr(i,2)*t8
-         t10 = ql(i,3)*t6+qr(i,3)*t8 
-         t11 = ql(i,4)*t6+qr(i,4)*t8 
-         t12 = ql(i,5)*t6+qr(i,5)*t8 
+         t10 = ql(i,3)*t6+qr(i,3)*t8
+         t11 = ql(i,4)*t6+qr(i,4)*t8
+         t12 = ql(i,5)*t6+qr(i,5)*t8
 c
 c         extract sound speed
 c
          t6  = (t9*t9+t10*t10+t11*t11)*0.5e0
-         t7  = gm1*(t12-t6) 
-         t8  = sqrt(t7) 
+         t7  = gm1*(t12-t6)
+         t8  = sqrt(t7)
 c
          t13 = t9*ax(i)+t10*ay(i)+t11*az(i)
 c
@@ -145,8 +145,8 @@ c         18,19,17   lambda(1),lambda(4),lambda(5)
 c
 c         rhoa*delta(ubar) , delta(p)/c2a
 c
-         ql(i,1) = qr(i,1)*(t18-t17) 
-         ql(i,2) = (t5-t19)/t7 
+         ql(i,1) = qr(i,1)*(t18-t17)
+         ql(i,2) = (t5-t19)/t7
 c
          t18 = t13+at(i)
          t18 = ccabs(t18)
@@ -183,15 +183,15 @@ c
          ql(i,1) = t14+t15+t16
          ql(i,2) = t8*(t15-t16)
 c
-         f1 = f1-ql(i,1) 
+         f1 = f1-ql(i,1)
          f2 = f2-ql(i,1)*t9-ax(i)*ql(i,2)-qr(i,2)
-         f3 = f3-ql(i,1)*t10-ay(i)*ql(i,2)-qr(i,3) 
-         f4 = f4-ql(i,1)*t11-az(i)*ql(i,2)-qr(i,4) 
+         f3 = f3-ql(i,1)*t10-ay(i)*ql(i,2)-qr(i,3)
+         f4 = f4-ql(i,1)*t11-az(i)*ql(i,2)-qr(i,4)
          f5 = f5-ql(i,1)*t12-t13*ql(i,2)-qr(i,5)+t7*c1*t14
 c
 c         include factor one-half area
 c
-         t7     = .5e0*area(i) 
+         t7     = .5e0*area(i)
          f(i,1) = t7*f1
          f(i,2) = t7*f2
          f(i,3) = t7*f3
@@ -200,7 +200,7 @@ c
  1000    continue
       else
 cdir$ ivdep
-         do 10001 i=1,n 
+         do 10001 i=1,n
          t1 = qr(i,1)-ql(i,1)
          t2 = qr(i,2)-ql(i,2)
          t3 = qr(i,3)-ql(i,3)
@@ -211,17 +211,17 @@ c
          t16     = 1.e0/qr(i,1)
          t5      = qr(i,5)
          qr(i,5) = x1*qr(i,5)*t16+.5e0*(qr(i,2)*qr(i,2)+qr(i,3)*qr(i,3)
-     .                                 +qr(i,4)*qr(i,4)) 
+     .                                 +qr(i,4)*qr(i,4))
 c
          t15     = 1.e0/ql(i,1)
-         t19     = ql(i,5) 
+         t19     = ql(i,5)
          ql(i,5) = x1*ql(i,5)*t15+.5e0*(ql(i,2)*ql(i,2)+ql(i,3)*ql(i,3)
-     .                                 +ql(i,4)*ql(i,4)) 
+     .                                 +ql(i,4)*ql(i,4))
 c
 c         unsplit contributions  f(r)+f(l)
 c
-         t18 = ax(i)*qr(i,2)+ay(i)*qr(i,3)+az(i)*qr(i,4)+at(i) 
-         t17 = ax(i)*ql(i,2)+ay(i)*ql(i,3)+az(i)*ql(i,4)+at(i) 
+         t18 = ax(i)*qr(i,2)+ay(i)*qr(i,3)+az(i)*qr(i,4)+at(i)
+         t17 = ax(i)*ql(i,2)+ay(i)*ql(i,3)+az(i)*ql(i,4)+at(i)
          t6  = t18*qr(i,1)
          t7  = t17*ql(i,1)
          f1  = t6+t7
@@ -229,7 +229,7 @@ c
          f3  = t6*qr(i,3)+t7*ql(i,3)
          f4  = t6*qr(i,4)+t7*ql(i,4)
          f5  = t6*qr(i,5)+t7*ql(i,5)
-         t8  = t5+t19 
+         t8  = t5+t19
          f2  = f2+ax(i)*t8
          f3  = f3+ay(i)*t8
          f4  = f4+az(i)*t8
@@ -240,8 +240,8 @@ c
 c         roe averaged variables
 c
          t6 = qr(i,1)*t15
-         t7 = sqrt(t6) 
-         t6 = 1.e0/(1.e0+t7) 
+         t7 = sqrt(t6)
+         t6 = 1.e0/(1.e0+t7)
          t8 = t7*t6
 c
 c        average density
@@ -251,27 +251,27 @@ c
 c         u,v,w,h average
 c
          t9  = ql(i,2)*t6+qr(i,2)*t8
-         t10 = ql(i,3)*t6+qr(i,3)*t8 
-         t11 = ql(i,4)*t6+qr(i,4)*t8 
-         t12 = ql(i,5)*t6+qr(i,5)*t8 
+         t10 = ql(i,3)*t6+qr(i,3)*t8
+         t11 = ql(i,4)*t6+qr(i,4)*t8
+         t12 = ql(i,5)*t6+qr(i,5)*t8
 c
 c         extract sound speed
 c
          t6  = (t9*t9+t10*t10+t11*t11)*0.5e0
-         t7  = gm1*(t12-t6) 
-         t8  = sqrt(t7) 
+         t7  = gm1*(t12-t6)
+         t8  = sqrt(t7)
 c
          t13 = t9*ax(i)+t10*ay(i)+t11*az(i)
-c    
+c
 c         compute preconditioning parameters
 c
          vmag1 =  2.0*t6 + 2.0*t7*ccabs(delp)/t8t
          vel2 = ccmax(vmag1,avn*uref**2)
          vel = sqrt(ccmin(t7,vel2))
          vel = cprec*vel + (1.-cprec)*t8
-         xm2 = (vel/t8)**2   
+         xm2 = (vel/t8)**2
          xmave = t13/t8
-         tt1 = 0.5*(1.+xm2)   
+         tt1 = 0.5*(1.+xm2)
          tt2 = 0.5*sqrt(xmave**2*(1.-xm2)**2 + 4.0*xm2)
 c
 c         the variables in t are as follows
@@ -286,11 +286,11 @@ c         18,19,17   lambda(1),lambda(4),lambda(5)
 c
 c         rhoa*delta(ubar) , delta(p)/c2a
 c
-         ql(i,1) = qr(i,1)*(t18-t17) 
-         ql(i,2) = (t5-t19)/t7 
+         ql(i,1) = qr(i,1)*(t18-t17)
+         ql(i,2) = (t5-t19)/t7
 c
          t18 = t13+at(i)
-         t19 = tt1*t13+tt2*t8+at(i) 
+         t19 = tt1*t13+tt2*t8+at(i)
          t17 = tt1*t13-tt2*t8+at(i)
          fplus = (t19-t18)/(xm2*t8)
          fmins = -(t17-t18)/(xm2*t8)
@@ -315,8 +315,8 @@ c
          end if
 c
          t14 = t18*(t1-ql(i,2))
-         t15 = .5e0*t19*(fplus*ql(i,2)+ql(i,1)/t8) 
-         t16 = .5e0*t17*(fmins*ql(i,2)-ql(i,1)/t8) 
+         t15 = .5e0*t19*(fplus*ql(i,2)+ql(i,1)/t8)
+         t16 = .5e0*t17*(fmins*ql(i,2)-ql(i,1)/t8)
 c
          qr(i,2) = t18*(t2*qr(i,1)-ax(i)*ql(i,1))
          qr(i,3) = t18*(t3*qr(i,1)-ay(i)*ql(i,1))
@@ -326,15 +326,15 @@ c
          ql(i,1) = t14+fsum*(t15+t16)
          ql(i,2) = fsum*t8*xm2*(fmins*t15-fplus*t16)
 c
-         f1 = f1-ql(i,1) 
+         f1 = f1-ql(i,1)
          f2 = f2-ql(i,1)*t9-ax(i)*ql(i,2)-qr(i,2)
-         f3 = f3-ql(i,1)*t10-ay(i)*ql(i,2)-qr(i,3) 
-         f4 = f4-ql(i,1)*t11-az(i)*ql(i,2)-qr(i,4) 
+         f3 = f3-ql(i,1)*t10-ay(i)*ql(i,2)-qr(i,3)
+         f4 = f4-ql(i,1)*t11-az(i)*ql(i,2)-qr(i,4)
          f5 = f5-ql(i,1)*t12-t13*ql(i,2)-qr(i,5)+t7*c1*t14
 c
 c         include factor one-half area
 c
-         t7     = .5e0*area(i) 
+         t7     = .5e0*area(i)
          f(i,1) = t7*f1
          f(i,2) = t7*f2
          f(i,3) = t7*f3

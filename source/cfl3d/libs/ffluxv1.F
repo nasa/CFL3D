@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -120,7 +120,7 @@ c
       t(j+jiv-1,18) = q(j,kk,i,2)
       t(j+jiv-1,19) = q(j,kk,i,3)
       t(j+jiv-1,20) = q(j,kk,i,4)
-      t(j+jiv-1,16) = q(j,kk,i,5) 
+      t(j+jiv-1,16) = q(j,kk,i,5)
  1002 continue
    50 continue
    10 continue
@@ -150,8 +150,8 @@ c
       wi0(jc,m+12) = qi0(jj,kk,1,mm)
       wi0(jc,m+8)  = qi0(jj,kk,2,mm)
       wi0(jc,m+9)  = qi0(jj,kk,3,mm)
-      wi0(jc,m+10) = qi0(jj,kk,4,mm) 
-      wi0(jc,m+6)  = qi0(jj,kk,5,mm) 
+      wi0(jc,m+10) = qi0(jj,kk,4,mm)
+      wi0(jc,m+6)  = qi0(jj,kk,5,mm)
 c     m+5 flag indicates whether ghost cell or interface values stored in wi0
       wi0(jc,m+5)  = bci(jj,kk,mb)
  6120 continue
@@ -168,9 +168,9 @@ c
       do 7005 j=1,n
       t(j,17) = 0.5e0*( t(j,18)*t(j,18)
      .                + t(j,19)*t(j,19)
-     .                + t(j,20)*t(j,20) ) 
-      t(j,21) = t(j,17)*t(j,22)+t(j,16)/gm1 
-      t(j,1)  = 1.e0/t(j,22) 
+     .                + t(j,20)*t(j,20) )
+      t(j,21) = t(j,17)*t(j,22)+t(j,16)/gm1
+      t(j,1)  = 1.e0/t(j,22)
       t(j,16) = gpr*t(j,16)*t(j,1)/gm1
  7005 continue
       do 2121 m=0,10,10
@@ -178,8 +178,8 @@ c
       wi0(j,m+7) = 0.5e0*( wi0(j,m+8)*wi0(j,m+8)
      .                  + wi0(j,m+9)*wi0(j,m+9)
      .                  + wi0(j,m+10)*wi0(j,m+10) )
-      wi0(j,m+11) = wi0(j,m+7)*wi0(j,m+12)+wi0(j,m+6)/gm1 
-      wi0(j,m+1)  = 1.e0/wi0(j,m+12) 
+      wi0(j,m+11) = wi0(j,m+7)*wi0(j,m+12)+wi0(j,m+6)/gm1
+      wi0(j,m+1)  = 1.e0/wi0(j,m+12)
       wi0(j,m+6) = gpr*wi0(j,m+6)*wi0(j,m+1)/gm1
  1005 continue
  2121 continue
@@ -193,7 +193,7 @@ c
 c
       do 1006 j=1,n
       t5     =  gm1pr*t(j,16)
-      t6     =  sqrt(t5) 
+      t6     =  sqrt(t5)
       t(j,7) =  c2bp*t5*t6/(c2b+t5)
  1006 continue
 c
@@ -212,12 +212,12 @@ cdir$ ivdep
       ab=1.+wi0(izz,5)
       bb=1.-wi0(izz,5)
       wi05        = gm1pr*0.5*(ab*wi0(izz,6)+bb*t(izz,16))
-      wi06        = sqrt(wi05) 
+      wi06        = sqrt(wi05)
       t(izz,14)   = c2bp*wi05*wi06/(c2b+wi05)
       ab=1.+wi0(izz,15)
       bb=1.-wi0(izz,15)
       wi05        = gm1pr*0.5*(ab*wi0(izz,16)+bb*t(izz+n-jv,16))
-      wi06        = sqrt(wi05) 
+      wi06        = sqrt(wi05)
       t(izz+n,14) = c2bp*wi05*wi06/(c2b+wi05)
  1008 continue
 c
@@ -230,21 +230,21 @@ c
       do 200 kpl=1,npl
       kk  = k+kpl-1
       do 200 i=1,idim
-      jiv = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
-      ji  = (i-1)*jdim 
-      if (i.eq.1) then 
+      jiv = (i-1)*npl*jdim1 + (kpl-1)*jdim1
+      ji  = (i-1)*jdim
+      if (i.eq.1) then
 c     inverse volume at i=0 interface
-        do 7013 j=1,jdim1 
+        do 7013 j=1,jdim1
         t(j+jiv,15) = 2./(voli0(j,kk,1)+vol(j,kk,1))
  7013   continue
-      else if (i.eq.idim) then 
+      else if (i.eq.idim) then
 c     inverse volume at i=idim interface
-        do 7113 j=1,jdim1 
+        do 7113 j=1,jdim1
         t(j+jiv,15) = 2./(voli0(j,kk,3)+vol(j,kk,idim1))
  7113   continue
       else
 c     inverse volume at interior interfaces
-        do 1013 j=1,jdim1 
+        do 1013 j=1,jdim1
         t(j+jiv,15) = 2./(vol(j,kk,i)+vol(j,kk,i-1))
  1013   continue
       end if
@@ -257,8 +257,8 @@ c  t(25) : d(xie)/dx
 c  t(26) : d(xie)/dy
 c  t(27) : d(xie)/dz
 c
-      do 1014 j=1,jdim1 
-      t1          =  si(j,kk,i,4)*t(j+jiv,15) 
+      do 1014 j=1,jdim1
+      t1          =  si(j,kk,i,4)*t(j+jiv,15)
       t(j+jiv,25) =  si(j,kk,i,1)*t1
       t(j+jiv,26) =  si(j,kk,i,2)*t1
       t(j+jiv,27) =  si(j,kk,i,3)*t1
@@ -277,7 +277,7 @@ c
       do 210 kpl=1,npl
       kk  = k+kpl-1
       do 210 i=1,idim
-      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1
       if (i.eq.1) then
        do 204 j = 1,jdim1
          t(jiv+j,28) = 0.25*t(j+jiv,15)*(sj(j,kk,i,1)*sj(j,kk,i,4)
@@ -341,7 +341,7 @@ c
       do 220 kpl=1,npl
       kk  = k+kpl-1
       do 220 i=1,idim
-      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1
       if (i.eq.1) then
        do 214 j = 1,jdim1
         t(jiv+j,31) = 0.25*t(j+jiv,15)*(sk(j,kk,i,1)*sk(j,kk,i,4)
@@ -396,7 +396,7 @@ c
 c
 c******************************************************************************
 c
-c   gradients at cell interfaces (needed for full ns terms). Note that 
+c   gradients at cell interfaces (needed for full ns terms). Note that
 c  we don't need derivatives in xie direction, because they have already
 c  been accounted for in ffluxv.
 c  Recall bcj=0 => cell data, bcj=1 => face data
@@ -411,7 +411,7 @@ c
       do 230 kpl = 1,npl
       kk = k + kpl -1
       do 230 i = 1,idim
-      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+      jiv  = (i-1)*npl*jdim1 + (kpl-1)*jdim1
 c
       if (i.eq.1) then
 c
@@ -461,11 +461,11 @@ c
 
           else if (j .eq. jdim1) then
 c
-c replace (j+1) data by boundary data 
+c replace (j+1) data by boundary data
 c
            t(jiv+j,3) = 0.25*gprgm1*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,5,3)/qj0(kk,i,1,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,5)/q(j,kk,i,1) - 
+     .       bcj(kk,i,2)*q(j,kk,i,5)/q(j,kk,i,1) -
      .       q(j-1,kk,i,5)/q(j-1,kk,i,1)  +
      .       2.*(1.+bci(j,kk,1))*qi0(j,kk,5,1)/qi0(j,kk,1,1) -
      .       2.*bci(j,kk,1)*q(j,kk,i,5)/q(j,kk,i,1) -
@@ -474,7 +474,7 @@ c
 
            t(jiv+j,4) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,2,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,2) - 
+     .       bcj(kk,i,2)*q(j,kk,i,2) -
      .       q(j-1,kk,i,2)  +
      .       2.*(1.+bci(j,kk,1))*qi0(j,kk,2,1) -
      .       2.*bci(j,kk,1)*q(j,kk,i,2) -
@@ -483,7 +483,7 @@ c
 
            t(jiv+j,5) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,3,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,3) - 
+     .       bcj(kk,i,2)*q(j,kk,i,3) -
      .       q(j-1,kk,i,3)  +
      .       2.*(1.+bci(j,kk,1))*qi0(j,kk,3,1) -
      .       2.*bci(j,kk,1)*q(j,kk,i,3) -
@@ -492,7 +492,7 @@ c
 
            t(jiv+j,6) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,4,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,4) - 
+     .       bcj(kk,i,2)*q(j,kk,i,4) -
      .       q(j-1,kk,i,4)  +
      .       2.*(1.+bci(j,kk,1))*qi0(j,kk,4,1) -
      .       2.*bci(j,kk,1)*q(j,kk,i,4) -
@@ -594,7 +594,7 @@ c
      .       2.*(1.+bci(j-1,kk,2))*qi0(j-1,kk,5,3)/qi0(j-1,kk,1,3) +
      .       2.*bci(j-1,kk,2)*q(j-1,kk,i-1,5)/q(j-1,kk,i-1,1) +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,5,3)/qj0(kk,i-1,1,3) -
-     .       bcj(kk,i-1,2)*q(j,kk,i-1,5)/q(j,kk,i-1,1) - 
+     .       bcj(kk,i-1,2)*q(j,kk,i-1,5)/q(j,kk,i-1,1) -
      .       q(j-1,kk,i-1,5)/q(j-1,kk,i-1,1) )
 
            t(jiv+j,4) = 0.25*(
@@ -603,7 +603,7 @@ c
      .       2.*(1.+bci(j-1,kk,2))*qi0(j-1,kk,2,3) +
      .       2.*bci(j-1,kk,2)*q(j-1,kk,i-1,2) +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,2,3) -
-     .       bcj(kk,i-1,2)*q(j,kk,i-1,2) - 
+     .       bcj(kk,i-1,2)*q(j,kk,i-1,2) -
      .       q(j-1,kk,i-1,2) )
 
            t(jiv+j,5) = 0.25*(
@@ -612,7 +612,7 @@ c
      .       2.*(1.+bci(j-1,kk,2))*qi0(j-1,kk,3,3) +
      .       2.*bci(j-1,kk,2)*q(j-1,kk,i-1,3) +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,3,3) -
-     .       bcj(kk,i-1,2)*q(j,kk,i-1,3) - 
+     .       bcj(kk,i-1,2)*q(j,kk,i-1,3) -
      .       q(j-1,kk,i-1,3) )
 
            t(jiv+j,6) = 0.25*(
@@ -621,7 +621,7 @@ c
      .       2.*(1.+bci(j-1,kk,2))*qi0(j-1,kk,4,3) +
      .       2.*bci(j-1,kk,2)*q(j-1,kk,i-1,4) +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,4,3) -
-     .       bcj(kk,i-1,2)*q(j,kk,i-1,4) - 
+     .       bcj(kk,i-1,2)*q(j,kk,i-1,4) -
      .       q(j-1,kk,i-1,4) )
           else
 c
@@ -704,38 +704,38 @@ c
 
           else if (j .eq. jdim1) then
 c
-c replace (j+1) data by boundary data 
+c replace (j+1) data by boundary data
 c
            t(jiv+j,3) = 0.25*gprgm1*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,5,3)/qj0(kk,i,1,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,5)/q(j,kk,i,1) - 
+     .       bcj(kk,i,2)*q(j,kk,i,5)/q(j,kk,i,1) -
      .       q(j-1,kk,i,5)/q(j-1,kk,i,1)  +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,5,3)/qj0(kk,i-1,1,3) -
-     .       bcj(kk,i-1,2)*q(j-1,kk,i,5)/q(j-1,kk,i,1) - 
+     .       bcj(kk,i-1,2)*q(j-1,kk,i,5)/q(j-1,kk,i,1) -
      .       q(j-1,kk,i-1,5)/q(j-1,kk,i-1,1) )
 
            t(jiv+j,4) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,2,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,2) - 
+     .       bcj(kk,i,2)*q(j,kk,i,2) -
      .       q(j-1,kk,i,2)  +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,2,3) -
-     .       bcj(kk,i-1,2)*q(j-1,kk,i,2) - 
+     .       bcj(kk,i-1,2)*q(j-1,kk,i,2) -
      .       q(j-1,kk,i-1,2) )
 
            t(jiv+j,5) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,3,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,3) - 
+     .       bcj(kk,i,2)*q(j,kk,i,3) -
      .       q(j-1,kk,i,3)  +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,3,3) -
-     .       bcj(kk,i-1,2)*q(j-1,kk,i,3) - 
+     .       bcj(kk,i-1,2)*q(j-1,kk,i,3) -
      .       q(j-1,kk,i-1,3) )
 
            t(jiv+j,6) = 0.25*(
      .       (1.+bcj(kk,i,2))*qj0(kk,i,4,3) -
-     .       bcj(kk,i,2)*q(j,kk,i,4) - 
+     .       bcj(kk,i,2)*q(j,kk,i,4) -
      .       q(j-1,kk,i,4)  +
      .       (1.+bcj(kk,i-1,2))*qj0(kk,i-1,4,3) -
-     .       bcj(kk,i-1,2)*q(j-1,kk,i,4) - 
+     .       bcj(kk,i-1,2)*q(j-1,kk,i,4) -
      .       q(j-1,kk,i-1,4) )
           else
 c
@@ -766,7 +766,7 @@ c
 c
 c******************************************************************************
 c
-c   gradients at cell interfaces (needed for full ns terms). Note that 
+c   gradients at cell interfaces (needed for full ns terms). Note that
 c  we don't need derivatives in xie direction, because they have already
 c  been accounted for in ffluxv.
 c  Recall bck=0 => cell data, bck=1 => face data
@@ -785,7 +785,7 @@ c
 c replace (kk-1) data by boundary data
 c
         do 330 i = 1,idim
-          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1
 c
           if (i .eq. 1) then
 c
@@ -922,7 +922,7 @@ c
 c replace (kk+1) data by boundary data
 c
         do 340 i = 1,idim
-          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1
           if (i .eq. 1) then
 c
 c replace (i-1) data by boundary data
@@ -1057,7 +1057,7 @@ c
 c-- general case (kk .ne 1. and kk .ne. kdkm1)
 c
         do 350 i = 1,idim
-          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1 
+          jiv     = (i-1)*npl*jdim1 + (kpl-1)*jdim1
           if (i .eq. 1) then
 c
 c replace (i-1) data by boundary data
@@ -1197,7 +1197,7 @@ c     laminar
 c
       do 1022 j=1,l0
 c  ratio of turbulent to laminar viscosity
-      t25     = t(j,24)/t(j,14) 
+      t25     = t(j,24)/t(j,14)
       t24     = 1.e0+t25*coef_eddy
 c
 c******************************************************************************

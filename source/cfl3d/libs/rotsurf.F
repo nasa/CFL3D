@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,8 +28,8 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Determines increment to delta displacement due to 
-c     surface rotation. 
+c     Purpose:  Determines increment to delta displacement due to
+c     surface rotation.
 c
 c     idefrm...modulation for mesh deformation
 c              = 0 no deformation
@@ -40,10 +40,10 @@ c                rotation or translation (not handled by this routine)
 c
 c     surface rotation set in the range (ici,icf), (jci,jcf), (kci,kcf)
 c     one pair of the indicies must be identical; this set of constant
-c     indicies determines which surface in the grid is deformed 
+c     indicies determines which surface in the grid is deformed
 c
 c     deltj/k/i...arrays for storage of delta displacements due to
-c                 surface rotation; upon entering this routine, 
+c                 surface rotation; upon entering this routine,
 c                 these will contain any deltas from surface translation
 c
 c     rotations are taken with positive angular displacement following
@@ -111,7 +111,7 @@ c
 c
 c***************************************************
 c        calculate rotated y and z surface points
-c        delt(1)=0 (unaltered) delt(2)=dy delt(3)=dz 
+c        delt(1)=0 (unaltered) delt(2)=dy delt(3)=dz
 c***************************************************
 c
          theta    = omegx*ft
@@ -181,7 +181,7 @@ c
 c
 c***************************************************
 c        calculate rotated x and z surface points
-c        delt(1)=dx delt(2)=0 (unaltered) delt(3)=dz               
+c        delt(1)=dx delt(2)=0 (unaltered) delt(3)=dz
 c***************************************************
 c
          theta    = omegy*ft
@@ -305,7 +305,7 @@ c
 c
          thetaz = theta
 c
-      else 
+      else
 c
          if (isklton .gt. 0) then
             nou(1) = min(nou(1)+1,ibufdim)

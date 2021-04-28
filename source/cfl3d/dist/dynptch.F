@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -43,7 +43,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Establish zone-to-zone communication for block inter-
-c     faces that move relative to one another, using a patched-grid 
+c     faces that move relative to one another, using a patched-grid
 c     technique (non-conservative)
 c***********************************************************************
 c
@@ -109,7 +109,7 @@ c
       dimension ireq_ar(intmx*3),mblk2nd(maxbl)
       dimension xorig(maxbl),yorig(maxbl),zorig(maxbl)
       dimension windx(mxxe,2),iindx(intmx,6*msub1+9),
-     .          windex(maxxe,2),iindex(intmax,6*nsub1+9), 
+     .          windex(maxxe,2),iindex(intmax,6*nsub1+9),
      .          llimit(intmx),iitmax(intmx),mmcxie(intmx),
      .          mmceta(intmx),ncheck(maxbl),iifit(intmx),
      .          mblkpt(mxxe),iic0(intmx),iiorph(intmx),iitoss(intmx),
@@ -231,7 +231,7 @@ c
       end if
 c
       if (myid.eq.myhost) then
-         if (isklton.eq.1) write(11,405) 
+         if (isklton.eq.1) write(11,405)
       end if
   405 format(/,52h calculating dynamic grid interpolation coefficients)
 c
@@ -286,9 +286,9 @@ c
 #if defined DIST_MPI
 c        share pre_patch data with nodes
 c
-         call MPI_Bcast(maxdcnt, 1, MPI_INTEGER, 
+         call MPI_Bcast(maxdcnt, 1, MPI_INTEGER,
      .                  myhost, mycomm, ierr)
-         call MPI_Bcast(isav_dpat, intmx*17, MPI_INTEGER, 
+         call MPI_Bcast(isav_dpat, intmx*17, MPI_INTEGER,
      .                  myhost, mycomm, ierr)
          call MPI_Bcast(isav_dpat_b, intmx*msub1*6, MPI_INTEGER,
      .                  myhost, mycomm, ierr)
@@ -366,7 +366,7 @@ c
          iindex(n+ninter0,2*nfb+4)  = iindx(n,2*nfb+4)
          if (n .eq. 1) then
             iindex(n+ninter0,2*nfb+5) = len0 + 1
-         else 
+         else
             nfb1 = iindex(n+ninter0-1,1)
             iindex(n+ninter0,2*nfb+5)  = iindex(n+ninter0-1,2*nfb1+4)
      .                                 + iindex(n+ninter0-1,2*nfb1+5)
@@ -496,8 +496,8 @@ c
       end if
 c
 #if defined DIST_MPI
-      if (ncall .eq. 1) then 
-         call MPI_Bcast(iindex, intmax*(6*nsub1+9), MPI_INTEGER, 
+      if (ncall .eq. 1) then
+         call MPI_Bcast(iindex, intmax*(6*nsub1+9), MPI_INTEGER,
      .                  myhost, mycomm, ierr)
          call MPI_Bcast(dthetxx, intmax*nsub1, MY_MPI_REAL,
      .                  myhost, mycomm, ierr)

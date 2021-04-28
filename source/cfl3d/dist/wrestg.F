@@ -7,20 +7,20 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
-      subroutine wrestg(nbl,jdim,kdim,idim,x,y,z,xnm2,ynm2,znm2,    
+      subroutine wrestg(nbl,jdim,kdim,idim,x,y,z,xnm2,ynm2,znm2,
      .                  deltj,deltk,delti,qc0,nflagg,iuns,utrans,
      .                  vtrans,wtrans,omegax,omegay,omegaz,xorig,
      .                  yorig,zorig,dxmx,dymx,dzmx,dthxmx,dthymx,
@@ -38,7 +38,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Append to the end of the restart file the required info 
+c     Purpose:  Append to the end of the restart file the required info
 c     for a dynamic mesh (nflagg=1); write qc0 for 2nd order accurate
 c     restart (in time) (nflagg=0).
 c***********************************************************************
@@ -144,7 +144,7 @@ c
       if (nflagg .eq. 0) then
 c
 c ************************************
-c        write out 2nd order time data 
+c        write out 2nd order time data
 c ************************************
 c
 #if defined DIST_MPI
@@ -309,7 +309,7 @@ c
                end if
 #if defined DIST_MPI
             end if
-#endif 
+#endif
             if (idefrm(nbl) .gt. 0) then
 c
 c
@@ -386,17 +386,17 @@ c
      .                        kcsi(nbl,is),kcsf(nbl,is)
                   end do
 c
-c                 xnm2, etc. only needed (and stored) for 2nd order, so 
-c                 write out x,y,z twice in 1st order case in order to 
+c                 xnm2, etc. only needed (and stored) for 2nd order, so
+c                 write out x,y,z twice in 1st order case in order to
 c                 simplify restart logic
-c                 
+c
                   if (abs(ita).gt.1) then
-                     write(2) 
+                     write(2)
      .                     (((xnm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((ynm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((znm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)
                   else
-                     write(2) 
+                     write(2)
      .                     (((x(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((y(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                     (((z(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -70,7 +70,7 @@ c
 c
 c     load rhs (delta q * dtj) into f
 c
-c      temporary variables are as below:  
+c      temporary variables are as below:
 c
 c      t(1-4)  :  kx,ky,kz,cell-face area
 c      t(5)    :  c = sound speed
@@ -149,9 +149,9 @@ c      average metric
 c
 cdir$ ivdep
       do 1008 izz=1,n
-      t1       = t(izz,16)+t(izz+jv,16) 
-      t2       = t(izz,17)+t(izz+jv,17) 
-      t3       = t(izz,18)+t(izz+jv,18) 
+      t1       = t(izz,16)+t(izz+jv,16)
+      t2       = t(izz,17)+t(izz+jv,17)
+      t3       = t(izz,18)+t(izz+jv,18)
       t4       = t1*t1+t2*t2+t3*t3
       t4       = 1.e0/sqrt(t4)
       t(izz,1) = t1*t4
@@ -247,7 +247,7 @@ c
       call tinvr(n,t(1,26),t(1,27),t(1,28),t(1,29),t(1,30),t(1,1),
      .             t(1,2), t(1,3), t(1,14),t(1,15),t(1,16),t(1,17),
      .             t(1,18),t(1,19),t(1,5), t(1,11),t(1,6), t(1,7),
-     .             t(1,8), t(1,9), maxf,1, t(1,33),t(1,34),t(1,35)) 
+     .             t(1,8), t(1,9), maxf,1, t(1,33),t(1,34),t(1,35))
 c
 c     assemble and solve decoupled matrix equations
 c

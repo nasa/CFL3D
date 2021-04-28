@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -87,7 +87,7 @@ c
      .          nblcg(maxbl),jsg(maxbl),ksg(maxbl),isg(maxbl),
      .          jeg(maxbl),keg(maxbl),ieg(maxbl),
      .          iindex(intmax,6*nsub1+9),nblkpt(maxxe),nblkk(2,mxbli),
-     .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli), 
+     .          limblk(2,6,mxbli),isva(2,2,mxbli),nblon(mxbli),
      .          inpl3d(nplots,11),thetay(maxbl),mblk2nd(maxbl)
       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
@@ -187,7 +187,7 @@ c
       if (mblk2nd(nblk).eq.myid) then
 c
 #endif
-c     assign default iblank (blank2) array 
+c     assign default iblank (blank2) array
 c
       do 2049 i=1,idim
       do 2049 j=1,jdim
@@ -199,7 +199,7 @@ c
 c     zero out edges and corners if desired (izero > 0)
 c
       izero = 0
-c     
+c
       if (izero.gt.0) then
          do 2050 i=1,idim
          do 2050 j=1,jdim,jdim1
@@ -295,12 +295,12 @@ c
  3190 continue
 c
 c     iblank (blank2) array for patch interface boundaries
-c  
+c
 c     Set blank2 array on block edges from nblkpt array.  Nblkpt array
 c     corresponds to cell center grid.  For ambiguous points which arise
 c     when going from cell-center data to grid point data (e.g. along block
-c     edges, corners, or for interior points on a patch interface for which 
-c     surrounding cell-centers lie in different blocks), blank2 value 
+c     edges, corners, or for interior points on a patch interface for which
+c     surrounding cell-centers lie in different blocks), blank2 value
 c     remains equal to previously set values.
 c
       if (abs(ninter).gt.0) then
@@ -322,7 +322,7 @@ c
             if (jdim.gt.2 .and. kdim.gt.2) then
                do 1610 j=j21+1,j22-1
                do 1610 k=k21+1,k22-1
-c              connecting block numbers of the four cell-centered points 
+c              connecting block numbers of the four cell-centered points
 c              surrounding the current grid point
                ll = lst + (j22-j21)*(k-1-k21) + (j-1-j21)
                mblk1 = iindex(inter,nblkpt(ll)+1)
@@ -364,7 +364,7 @@ c
             if (idim.gt.2 .and .kdim.gt.2) then
                do 1620 i=k21+1,k22-1
                do 1620 k=j21+1,j22-1
-c              connecting block numbers of the four cell-centered points 
+c              connecting block numbers of the four cell-centered points
 c              surrounding the current grid point
                ll = lst + (j22-j21)*(i-1-k21) + (k-1-j21)
                mblk1 = iindex(inter,nblkpt(ll)+1)
@@ -404,7 +404,7 @@ c
             if (idim.gt.2 .and. jdim.gt.2) then
                do 1630 i=k21+1,k22-1
                do 1630 j=j21+1,j22-1
-c              connecting block numbers of the four cell-centered points 
+c              connecting block numbers of the four cell-centered points
 c              surrounding the current grid point
                ll = lst + (j22-j21)*(i-1-k21) + (j-1-j21)
                mblk1 = iindex(inter,nblkpt(ll)+1)
@@ -583,7 +583,7 @@ c
      .                               blank(j-1,k,1),
      .                               blank(j,k-1,1),
      .                               blank(j-1,k-1,1))
-         blank2(j,k,idim,2) = ccmin4(blank(j,k,idim1),  
+         blank2(j,k,idim,2) = ccmin4(blank(j,k,idim1),
      .                               blank(j-1,k,idim1),
      .                               blank(j,k-1,idim1),
      .                               blank(j-1,k-1,idim1))
@@ -637,7 +637,7 @@ c
   513    continue
 c
 c        edges and corners (j=1 and j=jdim)
-c  
+c
          do 514 m=1,2
          k  = 1
          kk = 1
@@ -768,8 +768,8 @@ c
             write(11,'(''   plot3dq file is a    q file'',
      .      '' at grid points'')')
 #           ifdef CMPLX
-            if (ip3dgrad .ne. 0) then 
-               write(11,'(''   NOTE: contains dq/d(), rather than q'')') 
+            if (ip3dgrad .ne. 0) then
+               write(11,'(''   NOTE: contains dq/d(), rather than q'')')
                call gradinfo(delh,11)
             end if
 #           endif
@@ -793,7 +793,7 @@ c
             write(11,'(''   plot3dq file is a function'',
      .      '' file of Cp at grid points'')')
 #           ifdef CMPLX
-            if (ip3dgrad .ne. 0) then 
+            if (ip3dgrad .ne. 0) then
                write(11,'(''   NOTE: contains dCp/d(), rather than'',
      .                    '' Cp'')')
                call gradinfo(delh,11)
@@ -806,7 +806,7 @@ c
             write(11,'(''   plot3dq file is a function'',
      .      '' file of P/Pinf at grid points'')')
 #           ifdef CMPLX
-            if (ip3dgrad .ne. 0) then 
+            if (ip3dgrad .ne. 0) then
                write(11,'(''   NOTE: contains d(P/Pinf)/d(), rather'',
      .                    '' than P/Pinf'')')
                call gradinfo(delh,11)
@@ -955,7 +955,7 @@ c
             if (iblnk.eq.0) then
                write(3)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
-     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw) 
+     .                 (((xg(j,k,i,3),i=1,iw),j=1,jw),k=1,kw)
             else
                write(3)
      .                 (((xg(j,k,i,1),i=1,iw),j=1,jw),k=1,kw),
@@ -982,7 +982,7 @@ c     ifunc...flag to determine whether a plot3d q file or plot3d function
 c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST
 c           = 0 plot3d q file is written at grid points
-c             (if inpl3d(iplot,2)=-1 then same, except off-body data used 
+c             (if inpl3d(iplot,2)=-1 then same, except off-body data used
 c             when output is on body only)
 c           < 0 function file is written
 c            -4 vist3d at grid points
@@ -1268,7 +1268,7 @@ c
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .             (((xw(j,k,i,4),i=1,iw),j=1,jw),k=1,kw),
      .             (((xw(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
-     .             (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw) 
+     .             (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw)
                end if
             else
                write(4,'(5e14.6)')
@@ -1293,7 +1293,7 @@ c
      .            ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,2),
      .             (((xw(j,k,i,4),i=1,iw),j=1,jw),k=1,kw),
      .             (((xw(j,k,i,3),i=1,iw),j=1,jw),k=1,kw),
-     .              (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw) 
+     .              (((xw(j,k,i,5),i=1,iw),j=1,jw),k=1,kw)
                end if
             else
                write(4)
@@ -1366,7 +1366,7 @@ c
       idw = (i2-i1)/i3 + 1
       ldw = 5
       call cctogp(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,q,
-     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)          
+     .            qi0,qj0,qk0,jdw,kdw,idw,xv,ldw)
       do l=1,ldw
          do i=1,idw
             do k=1,kdw
@@ -1390,7 +1390,7 @@ c
                xg(j,k,i,4) = xv(j,k,i,4)
             end do
          end do
-      end do 
+      end do
       end if
 c
 c     old way for eddy viscosity ...incorrect for surface data,
@@ -1538,7 +1538,7 @@ c
 c
       if (ivisc(3).ne.0) then
 c
-c     output viscous-flow data (skin friction, heat transfer, etc) on 
+c     output viscous-flow data (skin friction, heat transfer, etc) on
 c     k=1 and/or k=kdim surfaces
 c
 #if defined DIST_MPI
@@ -1603,7 +1603,7 @@ c
      .                + q(j,kd,id1,5)  +q(j-1,kd,id1,5))
       t1k2 = q5k2/q1k2
 c
-      if (sk(j  ,kdx,id ,4) .eq. 0. .or. 
+      if (sk(j  ,kdx,id ,4) .eq. 0. .or.
      +    sk(j-1,kdx,id ,4) .eq. 0. .or.
      +    sk(j  ,kdx,id1,4) .eq. 0. .or.
      +    sk(j-1,kdx,id1,4) .eq. 0.) then
@@ -1835,7 +1835,7 @@ c
      .                + q(jd,k,id1,5)  +q(jd,k-1,id1,5))
       t1j2 = q5j2/q1j2
 c
-      if (sj(jdx,k  ,id ,4) .eq. 0. .or. 
+      if (sj(jdx,k  ,id ,4) .eq. 0. .or.
      +    sj(jdx,k-1,id ,4) .eq. 0. .or.
      +    sj(jdx,k  ,id1,4) .eq. 0. .or.
      +    sj(jdx,k-1,id1,4) .eq. 0.) then
@@ -2061,7 +2061,7 @@ c
      .                + q(j-1,k,id,5)  +q(j-1,k-1,id,5))
       t1i2 = q5i2/q1i2
 c
-      if (si(j  ,k  ,idx,4) .eq. 0. .or.                 
+      if (si(j  ,k  ,idx,4) .eq. 0. .or.
      +    si(j  ,k-1,idx,4) .eq. 0. .or.
      +    si(j-1,k  ,idx,4) .eq. 0. .or.
      +    si(j-1,k-1,idx,4) .eq. 0.) then

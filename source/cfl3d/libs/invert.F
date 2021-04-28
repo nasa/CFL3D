@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -93,7 +93,7 @@ c
       ifit  = abs(ifit)
 c
 c     itrace < 0, do not write search history for current "to" cell
-c     itrace = 0, overwrite history from previous "to" cell with current 
+c     itrace = 0, overwrite history from previous "to" cell with current
 c     itrace = 1, retain the search history for ALL cells (may get huge file)
 c     trace output found in fort.7
 c
@@ -123,7 +123,7 @@ c
       if (ifit.eq.3) then
          nou(4) = min(nou(4)+1,ibufdim)
          write(bou(nou(4),4),*)'      using quadratic fit',
-     .                          ' in xie, linear fit in eta' 
+     .                          ' in xie, linear fit in eta'
       end if
       if (ifit.eq.4) then
          nou(4) = min(nou(4)+1,ibufdim)
@@ -140,7 +140,7 @@ c
 c
 c     call trace(0,icheck,idum2,idum3,idum4,dum1,dum2,dum3)
 c
-c     compute cell edge midpoints of "from" grid(s) 
+c     compute cell edge midpoints of "from" grid(s)
 c     using quadratic least squares
 c
       do 999 l=1,lmax1
@@ -169,7 +169,7 @@ c
   999 continue
 c
 c     don't go through inversion process if coarser level
-c     interpolation data are always obtained by averaging 
+c     interpolation data are always obtained by averaging
 c     fine level data
 c
       if (ifiner.gt.0 .and. iavg.gt.0) go to 552
@@ -185,14 +185,14 @@ c
       do 1000 j=j21,j22-1
       do 1001 k=k22-1,k21,-1
 c
-c     compute cell edge midpoints of "to" grid 
+c     compute cell edge midpoints of "to" grid
 c     using quadratic least squares
 c
       if (k.eq.k22-1) then
         kcall = k+1
         call extra(jdim1,kdim1,msub2,l2,x2,y2,z2,
      .             j,kcall,jl,jr,x6,y6,z6,icase,ifit)
-      end if 
+      end if
       call extra(jdim1,kdim1,msub2,l2,x2,y2,z2,
      .           j,k,jl,jr,x5,y5,z5,icase,ifit)
       call extrae(jdim1,kdim1,msub2,l2,x2,y2,z2,
@@ -221,11 +221,11 @@ c     compute center of "to" cell, consistent with ifit
 c
 c     bi-linear
       if (ifit .eq. 1) then
-         xc = 0.25*( x2(j,k,l2) + x2(j+1,k,l2) 
+         xc = 0.25*( x2(j,k,l2) + x2(j+1,k,l2)
      .         + x2(j+1,k+1,l2) + x2(j,k+1,l2) )
-         yc = 0.25*( y2(j,k,l2) + y2(j+1,k,l2) 
+         yc = 0.25*( y2(j,k,l2) + y2(j+1,k,l2)
      .         + y2(j+1,k+1,l2) + y2(j,k+1,l2) )
-         zc = 0.25*( z2(j,k,l2) + z2(j+1,k,l2) 
+         zc = 0.25*( z2(j,k,l2) + z2(j+1,k,l2)
      .         + z2(j+1,k+1,l2) + z2(j,k+1,l2) )
       end if
 c     bi-quadratic
@@ -234,11 +234,11 @@ c     bi-quadratic
      .       -0.25*( x2(j,k,l2)     + x2(j+1,k,l2)
      .       +       x2(j+1,k+1,l2) + x2(j,k+1,l2) )
          yc = 0.5* ( y5 + y6 + y7 + y8 )
-     .       -0.25*( y2(j,k,l2)    + y2(j+1,k,l2) 
+     .       -0.25*( y2(j,k,l2)    + y2(j+1,k,l2)
      .       +      y2(j+1,k+1,l2) + y2(j,k+1,l2) )
          zc = 0.5* ( z5 + z6 + z7 + z8 )
-     .       -0.25*( z2(j,k,l2)     + z2(j+1,k,l2) 
-     .       +       z2(j+1,k+1,l2) + z2(j,k+1,l2) )      
+     .       -0.25*( z2(j,k,l2)     + z2(j+1,k,l2)
+     .       +       z2(j+1,k+1,l2) + z2(j,k+1,l2) )
       end if
 c     quadratic in xie, linear in eta
       if (ifit .eq. 3) then
@@ -271,7 +271,7 @@ c
                if (mblkpt(ll).ne.0) then
                   xiet = xie2(ll) + 1.
                   etat = eta2(ll) + 1.
-                  l1   = mblkpt(ll) 
+                  l1   = mblkpt(ll)
                else
                   xiet = 0.
                   etat = 0.
@@ -287,7 +287,7 @@ c
                if (mblkpt(ll).ne.0) then
                   xiet = xie2(ll) + 1.
                   etat = eta2(ll) + 1.
-                  l1   = mblkpt(ll) 
+                  l1   = mblkpt(ll)
                else
                   xiet = 0.
                   etat = 0.
@@ -307,7 +307,7 @@ c
           if (mblkpt(ll).ne.0) then
              xiet = xie2(ll) + 1.
              etat = eta2(ll) + 1.
-             l1   = mblkpt(ll) 
+             l1   = mblkpt(ll)
           else
              xiet = 0.
              etat = 0.
@@ -319,7 +319,7 @@ c
 17086 continue
 c
 c     search over "from" blocks to find xie,eta associated with "to"
-c     cell center xc,yc,zc.  
+c     cell center xc,yc,zc.
 c
       call topol(jdim1,kdim1,msub1,jjmax1,kkmax1,lmax1,l1,x1,y1,z1,
      .           x1mid,y1mid,z1mid,x1mide,y1mide,z1mide,limit0,xc,yc,zc,
@@ -338,7 +338,7 @@ c
             if (iorph.le.0) then
                if (ifiner.gt.0) then
                   nou(4) = min(nou(4)+1,ibufdim)
-                  write(bou(nou(4),4),172) 
+                  write(bou(nou(4),4),172)
                   nou(4) = min(nou(4)+1,ibufdim)
                   write(bou(nou(4),4),272) j,k
                   nou(4) = min(nou(4)+1,ibufdim)
@@ -391,7 +391,7 @@ c
             else
 c
 c              mark orphan point as interpolated from block "0" - will
-c              not be interpolated in cfl3d - this option used for points 
+c              not be interpolated in cfl3d - this option used for points
 c              really do lie outside the domain of the from block - for
 c              example, an exposed flap surface.
 c
@@ -422,7 +422,7 @@ c
 c
       if(iorph.gt.0) then
 c
-c       search routine "succesful", but only because it found what might 
+c       search routine "succesful", but only because it found what might
 c       otherwise be an orphan point in the expanded "from" grid.
 c
         ll = (j22-j21)*(k-k21) + (j-j21+1)
@@ -431,7 +431,7 @@ c
           iorfn = iorfn +1
           if(iorfn.le.1)then
 c
-c           redo the search for this point, starting with a minimum 
+c           redo the search for this point, starting with a minimum
 c           distance search to make sure this point should really
 c           be marked as an orhan
 c
@@ -459,7 +459,7 @@ c     call trace(50,j,k,idum3,idum4,dum1,dum2,dum3)
         end if
       end if
 c
-c     if current polynomial fit is not the one which was input, 
+c     if current polynomial fit is not the one which was input,
 c     try again with the input value
 c
       if(ifit.ne.ifits) then
@@ -510,17 +510,17 @@ c
  1001 continue
  1000 continue
 c
-c     check and, if necessary, correct values of xie and/or eta    
-c     near boundaries. 
+c     check and, if necessary, correct values of xie and/or eta
+c     near boundaries.
 c
-c     ishear > 0: try a shearing correction to make the "to" 
-c                 and "from" boundaries coincident; if shearing fails, then 
-c                 try an arc length correction.  
+c     ishear > 0: try a shearing correction to make the "to"
+c                 and "from" boundaries coincident; if shearing fails, then
+c                 try an arc length correction.
 c     ishear < 0: use only the arc length correction
 c
       ishear = 1
 c
-      call shear(ishear,istop,iout,igap,jdim1,kdim1,msub1, 
+      call shear(ishear,istop,iout,igap,jdim1,kdim1,msub1,
      .           msub2,jjmax1,kkmax1,lmax1,x1,y1,z1,x1mid,y1mid,
      .           z1mid,x1mide,y1mide,z1mide,limit0,jjmax2,kkmax2,
      .           x2,y2,z2,xie2,eta2,mblkpt,temp,jimage,kimage,ifit,

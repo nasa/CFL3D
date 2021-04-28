@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -201,9 +201,9 @@ c
       common /igrdtyp/ ip3dgrd,ialph
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /elastic/ ndefrm,naesrf
-      common /elastic_ss/ idef_ss 
+      common /elastic_ss/ idef_ss
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /ghost/ irghost,iwghost
       common /rigidbody/ irigb,irbtrim
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
@@ -349,11 +349,11 @@ c
 #endif
       else
       if (ip3dgrd.eq.0) then
-c	  
+c
 c        cfl3d type
 c
          if (myid .eq. myhost) then
-            read(1) jdum,kdum,idum  
+            read(1) jdum,kdum,idum
          end if
 c
   100       format(13h reading grid,i6,24h of dimensions (I/J/K) :,3i6)
@@ -391,8 +391,8 @@ c
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
 c
-c           if it is desired to allow ialph to be used with cfl3d type 
-c           grids as well as plot3d type grids (i.e. ialph = 0 means 
+c           if it is desired to allow ialph to be used with cfl3d type
+c           grids as well as plot3d type grids (i.e. ialph = 0 means
 c           alpha measured in x-z plane; ialph = 1 means alpha measured
 c           in x-y  plane), then comment out the following line in
 c           subroutine global:      if (ngrid .gt. 0) ialph = 0
@@ -415,7 +415,7 @@ c
 c
       else
 c
-c        plot3d type     	  
+c        plot3d type
 c
          if (myid .eq.myhost) then
             if (igrid.eq.1) then
@@ -452,7 +452,7 @@ c
 #   endif
 c
          if (myid .eq.myhost) then
-            if (jtest(igrid).ne.jdim .or. ktest(igrid).ne.kdim .or. 
+            if (jtest(igrid).ne.jdim .or. ktest(igrid).ne.kdim .or.
      .         itest(igrid).ne.idim) then
                write(11,*) ' stopping....inconsistency in',
      .                     ' grid data file'
@@ -475,13 +475,13 @@ c
          end if
       end if
 c
-      end if 
+      end if
 c
 c
       if (myid.eq.myhost) then
          if (igrid .eq. 1) then
             write(11,*)
-            write(11,'(''input roll angle = '',f9.4,'' degrees'')') 
+            write(11,'(''input roll angle = '',f9.4,'' degrees'')')
      .            real(roll_angle)
             roll_angle = roll_angle*atan(1.0)/45.0   ! radians
          end if
@@ -563,7 +563,7 @@ c
          end if
  1010    continue
       end if
-c        
+c
       nblout = nblg(igrid)
 #   ifdef FASTIO
       call writ_buffast(nblout,11,nou,bou,nbuf,ibufdim,myhost,myid,
@@ -606,7 +606,7 @@ c
          end if
 #endif
 c
-c        read in the new surface data and temporarily store in 
+c        read in the new surface data and temporarily store in
 c        the deltj/deltk/delti arrays
 c
          do igrid = 1,ngrid
@@ -661,7 +661,7 @@ c
 c
 c              calculate delta displacement between new surface and
 c              current surface
-c 
+c
 #if defined DIST_MPI
                if (mblk2nd(nbl).eq.myid) then
 #endif
@@ -698,7 +698,7 @@ c
             end if
          end do
 c
-c        deform volume grid to fit new surface 
+c        deform volume grid to fit new surface
 c
          iwk1 = 2*maxbl
          iwork1 = iwork - iwk1
@@ -902,7 +902,7 @@ c
 c
  1300 continue
 c
-c*******************************************************	  
+c*******************************************************
 c     read/set auxilliary data arrays for 2000 series
 c     boundary conditions
 c*******************************************************
@@ -919,7 +919,7 @@ c
       itag_bckd = itag_bck0 + ioffset
       itag2k    = 0
 #endif
-c 
+c
       if (myid.eq.mblk2nd(1)) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),*)
@@ -939,7 +939,7 @@ c
      .    abs(ibcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,1)
          mdim = ibcinfo(nbl,nseg,3,mm)-ibcinfo(nbl,nseg,2,mm)
-         ndim = ibcinfo(nbl,nseg,5,mm)-ibcinfo(nbl,nseg,4,mm)  
+         ndim = ibcinfo(nbl,nseg,5,mm)-ibcinfo(nbl,nseg,4,mm)
 #if defined DIST_MPI
          nvals = mdim*ndim*12*2
          itag2k = itag2k + 1
@@ -965,7 +965,7 @@ c
 c
       do 1430 nseg = 1,nbcidim(nbl)
       mm = 2
-      if (abs(ibcinfo(nbl,nseg,1,mm)).ge.2000 .and. 
+      if (abs(ibcinfo(nbl,nseg,1,mm)).ge.2000 .and.
      .    abs(ibcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,2)
          mdim = ibcinfo(nbl,nseg,3,mm)-ibcinfo(nbl,nseg,2,mm)
@@ -992,10 +992,10 @@ c
 #endif
       end if
  1430 continue
-c 
+c
       do 1440 nseg = 1,nbcj0(nbl)
       mm = 1
-      if (abs(jbcinfo(nbl,nseg,1,mm)).ge.2000 .and. 
+      if (abs(jbcinfo(nbl,nseg,1,mm)).ge.2000 .and.
      .    abs(jbcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,3)
          mdim = jbcinfo(nbl,nseg,5,mm)-jbcinfo(nbl,nseg,4,mm)
@@ -1025,7 +1025,7 @@ c
 c
       do 1450 nseg = 1,nbcjdim(nbl)
       mm = 2
-      if (abs(jbcinfo(nbl,nseg,1,mm)).ge.2000 .and. 
+      if (abs(jbcinfo(nbl,nseg,1,mm)).ge.2000 .and.
      .    abs(jbcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,4)
          mdim = jbcinfo(nbl,nseg,5,mm)-jbcinfo(nbl,nseg,4,mm)
@@ -1052,10 +1052,10 @@ c
 #endif
       end if
  1450 continue
-c 
+c
       do 1460 nseg = 1,nbck0(nbl)
       mm = 1
-      if (abs(kbcinfo(nbl,nseg,1,mm)).ge.2000 .and. 
+      if (abs(kbcinfo(nbl,nseg,1,mm)).ge.2000 .and.
      .    abs(kbcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,5)
          mdim = kbcinfo(nbl,nseg,5,mm)-kbcinfo(nbl,nseg,4,mm)
@@ -1085,7 +1085,7 @@ c
 c
       do 1470 nseg = 1,nbckdim(nbl)
       mm = 2
-      if (abs(kbcinfo(nbl,nseg,1,mm)).ge.2000 .and. 
+      if (abs(kbcinfo(nbl,nseg,1,mm)).ge.2000 .and.
      .    abs(kbcinfo(nbl,nseg,1,mm)).lt.3000) then
          ldata = lwdat(nbl,nseg,6)
          mdim = kbcinfo(nbl,nseg,5,mm)-kbcinfo(nbl,nseg,4,mm)
@@ -1269,7 +1269,7 @@ c
      .                  ibpntsg,iipntsg,myid,ibufdim,nbuf,bou,nou)
 #if defined DIST_MPI
             nd_dest = mblk2nd(nbl)
-            mytag = itag_data 
+            mytag = itag_data
             call MPI_Send (nblpts, 1, MPI_INTEGER,
      .                     nd_dest, mytag, mycomm, ierr)
             mytag = itag_data + 1
@@ -1576,9 +1576,9 @@ c
          nvals = intmax*nsub1
          call MPI_Bcast (dthetxx, nvals, MY_MPI_REAL,
      .                   myhost, mycomm, ierr)
-         call MPI_Bcast (dthetyy, nvals, MY_MPI_REAL, 
+         call MPI_Bcast (dthetyy, nvals, MY_MPI_REAL,
      .                   myhost, mycomm, ierr)
-         call MPI_Bcast (dthetzz, nvals, MY_MPI_REAL, 
+         call MPI_Bcast (dthetzz, nvals, MY_MPI_REAL,
      .                   myhost, mycomm, ierr)
 #endif
       end if
@@ -1697,7 +1697,7 @@ c     initialize rigid body dynamics arrays/data
 c*******************************************************
 c
       if (irigb.gt.0.or.irbtrim.gt.0) then
-            call init_rb(maxaes,maxbl,zorig,aesrfdat) 
+            call init_rb(maxaes,maxbl,zorig,aesrfdat)
       end if
       call init_trim
 c
@@ -1962,27 +1962,27 @@ c
            if (ipertavg .ne. 0) then
 
               do igrid=1,ngrid
-                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or. 
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or.
      .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1) .or.
      .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1))
      .                goto 1011
               enddo
-              read(98,end=1011,err=1011) ngx 
-              if (ngx .ne. ngrid) goto 1011 
-              read(98,end=1011,err=1011) (itest(igrid),jtest(igrid), 
-     .             ktest(igrid),igrid=1,ngx) 
-              do igrid=1,ngrid  
-                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or. 
-     .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1) .or. 
-     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)) 
-     .                goto 1011 
-c     
+              read(98,end=1011,err=1011) ngx
+              if (ngx .ne. ngrid) goto 1011
+              read(98,end=1011,err=1011) (itest(igrid),jtest(igrid),
+     .             ktest(igrid),igrid=1,ngx)
+              do igrid=1,ngrid
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1) .or.
+     .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1) .or.
+     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1))
+     .                goto 1011
+c
               enddo
            else
               do igrid=1,ngrid
-                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1)-1 .or. 
+                 if (itest(igrid) .ne. idimg(nblg(igrid)+mseq-1)-1 .or.
      .                jtest(igrid) .ne. jdimg(nblg(igrid)+mseq-1)-1 .or.
-     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)-1) 
+     .                ktest(igrid) .ne. kdimg(nblg(igrid)+mseq-1)-1)
      .                goto 1011
               enddo
            end if
@@ -2059,7 +2059,7 @@ c
      .                 nou,bou,nbuf,ibufdim,igrid,
      .                 wk,idima,jdima,kdima,w(lvj0),w(lvk0),w(lvi0),
      .                 w(ltj0),w(ltk0),w(lti0),w(lqavg),w(lq2avg),
-     .                 nummem) 
+     .                 nummem)
             ntq     = ntt
             ncycchk = ncyctot+ntt
 c
@@ -2329,7 +2329,7 @@ c
 #   endif
                   end do
                end if
-c 
+c
             end if
          end if
 c
@@ -2509,7 +2509,7 @@ c
       if (isminc .ge. 1) then
       if (isminc .eq. 1 .or. isminc .eq. 2) then
 c
-c        avoid computing min dist function on grid levels 
+c        avoid computing min dist function on grid levels
 c        where it's not needed
 c
          if(mseq.eq.2 .and. ncyc1(2).eq.0) then
@@ -2551,7 +2551,7 @@ c
          iset2 = nblg(n) + ncgg(n)
          do 2000 nbl=iset1,iset2
          call lead(nbl,lw,lw2,maxbl)
-         if (ivisc(1).ge.4 .or. ivisc(2).ge.4 .or. 
+         if (ivisc(1).ge.4 .or. ivisc(2).ge.4 .or.
      .      ivisc(3).ge.4)then
             itry=itry+1
             if (myid.eq.mblk2nd(nbl)) then
@@ -2616,7 +2616,7 @@ c  If no walls at all, don't do min distance calculation
 c
          if (itry.ne.0) then
 c
-c              calculate minimum distance via recursive-box algorithm 
+c              calculate minimum distance via recursive-box algorithm
 c
                j1 = j1sav
 c
@@ -2662,7 +2662,7 @@ c              check storage availability
                nworkf = max(nworkf,ntempf)
                nworki = max(nworki,ntempi)
  2055          continue
-c              additional memory allocation for temporary storage of 
+c              additional memory allocation for temporary storage of
 c              smin at all grid points on all levels
                nadd = 0
                do 2065 nbl= 1,nblock
@@ -2769,7 +2769,7 @@ c        need to initialize turb quantities if there is turbulence
 c        on any block. (NOTE: For the case of restarting in a
 c        mesh-sequencing fashion from a coarser grid solution,
 c        i.e. mseq > 1, we do NOT want to reinitialize these
-c        quantities, since they will be interpolated from the 
+c        quantities, since they will be interpolated from the
 c        coarser mesh solution saved in the restart file
 c
          if (isminc .eq. 1 .or. isminc .eq. 3) then
@@ -2909,7 +2909,7 @@ c     I-dir:
       end if
 c
 c********************************************************
-c     use overlapped grid interpolation data to set 
+c     use overlapped grid interpolation data to set
 c     conditions in overlapped cells
 c********************************************************
 c
@@ -2981,7 +2981,7 @@ c
 c           recieve the data on non-local nodes
 c
             nd_srce = mblk2nd(nbl)
-c           receive q data 
+c           receive q data
             do ll=1,5
                mytag  = mytag_qb(ll) + nbl
                call MPI_Irecv (qb(lig(nbl),ll,1), nvalqb,
@@ -3000,7 +3000,7 @@ c              receive vist3d data
                nreq = nreq + 1
             end if
             if (ivmx.ge.4) then
-c              receive turb. data            
+c              receive turb. data
                  do ll=1,nummem
                     mytag = mytag_qb(6+ll) + nbl
                     call MPI_Irecv (qb(lig(nbl),ll,3), nvalqb,

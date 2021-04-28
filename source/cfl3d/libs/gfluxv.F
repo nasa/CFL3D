@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Calculate right-hand residual contributions in the 
+c     Purpose:  Calculate right-hand residual contributions in the
 c     J-direction due to the viscous terms.
 c***********************************************************************
 c
@@ -154,14 +154,14 @@ c
       do 10 ipl=1,npl
       ii  = i+ipl-1
       do 50 j=1,jdim1
-      jkv = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
+      jkv = (j-1)*npl*kdim1 + (ipl-1)*kdim1
 cdir$ ivdep
       do 1002 k=1,kdim1
       t(k+jkv,22) = q(j,k,ii,1)
       t(k+jkv,18) = q(j,k,ii,2)
       t(k+jkv,19) = q(j,k,ii,3)
       t(k+jkv,20) = q(j,k,ii,4)
-      t(k+jkv,16) = q(j,k,ii,5) 
+      t(k+jkv,16) = q(j,k,ii,5)
  1002 continue
    50 continue
    10 continue
@@ -209,8 +209,8 @@ cdir$ ivdep
       do 7005 izz=1,n
       t(izz,17) = 0.5e0*(t(izz,18)*t(izz,18)
      .                  +t(izz,19)*t(izz,19)
-     .                  +t(izz,20)*t(izz,20)) 
-      t(izz,1)  = 1.e0/t(izz,22) 
+     .                  +t(izz,20)*t(izz,20))
+      t(izz,1)  = 1.e0/t(izz,22)
       t(izz,16) = gpr*t(izz,16)*t(izz,1)/gm1
  7005 continue
       do 2121 m=0,10,10
@@ -219,7 +219,7 @@ cdir$ ivdep
       wj0(izz,m+7) = 0.5e0*(wj0(izz,m+8)*wj0(izz,m+8)
      .                     +wj0(izz,m+9)*wj0(izz,m+9)
      .                     +wj0(izz,m+10)*wj0(izz,m+10))
-      wj0(izz,m+1)  = 1.e0/wj0(izz,m+12) 
+      wj0(izz,m+1)  = 1.e0/wj0(izz,m+12)
       wj0(izz,m+6) = gpr*wj0(izz,m+6)*wj0(izz,m+1)/gm1
  1005 continue
  2121 continue
@@ -234,7 +234,7 @@ c
 cdir$ ivdep
       do 1006 izz=1,n
       t5       = gm1pr*t(izz,16)
-      t6       = sqrt(t5) 
+      t6       = sqrt(t5)
       t(izz,7) = c2bp*t5*t6/(c2b+t5)
  1006 continue
 c
@@ -254,13 +254,13 @@ cdir$ ivdep
       ab=1.+wj0(izz,5)
       bb=1.-wj0(izz,5)
       wj05        = gm1pr*0.5*(ab*wj0(izz,6)+bb*t(izz,16))
-      wj06        = sqrt(wj05) 
-      t(izz,14)   = c2bp*wj05*wj06/(c2b+wj05) 
+      wj06        = sqrt(wj05)
+      t(izz,14)   = c2bp*wj05*wj06/(c2b+wj05)
       ab=1.+wj0(izz,15)
       bb=1.-wj0(izz,15)
       wj05        = gm1pr*0.5*(ab*wj0(izz,16)+bb*t(izz+n-kv,16))
-      wj06        = sqrt(wj05) 
-      t(izz+n,14) = c2bp*wj05*wj06/(c2b+wj05) 
+      wj06        = sqrt(wj05)
+      t(izz+n,14) = c2bp*wj05*wj06/(c2b+wj05)
  1008 continue
 c
 c******************************************************************************
@@ -272,20 +272,20 @@ c
       do 200 ipl=1,npl
       ii  = i+ipl-1
       do 200 j=1,jdim
-      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1 
-      if (j.eq.1) then 
+      jkv  = (j-1)*npl*kdim1 + (ipl-1)*kdim1
+      if (j.eq.1) then
 c     inverse volume at j=0 interface
-         do 7013 k=1,kdim1 
+         do 7013 k=1,kdim1
          t(k+jkv,15) = 2./(volj0(k,ii,1)+vol(1,k,ii))
  7013    continue
-      else if (j.eq.jdim) then 
+      else if (j.eq.jdim) then
 c     inverse volume at j=jdim interface
-         do 7113 k=1,kdim1 
+         do 7113 k=1,kdim1
          t(k+jkv,15) = 2./(volj0(k,ii,3)+vol(jdim1,k,ii))
  7113    continue
       else
 c     inverse volume at interior interfaces
-         do 1013 k=1,kdim1 
+         do 1013 k=1,kdim1
          t(k+jkv,15) = 2./(vol(j,k,ii)+vol(j-1,k,ii))
  1013    continue
       end if
@@ -298,8 +298,8 @@ c  t(25) : d(eta)/dx
 c  t(26) : d(eta)/dy
 c  t(27) : d(eta)/dz
 c
-      do 1014 k=1,kdim1 
-      t1         =  sj(j,k,ii,4)*t(k+jkv,15) 
+      do 1014 k=1,kdim1
+      t1         =  sj(j,k,ii,4)*t(k+jkv,15)
       t(k+jkv,25) =  sj(j,k,ii,1)*t1
       t(k+jkv,26) =  sj(j,k,ii,2)*t1
       t(k+jkv,27) =  sj(j,k,ii,3)*t1
@@ -372,7 +372,7 @@ c
 cdir$ ivdep
       do 1022 izz=1,l0
 c  ratio of turbulent to laminar viscosity
-      t25       = t(izz,24)/t(izz,14) 
+      t25       = t(izz,24)/t(izz,14)
       t24       = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
@@ -397,7 +397,7 @@ c
 c
 c******************************************************************************
 c
-c  t(11) : t(14)*((d(eta)/dx * d(u)/d(eta)) 
+c  t(11) : t(14)*((d(eta)/dx * d(u)/d(eta))
 c               + (d(eta)/dy * d(v)/d(eta))
 c               + (d(eta)/dz * d(w)/d(eta)))/3
 c
@@ -615,7 +615,7 @@ c             ignoring -2/3*rho*k*delij term
                 t23=t23p
               end if
               if (i_qcr2013 .eq. 1) then
-                xis2013 = s11star*s11star + s22star*s22star + 
+                xis2013 = s11star*s11star + s22star*s22star +
      +                    s33star*s33star +
      +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 s_mod = sqrt(2.*xis2013)
@@ -884,7 +884,7 @@ c
      +          +t(k+jkv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(k+jkv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(k+jkv,15)*(t(k+jkv,14)*
      +          t(k+jkv,15)/xmre-t(k+jkv,24)+sigk1*t(k+jkv,24))*
@@ -987,7 +987,7 @@ c
      +          +t(k+jkv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(k+jkv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(k+jkv,15)*(t(k+jkv,14)*
      +          t(k+jkv,15)/xmre-t(k+jkv,24)+sigk1*t(k+jkv,24))*
@@ -1083,7 +1083,7 @@ c
      +                       +0.5*(q(j,k,ii,3)+q(j-1,k,ii,3))*t23
      +                       +0.5*(q(j,k,ii,4)+q(j-1,k,ii,4))*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(k+jkv,15)*(t(k+jkv,14)*
      +          t(k+jkv,15)/xmre-t(k+jkv,24)+sigk1*t(k+jkv,24))*
@@ -1461,7 +1461,7 @@ c   to get mulam, need mulam=t14*t15/xmre-t24
             end if
  1285     continue
  1286   continue
-      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and. 
+      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and.
      +        level .ge. lglobal) then
         re=reue/xmach
 c   Add nonlinear terms to RHS
@@ -1735,4 +1735,4 @@ c   sign (this term is going into -d/dxj(Gv) term)
  1268   continue
       end if
       return
-      end 
+      end

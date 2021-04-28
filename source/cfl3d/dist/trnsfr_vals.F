@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -53,10 +53,10 @@ c
 c***********************************************************************
 c     Purpose:  Load various data into work arrays for transfer from
 c     host to nodes. For ease of modification, a special section is
-c     reserved for keyword data (look for the word "keyword"); if 
+c     reserved for keyword data (look for the word "keyword"); if
 c     additional keyword data is defined, make sure both the host
 c     node sections are altered; the section provided is in the real
-c     transfer section, so any integers keywords should first be 
+c     transfer section, so any integers keywords should first be
 c     converted to reals via "float" and then converted back to integer
 c***********************************************************************
 c
@@ -160,7 +160,7 @@ c
       common /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
       common /singular/ atol
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /mydist2/ nnodes,myhost,myid,mycomm
       common /alphait/ ialphit,cltarg,rlxalph,dalim,dalpha,icycupdt
       common /chk/ ichk
@@ -181,7 +181,7 @@ c
       common /twod/ i2d
       common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
-      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3) 
+      common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /wrbl/ nwrest
       common /wrestq/ irest,irest2
       common /igrdtyp/ ip3dgrd,ialph
@@ -287,7 +287,7 @@ c
             work(iii+29*maxbl) = rkap0g(iii,3)
          end do
          nlast = 30*maxbl
-         iii   = nlast 
+         iii   = nlast
          do jj=1,maxbl
             do kk=1,maxsegdg
                iii                         = iii + 1
@@ -392,7 +392,7 @@ c
             end do
          end do
          nlast = nlast + 4*nmds*maxaes
-         iii   = nlast 
+         iii   = nlast
          do kk=1,maxaes
             do jj=1,5
                iii = iii + 1
@@ -610,7 +610,7 @@ c
             write(11,'('' error in subroutine trnsfr_vals, real'',
      .      '' transfer: nvals.ne.nlast'')')
             write(11,'('' nvals,nlast '',i8,'' '',i8)') nvals,nlast
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)         
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
       end if
       call MPI_Bcast (work, nvals, MY_MPI_REAL,
@@ -618,7 +618,7 @@ c
 c
       if (myid.ne.myhost) then
          do iii=1,maxbl
-            utrans(iii)   = work(iii)         
+            utrans(iii)   = work(iii)
             vtrans(iii)   = work(iii+   maxbl)
             wtrans(iii)   = work(iii+ 2*maxbl)
             omegax(iii)   = work(iii+ 3*maxbl)
@@ -647,7 +647,7 @@ c
             thetazl(iii)  = work(iii+26*maxbl)
             rkap0g(iii,1) = work(iii+27*maxbl)
             rkap0g(iii,2) = work(iii+28*maxbl)
-            rkap0g(iii,3) = work(iii+29*maxbl) 
+            rkap0g(iii,3) = work(iii+29*maxbl)
          end do
          nlast = 30*maxbl
          iii   = nlast
@@ -746,7 +746,7 @@ c
             end do
          end do
          nlast = nlast + 4*nmds*maxaes
-         iii   = nlast 
+         iii   = nlast
          do kk=1,maxaes
             do jj=1,2*nmds
                iii = iii + 1
@@ -1139,7 +1139,7 @@ c
                do ll=1,2
                   iii = iii + 1
                   iwork(iii)                = bcfilei(nbl,nseg,ll)
-                  iwork(iii+maxbl*maxseg*2) = bcfilej(nbl,nseg,ll) 
+                  iwork(iii+maxbl*maxseg*2) = bcfilej(nbl,nseg,ll)
                   iwork(iii+maxbl*maxseg*4) = bcfilek(nbl,nseg,ll)
                end do
             end do
@@ -1229,7 +1229,7 @@ c
             write(11,'('' error in subroutine trnsfr_vals, integer'',
      .      '' transfer: nvals.ne.nlast'')')
             write(11,'('' nvals,nlast '',i8,'' '',i8)') nvals,nlast
-            call termn8(myid,-1,ibufdim,nbuf,bou,nou)      
+            call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
       end if
       call MPI_Bcast (iwork, nvals, MPI_INTEGER, myhost,
@@ -1420,7 +1420,7 @@ c
                      iii = iii + 1
                      ibcinfo(nbl,nseg,mm,ll) =
      .                          iwork(iii)
-                     jbcinfo(nbl,nseg,mm,ll) = 
+                     jbcinfo(nbl,nseg,mm,ll) =
      .                          iwork(iii+maxbl*maxseg*14)
                      kbcinfo(nbl,nseg,mm,ll) =
      .                          iwork(iii+maxbl*maxseg*28)

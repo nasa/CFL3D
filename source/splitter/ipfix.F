@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -68,7 +68,7 @@ c	write(6,*) 'Fix: ',ibl,ndir,indx,inewbl
 c      write(6,*) 'Fixing block ',jbl,', face ',jfc
       is = idseg(jbl)
  2    if (is.eq.0) goto 998
-      
+
       if (imap(1,is).ne.-1)  goto 997
       if (imap(2,is).ne.jfc) goto 997
       if (imap(7,is).ne.ibl) goto 997
@@ -117,11 +117,11 @@ c	 write(6,*) 'new seg: ',imap(jx1,ns),imap(jx2,ns)
  997  continue
       is = nxtseg(is)
       goto 2
-      
+
  998  continue
       i = j + 1
       goto 1
-      
+
  999  continue
 
       return

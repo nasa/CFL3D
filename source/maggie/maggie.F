@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -37,8 +37,8 @@ c
 c***********************************************************************
 c
 c  input files:
-c 
-c               grid.bin   input grids in CFL3D format 
+c
+c               grid.bin   input grids in CFL3D format
 c                          x(jdim,kdim,ldim),y,z (binary)
 c
 c               unit 5     input file which contains grid
@@ -47,60 +47,60 @@ c
 c  output files:
 c
 c               ovrlp.bin  interpolation data (binary)
-c                          required as an input file for CFL3D  
+c                          required as an input file for CFL3D
 c
 c               unit 6     primary information file (ascii)
-c              
+c
 c               unit 7     secondary information file (ascii)
 c                          contains search routine history from search
 c                          for interpolation stencils. turned on or off
 c                          in subroutines hintpt and ointpt as follows:
-c                            itrace < 0, do not write search history 
+c                            itrace < 0, do not write search history
 c                              for current fringe or boundary pt
-c                            itrace = 0, overwrite history from previous 
-c                              point  with current (small file) 
-c                            itrace = 1, retain the search history for ALL 
+c                            itrace = 0, overwrite history from previous
+c                              point  with current (small file)
+c                            itrace = 1, retain the search history for ALL
 c                              points (may get huge file)
 c                          itrace < 0 recomended unless error in search is
 c                          suspected. itrace option slows down search.
 c                          itrace is set near the top of subroutines HOLE
 c                          and OUTER, and may be turned on in one or both
 c                          routines
-c                         
-c               unit 8     terciary information file (ascii)  
+c
+c               unit 8     terciary information file (ascii)
 c
 c               unit 9     plot3d diagnostic file (binary)
-c                          contains points segregated into field, fringe, 
-c                          or boundary points, as well as orphan points 
-c                          (ie points requiring extrapolation stencils) 
+c                          contains points segregated into field, fringe,
+c                          or boundary points, as well as orphan points
+c                          (ie points requiring extrapolation stencils)
 c                          and points having illegal stencils...file may
-c                          be large. set iplt3d > 0 in input file to get 
+c                          be large. set iplt3d > 0 in input file to get
 c                          this file
-c                         
+c
 c              temp_grd.n  grid data, where n = mesh number (binary)
 c                          ...deleted after successful run
-c 
+c
 c              temp_cen.n  cell-center grid data, where n = mesh number (binary)
 c                          ...deleted after successful run
-c  
-c              temp_ibl.n  iblank files corresponding to each grid, 
+c
+c              temp_ibl.n  iblank files corresponding to each grid,
 c                          where n = mesh number (binary)
 c                          ...deleted after successful run
-c 
-c              temp_int.n  interpolation data, where n = mesh number (binary) 
+c
+c              temp_int.n  interpolation data, where n = mesh number (binary)
 c                          ...deleted after successful run
-c 
+c
 c              unit 30 is used for all temporary I/O
 c
 c             hole_grd.nh  inital hole boundary, where nh = hole number (ascii)
 c                          useful for verifying hole input data.
-c                          to get this file, must have "hole no." set 
+c                          to get this file, must have "hole no." set
 c                          to "-hole no." in input for hole definition
 c
-c             hole_nrm.nh  outward pointing normals to the inital hole 
+c             hole_nrm.nh  outward pointing normals to the inital hole
 c                          boundary, where nh = hole number (ascii)
-c                          useful for verifying hole input data. 
-c                          to get this file, must have "hole no." set 
+c                          useful for verifying hole input data.
+c                          to get this file, must have "hole no." set
 c                          to "-hole no." in input for hole definition
 c
 c             unit 35 is used for hole boundary/normal output
@@ -113,11 +113,11 @@ c
       include 'mag1.h'
 c
       character*80 grid,outpt,ovrlp,plt3d
-c 
+c
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
      .                zill(idim),nbnd,norph,nill
-      common /files/  grid,outpt,ovrlp,plt3d 
+      common /files/  grid,outpt,ovrlp,plt3d
 c
       common /tol/    epsc
 c
@@ -127,8 +127,8 @@ c
       nbnd  = 0
       norph = 0
       nill  = 0
-c 
-c     epsc: tolerance on interpolation coefficients 
+c
+c     epsc: tolerance on interpolation coefficients
 c
       epsc=.25e-3
 c
@@ -187,61 +187,61 @@ c
 c***********************************************************************
 c                    set up and initialize
 c***********************************************************************
-c 
+c
       call blckdat
-      call setup 
-c 
+      call setup
+c
 c***********************************************************************
 c                   compute interpolation data
 c***********************************************************************
-c 
-      call hole 
+c
+      call hole
 c
       call outer
-c 
-c***********************************************************************
-c                   diagnostic checks 
-c***********************************************************************
-c 
-      call diagnos 
 c
 c***********************************************************************
-c                   output connection file for flow solver  
+c                   diagnostic checks
 c***********************************************************************
-c 
-      call output 
+c
+      call diagnos
+c
+c***********************************************************************
+c                   output connection file for flow solver
+c***********************************************************************
+c
+      call output
 c
       itime = -1
       call cputim(itime)
 c
       stop
-      end 
+      end
 c
-      subroutine blckdat 
-c 
+      subroutine blckdat
+c
 c***********************************************************************
-c     Purpose: the variables and scalars are given their initial or 
-c     default values 
+c     Purpose: the variables and scalars are given their initial or
+c     default values
 c***********************************************************************
-c 
+c
       include 'mag1.h'
       parameter (md2=mdim*mdim, mid=mdim*idim, md3=md2*mhldim,
      .           md4=mdim*mhldim)
-c 
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      .                mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
      .                ibpts(mdim), jbpt(idim), kbpt(idim), lbpt(idim),
      .                ji(idim),ki(idim), li(idim)
-      common /book3/  iblank(mlen) 
+      common /book3/  iblank(mlen)
       common /bound1/ ihbtyp(mdim,mdim),jh1(ipmax),jh2(ipmax),
      .                kh1(ipmax),kh2(ipmax),lh1(ipmax),lh2(ipmax),
-     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax) 
+     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax)
       common /bound2/ iobtyp(mdim),nobtyp(mdim),
      .                jo1(ipmax),jo2(ipmax),ko1(ipmax),ko2(ipmax),
      .                lo1(ipmax),lo2(ipmax)
       common /grdlim/ jsrs(mdim), jsre(mdim), ksrs(mdim), ksre(mdim),
-     .                lsrs(mdim), lsre(mdim) 
+     .                lsrs(mdim), lsre(mdim)
       common /grid1/  x(mlen), y(mlen), z(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
@@ -249,7 +249,7 @@ c
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
 c
       do 10 m=1,mdim
-10    nsets(m) = 0 
+10    nsets(m) = 0
 c
       do 20 n=1,mhldim
       do 20 m=1,mdim
@@ -275,13 +275,13 @@ c
 c
       do 60 m=1,mdim
       nhole(m) = 0
-60    noutr(m) = 0 
+60    noutr(m) = 0
 c
-      do 70 m=1,mdim 
+      do 70 m=1,mdim
       do 70 n=1,mhldim
       moutr(m,n) = 0
 70    mhole(m,n) = 0
-c  
+c
       do 80 m=1,mdim
       do 80 n=1,mhldim
       do 80 nn=1,mdim
@@ -292,11 +292,11 @@ c
       jsrs(m) = 0
       jsre(m) = 0
       ksrs(m) = 0
-      ksre(m) = 0 
+      ksre(m) = 0
       lsrs(m) = 0
       lsre(m) = 0
 90    continue
-c  
+c
       do 100 m=1,mlen
       x(m) = 0.0
       y(m) = 0.0
@@ -317,24 +317,24 @@ c
       kh1(ip) = 0
       kh2(ip) = 0
       lh1(ip) = 0
-      lh2(ip) = 0 
+      lh2(ip) = 0
       jo1(ip) = 0
       jo2(ip) = 0
       ko1(ip) = 0
       ko2(ip) = 0
       lo1(ip) = 0
-130   lo2(ip) = 0 
+130   lo2(ip) = 0
 c
       do 140 m=1,mdim
       iobtyp(m) = 0
-140   nobtyp(m) = 0 
+140   nobtyp(m) = 0
 c
-      return 
-      end 
+      return
+      end
       subroutine bound(j,k,l,x1,y1,z1,jd,kd,ld,x,y,z,ife)
-c***************************************************************** 
+c*****************************************************************
 c     Purpose: create boundary points to be interpolated
-c***************************************************************** 
+c*****************************************************************
 c
       include 'mag1.h'
 c
@@ -368,9 +368,9 @@ c
         dx1    = x(jd,k,l) - x(jd-1,k,l)
         dy1    = y(jd,k,l) - y(jd-1,k,l)
         dz1    = z(jd,k,l) - z(jd-1,k,l)
-        rx1    = min( t1 , (dx1 + eps)/(x(jd-1,k,l)-x(jd-2,k,l)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(jd-1,k,l)-y(jd-2,k,l)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(jd-1,k,l)-z(jd-2,k,l)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(jd-1,k,l)-x(jd-2,k,l)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(jd-1,k,l)-y(jd-2,k,l)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(jd-1,k,l)-z(jd-2,k,l)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -382,9 +382,9 @@ c
         dx1    = x(1,k,l) - x(2,k,l)
         dy1    = y(1,k,l) - y(2,k,l)
         dz1    = z(1,k,l) - z(2,k,l)
-        rx1    = min( t1 , (dx1 + eps)/(x(2,k,l)-x(3,k,l)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(2,k,l)-y(3,k,l)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(2,k,l)-z(3,k,l)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(2,k,l)-x(3,k,l)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(2,k,l)-y(3,k,l)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(2,k,l)-z(3,k,l)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -396,9 +396,9 @@ c
         dx1    = x(j,kd,l) - x(j,kd-1,l)
         dy1    = y(j,kd,l) - y(j,kd-1,l)
         dz1    = z(j,kd,l) - z(j,kd-1,l)
-        rx1    = min( t1 , (dx1 + eps)/(x(j,kd-1,l)-x(j,kd-2,l)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(j,kd-1,l)-y(j,kd-2,l)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(j,kd-1,l)-z(j,kd-2,l)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(j,kd-1,l)-x(j,kd-2,l)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(j,kd-1,l)-y(j,kd-2,l)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(j,kd-1,l)-z(j,kd-2,l)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -410,9 +410,9 @@ c
         dx1    = x(j,1,l) - x(j,2,l)
         dy1    = y(j,1,l) - y(j,2,l)
         dz1    = z(j,1,l) - z(j,2,l)
-        rx1    = min( t1 , (dx1 + eps)/(x(j,2,l)-x(j,3,l)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(j,2,l)-y(j,3,l)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(j,2,l)-z(j,3,l)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(j,2,l)-x(j,3,l)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(j,2,l)-y(j,3,l)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(j,2,l)-z(j,3,l)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -424,9 +424,9 @@ c
         dx1    = x(j,k,ld) - x(j,k,ld-1)
         dy1    = y(j,k,ld) - y(j,k,ld-1)
         dz1    = z(j,k,ld) - z(j,k,ld-1)
-        rx1    = min( t1 , (dx1 + eps)/(x(j,k,ld-1)-x(j,k,ld-2)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(j,k,ld-1)-y(j,k,ld-2)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(j,k,ld-1)-z(j,k,ld-2)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(j,k,ld-1)-x(j,k,ld-2)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(j,k,ld-1)-y(j,k,ld-2)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(j,k,ld-1)-z(j,k,ld-2)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -438,9 +438,9 @@ c
         dx1    = x(j,k,1) - x(j,k,2)
         dy1    = y(j,k,1) - y(j,k,2)
         dz1    = z(j,k,1) - z(j,k,2)
-        rx1    = min( t1 , (dx1 + eps)/(x(j,k,2)-x(j,k,3)+eps) ) 
-        ry1    = min( t1 , (dy1 + eps)/(y(j,k,2)-y(j,k,3)+eps) ) 
-        rz1    = min( t1 , (dz1 + eps)/(z(j,k,2)-z(j,k,3)+eps) ) 
+        rx1    = min( t1 , (dx1 + eps)/(x(j,k,2)-x(j,k,3)+eps) )
+        ry1    = min( t1 , (dy1 + eps)/(y(j,k,2)-y(j,k,3)+eps) )
+        rz1    = min( t1 , (dz1 + eps)/(z(j,k,2)-z(j,k,3)+eps) )
         rx1    = max( t2 , rx1 )
         ry1    = max( t2 , ry1 )
         rz1    = max( t2 , rz1 )
@@ -455,9 +455,9 @@ c
       subroutine branch(m1,jd,kd,ld,jimage,kimage,limage,
      .                 x1,y1,z1)
 c***********************************************************************
-c     Purpose: Check for branch cuts in mesh m1 and set up connection arrays 
-c     jimage,kimage,limage to allow search routine to pass across branch cuts 
-c     in the grid. 
+c     Purpose: Check for branch cuts in mesh m1 and set up connection arrays
+c     jimage,kimage,limage to allow search routine to pass across branch cuts
+c     in the grid.
 c***********************************************************************
 c
       dimension x1(jd,kd,ld),y1(jd,kd,ld),z1(jd,kd,ld)
@@ -479,14 +479,14 @@ c
       face(4) = 'k = kdim'
       face(5) = 'l = 1'
       face(6) = 'l = ldim'
-c      
-c     notes: the indicies of the image points found in this subroutine point 
-c     to the lower left hand corner of the image cell. the test for branch 
+c
+c     notes: the indicies of the image points found in this subroutine point
+c     to the lower left hand corner of the image cell. the test for branch
 c     cuts is performed on the grid of node values, while the image indicies
 c     pertain to cell centers. for a grid of dimensions jd,kd,ld, the cell-
-c     center mesh is jd-1,kd-1,ld-1; however, the range of stencil points 
+c     center mesh is jd-1,kd-1,ld-1; however, the range of stencil points
 c     extends only to jd-2,kd-2,ld-2.  Thus image point arrays are set at
-c     the j,k,l=1 and j,k,l=jd-2,kd-2,ld-2. 
+c     the j,k,l=1 and j,k,l=jd-2,kd-2,ld-2.
 c
       write(6,*)'    checking mesh ',m1,' for branch cuts on',
      .' boundaries'
@@ -516,8 +516,8 @@ c
       do 5 k=1,kd-1
       do 5 l=1,ld-1
       jimage(j,k,l) = j
-      kimage(j,k,l) = k  
-      limage(j,k,l) = l 
+      kimage(j,k,l) = k
+      limage(j,k,l) = l
 5     continue
 c***
 c      mskip = 2
@@ -525,15 +525,15 @@ c      if(m1.eq.mskip) then
 c        write(6,*)'        skipping branch cut check on this mesh'
 c        return
 c      end if
-c*** 
-c      
+c***
+c
 c     check for C-grid type branch cut on k=1 and k=kd boundaries
 c
-      if(kd.gt.2) then 
+      if(kd.gt.2) then
 c
 c       branch cut in j-direction
 c
-        if(jd.gt.2) then        
+        if(jd.gt.2) then
 c
         do 100 k=1,kd,kd-1
         iface = 3
@@ -546,13 +546,13 @@ c
         lq0 = 0
         do 200 l=1,ld-1
         do 200 js=1,jd-2
-        do 300 jq=js+1,jd 
-        delxyz = abs( x1(js,k,l)-x1(jq,k,l) ) 
+        do 300 jq=js+1,jd
+        delxyz = abs( x1(js,k,l)-x1(jq,k,l) )
      .         + abs( y1(js,k,l)-y1(jq,k,l) )
      .         + abs( z1(js,k,l)-z1(jq,k,l) )
         if (delxyz.lt.eps) then
 c          grid points js and jq lie on opposite sides of a branch cut
-           del2 = abs( x1(js+1,k,l)-x1(jq-1,k,l) ) 
+           del2 = abs( x1(js+1,k,l)-x1(jq-1,k,l) )
      .          + abs( y1(js+1,k,l)-y1(jq-1,k,l) )
      .          + abs( z1(js+1,k,l)-z1(jq-1,k,l) )
            if(del2.lt.eps)then
@@ -580,10 +580,10 @@ c            cell centers js and jq-1 lie on opposite sides of a branch cut
   300   continue
   200   continue
 c
-c       amalgamate points to avoid gap in branch cut mapping at tip...the 
+c       amalgamate points to avoid gap in branch cut mapping at tip...the
 c       above criteria for C-type branch cut fails at the very tip where
 c       the upper surface becomes the lower and vice versa.
-c 
+c
         if(k.eq.1) kk = 1
         if(k.eq.kd) kk = kd-2
         do 201 l=1,ld-1
@@ -593,7 +593,7 @@ c
             jimage(j,kk,l) = j-1
 c           write(6,*)' fixing hole in branch cut array at j,k,i = ',
 c    .      j,k,l,' jimage = ',jimage(j,kk,l)
-          end if 
+          end if
         end if
 301     continue
 201     continue
@@ -610,7 +610,7 @@ c
         end if
 c
 c       branch cut in l-direction
-c        
+c
         if(ld.gt.2) then
 c
         do 110 k=1,kd,kd-1
@@ -624,13 +624,13 @@ c
         lq0 = 0
         do 210 j=1,jd-1
         do 210 ls=1,ld-2
-        do 310 lq=ls+1,ld 
-        delxyz = abs( x1(j,k,ls)-x1(j,k,lq) ) 
+        do 310 lq=ls+1,ld
+        delxyz = abs( x1(j,k,ls)-x1(j,k,lq) )
      .         + abs( y1(j,k,ls)-y1(j,k,lq) )
      .         + abs( z1(j,k,ls)-z1(j,k,lq) )
         if (delxyz.lt.eps) then
 c          grid points ls and lq lie on opposite sides of a branch cut
-           del2 = abs( x1(j,k,ls+1)-x1(j,k,lq-1) ) 
+           del2 = abs( x1(j,k,ls+1)-x1(j,k,lq-1) )
      .          + abs( y1(j,k,ls+1)-y1(j,k,lq-1) )
      .          + abs( z1(j,k,ls+1)-z1(j,k,lq-1) )
            if(del2.lt.eps)then
@@ -688,15 +688,15 @@ c
         end if
 c
       end if
-c      
-c     check for C-grid type branch cut on j=1 and j=jd boundaries 
+c
+c     check for C-grid type branch cut on j=1 and j=jd boundaries
 c
       if(jd.gt.2) then
 c
 c       branch cut in k-direction
 c
         if(kd.gt.2) then
-c        
+c
         do 120 j=1,jd,jd-1
         iface = 1
         if(j.eq.jd) iface = 2
@@ -707,13 +707,13 @@ c
         jcheck = 0
         do 220 l=1,ld-1
         do 220 ks=1,kd-2
-        do 320 kq=ks+1,kd 
-        delxyz = abs( x1(j,ks,l)-x1(j,kq,l) ) 
+        do 320 kq=ks+1,kd
+        delxyz = abs( x1(j,ks,l)-x1(j,kq,l) )
      .         + abs( y1(j,ks,l)-y1(j,kq,l) )
      .         + abs( z1(j,ks,l)-z1(j,kq,l) )
         if (delxyz.lt.eps) then
 c          grid points ks and kq lie on opposite sides of a branch cut
-           del2 = abs( x1(j,ks+1,l)-x1(j,kq-1,l) ) 
+           del2 = abs( x1(j,ks+1,l)-x1(j,kq-1,l) )
      .          + abs( y1(j,ks+1,l)-y1(j,kq-1,l) )
      .          + abs( z1(j,ks+1,l)-z1(j,kq-1,l) )
            if(del2.lt.eps)then
@@ -773,7 +773,7 @@ c
 c       branch cut in l-direction
 c
         if(ld.gt.2) then
-c        
+c
         do 130 j=1,jd,jd-1
         iface = 1
         if(j.eq.jd) iface = 2
@@ -785,13 +785,13 @@ c
         jcheck = 0
         do 230 k=1,kd-1
         do 230 ls=1,ld-2
-        do 330 lq=ls+1,ld 
-        delxyz = abs( x1(j,k,ls)-x1(j,k,lq) ) 
+        do 330 lq=ls+1,ld
+        delxyz = abs( x1(j,k,ls)-x1(j,k,lq) )
      .         + abs( y1(j,k,ls)-y1(j,k,lq) )
      .         + abs( z1(j,k,ls)-z1(j,k,lq) )
         if (delxyz.lt.eps) then
 c          grid points ls and lq lie on opposite sides of a branch cut
-           del2 = abs( x1(j,k,ls+1)-x1(j,k,lq-1) ) 
+           del2 = abs( x1(j,k,ls+1)-x1(j,k,lq-1) )
      .          + abs( y1(j,k,ls+1)-y1(j,k,lq-1) )
      .          + abs( z1(j,k,ls+1)-z1(j,k,lq-1) )
            if(del2.lt.eps)then
@@ -849,15 +849,15 @@ c
         end if
 c
       end if
-c      
-c     check for C-grid type branch cut on l=1 and l=ld boundaries 
+c
+c     check for C-grid type branch cut on l=1 and l=ld boundaries
 c
       if(ld.gt.2) then
 c
 c       branch cut in j-direction
 c
         if(jd.gt.2) then
-c        
+c
         do 140 l=1,ld,ld-1
         iface = 5
         if(l.eq.ld) iface = 6
@@ -868,13 +868,13 @@ c
         lcheck = 0
         do 240 k=1,kd-1
         do 240 js=1,jd-2
-        do 340 jq=js+1,jd 
-        delxyz = abs( x1(js,k,l)-x1(jq,k,l) ) 
+        do 340 jq=js+1,jd
+        delxyz = abs( x1(js,k,l)-x1(jq,k,l) )
      .         + abs( y1(js,k,l)-y1(jq,k,l) )
      .         + abs( z1(js,k,l)-z1(jq,k,l) )
         if (delxyz.lt.eps) then
 c          grid points js and jq lie on opposite sides of a branch cut
-           del2 = abs( x1(js+1,k,l)-x1(jq-1,k,l) ) 
+           del2 = abs( x1(js+1,k,l)-x1(jq-1,k,l) )
      .          + abs( y1(js+1,k,l)-y1(jq-1,k,l) )
      .          + abs( z1(js+1,k,l)-z1(jq-1,k,l) )
            if(del2.lt.eps)then
@@ -934,7 +934,7 @@ c
 c       branch cut in k-direction
 c
         if(kd.gt.2) then
-c        
+c
         do 150 l=1,ld,ld-1
         iface = 5
         if(l.eq.ld) iface = 6
@@ -946,13 +946,13 @@ c
         lcheck = 0
         do 250 j=1,jd-1
         do 250 ks=1,kd-2
-        do 350 kq=ks+1,kd 
-        delxyz = abs( x1(j,ks,l)-x1(j,kq,l) ) 
+        do 350 kq=ks+1,kd
+        delxyz = abs( x1(j,ks,l)-x1(j,kq,l) )
      .         + abs( y1(j,ks,l)-y1(j,kq,l) )
      .         + abs( z1(j,ks,l)-z1(j,kq,l) )
         if (delxyz.lt.eps) then
 c          grid points ks and kq lie on opposite sides of a branch cut
-           del2 = abs( x1(j,ks+1,l)-x1(j,kq-1,l) ) 
+           del2 = abs( x1(j,ks+1,l)-x1(j,kq-1,l) )
      .          + abs( y1(j,ks+1,l)-y1(j,kq-1,l) )
      .          + abs( z1(j,ks+1,l)-z1(j,kq-1,l) )
            if(del2.lt.eps)then
@@ -1011,21 +1011,21 @@ c
 c
       end if
 c
-c     iflag = 1 causes a message to be printed if some points are detected 
-c     as being O-type branch points, but the cut does not extend over the 
+c     iflag = 1 causes a message to be printed if some points are detected
+c     as being O-type branch points, but the cut does not extend over the
 c     entire face...this is usually a spurious message
 c
       iflag = 0
-c     
+c
 c     check for O-type branch cut between k=1 and k=kd boundaries
 c
       if(kd.gt.2) then
 c
-      if(ibrnch(3).eq.0 .and. ibrnch(4).eq.0) then 
+      if(ibrnch(3).eq.0 .and. ibrnch(4).eq.0) then
         jcount = 0
         do 400 l=1,ld
         do 400 j=1,jd
-        delxyz = abs( x1(j,1,l)-x1(j,kd,l) ) 
+        delxyz = abs( x1(j,1,l)-x1(j,kd,l) )
      .         + abs( y1(j,1,l)-y1(j,kd,l) )
      .         + abs( z1(j,1,l)-z1(j,kd,l) )
         if (delxyz.lt.eps) jcount = jcount+1
@@ -1033,9 +1033,9 @@ c
 c
         if(jcount.eq.jd*ld) then
 c
-          ibrnch(3) = 50 
+          ibrnch(3) = 50
           ibrnch(4) = 50
-c 
+c
           do 500 j=1,jd-1
           do 500 l=1,ld-1
           kimage(j,1,l)    = kd - 2
@@ -1054,22 +1054,22 @@ c
           write(6,*)'      however, this is not the entire j and l',
      .    ' range as required'
           write(6,*)'      O-type image points not set...verify as',
-     .    ' correct'  
+     .    ' correct'
           end if
         end if
       end if
 c
       end if
-c     
+c
 c     check for O-type branch cut between j=1 and j=jd boundaries
 c
       if(jd.gt.2) then
 c
-      if(ibrnch(1).eq.0 .and. ibrnch(2).eq.0) then 
+      if(ibrnch(1).eq.0 .and. ibrnch(2).eq.0) then
         kcount = 0
         do 410 l=1,ld
         do 410 k=1,kd
-        delxyz = abs( x1(1,k,l)-x1(jd,k,l) ) 
+        delxyz = abs( x1(1,k,l)-x1(jd,k,l) )
      .         + abs( y1(1,k,l)-y1(jd,k,l) )
      .         + abs( z1(1,k,l)-z1(jd,k,l) )
         if (delxyz.lt.eps) kcount = kcount+1
@@ -1077,9 +1077,9 @@ c
 c
         if(kcount.eq.kd*ld) then
 c
-          ibrnch(1) = 40 
-          ibrnch(2) = 40 
-c 
+          ibrnch(1) = 40
+          ibrnch(2) = 40
+c
           do 510 k=1,kd-1
           do 510 l=1,ld-1
           jimage(1,k,l)    = jd - 2
@@ -1098,22 +1098,22 @@ c
           write(6,*)'      however, this is not the entire k and l',
      .    ' range as required'
           write(6,*)'      O-type image points not set...verify as',
-     .    ' correct'  
+     .    ' correct'
           end if
-        end if      
+        end if
       end if
 c
       end if
-c     
+c
 c     check for O-type branch cut between l=1 and l=ld boundaries
 c
       if(ld.gt.2) then
 c
-      if(ibrnch(5).eq.0 .and. ibrnch(6).eq.0) then 
-        lcount = 0 
+      if(ibrnch(5).eq.0 .and. ibrnch(6).eq.0) then
+        lcount = 0
         do 420 j=1,jd
         do 420 k=1,kd
-        delxyz = abs( x1(j,k,1)-x1(j,k,ld) ) 
+        delxyz = abs( x1(j,k,1)-x1(j,k,ld) )
      .         + abs( y1(j,k,1)-y1(j,k,ld) )
      .         + abs( z1(j,k,1)-z1(j,k,ld) )
         if (delxyz.lt.eps) lcount = lcount+1
@@ -1121,9 +1121,9 @@ c
 c
         if(lcount.eq.jd*kd) then
 c
-          ibrnch(5) = 60 
+          ibrnch(5) = 60
           ibrnch(6) = 60
-c 
+c
           do 520 j=1,jd-1
           do 520 k=1,kd-1
           limage(j,k,1)    = ld - 2
@@ -1143,12 +1143,12 @@ c
      .    ' range as required'
           write(6,*)'      O-type image points not set...verify as',
      .    ' correct'
-          end if  
-        end if      
+          end if
+        end if
       end if
 c
       end if
-c  
+c
 c     message for no branch cuts on block boundaries
 c
       icount = 0
@@ -1160,45 +1160,45 @@ c
         return
       end if
       return
-      end 
-      subroutine bsurf(js,je,ks,ke,ls,le,jd,kd,ld,x,y,z,m1) 
-c 
-c*********************************************************************** 
+      end
+      subroutine bsurf(js,je,ks,ke,ls,le,jd,kd,ld,x,y,z,m1)
+c
+c***********************************************************************
 c     Purpose: calculate normals to the coordinate surface defined by
-c     js,je...ls,le in mesh m1. this coordinate surface and its normals 
+c     js,je...ls,le in mesh m1. this coordinate surface and its normals
 c     are then loaded into 1-d boundary arrays.
 c***********************************************************************
-c 
-c 
+c
+c
       include 'mag1.h'
-c 
+c
       common /surf/ xb(ibdim),yb(ibdim),zb(ibdim),ibmax
-      common /norm/ vnx(ibdim),vny(ibdim),vnz(ibdim) 
+      common /norm/ vnx(ibdim),vny(ibdim),vnz(ibdim)
       common /temp/ temp(ndim,ndim,6)
 c
-      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld) 
+      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld)
 c
       eps = 1.e-2
 c
       if(ls.eq.le) then
       icase = 1
       sgn = float(ls)/float(iabs(ls))
-      end if      
+      end if
       if(ks.eq.ke) then
       icase = 2
       sgn = float(ks)/float(iabs(ks))
-      end if      
+      end if
       if(js.eq.je) then
       icase = 3
       sgn = float(js)/float(iabs(js))
-      end if      
+      end if
       ls = iabs(ls)
       le = iabs(le)
       ks = iabs(ks)
       ke = iabs(ke)
       js = iabs(js)
       je = iabs(je)
-c 
+c
 c     l = constant plane
 c
 c
@@ -1242,7 +1242,7 @@ c
         stop
       end if
 15    continue
-c     
+c
 c     average surrounding cell center normals to get grid point normals
 c
 c     interior points
@@ -1274,7 +1274,7 @@ c
 17      continue
       end if
 c
-      if(ks+1.le.ke-1) then 
+      if(ks+1.le.ke-1) then
         do 18 j = js,je,jskip
         j1 = j
         if(j.eq.je) j1 = j-1
@@ -1283,7 +1283,7 @@ c
         temp(j,k,5) = 0.5*(temp(j1,k-1,2) + temp(j1,k,2))
         temp(j,k,6) = 0.5*(temp(j1,k-1,3) + temp(j1,k,3))
 18      continue
-      end if 
+      end if
 c
 c     corner points
 c
@@ -1386,7 +1386,7 @@ c
         stop
       end if
 25    continue
-c     
+c
 c     average surrounding cell center normals to get grid point normals
 c
 c     interior points
@@ -1528,7 +1528,7 @@ c
         stop
       end if
 35    continue
-c     
+c
 c     average surrounding cell center normals to get grid point normals
 c
 c     interior points
@@ -1628,7 +1628,7 @@ c
 40    continue
 c
       end if
-c 
+c
 c     make sure ibdim is large enough for this case
 c
       if(ibmax.gt.ibdim) then
@@ -1642,86 +1642,86 @@ c
       end
       subroutine cellcen(x,y,z,jd,kd,ld)
 c
-c***************************************************************** 
-c     Purpose: find the cell centers of the grid 
-c***************************************************************** 
+c*****************************************************************
+c     Purpose: find the cell centers of the grid
+c*****************************************************************
 c
       include 'mag1.h'
-c 
+c
       dimension x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld)
       common/temp1/   x1(jdim,kdim,ldim),y1(jdim,kdim,ldim),
-     .                z1(jdim,kdim,ldim) 
-c 
+     .                z1(jdim,kdim,ldim)
+c
       jmax = jd
       kmax = kd
       lmax = ld
-c 
-      do 10 l=1,lmax-1 
-      do 20 k=1,kmax-1 
+c
+      do 10 l=1,lmax-1
+      do 20 k=1,kmax-1
       do 30 j=1,jmax-1
       x1(j,k,l)=(x(j,k,l)+x(j+1,k,l)+x(j,k+1,l)+x(j+1,k+1,l)+
-     .           x(j,k,l+1)+x(j,k+1,l+1)+x(j+1,k,l+1)+ 
-     .           x(j+1,k+1,l+1))/8.0 
+     .           x(j,k,l+1)+x(j,k+1,l+1)+x(j+1,k,l+1)+
+     .           x(j+1,k+1,l+1))/8.0
       y1(j,k,l)=(y(j,k,l)+y(j+1,k,l)+y(j,k+1,l)+y(j+1,k+1,l)+
-     .           y(j,k,l+1)+y(j,k+1,l+1)+y(j+1,k,l+1)+ 
-     .           y(j+1,k+1,l+1))/8.0 
+     .           y(j,k,l+1)+y(j,k+1,l+1)+y(j+1,k,l+1)+
+     .           y(j+1,k+1,l+1))/8.0
       z1(j,k,l)=(z(j,k,l)+z(j+1,k,l)+z(j,k+1,l)+z(j+1,k+1,l)+
-     .           z(j,k,l+1)+z(j,k+1,l+1)+z(j+1,k,l+1)+ 
-     .           z(j+1,k+1,l+1))/8.0 
+     .           z(j,k,l+1)+z(j,k+1,l+1)+z(j+1,k,l+1)+
+     .           z(j+1,k+1,l+1))/8.0
 30    continue
-20    continue 
-10    continue 
+20    continue
+10    continue
 c
       do 140 l=1,lmax-1
-      do 150 k=1,kmax-1 
+      do 150 k=1,kmax-1
       do 160 j=1,jmax-1
-      x(j,k,l) = x1(j,k,l) 
-      y(j,k,l) = y1(j,k,l) 
-      z(j,k,l) = z1(j,k,l) 
-160   continue 
+      x(j,k,l) = x1(j,k,l)
+      y(j,k,l) = y1(j,k,l)
+      z(j,k,l) = z1(j,k,l)
+160   continue
 150   continue
-140   continue 
+140   continue
 c
-      return 
+      return
       end
-      subroutine chkstn( iblank ) 
+      subroutine chkstn( iblank )
 c
 c***********************************************************************
-c     Purpose: the points in the interpolation/extrapolation stencil are 
-c     checked to determine if illegal communication between 
+c     Purpose: the points in the interpolation/extrapolation stencil are
+c     checked to determine if illegal communication between
 c     mesh m and mesh m1 will result. there are four types of illegal
 c     communication transfers:
-c 
-c       1. data transfer from hole or fringe point to fringe point 
-c       2. data transfer from (interpolated/extrapolated) boundary point 
-c          to fringe point 
+c
+c       1. data transfer from hole or fringe point to fringe point
+c       2. data transfer from (interpolated/extrapolated) boundary point
+c          to fringe point
 c       3. data transfer from hole or fringe point to (interpolated/
-c          extrapolated) boundary point 
+c          extrapolated) boundary point
 c       4. from (interpolated/extrapolated) boundary point to (interpolated/
-c          extrapolated) boundary point 
+c          extrapolated) boundary point
 c
 c     the flow solver must not be run if illegal transfers are detected and
-c     cannot be corrected. provided that iholcor is set > 0 below, stencils 
-c     that contain illegal points, but have at least one legal (i.e. field) 
-c     point, are corrected using zeroth order interpolation.  this is  
-c     accomplished by identifying the nearest legal (field) point in the 
-c     stencil to the point to be interpolated.  This nearest legal point is 
-c     then defined as the target point, and all weight of the interpolation 
+c     cannot be corrected. provided that iholcor is set > 0 below, stencils
+c     that contain illegal points, but have at least one legal (i.e. field)
+c     point, are corrected using zeroth order interpolation.  this is
+c     accomplished by identifying the nearest legal (field) point in the
+c     stencil to the point to be interpolated.  This nearest legal point is
+c     then defined as the target point, and all weight of the interpolation
 c     is thrown into this target point, i.e., dxint=dyint=dzint=0
 c
-c     also: 
+c     also:
 c       checks to make sure that stencils have been found
 c       for all points which need them, and that all target points lie
 c       in the (cell center) range 1 < ji/ki/li < j/k/lmax-1 (where
 c       j/k/lmax are the dimensions of the cell center mesh)
 c
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-      parameter ( mdim2 = mdim*mdim ) 
-c 
-      logical iholcor 
-c 
+      parameter ( mdim2 = mdim*mdim )
+c
+      logical iholcor
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      .                mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
@@ -1731,30 +1731,30 @@ c
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /grid1 / x(mlen), y(mlen), z(mlen)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
-      common /iwork/   ibck(iwrdim) 
+      common /iwork/   ibck(iwrdim)
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
      .                zill(idim),nbnd,norph,nill
       common /surf/   xb(ibdim), yb(ibdim), zb(ibdim),ibmax
-      common /chkst/ nwr 
-c 
+      common /chkst/ nwr
+c
       dimension      iblank(*),list(mdim)
       dimension      mhhtrn(mdim,mdim), mhotrn(mdim,mdim),
      .               mohtrn(mdim,mdim), mootrn(mdim,mdim),
-     .               ife(6) 
+     .               ife(6)
       dimension      jinew(idim),kinew(idim),linew(idim)
-c 
-c 
-      data           mhhtrn / mdim2*0 /, mhotrn / mdim2*0 /,    
-     .               mohtrn / mdim2*0 /, mootrn / mdim2*0 / 
+c
+c
+      data           mhhtrn / mdim2*0 /, mhotrn / mdim2*0 /,
+     .               mohtrn / mdim2*0 /, mootrn / mdim2*0 /
 c
 c     perform correction to stencils containing hole,fringe or boundary points
 c     (if possible) when iholcor is true
 c
       iholcor = .true.
-c 
+c
       iflag1 = 0
       iflag2 = 0
 c
@@ -1762,14 +1762,14 @@ c
          ife(ll) = 0
       end do
 c
-      do 31 m = 1,nmesh  
-c 
+      do 31 m = 1,nmesh
+c
 c***************************************************************************
-c     check to determine if any stencils for mesh m fringe points contain 
+c     check to determine if any stencils for mesh m fringe points contain
 c     illegal points
 c***************************************************************************
 c
-      nh = nhole(m) 
+      nh = nhole(m)
 c
       if (nh.gt.0) then
         jmaxm = mjmax(m)
@@ -1781,18 +1781,18 @@ c
         call getgrd( m,x,y,z,jimage,kimage,limage,jmaxm,kmaxm,lmaxm )
         ioh = 0
         ihh = 0
-        m1  = lhole(m,n,nn) 
+        m1  = lhole(m,n,nn)
         call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      .       dxint,dyint,dzint )
-        iset = mhbs(m,m1) 
-        is   = ipntr(m1,iset) 
-        ie   = npntr(m1,iset) 
-        ic   = ie - is + 1 
-        if(ic.gt.0) then 
+        iset = mhbs(m,m1)
+        is   = ipntr(m1,iset)
+        ie   = npntr(m1,iset)
+        ic   = ie - is + 1
+        if(ic.gt.0) then
 c
-c         make sure stencils of fringe points have been set and that all target 
-c         points lie in the range 1 < ji,ki,li < j/k/lmax-1 
-c         (where j/k/lmax is the dimension of cell center grid). 
+c         make sure stencils of fringe points have been set and that all target
+c         points lie in the range 1 < ji,ki,li < j/k/lmax-1
+c         (where j/k/lmax is the dimension of cell center grid).
 c
           jmax = mjmax(m1)
           kmax = mkmax(m1)
@@ -1807,13 +1807,13 @@ c
 c         points with zeroth order interpolation can actually use the range
 c         1 < j/k/lmax instead of the range 1 < j,k,lmax-1 for points with
 c         first order interpolation/extrapolation
-          if(dxint(i).eq.0. .and. dyint(i).eq.0. .and. 
+          if(dxint(i).eq.0. .and. dyint(i).eq.0. .and.
      .    dzint(i).eq.0.) then
             jmaxx = jmax
             kmaxx = kmax
             lmaxx = lmax
           end if
-          if(ji(i).lt.1 .or. ji(i).gt.jmaxx .or. 
+          if(ji(i).lt.1 .or. ji(i).gt.jmaxx .or.
      .       ki(i).lt.1 .or. ki(i).gt.kmaxx .or.
      .       li(i).lt.1 .or. li(i).gt.lmaxx) then
             write(6,*) ' stopping...illegal target cell for fringe',
@@ -1824,29 +1824,29 @@ c         first order interpolation/extrapolation
      .      '  1<j<',jmaxx,'  1<k<',kmaxx,'  1<l<',lmaxx
             write(6,*) '   possible miscue in search routine'
             stop
-          end if 
+          end if
 1600      continue
 c
           do 131 i = 1,ic
-          ii     = i + is-1 
+          ii     = i + is-1
           call bound(jbpt(ii),kbpt(ii),lbpt(ii),x0,y0,z0,jmaxm,kmaxm,
      .    lmaxm,x,y,z,ife)
           xb(i) = x0
           yb(i) = y0
           zb(i) = z0
 131       continue
-          call getibl( m1,iblank,jmax,kmax,lmax ) 
+          call getibl( m1,iblank,jmax,kmax,lmax )
           call getgrd( m1,x,y,z,jimage,kimage,limage,jmax,kmax,lmax )
           call ibchk( ibck,iblank,ic,is,ji,ki,li,m1,jmax,kmax,lmax,
      .    xb,yb,zb,jinew,kinew,linew,x,y,z )
           do 10 i = 1,ic
-          if( ibck(i).gt.0 ) then 
+          if( ibck(i).gt.0 ) then
 c
 c           stencil contains interpolated boundary points
 c
             ioh    = ioh + 1
             iflag1 = iflag1 + 1
-            ii     = i + is-1 
+            ii     = i + is-1
             nill = nill + 1
             xill(nill) = xb(i)
             yill(nill) = yb(i)
@@ -1858,15 +1858,15 @@ c
      .      i3,/,'    has a stencil from point ji,ki,li ',3i4,' which',
      .      ' lies on an interp bndry of mesh ',i3)
 c
-c           if possible (i.e. target cell itself is not an interpolated 
-c           boundary  point), use zeroth order transfer to correct this 
+c           if possible (i.e. target cell itself is not an interpolated
+c           boundary  point), use zeroth order transfer to correct this
 c           illegal stencil.
 c
             if ( iholcor ) then
               if(ibck(i) .gt. 1) then
 c               zeroth order transfer possible
                 write(8,*) '      this illegal transfer was',
-     .          ' circumvented using zeroth order data transfer' 
+     .          ' circumvented using zeroth order data transfer'
                 write(8,*) '        old ji,ki,li: ',ji(ii),ki(ii),li(ii)
                 write(8,*) '        new ji,ki,li: ',jinew(ii),kinew(ii),
      .          linew(ii)
@@ -1879,13 +1879,13 @@ c               zeroth order transfer possible
                 iflag2    = iflag2 + 1
               end if
             end if
-          else if( ibck(i).lt.0 ) then 
+          else if( ibck(i).lt.0 ) then
 c
 c           stencil contains hole and/or fringe points
 c
             ihh    = ihh + 1
             iflag1 = iflag1 + 1
-            ii     = i + is-1 
+            ii     = i + is-1
             nill = nill + 1
             xill(nill) = xb(i)
             yill(nill) = yb(i)
@@ -1904,7 +1904,7 @@ c
               if(ibck(i) .lt. -1) then
 c               zeroth order transfer possible
                 write(8,*) '      this illegal transfer was',
-     .          ' circumvented using zeroth order data transfer' 
+     .          ' circumvented using zeroth order data transfer'
                 write(8,*) '        old ji,ki,li: ',ji(ii),ki(ii),li(ii)
                 write(8,*) '        new ji,ki,li: ',jinew(ii),kinew(ii),
      .          linew(ii)
@@ -1919,7 +1919,7 @@ c               zeroth order transfer possible
             end if
           end if
    10     continue
-          call putint(nwr,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint) 
+          call putint(nwr,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint)
         end if
         mhhtrn(m,m1) = ihh + mhhtrn(m,m1)
         mohtrn(m,m1) = ioh + mohtrn(m,m1)
@@ -1927,12 +1927,12 @@ c               zeroth order transfer possible
   14    continue
       end if
 c***************************************************************************
-c     check to determine if any stencils for mesh m boundary points contain 
+c     check to determine if any stencils for mesh m boundary points contain
 c     illegal points
 c***************************************************************************
 c
-      no = noutr(m) 
-c 
+      no = noutr(m)
+c
       if (no.gt.0) then
         jmaxm = mjmax(m)
         kmaxm = mkmax(m)
@@ -1948,15 +1948,15 @@ c
         m1 = loutr(m,nnn,nn)
         call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      .       dxint,dyint,dzint )
-        iset = mobs(m,m1) 
-        is   = ipntr(m1,iset) 
-        ie   = npntr(m1,iset) 
-        ic   = ie - is + 1 
-        if(ic.gt.0) then 
+        iset = mobs(m,m1)
+        is   = ipntr(m1,iset)
+        ie   = npntr(m1,iset)
+        ic   = ie - is + 1
+        if(ic.gt.0) then
 c
-c         make sure stencils of boundary points have been set and that all 
-c         target points lie in the range 1 < ji,ki,li < j/k/lmax-1 
-c         (where j/k/lmax is the dimension of cell center grid). 
+c         make sure stencils of boundary points have been set and that all
+c         target points lie in the range 1 < ji,ki,li < j/k/lmax-1
+c         (where j/k/lmax is the dimension of cell center grid).
 c
           jmax = mjmax(m1)
           kmax = mkmax(m1)
@@ -1971,13 +1971,13 @@ c
 c         points with zeroth order interpolation can actually use the range
 c         1 < j/k/lmax instead of the range 1 < j,k,lmax-1 for points with
 c         first order interpolation/extrapolation
-          if(dxint(i).eq.0. .and. dyint(i).eq.0. .and. 
+          if(dxint(i).eq.0. .and. dyint(i).eq.0. .and.
      .    dzint(i).eq.0.) then
             jmaxx = jmax
             kmaxx = kmax
             lmaxx = lmax
           end if
-          if(ji(i).lt.1 .or. ji(i).gt.jmaxx .or. 
+          if(ji(i).lt.1 .or. ji(i).gt.jmaxx .or.
      .       ki(i).lt.1 .or. ki(i).gt.kmaxx .or.
      .       li(i).lt.1 .or. li(i).gt.lmaxx) then
             write(6,*) ' stopping...illegal target cell for boundary',
@@ -1988,29 +1988,29 @@ c         first order interpolation/extrapolation
      .      '  1<j<',jmaxx,'  1<k<',kmaxx,'  1<l<',lmaxx
             write(6,*) '   possible miscue in search routine'
             stop
-          end if 
+          end if
 2600      continue
 c
           do 231 i = 1,ic
-          ii     = i + is-1 
+          ii     = i + is-1
           call bound(jbpt(ii),kbpt(ii),lbpt(ii),x0,y0,z0,jmaxm,kmaxm,
      .    lmaxm,x,y,z,ife)
           xb(i) = x0
           yb(i) = y0
           zb(i) = z0
 231       continue
-          call getibl( m1,iblank,jmax,kmax,lmax ) 
+          call getibl( m1,iblank,jmax,kmax,lmax )
           call getgrd( m1,x,y,z,jimage,kimage,limage,jmax,kmax,lmax )
           call ibchk( ibck,iblank,ic,is,ji,ki,li,m1,jmax,kmax,lmax,
      .    xb,yb,zb,jinew,kinew,linew,x,y,z )
           do 20 i = 1,ic
-          if( ibck(i).gt.0 ) then 
+          if( ibck(i).gt.0 ) then
 c
 c           stencil contains interpolated boundary points
 c
             ioo    = ioo + 1
             iflag1 = iflag1 + 1
-            ii     = i + is-1 
+            ii     = i + is-1
             nill = nill + 1
             xill(nill) = xb(i)
             yill(nill) = yb(i)
@@ -2022,15 +2022,15 @@ c
      .      i3,/,'    has a stencil from point ji,ki,li ',3i4,' which',
      .      ' lies on an interp bndry of mesh ',i3)
 c
-c           if possible (i.e. target cell itself is not an interpolated 
-c           boundary  point), use zeroth order transfer to correct this 
+c           if possible (i.e. target cell itself is not an interpolated
+c           boundary  point), use zeroth order transfer to correct this
 c           illegal stencil.
 c
             if ( iholcor ) then
               if(ibck(i) .gt. 1) then
 c               zeroth order transfer possible
                 write(8,*) '      this illegal transfer was',
-     .          ' circumvented using zeroth order data transfer' 
+     .          ' circumvented using zeroth order data transfer'
                 write(8,*) '        old ji,ki,li: ',ji(ii),ki(ii),li(ii)
                 write(8,*) '        new ji,ki,li: ',jinew(ii),kinew(ii),
      .          linew(ii)
@@ -2043,13 +2043,13 @@ c               zeroth order transfer possible
                 iflag2    = iflag2 + 1
               end if
             end if
-          else if( ibck(i).lt.0 ) then 
+          else if( ibck(i).lt.0 ) then
 c
 c           stencil contains hole and/or fringe points
 c
             iho    = iho + 1
             iflag1 = iflag1 + 1
-            ii     = i + is-1 
+            ii     = i + is-1
             nill = nill + 1
             xill(nill) = xb(i)
             yill(nill) = yb(i)
@@ -2068,7 +2068,7 @@ c
               if(ibck(i) .lt. -1) then
 c               zeroth order transfer possible
                 write(8,*) '      this illegal transfer was',
-     .          ' circumvented using zeroth order data transfer' 
+     .          ' circumvented using zeroth order data transfer'
                 write(8,*) '        old ji,ki,li: ',ji(ii),ki(ii),li(ii)
                 write(8,*) '        new ji,ki,li: ',jinew(ii),kinew(ii),
      .          linew(ii)
@@ -2083,7 +2083,7 @@ c               zeroth order transfer possible
             end if
           end if
    20     continue
-          call putint(nwr,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint) 
+          call putint(nwr,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint)
         end if
         mhotrn(m,m1) = iho + mhotrn(m,m1)
         mootrn(m,m1) = ioo + mootrn(m,m1)
@@ -2091,7 +2091,7 @@ c               zeroth order transfer possible
   24    continue
       end if
    31 continue
-c 
+c
 c***********************************************************************
 c            output summary of stencil checks
 c***********************************************************************
@@ -2105,7 +2105,7 @@ c
      .' points'
       write(6,*) '    3. boundary points receive data from hole/fringe',
      .' points'
-      write(6,*) '    4. boundary pts receive data from boundary points'      
+      write(6,*) '    4. boundary pts receive data from boundary points'
 c
       do 401 m=1,nmesh
       write(6,*)
@@ -2121,13 +2121,13 @@ c
      .  ' to check'
       else
 c
-c       generate list of all meshes which got searched to find the fringe 
+c       generate list of all meshes which got searched to find the fringe
 c       points of all holes in the current mesh
 c
-        do 612 n = 1,nh 
+        do 612 n = 1,nh
         nserch = mhole(m,n)
         do 612 nn=1,nserch
-        m1 = lhole(m,n,nn) 
+        m1 = lhole(m,n,nn)
         if(list(m1).eq.0) list(m1) = 1
 612     continue
 c
@@ -2164,7 +2164,7 @@ c
         write(6,*)'        there are no boundary pts in mesh ',m,
      .  ' to check'
       else
-        do 812 n = 1,no 
+        do 812 n = 1,no
         nnn = 1
         nserch=moutr(m,nnn)
         do 812 nn=1,nserch
@@ -2208,7 +2208,7 @@ c
      .  ' illegal transfer of information'
         write(6,*) '    will no longer occur with these stencils,',
      .  ' but accuracy and convergence'
-        write(6,*) '    may suffer. a large geometric mismatch', 
+        write(6,*) '    may suffer. a large geometric mismatch',
      .  ' (see below, and also file 8)'
         write(6,*) '    indicates loss of accuracy. if possible,',
      .  ' adjust maggie input parameters'
@@ -2216,7 +2216,7 @@ c
      .  ' the number of stencils needing correction'
         write(6,*) '    ***CAUTION***CAUTION***CAUTION***CAUTION',
      .  '***CAUTION***CAUTION***CAUTION***'
-      end if 
+      end if
 c
       if(iflag2.ne.iflag1) then
         write(6,*)
@@ -2225,7 +2225,7 @@ c
         write(6,*) '                           DO NOT RUN FLOW',
      .  ' SOLVER!!!'
         write(6,*) '    ',iflag1-iflag2,' illegal stencils',
-     .  ' could not be circumvented...must either adjust' 
+     .  ' could not be circumvented...must either adjust'
         write(6,*) '    maggie input parameters and/or component grids',
      .  ' to rectify this problem.'
         write(6,*) '                           DO NOT RUN FLOW',
@@ -2233,22 +2233,22 @@ c
         write(6,*) '    ***WARNINIG***WARNING***WARNING***WARNING',
      .  '***WARNING***WARNING***WARNING***'
       end if
-c 
+c
       return
       end
       subroutine chkxyz
 c
 c***********************************************************************
-c     Purpose: check for mismatch between 1) x,y,z of the cell centers for 
-c     fringe and boundary points as determined from the input grids and 
-c     2) x,y,z of the same points as found by trilinear interpolation using 
+c     Purpose: check for mismatch between 1) x,y,z of the cell centers for
+c     fringe and boundary points as determined from the input grids and
+c     2) x,y,z of the same points as found by trilinear interpolation using
 c     the transfer stencil information calculated by maggie. Substantial
 c     mismatch indicates an error in the transfer stencil.
-c 
+c
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      .                mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
@@ -2262,7 +2262,7 @@ c
       common /chkpt/  xcc0(idim),ycc0(idim),zcc0(idim),xccint(idim),
      .                yccint(idim),zccint(idim),
      .                xscale(idim),yscale(idim),zscale(idim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
 c
       dimension ife(6)
 c
@@ -2274,7 +2274,7 @@ c
       write(6,*) '    checking for mismatch between cell',
      .' centers of fringe and boundary pts'
       write(6,*) '    as calculated from 1) input meshes and 2)',
-     .' data transfer stencils' 
+     .' data transfer stencils'
 c
       sigdif = .1
 c
@@ -2287,21 +2287,21 @@ c
       kerrmx = 1
       lerrmx = 1
       nsig   = 0
-      nh     = nhole(m) 
-      no     = noutr(m) 
+      nh     = nhole(m)
+      no     = noutr(m)
       jmax   = mjmax(m)
       kmax   = mkmax(m)
       lmax   = mlmax(m)
 c
 c     index increments for 2d or 3d case
-c  
+c
       jinc = 1
       kinc = 1
       linc = 1
       if(jmax.lt.2) jinc = 0
       if(kmax.lt.2) kinc = 0
       if(lmax.lt.2) linc = 0
-c 
+c
 c     check fringe points
 c
       if(nh.gt.0) then
@@ -2313,12 +2313,12 @@ c
         kmax1 = mkmax(m1)
         lmax1 = mlmax(m1)
         call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint )
-        iset = mhbs(m,m1) 
-        is   = ipntr(m1,iset) 
-        ie   = npntr(m1,iset)  
+        iset = mhbs(m,m1)
+        is   = ipntr(m1,iset)
+        ie   = npntr(m1,iset)
         call getgrd( m,x,y,z,jimage,kimage,limage,jmax,kmax,lmax )
 c
-        do 141 i=is,ie 
+        do 141 i=is,ie
 c
 c       cell center value of point jbpt,kbpt,lbpt of mesh m from cell center
 c       grid
@@ -2326,7 +2326,7 @@ c
         call bound(jbpt(i),kbpt(i),lbpt(i),x0,y0,z0,jmax,kmax,lmax,
      .  x,y,z,ife)
 c
-c       set x,y,z length scales from cell with jbpt,kbpt,lbpt as lower 
+c       set x,y,z length scales from cell with jbpt,kbpt,lbpt as lower
 c       corner point (for extrapolated points, i.e. those that don't exist
 c       in the input grid, use a nearby neighbor that does exist in the
 c       input grid to set the length scales)
@@ -2347,7 +2347,7 @@ c
         do 10 j=j00,j00+jinc
         do 10 k=k00,k00+kinc
         do 10 l=l00,l00+linc
-        ii = j +(k-1)*jmax +(l-1)*jmax*kmax 
+        ii = j +(k-1)*jmax +(l-1)*jmax*kmax
         dx = abs(x(ii) - x0)
         dy = abs(y(ii) - y0)
         dz = abs(z(ii) - z0)
@@ -2361,9 +2361,9 @@ c
         if(zscal.le.0.) zscal = 1.
 c
         itotn = itotn + 1
-        xcc0(itotn) = x0 
-        ycc0(itotn) = y0 
-        zcc0(itotn) = z0 
+        xcc0(itotn) = x0
+        ycc0(itotn) = y0
+        zcc0(itotn) = z0
         xscale(itotn) = xscal
         yscale(itotn) = yscal
         zscale(itotn) = zscal
@@ -2371,7 +2371,7 @@ c
 141     continue
 c
         call getgrd( m1,x,y,z,jimage,kimage,limage,
-     .  jmax1,kmax1,lmax1 ) 
+     .  jmax1,kmax1,lmax1 )
 c
         do 13 i = is,ie
 c
@@ -2426,7 +2426,7 @@ c
    13   continue
    14   continue
       end if
-c 
+c
 c     check boundary points
 c
       if(no.gt.0) then
@@ -2440,12 +2440,12 @@ c
         kmax1 = mkmax(m1)
         lmax1 = mlmax(m1)
         call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint )
-        iset = mobs(m,m1) 
-        is   = ipntr(m1,iset) 
-        ie   = npntr(m1,iset)  
+        iset = mobs(m,m1)
+        is   = ipntr(m1,iset)
+        ie   = npntr(m1,iset)
         call getgrd( m,x,y,z,jimage,kimage,limage,jmax,kmax,lmax )
 c
-        do 161 i=is,ie 
+        do 161 i=is,ie
 c
 c       cell center value of point jbpt,kbpt,lbpt of mesh m from cell center
 c       grid
@@ -2453,7 +2453,7 @@ c
         call bound(jbpt(i),kbpt(i),lbpt(i),x0,y0,z0,jmax,kmax,lmax,
      .  x,y,z,ife)
 c
-c       set x,y,z length scales from cell with jbpt,kbpt,lbpt as lower 
+c       set x,y,z length scales from cell with jbpt,kbpt,lbpt as lower
 c       corner point (for extrapolated points, i.e. those that don't exist
 c       in the input grid, use a nearby neighbor that does exist in the
 c       input grid to set the length scales)
@@ -2474,7 +2474,7 @@ c
         do 11 j=j00,j00+jinc
         do 11 k=k00,k00+kinc
         do 11 l=l00,l00+linc
-        ii = j +(k-1)*jmax +(l-1)*jmax*kmax 
+        ii = j +(k-1)*jmax +(l-1)*jmax*kmax
         dx = abs(x(ii) - x0)
         dy = abs(y(ii) - y0)
         dz = abs(z(ii) - z0)
@@ -2488,9 +2488,9 @@ c
         if(zscal.le.0.) zscal = 1.
 c
         itotn = itotn + 1
-        xcc0(itotn) = x0 
-        ycc0(itotn) = y0 
-        zcc0(itotn) = z0 
+        xcc0(itotn) = x0
+        ycc0(itotn) = y0
+        zcc0(itotn) = z0
         xscale(itotn) = xscal
         yscale(itotn) = yscal
         zscale(itotn) = zscal
@@ -2498,7 +2498,7 @@ c
 161     continue
 c
         call getgrd( m1,x,y,z,jimage,kimage,limage,
-     .  jmax1,kmax1,lmax1 ) 
+     .  jmax1,kmax1,lmax1 )
 c
         do 15 i = is,ie
 c
@@ -2559,9 +2559,9 @@ c
         write(6,*) '      ',nsig,' cell centers of mesh ',m,
      .  ' calculated using the transfer stencils'
         write(6,*) '      differ by more than ',int(sigdif*100),
-     .  ' percent from the actual cell centers'  
+     .  ' percent from the actual cell centers'
         write(6,*) '      the maximum deviation ',100*errmax,
-     .  ' percent occurs at ',jerrmx,kerrmx,lerrmx 
+     .  ' percent occurs at ',jerrmx,kerrmx,lerrmx
 c
       end if
 c
@@ -2569,18 +2569,18 @@ c
       return
       end
       subroutine cindex (ibc,ibpnts,iipnts,jb,kb,lb,mesh )
-c 
+c
 c***********************************************************************
 c     Purpose: the flow solver cfl3d expects interpolation data in the
-c     form of list of jb,kb,lb for a grid at a time.thus, 
+c     form of list of jb,kb,lb for a grid at a time.thus,
 c     construct the cross index array ibc and pointers for transfer
-c     of interpolated values to the appropriate boundary points. 
-c     these points are located in different meshes from those in 
-c     which they were interpolated: thus the need for a cross index. 
+c     of interpolated values to the appropriate boundary points.
+c     these points are located in different meshes from those in
+c     which they were interpolated: thus the need for a cross index.
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      .                mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
@@ -2589,31 +2589,31 @@ c
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
-c 
+c
       dimension ipts(mdim),list(mdim)
       dimension ibc(*),jb(*),kb(*),lb(*)
-c  
-c     set up offset counter 
-c 
+c
+c     set up offset counter
+c
       ipts(1) = 0
-      do 11 m = 2,nmesh 
-      ipts(m) = ipts(m-1) + ibpts(m-1) 
+      do 11 m = 2,nmesh
+      ipts(m) = ipts(m-1) + ibpts(m-1)
    11 continue
-c 
-c     set up cross index and pointers 
-c 
-      m  = mesh 
+c
+c     set up cross index and pointers
+c
+      m  = mesh
       ic = 0
-c 
-c     outer boundaries 
-c 
-      no = noutr(m) 
-c 
+c
+c     outer boundaries
+c
+      no = noutr(m)
+c
       if( no.ne.0 ) then
         do 312 m1=1,nmesh
         list(m1) = 0
 312     continue
-        do 412 n = 1,no 
+        do 412 n = 1,no
         nnn = 1
         nserch=moutr(m,nnn)
         do 412 nn=1,nserch
@@ -2623,14 +2623,14 @@ c
 412     continue
         do 23 m1 = 1,nmesh
         if(list(m1) .gt. 0) then
-          iset       = mobs(m,m1) 
-          is         = ipntr(m1,iset) 
-          ie         = npntr(m1,iset) 
+          iset       = mobs(m,m1)
+          is         = ipntr(m1,iset)
+          ie         = npntr(m1,iset)
           call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      .                 dxint,dyint,dzint )
-          do 22 i = is,ie 
-          ic         = ic + 1 
-          ibc(ic)    = i + ipts(m1) 
+          do 22 i = is,ie
+          ic         = ic + 1
+          ibc(ic)    = i + ipts(m1)
           jb(ic)     = jbpt(i)
           kb(ic)     = kbpt(i)
           lb(ic)     = lbpt(i)
@@ -2638,31 +2638,31 @@ c
         end if
    23   continue
       end if
-c 
+c
 c     hole boundary (fringe point)
-c 
-      nh = nhole(m) 
-c 
+c
+      nh = nhole(m)
+c
       if( nh.ne.0 ) then
         do 512 m1=1,nmesh
         list(m1) = 0
 512     continue
-        do 612 n = 1,nh 
+        do 612 n = 1,nh
         nserch = mhole(m,n)
         do 612 nn=1,nserch
-        m1 = lhole(m,n,nn) 
+        m1 = lhole(m,n,nn)
         if(list(m1).eq.0) list(m1) = 1
 612     continue
         do 32 m1 = 1,nmesh
         if(list(m1).gt.0) then
-          iset       = mhbs(m,m1) 
-          is         = ipntr(m1,iset) 
-          ie         = npntr(m1,iset) 
+          iset       = mhbs(m,m1)
+          is         = ipntr(m1,iset)
+          ie         = npntr(m1,iset)
           call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      .                 dxint,dyint,dzint )
-          do 31 i = is,ie 
-          ic      = ic + 1 
-          ibc(ic) = i + ipts(m1) 
+          do 31 i = is,ie
+          ic      = ic + 1
+          ibc(ic) = i + ipts(m1)
           jb(ic)  = jbpt(i)
           kb(ic)  = kbpt(i)
           lb(ic)  = lbpt(i)
@@ -2670,62 +2670,62 @@ c
         end if
    32   continue
       end if
-c 
-c     set pointers 
-c 
-      ibpnts = ic 
-      iipnts = ibpts(m) 
-c 
+c
+c     set pointers
+c
+      ibpnts = ic
+      iipnts = ibpts(m)
+c
 c     check to make sure that ic is within dimensions of arrays
-c 
-      if( ibpnts.gt.idim ) then 
-        write(6,601) mesh,ibpnts,idim 
+c
+      if( ibpnts.gt.idim ) then
+        write(6,601) mesh,ibpnts,idim
   601   format( /,/,' ',10x,'failure in cindex the number of boundary',
-     .  1x,'points in mesh ',i3,1x,'is ibpnts = ',i5, 
-     .  1x,'and the dimension is idim = ',i5  ) 
-        stop 'cindex' 
+     .  1x,'points in mesh ',i3,1x,'is ibpnts = ',i5,
+     .  1x,'and the dimension is idim = ',i5  )
+        stop 'cindex'
       end if
-c 
+c
       return
-      end 
-      subroutine diagnos 
-c 
+      end
+      subroutine diagnos
+c
 c***********************************************************************
 c     Purpose: perform diagnostic checks
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       character*80 grid,outpt,ovrlp,plt3d
 c
-      common /book3/  iblank(mlen) 
+      common /book3/  iblank(mlen)
       common /grid1/  x(mlen), y(mlen), z(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
      .                zill(idim),nbnd,norph,nill
       common /diagno/ jp(mdim*3+3),kp(mdim*3+3),lp(mdim*3+3),iplt3d
       common /files/  grid,outpt,ovrlp,plt3d
-c 
+c
       write(6,*)
       write(6,*) '  *** beginning diagnostic checks of interpolation',
      .'/extrapolation stencils ***'
-c 
-c***********************************************************************
-c    check for hole points or interpolated points as part of interpolation 
-c    stencil
-c***********************************************************************
-c 
-      call chkstn( iblank ) 
 c
 c***********************************************************************
-c     check for mismatch between 1) x,y,z of the cell centers for fringe 
+c    check for hole points or interpolated points as part of interpolation
+c    stencil
+c***********************************************************************
+c
+      call chkstn( iblank )
+c
+c***********************************************************************
+c     check for mismatch between 1) x,y,z of the cell centers for fringe
 c     and boundary points as determined from the input grids and 2) x,y,z
-c     of the same points as found by trilinear interpolation using the 
+c     of the same points as found by trilinear interpolation using the
 c     interpolation stencil information calculated by maggie. Substantial
 c     mismatch indicates an inappropriate interpolation stencil.
 c***********************************************************************
@@ -2734,10 +2734,10 @@ c
 c
 c***********************************************************************
 c     output plot3d file to unit 9 to provide a visual check of point
-c     type classification (i.e. field, hole fringe, boundary) as well 
+c     type classification (i.e. field, hole fringe, boundary) as well
 c     as points for which extrapolation rather than interpolation was
 c     used (i.e. orphan points) and points having illegal interpolation
-c     stencils. 
+c     stencils.
 c***********************************************************************
 c
       if(iplt3d.gt.0) then
@@ -2745,7 +2745,7 @@ c
         write(6,'(''  plot3d diagnostic file (mg/blank) being'',
      .  '' written to '',a60)')plt3d
         write(6,*)'        the file has the following',
-     .  ' structure:'    
+     .  ' structure:'
         nmesh3=nmesh*3
         mm = 0
         do 3 m=1,nmesh3,3
@@ -2755,7 +2755,7 @@ c
         write(6,102) m+1,mm
         write(6,103) m+2,mm
 3       continue
-        if(nbnd.gt.0)then  
+        if(nbnd.gt.0)then
           write(6,104) nmesh3+1
           write(6,1012)
         end if
@@ -2791,11 +2791,11 @@ c
 1013    format(22x,'.....(does not reflect any illegal stencils',
      .  /,22x,'.....corrected by zeroth order data transfer)')
         do 5 m=1,nmesh
-        jd=mjmax(m) 
-        kd=mkmax(m) 
-        ld=mlmax(m) 
-        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld ) 
-        call getibl( m,iblank,jd,kd,ld ) 
+        jd=mjmax(m)
+        kd=mkmax(m)
+        ld=mlmax(m)
+        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld )
+        call getibl( m,iblank,jd,kd,ld )
         call pltpts( nmesh,m,jd,kd,ld,x,y,z,jimage,iblank )
 5       continue
       end if
@@ -2806,19 +2806,19 @@ c
      .                 je,ks,ke,ls,le,jskip,kskip,lskip,dmin)
 c
 c***********************************************************************
-c      Purpose: Find closest point in grid to point (xp,yp,zp) to serve 
+c      Purpose: Find closest point in grid to point (xp,yp,zp) to serve
 c      a staring point for the search routine.
-c      note that in many cases, the cell associated with the minimum 
+c      note that in many cases, the cell associated with the minimum
 c      distance point is not the cell which actually contains xp,yp,zp;
 c      a better esimate of the cell that surrounds xp,yp,zp is therefore
-c      made. 
+c      made.
 c***********************************************************************
 c
       implicit real (a-h,o-z)
 c
       include 'mag1.h'
 c
-      common/work/ rm(iwrdim) 
+      common/work/ rm(iwrdim)
 c
       dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),
      .          z(jmax,kmax,lmax)
@@ -2826,15 +2826,15 @@ c
       dmin = 1.0e+20
 c
       jp = 0
-      kp = 0	
+      kp = 0
       lp = 0
       num = (je - js)/jskip + 1
       if( num.gt.iwrdim ) then
-        write( 6,601 ) num,iwrdim 
+        write( 6,601 ) num,iwrdim
 601     format( ' ', 10x,'failure in dsmin: num exceeds iwrdim',
-     .  1x,'num = ',i5,1x,'iwrdim = ',i5  ) 
-        stop 'dsmin' 
-      end if 
+     .  1x,'num = ',i5,1x,'iwrdim = ',i5  )
+        stop 'dsmin'
+      end if
 c
       do 1234 k=ks,ke,kskip
       do 1234 l=ls,le,lskip
@@ -2848,10 +2848,10 @@ c
       rm(jj) = dx*dx + dy*dy + dz*dz
  1235 continue
 
-      jmin = ismin( num,rm,1 ) 
+      jmin = ismin( num,rm,1 )
       d1   = rm(jmin)
       if (d1.lt.dmin) then
-         jp   = (jmin-1)*jskip + js 
+         jp   = (jmin-1)*jskip + js
          kp   = k
          lp   = l
          dmin = d1
@@ -2864,8 +2864,8 @@ c
      .                 je,ks,ke,ls,le,dmin)
 c
 c***********************************************************************
-c      Purpose: Find closest point in grid faces to point (xp,yp,zp) to 
-c      serve a staring point for the search routine when extrapolating 
+c      Purpose: Find closest point in grid faces to point (xp,yp,zp) to
+c      serve a staring point for the search routine when extrapolating
 c      for orphan points.
 c***********************************************************************
 c
@@ -2873,16 +2873,16 @@ c
 c
       include 'mag1.h'
 c
-      common/work/ rm(iwrdim) 
+      common/work/ rm(iwrdim)
 c
       dimension x(jmax,kmax,lmax),y(jmax,kmax,lmax),
      .          z(jmax,kmax,lmax)
 c
       dmin = 1.0e+20
 c
-c     search only faces of mesh, using original grid density 
+c     search only faces of mesh, using original grid density
 c
-      jskip = je - js 
+      jskip = je - js
       kskip = ke - ks
       lskip = le - ls
       if(jskip.lt.1)jskip = 1
@@ -2891,11 +2891,11 @@ c
 c
       num = je - js + 1
       if( num.gt.iwrdim ) then
-        write( 6,601 ) num,iwrdim 
+        write( 6,601 ) num,iwrdim
 601     format( ' ', 10x,'failure in dsmin: num exceeds iwrdim',
-     .  1x,'num = ',i5,1x,'iwrdim = ',i5  ) 
-        stop 'dsmin2' 
-      end if 
+     .  1x,'num = ',i5,1x,'iwrdim = ',i5  )
+        stop 'dsmin2'
+      end if
 c
 c     k-faces
 c
@@ -2911,10 +2911,10 @@ c
       rm(jj) = dx*dx + dy*dy + dz*dz
  2235 continue
 
-      jmin = ismin( num,rm,1 ) 
+      jmin = ismin( num,rm,1 )
       d1   = rm(jmin)
       if (d1.lt.dmin) then
-         jp   = jmin + js - 1 
+         jp   = jmin + js - 1
          kp   = k
          lp   = l
          dmin = d1
@@ -2934,10 +2934,10 @@ c
       dz = zp-z(j,k,l)
       rm(jj) = dx*dx + dy*dy + dz*dz
  3235 continue
-      jmin = ismin( num,rm,1 ) 
+      jmin = ismin( num,rm,1 )
       d1   = rm(jmin)
       if (d1.lt.dmin) then
-         jp   = jmin + js - 1 
+         jp   = jmin + js - 1
          kp   = k
          lp   = l
          dmin = d1
@@ -2948,9 +2948,9 @@ c     j-faces
 c
       num = ke - ks + 1
       if( num.gt.iwrdim ) then
-        write( 6,601 ) num,iwrdim 
-        stop 'dsmin2' 
-      end if 
+        write( 6,601 ) num,iwrdim
+        stop 'dsmin2'
+      end if
       do 4234 j=js,je,jskip
       do 4234 l=ls,le
 c
@@ -2962,10 +2962,10 @@ c
       dz = zp-z(j,k,l)
       rm(kk) = dx*dx + dy*dy + dz*dz
  4235 continue
-      kmin = ismin( num,rm,1 ) 
+      kmin = ismin( num,rm,1 )
       d1   = rm(kmin)
       if (d1.lt.dmin) then
-         kp   = kmin + ks - 1 
+         kp   = kmin + ks - 1
          jp   = j
          lp   = l
          dmin = d1
@@ -2975,11 +2975,11 @@ c
       return
       end
       subroutine extrap(i,m,m1,jd1,kd1,ld1,xm1,ym1,zm1,xp,yp,zp,iok,
-     .              jp,kp,lp,jimage,kimage,limage)     
+     .              jp,kp,lp,jimage,kimage,limage)
 c
 c******************************************************************
 c
-c     Purpose: search over mesh m1 to find the cell nearest the 
+c     Purpose: search over mesh m1 to find the cell nearest the
 c     mesh m point xp,yp,zp and compute the extrapolation data
 c******************************************************************
 c
@@ -2989,11 +2989,11 @@ c     parameter mfroz should be set at least as large as itmax
 c
       parameter (mfroz=999)
 c
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
       common /tol/    epsc
-c 
+c
       dimension xm1(jd1,kd1,ld1),ym1(jd1,kd1,ld1),zm1(jd1,kd1,ld1)
       dimension jimage(jd1,kd1,ld1),kimage(jd1,kd1,ld1),
      .          limage(jd1,kd1,ld1)
@@ -3029,12 +3029,12 @@ c
 c
       call trace(3,intern,idum2,idum3,idum4,dum1,dum2,dum3)
 c
-c     find local xie,eta,zeta via Newton iteraton in current target 
+c     find local xie,eta,zeta via Newton iteraton in current target
 c     cell jp,kp,lp
 c
       call trace(4,jp,kp,lp,m1,dum1,dum2,dum3)
 c
-      call xe(jd1,kd1,ld1,xm1,ym1,zm1,jp,kp,lp,xp,yp,zp, 
+      call xe(jd1,kd1,ld1,xm1,ym1,zm1,jp,kp,lp,xp,yp,zp,
      .              xie,eta,zeta,imiss)
 c
       xfroz(intern) = xie
@@ -3044,7 +3044,7 @@ c
 c     current target cell correct if imiss = 0 (i.e. interpolation will
 c     be done, rather than extrapolation)
 c
-      if(imiss.eq.0) then 
+      if(imiss.eq.0) then
         call trace(5,idum1,idum2,idum3,idum4,xie,eta,zeta)
 c
         go to 5556
@@ -3054,12 +3054,12 @@ c     current block m1 a poor guess if xie,eta or zeta become large. exit
 c     to try another mesh m1
 c
       huge = 1.e5
-      if(abs(xie).ge.huge .or. abs(eta).ge.huge .or. 
+      if(abs(xie).ge.huge .or. abs(eta).ge.huge .or.
      .abs(zeta).ge.huge) then
         iok = 0
         return
       end if
- 
+
 c
       call trace(5,idum1,idum2,idum3,idum4,xie,eta,zeta)
 c
@@ -3082,19 +3082,19 @@ c
       linc = min0( linc , limit )
 c
       if (xie.gt.1.0) then
-         jp = jp + jinc  
+         jp = jp + jinc
       else if (xie.lt.0.) then
-         jp = jp - jinc  
+         jp = jp - jinc
       end if
       if (eta.gt.1.0) then
          kp = kp + kinc
       else if (eta.lt.0.) then
-         kp = kp - kinc 
+         kp = kp - kinc
       end if
       if (zeta.gt.1.0) then
          lp = lp + linc
       else if (zeta.lt.0.) then
-         lp = lp - linc 
+         lp = lp - linc
       end if
 c
       xieg  = float(jp)
@@ -3147,22 +3147,22 @@ c
 c     check for frozen convergence: search routine keeps returning
 c     to the same point, without 0 < xie,eta,zeta < 1 at that point.
 c     of those cells searched in the frozen cycle, use the point with
-c     with the minimum extrapolation coefficient as the point to 
+c     with the minimum extrapolation coefficient as the point to
 c     extrapolate from, unless that requires extrapolation in two
 c     or three directions.
-c     note: extrapolation measured from 0.0 for negative values and 
+c     note: extrapolation measured from 0.0 for negative values and
 c     1.0 for positive values.
 c
       ifroz = 0
       do 77 ii=1,intern
       int = intern-ii+1
       if (jp.eq.jfroz(int) .and. kp.eq.kfroz(int)
-     .    .and. lfroz(int).eq.lp) ifroz = 1 
+     .    .and. lfroz(int).eq.lp) ifroz = 1
 77    continue
       if(ifroz.gt.0) then
 c       frozen convervence...search is cyclic
         xi0 = xfroz(1)
-        yi0 = yfroz(1) 
+        yi0 = yfroz(1)
         zi0 = zfroz(1)
         iext = 1
         nex0 = 0
@@ -3269,59 +3269,59 @@ c
       jn(i)  = jp
       kn(i)  = kp
       ln(i)  = lp
-      xi(i)  = xie 
+      xi(i)  = xie
       yi(i)  = eta
       zi(i)  = zeta
       iok = 1
 c
 c***
 c      itrace = -1
-c***     
+c***
       return
-      end     
+      end
       subroutine frnge( iblank,jd,kd,ld,m1 )
-c 
+c
 c***********************************************************************
 c     Purpose: construct the  fringe boundary surrounding a hole.
-c     specify fringe points by setting 
+c     specify fringe points by setting
 c     iblank = -( m1 + mdim ). Check for two points on either side
-c     of a field point to give enough data for second order accurate 
+c     of a field point to give enough data for second order accurate
 c     solution
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       dimension iblank(jd,kd,ld)
-c 
-      jmax       = jd 
-      kmax       = kd 
-      lmax       = ld 
-c 
+c
+      jmax       = jd
+      kmax       = kd
+      lmax       = ld
+c
 c     loop through cell centers
 c
       do 11 j = 1,jmax
       do 11 k = 1,kmax
       do 11 l = 1,lmax
-      if( iblank(j,k,l).eq.1 ) then 
+      if( iblank(j,k,l).eq.1 ) then
 c
-c       point is field point. determine if it is adjacent to a 
+c       point is field point. determine if it is adjacent to a
 c       hole point and hence should be identified as a fringe point
-c 
+c
 c       keep within grid boundaries
-c 
+c
         jp   = min( j+1,jmax )
         kp   = min( k+1,kmax )
         lp   = min( l+1,lmax )
-        jm   = max( j-1,1 ) 
-        km   = max( k-1,1 ) 
-        lm   = max( l-1,1 ) 
+        jm   = max( j-1,1 )
+        km   = max( k-1,1 )
+        lm   = max( l-1,1 )
         jp1  = min( j+2,jmax )
         kp1  = min( k+2,kmax )
         lp1  = min( l+2,lmax )
-        jm1  = max( j-2,1 ) 
-        km1  = max( k-2,1 ) 
+        jm1  = max( j-2,1 )
+        km1  = max( k-2,1 )
         lm1  = max( l-2,1 )
-        imin = min( 
+        imin = min(
      .         abs( iblank(jm1,k,l) ),  abs( iblank(jm,k,l) ),
      .         abs( iblank(jp1,k,l) ),  abs( iblank(jp,k,l) ),
      .         abs( iblank(j,km1,l) ),  abs( iblank(j,km,l) ),
@@ -3330,12 +3330,12 @@ c
      .         abs( iblank(j,k,lp1) ),  abs( iblank(j,k,lp) ) )
         if( imin.eq.0 ) then
 c         fringe point
-          iblank(j,k,l) = -( m1 +mdim ) 
+          iblank(j,k,l) = -( m1 +mdim )
         end if
       end if
 11    continue
       return
-      end 
+      end
       subroutine getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld )
 c
 c***********************************************************************
@@ -3345,7 +3345,7 @@ c***********************************************************************
 c
       character*20 titl
 c
-      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld) 
+      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld)
       dimension jimage(jd,kd,ld),kimage(jd,kd,ld),limage(jd,kd,ld)
 c
       iunit = 30
@@ -3365,13 +3365,13 @@ c
       open(iunit,file=titl(1:len),form='unformatted',
      .status='unknown')
 c
-      read(iunit) x,y,z 
+      read(iunit) x,y,z
       read(iunit) jimage,kimage,limage
       rewind iunit
       close(iunit)
       return
-      end 
-      subroutine getgrd2( m,x,y,z,jd,kd,ld ) 
+      end
+      subroutine getgrd2( m,x,y,z,jd,kd,ld )
 c
 c***********************************************************************
 c     Purpose: get a copy of grid points (node points) for mesh m from
@@ -3380,9 +3380,9 @@ c***********************************************************************
 c
       character*20 titl
 c
-      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld) 
+      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld)
 c
-      iunit = 30 
+      iunit = 30
       if (m.gt.99) then
           len = 12
           write (titl,'("temp_grd.",i3)') m
@@ -3398,14 +3398,14 @@ c
       end do
       open(iunit,file=titl(1:len),form='unformatted',
      .status='unknown')
-c 
+c
       read(iunit) x,y,z
       rewind iunit
       close(iunit)
-c 
+c
       return
-      end 
-      subroutine getibl( m,iblank,jd,kd,ld ) 
+      end
+      subroutine getibl( m,iblank,jd,kd,ld )
 c
 c***********************************************************************
 c     Purpose: get a copy of the iblank array for mesh m from
@@ -3436,24 +3436,24 @@ c
       rewind iunit
       close(iunit)
       return
-      end 
-      subroutine getint( m,ji,ki,li,jbpt,kbpt,lbpt, 
+      end
+      subroutine getint( m,ji,ki,li,jbpt,kbpt,lbpt,
      &                   dxint,dyint,dzint )
-c 
+c
 c***********************************************************************
 c     Purpose: get a copy of the interpolation data for mesh m from
 c     file temp_int.m
 c***********************************************************************
-c 
+c
       include 'mag1.h'
 c
       character*20 titl
-c 
-      dimension ji(idim),ki(idim),li(idim), 
-     .          jbpt(idim),kbpt(idim),lbpt(idim), 
+c
+      dimension ji(idim),ki(idim),li(idim),
+     .          jbpt(idim),kbpt(idim),lbpt(idim),
      .          dxint(idim),dyint(idim),dzint(idim)
 c
-      common /chkst/ nwr 
+      common /chkst/ nwr
 c
       iunit = 30
       if (m.gt.99) then
@@ -3480,92 +3480,92 @@ c
       rewind iunit
       close(iunit)
       return
-      end 
+      end
       subroutine hlocat( iblank,x,y,z,jd,kd,ld)
-c 
-c***********************************************************************
-c     Purpose: locate the points interior to the hole boundary in 
-c     mesh m due to the grid m1. 
 c
-c     interior points are identified by forming the dot product, d = (rp,vn) 
-c     where rp is the position vector between the nearest point on the 
-c     boundary surface to a field point of m, and where vn is the outward 
+c***********************************************************************
+c     Purpose: locate the points interior to the hole boundary in
+c     mesh m due to the grid m1.
+c
+c     interior points are identified by forming the dot product, d = (rp,vn)
+c     where rp is the position vector between the nearest point on the
+c     boundary surface to a field point of m, and where vn is the outward
 c     normal vector to the surface. d < 0 indicates an interior point
 c***********************************************************************
-c 
-c 
+c
+c
       include 'mag1.h'
-c 
-      common /norm/   vnx(ibdim), vny(ibdim),vnz(ibdim) 
+c
+      common /norm/   vnx(ibdim), vny(ibdim),vnz(ibdim)
       common /surf/   xb(ibdim), yb(ibdim), zb(ibdim),ibmax
-      common /work/   rm(iwrdim) 
-c 
-      dimension iblank(jd,kd,ld),x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld) 
-c 
+      common /work/   rm(iwrdim)
+c
+      dimension iblank(jd,kd,ld),x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld)
+c
       data epslon /1.e-04/
-c 
+c
       ijmax = ibmax
       if( ijmax.gt.iwrdim ) then
-        write( 6,601 ) ijmax,iwrdim 
+        write( 6,601 ) ijmax,iwrdim
 601     format( ' ', 10x,'failure in hlocat: ijmax exceeds iwrdim',
-     .  1x,'ijmax = ',i5,1x,'iwrdim = ',i5  ) 
-        stop 'hlocat' 
-      end if 
-c 
+     .  1x,'ijmax = ',i5,1x,'iwrdim = ',i5  )
+        stop 'hlocat'
+      end if
+c
 c     for radius test, compute origin for boundary of mesh m1 and
 c     max radius from origin to boundary
-c 
+c
       ii     = 0
       do 11 ib = 1,ibmax
-      ii     = ii + 1 
+      ii     = ii + 1
       rm(ii) = xb(ib)
    11 continue
-      i      = ismax( ijmax,rm,1 ) 
+      i      = ismax( ijmax,rm,1 )
       xmax   = rm(i)
-      i      = ismin( ijmax,rm,1 ) 
-      xmin   = rm(i) 
+      i      = ismin( ijmax,rm,1 )
+      xmin   = rm(i)
       ii     = 0
       do 12 ib = 1,ibmax
-      ii     = ii + 1 
+      ii     = ii + 1
       rm(ii) = yb(ib)
    12 continue
-      i      = ismax( ijmax,rm,1 ) 
+      i      = ismax( ijmax,rm,1 )
       ymax   = rm(i)
-      i      = ismin( ijmax,rm,1 ) 
+      i      = ismin( ijmax,rm,1 )
       ymin   = rm(i)
       ii     = 0
       do 13 ib = 1,ibmax
-      ii     = ii + 1 
+      ii     = ii + 1
       rm(ii) = zb(ib)
    13 continue
-      i      = ismax( ijmax,rm,1 ) 
+      i      = ismax( ijmax,rm,1 )
       zmax   = rm(i)
-      i      = ismin( ijmax,rm,1 ) 
+      i      = ismin( ijmax,rm,1 )
       zmin   = rm(i)
-      xorg   = ( xmax +xmin )/2.0 
-      yorg   = ( ymax +ymin )/2.0 
-      zorg   = ( zmax +zmin )/2.0 
+      xorg   = ( xmax +xmin )/2.0
+      yorg   = ( ymax +ymin )/2.0
+      zorg   = ( zmax +zmin )/2.0
       ii     = 0
       do 14 ib = 1,ibmax
-      ii     = ii + 1 
-      rm(ii) = (xb(ib)-xorg)**2 + (yb(ib)-yorg)**2 
+      ii     = ii + 1
+      rm(ii) = (xb(ib)-xorg)**2 + (yb(ib)-yorg)**2
      .       + (zb(ib)-zorg)**2
    14 continue
-      i     = ismax( ijmax,rm,1 ) 
+      i     = ismax( ijmax,rm,1 )
       rmax  = rm(i)
-c 
+c
 c      write(6,*) ' ........in subroutine hlocat.................'
 c      write(6,*)'  .............xmin,xmax ',xmin,xmax
 c      write(6,*)'  .............ymin,ymax ',ymin,ymax
 c      write(6,*)'  .............zmin,zmax ',zmin,zmax
 c      write(6,*)'  .............rmax ',rmax
-c 
+c
 c     locate any points within a hole
 c
       do 34 j = 1,jd
       do 34 k = 1,kd
       do 34 l = 1,ld
-c 
+c
 c     first check if point j,k,l of mesh m lies within the minimum and
 c     maximum boundary points of mesh m1. If not then j,k,l does not lie
 c     inside mesh m1
@@ -3580,63 +3580,63 @@ c
       dx = x(j,k,l)-xorg
       dy = y(j,k,l)-yorg
       dz = z(j,k,l)-zorg
-      r =  dx*dx + dy*dy +dz*dz 
+      r =  dx*dx + dy*dy +dz*dz
 c
-c     check if radius r is smaller than rmax 
-c 
-c 
+c     check if radius r is smaller than rmax
+c
+c
       if( r.gt.rmax ) then
-c       point not located in mesh m1; iblank does not change 
+c       point not located in mesh m1; iblank does not change
       else
-c 
+c
 c       locate nearest point on hole boundary
-c 
+c
         ii = 0
         do 31 ib = 1,ibmax
-        ii = ii + 1 
-        dx = x(j,k,l) - xb(ib) 
-        dy = y(j,k,l) - yb(ib) 
-        dz = z(j,k,l) - zb(ib) 
+        ii = ii + 1
+        dx = x(j,k,l) - xb(ib)
+        dy = y(j,k,l) - yb(ib)
+        dz = z(j,k,l) - zb(ib)
         rm(ii) = dx**2 + dy**2 + dz**2
 31      continue
-        in = ismin( ijmax,rm,1 ) 
+        in = ismin( ijmax,rm,1 )
 c
 c       locate 2nd nearest point on hole boundary
 c
         rm(in) = 1.e30
-        in2 = ismin( ijmax,rm,1 ) 
+        in2 = ismin( ijmax,rm,1 )
 c
 c       locate 3rd nearest point on hole boundary
 c
         rm(in2) = 1.e30
-        in3 = ismin( ijmax,rm,1 ) 
-c 
+        in3 = ismin( ijmax,rm,1 )
+c
 c       form dot products
-c 
-        rpx = x(j,k,l) - xb(in) 
-        rpy = y(j,k,l) - yb(in) 
-        rpz = z(j,k,l) - zb(in)         
-        d   = rpx*vnx(in) + rpy*vny(in) + rpz*vnz(in) 
 c
-        rpx = x(j,k,l) - xb(in2) 
-        rpy = y(j,k,l) - yb(in2) 
-        rpz = z(j,k,l) - zb(in2) 
-        d2  = rpx*vnx(in2) + rpy*vny(in2) + rpz*vnz(in2) 
-c 
-        rpx = x(j,k,l) - xb(in3) 
-        rpy = y(j,k,l) - yb(in3) 
-        rpz = z(j,k,l) - zb(in3) 
-        d3  = rpx*vnx(in3) + rpy*vny(in3) + rpz*vnz(in3) 
+        rpx = x(j,k,l) - xb(in)
+        rpy = y(j,k,l) - yb(in)
+        rpz = z(j,k,l) - zb(in)
+        d   = rpx*vnx(in) + rpy*vny(in) + rpz*vnz(in)
 c
-c       interior point tests...use inner product test on nearest 3 
+        rpx = x(j,k,l) - xb(in2)
+        rpy = y(j,k,l) - yb(in2)
+        rpz = z(j,k,l) - zb(in2)
+        d2  = rpx*vnx(in2) + rpy*vny(in2) + rpz*vnz(in2)
+c
+        rpx = x(j,k,l) - xb(in3)
+        rpy = y(j,k,l) - yb(in3)
+        rpz = z(j,k,l) - zb(in3)
+        d3  = rpx*vnx(in3) + rpy*vny(in3) + rpz*vnz(in3)
+c
+c       interior point tests...use inner product test on nearest 3
 c       boundary points...if two of these pass the test, identify
-c       point as interior...usually, just the nearest point is put 
+c       point as interior...usually, just the nearest point is put
 c       through the inner product test - three points checked here
 c       to try to reduce occurances of spurious hole point generation
-c 
+c
 c        if(d .le. epslon) then
         if( (d .le. epslon .and. d2 .le. epslon) .or.
-     .      (d .le. epslon .and. d3 .le. epslon)) then 
+     .      (d .le. epslon .and. d3 .le. epslon)) then
 c         interior point to hole boundary; set iblank to zero
           iblank(j,k,l) = 0
 c         write(8,*)' hole point=> j,k,l ',j,k,l,iblank(j,k,l)
@@ -3645,9 +3645,9 @@ c         write(8,*)' x,y,z', x(j,k,l),y(j,k,l),z(j,k,l)
 c
       end if
 34    continue
-c 
+c
       return
-      end 
+      end
       subroutine hlocat2(m,jd,kd,ld,jmn,jmx,kmn,kmx,lmn,lmx,iblank)
 c
 c***********************************************************************
@@ -3678,29 +3678,29 @@ c
       return
       end
       subroutine hole
-c 
+c
 c***********************************************************************
-c     Purpose: construct hole in mesh m introduced by the presence of 
-c     mesh m1 and compute the interpolation stencils for mesh m fringe 
-c     points surrounding the hole. 
-c 
+c     Purpose: construct hole in mesh m introduced by the presence of
+c     mesh m1 and compute the interpolation stencils for mesh m fringe
+c     points surrounding the hole.
+c
 c     iblank = 0 for points interior to hole
 c     iblank < 0 for points surrounding hole (fringe points)
 c     iblank = 1 for regular field points
 c
 c     if ihplt(nh) > 0  plot3d files for the initial hole and normals are
-c     output. hole (grid file) is in hole_grd.nh, components of normal vector 
+c     output. hole (grid file) is in hole_grd.nh, components of normal vector
 c     (q file) are in hole_nrm.nh. plot hole points with "points" option
 c     in plot3d. plot normals using vector velocity. nh is the hole number.
 c***********************************************************************
-c 
-c 
+c
+c
       include 'mag1.h'
-c 
-      common /book3 / iblank(mlen) 
+c
+      common /book3 / iblank(mlen)
       common /bound1/ ihbtyp(mdim,mdim),jh1(ipmax),jh2(ipmax),
      .                kh1(ipmax),kh2(ipmax),lh1(ipmax),lh2(ipmax),
-     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax) 
+     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax)
       common /grid1 / x(mlen), y(mlen), z(mlen)
       common /grid2 / mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
@@ -3708,12 +3708,12 @@ c
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /surf/   xb(ibdim), yb(ibdim), zb(ibdim), ibmax
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
-      common /norm/   vnx(ibdim), vny(ibdim),vnz(ibdim) 
+      common /norm/   vnx(ibdim), vny(ibdim),vnz(ibdim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+     .                ln(idim), itotal
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /where/  nblkpt(idim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /tol/    epsc
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
@@ -3723,38 +3723,38 @@ c
      .                iorphh(mdim,mhldim),iorpho(mdim,mhldim)
 c
       character*20 titlhlgrd, titlhlnrm
-c 
+c
       dimension jbtmp(idim),kbtmp(idim),lbtmp(idim),
      .          jntmp(idim),kntmp(idim),lntmp(idim),xitmp(idim),
      .          yitmp(idim),zitmp(idim)
       dimension list(mdim),iskip(idim)
 c
       character*4 flag(3)
-c  
+c
 c     itrace < 0, do not write search history for current fringe point
-c     itrace = 0, overwrite history from previous point with current 
+c     itrace = 0, overwrite history from previous point with current
 c     itrace = 1, retain the search history for ALL points (may get huge file)
 c     trace output found in unit 7
 c
       itrace = -1
 c
-      flag(1) = 'xie' 
-      flag(2) = 'eta' 
-      flag(3) = 'zeta' 
+      flag(1) = 'xie'
+      flag(2) = 'eta'
+      flag(3) = 'zeta'
 c
 
       nh = 0
       nhplt = 0
-c  
+c
 c     construct hole boundaries and locate fringe points of mesh m
-c  
-      do 13 m = 1,nmesh 
-      jd = mjmax(m) 
-      kd = mkmax(m) 
-      ld = mlmax(m) 
+c
+      do 13 m = 1,nmesh
+      jd = mjmax(m)
+      kd = mkmax(m)
+      ld = mlmax(m)
       ntot = nhole(m)
       itotal = 0
-c  
+c
       if( ntot.gt.0 ) then
 c
         write(6,*)
@@ -3763,24 +3763,24 @@ c
      .  m,' ***'
 c
         call getibl( m,iblank,jd,kd,ld )
-c 
+c
 c       loop over all holes in mesh m
 c
-        do 11 n = 1,ntot 
+        do 11 n = 1,ntot
         nh  = nh+1
 c
         write(6,*)
         write(6,*) '    creating hole ',n,' in mesh ',m,
      .  ' using ',ip2(nh)-ip1(nh)+1,' coordinate surfaces'
 c
-c       loop through coordinate surfaces to define initial 
+c       loop through coordinate surfaces to define initial
 c       hole boundary
 c
         m1last = 0
         mseg   = 0
-        ibmax  = 0      
+        ibmax  = 0
 c
-c       test for holein mesh m defined only by coorinate surfaces 
+c       test for holein mesh m defined only by coorinate surfaces
 c       of mesh m - then can simply blank out the appropriate j,k,l
 c       range without the using hlocat (hlocat is less reliable since
 c       ocassional, it generates spurious hole pts. due to corners)
@@ -3822,7 +3822,7 @@ c          cell center range (js,je, etc. based on grid points):
            if (jmx .gt. 1) jmx = jmx-1
            if (kmx .gt. 1) kmx = kmx-1
            if (lmx .gt. 1) lmx = lmx-1
-118        continue 
+118        continue
 c
            call hlocat2(m,jd,kd,ld,jmn,jmx,kmn,kmx,lmn,lmx,iblank)
 c
@@ -3905,14 +3905,14 @@ c             (dummy) mach, alpha, re, time
      .                    (1.,ib=1,ibmax)
            end if
 c
-c          determine actual hole in mesh m as being all points of mesh m 
-c          that lie inside of initial hole boundary 
+c          determine actual hole in mesh m as being all points of mesh m
+c          that lie inside of initial hole boundary
 c
-           call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld ) 
-           call hlocat( iblank,x,y,z,jd,kd,ld) 
+           call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld )
+           call hlocat( iblank,x,y,z,jd,kd,ld)
 c
         end if
-c 
+c
 c       identify fringe points in mesh m as points adjacent to hole n in mesh m
 c       such points are identified with iblank = -(n+mdim)
 c
@@ -3923,15 +3923,15 @@ c
         call putibl( m,iblank,jd,kd,ld )
 c
       end if
-c  
+c
 13    continue
-      do 1313 m = 1,nmesh 
-      jd = mjmax(m) 
-      kd = mkmax(m) 
-      ld = mlmax(m) 
+      do 1313 m = 1,nmesh
+      jd = mjmax(m)
+      kd = mkmax(m)
+      ld = mlmax(m)
       ntot = nhole(m)
       itotal = 0
-c  
+c
       if( ntot.gt.0 ) then
 c
         do 610 mm=1,nmesh
@@ -3942,16 +3942,16 @@ c
         write(6,*)
         write(6,*) '  *** beginning determination of stencils for',
      .  ' fringe points of mesh ',m,' ***'
-c 
+c
 c       loop over all holes in mesh m
 c
-        do 1111 n = 1,ntot 
-        nserch = mhole(m,n) 
+        do 1111 n = 1,ntot
+        nserch = mhole(m,n)
         iorph = iorphh(m,n)
 c
-        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld ) 
+        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld )
         call getibl( m,iblank,jd,kd,ld )
-c 
+c
 c       place fringe points of mesh m into  1-d lists jb,kb,lb of points to be
 c       interpolated
 c
@@ -3963,10 +3963,10 @@ c
         if(iblank(i).eq.-(n+mdim)) then
           itotal      = itotal + 1
           if( itotal .gt.idim ) then
-            write(6,602) itotal,idim 
-602         format('0',130('*'),/,/,5x,'failure in hole: total' 
-     .      ,1x,'number of fringe points exceeds available storage', 
-     .      /,20x,'itotal = ',i6,2x,'idim = ',i6, 
+            write(6,602) itotal,idim
+602         format('0',130('*'),/,/,5x,'failure in hole: total'
+     .      ,1x,'number of fringe points exceeds available storage',
+     .      /,20x,'itotal = ',i6,2x,'idim = ',i6,
      .      /,/,130('*') )
             stop 'hole'
           end if
@@ -3982,26 +3982,26 @@ c
         write(6,*)
         write(6,*) '    there are ',itotal-i1+1,' fringe points',
      .  ' due to hole ',n
-c 
+c
 c       initialize block pointer array nblkpt
 c       ...nblkpt(i) = 0 if interp. stencil for fringe point i not yet found
-c       ...nblkpt(i) = -(m1+mdim)  if interp. stencil for fringe point i 
+c       ...nblkpt(i) = -(m1+mdim)  if interp. stencil for fringe point i
 c                                  has been found in mesh m1
         do 112 i=i1,itotal
-        nblkpt(i) = 0 
+        nblkpt(i) = 0
 112     continue
 c
 c       search over all meshes in search list to find interpolation
 c       stencils for fringe points of mesh m associated with hole n
 c
         do 12 nn = 1,nserch
-        m1  = lhole( m,n,nn ) 
+        m1  = lhole( m,n,nn )
         jd1 = mjmax(m1)
         kd1 = mkmax(m1)
         ld1 = mlmax(m1)
-        call getgrd( m1,x,y,z,jimage,kimage,limage,jd1,kd1,ld1 ) 
-        call intpt( -1,jimage,kimage,limage,jd,kd,ld, 
-     .  m1,x,y,z,jd1,kd1,ld1,m,i1 ) 
+        call getgrd( m1,x,y,z,jimage,kimage,limage,jd1,kd1,ld1 )
+        call intpt( -1,jimage,kimage,limage,jd,kd,ld,
+     .  m1,x,y,z,jd1,kd1,ld1,m,i1 )
 c       reject stencils that contain hole/fringe pts.
           call getibl( m1,iblank,jd1,kd1,ld1 )
           do 1114 i=i1,itotal
@@ -4035,17 +4035,17 @@ c       reject stencils that contain hole/fringe pts.
           end if
  1114     continue
 12      continue
-c 
-c       check to see if interpolation stencils were not found for any 
+c
+c       check to see if interpolation stencils were not found for any
 c       mesh m fringe points. for such "orphan" points, use either the nearest
-c       point from one of the meshes in the search list, with xi=eta=zeta=0 
-c       (zeroth order interpolation), or, use extrapolation from the nearest 
+c       point from one of the meshes in the search list, with xi=eta=zeta=0
+c       (zeroth order interpolation), or, use extrapolation from the nearest
 c       point.  extrapolation is distinguished from interpolation in that an
 c       interpolation stencil has 0 < xie,eta,zeta < 1 (to within a tolerance
 c       epsc) while for extrapolation, either xie, eta or zeta is < 0 or > 1
-c       use of the nearest neighbor or extrapolation should occur only from 
+c       use of the nearest neighbor or extrapolation should occur only from
 c       boundaries of mesh m1; otherwise search routine has failed in some way
-c       
+c
         notok = 0
         do 113 i=i1,itotal
         if(nblkpt(i).eq.0) notok = notok + 1
@@ -4054,27 +4054,27 @@ c
         if(notok.gt.0) then
           iflg = 0
           call orphan(m,n,nserch,i1,iorph,iflg)
-        end if    
+        end if
 c
-c       check to see if any interpolation stencils contain hole points 
+c       check to see if any interpolation stencils contain hole points
 c       if any do, check all other meshes in search list (if more than one)
 c       to see if a valid stencil can be found elsewhere
-c       
+c
         if(iholeh(m,n).gt.0) then
           iflg = 0
           call reserch(m,n,nserch,i1,iskip,iorph,iflg)
         end if
-1111    continue 
+1111    continue
 c
-        do 612 n = 1,ntot 
+        do 612 n = 1,ntot
         nserch = mhole(m,n)
         do 612 nn=1,nserch
-        m1 = lhole(m,n,nn) 
+        m1 = lhole(m,n,nn)
         if(list(m1).eq.0) list(m1) = 1
 612     continue
-c 
+c
 c       summary of search routine results
-c      
+c
         write(6,*)
         write(6,*) '    summary of search routine results for mesh ',m,
      .  ' stencils:'
@@ -4093,14 +4093,14 @@ c
           nin    = 0
           nex    = 0
           norphb = 0
-          norphc = 0 
+          norphc = 0
           norphd = 0
           nzero  = 0
           do 115 i=1,itotal
           if(nblkpt(i).eq.-(m1+mdim)) then
             j    = jb(i)
             k    = kb(i)
-            l    = lb(i)      
+            l    = lb(i)
             xp   = xbo(i)
             yp   = ybo(i)
             zp   = zbo(i)
@@ -4117,7 +4117,7 @@ c
               nzero = nzero + 1
 c             for stencils weighted totally at nearest neighbor,
 c             keep all points in stencil within bounds of cell center grid,
-c             grid,  1 .ge. j/k/l .le. jd1-1/kd-1/ld1-1  
+c             grid,  1 .ge. j/k/l .le. jd1-1/kd-1/ld1-1
 c             for example, if nearest neighbor is at last cell center in
 c             l-direction, say, l=ld1, then switch stencil from
 c             jn,kn,ln with xie,eta,zeta=0 to jn,kn,ln-1 with xie=eta=0,
@@ -4156,17 +4156,17 @@ c
 c
 c           points using interpolation
 c
-            else if(xie .ge.-epsc .and. xie .le.1.+epsc .and. 
-     .      eta .ge.-epsc .and. eta .le.1.+epsc .and. 
-     .      zeta.ge.-epsc .and. zeta.le.1.+epsc) then 
+            else if(xie .ge.-epsc .and. xie .le.1.+epsc .and.
+     .      eta .ge.-epsc .and. eta .le.1.+epsc .and.
+     .      zeta.ge.-epsc .and. zeta.le.1.+epsc) then
               nin = nin + 1
             end if
 c
 c           (orphan) points using extrapolation
 c
-            if(xie .lt.-epsc .or. xie .gt.1.+epsc .or. 
-     .      eta .lt.-epsc .or. eta .gt.1.+epsc .or. 
-     .      zeta.lt.-epsc .or. zeta.gt.1.+epsc) then 
+            if(xie .lt.-epsc .or. xie .gt.1.+epsc .or.
+     .      eta .lt.-epsc .or. eta .gt.1.+epsc .or.
+     .      zeta.lt.-epsc .or. zeta.gt.1.+epsc) then
               iflagg = 0
               norph        = norph + 1
               xorph(norph) = xp
@@ -4228,11 +4228,11 @@ c
                   iflag1  = 3
                 end if
               end if
-              if(xie.lt.-0.5-epsc .or. xie.gt.1.5+epsc) 
+              if(xie.lt.-0.5-epsc .or. xie.gt.1.5+epsc)
      .        norphc = norphc+1
-              if(eta.lt.-0.5-epsc .or. eta.gt.1.5+epsc) 
+              if(eta.lt.-0.5-epsc .or. eta.gt.1.5+epsc)
      .        norphc = norphc+1
-              if(zeta.lt.-0.5-epsc .or. zeta.gt.1.5+epsc) 
+              if(zeta.lt.-0.5-epsc .or. zeta.gt.1.5+epsc)
      .        norphc = norphc+1
               if(iflagg .gt. 1) norphd = norphd+1
             end if
@@ -4242,7 +4242,7 @@ c
           write(6,*)
           write(6,*) '      ',nin,' fringe points of mesh ',m,
      .    ' are interpolated from mesh ',m1
-          if(nex.gt.0) then  
+          if(nex.gt.0) then
           write(6,*) '      ',nex,' orphaned fringe points of mesh ',
      .    m,' are extrapolated from mesh ',m1
           write(6,*) '      ',norphc,' of these orphans have',
@@ -4265,12 +4265,12 @@ c
      .    lb(ixtrap1),' from the mesh ',mxtrap1,' target pt ',
      .    jn(ixtrap1),kn(ixtrap1),ln(ixtrap1)
           end if
-          write(6,*)'        check file 8 for more details' 
+          write(6,*)'        check file 8 for more details'
           end if
           if(nzero.gt.0) then
           write(6,*) '      ',nzero,' orphaned fringe points of mesh ',
      .    m,' use the nearest point in mesh ',m1
-          write(6,*)'        check file 8 for more details' 
+          write(6,*)'        check file 8 for more details'
           end if
           if(nex+nzero-norphb.ne.0)then
               write(6,*)'        WARNING: ',nex-norphb,' of these',
@@ -4295,7 +4295,7 @@ c
           stop
         end if
 c
-c       put data back in original order (i.e. all points 
+c       put data back in original order (i.e. all points
 c       interpolated/extrapolated from mesh m1 are sequential in list jb,kb,lb
 c
         itotl1 = itotal
@@ -4311,7 +4311,7 @@ c
         zitmp(i) = zi(i)
 120     continue
 c
-        do 125 m1 = 1,nmesh 
+        do 125 m1 = 1,nmesh
         if(list(m1).gt.0) then
           ii = 0
           do 126 i=1,itotl1
@@ -4328,7 +4328,7 @@ c
             zi(ii) = zitmp(i)
           end if
 126       continue
-c   
+c
 c         set interpolation pointers and load lists for input to flow solver
 c
           itotal = ii
@@ -4336,7 +4336,7 @@ c
           call setptr( m,m1,icase )
         end if
 125     continue
-c  
+c
       end if
 c
 1313  continue
@@ -4345,51 +4345,51 @@ c     reset itrace to "off"
       itrace = -1
 c
       return
-      end 
+      end
 c
-      subroutine ibchk( ib,iblank,ic,is,ji,ki,li,m1,jd,kd,ld, 
+      subroutine ibchk( ib,iblank,ic,is,ji,ki,li,m1,jd,kd,ld,
      . xb,yb,zb,jinew,kinew,linew,x,y,z )
-c 
-c***********************************************************************
-c     Purpose: set up array to check for fringe points, hole points or 
-c     interpolated boundary points in the interpolation stencil made up 
-c     of mesh m1 points. 
 c
-c     if all points in the interpolation stencil are field points (valid 
+c***********************************************************************
+c     Purpose: set up array to check for fringe points, hole points or
+c     interpolated boundary points in the interpolation stencil made up
+c     of mesh m1 points.
+c
+c     if all points in the interpolation stencil are field points (valid
 c     stencil), ib(i) is returned as zero.
-c     
+c
 c     if the stencil contains hole and/or fringe points (but no interpolated)
-c      
+c
 c
 
 c     if all points in the stencil are invalid (i.e. each stencil point
-c     is either a hole, fringe or interpolated boundary point), ib(i) 
+c     is either a hole, fringe or interpolated boundary point), ib(i)
 c     is returned as zero
 c
-c     if at least one point in the stencil is a field point, then 
-c     ib(i) is returned as negative; also returned are the indicies 
-c     jinew,kinew,linew of the nearest field point in the stencil to 
-c     the point to be interpolated (xb,yb,zb) 
+c     if at least one point in the stencil is a field point, then
+c     ib(i) is returned as negative; also returned are the indicies
+c     jinew,kinew,linew of the nearest field point in the stencil to
+c     the point to be interpolated (xb,yb,zb)
 c
-c  
+c
 c***********************************************************************
-c 
-      dimension ib(*), iblank(jd,kd,ld),ji(*),ki(*),li(*) 
+c
+      dimension ib(*), iblank(jd,kd,ld),ji(*),ki(*),li(*)
       dimension x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld),jinew(*),kinew(*),
-     .linew(*),xb(*),yb(*),zb(*) 
-c 
+     .linew(*),xb(*),yb(*),zb(*)
+c
 c***********************************************************************
-c 
+c
       dmin0 = 1.e30
 c
-      ii = is - 1 
+      ii = is - 1
       do 11 i = 1,ic
       dmin  = dmin0
       ib(i) = 0
-      ii    = ii + 1 
-      j     = ji(ii) 
-      k     = ki(ii) 
-      l     = li(ii) 
+      ii    = ii + 1
+      j     = ji(ii)
+      k     = ki(ii)
+      l     = li(ii)
       jp1   = min( j+1,jd )
       kp1   = min( k+1,kd )
       lp1   = min( l+1,ld )
@@ -4400,13 +4400,13 @@ c
       i5   = iblank(j,k,lp1)
       i6   = iblank(jp1,k,lp1)
       i7   = iblank(jp1,kp1,lp1)
-      i8   = iblank(j,kp1,lp1)  
+      i8   = iblank(j,kp1,lp1)
       ib1  = min( i1,i2,i3,i4,i5,i6,i7,i8)
       ib2  = max( i1,i2,i3,i4,i5,i6,i7,i8)
 c
       if(ib1*ib2 .ne. 1) then
 c
-c       stencil contains at least one hole, fringe, or interpolated 
+c       stencil contains at least one hole, fringe, or interpolated
 c       boundary point
 c
         if(i1.eq.1) then
@@ -4415,7 +4415,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = j
-            kmin = k 
+            kmin = k
             lmin = l
           end if
         end if
@@ -4425,7 +4425,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = jp1
-            kmin = k 
+            kmin = k
             lmin = l
           end if
         end if
@@ -4445,7 +4445,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = j
-            kmin = kp1 
+            kmin = kp1
             lmin = l
           end if
         end if
@@ -4455,7 +4455,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = j
-            kmin = k 
+            kmin = k
             lmin = lp1
           end if
         end if
@@ -4465,7 +4465,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = jp1
-            kmin = k 
+            kmin = k
             lmin = lp1
           end if
         end if
@@ -4485,7 +4485,7 @@ c
           if(d1.lt.dmin) then
             dmin = d1
             jmin = j
-            kmin = kp1 
+            kmin = kp1
             lmin = lp1
           end if
         end if
@@ -4521,35 +4521,35 @@ c
       end if
 c
   11  continue
-c 
+c
       return
-      end 
+      end
       subroutine iblcon( iblank,jd,kd,ld )
 c
 c***********************************************************************
-c     Purpose: remove the connection data from iblank by setting 
+c     Purpose: remove the connection data from iblank by setting
 c     iblank = 0 if iblank .ne. 1.
 c***********************************************************************
-c 
+c
       dimension iblank(jd,kd,ld)
-c 
+c
       do 11 l = 1,ld
       do 11 k = 1,kd
       do 11 j = 1,jd
        if( iblank(j,k,l).ne.1 )  iblank(j,k,l)=0
    11 continue
-c 
+c
       return
-      end 
+      end
       subroutine iblplt(m,iblank,jd,kd,ld)
-c********************************************************************** 
-c     Purpose: print the iblank array for each mesh. 
-c********************************************************************** 
-c 
+c**********************************************************************
+c     Purpose: print the iblank array for each mesh.
+c**********************************************************************
+c
       dimension iblank(jd,kd,ld)
-c 
-      write(6,299) m 
-c 
+c
+      write(6,299) m
+c
       do 10 l=1,ld
         icell =0
         do 30 k=1,kd
@@ -4559,41 +4559,41 @@ c
         if(icell.eq.0) then
               write(6,302) l
         else
-              write(6,301) l 
+              write(6,301) l
         do 20 k=1,kd
-              write(6,305)(abs(iblank(j,k,l)),j=1,jd) 
+              write(6,305)(abs(iblank(j,k,l)),j=1,jd)
  20     continue
         end if
  10   continue
-c 
- 299   format(/,/,' iblank array for cell centers of mesh=',i3) 
+c
+ 299   format(/,/,' iblank array for cell centers of mesh=',i3)
  301   format(' .....l=constant= ',i3)
  302   format(' .....all values unity for l=constant= ',i3)
  305   format(' ',130i1)
-c 
-      return 
+c
+      return
       end
-      subroutine initia 
+      subroutine initia
 c
 c***********************************************************************
 c     Purpose: read connection and grid parameters
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
      .                ibpts(mdim), jbpt(idim), kbpt(idim), lbpt(idim),
      .                ji(idim),ki(idim), li(idim)
-      common /book3/  iblank(mlen) 
+      common /book3/  iblank(mlen)
       common /grdlim/ jsrs(mdim),jsre(mdim),ksrs(mdim),ksre(mdim),
-     .                lsrs(mdim),lsre(mdim) 
+     .                lsrs(mdim),lsre(mdim)
       common /grid2/  mjmax(mdim),mkmax(mdim),mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /bound1/ ihbtyp(mdim,mdim),jh1(ipmax),jh2(ipmax),
      .                kh1(ipmax),kh2(ipmax),lh1(ipmax),lh2(ipmax),
-     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax) 
+     .                ip1(ipmax),ip2(ipmax),mh(ipmax),ihplt(ipmax)
       common /bound2/ iobtyp(mdim),nobtyp(mdim),jo1(ipmax),jo2(ipmax),
      .                ko1(ipmax),ko2(ipmax),lo1(ipmax),lo2(ipmax)
       common /iseq/   iseq(mdim),icount(mdim)
@@ -4601,7 +4601,7 @@ c
       common /snafu/  iholeh(mdim,mhldim),iholeo(mdim,mhldim),
      .                iorphh(mdim,mhldim),iorpho(mdim,mhldim)
       common /igrdtyp/ ip3dgrd,ialph
-c 
+c
       dimension title(20)
 c
 c ***************************************************************
@@ -4633,7 +4633,7 @@ c
 c
       read(5,10)
       write(6,101)
-      nout    = 0 
+      nout    = 0
       nob     = 0
       ihotest = 0
       do 100 n=1,nmesh
@@ -4779,7 +4779,7 @@ c
       if (l2.eq.0) l2 = mlmax(mm)+1
 c
 c
-c     check for inappropriate indices on components of hole surface 
+c     check for inappropriate indices on components of hole surface
 c
       if (abs(j1) .gt. mjmax(mm)+1) then
          write(6,440) j1,mjmax(mm)+1
@@ -4911,11 +4911,11 @@ c
            if (k2.eq.0) k2 = mkmax(mm)
            if (l1.eq.0) l1 = 1
            if (l2.eq.0) l2 = mlmax(mm)
-c 
+c
            if (j1.lt.0) j2 = 0
            if (k1.lt.0) k2 = 0
            if (l1.lt.0) l2 = 0
-c  
+c
            write(6,20) mm,j1,j2,k1,k2,l1,l2
            iseq(mm)      = iseq(mm)+1
 c
@@ -4974,17 +4974,17 @@ c         write(6,701)
      .       1x,17Hbut NOBTYP(m) = 0)
 c
       mb = 0
-      do 750 m=1,nmesh 
+      do 750 m=1,nmesh
       iobtyp(m) = 0
-      if (nobtyp(m).ne.0) then 
+      if (nobtyp(m).ne.0) then
          iobtyp(m) = mb+1
          do 725 nb=1,nobtyp(m)
          mb = mb+1
-         if (jo1(mb).gt.mjmax(m)+2 .or. jo2(mb).gt.mjmax(m)+2 .or. 
-     .       ko1(mb).gt.mkmax(m)+2 .or. ko2(mb).gt.mkmax(m)+2 .or. 
-     .       lo1(mb).gt.mlmax(m)+2 .or. lo2(mb).gt.mlmax(m)+2 .or. 
-     .       jo1(mb).lt.-1         .or. jo2(mb).lt.-1         .or. 
-     .       ko1(mb).lt.-1         .or. ko2(mb).lt.-1         .or. 
+         if (jo1(mb).gt.mjmax(m)+2 .or. jo2(mb).gt.mjmax(m)+2 .or.
+     .       ko1(mb).gt.mkmax(m)+2 .or. ko2(mb).gt.mkmax(m)+2 .or.
+     .       lo1(mb).gt.mlmax(m)+2 .or. lo2(mb).gt.mlmax(m)+2 .or.
+     .       jo1(mb).lt.-1         .or. jo2(mb).lt.-1         .or.
+     .       ko1(mb).lt.-1         .or. ko2(mb).lt.-1         .or.
      .       lo1(mb).lt.-1         .or. lo2(mb).lt.-1) then
              write(6,755) m
              stop
@@ -4997,70 +4997,70 @@ c
 c
 c
 c***********************************************************************
-c                initialize iblank to 1 for each grid 
+c                initialize iblank to 1 for each grid
 c***********************************************************************
-c 
-      do 1000 m=1,nmesh 
-      jd = mjmax(m) 
-      kd = mkmax(m) 
-      ld = mlmax(m) 
+c
+      do 1000 m=1,nmesh
+      jd = mjmax(m)
+      kd = mkmax(m)
+      ld = mlmax(m)
       call putibl( m,iblank,jd,kd,ld )
  1000 continue
-c 
+c
 c***********************************************************************
 c                initialize the interpolation arrays for each grid
 c***********************************************************************
-c 
+c
       nwr = 0
-      do 1100 m=1,nmesh 
+      do 1100 m=1,nmesh
       call putint( nwr,m,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint )
  1100 continue
-c 
+c
 c***********************************************************************
 c                         consistency check
 c***********************************************************************
-c 
-c     check total number of points less than mlen 
-c 
+c
+c     check total number of points less than mlen
+c
       istop = 0
-      do 1200 m=1,nmesh 
+      do 1200 m=1,nmesh
       ntotal = (mjmax(m)+1)*(mkmax(m)+1)*(mlmax(m)+1)
-      if (ntotal.gt.mlen) then 
+      if (ntotal.gt.mlen) then
          write(6,1205) m,ntotal,mlen
-         istop = 1 
+         istop = 1
       end if
  1200 continue
- 1205 format('0',10x,'fatal error in mesh = ',i3,/, 
-     .           10x,'the total number of points in', 
+ 1205 format('0',10x,'fatal error in mesh = ',i3,/,
+     .           10x,'the total number of points in',
      .            1x,'mesh is ',i6,1x,'max dimension is ',i6  )
-c 
+c
 c     check each dimension
-c 
+c
       if (nmesh.gt.mdim) then
-         write(6,1305) nmesh,mdim 
+         write(6,1305) nmesh,mdim
          istop = 1
       else
-         do 1300 m=1,nmesh 
+         do 1300 m=1,nmesh
          if (mjmax(m)+1.gt.jdim .or. mkmax(m)+1.gt.kdim .or.
      .       mlmax(m)+1.gt.ldim)  then
-             write(6,1310) m,mjmax(m)+1,jdim,mkmax(m)+1,kdim, 
+             write(6,1310) m,mjmax(m)+1,jdim,mkmax(m)+1,kdim,
      .                    mlmax(m)+1,ldim
              istop = 1
-         end if 
+         end if
  1300    continue
       end if
- 1305 format(1h0,130('*'),/,/,5x,'failure in initia,number of' 
+ 1305 format(1h0,130('*'),/,/,5x,'failure in initia,number of'
      .       ,1x,'grids input,nmesh=',i3,3x,'is greater than dimension,'
-     .       ,1x,'mdim =',i3,/,/,130('*') ) 
+     .       ,1x,'mdim =',i3,/,/,130('*') )
  1310 format('0',130('*'),/,/,5x,'input failure in initia',
-     .        1x,'exceeds maximum dimension', /, 
-     .       25x,'mesh =',i5,3x,'jmax,jdim',2i5,5x,'kmax,kdim',2i5, 
-     .        5x,'lmax,ldim',2i5,/,/,130('*') ) 
+     .        1x,'exceeds maximum dimension', /,
+     .       25x,'mesh =',i5,3x,'jmax,jdim',2i5,5x,'kmax,kdim',2i5,
+     .        5x,'lmax,ldim',2i5,/,/,130('*') )
 
-c 
+c
       if (istop.eq.1) stop 'initia'
       return
-      end 
+      end
       subroutine interp(jmax1,kmax1,lmax1,x11,y11,z11,ji,ki,li,
      .                  xie,eta,zeta,xintrp,yintrp,zintrp)
 c
@@ -5080,7 +5080,7 @@ c
       if(kmax1.lt.2) kinc1 = 0
       if(lmax1.lt.2) linc1 = 0
 c
-c     cell center value of point in mesh m via trilinear 
+c     cell center value of point in mesh m via trilinear
 c     interpolation in target cell ji,ki,li of mesh m1
 c
       x1 = x11(ji,ki,li)
@@ -5157,29 +5157,29 @@ c
       c8 = dz7 - dz3 - dz6 + dz2 - dz8 + dz4 + dz5
 c
       xintrp = x1 + xie*( a2 + a5*eta + a6*zeta + a8*eta*zeta )
-     .        + eta*( a3 + a7*zeta ) + a4*zeta 
+     .        + eta*( a3 + a7*zeta ) + a4*zeta
       yintrp = y1 + xie*( b2 + b5*eta + b6*zeta + b8*eta*zeta )
-     .        + eta*( b3 + b7*zeta ) + b4*zeta 
+     .        + eta*( b3 + b7*zeta ) + b4*zeta
       zintrp = z1 + xie*( c2 + c5*eta + c6*zeta + c8*eta*zeta )
-     .        + eta*( c3 + c7*zeta ) + c4*zeta 
+     .        + eta*( c3 + c7*zeta ) + c4*zeta
 c
       return
       end
       subroutine intpt( itr,jimage,kimage,limage,jd,kd,
      .                   ld,m1,xm1,ym1,zm1,jd1,kd1,ld1,m,i1)
 c
-c*********************************************************************** 
-c     Purpose: find interpolation coefficients for interpolation to fringe 
+c***********************************************************************
+c     Purpose: find interpolation coefficients for interpolation to fringe
 c     or boundary points of mesh m from mesh m1
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
       common /where/  nblkpt(idim)
-c 
+c
       dimension xm1(jd1,kd1,ld1), ym1(jd1,kd1,ld1), zm1(jd1,kd1,ld1)
       dimension jimage(jd1,kd1,ld1),kimage(jd1,kd1,ld1),
      .          limage(jd1,kd1,ld1)
@@ -5192,11 +5192,11 @@ c
       dum2  = 0.
       dum3  = 0.
 c
-      if( itotal .gt. idim) then 
+      if( itotal .gt. idim) then
         write(6,601) m,idim,itotal
-  601   format('0', ' dimension exceeded on interpolation arrays for' 
-     .  ,1x,'mesh =',i5,2x,'idim =',i5,2x,'itotal = ',i5) 
-        stop 'intpt' 
+  601   format('0', ' dimension exceeded on interpolation arrays for'
+     .  ,1x,'mesh =',i5,2x,'idim =',i5,2x,'itotal = ',i5)
+        stop 'intpt'
       end if
 c
       call trace(itr,m1,idum2,idum3,idum4,dum1,dum2,dum3)
@@ -5207,11 +5207,11 @@ c
 c
       if(nblkpt(i).eq.0) then
 c
-        xp = xbo(i) 
-        yp = ybo(i) 
-        zp = zbo(i) 
+        xp = xbo(i)
+        yp = ybo(i)
+        zp = zbo(i)
 c
-c       search over mesh m1 to find the cell surrounding the mesh m 
+c       search over mesh m1 to find the cell surrounding the mesh m
 c       point xp,yp,zp and compute the required interpolation data
 c
         icall = icall + 1
@@ -5220,22 +5220,22 @@ c
         if(iok.eq.1) nblkpt(i) = -(m1+mdim)
 c
       end if
-c      
+c
    12 continue
 c
       return
-      end 
+      end
       subroutine obibl( m,n,iblank,jd,kd,ld )
-c 
+c
 c***********************************************************************
 c     Purpose: outer boundary points that are interpolated from another grid,
 c     m1, are flagged by setting iblank = m1 +mdim. this will keep
-c     mesh = 1 and iblank= 1 unique. these points will be 
+c     mesh = 1 and iblank= 1 unique. these points will be
 c     set to zero later
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      &               mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
@@ -5244,18 +5244,18 @@ c
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
-c 
+c
       dimension iblank(jd,kd,ld)
-c 
-c 
+c
+c
         nnn = 1
         nserch=moutr(m,nnn)
       do 21 nn = 1,nserch
         nnn        = 1
         m1         = loutr(m,nnn,nn)
-        ns         = mobs(m,m1) 
-        ip         = ipntr(m1,ns) 
-        np         = npntr(m1,ns) 
+        ns         = mobs(m,m1)
+        ip         = ipntr(m1,ns)
+        np         = npntr(m1,ns)
         call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      &               dxint,dyint,dzint )
         do 11 ib = ip,np
@@ -5269,33 +5269,33 @@ c
           end if
    11   continue
    21 continue
-c 
+c
       return
-      end 
-      subroutine obtot( m,x,y,z,iblank,jd,kd,ld,i1 ) 
-c 
+      end
+      subroutine obtot( m,x,y,z,iblank,jd,kd,ld,i1 )
+c
 c***********************************************************************
-c     Purpose: any points on the outer boundary of mesh m which need to 
-c     interpolated from other meshes are loaded into the 
-c     1-d lists jb,kb,lb.  outer boundary points that are also hole 
+c     Purpose: any points on the outer boundary of mesh m which need to
+c     interpolated from other meshes are loaded into the
+c     1-d lists jb,kb,lb.  outer boundary points that are also hole
 c     points of mesh m are then removed from these lists
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /bound2/ iobtyp(mdim),nobtyp(mdim),
      .                jo1(ipmax),jo2(ipmax),ko1(ipmax),ko2(ipmax),
      .                lo1(ipmax),lo2(ipmax)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
      .                zill(idim),nbnd,norph,nill
-c 
+c
       dimension iblank(jd,kd,ld),ife(6)
       dimension x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld)
-c 
+c
       do ll=1,6
          ife(ll) = 0
       end do
@@ -5320,19 +5320,19 @@ c
 c
       do 100 l=ls,le
       do 100 k=ks,ke
-      do 100 j=js,je      
+      do 100 j=js,je
       ito      = ito + 1
       if( itotal+ito.gt.idim ) then
-         write(6,602) ito+itotal,idim 
-602      format('0',130('*'),/,/,5x,'failure in obtot: total' 
-     .   ,1x,'number of boundary points exceeds available storage', 
-     .   /,20x,'itotal = ',i6,2x,'idim = ',i6, 
+         write(6,602) ito+itotal,idim
+602      format('0',130('*'),/,/,5x,'failure in obtot: total'
+     .   ,1x,'number of boundary points exceeds available storage',
+     .   /,20x,'itotal = ',i6,2x,'idim = ',i6,
      .   /,/,130('*') )
          stop 'obtot'
       end if
       jb(ito) = j
       kb(ito) = k
-      lb(ito) = l 
+      lb(ito) = l
       call bound(j,k,l,x1,y1,z1,jd,kd,ld,x,y,z,ife)
       xbo(ito) = x1
       ybo(ito) = y1
@@ -5359,23 +5359,23 @@ c
       write(6,*)
       write(6,*) '    there are ',ito,
      .' boundary points in mesh ',m,' for which'
-        write(6,*) '    stencils must be determined' 
+        write(6,*) '    stencils must be determined'
 c
 c     exclude hole points from list of outer boundary points
-c 
+c
       ni = itotal
       i1 = itotal + 1
-      do 1001 i = 1,ito 
+      do 1001 i = 1,ito
       j  = max(1,jb(i))
       k  = max(1,kb(i))
       l  = max(1,lb(i))
       j  = min(jd,j)
       k  = min(kd,k)
       l  = min(ld,l)
-      if( iblank(j,k,l).eq.1 )then 
-        ni        = ni + 1 
-        jb(ni)    = jb(i) 
-        kb(ni)    = kb(i) 
+      if( iblank(j,k,l).eq.1 )then
+        ni        = ni + 1
+        jb(ni)    = jb(i)
+        kb(ni)    = kb(i)
         lb(ni)    = lb(i)
         xbo(ni)   = xbo(i)
         ybo(ni)   = ybo(i)
@@ -5390,48 +5390,48 @@ c
         zbnd(nbnd) = zbo(i)
 c      else
 c        write(8,*) ' mesh ',m,'  boundary point eliminated  i,j,k,l= ',
-c     .  i,jb(i),kb(i),lb(i) 
+c     .  i,jb(i),kb(i),lb(i)
       end if
  1001 continue
-c 
+c
       if(ni.ne.itotal+ito) then
-        ito        = ni-itotal 
+        ito        = ni-itotal
         write(6,*)'    ...after omitting hole points, there',
      .  ' are ',ito,' points for which'
         write(6,*)'    stencils must be determined'
       end if
 c
       itotal = itotal +ito
-c 
+c
       return
-      end 
+      end
       subroutine orphan(m,n,nserch,i1,iorph,iflg)
-c 
+c
 c***********************************************************************
 c     Purpose: deal with the inevitable orphan points: if iorph = 0, use
-c     nearest neighboring point (zeroth order interpolation) from the 
-c     meshes in the search list. if iorph = 1, extrapolate from the nearest 
+c     nearest neighboring point (zeroth order interpolation) from the
+c     meshes in the search list. if iorph = 1, extrapolate from the nearest
 c     neighbor. if iorph = 2, use nearest neighbor only if extrapolation
 c     occurs outside the usually acceptable range of -0.5 to 1.5.
 c***********************************************************************
 c
       include 'mag1.h'
-c 
+c
       common /grid1 / x(mlen), y(mlen), z(mlen)
       common /grid2 / mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /grdlim/ jsrs(mdim), jsre(mdim), ksrs(mdim), ksre(mdim),
-     .                lsrs(mdim), lsre(mdim) 
+     .                lsrs(mdim), lsre(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+     .                ln(idim), itotal
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /where/  nblkpt(idim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /tol/    epsc
-c 
+c
       dimension ds(idim),nbltmp(idim)
 c
       do 220 i=i1,itotal
@@ -5440,33 +5440,33 @@ c
 c
       do 22 nn = 1,nserch
       if (iflg.eq.0) then
-        m1  = lhole(m,n,nn) 
+        m1  = lhole(m,n,nn)
       else
         nnn = 1
         m1 = loutr(m,nnn,nn)
-      end if      
+      end if
       jd1 = mjmax(m1)
       kd1 = mkmax(m1)
       ld1 = mlmax(m1)
       call getgrd( m1,x,y,z,jimage,kimage,limage,
-     .jd1,kd1,ld1 ) 
+     .jd1,kd1,ld1 )
       do 23 i=i1,itotal
       if(nblkpt(i).eq.0) then
-        j  = jb(i) 
+        j  = jb(i)
         k  = kb(i)
 	l  = lb(i)
         xp = xbo(i)
         yp = ybo(i)
         zp = zbo(i)
 c
-c       minimum distance search on mesh m1 faces only  
+c       minimum distance search on mesh m1 faces only
 c
-        js = jsrs(m1) 
-        je = jsre(m1) 
-        ks = ksrs(m1) 
-        ke = ksre(m1) 
-        ls = lsrs(m1) 
-        le = lsre(m1) 
+        js = jsrs(m1)
+        je = jsre(m1)
+        ks = ksrs(m1)
+        ke = ksre(m1)
+        ls = lsrs(m1)
+        le = lsre(m1)
         call dsmin2(jd1,kd1,ld1,x,y,z,
      .  xp,yp,zp,jp,kp,lp,js,je,ks,ke,ls,le,dmin1)
 c
@@ -5526,8 +5526,8 @@ c              linear extrapolation not successful...use zeroth order
              end if
 c
 c           for iorph=2, check extrapolation coefficients to
-c           see if they are outside usually acceptable range 
-c           of -0.5 to 1.5 . if outside acceptable range, use 
+c           see if they are outside usually acceptable range
+c           of -0.5 to 1.5 . if outside acceptable range, use
 c           nearest neighbor instead
 c
             if(iorph.eq.2) then
@@ -5544,7 +5544,7 @@ c
                     end if
                end if
             end if
-c 
+c
             iok = 1
 c
           end if
@@ -5616,7 +5616,7 @@ c***
              jn(i) = jnsav
              kn(i) = knsav
              ln(i) = lnsav
-             nbltmp(i) = nbsav 
+             nbltmp(i) = nbsav
            end if
           end if
         end if
@@ -5626,32 +5626,32 @@ c***
 c
       do 221 i=i1,itotal
       if(nblkpt(i).eq.0) nblkpt(i) = nbltmp(i)
-221   continue         
+221   continue
 c
       return
       end
-c     
+c
       subroutine outer
 c
 c***********************************************************************
-c     Purpose: compute the interpolation data for the outer boundaries of 
-c     mesh  m 
+c     Purpose: compute the interpolation data for the outer boundaries of
+c     mesh  m
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
-      common /book3/  iblank(mlen) 
+c
+      common /book3/  iblank(mlen)
       common /grid1/  x(mlen), y(mlen), z(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
       common /where/  nblkpt(idim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /tol/    epsc
       common /pltpt/  xbnd(idim),ybnd(idim),zbnd(idim),xorph(idim),
      .                yorph(idim),zorph(idim),xill(idim),yill(idim),
@@ -5659,34 +5659,34 @@ c
       common /trace1/ itrace
       common /snafu/  iholeh(mdim,mhldim),iholeo(mdim,mhldim),
      .                iorphh(mdim,mhldim),iorpho(mdim,mhldim)
-c 
+c
       dimension jbtmp(idim),kbtmp(idim),lbtmp(idim),
      .          jntmp(idim),kntmp(idim),lntmp(idim),xitmp(idim),
      .          yitmp(idim),zitmp(idim)
       dimension list(mdim),iskip(idim)
-c  
+c
       character*4 flag(3)
 c
 c     itrace < 0, do not write search history for current boundary point
-c     itrace = 0, overwrite history from previous point with current 
+c     itrace = 0, overwrite history from previous point with current
 c     itrace = 1, retain the search history for ALL points (may get huge file)
 c     trace output found in unit 7
 c
       itrace =  -1
 c
-      flag(1) = 'xie ' 
-      flag(2) = 'eta ' 
+      flag(1) = 'xie '
+      flag(2) = 'eta '
       flag(3) = 'zeta'
-c 
+c
       do 31 m = 1,nmesh
 c
-      jd = mjmax(m) 
-      kd = mkmax(m) 
+      jd = mjmax(m)
+      kd = mkmax(m)
       ld = mlmax(m)
-      ntot = noutr(m) 
+      ntot = noutr(m)
       itotal = 0
 c
-      if(ntot .gt. 0) then 
+      if(ntot .gt. 0) then
 c
         do 610 mm=1,nmesh
         list(mm) = 0
@@ -5705,20 +5705,20 @@ c
         nserch=moutr(m,nnn)
         iorph = iorpho(m,nnn)
 c
-        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld ) 
+        call getgrd( m,x,y,z,jimage,kimage,limage,jd,kd,ld )
         call getibl( m,iblank,jd,kd,ld )
 c
 c       place outer boundary points of mesh m into 1-d lists jb,kb,lb of
 c       points to be interpolated
-c 
+c
         call obtot( m,x,y,z,iblank,jd,kd,ld,i1 )
-c 
+c
 c       initialize block pointer array nblkpt
 c       ...nblkpt(i) = 0 if interp. stencil for boundary point i not yet found
-c       ...nblkpt(i) = -(m1+mdim)  if interp. stencil for boundary point i 
+c       ...nblkpt(i) = -(m1+mdim)  if interp. stencil for boundary point i
 c                       has been found in mesh m1
         do 112 i=i1,itotal
-        nblkpt(i) = 0 
+        nblkpt(i) = 0
 112     continue
 c
 c       search over all meshes connected to  mesh m to find interpolation
@@ -5727,12 +5727,12 @@ c
         do 21 nn = 1,nserch
         nnn = 1
         m1  = loutr(m,nnn,nn)
-        jd1 = mjmax(m1) 
-        kd1 = mkmax(m1) 
-        ld1 = mlmax(m1) 
-        call getgrd( m1,x,y,z,jimage,kimage,limage,jd1,kd1,ld1 ) 
-        call intpt( 0,jimage,kimage,limage,jd,kd,ld, 
-     .  m1,x,y,z,jd1,kd1,ld1,m,i1 ) 
+        jd1 = mjmax(m1)
+        kd1 = mkmax(m1)
+        ld1 = mlmax(m1)
+        call getgrd( m1,x,y,z,jimage,kimage,limage,jd1,kd1,ld1 )
+        call intpt( 0,jimage,kimage,limage,jd,kd,ld,
+     .  m1,x,y,z,jd1,kd1,ld1,m,i1 )
 c       reject stencils that contain hole/fringe pts.
           call getibl( m1,iblank,jd1,kd1,ld1 )
           do 1114 i=i1,itotal
@@ -5766,17 +5766,17 @@ c       reject stencils that contain hole/fringe pts.
           end if
  1114     continue
 21      continue
-c 
-c       check to see if interpolation stencils were not found for any 
+c
+c       check to see if interpolation stencils were not found for any
 c       mesh m boundary points. for such "orphan" points, use either the nearest
-c       point from one of the meshes in the search list, with xi=eta=zeta=0 
-c       (zeroth order interpolation), or, use extrapolation from the nearest 
+c       point from one of the meshes in the search list, with xi=eta=zeta=0
+c       (zeroth order interpolation), or, use extrapolation from the nearest
 c       point.  extrapolation is distinguished from interpolation in that an
 c       interpolation stencil has 0 < xie,eta,zeta < 1 (to within a tolerance
 c       epsc) while for extrapolation, either xie, eta or zeta is < 0 or > 1
-c       use of the nearest neighbor or extrapolation should occur only from 
+c       use of the nearest neighbor or extrapolation should occur only from
 c       boundaries of mesh m1; otherwise search routine has failed in some way
-c       
+c
         notok = 0
         do 113 i=i1,itotal
         if(nblkpt(i).eq.0) notok = notok + 1
@@ -5785,23 +5785,23 @@ c
         if(notok.gt.0) then
           iflg = 1
           call orphan(m,n,nserch,i1,iorph,iflg)
-        end if    
+        end if
 c
-c       check to see if any interpolation stencils contain hole points 
+c       check to see if any interpolation stencils contain hole points
 c       if any do, check all other meshes in search list (if more than one)
 c       to see if a valid stencil can be found elsewhere
-c 
-        nnn = 1      
+c
+        nnn = 1
         if(iholeo(m,nnn).gt.0) then
           iflg = 1
           call reserch(m,n,nserch,i1,iskip,iorph,iflg)
         end if
-1111    continue 
+1111    continue
 c
-c       generate list of all meshes which got searched to find the boundary 
+c       generate list of all meshes which got searched to find the boundary
 c       points of all outer boundaries in the current mesh
 c
-        do 612 n = 1,ntot 
+        do 612 n = 1,ntot
         nnn = 1
         nserch=moutr(m,nnn)
         do 612 nn=1,nserch
@@ -5809,9 +5809,9 @@ c
         m1 = loutr(m,nnn,nn)
         if(list(m1).eq.0) list(m1) = 1
 612     continue
-c  
+c
 c       summary of search routine results
-c      
+c
         write(6,*)
         write(6,*) '    summary of search routine results for mesh ',m,
      .  ' stencils:'
@@ -5854,7 +5854,7 @@ c
               nzero = nzero + 1
 c             for stencils weighted totally at nearest neighbor,
 c             keep all points in stencil within bounds of cell center grid,
-c             grid,  1 .ge. j/k/l .le. j.k.ld1-1  
+c             grid,  1 .ge. j/k/l .le. j.k.ld1-1
 c             for example, if nearest neighbor is at last cell center in
 c             l-direction, say, l=ld1, then switch stencil from
 c             jn,kn,ln with xie,eta,zeta=0 to jn,kn,ln-1 with xie=eta=0,
@@ -5894,17 +5894,17 @@ c
 c
 c           points using interpolation
 c
-            else if(xie .ge.-epsc .and. xie .le.1.+epsc .and. 
-     .         eta .ge.-epsc .and. eta .le.1.+epsc .and. 
-     .         zeta.ge.-epsc .and. zeta.le.1.+epsc) then 
+            else if(xie .ge.-epsc .and. xie .le.1.+epsc .and.
+     .         eta .ge.-epsc .and. eta .le.1.+epsc .and.
+     .         zeta.ge.-epsc .and. zeta.le.1.+epsc) then
                nin = nin + 1
             end if
 c
 c           (orphan) points using extrapolation
 c
-            if(xie .lt.-epsc .or. xie .gt.1.+epsc .or. 
-     .      eta .lt.-epsc .or. eta .gt.1.+epsc .or. 
-     .      zeta.lt.-epsc .or. zeta.gt.1.+epsc) then 
+            if(xie .lt.-epsc .or. xie .gt.1.+epsc .or.
+     .      eta .lt.-epsc .or. eta .gt.1.+epsc .or.
+     .      zeta.lt.-epsc .or. zeta.gt.1.+epsc) then
               iflagg = 0
               norph        = norph + 1
               xorph(norph) = xp
@@ -6004,12 +6004,12 @@ c
      .    lb(ixtrap1),' from the mesh ',mxtrap1,' target pt ',
      .    jn(ixtrap1),kn(ixtrap1),ln(ixtrap1)
           end if
-          write(6,*)'        check file 8 for more details' 
+          write(6,*)'        check file 8 for more details'
           end if
           if(nzero.gt.0) then
           write(6,*) '      ',nzero,' orphaned boundary points of ',
      .    'mesh ',m,' use the nearest point in mesh ',m1
-          write(6,*)'        check file 8 for more details' 
+          write(6,*)'        check file 8 for more details'
           end if
           if(nex+nzero-norphb.ne.0)then
             write(6,*)'        WARNING: ',nex+nzero-norphb,' of these',
@@ -6022,7 +6022,7 @@ c
           nextot = nextot + nex
           nzerot = nzerot + nzero
 c
-        end if 
+        end if
 c
 114     continue
 c
@@ -6034,7 +6034,7 @@ c
           stop
         end if
 c
-c       put data back in original order (i.e. all points 
+c       put data back in original order (i.e. all points
 c       interpolated/extrapolated from mesh m1 are sequential in list jb,kb,lb
 c
         itotl1 = itotal
@@ -6066,7 +6066,7 @@ c
             zi(ii) = zitmp(i)
           end if
 126       continue
-c   
+c
 c         set interpolation pointers and load lists for input to flow solver
 c
           itotal = ii
@@ -6075,74 +6075,74 @@ c
         end if
 125     continue
 c
-      end if 
+      end if
 c
 31    continue
-c 
-c     update and store iblank array for mesh m (set iblank on outer 
+c
+c     update and store iblank array for mesh m (set iblank on outer
 c     boundary equal to m1 + mdim)
-c 
-      do 41 m = 1,nmesh  
+c
+      do 41 m = 1,nmesh
       ntot = noutr(m)
       if( ntot.gt.0 ) then
         do 42 n=1,ntot
-        jd = mjmax(m) 
-        kd = mkmax(m) 
-        ld = mlmax(m) 
+        jd = mjmax(m)
+        kd = mkmax(m)
+        ld = mlmax(m)
         call getibl( m,iblank,jd,kd,ld )
         call obibl( m,n,iblank,jd,kd,ld )
         call putibl( m,iblank,jd,kd,ld )
    42   continue
       end if
-   41 continue 
+   41 continue
 c
 c     reset itrace to "off"
       itrace = -1
 c
       return
-      end 
+      end
 c
-      subroutine output 
-c 
+      subroutine output
+c
 c***********************************************************************
-c     Purpose: write summary of overlapped mesh calculation to unit 6, 
+c     Purpose: write summary of overlapped mesh calculation to unit 6,
 c     and  write interpolation data to unit 2
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       character*20 titl
 c
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
      .                ibpts(mdim), jbpt(idim), kbpt(idim), lbpt(idim),
      .                ji(idim),ki(idim), li(idim)
-      common /book3/  iblank(mlen) 
+      common /book3/  iblank(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
-c 
+     .                ln(idim), itotal
+c
       dimension ibc(idim), ibpnts(mdim), iipnts(mdim)
       dimension intpts(4),iord(idim)
-c 
+c
 c***********************************************************************
 c     print out summary of overlapped mesh calculations
 c***********************************************************************
-c 
+c
 c     count number of hole/fringe points in each mesh; get total for all meshes
 c
       iholpt = 0
       ifrgpt = 0
       npnts  = 0
-c 
-      do 12 m = 1,nmesh 
-c 
-      jd = mjmax(m) 
-      kd = mkmax(m) 
-      ld = mlmax(m)  
-      npnts = npnts + jd*kd*ld 
+c
+      do 12 m = 1,nmesh
+c
+      jd = mjmax(m)
+      kd = mkmax(m)
+      ld = mlmax(m)
+      npnts = npnts + jd*kd*ld
       call getibl( m,iblank,jd,kd,ld )
 c
       do 11 l = 1,ld
@@ -6154,7 +6154,7 @@ c
    11 continue
    12 continue
 c
-      write(6,*) 
+      write(6,*)
       write(6,*) '  *** summary of maggie preprocessor ***'
       write(6,*)
       write(6,*) '    there are ', nmesh,' grids in the composite mesh'
@@ -6163,107 +6163,107 @@ c
       write(6,*) '              ',ifrgpt,' are fringe points'
 c
 c***********************************************************************
-c               set up CFL3D data structures 
+c               set up CFL3D data structures
 c***********************************************************************
-c  
+c
 c
 c     set iblank for flow solver (remove connection information)
-c 
+c
       do 60 m = 1,nmesh
-      jd=mjmax(m) 
-      kd=mkmax(m) 
-      ld=mlmax(m) 
+      jd=mjmax(m)
+      kd=mkmax(m)
+      ld=mlmax(m)
       call getibl( m,iblank,jd,kd,ld )
-c*** 
-c     output of iblank arrays WITH connection info: call subroutine 
+c***
+c     output of iblank arrays WITH connection info: call subroutine
 c     putibl2 to overwrite units 10 + mesh with this data
 c     for use with checkmag2 program
-      call putibl2( m,iblank,jd,kd,ld ) 
-c*** 
-      call iblcon( iblank,jd,kd,ld ) 
-      call putibl( m,iblank,jd,kd,ld ) 
+      call putibl2( m,iblank,jd,kd,ld )
+c***
+      call iblcon( iblank,jd,kd,ld )
+      call putibl( m,iblank,jd,kd,ld )
 60    continue
 c
       iitot = 0
-      do 61 m = 1,nmesh 
-      iitot = iitot + ibpts(m) 
+      do 61 m = 1,nmesh
+      iitot = iitot + ibpts(m)
    61 continue
-c 
+c
 c     set up cross index array ibc,associated pointers
 c     and load boundary point arrays
-c 
-      do 63 m = 1,nmesh 
-c 
+c
+      do 63 m = 1,nmesh
+c
       write(6,*)
       write(6,*) '      writing connection data for CFL3D to ',
      .           ' unit 2 for mesh ',m
 c
-      if( m.eq.1 ) then 
+      if( m.eq.1 ) then
         iisptr     = 1
-        iieptr     = ibpts(m) 
+        iieptr     = ibpts(m)
       else
         iisptr     = iisptr + ibpts(m-1)
         iieptr     = iieptr + ibpts(m)
       end if
 c
-      call cindex( ibc,ibpnts(m),iipnts(m),jb,kb,lb,m ) 
+      call cindex( ibc,ibpnts(m),iipnts(m),jb,kb,lb,m )
 c
       write(6,*) '        ibpnts,iipnts,iieptr,iisptr ',
      .                  ibpnts(m),iipnts(m),iieptr,iisptr
 c
       call reorder(idim,ibpnts(m),intpts,jb,kb,lb,iord,
-     .             mjmax(m),mkmax(m),mlmax(m)) 
+     .             mjmax(m),mkmax(m),mlmax(m))
 c
       write(6,*) '        intpts = ',intpts
-c       
+c
       write(2) mjmax(m),mkmax(m),mlmax(m)
       write(2) ibpnts(m),intpts,iipnts(m),iieptr,iisptr
-      call getint( m,ji,ki,li,jbpt,kbpt,lbpt, 
+      call getint( m,ji,ki,li,jbpt,kbpt,lbpt,
      .             dxint,dyint,dzint )
-c 
-      write(2) ( ji(i),ki(i),li(i),dxint(i),dyint(i), 
+c
+      write(2) ( ji(i),ki(i),li(i),dxint(i),dyint(i),
      .           dzint(i), i=1,iipnts(m) )
       write(2) ( jb(iord(i)),kb(iord(i)),lb(iord(i)),ibc(iord(i)),
      .           i=1,ibpnts(m) )
-c 
-      jd = mjmax(m) 
-      kd = mkmax(m) 
-      ld = mlmax(m) 
 c
-c     add iblank array to file 2, as required by CFL3D 
+      jd = mjmax(m)
+      kd = mkmax(m)
+      ld = mlmax(m)
+c
+c     add iblank array to file 2, as required by CFL3D
 c
       call getibl(m,iblank,jd,kd,ld)
       call wiblnk(  iblank,jd,kd,ld)
 c      call iblplt(m,iblank,jd,kd,ld)
-c 
+c
    63 continue
-c 
-c 
+c
+c
 c***********************************************************************
 c          compute minimum sizes of parameters needed for overlaped mesh
-c          mesh option in CFL3D (minimum size of iitot) 
+c          mesh option in CFL3D (minimum size of iitot)
 c***********************************************************************
-c 
-c 
+c
+c
       iidmax = 0
       ibdmax = 0
-c 
-      do 71 m = 1,nmesh 
-      iidmax = iidmax + iipnts(m) 
+c
+      do 71 m = 1,nmesh
+      iidmax = iidmax + iipnts(m)
       ibdmax = ibdmax + ibpnts(m)
    71 continue
       iitotl = max(iidmax,ibdmax)
-c 
-      write(6,*) 
+c
+      write(6,*)
       write(6,*) '    minimum dimension for parameter IITOT',
-     .' in CFL3D (module RHS): ',iitotl 
-c  
-c 
+     .' in CFL3D (module RHS): ',iitotl
+c
+c
 c***********************************************************************
 c          free up file space no longer needed
 c***********************************************************************
 c
-c 
+c
       do m=1,nmesh
          if (m.gt.99) then
              len = 12
@@ -6342,16 +6342,16 @@ c
          open(iunit,file=titl(1:len),form='unformatted',
      .   status='unknown')
          close(iunit,status='delete')
-      end do 
-c 
+      end do
+c
       return
-      end 
+      end
       subroutine pltpts(nmesh,m,jmax,kmax,lmax,xx,yy,zz,ib,ibb)
 c
 c**********************************************************************
 c     Purpose: output plot3d file for visual check of classification of
 c     points, i.e., field, hole, fringe, interpolated boundary, orphan
-c     (if applicable), or point with illegal stencil (if applicable) 
+c     (if applicable), or point with illegal stencil (if applicable)
 c**********************************************************************
 c
       include 'mag1.h'
@@ -6582,12 +6582,12 @@ c
       return
       end
 c
-      subroutine putibl( m,iblank,jd,kd,ld ) 
-c 
+      subroutine putibl( m,iblank,jd,kd,ld )
+c
 c***********************************************************************
 c     Purpose: put a copy of iblank array for mesh m onto file temp_ibl.m
 c***********************************************************************
-c 
+c
       character*20 titl
 c
       dimension iblank(jd,kd,ld)
@@ -6608,17 +6608,17 @@ c
       end do
       open(iunit,file=titl(1:len),form='unformatted',
      .status='unknown')
-      write(iunit) iblank 
+      write(iunit) iblank
       rewind iunit
-c 
+c
       return
-      end 
-      subroutine putibl2( m,iblank,jd,kd,ld ) 
-c 
+      end
+      subroutine putibl2( m,iblank,jd,kd,ld )
+c
 c***********************************************************************
 c     Purpose: put a copy of iblank array for mesh m into file temp_grd.m
 c***********************************************************************
-c 
+c
       character*20 titl
 c
       dimension iblank(jd,kd,ld)
@@ -6639,25 +6639,25 @@ c
       end do
       open(iunit,file=titl(1:len),form='unformatted',
      .status='unknown')
-      write(iunit) (((iblank(j,k,l),j=1,jd),k=1,kd),l=1,ld) 
+      write(iunit) (((iblank(j,k,l),j=1,jd),k=1,kd),l=1,ld)
       rewind iunit
-c 
+c
       return
-      end 
-      subroutine putint( nwr,m,ji,ki,li,jbpt,kbpt,lbpt, 
+      end
+      subroutine putint( nwr,m,ji,ki,li,jbpt,kbpt,lbpt,
      &                   dxint,dyint,dzint )
-c 
+c
 c***********************************************************************
 c     Purpose: put interpolation data for mesh m, into file temp_int.m
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       character*20 titl
 c
-      dimension ji(idim),ki(idim),li(idim), 
-     &          jbpt(idim),kbpt(idim),lbpt(idim), 
-     &          dxint(idim),dyint(idim),dzint(idim) 
+      dimension ji(idim),ki(idim),li(idim),
+     &          jbpt(idim),kbpt(idim),lbpt(idim),
+     &          dxint(idim),dyint(idim),dzint(idim)
 c
       iunit = 30
       if (m.gt.99) then
@@ -6682,22 +6682,22 @@ c
      .    (dxint(i),dyint(i),dzint(i),i=1,nwr)
       end if
       rewind iunit
-c 
-c 
+c
+c
       return
-      end 
+      end
 c
       subroutine reorder(idim,ibpnts,intpts,jb,kb,lb,iord,jd,kd,ld)
-c 
+c
 c***********************************************************************
 c     Purpose: reorder and modify interpolated values for QI0/QJ0/QK0
 c     as required by cfl3d
 c***********************************************************************
-c 
+c
       dimension  jb(idim),  kb(idim),  lb(idim),   iord(idim)
-c 
+c
       dimension intpts(4)
-c 
+c
       do 1 ip    = 1,4
     1 intpts(ip) = 0
 c
@@ -6763,32 +6763,32 @@ c
       end if
 c
       return
-      end 
+      end
       subroutine reserch(m,n,nserch,i1,iskip,iorph,iflg)
-c 
+c
 c***********************************************************************
 c     Purpose: the initial pass through the search routines has determined
 c     interpolation/extrapolation  stencils for all fringe or boundary points;
-c     check to see if these stencils contain hole/fringe points (illegal)  
+c     check to see if these stencils contain hole/fringe points (illegal)
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-      common /book3 / iblank(mlen) 
+      common /book3 / iblank(mlen)
       common /grid1 / x(mlen), y(mlen), z(mlen)
       common /grid2 / mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /grdlim/ jsrs(mdim), jsre(mdim), ksrs(mdim), ksre(mdim),
-     .                lsrs(mdim), lsre(mdim) 
+     .                lsrs(mdim), lsre(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
       common /surf2/  xbo(idim),ybo(idim),zbo(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+     .                ln(idim), itotal
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /where/  nblkpt(idim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /tol/    epsc
-c 
+c
       dimension ds(idim),nbltmp(idim)
       dimension iskip(idim)
 c
@@ -6799,11 +6799,11 @@ c
 1110      continue
           do 1113 nn = 1,nserch
       if (iflg.eq.0) then
-        m1  = lhole(m,n,nn) 
+        m1  = lhole(m,n,nn)
       else
         nnn = 1
         m1 = loutr(m,nnn,nn)
-      end if      
+      end if
           jd1 = mjmax(m1)
           kd1 = mkmax(m1)
           ld1 = mlmax(m1)
@@ -6811,9 +6811,9 @@ c
           do 1114 i=i1,itotal
           if(nblkpt(i) .ne. -(m1+mdim)) go to 1115
 c
-          j     = jn(i) 
-          k     = kn(i) 
-          l     = ln(i) 
+          j     = jn(i)
+          k     = kn(i)
+          l     = ln(i)
           jp1   = min( j+1,jd1 )
           kp1   = min( k+1,kd1 )
           lp1   = min( l+1,ld1 )
@@ -6835,7 +6835,7 @@ c
      .       iblank(ii7) .le. 0 .or.
      .       iblank(ii8) .le. 0) then
 c
-c            stencil contains hole/fringe point from mesh m1: do not search 
+c            stencil contains hole/fringe point from mesh m1: do not search
 c            mesh m1 in next attempt
 c
              iskip(i) = m1
@@ -6854,23 +6854,23 @@ c
             do 2221 i=i1,itotal
 2221        ds(i) = 1.e30
 c
-c              
+c
 c           try again for those points which had illegal stencils
 c
             nok = 0
             do 222 nn = 1,nserch
            if (iflg.eq.0) then
-             m1  = lhole(m,n,nn) 
+             m1  = lhole(m,n,nn)
            else
              nnn = 1
              m1 = loutr(m,nnn,nn)
-           end if      
+           end if
             jd1 = mjmax(m1)
             kd1 = mkmax(m1)
             ld1 = mlmax(m1)
             call getibl( m1,iblank,jd1,kd1,ld1 )
             call getgrd( m1,x,y,z,jimage,kimage,limage,
-     .      jd1,kd1,ld1 ) 
+     .      jd1,kd1,ld1 )
             do 233 i=i1,itotal
             if(iskip(i).eq.9999) go to 234
             if(iskip(i).eq.m1) go to 234
@@ -6887,14 +6887,14 @@ c
             yisav = yi(i)
             zisav = zi(i)
 c
-c           minimum distance search 
+c           minimum distance search
 c
-            js = jsrs(m1) 
-            je = jsre(m1) 
-            ks = ksrs(m1) 
-            ke = ksre(m1) 
-            ls = lsrs(m1) 
-            le = lsre(m1) 
+            js = jsrs(m1)
+            je = jsre(m1)
+            ks = ksrs(m1)
+            ke = ksre(m1)
+            ls = lsrs(m1)
+            le = lsre(m1)
             call dsmin2(jd1,kd1,ld1,x,y,z,
      .      xp,yp,zp,jp,kp,lp,js,je,ks,ke,ls,le,dmin1)
 c***
@@ -6906,7 +6906,7 @@ c           lskip = 1
 c           call dsmin(jd1,kd1,ld1,x,y,z,xp,yp,zp,jp,kp,lp,
 c     .     js,je,ks,ke,ls,le,jskip,kskip,lskip,dmin1)
 c***
-c     
+c
             if(dmin1.lt.ds(i)) then
               ds(i) = dmin1
 c
@@ -6933,7 +6933,7 @@ c               keep within bounds 1 < j,k,l < j/k/ld1-1 for interp/extrap stenc
                 lp = max0( 1 , lp )
                 call extrap(i,m,m1,jd1,kd1,ld1,x,y,z,xp,yp,zp,iok,
      .          jp,kp,lp,jimage,kimage,limage)
-                if(iok.eq.0) then 
+                if(iok.eq.0) then
 c                 linear extrapolation not successful...use zeroth order
                   jn(i) = jpold
                   kn(i) = kpold
@@ -6965,9 +6965,9 @@ c
                 iok = 1
               end if
 	      if(iok.gt.0) then
-                j     = jn(i) 
-                k     = kn(i) 
-                l     = ln(i) 
+                j     = jn(i)
+                k     = kn(i)
+                l     = ln(i)
                 jp1   = min( j+1,jd1 )
                 kp1   = min( k+1,kd1 )
                 lp1   = min( l+1,ld1 )
@@ -6981,7 +6981,7 @@ c
                 ii8 = j   + (kp1-1)*jd1 + (lp1-1)*jd1*kd1
 c
 c               only accept new stencil if it does not contain hole/fringe pts.
-c                                      
+c
                 if(iblank(ii1) .gt. 0 .and.
      .             iblank(ii2) .gt. 0 .and.
      .             iblank(ii3) .gt. 0 .and.
@@ -7015,34 +7015,34 @@ c
           end
 c
       subroutine rgrid( m,x,y,z,jd,kd,ld )
-c 
+c
 c***********************************************************************
-c     Purpose: read a grid from external unit = 10 (unit 10 is opened 
+c     Purpose: read a grid from external unit = 10 (unit 10 is opened
 c     elsewhere in the code and contains all  grids in cfl3d format)
 c     Also check the consistency of the input dimensions, and output
 c     individual grids to file temp_grd.m, where m=grid number
 c***********************************************************************
-c 
+c
       character*20 titl
 c
-      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld) 
+      dimension x(jd,kd,ld), y(jd,kd,ld), z(jd,kd,ld)
 c
       read(10) jmax,kmax,lmax
-c 
+c
       if( jd.ne.jmax .or. kd.ne.kmax .or. ld.ne.lmax ) then
-        write(6,606) m,jd,jmax,kd,kmax,ld,lmax 
-  606   format('0',130('*'),/,/,5x,'grid input failed ' 
+        write(6,606) m,jd,jmax,kd,kmax,ld,lmax
+  606   format('0',130('*'),/,/,5x,'grid input failed '
      .  ,'due to inconsistent input dimensions:',/,
      .  25x,'mesh number ',i5,/,
      .  25x,'jmax, tape jmax',2i5,/,
      .  25x,'kmax, tape kmax',2i5,/,
-     .  25x,'lmax, tape lmax',2i5,/,/,130('*') ) 
-        stop 'rgrid' 
+     .  25x,'lmax, tape lmax',2i5,/,/,130('*') )
+        stop 'rgrid'
       end if
-c 
-c     read grid from input file and write coordinates for each grid 
-c     to a separate unit 
-c 
+c
+c     read grid from input file and write coordinates for each grid
+c     to a separate unit
+c
       read(10) x,y,z
 c
       iunit = 30
@@ -7063,15 +7063,15 @@ c
      .status='unknown')
       write(iunit) x,y,z
       rewind iunit
-c 
+c
       return
-      end  
+      end
 c
       subroutine rp3d( m,x,y,z,jd,kd,ld,ialph,nmesh )
 c
 c***********************************************************************
-c     Purpose: read a plot3d/tlns3d grid from external unit = 10 
-c     (unit 10 is opened elsewhere in the code and in this case 
+c     Purpose: read a plot3d/tlns3d grid from external unit = 10
+c     (unit 10 is opened elsewhere in the code and in this case
 c     contains all grids in plot3d/tlns3d format);
 c     Also check the consistency of the input dimensions, and output
 c     individual grids to file temp_grd.m, where m=grid number
@@ -7102,7 +7102,7 @@ c
         read(10) (ltest(mm),jtest(mm),ktest(mm),mm=1,nmesh)
       end if
 c
-      if( jd.ne.jtest(m) .or. kd.ne.ktest(m) .or. 
+      if( jd.ne.jtest(m) .or. kd.ne.ktest(m) .or.
      .  ld.ne.ltest(m) ) then
         write(6,606) m,jd,jtest(m),kd,ktest(m),ld,ltest(m)
   606   format('0',130('*'),/,/,5x,'grid input failed '
@@ -7152,25 +7152,25 @@ c
       rewind iunit
 c
       return
-      end  
+      end
 c
       subroutine search2(i,m,m1,jd1,kd1,ld1,xm1,ym1,zm1,
-     .                   jimage,kimage,limage,xp,yp,zp,iok,icall)     
+     .                   jimage,kimage,limage,xp,yp,zp,iok,icall)
 c
 c******************************************************************
-c     Purpose: search over mesh m1 to find the cell surrounding the 
+c     Purpose: search over mesh m1 to find the cell surrounding the
 c     mesh m point xp,yp,zp and compute the required interpolation data
 c******************************************************************
 c
       include 'mag1.h'
 c
       common /grdlim/ jsrs(mdim), jsre(mdim), ksrs(mdim), ksre(mdim),
-     .                lsrs(mdim), lsre(mdim) 
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+     .                lsrs(mdim), lsre(mdim)
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
       common /where/  nblkpt(idim)
-c 
+c
       dimension xm1(jd1,kd1,ld1), ym1(jd1,kd1,ld1), zm1(jd1,kd1,ld1),
      .          jimage(jd1,kd1,ld1),kimage(jd1,kd1,ld1),
      .          limage(jd1,kd1,ld1)
@@ -7186,31 +7186,31 @@ c
       itmax  = 50
       limit  = 5
       icount = 1
-c 
+c
 c     search limits for minimum distance search
 c
-      js = jsrs(m1) 
-      je = jsre(m1) 
-      ks = ksrs(m1) 
-      ke = ksre(m1) 
-      ls = lsrs(m1) 
-      le = lsre(m1) 
+      js = jsrs(m1)
+      je = jsre(m1)
+      ks = ksrs(m1)
+      ke = ksre(m1)
+      ls = lsrs(m1)
+      le = lsre(m1)
 c
 17085 continue
 c
       call trace(1,i,idum2,idum3,idum4,xp,yp,zp)
 c
 c
-c     use last successful solution point in mesh m1 as the initial 
+c     use last successful solution point in mesh m1 as the initial
 c     guess for the cell which surrounds  point i if one exists; otherwise,
-c     use minimum distance search to get a starting point  
+c     use minimum distance search to get a starting point
 c
       if(icall.eq.1) then
         idsmin = 1
       else
         do 555 ii = 1,i-1
         iii = i - ii
-        if(jn(iii).gt.0 .and. 
+        if(jn(iii).gt.0 .and.
      .  abs(nblkpt(iii))-mdim .eq. m1) then
           xiet  = xi(iii)
           etat  = yi(iii)
@@ -7245,55 +7245,55 @@ c
       end if
 c
       return
-      end     
-      subroutine setptr( m,m1,icase ) 
-c 
+      end
+      subroutine setptr( m,m1,icase )
+c
 c***********************************************************************
 c     Purpose: set interpolation pointers and load lists
-c 
-c     note that jn,kn,ln belong to mesh m1 and 
+c
+c     note that jn,kn,ln belong to mesh m1 and
 c     jb,kb,lb belong to mesh m
-c     thus the data must be added to m1 data 
-c 
+c     thus the data must be added to m1 data
+c
 c               icase  = 1 indicates hole boundary
-c                      = 2 indicates outer boundary 
+c                      = 2 indicates outer boundary
 c***********************************************************************
-c 
+c
       include 'mag1.h'
-c 
+c
       common /book1/  ipntr(mdim,mhldim*mdim), npntr(mdim,mhldim*mdim),
      .                mhbs(mdim,mdim), mobs(mdim,mdim), nsets(mdim)
       common /book2/  dxint(idim), dyint(idim), dzint(idim),
      .                ibpts(mdim), jbpt(idim), kbpt(idim), lbpt(idim),
      .                ji(idim),ki(idim), li(idim)
-      common /intrp1/ xi(idim), yi(idim), zi(idim) 
+      common /intrp1/ xi(idim), yi(idim), zi(idim)
       common /intrp2/ jb(idim), kb(idim), lb(idim), jn(idim), kn(idim),
-     .                ln(idim), itotal 
+     .                ln(idim), itotal
 c
       write(6,*)
       write(6,*) '    updating pointers for mesh ',m
-c 
+c
 c     update pointers
-c 
+c
       call getint( m1,ji,ki,li,jbpt,kbpt,lbpt,
      .             dxint,dyint,dzint )
       nsets(m1) = nsets(m1) + 1
       n = nsets(m1)
       if( n.gt.mhldim*mdim ) then
-        write( 6,601) n,mhldim*mdim,m1 
+        write( 6,601) n,mhldim*mdim,m1
 601     format( '0',10x,'failure in setptr. the number of sets, n = ',
      .  i5,1x,'exceeds the max dimension = ',i5,1x,'for mesh ',i3 )
         stop 'setptr '
       end if
-c 
-      ipntr(m1,n) = ibpts(m1) + 1 
+c
+      ipntr(m1,n) = ibpts(m1) + 1
       npntr(m1,n) = ipntr(m1,n) + itotal - 1
-      ibpts(m1)   = ibpts(m1) + itotal 
+      ibpts(m1)   = ibpts(m1) + itotal
 c
       write(6,*) '      nsets(m1),m1= ',n,m1
       write(6,*) '      ibpts,ipntr(m1,n),npntr(m1,n)= ',
      .             ibpts(m1),ipntr(m1,n),npntr(m1,n)
-c 
+c
       if( ibpts(m1).gt.idim ) then
         write(6,602) ibpts(m1),idim,m1
 602     format( '0',10x,'failure in setup. the number of points,',
@@ -7301,25 +7301,25 @@ c
      .  1x,'for mesh ',i3 )
         stop 'setptr'
       end if
-c 
-      if( icase.eq.1 ) then 
+c
+      if( icase.eq.1 ) then
 c       hole boundaries
         mhbs(m,m1) = n
         write(6,*) '      m,m1,mhbs(m,m1)= ',m,m1,mhbs(m,m1)
       else if( icase.eq.2 ) then
-c       outer boundaries 
+c       outer boundaries
         mobs(m,m1) = n
         write(6,*) '      m,m1,mobs(m,m1)= ',m,m1,mobs(m,m1)
       else
 c       a foul up
-        stop 'setptr' 
+        stop 'setptr'
       end if
-c 
-c     update lists 
-c 
+c
+c     update lists
+c
       ib = ipntr(m1,n) - 1
       do 11 i = 1,itotal
-      ib         = ib +  1 
+      ib         = ib +  1
       jbpt(ib)   = jb(i)
       kbpt(ib)   = kb(i)
       lbpt(ib)   = lb(i)
@@ -7330,37 +7330,37 @@ c
       dyint(ib)  = yi(i)
       dzint(ib)  = zi(i)
    11 continue
-      call putint( ib,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint ) 
-c 
+      call putint( ib,m1,ji,ki,li,jbpt,kbpt,lbpt,dxint,dyint,dzint )
+c
       return
-      end 
-      subroutine setup 
-c 
+      end
+      subroutine setup
+c
 c***********************************************************************
 c     Purpose:  set up for overlaped grid interpolation
 c***********************************************************************
-c 
-c 
+c
+c
       include 'mag1.h'
-c 
+c
       common /grid1/  x(mlen), y(mlen), z(mlen)
       common /grid2/  mjmax(mdim), mkmax(mdim), mlmax(mdim)
       common /conec1/ nmesh, nhole(mdim), noutr(mdim),
      .                mhole(mdim,mhldim),moutr(mdim,mhldim),
      .                lhole(mdim,mhldim,mdim),loutr(mdim,mhldim,mdim)
-      common /image/  jimage(mlen), kimage(mlen), limage(mlen) 
+      common /image/  jimage(mlen), kimage(mlen), limage(mlen)
       common /igrdtyp/ ip3dgrd,ialph
-c 
+c
 c     read input data and initialize
-c 
-      call initia 
+c
+      call initia
 c
       do 11 mesh = 1,nmesh
-c 
+c
       jdg = mjmax(mesh)+1
       kdg = mkmax(mesh)+1
       ldg = mlmax(mesh)+1
-c 
+c
 c     read in grid
 c
       if(ip3dgrd.eq.0) then
@@ -7370,15 +7370,15 @@ c       (cfl3d format)
 c       (plot3d/tlns3d format)
         call rp3d( mesh,x,y,z,jdg,kdg,ldg,ialph,nmesh )
       end if
-c 
-      npnts = jdg*kdg*ldg 
-c 
+c
+      npnts = jdg*kdg*ldg
+c
       if( npnts.gt.mlen ) then
         write(6,601) npnts, mlen
   601   format(1h0,130('*'),/,/,10x,'failure in setup due to number',
      .  1x,'of total grid points exceeding allocate',
-     .  1x,'storage',/,30x,'npnts =',i3,5x,'mlen =',i3,/,/,130('*') ) 
-        stop 'setup' 
+     .  1x,'storage',/,30x,'npnts =',i3,5x,'mlen =',i3,/,/,130('*') )
+        stop 'setup'
       end if
 c
 c     check for branch cuts in grid
@@ -7392,31 +7392,31 @@ c
       call branch(mesh,jdg,kdg,ldg,jimage,kimage,limage,
      .                 x,y,z)
 c
-c     transform grid to cell centered grid. 
-c 
+c     transform grid to cell centered grid.
+c
       call cellcen(x,y,z,jdg,kdg,ldg)
-c 
-c     write cell centered grid 
-c 
-      call wcelgrd(mesh,x,y,z,jimage,kimage,limage,jdg,kdg,ldg) 
-c 
+c
+c     write cell centered grid
+c
+      call wcelgrd(mesh,x,y,z,jimage,kimage,limage,jdg,kdg,ldg)
+c
    11 continue
 c
       rewind 1
-c 
+c
       npnts = 0
-      do 21 m = 1,nmesh 
+      do 21 m = 1,nmesh
       npnts = (mjmax(m)+1)*(mkmax(m)+1)*(mlmax(m)+1) +npnts
    21 continue
-c 
+c
       return
-      end 
+      end
       subroutine topol(m1,jdim,kdim,ldim,x,y,z,jimage,kimage,limage,
      .                 xp,yp,zp,xie,eta,zeta,jp,kp,lp,itmax,limit,iok,
      .                 js,je,ks,ke,ls,le,idsmin)
 c
 c***********************************************************************
-c     Purpose: search mesh m1 for  the mesh m point with 
+c     Purpose: search mesh m1 for  the mesh m point with
 c     coordinates xp,yp,zp; determine corresponding xie,eta,zeta
 c***********************************************************************
 c
@@ -7451,7 +7451,7 @@ c
 c     find nearest point (with indicies jp,kp,lp) to xp,yp,zp; start with
 c     minimum distance search if idsmin > 0
 c
-c     search only on coarser version of  mesh 
+c     search only on coarser version of  mesh
       jskip = 4
       kskip = 4
       lskip = 4
@@ -7479,12 +7479,12 @@ c
 c
       call trace(3,intern,idum2,idum3,idum4,dum1,dum2,dum3)
 c
-c     find local xie,eta,zeta via Newton iteraton in current target 
+c     find local xie,eta,zeta via Newton iteraton in current target
 c     cell jp,kp,lp
 c
       call trace(4,jp,kp,lp,m1,dum1,dum2,dum3)
 c
-      call xe(jdim,kdim,ldim,x,y,z,jp,kp,lp,xp,yp,zp, 
+      call xe(jdim,kdim,ldim,x,y,z,jp,kp,lp,xp,yp,zp,
      .              xie,eta,zeta,imiss)
 c
       call trace(5,idum1,idum2,idum3,idum4,xie,eta,zeta)
@@ -7508,24 +7508,24 @@ c
       linc = min0( linc , limit )
 c
       if (xie.gt.1.0) then
-         jp = jp + jinc  
+         jp = jp + jinc
       else if (xie.lt.0.) then
-         jp = jp - jinc  
+         jp = jp - jinc
       end if
       if (eta.gt.1.0) then
          kp = kp + kinc
       else if (eta.lt.0.) then
-         kp = kp - kinc 
+         kp = kp - kinc
       end if
       if (zeta.gt.1.0) then
          lp = lp + linc
       else if (zeta.lt.0.) then
-         lp = lp - linc 
+         lp = lp - linc
       end if
 c
-      xieg  = float(jp) 
-      etag  = float(kp) 
-      zetag = float(lp) 
+      xieg  = float(jp)
+      etag  = float(kp)
+      zetag = float(lp)
 c
 c     keep within bounds of mesh m1
 c
@@ -7568,11 +7568,11 @@ c
       lp  = lpc
 
 c
-c     search routine off track if xie,eta or zeta are huge...try to 
-c     get back on track with minumum distance search 
+c     search routine off track if xie,eta or zeta are huge...try to
+c     get back on track with minumum distance search
 c
       huge=1.e3
-      if(abs(xie).ge.huge .or. abs(eta).ge.huge .or. 
+      if(abs(xie).ge.huge .or. abs(eta).ge.huge .or.
      .abs(zeta).ge.huge) then
         ihuge = ihuge + 1
         if (ihuge.gt.ihu) go to 1000
@@ -7595,14 +7595,14 @@ c
       end if
 c
 c     check for frozen convergence: search routine keeps returning
-c     to the same point, without 0 < xie,eta,zeta < 1 at that point. if frozen, 
+c     to the same point, without 0 < xie,eta,zeta < 1 at that point. if frozen,
 c     attempt to break out of cycle by using minimum distance search
 c
       ifroz = 0
       do 77 ii=1,intern
       int = intern-ii+1
       if (jp.eq.jfroz(int) .and. kp.eq.kfroz(int)
-     .    .and. lfroz(int).eq.lp) then 
+     .    .and. lfroz(int).eq.lp) then
           ifroz  = 1
           jpfroz = jp
           kpfroz = kp
@@ -7629,12 +7629,12 @@ c
       end if
 c
 5555  continue
-c 
+c
 c     search routine has been unsuccessful
 c
 1000  continue
       iok = 0
-      return     
+      return
 c
 5556  continue
 c
@@ -7646,15 +7646,15 @@ c
       subroutine trace(icall,idum1,idum2,idum3,idum4,dum1,dum2,dum3)
 c
 c***********************************************************************
-c     Purpose: Writes the search routine history for the current fringe 
-c     or boundary point to unit 7.  
+c     Purpose: Writes the search routine history for the current fringe
+c     or boundary point to unit 7.
 c***********************************************************************
 c
       common /trace1/itrace
 c
 c     itrace < 0, do not write history for current fringe or boundary point
-c     itrace = 0, overwrite history from previous point with current 
-c     itrace = 1, retain the search history for ALL points 
+c     itrace = 0, overwrite history from previous point with current
+c     itrace = 1, retain the search history for ALL points
 c
       iunit = 7
 c
@@ -7712,7 +7712,7 @@ c
   105 format(' ',8x,'xie,eta,zeta=',e10.3,',',e10.3,
      .       ',',e10.3,' (local values)')
       end if
-c     
+c
       if(icall.eq.6) then
       write(iunit,*)'search off track...using dsmin to get back on',
      .              ' track'
@@ -7733,7 +7733,7 @@ c
   120 format(' ',4x,'giving up...will try in another mesh or',/,
      .       6x,'attempt extrapolation if that fails')
       end if
-c 
+c
       if(icall.eq.21) then
       write(iunit,*) '      miscue in xe2: newton iteration not',
      .' converged but 0 < xie,eta,zeta < 1'
@@ -7760,12 +7760,12 @@ c
       return
       end
       subroutine wcelgrd(m,x,y,z,jimage,kimage,limage,jd,kd,ld)
-c 
-c******************************************************************** 
+c
+c********************************************************************
 c     Purpose: write the cell center coordinates for mesh m into
 c     file temp_cen.m
 c********************************************************************
-c 
+c
       character*20 titl
 c
       dimension x(jd,kd,ld),y(jd,kd,ld),z(jd,kd,ld)
@@ -7788,29 +7788,29 @@ c
       end do
       open(iunit,file=titl(1:len),form='unformatted',
      .status='unknown')
-c 
+c
       write(iunit)(((x(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1),
      &            (((y(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1),
      &            (((z(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1)
       write(iunit)(((jimage(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1),
      &            (((kimage(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1),
      &            (((limage(j,k,l),j=1,jd-1),k=1,kd-1),l=1,ld-1)
-      rewind iunit 
-c 
-      return 
+      rewind iunit
+c
+      return
       end
-      subroutine wiblnk(iblank,jd,kd,ld) 
-c 
-c******************************************************************** 
+      subroutine wiblnk(iblank,jd,kd,ld)
+c
+c********************************************************************
 c     Purpose: write iblank array in form expected by cfl3d
 c********************************************************************
-c 
+c
       dimension iblank(jd,kd,ld)
-c 
+c
       write(2)(((float(iblank(j,k,l)),j=1,jd),k=1,kd),l=1,ld)
 c
       return
-      end 
+      end
       subroutine xe(jdim,kdim,ldim,x,y,z,jcell,kcell,lcell,
      .              xc,yc,zc,xie,eta,zeta,imiss)
 c
@@ -7885,7 +7885,7 @@ c
 c     initial guess
 c
       xie  = .5
-      eta  = .5 
+      eta  = .5
       zeta = .5
 c
       limit = 50
@@ -7986,15 +7986,15 @@ c
 c
 c     newton iteration to invert for xie,eta,zeta
 c
-c     convergence criterion for Newton iteration...require 4 orders of 
-c     reduction to starting error=abs(f1)+abs(f2)+abs(f3) 
+c     convergence criterion for Newton iteration...require 4 orders of
+c     reduction to starting error=abs(f1)+abs(f2)+abs(f3)
 c
       f1 = x1 + xie*( a2 + a5*eta + a6*zeta + a8*eta*zeta )
      .        + eta*( a3 + a7*zeta ) + a4*zeta - xc
       f2 = y1 + xie*( b2 + b5*eta + b6*zeta + b8*eta*zeta )
      .        + eta*( b3 + b7*zeta ) + b4*zeta - yc
       f3 = z1 + xie*( c2 + c5*eta + c6*zeta + c8*eta*zeta )
-     .        + eta*( c3 + c7*zeta ) + c4*zeta - zc      
+     .        + eta*( c3 + c7*zeta ) + c4*zeta - zc
 c
       error0 = abs(f1)+abs(f2)+abs(f3)
       epsf   = 1.0e-4*error0
@@ -8008,13 +8008,13 @@ c
       f2 = y1 + xie*( b2 + b5*eta + b6*zeta + b8*eta*zeta )
      .        + eta*( b3 + b7*zeta ) + b4*zeta - yc
       f3 = z1 + xie*( c2 + c5*eta + c6*zeta + c8*eta*zeta )
-     .        + eta*( c3 + c7*zeta ) + c4*zeta - zc      
+     .        + eta*( c3 + c7*zeta ) + c4*zeta - zc
 c
 c d(f1)/d(xie)
       a2b = a2 + a5*eta + zeta*( a6 + a8*eta )
 c
 c d(f1)/d(eta)
-      a3b = a3 + a5*xie + zeta*( a7 + a8*xie ) 
+      a3b = a3 + a5*xie + zeta*( a7 + a8*xie )
 c
 c d(f1)/d(zeta)
       a4b = a4 + a6*xie + eta*( a7 + a8*xie )
@@ -8044,7 +8044,7 @@ c
      .           + a4b*(b2b*c3b-b3b*c2b) )
 c
       xie   =  xie - det*( f1*(b3b*c4b-b4b*c3b)
-     .                   - f2*(a3b*c4b-a4b*c3b) 
+     .                   - f2*(a3b*c4b-a4b*c3b)
      .                   + f3*(a3b*b4b-a4b*b3b) )
 c
       eta   =  eta - det*(-f1*(b2b*c4b-b4b*c2b)
@@ -8056,8 +8056,8 @@ c
      .                  + f3*(a2b*b3b-a3b*b2b) )
 c
 c     exit newton iteration if xie,eta,zeta become large...the current target
-c     cell is a poor guess. set xie,eta,zeta to a fixed large value so as to 
-c     trigger a minimum distance search upon exiting this routine 
+c     cell is a poor guess. set xie,eta,zeta to a fixed large value so as to
+c     trigger a minimum distance search upon exiting this routine
 
 c
       huge=1.e10
@@ -8087,9 +8087,9 @@ c
      .    zeta.lt.-epsc .or. zeta.gt.1.+epsc) imiss = 1
 c
 c     check for non-converged newton iteration which nevertheless manages
-c     to have  0 < xie,eta,zeta < 1. set xie,eta,zeta to a fixed large 
-c     value so as to trigger a minimum distance search upon exiting this 
-c     routine 
+c     to have  0 < xie,eta,zeta < 1. set xie,eta,zeta to a fixed large
+c     value so as to trigger a minimum distance search upon exiting this
+c     routine
 c
       if(imiss.eq.0 .and. error.gt.epsf) then
         call trace(21,idum1,idum2,idum3,idum4,xie,eta,zeta)

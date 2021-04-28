@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,11 +27,11 @@ c
 c***********************************************************************
 c     Purpose:
 c     Reads in CFL3D V6 restart file as unformatted or formatted,
-c     and writes it out either same size, HALF the size, 
+c     and writes it out either same size, HALF the size,
 c     or as DOUBLE the size.
 c     Going to HALF size is useful if one wishes to restart
 c     from a fine grid solution and run on a COARSER level.
-c     User can choose to coarsen/refine only particular index 
+c     User can choose to coarsen/refine only particular index
 c     directions, if desired.  The program cannot BOTH
 c     coarsen and refine different directions simultaneously.
 c     For refining, the code uses CFL3D's method for determining
@@ -429,7 +429,7 @@ c
       dimension titlw(20)
       dimension jdd(nblk),kdd(nblk),idd(nblk)
       dimension jddc(nblk),kddc(nblk),iddc(nblk)
-c 
+c
       allocatable :: cdpw(:)
       allocatable :: cdvw(:)
       allocatable :: cdw(:)
@@ -550,7 +550,7 @@ c
         stop
       end if
       jtc=(jt+1)/2
-      else 
+      else
       jtc=jt
       end if
       if (kc .eq. 1) then
@@ -1141,7 +1141,7 @@ c     Make finer:
                  write(3) jtc,ktc,itc
                else
                  write(3,*) jtc,ktc,itc
-               end if 
+               end if
                if (iunfi .eq. 1) then
                read(2) itrans,rfreqt,xorig,yorig,zorig,xorig0,yorig0,
      .                  zorig0,utrans,vtrans,wtrans,dxmx,dymx,dzmx,

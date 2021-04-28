@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -81,7 +81,7 @@ c
       write(6,'(''enter 1 to use the pegsus/OVERFLOW-jkl index '',
      .          ''definition'')')
       read(5,*) iswap
-c 
+c
 c     set debugging flags:
 c
 c     iogrd > 0: write out a cell-center grid, augmented with
@@ -326,7 +326,7 @@ c     notation: arrays jdim(n),kdim(n),ldim(n) are taken as cfl3d
 c     GRID dimensions for zone n. the corresponding cfl3d CELL CENTER
 c     dimensions are thus jdim(n)-1,kdim(n)-1,ldim(n)-1.
 c
-c     the augmented cell center dimensions used by pegsus are 
+c     the augmented cell center dimensions used by pegsus are
 c     jdim(n)+1,kdim(n)+1,ldim(n)+1 (cell centers plus one rind
 c     layer in each of the 6 block faces)
 c
@@ -451,7 +451,7 @@ c        in the pegsus data by -1, so that the indicies in the pegsus
 c        data start at 0. then index 1 in the pegsus data corresponds
 c        to the first cfl3d cell center. stencil points with indicies
 c        0,jdim+1,kdim+1,ldim+1 will be used to access cell-face
-c        center boundary data in cfl3d. this also allows backward 
+c        center boundary data in cfl3d. this also allows backward
 c        compatability with maggie interpolation data.
 c
          do i=iisptr(ig),iieptr(ig)
@@ -584,7 +584,7 @@ c
          end if
 c
 c        output to diagnostic plot3d files if desired
-c 
+c
          if (iogrd .gt. 0) then
             if (ig.eq.1) then
                write(4) ngrid
@@ -596,7 +596,7 @@ c
             end if
 c
 c           modify iblank using stencil info - use to visualize the
-c           source point of each target point as suggested by James 
+c           source point of each target point as suggested by James
 c           Hager. note: must shift jb,kb,lb back to original values
 c           in the iblank array
 c
@@ -605,7 +605,7 @@ c
                iblank(jb(i)+1,kb(i)+1,lb(i)+1) = -iiblk(ii)
             enddo
 c
-c           set orphan points to blank=+2 to distinguish them from 
+c           set orphan points to blank=+2 to distinguish them from
 c           field, hole, or interpolated points
 c
             if (norpht .gt. 0) then
@@ -819,7 +819,7 @@ c
      .      ''more illegal indicies'')') i
             write(6,'(''     ji,   ki,   li = '',3i4)') ji(i),
      .      ki(i),li(i)
-            write(6,'(''jdim1, kdim1, ldim1 =  '',3i4)') jid1,kid1,lid1 
+            write(6,'(''jdim1, kdim1, ldim1 =  '',3i4)') jid1,kid1,lid1
             write(6,'(''   dl = '',3f8.3)') dl(i)
          end if
       end do
@@ -847,7 +847,7 @@ c
       jbd1 = jdim(ig) - 1
       kbd1 = kdim(ig) - 1
       lbd1 = ldim(ig) - 1
-c 
+c
       do i=ibsptr(ig),ibeptr(ig)
 c
          jbd1 = jdim(ibblk(i)) - 1
@@ -910,7 +910,7 @@ c
      .      ''more illegal indicies'')') ii
             write(7,'(''     ji,   ki,   li = '',3i4)') ji(ii),
      .      ki(ii),li(ii)
-            write(7,'(''jdim1, kdim1, ldim1 =  '',3i4)') jid1,kid1,lid1 
+            write(7,'(''jdim1, kdim1, ldim1 =  '',3i4)') jid1,kid1,lid1
             write(7,'(''   dl = '',3f8.3)') dl(ii)
             ierr = ierr + 1
          end if

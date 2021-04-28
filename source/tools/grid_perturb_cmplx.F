@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -33,14 +33,14 @@ c     the x,y,z components of the ndv design variables). The data in the
 c     sensitivity file should correspond to d(x)/d(DV),d(y)/d(DV),
 c     d(z)/d(DV) of the grid, for each of the ndv design variables. The
 c     user chooses one of the design variables and a step size, eps. The
-c     new grid is created by adding an imaginary component to the input 
+c     new grid is created by adding an imaginary component to the input
 c     grid via:
 c             (x,y,z) = (x,y,z) +i*eps*d(x,y,z)/d(DV)  where i=sqrt(-1)
 c
 c     The output grid may be read into the *complex version* of cfl3d
 c     (cfl3dcmplx_mpi or cfl3dcmplx_seq) to determine the solution
 c     derivatives with respect to the chosen design variable.
-c*********************************************************************** 
+c***********************************************************************
 c
       implicit complex(a-h,o-z)
 c
@@ -144,7 +144,7 @@ c
 c
       stop
       end
-c 
+c
       subroutine sizeijk(maxbl,imax,jmax,kmax,iginform)
 c***********************************************************************
 c     Purpose: determine max i,j,k dimensions needed for this case
@@ -260,7 +260,7 @@ c
 c
 c     open files
 c
-      if (iginform.eq.0) then 
+      if (iginform.eq.0) then
          open(unit=10,file=gfilein,form='unformatted',status='old')
       else
          open(unit=10,file=gfilein,form='formatted',status='old')
@@ -323,7 +323,7 @@ c
           stop
       end if
 c
-c     read sensitivity file dimensions and make sure they match the 
+c     read sensitivity file dimensions and make sure they match the
 c     grid dimensions
 c
       if (isdform.eq.0) then
@@ -331,7 +331,7 @@ c
       else
          read(11,*) ngrdsd
       end if
-      if (ngrd.ne.ngrdsd) then 
+      if (ngrd.ne.ngrdsd) then
          write(6,*)'stopping...grid and SD files contain ',
      .             'different number of zones'
          write(6,*)'zones in grid file: ',ngrd
@@ -357,7 +357,7 @@ c
       end do
 c
 c     write dimensions for perturbed grid file
-c 
+c
       if (igoutform.eq.0) then
          write(12) ngrd
          write(12) (idim(n),jdim(n),kdim(n),n=1,ngrd)

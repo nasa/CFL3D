@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -26,7 +26,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Create an "augmented" q array (qq) of dimensions 
+c     Purpose:  Create an "augmented" q array (qq) of dimensions
 c     jdim+1 x kdim+1 x idim+1, in which the min/max indicies
 c     contain cell-face center data and the interior points contain
 c     cell-center data at the standard cfl3d cell center locations.
@@ -65,7 +65,7 @@ c     fill in block faces (excluding for now the edges and corners)
 c     if ghost-cell data is not available, use duplicate interior
 c     data to fill in the block face info.
 c
-c     note: eddy viscosity and turbulence quantities are always 
+c     note: eddy viscosity and turbulence quantities are always
 c     stored at cell centers, so must override the bcj/k/i arrays
 c
       visflg = 1.
@@ -87,7 +87,7 @@ c
                   qq(1,kk,ii,l)      = (aa*qj0(k,i,l,1) +
      .                                  bb*q(1,k,i,l))*0.5
                   qq(jdim+1,kk,ii,l) = (cc*qj0(k,i,l,3) +
-     .                                  dd*q(jdim-1,k,i,l))*0.5     
+     .                                  dd*q(jdim-1,k,i,l))*0.5
                end do
             end do
             do i=1,idim-1
@@ -112,7 +112,7 @@ c
                   bb = 1. - bci(j,k,1)*visflg
                   cc = 1. + bci(j,k,2)*visflg
                   dd = 1. - bci(j,k,2)*visflg
-                  qq(jj,kk,1,l)      = (aa*qi0(j,k,l,1) + 
+                  qq(jj,kk,1,l)      = (aa*qi0(j,k,l,1) +
      .                                  bb*q(j,k,1,l))*0.5
                   qq(jj,kk,idim+1,l) = (cc*qi0(j,k,l,3) +
      .                                  dd*q(j,k,idim-1,l))*0.5
@@ -150,7 +150,7 @@ c
                end do
             end do
          end do
-      end if 
+      end if
 c
 c     fill in edge values and corner values via extrapolation/averaging
 c

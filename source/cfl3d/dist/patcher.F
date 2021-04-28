@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -38,7 +38,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Calculate patched-grid interpolation coefficients 
+c     Purpose:  Calculate patched-grid interpolation coefficients
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -77,42 +77,42 @@ c                interpolated from
 c***********************************************************************
 c
 c      For each interpolation (int):
-c   
+c
 c      iindx(int,1) - number of sub-faces which make up the "from" side
 c                      of the patch surface
-c      
+c
 c      iindx(int,2)
 c           .
 c           .       - global block number(s) of the blocks which contain
 c           .         the sub-faces on the "from' side of the patch surface
 c           .         note: must have iindx(int,1) values
-c           .  
-c      iindx(int,iindx(int,1)+1)    
-c                      
+c           .
+c      iindx(int,iindx(int,1)+1)
+c
 c      iindx(int,iindx(int,1)+2))  - global block number of the block which
-c                                    contains the "to" side of the patch 
+c                                    contains the "to" side of the patch
 c                                    surface
 c
 c      iindx(int,iindx(int,1)+3))
-c                  .                
+c                  .
 c                  .                - topology of patch in "from" (sub)-block(s)
 c                  .                  of the form mn (see below)
 c                  .
-c      iindx(int,2*iindx(int,1)+2) 
+c      iindx(int,2*iindx(int,1)+2)
 c
-c                       
+c
 c      iindx(int,2*iindx(int,1)+3)  - topology of the "to" side of the
 c                                      patch surface
 c
-c      iindx(int,2*iindx(int,1)+4)  - number of grid points in cross-section 
+c      iindx(int,2*iindx(int,1)+4)  - number of grid points in cross-section
 c                                      of the "to" grid
-c      iindx(int,2*iindx(int,1)+5)  - starting location of generalized 
+c      iindx(int,2*iindx(int,1)+5)  - starting location of generalized
 c                      coordinate data for interpolation to the "to" side
-c                      of the patch surface from the "from" side of the 
+c                      of the patch surface from the "from" side of the
 c                      patch surface
 c
 c      iindx(int,2*iindx(int,1)+6)  - starting location in xie for the
-c                                     "to" side of the patch interface 
+c                                     "to" side of the patch interface
 c
 c      iindx(int,2*iindx(int,1)+7)  - ending location in xie for the
 c                                     "to" side of the patch interface
@@ -279,7 +279,7 @@ c
 c        nbll is the current (to) block
 c        mbl is the source (from) block
          nbll    = isav_dpat(lcnt,1)
-         nd_dest = mblk2nd(nbll) 
+         nd_dest = mblk2nd(nbll)
          lmax1   = isav_dpat(lcnt,2)
          do ll = 1, lmax1
             itag = itag + 1
@@ -289,7 +289,7 @@ c        mbl is the source (from) block
                if (nd_dest.eq.myid) then
                   mdim1  = isav_dpat_b(lcnt,ll,3)
                   ndim1  = isav_dpat_b(lcnt,ll,4)
-                  jkdim  = 3*mdim1*ndim1 
+                  jkdim  = 3*mdim1*ndim1
                   lcheck = locv + jkdim
                   if (lcheck.gt.nwork) then
                      nou(1) = min(nou(1)+1,ibufdim)
@@ -417,7 +417,7 @@ c
             xif2l = iindx(icheck,3*lmax1+9+l)
             etf1l = iindx(icheck,4*lmax1+9+l)
             etf2l = iindx(icheck,5*lmax1+9+l)
-c            
+c
 c           patch surface to be interpolated from is an i=constant surface
 c
             if (iindx(icheck,l+lmax1+2)/10.eq.1) then
@@ -435,7 +435,7 @@ c
                   end if
                end if
             end if
-c      
+c
 c           patch surface to be interpolated from is a j=constant surface
 c
             if (iindx(icheck,l+lmax1+2)/10.eq.2) then
@@ -446,14 +446,14 @@ c
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1958) 1,mbl,xif1l,xif2l,
      .                                      etf1l,etf2l
-                  else 
+                  else
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1958) jdimg(mbl),mbl,xif1l,
      .                                      xif2l,etf1l,etf2l
                  end if
                end if
-            end if      
-c           
+            end if
+c
 c           patch surface to be interpolated from is a k=constant surface
 c
             if (iindx(icheck,l+lmax1+2)/10.eq.3) then
@@ -464,7 +464,7 @@ c
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1959) 1,mbl,xif1l,xif2l,
      .                                      etf1l,etf2l
-                  else 
+                  else
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1959) kdimg(mbl),mbl,xif1l,
      .                                      xif2l,etf1l,etf2l
@@ -480,7 +480,7 @@ c
                write(bou(nou(1),1),*) 'stopping ... mptch =',mptch,
      .         ' too small '
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if 
+            end if
 c
  1605       continue
 c
@@ -493,14 +493,14 @@ c
                   if (iindx(icheck,2*lmax1+3).eq.11) then
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1857) 1,nbl,xi1,xi2,et1,et2
-                  else 
+                  else
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1857) idimg(nbl),nbl,xi1,xi2,
      .                                      et1,et2
                   end if
                end if
             end if
-c            
+c
 c           patch surface to be interpolated to is a j=constant surface
 c
             if (iindx(icheck,2*lmax1+3)/10.eq.2) then
@@ -509,15 +509,15 @@ c
                if (isklt1.gt.0) then
                   if (iindx(icheck,2*lmax1+3).eq.21) then
                      nou(4) = min(nou(4)+1,ibufdim)
-                     write(bou(nou(4),4),1858) 1,nbl,xi1,xi2,et1,et2 
-                  else 
+                     write(bou(nou(4),4),1858) 1,nbl,xi1,xi2,et1,et2
+                  else
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1858) jdimg(nbl),nbl,xi1,xi2,
      .                                      et1,et2
                   end if
-               end if     
+               end if
             end if
-c            
+c
 c           patch surface to be interpolated to is a k=constant surface
 c
             if (iindx(icheck,2*lmax1+3)/10.eq.3) then
@@ -527,7 +527,7 @@ c
                   if (iindx(icheck,2*lmax1+3).eq.31) then
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1859) 1,nbl,xi1,xi2,et1,et2
-                  else 
+                  else
                      nou(4) = min(nou(4)+1,ibufdim)
                      write(bou(nou(4),4),1859) kdimg(nbl),nbl,xi1,xi2,
      .                                      et1,et2
@@ -543,7 +543,7 @@ c
                write(bou(nou(1),1),*) 'stopping ... mptch =',mptch,
      .         ' too small '
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-            end if 
+            end if
 c
  1857       format(' ',16x,'to surface i =',i3,' of block',i3,2x,'(j: ',
      .             i3,' to ',i3,', k: ',i3,' to ',i3,')')
@@ -565,13 +565,13 @@ c
                nou(4) = min(nou(4)+1,ibufdim)
                write(bou(nou(4),4),99)
             end if
-   99       format(' ','note: j and k referred to below are indicies', 
+   99       format(' ','note: j and k referred to below are indicies',
      .             ' local to the patch surface')
 c
 c           set-up for "to" side of patch interface
 c
             jmax2  = jjmax2(1)
-            kmax2  = kkmax2(1) 
+            kmax2  = kkmax2(1)
             lx2    = lw(10,nbl)
             ly2    = lw(11,nbl)
             lz2    = lw(12,nbl)
@@ -649,14 +649,14 @@ c
             call collapse(mptch+2,mptch+2,jmax1,kmax1,x1,y1,z1,
      .                    nou,bou,nbuf,ibufdim)
 c
-c           check for branch cuts 
+c           check for branch cuts
 c
             if (isklt1.gt.0) then
                nou(4) = min(nou(4)+1,ibufdim)
                write(bou(nou(4),4),98) mbl
             end if
    98       format(' ','   checking for branch cuts',
-     .             ' on "from" side in block ',i3) 
+     .             ' on "from" side in block ',i3)
 c
             xif1l = iindx(icheck,2*lmax1+9+l)
             xif2l = iindx(icheck,3*lmax1+9+l)
@@ -666,7 +666,7 @@ c
      .                 jmax1,kmax1,l,x1,y1,z1,xif1l,xif2l,etf1l,etf2l,
      .                 nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
 c
-c           expand "from" grid(s) at boundaries to insure that the 
+c           expand "from" grid(s) at boundaries to insure that the
 c           "to" grid is completely covered
 c
             if (isklt1.gt.0) then
@@ -714,7 +714,7 @@ c
                 call transp(mptch+2,mptch+2,jjte,kkte,msub1,l,
      .                      xte,yte,zte,dx,dy,dz,intmx,icheck)
             end if
-            if (abs(real(dthetx(icheck,l))).gt.0. .or. 
+            if (abs(real(dthetx(icheck,l))).gt.0. .or.
      .          abs(real(dthety(icheck,l))).gt.0. .or.
      .          abs(real(dthetz(icheck,l))).gt.0.) then
                 jjte = jte(l)
@@ -776,7 +776,7 @@ c
      .                     nptf,xi1,xi2,et1,et2,xi1f,xi2f,et1f,et2f)
             end if
 c
-c           determine projection of x2,y2,z2 points onto generalized 
+c           determine projection of x2,y2,z2 points onto generalized
 c           coordinate system(s) defined by the grid(s) on "from" side
 c
             call invert(mptch+2,mptch+2,msub1,1,jte,kte,

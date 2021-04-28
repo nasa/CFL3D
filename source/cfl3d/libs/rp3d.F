@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -63,10 +63,10 @@ c
       if (ialph.eq.0) then
 #ifdef CMPLX
          if (igeom_img .eq. 0) then
-c        
+c
 c           for non-geometric derivatives, input grid is real
 c
-            read(1,end=999,err=999) 
+            read(1,end=999,err=999)
      .              (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((yr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((zr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
@@ -80,17 +80,17 @@ c
                end do
             end do
          else
-c        
+c
 c           for geometric derivatives, input grid is complex
 c
-            read(1,end=999,err=999) 
+            read(1,end=999,err=999)
      .              (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
 
          end if
 #else
-         read(1,end=999,err=999) 
+         read(1,end=999,err=999)
      .           (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
@@ -101,7 +101,7 @@ c
 c
 c           for non-geometric derivatives, input grid is real
 c
-            read(1,end=999,err=999) 
+            read(1,end=999,err=999)
      .              (((xr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((zr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((yr(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
@@ -118,13 +118,13 @@ c
 c
 c           for geometric derivatives, input grid is complex
 c
-            read(1,end=999,err=999) 
+            read(1,end=999,err=999)
      .              (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .              (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
          end if
 #else
-         read(1,end=999,err=999) 
+         read(1,end=999,err=999)
      .           (((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
      .           (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
@@ -150,4 +150,4 @@ c
  999  continue
       irr=1
       return
-      end	
+      end

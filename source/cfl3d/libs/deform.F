@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -75,7 +75,7 @@ c
 c
       common /twod/ i2d
       common /zero/ iexp
-      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax 
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit
 
@@ -154,7 +154,7 @@ c     call umalloc(nslave,0,'volij',memuse,stats)
       call umalloc(20,1,'n1',memuse,stats)
 
       eps  = 100.*10.**(-iexp)
-c 
+c
 c     n       = i,j,k
 c     islavept(2) = j - 1
 c     islavept(3) = j + 1
@@ -165,7 +165,7 @@ c     islavept(7) = i + 1
 c     islavept(10) = number of ija and sa array values to reserve for this
 c                    point
 c     islavept(11) = max number of coincident points at block interfaces
-c     islavept(12) = coincident pt 2 (pt n is the first)   
+c     islavept(12) = coincident pt 2 (pt n is the first)
 c     islavept(13) = coincident pt 3
 c     islavept(14) = coincident pt 4
 c     islavept(15) = coincident pt 5
@@ -176,16 +176,16 @@ c     islavept(19) = coincident pt 9
 c     islavept(20) = coincident pt 10
 c     islavept(21) = number of the nearest surface pt
 c
-      ipt = 3*nslave+2 
+      ipt = 3*nslave+2
       ija(1) = ipt
-      do n = 1,nslave 
+      do n = 1,nslave
          ija(3*(n-1)+2)= ija(3*(n-1)+1) + islavept(n,10,iseqr)
-         ija(3*(n-1)+3)= ija(3*(n-1)+2) + islavept(n,10,iseqr) 
-         ija(3*n    +1)= ija(3*(n-1)+3) + islavept(n,10,iseqr) 
+         ija(3*(n-1)+3)= ija(3*(n-1)+2) + islavept(n,10,iseqr)
+         ija(3*n    +1)= ija(3*(n-1)+3) + islavept(n,10,iseqr)
       enddo
       do n = 3*nslave+2,245*nslave+2
         ija(n) = 0
-      enddo 
+      enddo
 c
 c
        if(nt.eq.1.and.meshdef.eq.1) then
@@ -210,24 +210,24 @@ c
        end if
 
 c
-      if(isktyp.gt.0) then 
-        gini = 10.d0 
-        eini = 10.d0 
+      if(isktyp.gt.0) then
+        gini = 10.d0
+        eini = 10.d0
 
-        mxiter1 = 1      
+        mxiter1 = 1
 c
-        call elrhs(b,u,islavept,nslave,nmaster,iseqr) 
+        call elrhs(b,u,islavept,nslave,nmaster,iseqr)
 
-        do itr1 = 1,mxiter1 
+        do itr1 = 1,mxiter1
 
           do n = 1,245*nslave+2
-            sa(n) = 0.d0 
+            sa(n) = 0.d0
           enddo
 
 
           if(meshdef.eq.1) then
            if(myid.eq.myhost) then
-             write(11,21022) nslave 
+             write(11,21022) nslave
 21022        format(' Calculating macroelement moduli ',
      .               'for ',i8,' element nodes')
            end if
@@ -239,7 +239,7 @@ c
 
           if(meshdef.eq.1) then
            if(myid.eq.myhost) then
-             write(11,21023) 
+             write(11,21023)
 21023        format(' Calculating macroelement metrics ')
            end if
           end if
@@ -248,10 +248,10 @@ c
      .                     zetaz,ooj,xst,yst,zst,eps,islavept,nslave,
      .                     nmaster,nnodes,myhost,myid,mycomm,
      .                     mblk2nd,maxbl,iseqr)
- 
+
           if(meshdef.eq.1) then
            if(myid.eq.myhost) then
-             write(11,21024) 
+             write(11,21024)
 21024        format(' Calculating and assembling macroelement stiffness'
      .                ,'  matrix ')
            end if
@@ -265,33 +265,33 @@ c
 
           if(meshdef.eq.1) then
            if(myid.eq.myhost) then
-             write(11,21025) 
+             write(11,21025)
 21025        format(' Solving the macroelement system ')
            end if
           end if
-         
+
           ncount = 245*nslave+2
           ndim   = 3*nslave
 c
           call gaussseidel(ncount,ndim,b,u,sa,ija,1e-6,9*nslave,err
-     .                     ,volij,myid,myhost) 
+     .                     ,volij,myid,myhost)
 c         call dprec(sa,ija,b,ndim,ncount)
 
 c         call linbcg(ncount,ndim,b,u,sa,ija,1,1e-6,nslave,iter,err
-c    .                ,time,eps,myid) 
-          
+c    .                ,time,eps,myid)
+
           call coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
         enddo
       else
 
           if(meshdef.eq.1) then
            if(myid.eq.myhost) then
-             write(11,21027) 
+             write(11,21027)
 21027        format(' Solving nodal displacements using exponential'
      .              ,' decay  ')
            end if
           end if
-         
+
           call expdecay(xst,yst,zst,u,volij,ei,ripm,eps,
      .                  islavept,nslave,nmaster,ndim,nt,
      .                  nnodes,myhost,myid,mycomm,mblk2nd,
@@ -299,16 +299,16 @@ c    .                ,time,eps,myid)
           call coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
       end if
 
-        if(i2d.ne.0) then 
+        if(i2d.ne.0) then
           do n = 1,nslave
             if(islavept(n,6,iseqr).eq.n) then
               nip1     = islavept(n,7,iseqr)
               u(3*(n-1)+1)    = .5*(u(3*(n-1)+1) + u(3*(nip1-1)+1))
               u(3*(nip1-1)+1) = u(3*(n-1)+1)
               u(3*(nip1-1)+2) = 0.
-              u(3*(n-1)+2)    = 0. 
+              u(3*(n-1)+2)    = 0.
               u(3*(n-1)+3)    = .5*(u(3*(n-1)+3) + u(3*(nip1-1)+3))
-              u(3*(nip1-1)+3) = u(3*(n-1)+3) 
+              u(3*(nip1-1)+3) = u(3*(n-1)+3)
             end if
           enddo
         end if
@@ -357,7 +357,7 @@ c
       subroutine coincdef(volij,u,islavept,nslave,nmaster,iseqr,n1)
       dimension islavept(nslave,nmaster,5)
       dimension u(3*nslave),volij(3*nslave)
-      dimension n1(20) 
+      dimension n1(20)
 c
           volij = 0.
           do n = 1,nslave
@@ -374,7 +374,7 @@ c
                   rooiim = 1./real(iimax)
                   do ii2 = 1,iimax
                     do j = 1,3
-                      volij(3*(n-1)+j) = volij(3*(n-1)+j) + 
+                      volij(3*(n-1)+j) = volij(3*(n-1)+j) +
      .                                   u(3*(n1(ii2)-1)+j)*rooiim
                     enddo
                   enddo
@@ -408,11 +408,11 @@ c
       return
       end
 c
-      SUBROUTINE gaussseidel(nc,n,b,x,sa,ija,tol,itmax,err, 
-     .                       xt,myid,myhost) 
-      parameter(EPS=1.d-12)  
-      INTEGER iter,itmax,itol,n 
-      INTEGER j 
+      SUBROUTINE gaussseidel(nc,n,b,x,sa,ija,tol,itmax,err,
+     .                       xt,myid,myhost)
+      parameter(EPS=1.d-12)
+      INTEGER iter,itmax,itol,n
+      INTEGER j
       dimension b(n),x(n)
       dimension xt(n)
       dimension ija(nc)
@@ -427,11 +427,11 @@ c
         sum = 0.
         resid = 0.
         do i = 1,n
-          ut = b(i)/sa(i)  
+          ut = b(i)/sa(i)
           do j = ija(i),ija(i+1)-1
             ut = ut - sa(j)*x(ija(j))/sa(i)
           enddo
-          xt(i) = alpha1*ut + (1.-alpha1)*x(i) 
+          xt(i) = alpha1*ut + (1.-alpha1)*x(i)
           sum = sum + (xt(i)-x(i))*(xt(i)-x(i))
           resid1= sqrt((xt(i)-x(i))*(xt(i)-x(i)))
           if(resid1.gt.resid) then
@@ -443,14 +443,14 @@ c
         errold = err
         err = sqrt(sum)
         nresmx = 1+(nresmx-1)/3
-        if(meshdef.eq.1.and.myid.eq.myhost) 
-     .               write(1000+myid,31029) it,err,nresmx,resid   
+        if(meshdef.eq.1.and.myid.eq.myhost)
+     .               write(1000+myid,31029) it,err,nresmx,resid
 31029   format(i8,e16.8,i8,e16.8)
-        if(err.lt.tol) goto 2000 
+        if(err.lt.tol) goto 2000
         if(errold.lt.err) then
           it1 = it1 + 1
           if(it1.gt.itmx1) then
-             write(1000,21022) 
+             write(1000,21022)
              stop
           end if
 21022     format(' Stopping, Gauss-Seidel scheme not converging: '
@@ -459,176 +459,176 @@ c
           it1 = 0
         end if
       enddo
-2000  continue 
-      if(myid.eq.myhost) write(1000+myid,31029) it,err   
- 
+2000  continue
+      if(myid.eq.myhost) write(1000+myid,31029) it,err
+
       return
       end
       SUBROUTINE linbcg(nc,n,b,x,sa,ija,itol,tol,itmax,iter,err
-     .                  ,time,eps,myid) 
-      INTEGER iter,itmax,itol,n 
-      INTEGER j 
+     .                  ,time,eps,myid)
+      INTEGER iter,itmax,itol,n
+      INTEGER j
       dimension b(n),x(n)
       dimension ija(nc)
       dimension sa(nc)
       dimension p(n),pp(n),r(n),rr(n),z(n),zz(n)
-CU    USES atimes,asolve,snrm 
-      iter=0 
+CU    USES atimes,asolve,snrm
+      iter=0
 
       test = 0.
       do 5 j = 1,n
         if(test.lt.abs(b(j))) test = abs(b(j))
 5     continue
       if(test.le.eps) return
-      call atimes(n,nc,x,r,sa,ija,0,myid) 
-      do 11 j=1,n 
-        r(j)=b(j)-r(j) 
-        rr(j)=r(j) 
-11    continue 
-      call atimes(n,nc,r,rr,sa,ija,0,myid) 
-      znrm=1.d0 
-      if(itol.eq.1) then 
-        bnrm=snrm(n,b,itol) 
-      else if (itol.eq.2) then 
+      call atimes(n,nc,x,r,sa,ija,0,myid)
+      do 11 j=1,n
+        r(j)=b(j)-r(j)
+        rr(j)=r(j)
+11    continue
+      call atimes(n,nc,r,rr,sa,ija,0,myid)
+      znrm=1.d0
+      if(itol.eq.1) then
+        bnrm=snrm(n,b,itol)
+      else if (itol.eq.2) then
         call asolve(n,nc,b,z,sa,0)
-        bnrm=snrm(n,z,itol) 
-      else if (itol.eq.3.or.itol.eq.4) then 
+        bnrm=snrm(n,z,itol)
+      else if (itol.eq.3.or.itol.eq.4) then
         call asolve(n,nc,b,z,sa,0)
-        bnrm=snrm(n,z,itol) 
+        bnrm=snrm(n,z,itol)
         call asolve(n,nc,r,z,sa,0)
-        znrm=snrm(n,z,itol) 
-      else 
+        znrm=snrm(n,z,itol)
+      else
         write(1000+myid,31922)
-31922   format('illegal itol in linbcg') 
+31922   format('illegal itol in linbcg')
         stop
-      endif 
+      endif
       if(bnrm.lt.EPS) then
         err = 0.
         znrm= 0.
-        goto 200 
+        goto 200
       end if
       call asolve(n,nc,r,z,sa,0)
-100   if (iter.le.itmax) then 
-        iter=iter+1 
+100   if (iter.le.itmax) then
+        iter=iter+1
         call asolve(n,nc,rr,zz,sa,1)
-        bknum=0.d0 
-        do 12 j=1,n 
-          bknum=bknum+z(j)*rr(j) 
-12      continue 
-        if(iter.eq.1) then 
-          do 13 j=1,n 
-            p(j)=z(j) 
-            pp(j)=zz(j) 
-13        continue 
-        else 
-          bk=bknum/bkden 
-          do 14 j=1,n 
-            p(j)=bk*p(j)+z(j) 
-            pp(j)=bk*pp(j)+zz(j) 
-14        continue 
-        endif 
-        bkden=bknum 
-        call atimes(n,nc,p,z,sa,ija,0,myid) 
-        akden=0.d0 
-        do 15 j=1,n 
-          akden=akden+z(j)*pp(j) 
-15      continue 
-        ak=bknum/akden 
-        call atimes(n,nc,pp,zz,sa,ija,1,myid) 
+        bknum=0.d0
+        do 12 j=1,n
+          bknum=bknum+z(j)*rr(j)
+12      continue
+        if(iter.eq.1) then
+          do 13 j=1,n
+            p(j)=z(j)
+            pp(j)=zz(j)
+13        continue
+        else
+          bk=bknum/bkden
+          do 14 j=1,n
+            p(j)=bk*p(j)+z(j)
+            pp(j)=bk*pp(j)+zz(j)
+14        continue
+        endif
+        bkden=bknum
+        call atimes(n,nc,p,z,sa,ija,0,myid)
+        akden=0.d0
+        do 15 j=1,n
+          akden=akden+z(j)*pp(j)
+15      continue
+        ak=bknum/akden
+        call atimes(n,nc,pp,zz,sa,ija,1,myid)
 c
 c
-        do 16 j=1,n 
-          x(j)=x(j)+ak*p(j) 
-          r(j)=r(j)-ak*z(j) 
-          rr(j)=rr(j)-ak*zz(j) 
-16      continue 
+        do 16 j=1,n
+          x(j)=x(j)+ak*p(j)
+          r(j)=r(j)-ak*z(j)
+          rr(j)=rr(j)-ak*zz(j)
+16      continue
 c
-        
+
         call asolve(n,nc,r,z,sa,0)
         if(itol.eq.1.) then
           if(bnrm.gt.EPS) then
-            err=snrm(n,r,itol)/bnrm 
+            err=snrm(n,r,itol)/bnrm
           else
             err = 0.
           end if
-             write(1000+myid,5040) iter,log10(err),znrm  
-        else if(itol.eq.2) then 
+             write(1000+myid,5040) iter,log10(err),znrm
+        else if(itol.eq.2) then
           if(bnrm.gt.EPS) then
-            err=snrm(n,z,itol)/bnrm 
+            err=snrm(n,z,itol)/bnrm
           else
             err = 0.
           end if
-             write(1000+myid,5040) iter,log10(err),znrm  
-        else if(itol.eq.3.or.itol.eq.4)then 
-          zm1nrm=znrm 
-          znrm=snrm(n,z,itol)  
+             write(1000+myid,5040) iter,log10(err),znrm
+        else if(itol.eq.3.or.itol.eq.4)then
+          zm1nrm=znrm
+          znrm=snrm(n,z,itol)
 c
-          if(abs(zm1nrm-znrm).gt.EPS*znrm) then 
-            dxnrm=abs(ak)*snrm(n,p,itol) 
+          if(abs(zm1nrm-znrm).gt.EPS*znrm) then
+            dxnrm=abs(ak)*snrm(n,p,itol)
             if(abs(zm1nrm-znrm).gt.EPS) then
-              err=znrm/abs(zm1nrm-znrm)*dxnrm 
+              err=znrm/abs(zm1nrm-znrm)*dxnrm
             else
               err = 0.
             end if
           else
             if(bnrm.gt.EPS) then
-              err=znrm/bnrm 
+              err=znrm/bnrm
             else
               err = 0.
-              znrm= 0. 
+              znrm= 0.
             end if
-c            write(1000+myid,5042) iter,log10(err),znrm  
-            goto 100 
-          endif 
-          xnrm=snrm(n,x,itol) 
+c            write(1000+myid,5042) iter,log10(err),znrm
+            goto 100
+          endif
+          xnrm=snrm(n,x,itol)
 c
-          if(err.le.0.5d0*xnrm) then 
+          if(err.le.0.5d0*xnrm) then
               if(xnrm.gt.EPS) then
-                err=err/xnrm 
+                err=err/xnrm
               else
                 err = 0.
               end if
-             write(1000+myid,5043) iter,log10(err),znrm  
-          else 
+             write(1000+myid,5043) iter,log10(err),znrm
+          else
             if(bnrm.gt.EPS) then
-              err=znrm/bnrm 
+              err=znrm/bnrm
             else
               err = 0.
-              znrm= 0. 
+              znrm= 0.
             end if
-c            write(1000+myid,5044) iter,log10(err),znrm  
-            goto 100 
-          endif 
-        endif 
-      if(err.gt.tol) goto 100 
-      endif 
+c            write(1000+myid,5044) iter,log10(err),znrm
+            goto 100
+          endif
+        endif
+      if(err.gt.tol) goto 100
+      endif
 200   continue
-5040    format('1',i8,2x,2(1x,e12.5)) 
-5041    format('2',i8,2x,6(1x,e12.5)) 
-5042    format('3',i8,2x,2(1x,e12.5)) 
-5043    format('4',i8,2x,2(1x,e12.5)) 
-5044    format('5',i8,2x,2(1x,e12.5)) 
+5040    format('1',i8,2x,2(1x,e12.5))
+5041    format('2',i8,2x,6(1x,e12.5))
+5042    format('3',i8,2x,2(1x,e12.5))
+5043    format('4',i8,2x,2(1x,e12.5))
+5044    format('5',i8,2x,2(1x,e12.5))
 
-      return 
-      END 
-
-
-C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3. 
+      return
+      END
 
 
+C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
-      SUBROUTINE atimes(n,nc,x,r,sa,ija,itrnsp,myid) 
+
+
+      SUBROUTINE atimes(n,nc,x,r,sa,ija,itrnsp,myid)
       INTEGER n,itrnsp
       dimension ija(nc)
-      dimension x(n),r(n),sa(nc) 
-CU    USES dsprsax,dsprstx 
-      if (itrnsp.eq.0) then 
-        call dsprsax(sa,ija,x,r,n,nc,myid) 
-      else 
-        call dsprstx(sa,ija,x,r,n,nc,myid) 
-      endif 
-      return 
-      END 
+      dimension x(n),r(n),sa(nc)
+CU    USES dsprsax,dsprstx
+      if (itrnsp.eq.0) then
+        call dsprsax(sa,ija,x,r,n,nc,myid)
+      else
+        call dsprstx(sa,ija,x,r,n,nc,myid)
+      endif
+      return
+      END
 C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
       SUBROUTINE dsprstx(sa,ija,x,b,n,nc,myid)
@@ -636,10 +636,10 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
       dimension b(n),sa(nc),x(n)
       INTEGER i,j,k
       if (ija(1).ne.n+2) then
-        write(1000+myid,3111) ija(1),n+2,nc 
-3111    format('mismatched vector and matrix in sprstx',3i8) 
+        write(1000+myid,3111) ija(1),n+2,nc
+3111    format('mismatched vector and matrix in sprstx',3i8)
         stop
-      end if 
+      end if
       do 11 i=1,n
         b(i)=sa(i)*x(i)
 11    continue
@@ -657,13 +657,13 @@ c  Bartels preconditioner
 c
       SUBROUTINE dprec(sa,ija,b,n,nc)
       INTEGER ija(nc)
-      dimension sa(nc),b(n) 
+      dimension sa(nc),b(n)
       INTEGER i,k
       if (ija(1).ne.n+2) then
-        write(1000+myid,3111) ija(1),n+2,nc 
-3111    format('mismatched vector and matrix in sprsax',3i8) 
+        write(1000+myid,3111) ija(1),n+2,nc
+3111    format('mismatched vector and matrix in sprsax',3i8)
         stop
-      end if 
+      end if
       do 12 i=1,n
         b(i) = b(i)/sa(i)
         do 11 k=ija(i),ija(i+1)-1
@@ -680,10 +680,10 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
       dimension b(n),sa(nc),x(n)
       INTEGER i,k
       if (ija(1).ne.n+2) then
-        write(1000+myid,3111) ija(1),n+2,nc 
-3111    format('mismatched vector and matrix in sprsax',3i8) 
+        write(1000+myid,3111) ija(1),n+2,nc
+3111    format('mismatched vector and matrix in sprsax',3i8)
         stop
-      end if 
+      end if
       do 12 i=1,n
         b(i)=sa(i)*x(i)
         do 11 k=ija(i),ija(i+1)-1
@@ -694,35 +694,35 @@ C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
       END
 C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
-      SUBROUTINE asolve(n,nc,b,x,sa,itrnsp) 
-      INTEGER n,itrnsp,i 
+      SUBROUTINE asolve(n,nc,b,x,sa,itrnsp)
+      INTEGER n,itrnsp,i
       dimension x(n),b(n),sa(nc)
-      do 11 i=1,n 
-        x(i)=b(i)/sa(i) 
-11    continue 
+      do 11 i=1,n
+        x(i)=b(i)/sa(i)
+11    continue
 
-      return 
-      END 
+      return
+      END
 C  (C) Copr. 1986-92 Numerical Recipes Software ">u,3.
 
-      FUNCTION snrm(n,sx,itol) 
-      INTEGER n,itol,i,isamax 
+      FUNCTION snrm(n,sx,itol)
+      INTEGER n,itol,i,isamax
       dimension sx(n)
-      if (itol.le.3)then 
-        snrm=0. 
-        do 11 i=1,n 
-          snrm=snrm+sx(i)**2 
-11      continue 
-        snrm=sqrt(snrm) 
-      else 
-        isamax=1 
-        do 12 i=1,n 
-          if(abs(sx(i)).gt.abs(sx(isamax))) isamax=i 
-12      continue 
-        snrm=abs(sx(isamax)) 
-      endif 
-      return 
-      END 
+      if (itol.le.3)then
+        snrm=0.
+        do 11 i=1,n
+          snrm=snrm+sx(i)**2
+11      continue
+        snrm=sqrt(snrm)
+      else
+        isamax=1
+        do 12 i=1,n
+          if(abs(sx(i)).gt.abs(sx(isamax))) isamax=i
+12      continue
+        snrm=abs(sx(isamax))
+      endif
+      return
+      END
 c
 ************************************************************************
 *
@@ -821,7 +821,7 @@ c    point to a control point will potentially change as a
 c    surface moves.
 c
         do n1 = 1,nslave
-          r(n1) = 1.e6 
+          r(n1) = 1.e6
           if(islavept(n1,8,iseqr).ne.0) then
            do n2 = 1,nslave
             if(islavept(n2,8,iseqr).eq.0) then
@@ -841,12 +841,12 @@ c
           end if
         enddo
         if(nt.eq.1) then
-          rmax = 0. 
-          rmin = 1.e+30  
+          rmax = 0.
+          rmin = 1.e+30
           do n = 1,nslave
             rave =  r(n)
-            if(rave.gt.rmax) rmax = rave   
-            if(rave.lt.rmin.and.rave.gt.eps) rmin = rave  
+            if(rave.gt.rmax) rmax = rave
+            if(rave.lt.rmin.and.rave.gt.eps) rmin = rave
           enddo
         end if
         eps1 = rmin/10000.
@@ -862,15 +862,15 @@ c
             nipm(7)= islavept(n,7,iseqr)
             do ii = 1,7
               nsf(ii)  = islavept(nipm(ii),8,iseqr)
-              if(n.ne.nipm(ii)) then 
+              if(n.ne.nipm(ii)) then
                 ripm(ii,n)=(xst(n)-xst(nipm(ii)))*(xst(n)-xst(nipm(ii)))
      .                    +(yst(n)-yst(nipm(ii)))*(yst(n)-yst(nipm(ii)))
      .                    +(zst(n)-zst(nipm(ii)))*(zst(n)-zst(nipm(ii)))
-     .                     +eps1 
+     .                     +eps1
                 ripm(ii,n) = sqrt(ripm(ii,n))
               else
                 ripm(ii,n) = 1.e+30
-              end if  
+              end if
             enddo
             coef   = 0.
             coef(8)= 1.
@@ -888,15 +888,15 @@ c
               rsn(ii)= r(nipm(ii))
             enddo
             n2    = n3(1)
-            arg(1) = - beta2*(rsn(1)/rmax  - alpha2) 
+            arg(1) = - beta2*(rsn(1)/rmax  - alpha2)
             if(arg(1).gt.0.) arg(1) = 0.
-            coef(1)= coef(1)/coef(8) 
+            coef(1)= coef(1)/coef(8)
             do ii = 2,7
-              if(n.ne.nipm(ii)) then 
+              if(n.ne.nipm(ii)) then
                 n2    = n3(ii)
-                arg(ii) = - beta2*(rsn(ii)/rmax  - alpha2) 
+                arg(ii) = - beta2*(rsn(ii)/rmax  - alpha2)
                 if(arg(ii).gt.0.) arg(ii) = 0.
-                coef(ii)= coef(ii)/coef(8) 
+                coef(ii)= coef(ii)/coef(8)
               else
                 coef(ii) = 0.
                 arg(ii)  = 0.
@@ -908,7 +908,7 @@ c
             enddo
           end if
         enddo
-       do it = 1,nsprgit   
+       do it = 1,nsprgit
         do n = 1,nslave
           nipm(2)= islavept(n,2,iseqr)
           nipm(3)= islavept(n,3,iseqr)
@@ -921,7 +921,7 @@ c         do ii = 2,7
 c           nsf(ii) = islavept(nipm(ii),8,iseqr)
 c         enddo
           if(nsf(1).ne.0) then
-            coef1 = 0. 
+            coef1 = 0.
             do ii = 2,7
               coef1= coef1 + 1./ripm(ii,n)
             enddo
@@ -929,7 +929,7 @@ c         enddo
               ut(3*(n-1)+j) = 0.
               do ii = 2,7
                ut(3*(n-1)+j)= ut(3*(n-1)+j)
-     .             + u(3*(nipm(ii)-1)+j)/ripm(ii,n)/coef1   
+     .             + u(3*(nipm(ii)-1)+j)/ripm(ii,n)/coef1
               enddo
             enddo
           end if
@@ -946,9 +946,9 @@ c         do ii = 2,7
 c           nsf(ii) = islavept(nipm(ii),8,iseqr)
 c         enddo
           if(nsf(1).ne.0) then
-            u(3*(n-1)+1) = relax*ut(3*(n-1)+1)+(1.-relax)*u(3*(n-1)+1) 
-            u(3*(n-1)+2) = relax*ut(3*(n-1)+2)+(1.-relax)*u(3*(n-1)+2) 
-            u(3*(n-1)+3) = relax*ut(3*(n-1)+3)+(1.-relax)*u(3*(n-1)+3) 
+            u(3*(n-1)+1) = relax*ut(3*(n-1)+1)+(1.-relax)*u(3*(n-1)+1)
+            u(3*(n-1)+2) = relax*ut(3*(n-1)+2)+(1.-relax)*u(3*(n-1)+2)
+            u(3*(n-1)+3) = relax*ut(3*(n-1)+3)+(1.-relax)*u(3*(n-1)+3)
           end if
         enddo
        enddo
@@ -965,8 +965,8 @@ c         enddo
       dimension ei(nslave),ej(nslave),ek(nslave),gij(nslave),
      .          gjk(nslave),gik(nslave)
       dimension volik(nslave),volij(3*nslave)
-      dimension r(nslave),r1(0:8) 
-      dimension ni1(0:8),ni0(0:8),test1(0:8) 
+      dimension r(nslave),r1(0:8)
+      dimension ni1(0:8),ni0(0:8),test1(0:8)
       dimension mblk2nd(maxbl)
       common /sgminmax/ rmin,rmax
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
@@ -977,10 +977,10 @@ c    Do this at every time step because the closest surface
 c    point to a control point will potentially change as a
 c    surface moves.
 c
-        rmax = 0. 
-        rmin = 1.e+30  
+        rmax = 0.
+        rmin = 1.e+30
         do n1 = 1,nslave
-          r(n1) = 1.e6 
+          r(n1) = 1.e6
           islavept(n1,21,iseqr) = 0
           ni0(0)    = n1
           ni0(1)    = islavept(n1    ,3,iseqr)
@@ -995,9 +995,9 @@ c
            ycent = 0.
            zcent = 0.
            do ii = 0,7
-             xcent = xcent + xst(ni0(ii))/8. 
-             ycent = ycent + yst(ni0(ii))/8. 
-             zcent = zcent + zst(ni0(ii))/8. 
+             xcent = xcent + xst(ni0(ii))/8.
+             ycent = ycent + yst(ni0(ii))/8.
+             zcent = zcent + zst(ni0(ii))/8.
            enddo
            do n2 = 1,nslave
             if(islavept(n2,8,iseqr).eq.0) then
@@ -1014,11 +1014,11 @@ c
      .               +(zst(n2)-zcent)*(zst(n2)-zcent)
               test    = sqrt(test)
               if(r(n1).gt.test) then
-                r(n1)                 = test   
+                r(n1)                 = test
                 islavept(n1,21,iseqr) = n2
               end if
               if(islavept(ni1(1),8,iseqr).eq.0.and.
-     .           islavept(ni1(2),8,iseqr).eq.0) then 
+     .           islavept(ni1(2),8,iseqr).eq.0) then
                  xsct = (xst(n2)+xst(ni1(1))+xst(ni1(2))
      .                    +xst(ni1(3)))/4.
                  ysct = (yst(n2)+yst(ni1(1))+yst(ni1(2))
@@ -1030,12 +1030,12 @@ c
      .                  +(zsct-zcent)*(zsct-zcent)
                  test    = sqrt(test)
                  if(r(n1).gt.test) then
-                    r(n1)                 = test   
+                    r(n1)                 = test
                     islavept(n1,21,iseqr) = n2
                  end if
               end if
               if(islavept(ni1(2),8,iseqr).eq.0.and.
-     .           islavept(ni1(4),8,iseqr).eq.0) then 
+     .           islavept(ni1(4),8,iseqr).eq.0) then
                  xsct = (xst(n2)+xst(ni1(2))+xst(ni1(4))
      .                    +xst(ni1(5)))/4.
                  ysct = (yst(n2)+yst(ni1(2))+yst(ni1(4))
@@ -1047,12 +1047,12 @@ c
      .                  +(zsct-zcent)*(zsct-zcent)
                  test    = sqrt(test)
                  if(r(n1).gt.test) then
-                    r(n1)                 = test   
+                    r(n1)                 = test
                     islavept(n1,21,iseqr) = n2
                  end if
               end if
               if(islavept(ni1(1),8,iseqr).eq.0.and.
-     .           islavept(ni1(4),8,iseqr).eq.0) then 
+     .           islavept(ni1(4),8,iseqr).eq.0) then
                  xsct = (xst(n2)+xst(ni1(1))+xst(ni1(4))
      .                    +xst(ni1(6)))/4.
                  ysct = (yst(n2)+yst(ni1(1))+yst(ni1(4))
@@ -1064,13 +1064,13 @@ c
      .                  +(zsct-zcent)*(zsct-zcent)
                  test    = sqrt(test)
                  if(r(n1).gt.test) then
-                    r(n1)                 = test   
+                    r(n1)                 = test
                     islavept(n1,21,iseqr) = n2
                  end if
               end if
             end if
            enddo
-          end if 
+          end if
           if(islavept(n1,21,iseqr).eq.0) then
             r(n1) = 0.
             islavept(n1,21,iseqr) = n1
@@ -1085,8 +1085,8 @@ c
         enddo
       e0 = 500000.
       r0 = (rmax*alog(1.-eini/e0)+beta1*rmin)/
-     .     (     alog(1.-eini/e0)+beta1     ) 
-  
+     .     (     alog(1.-eini/e0)+beta1     )
+
       do n = 1,nslave
        nbl = islavept(n,9,iseqr)
         ni0(1)    = islavept(n     ,3,iseqr)
@@ -1094,7 +1094,7 @@ c
         ni0(4)    = islavept(n     ,7,iseqr)
         if(ni0(1).ne.n.and.ni0(2).ne.n.and.ni0(4).ne.n) then
           rave = r(n)
-          denom    = (1.-exp(-beta1*(rave-r0)/(rmax-r0))) 
+          denom    = (1.-exp(-beta1*(rave-r0)/(rmax-r0)))
           if(denom.lt.eps) denom = eps
           fact  = 1./denom
           ej(n) = eini*fact
@@ -1124,7 +1124,7 @@ c
 c
       do n = 1,nslave
        nbl = islavept(n,9,iseqr)
-c      if (myid .eq. mblk2nd(nbl)) then 
+c      if (myid .eq. mblk2nd(nbl)) then
         njp    = islavept(n,3,iseqr)
         nkp    = islavept(n,5,iseqr)
         njpkp  = islavept(nkp,3,iseqr)
@@ -1153,7 +1153,7 @@ c      if (myid .eq. mblk2nd(nbl)) then
      .                +zs(njpip)-zs(njp)+zs(njpipkp)-zs(njpkp))
           ooj(n)  = 1./(  xxi*(yeta*zzeta-yzeta*zeta)
      .                  -xeta*(yxi *zzeta-yzeta*zxi )
-     .                 +xzeta*(yxi *zeta -yeta *zxi )) 
+     .                 +xzeta*(yxi *zeta -yeta *zxi ))
           xix(n)  =(yeta*zzeta-yzeta*zeta)*ooj(n)
           xiy(n)  =(xzeta*zeta-xeta*zzeta)*ooj(n)
           xiz(n)  =(xeta*yzeta-xzeta*yeta)*ooj(n)
@@ -1177,11 +1177,11 @@ c      if (myid .eq. mblk2nd(nbl)) then
         end if
 c      end if
       enddo
-  
+
       return
       end
 c
-      subroutine elrhs(b,u,islavept,nslave,nmaster,iseqr) 
+      subroutine elrhs(b,u,islavept,nslave,nmaster,iseqr)
       dimension islavept(nslave,nmaster,5)
       dimension b(3*nslave)
       dimension u(3*nslave)
@@ -1189,7 +1189,7 @@ c
 c
       do n = 1,nslave
          ii4  = 1
-         ni3  = 0 
+         ni3  = 0
          if(islavept(n,8,iseqr).eq.0) ii4 = 0
          if(ii4.ne.0) then
            iimax = islavept(n,11,iseqr)
@@ -1242,8 +1242,8 @@ c     irst    = 0 standard update; do all steps described above
 c               1 restart - compute the mesh deformation and update
 c                 only the grid shape; do not update the grid speeds.
 c
-c     isktyp  = 0 use only transfinite interpolation 
-c             > 0 do isktyp smoothing steps using the spring analogy 
+c     isktyp  = 0 use only transfinite interpolation
+c             > 0 do isktyp smoothing steps using the spring analogy
 c                 and mesh shape preservation near the k=1 and k=kdim
 c                 surfaces
 c***********************************************************************
@@ -1331,8 +1331,8 @@ c
       common /twod/ i2d
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
      .                 nsprgit,ndgrd,ndwrt
-      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax 
-      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie 
+      common /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
+      common /moov/movie,nframes,icall1,lhdr,icoarsemovie,i2dmovie
 c
 c     allocate memory
 c
@@ -1455,7 +1455,7 @@ c
 c     i=1 to idim  subfaces
 c
       if(abs(isktyp).eq.1) then
-       do i = 1,idim,iskp     
+       do i = 1,idim,iskp
          js = 1
          je = jdim
          ks = 1
@@ -1476,12 +1476,12 @@ c
          end do
        enddo
       else
-       do i1 = 1,iskmax(nbl)     
+       do i1 = 1,iskmax(nbl)
          i = iskip(nbl,i1)
-         do j1=1,jskmax(nbl)-1 
+         do j1=1,jskmax(nbl)-1
             j = jskip(nbl,j1)
             jskp = jskip(nbl,j1+1)
-            do k1=1,kskmax(nbl) 
+            do k1=1,kskmax(nbl)
                k = kskip(nbl,k1)
                call tfiedge(idim,jdim,kdim,dx,dy,dz,i,i,
      .                      j,jskp,k,k,arci,arcj,arck,
@@ -1520,7 +1520,7 @@ c
      .       abs(ibctyp).ne.2034 .and.
      .       abs(ibctyp).ne.2016 .and.
      .       abs(ibctyp).ne.1005 .and.
-     .       abs(ibctyp).ne.1006) then 
+     .       abs(ibctyp).ne.1006) then
              js = ibcinfo(nbl,nseg,2,ii)
              je = ibcinfo(nbl,nseg,3,ii)
              ks = ibcinfo(nbl,nseg,4,ii)
@@ -1589,7 +1589,7 @@ c
                      if((j.ge.js.and.j.lt.je).and.(k.ge.ks.
      .                  and.k.lt.ke)) then
                        call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
-     .                              dx2,dy2,dz2,arci,arcj,arck,idim,     
+     .                              dx2,dy2,dz2,arci,arcj,arck,idim,
      .                              idim,j,jskp,k,kskp,nou,bou,nbuf,
      .                              ibufdim,myid)
                      end if
@@ -1602,8 +1602,8 @@ c
 c     Intermediate i subfaces
 c
       if(idim.gt.2) then
-        if(abs(isktyp).eq.1) then 
-         do i = 1+iskp,idim-iskp       
+        if(abs(isktyp).eq.1) then
+         do i = 1+iskp,idim-iskp
           js = 1
           je = jdim
           ks = 1
@@ -1618,12 +1618,12 @@ c
           end do
          enddo
         else
-         do i1 = 2,iskmax(nbl)-1     
+         do i1 = 2,iskmax(nbl)-1
           i = iskip(nbl,i1)
-          do j1=1,jskmax(nbl)-1 
+          do j1=1,jskmax(nbl)-1
             j = jskip(nbl,j1)
             jskp = jskip(nbl,j1+1)
-            do k1=1,kskmax(nbl)-1 
+            do k1=1,kskmax(nbl)-1
                k = kskip(nbl,k1)
                kskp = kskip(nbl,k1+1)
                call tfiface(idim,jdim,kdim,dx,dy,dz,dx1,dy1,dz1,
@@ -1641,7 +1641,7 @@ c
 c     j=1 to jdim  subfaces
 c
         if(abs(isktyp).eq.1) then
-         do j = 1,jdim,jskp     
+         do j = 1,jdim,jskp
            is = 1
            ie = idim
            ks = 1
@@ -1655,12 +1655,12 @@ c
            end do
          enddo
         else
-         do j1 = 1,jskmax(nbl)     
+         do j1 = 1,jskmax(nbl)
            j = jskip(nbl,j1)
-           do i1=1,iskmax(nbl)-1 
+           do i1=1,iskmax(nbl)-1
              i = iskip(nbl,i1)
              iskp = iskip(nbl,i1+1)
-             do k1=1,kskmax(nbl) 
+             do k1=1,kskmax(nbl)
                k = kskip(nbl,k1)
                call tfiedge(idim,jdim,kdim,dx,dy,dz,i,iskp,
      .                      j,j,k,k,arci,arcj,arck,
@@ -1771,7 +1771,7 @@ c
 c     Intermediate j subfaces
 c
          if(abs(isktyp).eq.1) then
-           do j = 1+jskp,jdim-jskp       
+           do j = 1+jskp,jdim-jskp
              is = 1
              ie = idim
              ks = 1
@@ -1786,7 +1786,7 @@ c
              end do
            end do
          else
-           do j1 = 2,jskmax(nbl)-1     
+           do j1 = 2,jskmax(nbl)-1
              j = jskip(nbl,j1)
              do i1=1,iskmax(nbl)-1
                i = iskip(nbl,i1)
@@ -1896,7 +1896,7 @@ c
 c     Intermediate k subfaces
 c
          if(abs(isktyp).eq.1) then
-           do k = 1+kskp,kdim-kskp       
+           do k = 1+kskp,kdim-kskp
              is = 1
              ie = idim
              js = 1

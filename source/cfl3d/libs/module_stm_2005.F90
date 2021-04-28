@@ -7,16 +7,16 @@
 !
 !  Copyright 2001 United States Government as represented by the Administrator
 !  of the National Aeronautics and Space Administration. All Rights Reserved.
-! 
-!  The CFL3D platform is licensed under the Apache License, Version 2.0 
-!  (the "License"); you may not use this file except in compliance with the 
-!  License. You may obtain a copy of the License at 
-!  http://www.apache.org/licenses/LICENSE-2.0. 
-! 
-!  Unless required by applicable law or agreed to in writing, software 
-!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-!  License for the specific language governing permissions and limitations 
+!
+!  The CFL3D platform is licensed under the Apache License, Version 2.0
+!  (the "License"); you may not use this file except in compliance with the
+!  License. You may obtain a copy of the License at
+!  http://www.apache.org/licenses/LICENSE-2.0.
+!
+!  Unless required by applicable law or agreed to in writing, software
+!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+!  License for the specific language governing permissions and limitations
 !  under the License.
 !  ---------------------------------------------------------------------------
 !
@@ -36,7 +36,7 @@ MODULE module_stm_2005
   private :: tensor_rotate
 CONTAINS
   ! build the rotation martix and its transpose
-  ! based on the rotation angle specified, c.f. the 
+  ! based on the rotation angle specified, c.f. the
   ! notes in the bc2005.F
   SUBROUTINE stm2k5_get_rotmat(thx, thy, thz, rn,rnt)
     implicit none
@@ -74,10 +74,10 @@ CONTAINS
   END SUBROUTINE stm2k5_bc
 
   ! rotate the tensor.
-  ! Tout = R *  Tin  * R_t  
+  ! Tout = R *  Tin  * R_t
   ! which is not the same as that in the symmetry bc
   ! Here we rotate the tensor itself, not the reference frame.
-  
+
   SUBROUTINE tensor_rotate(tin, rn, rnt, tout)
     implicit none
     REAL, INTENT(in) :: tin(6),rn(3,3),rnt(3,3)

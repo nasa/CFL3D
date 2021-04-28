@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -32,7 +32,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Calculate yplus in turbulent flows at solid surfaces
-c     in a block, and calculates statistics for the yplus distribution 
+c     in a block, and calculates statistics for the yplus distribution
 c     (average yplus, max yplus and location, standard deviation)
 c
 c     yplus values are calculated at surface grid point, first gridpoint
@@ -167,7 +167,7 @@ c
             kd  = 1
             kdx = 1
             kd1 = kd+1
-         else 
+         else
             mm  = 4
             nbc = nbckdim(nbl)
             kd  = kdim1
@@ -292,7 +292,7 @@ c        Get turb viscosity at wall (0 unless wall fn used)
             cfy   = 2.*(emuka+avgmut)*cfy/(reue*xmach)
 c
             yplusk(j,i,m) = 0.
-            if (abs(real(cfy)).gt.0.) yplusk(j,i,m) = 
+            if (abs(real(cfy)).gt.0.) yplusk(j,i,m) =
      .         dn*reue*q1k1*sqrt(abs(real(cfy)*0.5/real(q1k1)))/emuka
             ypsum   = ypsum  + yplusk(j,i,m)
             if (real(yplusk(j,i,m)).gt.real(ypmax)) then
@@ -326,7 +326,7 @@ c
                nxyz = idim*jdim*kdim
                nypk = jdim*idim*2
                nypj = kdim*idim*2
-               nypi = jdim*kdim*2           
+               nypi = jdim*kdim*2
                if (myid.eq.mblk2nd(nbl)) then
                   mytag = itag_x + nbl
                   call MPI_Send(x,nxyz,MY_MPI_REAL,myhost,
@@ -474,7 +474,7 @@ c
                nxyz = idim*jdim*kdim
                nypk = jdim*idim*2
                nypj = kdim*idim*2
-               nypi = jdim*kdim*2           
+               nypi = jdim*kdim*2
                if (myid.eq.mblk2nd(nbl)) then
                   mytag = itag_x + nbl
                   call MPI_Send(x,nxyz,MY_MPI_REAL,myhost,
@@ -757,7 +757,7 @@ c        Get turb viscosity at wall (0 unless wall fn used)
             cfy   = 2.*(emuka+avgmut)*cfy/(reue*xmach)
 c
             yplusj(k,i,m) = 0.
-            if (abs(real(cfy)).gt.0.) yplusj(k,i,m) = 
+            if (abs(real(cfy)).gt.0.) yplusj(k,i,m) =
      .         dn*reue*q1j1*sqrt(abs(real(cfy)*0.5/real(q1j1)))/emuka
             ypsum   = ypsum   + yplusj(k,i,m)
             if (real(yplusj(k,i,m)).gt.real(ypmax)) then
@@ -791,7 +791,7 @@ c
                nxyz = idim*jdim*kdim
                nypk = jdim*idim*2
                nypj = kdim*idim*2
-               nypi = jdim*kdim*2           
+               nypi = jdim*kdim*2
                if (myid.eq.mblk2nd(nbl)) then
                   mytag = itag_x + nbl
                   call MPI_Send(x,nxyz,MY_MPI_REAL,myhost,
@@ -941,7 +941,7 @@ c
                nxyz = idim*jdim*kdim
                nypk = jdim*idim*2
                nypj = kdim*idim*2
-               nypi = jdim*kdim*2           
+               nypi = jdim*kdim*2
                if (myid.eq.mblk2nd(nbl)) then
                   mytag = itag_x + nbl
                   call MPI_Send(x,nxyz,MY_MPI_REAL,myhost,
@@ -1227,7 +1227,7 @@ c        Get turb viscosity at wall (0 unless wall fn used)
             cfy   = 2.*(emuka+avgmut)*cfy/(reue*xmach)
 c
             yplusi(j,k,m) = 0.
-            if (abs(real(cfy)).gt.0.) yplusi(j,k,m) = 
+            if (abs(real(cfy)).gt.0.) yplusi(j,k,m) =
      .         dn*reue*q1i1*sqrt(abs(real(cfy)*0.5/real(q1i1)))/emuka
             ypsum   = ypsum   + yplusi(j,k,m)
             if (real(yplusi(j,k,m)).gt.real(ypmax)) then
@@ -1352,7 +1352,7 @@ c
                nxyz = idim*jdim*kdim
                nypk = jdim*idim*2
                nypj = kdim*idim*2
-               nypi = jdim*kdim*2           
+               nypi = jdim*kdim*2
                if (myid.eq.mblk2nd(nbl)) then
                   mytag = itag_x + nbl
                   call MPI_Send(x,nxyz,MY_MPI_REAL,myhost,
@@ -1479,7 +1479,7 @@ c
 c
  8000    continue
 c
-      end if 
+      end if
 c
   101 format(/2x,'K=1    SURFACE:')
   102 format(/2x,'K=KDIM SURFACE:')

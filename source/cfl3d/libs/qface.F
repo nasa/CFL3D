@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Determine variables at cell-face centers on the edges
-c     of the grid and install in the j0/k0/i0 arrays for use in output 
+c     of the grid and install in the j0/k0/i0 arrays for use in output
 c     routines. The input data in the dum,dumj0,dumk0, and dumi0
 c     arrays are assumed to have the same form as q,qj0,qk0, and qi0
 c     arrays:
@@ -88,7 +88,7 @@ c
          do 6120 ii=imin,imax
          do 6120 kk=kmin,kmax
          aa = 1. +  bcj(kk,ii,m)
-         bb = 1. -  bcj(kk,ii,m) 
+         bb = 1. -  bcj(kk,ii,m)
          cc = 0.
          if (blank(1,kk,ii).eq.0) then
             aa = 0.
@@ -107,9 +107,9 @@ c
          do 6330 ii=imin,imax
          do 6330 kk=kmin,kmax
          aa = 1. +  bcj(kk,ii,m)
-         bb = 1. -  bcj(kk,ii,m) 
+         bb = 1. -  bcj(kk,ii,m)
          cc = 0.
-         if (blank(jdim-1,kk,ii).eq.0) then 
+         if (blank(jdim-1,kk,ii).eq.0) then
             aa = 0.
             bb = 3.
             cc = -1.
@@ -140,7 +140,7 @@ c
          aa = 1. +  bck(jj,ii,m)
          bb = 1. -  bck(jj,ii,m)
          cc = 0.
-         if (blank(jj,1,ii).eq.0) then 
+         if (blank(jj,1,ii).eq.0) then
             aa = 0.
             bb = 3.
             cc = -1.
@@ -159,7 +159,7 @@ c
          aa = 1. +  bck(jj,ii,m)
          bb = 1. -  bck(jj,ii,m)
          cc = 0.
-         if (blank(jj,kdim-1,ii).eq.0) then 
+         if (blank(jj,kdim-1,ii).eq.0) then
             aa = 0.
             bb = 3.
             cc = -1.
@@ -216,13 +216,13 @@ c
             bb = 3.
             cc = -1.
          end if
-         dumi0(jj,kk,l,4)  = 0.5*(aa*dumi0(jj,kk,l,3) 
+         dumi0(jj,kk,l,4)  = 0.5*(aa*dumi0(jj,kk,l,3)
      .                     +      bb*dum(jj,kk,idim-1,l)
      .                     +      cc*dum(jj,kk,id2,l))
  8330    continue
       end if
  8400 continue
 c
- 9000 continue   
+ 9000 continue
       return
-      end 
+      end

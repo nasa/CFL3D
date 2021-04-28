@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,16 +27,16 @@ c
       subroutine getsolinfo(iccg,ibase,igrid,nsoluse,irinddata)
 c
 c**********************************************************************
-c     Purpose: Gets nsoluse and rind data from CGNS data base 
-c     for zone number "igrid". The CGNS file must already be 
-c     opened. If no solution node exists, the routine stops 
-c     execution. If the solutions are not stored at CellCenter, 
+c     Purpose: Gets nsoluse and rind data from CGNS data base
+c     for zone number "igrid". The CGNS file must already be
+c     opened. If no solution node exists, the routine stops
+c     execution. If the solutions are not stored at CellCenter,
 c     the routine stops execution.
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c   OUTPUTS
@@ -115,7 +115,7 @@ c***********************************************************************
 c     Purpose: Gets x,y, and z from CGNS data base for zone number
 c     "igrid" The CGNS file must already be opened. If there is a
 c     grid-size inconsistency with what is expected (idim,jdim,kdim)
-c     or if the 3 coordinates CoordinateX, CoordinateY, and CoordinateZ 
+c     or if the 3 coordinates CoordinateX, CoordinateY, and CoordinateZ
 c     do not exist, the routine stops execution.
 c     Gets results in the following order:
 c
@@ -134,7 +134,7 @@ c      idim,jdim,kdim...expected dimensions of this zone (zone "igrid")
 c                       (integers)
 c      wk...............working space needed, of dimension
 c                       (idim*jdim*kdim) or larger (real)
-c      ialph............parameter in CFL3D for determining whether 
+c      ialph............parameter in CFL3D for determining whether
 c                       y or z is "up" (integer)
 c   OUTPUTS:
 c      x,y,z............coordinates, output in (j,k,i) order (real)
@@ -197,7 +197,7 @@ c   Check coordinate names in data base
      +     coordname .eq. testname(3)) then
           continue
         else
-          write(901,'('' coordname of '',a32,'' unrecognized.'')') 
+          write(901,'('' coordname of '',a32,'' unrecognized.'')')
      +     coordname
           write(901,'('' Looking for CoordinateX, CoordinateY, and'',
      +     '' CoordinateZ'')')
@@ -213,10 +213,10 @@ c   Set up array bounds:
       irmax(3)=kdim
 c   Read x,y,z
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX',
      &                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX',
      &                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -224,10 +224,10 @@ c   Reorder i,j,k to j,k,i:
       call reorderg(1,1,idim,jdim,kdim,idim,jdim,kdim,wk,x)
 c
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY',
      &                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY',
      &                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -239,10 +239,10 @@ c   Reorder i,j,k to j,k,i:
       end if
 c
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ',
      &                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ',
      &                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -332,7 +332,7 @@ c   INPUT:
 c     cgnsdesired.....name of CGNS file to open (character*80)
 c     basedesired.....name of base desired (character*32)
 c     idimdesired.....dimensionality desired (integer)
-c     
+c
 c   OUTPUT:
 c     iccg............index number of CGNS file (integer)
 c     ibase...........index number of base desired (integer)
@@ -368,7 +368,7 @@ c
 c   Find out how many "bases" there are
       call cg_nbases_f(iccg, nbases, ier)
       if (ier .ne. 0) call cg_error_exit_f
-      write(901,'('' Found ''i5,'' base(s) in cgns file: '',a32)') 
+      write(901,'('' Found ''i5,'' base(s) in cgns file: '',a32)')
      +  nbases,cgnsdesired
 c
 c   Get base name and index dimension (dimensionality)
@@ -428,7 +428,7 @@ c   INPUT:
 c     cgnsdesired.....name of CGNS file to open (character*80)
 c     basedesired.....name of base desired (character*32)
 c     idimdesired.....dimensionality desired (integer)
-c     
+c
 c   OUTPUT:
 c     iccg............index number of CGNS file (integer)
 c     ibase...........index number of base desired (integer)
@@ -507,8 +507,8 @@ c
 c     (idim,jdim,kdim) <- necessary for CGNS!,
 c
 c     even though they are stored in CFL3D in the order: jdim,kdim,idim
-c     Also writes rind cell information:  all FACES of an IxJxK grid 
-c     are accurate, but all edges and corners have no value... 
+c     Also writes rind cell information:  all FACES of an IxJxK grid
+c     are accurate, but all edges and corners have no value...
 c     currently we use nearby-cell information (somewhat arbitrary).
 c     For 2-D solutions, rind cells are not written in the i-direction.
 c
@@ -530,13 +530,13 @@ c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      q................cell-centered q-values, in (j,k,i) order,
 c                       CONSERVED quantities (real)
-c      qi0,qj0,qk0......B.C. q-values from CFL3D, 
+c      qi0,qj0,qk0......B.C. q-values from CFL3D,
 c                       CONSERVED quantities (real)
 c      bci,bcj,bck......flag from CFL3D; 0=ghost-cell B.C., 1=B.C. at
 c                       interface (real)
-c      i2d..............0 if 3-D (rind data to be output in all 3 
+c      i2d..............0 if 3-D (rind data to be output in all 3
 c                          directions),
-c                       1 if 2-D (rind data to be output only in j- 
+c                       1 if 2-D (rind data to be output only in j-
 c                          and k- directions) (integer)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
@@ -614,7 +614,7 @@ c   Density:
       call reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
      +  q,bci,bcj,bck,qi0,qj0,qk0,5,1,0,wk)
       if (idouble .eq. 1) then
-      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble, 
+      call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'Density', wk, ifindex, ier)
       else
       call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
@@ -694,9 +694,9 @@ c
      +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,ialph,q,iprim)
 c***********************************************************************
 c     Purpose: Reads solution from CGNS data base for zone number
-c     "igrid". The CGNS file must be already opened. If the desired 
+c     "igrid". The CGNS file must be already opened. If the desired
 c     solution names are not in the CGNS file, the routine stops
-c     execution. Must know (through irind,jrind,krind) what Rind 
+c     execution. Must know (through irind,jrind,krind) what Rind
 c     Cell info exists. Gets results in the following order:
 c
 c      (jdim,kdim,idim) <- necessary for CFL3D!,
@@ -778,7 +778,7 @@ c   Check to make sure the conserved field names needed exist:
           end if
         enddo
         if (ido .eq. 0) then
-          write(901,'('' Cannot find solution of name '',a32)') 
+          write(901,'('' Cannot find solution of name '',a32)')
      +      fndesired(n)
           write(901,'(''  for conservative... try primitive instead'')')
           iprim=1
@@ -844,7 +844,7 @@ c   Check that correct grid level is stored
         call cg_descriptor_read_f(n,name,text,ier)
         if (ier .ne. 0) call cg_error_exit_f
         if (name .eq. 'Information') then
-          if (text .eq. 
+          if (text .eq.
      +     'Fine grid solution (on same level as GridCoordinates)' .and.
      +     nfac .ne. 1) istop=1
           if (text .eq.
@@ -936,8 +936,8 @@ c
       subroutine writeblnk(iccg,ibase,igrid,idim,jdim,kdim,npnts,ipnt,
      .                     blank)
 c***********************************************************************
-c     Purpose: Writes OversetHoles info (at cell centers) to CGNS data 
-c     base for zone number "igrid" (does this only if the zone in 
+c     Purpose: Writes OversetHoles info (at cell centers) to CGNS data
+c     base for zone number "igrid" (does this only if the zone in
 c     question has overset information)
 c     The CGNS file must be already opened in "MODE_MODIFY" mode.
 c
@@ -951,11 +951,11 @@ c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (integers)
 c      npnts............number of points where blank=0 in this zone
 c                       (integer)
-c      ipnt.............input as work array, used internal to this 
+c      ipnt.............input as work array, used internal to this
 c                       routine for storing OversetHoles info,
 c                       must be at least of size (3*npnts) in the
 c                       call to this routine (integer)
-c      blank............cell-centered blank-values, in (j,k,i) order 
+c      blank............cell-centered blank-values, in (j,k,i) order
 c                       0.0=blanked, 1.0=not-blanked (real)
 c   OUTPUTS:
 c      none
@@ -997,14 +997,14 @@ c
      +   xib,blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,
      +   xmach,reue,nummem)
 c***********************************************************************
-c     Purpose: Writes turb info to CGNS data base for zone number 
+c     Purpose: Writes turb info to CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened in "MODE_MODIFY"
 c     mode. Writes results in the following order:
 c
 c       (idim,jdim,kdim) <- necessary for CGNS!,
 c
 c     even though they are stored in CFL3D in the order: jdim,kdim,idim
-c     Also writes rind cell information for vist3d and tursav:  all 
+c     Also writes rind cell information for vist3d and tursav:  all
 c     FACES of an IxJxK grid are accurate, but all edges and corners
 c     have no value...currently we use nearby-cell information (somewhat
 c     arbitrary). No B.C info exists for other output quantities (like
@@ -1026,34 +1026,34 @@ c                          "igrid"), at finest level (integers)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (e.g., could be every other point
 c                       of fine grid) - if actual dimensions are a subset
-c                       of idima,jdima,kdima, results will be prolonged 
+c                       of idima,jdima,kdima, results will be prolonged
 c                       to the fine grid and written at that level
 c                       (integers)
 c      ivisc............ivisc parameters, of dimension 3 (integers)
 c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
-c      vist3d...........cell-centered eddy viscosity-values, in (j,k,i) 
+c      vist3d...........cell-centered eddy viscosity-values, in (j,k,i)
 c                       order (real) (CFL3D-normalization)
-c      tursav...........set of nummem cell-centered turbulence quantities, in 
+c      tursav...........set of nummem cell-centered turbulence quantities, in
 c                       (j,k,i,nummem) order (real) (CFL3D-normalization)
-c      smin.............minimum distance function, in (j,k,i) order 
+c      smin.............minimum distance function, in (j,k,i) order
 c                       (real)
-c      xjb..............nearest-wall j-location for B-B/LES, in (j,k,i) 
+c      xjb..............nearest-wall j-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      xkb..............nearest-wall k-location for B-B/LES, in (j,k,i) 
+c      xkb..............nearest-wall k-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      xib..............nearest-wall i-location for B-B/LES, in (j,k,i) 
+c      xib..............nearest-wall i-location for B-B/LES, in (j,k,i)
 c                       order (real)
-c      blnum............nearest-wall block number for B-B/LES, in (j,k,i) 
+c      blnum............nearest-wall block number for B-B/LES, in (j,k,i)
 c                       order (real)
 c      cmuv.............variable cmu coefficient for EASM, var g, in
 c                       (j,k,i) order (real)
-c      vi0,vj0,vk0......B.C. vist3d-values (eddy viscosity) from CFL3D 
+c      vi0,vj0,vk0......B.C. vist3d-values (eddy viscosity) from CFL3D
 c                       (real) (CFL3D-normalization)
-c      ti0,tj0,tk0......B.C. turbulence-values from CFL3D (real) 
+c      ti0,tj0,tk0......B.C. turbulence-values from CFL3D (real)
 c                       (CFL3D-normalization)
-c      i2d..............0 if 3-D (rind data to be output in all 3 
-c                       directions), 1 if 2-D (rind data to be output 
+c      i2d..............0 if 3-D (rind data to be output in all 3
+c                       directions), 1 if 2-D (rind data to be output
 c                       only in j- and k- directions) (integer)
 c      xmach............Mach number (real)
 c      reue.............Reynolds number (real)
@@ -1121,7 +1121,7 @@ c        put in SIDS-like-"consistent normalization"
          enddo
          enddo
          if (idouble .eq. 1) then
-         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble, 
+         call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealDouble,
      +                      'ViscosityEddy', wk, ifindex, ier)
          else
          call cg_field_write_f(iccg, ibase, igrid, nsoluse, RealSingle,
@@ -1542,16 +1542,16 @@ c
 c***********************************************************************
 c     Purpose: Reads turb quantities from CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened. If the desired
-c     solution names are not in the CGNS file, the routine stops 
-c     execution. Must know (through irind,jrind,krind) what Rind 
+c     solution names are not in the CGNS file, the routine stops
+c     execution. Must know (through irind,jrind,krind) what Rind
 c     Cell info exists. Gets results in the following order:
 c
 c       (jdim,kdim,idim) <- necessary for CFL3D!,
 c
 c     and assumes they are stored in the CGNS database in the order:
 c     (idim,jdim,kdim)
-c     Note: turb quantities need to be renormalized to be taken out of 
-c     SIDS-standard "consistent" normalization, and back to 
+c     Note: turb quantities need to be renormalized to be taken out of
+c     SIDS-standard "consistent" normalization, and back to
 c     CFL3D-type-normalization
 c
 c   INPUTS:
@@ -1657,10 +1657,10 @@ c   Read vist3d
       if (ivmxold .ge. 2 .and. iread .eq. 1) then
       solname='ViscosityEddy'
       if (idouble .eq. 1) then
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname, 
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname, 
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -1680,10 +1680,10 @@ c   Read smin
       if (ivmxold .ge. 4) then
       solname='TurbulentDistance'
       if (idouble .eq. 1) then
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -1695,10 +1695,10 @@ c   Read B-B info
       if (ivmxold .eq. 4 .and. iread .eq. 1) then
       solname='TurbulentBBReynolds'
       if (idouble .eq. 1) then
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -1715,10 +1715,10 @@ c   Change from SIDS-"consistent-normalization" back to CFL3D-type
 c
       solname='TurbulentBBNearestWallJ'
       if (idouble .eq. 1) then
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealDouble, irmin, irmax, wk, ier)
       else
-      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,         
+      call cg_field_read_f(iccg, ibase, igrid, nsoluse, solname,
      +                     RealSingle, irmin, irmax, wk, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
@@ -2094,11 +2094,11 @@ c   OUTPUTS:
 c      iblk.............block number of receiver patch,
 c                       dimensioned (2,n1to1_global)
 c                       1st index is receiver, 2nd is donor (integer)
-c      irange...........min-max range defining receiver patch, 
-c                       dimensioned (2,6,n1to1_global) 
+c      irange...........min-max range defining receiver patch,
+c                       dimensioned (2,6,n1to1_global)
 c                       1st index is receiver, 2nd is donor (integer)
-c      index_vary.......which indices vary on receiver patch, 
-c                       dimensioned (2,2,n1to1_global) 
+c      index_vary.......which indices vary on receiver patch,
+c                       dimensioned (2,2,n1to1_global)
 c                       1st index is receiver, 2nd is donor (integer)
 c***********************************************************************
 c
@@ -2164,7 +2164,7 @@ c   use itransform to get appropriate index of 2nd zone
 c
 c   check to make sure ranges match, and direction of indices (lo to hi vs. hi to lo)
 c   is as expected, according to value of itransform
-c   
+c
 c   first, get values of hi-lo
           ival1rec=irange(1,index_vary(1,1,n)+3,n)-
      +            irange(1,index_vary(1,1,n),n)
@@ -2175,7 +2175,7 @@ c   first, get values of hi-lo
           ival2don=irange(2,index_vary(2,2,n)+3,n)-
      +            irange(2,index_vary(2,2,n),n)
 c   the absolute value of the differences should match
-          if ((abs(ival1rec) .ne. abs(ival1don)) .or. 
+          if ((abs(ival1rec) .ne. abs(ival1don)) .or.
      +        (abs(ival2rec) .ne. abs(ival2don))) then
             write(901,'('' 1-to-1 donor & reciever ranges do not'',
      +       '' match, interface #'',i5)') n
@@ -2222,7 +2222,7 @@ c     ibase............CGNS base index number (determined outside this
 c                      routine) (integer)
 c     izone............zone (or grid) number (integer)
 c   OUTPUT:
-c     numseg....number of segments on each face (1-6 represent 
+c     numseg....number of segments on each face (1-6 represent
 c               ilo,jlo,klo,ihi,jhi,khi, respectively)
 c               dimensioned (6)  (integer)
 c***********************************************************************
@@ -2289,7 +2289,7 @@ c       Increment if ilo surface only:
           numseg(6)=numseg(6)+1
         end if
       enddo
-c   
+c
       return
       end
 c
@@ -2309,7 +2309,7 @@ c     ibase............CGNS base index number (determined outside this
 c                      routine) (integer)
 c     izone............zone (or grid) number (integer)
 c     maxseg.........max number of segments per face allowed (integer)
-c     ifacedesired...face desired (1-6 = ilo,jlo,klo,ihi,jhi,khi, 
+c     ifacedesired...face desired (1-6 = ilo,jlo,klo,ihi,jhi,khi,
 c                    respectively) (integer)
 c   OUTPUT:
 c     ibctyp.........CFL3D-BC-type; dimensioned (maxseg) (integer)
@@ -2318,7 +2318,7 @@ c                    and ihi1 are the first non-face index (i or j),
 c                    and ilo2 and ihi2 are the second non-face index
 c                    (j or k); dimensioned (maxseg,4) (integer)
 c     iforc..........indicates whether a force computation is to be
-c                    ignored (1=computes force if appropriate, 
+c                    ignored (1=computes force if appropriate,
 c                    0=override and do NOT compute);
 c                    dimensioned (maxseg) (integer)
 c     numdata........number of additional pieces of data needed;
@@ -2493,7 +2493,7 @@ c       Increment if correct surface only
           end if
         end if
       enddo
-c   
+c
       return
       end
 c
@@ -2502,7 +2502,7 @@ c
      +   cfttotw,rmstr1,rmstr2,rmstr3,rmstr4,rmstr5,rmstr6,rmstr7,
      +   nneg1,nneg2,nneg3,nneg4,nneg5,nneg6,nneg7,nummem)
 c***********************************************************************
-c     Purpose: Writes history info to CGNS file.  
+c     Purpose: Writes history info to CGNS file.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -2804,7 +2804,7 @@ c
      +   rmstr6,rmstr7,nneg1,nneg2,nneg3,nneg4,nneg5,nneg6,nneg7,
      +   nummem)
 c***********************************************************************
-c     Purpose: Reads history info from CGNS file.  
+c     Purpose: Reads history info from CGNS file.
 c      (NOTE:  cg_array_read_as_f may eventually be converted
 c      to cg_array_read_f)
 c
@@ -3219,7 +3219,7 @@ c
      +   prandtl,prandtlt,suth,i2d,ifullns,ides,isarcxd,ieasmcc2d,
      +   isstrc,isar)
 c***********************************************************************
-c     Purpose: Writes equation info to CGNS data base for zone number 
+c     Purpose: Writes equation info to CGNS data base for zone number
 c     "igrid". The CGNS file must be already opened in "MODE_MODIFY"
 c      mode.
 c
@@ -3230,7 +3230,7 @@ c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      iv1,iv2,iv3......ivisc(n) parameters from CFL3D (integers)
-c      ideg(3)..........degani-schiff turb model parameter from CFL3D 
+c      ideg(3)..........degani-schiff turb model parameter from CFL3D
 c                       (integers)
 c      gamma............specific heat ratio (real)
 c      prandtl..........Prandtl number (real)
@@ -3870,7 +3870,7 @@ c   Read 'GoverningEquations' node
         if (itype .eq. Euler .or.
      +      itype .eq. NSLaminar .or.
      +      itype .eq. NSTurbulent) then
-          write(901,'('' cgns read solution of:  '',a32)') 
+          write(901,'('' cgns read solution of:  '',a32)')
      +     GoverningEquationsTypeName(itype)
         else
           write(901,'('' WARNING! GoverningEquations type not'',
@@ -4053,7 +4053,7 @@ c   Read 'DiffusionModel' node
         write(901,'('' Restarting from FULL N-S'',
      +  '' (X-derivatives included)'')')
       end if
-      if (itype .eq. Euler .and. 
+      if (itype .eq. Euler .and.
      + (idata(1).eq.1 .or. idata(2).eq.1 .or. idata(3).eq.1)) then
         write(901,'('' Inconsistency in ADF file between'',
      +  '' GoverningEquations and DiffusionModel'')')
@@ -4083,7 +4083,7 @@ c   Read 'TurbulenceModel' node, if appropriate
           iv1=idata(1)*2
           iv2=idata(2)*2
           iv3=idata(3)*2
-        else if(itype .eq. UserDefined .and. 
+        else if(itype .eq. UserDefined .and.
      +   text .eq. 'Algebraic_BaldwinLomax_DS') then
           iv1=idata(1)*2
           iv2=idata(2)*2
@@ -4235,9 +4235,9 @@ c     the time step dt, which will only be read in (by rsecord) if
 c     the run is 2nd-order time-accurate.
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      time.............last time (for time-accurate) (real)
 c      iter.............last iteration (integer)
@@ -4318,13 +4318,13 @@ c   Go to Base node, write CFL3DTimeStep array as UserDefinedData
 c
       subroutine readtime(iccg,ibase,time)
 c**********************************************************************
-c     Purpose: Reads latest time info from CGNS file (latest 
+c     Purpose: Reads latest time info from CGNS file (latest
 c     iteration is not read from here).
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c   OUTPUTS:
 c      time.............last time (for time-accurate) (real)
@@ -4394,7 +4394,7 @@ c
      +                    u0,v0,w0,ialph)
 c**********************************************************************
 c     Purpose: Writes reference (nondimensionalization) info to
-c     CGNS file.  
+c     CGNS file.
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
@@ -4406,7 +4406,7 @@ c      reue.............Reynolds number (real)
 c      rho0.............reference nondim density (real)
 c      c0...............reference nondim speed of sound (real)
 c      p0...............reference nondim pressure (real)
-c      vk0..............reference nondim molecular viscosity (real) 
+c      vk0..............reference nondim molecular viscosity (real)
 c                       (CFL3D-normalization)
 c      xlength0.........reference nondim length (real)
 c      tinf.............reference temperature in Rankine (real)
@@ -4415,7 +4415,7 @@ c      betaw............angle of yaw in deg (real)
 c      u0...............reference nondim x-velocity (real)
 c      v0...............reference nondim y-velocity (real)
 c      w0...............reference nondim z-velocity (real)
-c      ialph............parameter in CFL3D for determining whether y 
+c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
 c   OUTPUTS:
 c      none
@@ -4762,12 +4762,12 @@ c
      +                   rho0,c0,vk0,xlength0,tinf,alphw)
 c**********************************************************************
 c     Purpose: Reads reference (nondimensionalization) info from
-c     CGNS file. If the DataClass is not right 
-c     (NormalizedByUnknownDimensional), the routine stops. Doesn't 
+c     CGNS file. If the DataClass is not right
+c     (NormalizedByUnknownDimensional), the routine stops. Doesn't
 c     bother to read Pressure, AngleofYaw, VelocityX, VelocityY, or
-c     VelocityZ because they are not needed. Tries to read 
+c     VelocityZ because they are not needed. Tries to read
 c     ViscosityMolecularCFL3D (CFL3D-type-normalization) first - if
-c     this does not exist, then reads from ViscosityMolecular (SIDS 
+c     this does not exist, then reads from ViscosityMolecular (SIDS
 c     standard)
 c      (NOTE:  cg_array_read_as_f may eventually be converted
 c      to cg_array_read_f)
@@ -4782,7 +4782,7 @@ c      xmach............Mach number (real)
 c      reue.............Reynolds number (real)
 c      rho0.............reference nondim density (real)
 c      c0...............reference nondim speed of sound (real)
-c      vk0..............reference nondim molecular viscosity (real) 
+c      vk0..............reference nondim molecular viscosity (real)
 c                       (CFL3D-normalization)
 c      xlength0.........reference nondim length (real)
 c      tinf.............reference temperature in Rankine (real)
@@ -4817,7 +4817,7 @@ c   Read DataClass node
          if(itype .ne. NormalizedByUnknownDimensional) then
            write(901,'('' Error:  Restart file must have data that'',
      +       '' is NormalizedByUnknownDimensional'')')
-           write(901,'('' Actual classname is: '',a32)') 
+           write(901,'('' Actual classname is: '',a32)')
      +      DataClassName(itype)
            stop
          end if
@@ -5013,7 +5013,7 @@ c   Get reference temperature
       if (itype .ne. Dimensional) then
          write(901,'('' WARNING: Restart file must have Temp data '',
      +    ''that is Dimensional'')')
-         write(901,'(''   Actual classname is: '',a32)') 
+         write(901,'(''   Actual classname is: '',a32)')
      +    DataClassName(itype)
          write(901,'(''   Ignoring this, and continuing.'')')
       end if
@@ -5022,7 +5022,7 @@ c   Get reference temperature
       if (ite .ne. Rankine) then
          write(901,'('' WARNING: Temp DimensionalUnits should be'',
      +    '' Rankine.'')')
-         write(901,'(''   Instead, they are:'',a32)') 
+         write(901,'(''   Instead, they are:'',a32)')
      +    TemperatureUnitsName(ite)
          write(901,'(''   Resetting to 520R and continuing.'')')
          tinf=520.
@@ -5079,7 +5079,7 @@ c     as a descriptor node called "InputFileUsed" under the Base.
 c     (Currently limited to a maximum of 2969 lines)
 c     Also writes the case title to a separate descriptor node called
 c     "CaseTitle"
-c   
+c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
 c                       routine) (integer)
@@ -5095,7 +5095,7 @@ c
 c
       parameter (inummax=296)
 c   stx must be dimensioned 81*(inummax+1), stxsav 81*(inummax+1)*10
-      character s(inummax)*80, stx(10)*24057, dum*80, dum1*1, extra*18, 
+      character s(inummax)*80, stx(10)*24057, dum*80, dum1*1, extra*18,
      .          title*98, stxsav*240570
       character name*32, filenum*2, title2*32
 c
@@ -5468,14 +5468,14 @@ c
       subroutine winfot(iccg,ibase,dt)
 c**********************************************************************
 c     Purpose: Writes out Descriptor node at base level, describing
-c     SimulationType 
+c     SimulationType
 c
 c   INPUTS:
 c      iccg.............CGNS file index number (determined outside this
 c                       routine) (integer)
 c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
-c      dt...............delta t parameter in CFL3D 
+c      dt...............delta t parameter in CFL3D
 c                       (+ = time accurate, - = SS) (real)
 c   OUTPUTS:
 c      none
@@ -5515,11 +5515,11 @@ c                       routine) (integer)
 c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
 c      igrid............zone (or grid) number (integer)
-c      idima,jdima,kdima...expected dimensions of this zone (zone 
+c      idima,jdima,kdima...expected dimensions of this zone (zone
 c                          "igrid"), at finest level (integers)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (e.g., could be every other point
-c                       of fine grid) - if actual dimensions are a  
+c                       of fine grid) - if actual dimensions are a
 c                       subset of idima,jdima,kdima, results will be
 c                       prolonged to the fine grid and written at that
 c                       level (integers)
@@ -5527,7 +5527,7 @@ c      wk...............working space needed, of dimension
 c                       (idima+1)*(jdima+1)*(kdima+1) or larger (real)
 c      qc0..............cell-centered q-values, in (j,k,i) order,
 c                       PRIMITIVE quantities (real)
-c      tursav2..........cell-centered turb values from last time step, 
+c      tursav2..........cell-centered turb values from last time step,
 c                       in (j,k,i) order; dimensioned by 2*nummem, but only
 c                       need to store nummem of them (real)
 c      nsoluse..........FlowSolution index number where data to be
@@ -5683,7 +5683,7 @@ c
 c**********************************************************************
 c     Purpose: Reads qc0 & tursav2 (Q's and turb quantities
 c     from previous time step) & dt for 2nd order
-c     time-accurate solns, for zone number "igrid". Must know (through 
+c     time-accurate solns, for zone number "igrid". Must know (through
 c     irind,jrind,krind) what Rind Cell info exists.
 c     Gets results in the following order:
 c
@@ -5973,7 +5973,7 @@ c     the data).
 c
 c   INPUTS:
 c      idima,jdima,kdima...expected dimensions of this zone
-c                          (zone "igrid") at finest level, 
+c                          (zone "igrid") at finest level,
 c                          modified by rind storage (integers)
 c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
 c                       for this zone (e.g., could be every other point
@@ -5988,9 +5988,9 @@ c                       16=4-levels down (integer)
 c      nfaci............same as nfac, except for i-direction only
 c                       (when 2-D, the i-direction does not coarsen)
 c                       (integer)
-c      wk...............solution array in i,j,k-ordering, as stored 
+c      wk...............solution array in i,j,k-ordering, as stored
 c                       in CGNS file (real)
-c        
+c
 c      irind,jrind,krind...= 0 if rind data exists for the direction,
 c                          = 1 if it does not (integers)
 c   OUTPUTS:
@@ -6045,11 +6045,11 @@ c      bci,bcj,bck......arrays denoting where BCs stored (0=at cell
 c                       center, 1=at face center) (real)
 c      qi0,qj0,qk0......arrays of BC data (real)
 c      ldim.............last dimension of q-array (integer)
-c      luse.............which last-dimension of q-array to use 
+c      luse.............which last-dimension of q-array to use
 c                       (integer)
 c      iflag............=0 means std BCs used (keys off of bci,bcj,bck)
 c                       =1 means BC is at ghost cell
-c                       =2 means no BC exists for rind cell (fills with 
+c                       =2 means no BC exists for rind cell (fills with
 c                        nearby values)
 c   OUTPUTS:
 c      wk...............solution array in i,j,k-ordering, as stored
@@ -6319,13 +6319,13 @@ c
 
       subroutine getiflagg(iccg,ibase,nsoluse,iflagg)
 c**********************************************************************
-c     Purpose: Checks CGNS file to determine if restart solution is 
+c     Purpose: Checks CGNS file to determine if restart solution is
 c     2nd order in time and/or has a moving grid.
 c     Specific to CFL3D:
 c     If DensityLastDT exists in any zone, then it means that it is
 c     a second order solution.
-c     If ANY RigidGridMotion_t nodes exist in CFL3D file, then it 
-c     means that it is an unsteady run (there is unsteady data that 
+c     If ANY RigidGridMotion_t nodes exist in CFL3D file, then it
+c     means that it is an unsteady run (there is unsteady data that
 c     needs to be read).
 c
 c   INPUTS:
@@ -6333,7 +6333,7 @@ c      iccg.............CGNS file index number (determined outside this
 c                       routine) (integer)
 c      ibase............CGNS base index number (determined outside this
 c                       routine) (integer)
-c      nsoluse..........FlowSolution index number where data is stored 
+c      nsoluse..........FlowSolution index number where data is stored
 c                       (integer)
 c   OUTPUTS:
 c      iflagg...........parameter in CFL3D for determining whether 1st
@@ -6379,8 +6379,8 @@ c   Check to see if any of the fields have the name 'DensityLastDT'
       enddo
 c   Now check for moving grid info
 c   If ANY RigidGridMotion_t nodes exist in CFL3D file -and- if
-c   ZoneIterativeData contains RigidGridMotionPointers, then it 
-c   it is an unsteady moving grid run (there is unsteady data that  
+c   ZoneIterativeData contains RigidGridMotionPointers, then it
+c   it is an unsteady moving grid run (there is unsteady data that
 c   needs to be read)
       call cg_n_rigid_motions_f(iccg, ibase, igrid, nmotions, ier)
       if (ier .ne. 0) call cg_error_exit_f
@@ -6460,12 +6460,12 @@ c   Create ZoneIterativeData node
 c
       return
       end
- 
+
       subroutine writebcs(iccg,ibase,igrid,idim,jdim,kdim,qj0,qk0,qi0,
      +  vj0,vk0,vi0,tj0,tk0,ti0,i2d,nummem)
 c**********************************************************************
 c     Purpose:  Store BC info necessary for CFL3D V6 in a
-c     'UserDefinedData'.  If i2d=1, don't write qi0, vi0, or ti0 
+c     'UserDefinedData'.  If i2d=1, don't write qi0, vi0, or ti0
 c     (not ever needed, and writing them triples the size of the
 c     CGNS file unnecessarily!).
 c
@@ -6490,7 +6490,7 @@ c
 c
       parameter(numnames=20)
 c
-      dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4), 
+      dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4),
      .          qk0(jdim,idim-1,5,4)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
@@ -6680,7 +6680,7 @@ c
 c
       parameter (numnames=20)
 c
-      dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4), 
+      dimension qi0(jdim,kdim,5,4),qj0(kdim,idim-1,5,4),
      .          qk0(jdim,idim-1,5,4)
       dimension vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
      .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,nummem,4),
@@ -6958,22 +6958,22 @@ c
      .                  omegaxmc,omegaymc,omegazmc,dthxmxmc,dthymxmc,
      .                  dthzmxmc,time2,time2mc,dt,ialph)
 c**********************************************************************
-c     Purpose: Creates 'RigidGridMotion' node and writes moving grid 
+c     Purpose: Creates 'RigidGridMotion' node and writes moving grid
 c     info under it (including CFL3D-specific info).
 c     Also adds RigidGridMotionPointers to ZoneIterativeData.
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
-c      iuns.............flag to indicate whether unsteady or not 
+c      iuns.............flag to indicate whether unsteady or not
 c                       (integer)
-c      itrans...........flag to indicate whether translating or not 
+c      itrans...........flag to indicate whether translating or not
 c                       (integer)
 c      etc...
-c      irotat...........flag to indicate whether rotating or not 
+c      irotat...........flag to indicate whether rotating or not
 c                       (integer)
 c      etc...
 c      dt...............time step (real)
@@ -7263,18 +7263,18 @@ c**********************************************************************
 c     Purpose:  Reads 'GridMotionDefinition' node moving grid info.
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      ialph............parameter in CFL3D for determining whether y
 c                       or z is "up" (integer)
 c   OUTPUTS:
-c      itrans...........flag to indicate whether translating or not 
+c      itrans...........flag to indicate whether translating or not
 c                       (integer)
 c      etc...
-c      irotat...........flag to indicate whether rotating or not 
+c      irotat...........flag to indicate whether rotating or not
 c                       (integer)
 c      etc...
 c      dt...............time step (real)
@@ -7429,7 +7429,7 @@ c
       call cg_nuser_data_f(nuserdata,ier)
       if (ier .ne. 0) call cg_error_exit_f
       if (nuserdata .ne. 1) then
-        write(901,'('' Error... should be 1 user data node in'', 
+        write(901,'('' Error... should be 1 user data node in'',
      +    '' RigidGridMotion'')')
         stop
       else
@@ -7804,17 +7804,17 @@ c
 
       subroutine readiuns(iccg,ibase,igrid,iuns)
 c**********************************************************************
-c     Purpose: Reads 'GridMotionDefinition' node and gets iuns 
+c     Purpose: Reads 'GridMotionDefinition' node and gets iuns
 c     parameter.
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c   OUTPUTS:
-c      iuns.............flag that tells what kind of unsteady 
+c      iuns.............flag that tells what kind of unsteady
 c                       motion it is (integer)
 c**********************************************************************
 c
@@ -7895,7 +7895,7 @@ c
      .            jcsf,kcsi,kcsf,jdima,kdima,idima,
      .            jdim,kdim,idim,x,y,z,xnm2,ynm2,znm2,wk,ialph,i2d)
 c**********************************************************************
-c     Purpose: Creates 'ArbitraryGridMotion' node and writes 
+c     Purpose: Creates 'ArbitraryGridMotion' node and writes
 c     arbitrary moving grid info (including CFL3D-specific info).
 c     Also adds ArbitraryGridMotionPointers and GridCoordinatesPointers
 c     to ZoneIterativeData.
@@ -7906,9 +7906,9 @@ c
 c     even though they are stored in CFL3D in the order: jdim,kdim,idim
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      idefrm...........CFL3D-specific parameter (integer)
@@ -8498,9 +8498,9 @@ c     and assumes they are stored in the CGNS database in the order:
 c     (idim,jdim,kdim)
 c
 c   INPUTS:
-c      iccg.............CGNS file index number (determined outside 
+c      iccg.............CGNS file index number (determined outside
 c                       this routine) (integer)
-c      ibase............CGNS base index number (determined outside 
+c      ibase............CGNS base index number (determined outside
 c                       this routine) (integer)
 c      igrid............zone (or grid) number (integer)
 c      nsegdfrm.........CFL3D-specific parameter that defines the

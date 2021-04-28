@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -37,8 +37,8 @@ c
      .                lbcprd,lbcemb,
      .                dthetxx,dthetyy,dthetzz,nblcg,lfgm,istat2_bl,
      .                istat2_pa,istat2_pe,istat2_em,istat_size,
-     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,    
-     .                nt,movabs,nummem)                              
+     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf,
+     .                nt,movabs,nummem)
 c
 c     $Id$
 c
@@ -129,21 +129,21 @@ c
 c
 c***********************************************************************
 c     write output file in PLOT3D format
-c     in this routine, iptype = inpl3d(n,2), where n is the block number 
-c     iptype = 0...output q at grid points 
-c              1...output q cell centers 
+c     in this routine, iptype = inpl3d(n,2), where n is the block number
+c     iptype = 0...output q at grid points
+c              1...output q cell centers
 c              2...turbulence data at cell centers, output in place of
-c                  the standard plot3d q vector 
-c              3...smin at cell centers 
-c              4...vist3d at cell centers 
-c              5...cp at cell centers 
-c             -5...cp at grid points 
-c              6...p/pinf at cell centers 
-c             -6...p/pinf at grid points 
+c                  the standard plot3d q vector
+c              3...smin at cell centers
+c              4...vist3d at cell centers
+c              5...cp at cell centers
+c             -5...cp at grid points
+c              6...p/pinf at cell centers
+c             -6...p/pinf at grid points
 c***********************************************************************
 c
-      !if (nplot3d.gt.0 .or. nprint.gt.0) then                          
-      if (nplot3d.gt.0 .or. nprint.gt.0 .or. iteravg.gt.0) then         
+      !if (nplot3d.gt.0 .or. nprint.gt.0) then
+      if (nplot3d.gt.0 .or. nprint.gt.0 .or. iteravg.gt.0) then
 c
 c        update all bc's for level lglobal (and above, if embeded),
 c        even if not all blocks at that level get output to plot3d or
@@ -202,7 +202,7 @@ c
                write(bou(nou(1),1),'(''stopping...not enough integer '',
      .                        ''work space for subroutine bc_period'')')
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),'(''have, need = '',2i12)') 
+               write(bou(nou(1),1),'(''have, need = '',2i12)')
      .         iwork,iwk6
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
@@ -316,7 +316,7 @@ c
 c
 c           update chimera boundary conditions
 c
-c           don't update interior (fringe) points if cell center data 
+c           don't update interior (fringe) points if cell center data
 c           is to be output (this is needed to get cell center output
 c           identical to version 5)
 c
@@ -344,7 +344,7 @@ c
                end if
             end do
 c
-c           call qface to install face-center values in 
+c           call qface to install face-center values in
 c           the qi0/qj0/qk0 arrays
 c
             do nbl=1,nblock
@@ -374,56 +374,56 @@ c
          level = level_sav
 c
       end if
-c 
-c---- mod for averaging at grid points ------------------------------   
-      if(iteravg.gt.0)then                                              
-        !prepare to call plot3davg and then call it.....                
-        do 999 n = 1,nblock                                             
-         nbl=n                                                          
 c
-         if (level.ne.levelg(nbl)) go to 999  !skip block if not global 
-         if (mblk2nd(nbl).eq.myid .or. myid.eq.myhost) then             
+c---- mod for averaging at grid points ------------------------------
+      if(iteravg.gt.0)then
+        !prepare to call plot3davg and then call it.....
+        do 999 n = 1,nblock
+         nbl=n
 c
-            call lead(nbl,lw,lw2,maxbl)                                 
+         if (level.ne.levelg(nbl)) go to 999  !skip block if not global
+         if (mblk2nd(nbl).eq.myid .or. myid.eq.myhost) then
 c
-            i1 = 1                                                      
-            i2 = idim                                                   
-            i3 = 1                                                      
-            j1 = 1                                                      
-            j2 = jdim                                                   
-            j3 = 1                                                      
-            k1 = 1                                                      
-            k2 = kdim                                                   
-            k3 = 1                                                      
+            call lead(nbl,lw,lw2,maxbl)
 c
-            jdw = (j2-j1)/j3 + 1                                        
-            kdw = (k2-k1)/k3 + 1                                        
-            idw = (i2-i1)/i3 + 1                                        
+            i1 = 1
+            i2 = idim
+            i3 = 1
+            j1 = 1
+            j2 = jdim
+            j3 = 1
+            k1 = 1
+            k2 = kdim
+            k3 = 1
 c
-c           check storage availability                                  
+            jdw = (j2-j1)/j3 + 1
+            kdw = (k2-k1)/k3 + 1
+            idw = (i2-i1)/i3 + 1
 c
-            ixwk = 1                                                    
-            nset = 5                                                    
-            ibwk = ixwk + jdw*kdw*idw*nset                              
-            ixgk = ibwk + jdim*kdim*idim*2                              
-            ixvk = ixgk + jdw*kdw*idw*4                                 
-            nroom = nwork - (ixvk+jdw*kdw*idw*5-1)                      
-            if (nroom .lt. 0.) then                                     
-               if (myid.eq.myhost) then                                 
+c           check storage availability
+c
+            ixwk = 1
+            nset = 5
+            ibwk = ixwk + jdw*kdw*idw*nset
+            ixgk = ibwk + jdim*kdim*idim*2
+            ixvk = ixgk + jdw*kdw*idw*4
+            nroom = nwork - (ixvk+jdw*kdw*idw*5-1)
+            if (nroom .lt. 0.) then
+               if (myid.eq.myhost) then
                   write(11,'('' not enough memory for plot3davg'')')
-                  write(11,'('' have, need = '',2i12)') nwork,          
-     .            nwork-nroom                                           
+                  write(11,'('' have, need = '',2i12)') nwork,
+     .            nwork-nroom
                   write(11,'('' Aborting - not calling plot3davg'')')
 #if defined DIST_MPI
                   call MPI_ABORT(MPI_COMM_WORLD, myid, mpierror)
 #else
                   stop
 #endif
-               end if                                                   
-            else                                                        
+               end if
+            else
 c
-               call plot3davg(jdim,kdim,idim,                           
-     .                     i1,i2,i3,j1,j2,j3,k1,k2,k3,                  
+               call plot3davg(jdim,kdim,idim,
+     .                     i1,i2,i3,j1,j2,j3,k1,k2,k3,
      .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),
      .                     w(ly),w(lz),wk(ixwk),wk(ibwk),
      .                     w(lblk),wk(ixgk),iflag,w(lvis),iovrlp(nbl),
@@ -434,22 +434,22 @@ c
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
-     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset,           
-     .                     w(lqavg),w(lq2avg),nt,movabs)                
-            end if                                                      
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset,
+     .                     w(lqavg),w(lq2avg),nt,movabs)
+            end if
 c
-         end if   !end of blk2nd(nbl).eq.myid or myid.eq.myhost if loop 
- 999    continue  !end of do loop over n=1,nblock                       
-      endif       !end of iteravg.gt.0 if loop                          
+         end if   !end of blk2nd(nbl).eq.myid or myid.eq.myhost if loop
+ 999    continue  !end of do loop over n=1,nblock
+      endif       !end of iteravg.gt.0 if loop
 c
-      if(movabs.eq.0)then                                               
-        return    !wouldn't have called qout here if not for averaging  
-      else if(nt.ne.nt/movabs*movabs) then                              
-        !no need to continue with qout for this time step               
-        return                                                          
-      endif                                                             
-c     End of changes to qout for averaging; remaining portion same as before 
-c---- End: mod for averaging at grid points -------------------------   
+      if(movabs.eq.0)then
+        return    !wouldn't have called qout here if not for averaging
+      else if(nt.ne.nt/movabs*movabs) then
+        !no need to continue with qout for this time step
+        return
+      endif
+c     End of changes to qout for averaging; remaining portion same as before
+c---- End: mod for averaging at grid points -------------------------
 c
       if (nplot3d.le.0) go to 231
 c
@@ -521,7 +521,7 @@ c
       if (myid .eq. myhost) then
          if (ibin.eq.0) then
             if (i2d.eq.0) then
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
@@ -530,7 +530,7 @@ c
      .              n=1,ncount)
                end if
             else
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
@@ -541,7 +541,7 @@ c
             end if
          else
             if (i2d.eq.0) then
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3) ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=1,3),n=1,ncount)
@@ -549,7 +549,7 @@ c
                   write(4) ((ip3ddim(i,n),i=1,3),ifuncuse,n=1,ncount)
                end if
             else
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3) ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=2,3),n=1,ncount)
@@ -569,7 +569,7 @@ c
       m = inpl3d(nnn,1)
       if (n.eq.m) nmap(n) = nnn
  1098 continue
- 1097 continue             
+ 1097 continue
 c
       if (myid.eq.myhost) then
          if (lhdr .gt. 0) write(11,1096)
@@ -634,7 +634,7 @@ c
                   write(11,'('' not writing out plot3d files'')')
                end if
             else
-               call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,  
+               call plot3d(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
      .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),
      .                     w(ly),w(lz),wk(ixwk),wk(ibwk),
      .                     w(lblk),wk(ixgk),iflag,w(lvis),iovrlp(nbl),
@@ -645,7 +645,7 @@ c
      .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
      .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
-     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)   
+     .                     w(lsj),w(lsk),w(lsi),w(lvol),nset)
             end if
 c
          end if
@@ -810,7 +810,7 @@ c
       endif
 c
 c     for stationary grid cases, set icall1 flag to prevent output
-c     of grid to plot3d file on subsequent calls (which occur only if 
+c     of grid to plot3d file on subsequent calls (which occur only if
 c     abs(movie) > 0).  For dynamic grid cases, grid is output every
 c     time plot3d routine is is called.
 c
@@ -866,7 +866,7 @@ c
       k1 = inpr(n,9)
       k2 = inpr(n,10)
       k3 = inpr(n,11)
-c  
+c
       iflag = 2
 c
       if (inpr(n,2).eq.0) then

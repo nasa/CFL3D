@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -101,7 +101,7 @@ c
       izz     = izz0 + k
       izzk1   = izz  + 1
       izzi1   = izz  + kdim
-      izzi1k1 = izz  + kdim + 1 
+      izzi1k1 = izz  + kdim + 1
       atbj(k,i,1,nn) = 0.25*( ttj(izz,1,nn)   + ttj(izzk1,1,nn)  +
      .                        ttj(izzi1,1,nn) + ttj(izzi1k1,1,nn) )
       atbj(k,i,2,nn) = 0.25*( ttj(izz,2,nn)   + ttj(izzk1,2,nn)  +
@@ -218,7 +218,7 @@ c     i=1/idim boundary accelerations
 c     use face-averaged values
 c**********************************************
 c
-      do 220 nn=1,2     
+      do 220 nn=1,2
       do 230 j=1,jdim-1
       do 230 k=1,kdim-1
       izz     = (k-1)*jdim+j

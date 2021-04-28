@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -104,7 +104,7 @@ c
       common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
-     .              tp(4,4),zlfct,epstr,relax,ittrst 
+     .              tp(4,4),zlfct,epstr,relax,ittrst
 c
       if (isklton.eq.1) then
 #if defined DIST_MPI
@@ -121,7 +121,7 @@ c
       icnt  = 0
       do 100 nbl = 1,nblock
       if (myid.eq.mblk2nd(nbl) .and. iadvance(nbl).ge.0 .and.
-     .   (levelg(nbl).ge.lglobal .and. 
+     .   (levelg(nbl).ge.lglobal .and.
      .    levelg(nbl).le.levelt(iseqr))) then
 c
          call lead(nbl,lw,lw2,maxbl)
@@ -131,12 +131,12 @@ c
          if (iuns .gt. 0.) then
 c
 c           zero out temp array used to store incremental grid point
-c           velocities and boundary accelerations due to translation 
+c           velocities and boundary accelerations due to translation
 c           and rotation components of grid motion. NOTE: between this
 c           point and the call to subroutine tmetric, the first lt1wk-1
 c           elements of the wk array must only be used to  store
 c           increments to the grid point velocities/accelerations.
-c           (temporarily treat this section of the temporary array 
+c           (temporarily treat this section of the temporary array
 c           as permanent!)
 c
 c           temporary storage locations:
@@ -174,7 +174,7 @@ c
   605             format(1x,20htranslating rb-block,i4,
      .                   16h to new position)
                end if
-c 
+c
                if (nwork.lt.mdim) then
                   nou(1) = min(nou(1)+1,ibufdim)
                   write(bou(nou(1),1),410)
@@ -257,7 +257,7 @@ c
      .                     nou,bou,nbuf,ibufdim)
             end if
 c
-c           translation 
+c           translation
 c
             if (itrans(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
      .          irigb .eq. 0 .and. nt .gt. 0) then
@@ -287,7 +287,7 @@ c
      .                    yorig0(nbl),zorig0(nbl),iupdat,time2(nbl))
             end if
 c
-c           rotation 
+c           rotation
 c
             if (irotat(nbl) .gt. 0 .and. irbtrim .eq. 0 .and.
      .          irigb .eq. 0 .and. nt .gt. 0) then
@@ -412,7 +412,7 @@ c                 collocate i0/idim boundary velocity/acceleration
                   call collxtb(w(latbi),w(latbic),jdim,kdim,
      .                        jj2,kk2,nbllm1)
 c
-c                 collocate j0/jdim boundary velocity/acceleration 
+c                 collocate j0/jdim boundary velocity/acceleration
                   call collxtb(w(lxtbj),w(lxtbjc),kdim,idim-1,
      .                        kk2,ii2-1,nbllm1)
                   call collxtb(w(latbj),w(latbjc),kdim,idim-1,
@@ -511,11 +511,11 @@ c
          trnsfr(5)  = yorigmc
          trnsfr(6)  = zorigmc
          trnsfr(7)  = thetaxmc
-         trnsfr(8)  = thetaymc 
+         trnsfr(8)  = thetaymc
          trnsfr(9)  = thetazmc
          trnsfr(10) = time2mc
       end if
-c 
+c
       call MPI_Bcast (trnsfr, 10, MY_MPI_REAL, myhost,
      .                mycomm, ierr)
 c

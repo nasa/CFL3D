@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,7 +29,7 @@ c     $Id$
 c
 c-----------------------------------------------------------------------
 c
-c     object : to read in and set up the topological mapping 
+c     object : to read in and set up the topological mapping
 c              funcions, 'imap'
 c
 c     initial coding : by m.d.sanetrik (August, 1990)
@@ -70,11 +70,11 @@ c      imap(5 , ) : specifies beginning of direction 2
 c      imap(6 , ) : specifies end       of direction 2
 c
 c      imap(8,  ) : if the boundary type is symmetry
-c                   takes the value 1,2 or 3 to indicate symmetry 
+c                   takes the value 1,2 or 3 to indicate symmetry
 c                   about x, y or z = constant planes, respectively
-c 
+c
 c  if the boundary type is a cut/interface
-c  additional information described below is required 
+c  additional information described below is required
 c
 c      imap(7 , ) : specifies block no. of source segment
 c     |imap(8 , )|: specifies face no. of source segment
@@ -91,7 +91,7 @@ c      imap(11, ) : specifies beginning of direction 2 of source segment
 c      imap(12, ) : specifies end       of direction 2 of source segment
 c
 c      turbulence/transitional related information
-c    
+c
 c      imap(13, ) : specifies if there is turbulent flow on this segment
 c                   1  corresponds to turbulent flow
 c                   0  corresponds to laminar   flow
@@ -99,9 +99,9 @@ c      imap(14, ) : begining index in direction 1 for turbulent flow
 c      imap(15, ) : ending   index in direction 1 for turbulent flow
 c      imap(16, ) : begining index in direction 2 for turbulent flow
 c      imap(17, ) : ending   index in direction 2 for turbulent flow
-c      imap(18, ) : begining index in normal direction for fmax 
-c      imap(19, ) : ending   index in normal direction for fmax 
-c      imap(20, ) : ending   index in normal direction for turb. flow 
+c      imap(18, ) : begining index in normal direction for fmax
+c      imap(19, ) : ending   index in normal direction for fmax
+c      imap(20, ) : ending   index in normal direction for turb. flow
 c
 c      the following items are added to facilitate the splitting of
 c      the cfl3d input files, and are not part of the standard tlns3d
@@ -116,7 +116,7 @@ c      xmap( 3, ) : 3rd additional data entry for 2000 series bc's
 c      xmap( 4, ) : 4th additional data entry for 2000 series bc's
 c      xmap( 5, ) : 5th additional data entry for 2000 series bc's
 c
-c      the following additions apply to blocks; ivisb(1-3, ) pertain 
+c      the following additions apply to blocks; ivisb(1-3, ) pertain
 c      to the turb model in the i,j,k directions, as before.
 c      ivisb( 4, ) : ncg
 c      ivisb( 5, ) : iem
@@ -222,7 +222,7 @@ c         write(6,*) ibloc,iseg
           read(imapfil,*) idum,idum,(imap(n,nsgtop),n= 1,12)
           read(imapfil,*) (imap(n,nsgtop),n=13,20)
 c         read(imapfil,*) (imap(n,nsgtop),n=13,20),val(nsgtop)
-          read(imapfil,*) 
+          read(imapfil,*)
           read(imapfil,*)
           read(imapfil,*) (xdum(n,nsgtop),n=1,5)
           read(imapfil,*) (xdum(n,nsgtop),n=6,10)
@@ -261,7 +261,7 @@ c
             do 310 ns=1,nseg(nbs)
                if((imap(1,nloc).eq.0.or.imap(1,nloc).eq.1)
      .         .and.imap(2,nloc).eq.nfs) then
-                 if((imap(3,nloc).eq.mns1 .and. 
+                 if((imap(3,nloc).eq.mns1 .and.
      .               imap(4,nloc).eq.mxs1).and.
      .              (imap(5,nloc).eq.mns2 .and.
      .               imap(6,nloc).eq.mxs2))     then

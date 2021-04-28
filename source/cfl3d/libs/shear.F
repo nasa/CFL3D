@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -34,8 +34,8 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Determine generalized coordinates of cell edge midpoints
-c     on xie=0 and eta=0 boundaries, and determine the requisite shearing 
-c     correction to the generalized coordinates near xie=0 and/or eta=0 
+c     on xie=0 and eta=0 boundaries, and determine the requisite shearing
+c     correction to the generalized coordinates near xie=0 and/or eta=0
 c     boundaries.
 c***********************************************************************
 c
@@ -96,10 +96,10 @@ c
       kcorr = 0
       ncoin = 0
 c
-      if (mceta.eq.0) then 
+      if (mceta.eq.0) then
         if (isklt1.gt.0) then
            nou(4) = min(nou(4)+1,ibufdim)
-           write(bou(nou(4),4),*) '      eta=0 boundaries not rendered', 
+           write(bou(nou(4),4),*) '      eta=0 boundaries not rendered',
      .     ' coincident'
         end if
         go to 670
@@ -157,7 +157,7 @@ c
       icount = 1
 18085 continue
 c
-c     compute midpoint of "to" cell on eta=0 boundary, consistent with ifit 
+c     compute midpoint of "to" cell on eta=0 boundary, consistent with ifit
 c
 c     bilinear or linear in xie
       if (ifit.eq.1.or.ifit.eq.4) then
@@ -215,7 +215,7 @@ c
 c
           if (ifiner.gt.0) then
              nou(4) = min(nou(4)+1,ibufdim)
-             write(bou(nou(4),4),172) 
+             write(bou(nou(4),4),172)
              nou(4) = min(nou(4)+1,ibufdim)
              write(bou(nou(4),4),272) j,1
              nou(4) = min(nou(4)+1,ibufdim)
@@ -278,7 +278,7 @@ c
         go to 18085
       end if
 c
-c     if second try with input value of ifit not successful, use the ifit 
+c     if second try with input value of ifit not successful, use the ifit
 c     value for which the search routine was successful
 c
       if(iretry.eq.1) then
@@ -318,15 +318,15 @@ c
 c
 c     block locations for k=k21 boundary points are stored in nblkj(j)
 c
-      nblkj(j) = l1 
+      nblkj(j) = l1
       ifit     = ifits
       etac     = etat - 2.0
       fact     = 1.
-c     
+c
 c     For some cases, boundaries eta=0 on "to"
 c     side and "from" side are not supposed to be coincident. Check
 c     to see if this is the case and, if so, skip over corrections to
-c     make the edges coincident. 
+c     make the edges coincident.
 c
       mcoin = mceta*(j22-j21)/100
       if (real(etac).gt.1.) then
@@ -346,7 +346,7 @@ c
 c
       if (real(etat).lt.2.0) then
 c
-c     the following correction accounts for the widely varying cell 
+c     the following correction accounts for the widely varying cell
 c     sizes near the boundary of a "from" grid  after extension
 c
         js    = xiet
@@ -401,7 +401,7 @@ c
         go to 670
       end if
 c
-      beta   = 25.                      
+      beta   = 25.
       do 2100 j=j21,j22-1
       kmaxck = kkmax1(nblkj(j))
       km     = kmm(j)
@@ -411,11 +411,11 @@ c
       red          = exp(-beta*fact*fact)
       seta2(j,k,1) = seta2(j,k,1) - temp(j)*red
 c
-c     check to see if sheared generalized coordinates will remain in the 
+c     check to see if sheared generalized coordinates will remain in the
 c     legal range...if not try the arc length correction near the surface
 c
 c
-      if (real(seta2(j,k,1)).lt.1. .or. 
+      if (real(seta2(j,k,1)).lt.1. .or.
      .    real(seta2(j,k,1)).gt.real(float(kmaxck-2))) then
       if(isklt1.gt.0) then
          nou(4) = min(nou(4)+1,ibufdim)
@@ -447,10 +447,10 @@ c
       jcorr = 0
       ncoin = 0
 c
-      if (mcxie.eq.0) then 
+      if (mcxie.eq.0) then
         if(isklt1.gt.0) then
            nou(4) = min(nou(4)+1,ibufdim)
-           write(bou(nou(4),4),*) '      xie=0 boundaries not rendered', 
+           write(bou(nou(4),4),*) '      xie=0 boundaries not rendered',
      .     ' coincident'
         end if
         go to 770
@@ -507,7 +507,7 @@ c
       icount = 1
 19085 continue
 c
-c     compute midpoint of "to" cell on xie=0 boundary, consistent with ifit 
+c     compute midpoint of "to" cell on xie=0 boundary, consistent with ifit
 c
 c     bilinear or linear in eta
       if(ifit.eq.1 .or. ifit.eq.3) then
@@ -566,7 +566,7 @@ c
 c
           if (ifiner.gt.0) then
              nou(4) = min(nou(4)+1,ibufdim)
-             write(bou(nou(4),4),173) 
+             write(bou(nou(4),4),173)
              nou(4) = min(nou(4)+1,ibufdim)
              write(bou(nou(4),4),273) 1,k
              nou(4) = min(nou(4)+1,ibufdim)
@@ -629,7 +629,7 @@ c
         go to 19085
       end if
 c
-c     if second try with input value of ifit not successful, use the ifit 
+c     if second try with input value of ifit not successful, use the ifit
 c     value for which the search routine was successful
 c
       if(iretry.eq.1) then
@@ -673,11 +673,11 @@ c
       ifit     = ifits
       xiec     = xiet - 2.0
       fact     = 1.
-c     
+c
 c     For some cases, boundaries xie=0 on "to"
 c     side and "from" side are not supposed to be coincident. Check
 c     to see if this is the case and, if so, skip over corrections to
-c     make the edges coincident 
+c     make the edges coincident
 c
       mcoin = mcxie*(k22-k21)/100
       if (real(xiec).gt.1.) then
@@ -697,7 +697,7 @@ c
 c
       if (real(xiet).lt.2.0) then
 c
-c     the following correction accounts for the widely varying cell 
+c     the following correction accounts for the widely varying cell
 c     sizes near the boundary of a "from" grid  after extension
 c
         ks    = etat
@@ -752,7 +752,7 @@ c
         go to 770
       end if
 c
-      beta = 25.                      
+      beta = 25.
       do 4100 k=k21,k22-1
       jmaxck = jjmax1(nblkk(k))
       jm     = jmm(k)
@@ -762,10 +762,10 @@ c
       red          = exp(-beta*fact*fact)
       sxie2(j,k,1) = sxie2(j,k,1) - temp(k)*red
 c
-c     check to see if sheared generalized coordinates will remain in the 
+c     check to see if sheared generalized coordinates will remain in the
 c     legal range...if not try the arc length correction near the surface
 c
-      if (real(sxie2(j,k,1)).lt.1. .or. 
+      if (real(sxie2(j,k,1)).lt.1. .or.
      .    real(sxie2(j,k,1)).gt.float(jmaxck-2)) then
       if(isklt1.gt.0) then
         nou(4) = min(nou(4)+1,ibufdim)

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,7 +29,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Set all primative variables with standard cfl3d 
+c     Purpose:  Set all primative variables with standard cfl3d
 c               normalization; rho/rho_inf, u/a_inf, v/a_inf,
 c               w/a_inf, p/(rho_inf*a_inf**2), and up to two
 c               turbulence quantities.
@@ -137,7 +137,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
         do 101 k=ksta,kend1
           kk=k-ksta+1
           ip = 1
-          t11 = (1 - itrflg1)*tursav(1,k,i,l) 
+          t11 = (1 - itrflg1)*tursav(1,k,i,l)
      .        + itrflg1*bcdata(kk,ii,ip,5+l)
           ip = 2
           t12 = (1 - itrflg1)*tursav(1,k,i,l)
@@ -153,7 +153,7 @@ c
 c******************************************************************************
 c      j=jdim boundary          set all primative variables         bctype 2007
 c******************************************************************************
-c 
+c
       if (nface.eq.4) then
 c
 c     check to see if turbulence data is input (itrflg1 = 1) or
@@ -500,5 +500,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
-      return 
+      return
       end

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -36,7 +36,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Check to see if any blocks in the grid have been 
+c     Purpose:  Check to see if any blocks in the grid have been
 c     translated/rotated out of bounds set by input deck. If so,
 c     reset these blocks so they are at or near the initial positions.
 c     If the rotational displacement of a block is reset, must also
@@ -58,7 +58,7 @@ c
 c
       dimension nou(nbuf)
       dimension w(mgwk),wk(nwork),lw(65,maxbl),lw2(43,maxbl)
-      dimension iresetb(maxbl) 
+      dimension iresetb(maxbl)
       dimension nbci0(maxbl),nbcidim(maxbl),nbcj0(maxbl),
      .          nbcjdim(maxbl),nbck0(maxbl),nbckdim(maxbl),
      .          ibcinfo(maxbl,maxseg,7,2),jbcinfo(maxbl,maxseg,7,2),
@@ -126,7 +126,7 @@ c
          athetx  = ccabs(thetax(nbl))
          athety  = ccabs(thetay(nbl))
          athetz  = ccabs(thetaz(nbl))
-         if (itrans(nbl) .eq. 1) then 
+         if (itrans(nbl) .eq. 1) then
             if (real(adxmx).gt.0. .and. real(axorig) .gt. real(adxmx))
      .         ireset=1
             if (real(adymx).gt.0. .and. real(ayorig).gt.real(adymx))
@@ -134,14 +134,14 @@ c
             if (real(adzmx).gt.0. .and. real(azorig).gt.real(adzmx))
      .         ireset=1
          else
-            if (real(adxmx).gt.0. .and. real(axorig).gt.real(adxmx)) 
+            if (real(adxmx).gt.0. .and. real(axorig).gt.real(adxmx))
      .         ireset= -1
             if (real(adymx).gt.0. .and. real(ayorig).gt.real(adymx))
      .         ireset= -1
             if (real(adzmx).gt.0. .and. real(azorig).gt.real(adzmx))
      .         ireset= -1
          end if
-         if (irotat(nbl) .eq. 1) then 
+         if (irotat(nbl) .eq. 1) then
             if (real(adthxmx).gt.0. .and. real(athetx).gt.real(adthxmx))
      .         ireset=1
             if (real(adthymx).gt.0. .and. real(athety).gt.real(adthymx))
@@ -241,7 +241,7 @@ c
                   time2(nbl)  = time2(nbl) - t2max - dt
                   thetaz(nbl) = time2(nbl)*omegaz(nbl)
                end if
-               dthtx  = thetax(nbl) - thtx 
+               dthtx  = thetax(nbl) - thtx
                dthty  = thetay(nbl) - thty
                dthtz  = thetaz(nbl) - thtz
                call grdmove(nbl,jdim,kdim,idim,w(lx),w(ly),w(lz),
@@ -249,7 +249,7 @@ c
      .                      xorig(nbl),yorig(nbl),zorig(nbl),
      .                      dthtx,dthty,dthtz)
 c
-c              We rotated the x,y,zs thru an extra delta t, since we 
+c              We rotated the x,y,zs thru an extra delta t, since we
 c              will be updating them again by delta t at the end of this
 c              routine (in the call to updateg).  For the Qs, however,
 c              we don't want to rotate them by extra amount:
@@ -326,7 +326,7 @@ c
 #endif
       iresetmc = 0
 c
-      if (itransmc.eq.1 .or. irotatmc.eq.1) then 
+      if (itransmc.eq.1 .or. irotatmc.eq.1) then
          adxmx   = ccabs(dxmxmc)
          adymx   = ccabs(dymxmc)
          adzmx   = ccabs(dzmxmc)
@@ -404,7 +404,7 @@ c
                   t2maxmc  = ccabs(dthymxmc)/ccabs(omegaymc)
                   time2mc  = time2mc  - t2maxmc - dt
                   thetaymc = time2mc*omegaymc
-                  dthtymc = thetaymc - thtymc 
+                  dthtymc = thetaymc - thtymc
                   xml = xmc
                   zml = zmc
                   ca  = cos(dthtymc)

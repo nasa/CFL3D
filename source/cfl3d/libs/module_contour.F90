@@ -7,16 +7,16 @@
 !
 !  Copyright 2001 United States Government as represented by the Administrator
 !  of the National Aeronautics and Space Administration. All Rights Reserved.
-! 
-!  The CFL3D platform is licensed under the Apache License, Version 2.0 
-!  (the "License"); you may not use this file except in compliance with the 
-!  License. You may obtain a copy of the License at 
-!  http://www.apache.org/licenses/LICENSE-2.0. 
-! 
-!  Unless required by applicable law or agreed to in writing, software 
-!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-!  License for the specific language governing permissions and limitations 
+!
+!  The CFL3D platform is licensed under the Apache License, Version 2.0
+!  (the "License"); you may not use this file except in compliance with the
+!  License. You may obtain a copy of the License at
+!  http://www.apache.org/licenses/LICENSE-2.0.
+!
+!  Unless required by applicable law or agreed to in writing, software
+!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+!  License for the specific language governing permissions and limitations
 !  under the License.
 !  ---------------------------------------------------------------------------
 !
@@ -54,7 +54,7 @@ CONTAINS
     REAL :: c2b,c2bp, fnu(jdim),tt,re,utau(jdim),vel&
          ,tau_w,fnuloc,Rel(jdim),cf(jdim)
     REAL :: deltabl, coef
-    
+
     COMMON /ivals/ p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv(5),&
          tur10(7)
     REAL :: p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv,&

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -257,11 +257,11 @@ c  First, see if there are any Family_t nodes
       if (nfamilies .gt. 0) then
       write(6,'('' Found '',i5,'' families:'')') nfamilies
       do n=1,nfamilies
-        call cg_family_read_f(iccg, ibase, n, famname(n), nfambc(n), 
+        call cg_family_read_f(iccg, ibase, n, famname(n), nfambc(n),
      +     ngeo, ier)
         call cg_fambc_read_f(iccg, ibase, n, 1, dumfam,
      +     ibctypef(n), ier)
-        write(6,'('' n,famname(n),type='',i2,3x,a32,3x,a32)') 
+        write(6,'('' n,famname(n),type='',i2,3x,a32,3x,a32)')
      +     n,famname(n),BCTypeName(ibctypef(n))
       enddo
       end if
@@ -308,8 +308,8 @@ c   See if there is any BC info
         write(6,'('' for zone '',i9,'', nbocos='',i9)') n,nbocos
         if (nbocos .gt. 0) then
           do m=1,nbocos
-            call cg_boco_info_f(iccg, ibase, n, m, boconame, ibocotype, 
-     +        iptset_type, npnts, normalindex, normalflag, 
+            call cg_boco_info_f(iccg, ibase, n, m, boconame, ibocotype,
+     +        iptset_type, npnts, normalindex, normalflag,
      +        idatatype, ndataset, ier)
             if (ier .ne. 0) call cg_error_exit_f
             if (npnts .ne. 2) then
@@ -332,7 +332,7 @@ c   See if there is any BC info
      +            boconame_short .ne. "far" .and.
      +            boconame_short .ne. "FAR" .and.
      +            boconame_short .ne. "Far") then
-                write(6,'('' ERROR:'',a32,'' not recognized'')') 
+                write(6,'('' ERROR:'',a32,'' not recognized'')')
      +            boconame
                 goto 333
               end if
@@ -367,13 +367,13 @@ c   See if there is any BC info
             end if
 c           write(6,'(''... boconame='',a32)') boconame
 c           write(6,'(''... ibocotype='',a32)') BCTypeName(ibocotype)
-c           write(6,'(''... iptset_type='',a32)') 
+c           write(6,'(''... iptset_type='',a32)')
 c    +       PointSetTypeName(iptset_type)
 c           write(6,'(''... npnts='',i5)') npnts
 c           write(6,'(''... normalindex='',3i6)') normalindex(1),
 c    +       normalindex(2),normalindex(3)
 c           write(6,'(''... normalflag='',i6)') normalflag
-c           write(6,'(''... idatatype='',a32)') 
+c           write(6,'(''... idatatype='',a32)')
 c    +       DataTypeName(idatatype)
 c           write(6,'(''... ndataset='',i6)') ndataset
 c           write(6,'(''... ipnts='',6i12)') ipnts(1),ipnts(2),ipnts(3),
@@ -396,7 +396,7 @@ c   the relevant info that I can use is ibocotype and ipnts(1-6)
               end if
             else
               if (ibocotype .eq. FamilySpecified) then
-                call cg_goto_f(iccg, ibase, ier, 'Zone_t', n, 
+                call cg_goto_f(iccg, ibase, ier, 'Zone_t', n,
      +            'ZoneBC_t', 1, 'BC_t', m, 'end')
                 if (ier .ne. 0) call cg_error_exit_f
                 call cg_famname_read_f(familyname, ier)
@@ -817,7 +817,7 @@ c       search thru all the 1-to-1 connections
         isum=0
         do m=1,n1to1_global
           if (znname(m) .eq. zonename(n)) then
-            if (irange(1,m) .eq. irange(4,m) .and. 
+            if (irange(1,m) .eq. irange(4,m) .and.
      +        (irange(1,m) .eq. 1)) then
               iseg=iseg+1
               jsta=min(irange(2,m),irange(5,m))
@@ -843,7 +843,7 @@ c       search thru all the 1-to-1 connections
         enddo
         if (nbc(n) .gt. 0) then
           do nn=1,nbc(n)
-            if ((ips(n,nn,1).eq.ips(n,nn,4)) .and. 
+            if ((ips(n,nn,1).eq.ips(n,nn,4)) .and.
      +          (ips(n,nn,1).eq.1)) then
               iseg=iseg+1
               jsta=min(ips(n,nn,2),ips(n,nn,5))
@@ -1511,7 +1511,7 @@ c       search thru all the 1-to-1 connections
       write(7,'(''         0    0.3000    0.3000    0.3000         0'',
      +  ''    0.3000    0.3000    0.3000'')')
       write(7,'(''      NCYC    MGLEVG     NEMGL     NITFO'')')
-      write(7,'(''      xxxx'',i10,''         0         0'')') 
+      write(7,'(''      xxxx'',i10,''         0         0'')')
      +  min(ncgmin+1,3)
       write(7,'(''      MIT1      MIT2      MIT3      MIT4      MIT5'',
      +  ''      MIT6      MIT7     MIT8'')')
@@ -1687,7 +1687,7 @@ c
 c   Gets x,y, and z from CGNS data base for zone number "igrid".
 c   The CGNS file must already be opened.
 c   If there is a grid-size inconsistency with what is expected (idim,jdim,kdim)
-c   or if the 3 coordinates CoordinateX, CoordinateY, and CoordinateZ 
+c   or if the 3 coordinates CoordinateX, CoordinateY, and CoordinateZ
 c   do not exist, the routine stops execution.
 c
 c   INPUTS:
@@ -1746,7 +1746,7 @@ c   Check coordinate names in data base
      +     coordname .eq. testname(3)) then
           continue
         else
-          write(6,'('' coordname of '',a32,'' unrecognized.'')') 
+          write(6,'('' coordname of '',a32,'' unrecognized.'')')
      +     coordname
           write(6,'('' Looking for CoordinateX, CoordinateY, and'',
      +     '' CoordinateZ'')')
@@ -1762,26 +1762,26 @@ c   Set up array bounds:
       irmax(3)=kdim
 c   Read x,y,z
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX',
      &                     RealDouble, irmin, irmax, x, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateX',
      &                     RealSingle, irmin, irmax, x, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY',
      &                     RealDouble, irmin, irmax, y, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateY',
      &                     RealSingle, irmin, irmax, y, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f
       if (idouble .eq. 1) then
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ',
      &                     RealDouble, irmin, irmax, z, ier)
       else
-      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ', 
+      call cg_coord_read_f(iccg, ibase, igrid, 'CoordinateZ',
      &                     RealSingle, irmin, irmax, z, ier)
       end if
       if (ier .ne. 0) call cg_error_exit_f

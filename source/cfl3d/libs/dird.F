@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -26,20 +26,20 @@ c
 c     $Id$
 c
 c**********************************************************************
-c      Purpose:  Evaluate directed distance from k=0 wall and i=0/j=0 
+c      Purpose:  Evaluate directed distance from k=0 wall and i=0/j=0
 c      wall for use in evaluating the Baldwin-Lomax turbulence model.
 c**********************************************************************
 c
-c      input arrays   : 
+c      input arrays   :
 c       x,y,z         : grid point positions
 c       sj,sk,si      : metrics
 c                       (direction cosines,areas,speeds of cell faces)
 c      output arrays  :
-c       snj0,snjm     : directed distance from j=0,max wall 
+c       snj0,snjm     : directed distance from j=0,max wall
 c                        of cell-centers
-c       snk0,snkm     : directed distance from k=0,max wall     
+c       snk0,snkm     : directed distance from k=0,max wall
 c                        of cell-centers
-c       sni0,snim     : directed distance from i=0,max wall     
+c       sni0,snim     : directed distance from i=0,max wall
 c                       of cell-centers
 c      scratch arrays :
 c       w(1-3)        : cell-centered positions
@@ -74,38 +74,38 @@ c
       idim1 = idim-1
 c
 c      cell-center locations
-c 
+c
       do 1000 i=1,idim1
       do 1000 k=1,kdim1
       do 1000 j=1,jdim1
-      w(j,k,i,1) = (  x(j  ,k  ,i) + x(j  ,k  ,i+1) + 
-     .                x(j  ,k+1,i) + x(j  ,k+1,i+1) + 
-     .                x(j+1,k  ,i) + x(j+1,k  ,i+1) + 
-     .                x(j+1,k+1,i) + x(j+1,k+1,i+1) ) 
-      w(j,k,i,2) = (  y(j  ,k  ,i) + y(j  ,k  ,i+1) + 
-     .                y(j  ,k+1,i) + y(j  ,k+1,i+1) + 
-     .                y(j+1,k  ,i) + y(j+1,k  ,i+1) + 
-     .                y(j+1,k+1,i) + y(j+1,k+1,i+1) ) 
-      w(j,k,i,3) = (  z(j  ,k  ,i) + z(j  ,k  ,i+1) + 
-     .                z(j  ,k+1,i) + z(j  ,k+1,i+1) + 
-     .                z(j+1,k  ,i) + z(j+1,k  ,i+1) + 
-     .                z(j+1,k+1,i) + z(j+1,k+1,i+1) ) 
+      w(j,k,i,1) = (  x(j  ,k  ,i) + x(j  ,k  ,i+1) +
+     .                x(j  ,k+1,i) + x(j  ,k+1,i+1) +
+     .                x(j+1,k  ,i) + x(j+1,k  ,i+1) +
+     .                x(j+1,k+1,i) + x(j+1,k+1,i+1) )
+      w(j,k,i,2) = (  y(j  ,k  ,i) + y(j  ,k  ,i+1) +
+     .                y(j  ,k+1,i) + y(j  ,k+1,i+1) +
+     .                y(j+1,k  ,i) + y(j+1,k  ,i+1) +
+     .                y(j+1,k+1,i) + y(j+1,k+1,i+1) )
+      w(j,k,i,3) = (  z(j  ,k  ,i) + z(j  ,k  ,i+1) +
+     .                z(j  ,k+1,i) + z(j  ,k+1,i+1) +
+     .                z(j+1,k  ,i) + z(j+1,k  ,i+1) +
+     .                z(j+1,k+1,i) + z(j+1,k+1,i+1) )
  1000 continue
 c
 c*********************************************************
 c      k=0 wall
 c*********************************************************
-c 
+c
       if (ivisc(3).gt.1) then
 c
       k = 1
       do 2000 i=1,idim1
       do 2000 j=1,jdim1
-      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k,i+1) + 
+      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k,i+1) +
      .                       x(j+1,k,i) + x(j+1,k,i+1) ) *sk(j,k,i,1)
-     .                  + (  y(j  ,k,i) + y(j  ,k,i+1) + 
+     .                  + (  y(j  ,k,i) + y(j  ,k,i+1) +
      .                       y(j+1,k,i) + y(j+1,k,i+1) ) *sk(j,k,i,2)
-     .                  + (  z(j  ,k,i) + z(j  ,k,i+1) + 
+     .                  + (  z(j  ,k,i) + z(j  ,k,i+1) +
      .                       z(j+1,k,i) + z(j+1,k,i+1) ) *sk(j,k,i,3) )
  2000 continue
 c
@@ -147,7 +147,7 @@ c       write(15,8111)
         write(bou(nou(1),1),8112)
  8112   format(3x,49hnegative directed distances have been detected...)
          nou(1) = min(nou(1)+1,ibufdim)
-        write(bou(nou(1),1),8113) 
+        write(bou(nou(1),1),8113)
  8113   format(3x,50hthis is not usually a problem, but check output on)
          nou(1) = min(nou(1)+1,ibufdim)
         write(bou(nou(1),1),8114)
@@ -250,11 +250,11 @@ c
       j = 1
       do 2100 i=1,idim1
       do 2100 k=1,kdim1
-      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k,i+1) + 
+      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k,i+1) +
      .                       x(j,k+1,i) + x(j,k+1,i+1) ) *sj(j,k,i,1)
-     .                  + (  y(j  ,k,i) + y(j  ,k,i+1) + 
+     .                  + (  y(j  ,k,i) + y(j  ,k,i+1) +
      .                       y(j,k+1,i) + y(j,k+1,i+1) ) *sj(j,k,i,2)
-     .                  + (  z(j  ,k,i) + z(j  ,k,i+1) + 
+     .                  + (  z(j  ,k,i) + z(j  ,k,i+1) +
      .                       z(j,k+1,i) + z(j,k+1,i+1) ) *sj(j,k,i,3) )
 2100  continue
 c
@@ -388,15 +388,15 @@ c      i=0 wall
 c*********************************************************
 c
       if (ivisc(1).gt.1) then
-c 
+c
       i = 1
       do 4000 k=1,kdim1
       do 4000 j=1,jdim1
-      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k+1,i) + 
+      w(j,k,i,4) = .25e0*((  x(j  ,k,i) + x(j  ,k+1,i) +
      .                       x(j+1,k,i) + x(j+1,k+1,i) ) *si(j,k,i,1)
-     .                  + (  y(j  ,k,i) + y(j  ,k+1,i) + 
+     .                  + (  y(j  ,k,i) + y(j  ,k+1,i) +
      .                       y(j+1,k,i) + y(j+1,k+1,i) ) *si(j,k,i,2)
-     .                  + (  z(j  ,k,i) + z(j  ,k+1,i) + 
+     .                  + (  z(j  ,k,i) + z(j  ,k+1,i) +
      .                       z(j+1,k,i) + z(j+1,k+1,i) ) *si(j,k,i,3) )
  4000 continue
 c

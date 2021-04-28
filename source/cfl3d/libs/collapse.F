@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,7 +29,7 @@ c***********************************************************************
 c     Purpose:  Check for collapsed points in grid, and epand any
 c     collapsed lines detected. The threshold for adjacent points
 c     being considered as collapsed is eps; 1)for lines on which all
-c     segments are not collapsed, collapsed segments between two 
+c     segments are not collapsed, collapsed segments between two
 c     adjacent points are expanded to fact*eps in size, 2) for lines
 c     on which all segments are collapsed, a polar singularity is
 c     assumed, and the expansion factor is epss2*r, where r is the
@@ -108,22 +108,22 @@ c
             jc  = j2
          end if
 c
-         do 88 jj=j1,j2     
-         fact1  = float(jj-jc)*epss1  
+         do 88 jj=j1,j2
+         fact1  = float(jj-jc)*epss1
          xo(jj,k) = xoo+fact1*sx0
          yo(jj,k) = yoo+fact1*sy0
          zo(jj,k) = zoo+fact1*sz0
    88    continue
 c
-      end if 
+      end if
 c
       j1     = j1 + ncount + 1
-      ncount = 0 
+      ncount = 0
       if (j1.lt.jmaxo-1) go to 110
 c
       go to 111
 c
-c     2) collapsed segments over the entire k=const line, but k+1 
+c     2) collapsed segments over the entire k=const line, but k+1
 c        line is not collapsed (or k-1 for k=kmaxo) - polar singularity
 c
   109 continue
@@ -142,7 +142,7 @@ c
       zo(j,k) = zo(j,k)+sz*epss2
    50 continue
 c
-  111 continue  
+  111 continue
 c
 c******************************
 c     check along lines j=const
@@ -175,7 +175,7 @@ c
             sx0 = xo(j,k1)-xo(j,k1-1)
             sy0 = yo(j,k1)-yo(j,k1-1)
             sz0 = zo(j,k1)-zo(j,k1-1)
-         else 
+         else
             sx0 = xo(j,k2+1)-xo(j,k2)
             sy0 = yo(j,k2+1)-yo(j,k2)
             sz0 = zo(j,k2+1)-zo(j,k2)
@@ -200,10 +200,10 @@ c
          zo(j,kk) = zoo+fact1*sz0
   881    continue
 c
-      end if 
+      end if
 c
       k1     = k1 + ncount + 1
-      ncount = 0 
+      ncount = 0
       if (k1.lt.kmaxo-1) go to 1101
 c
       go to 1111

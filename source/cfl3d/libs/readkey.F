@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,8 +29,8 @@ c***********************************************************************
 c     Purpose:  Read in any keyword-driven inputs. ititr is returned
 c     as 1 if the title line has been read; returned as 0 if unread
 c     note: most, if not all, data read via this routine will have to
-c     be explicitly passed from the host to the nodes for parallel 
-c     processing, via subroutine trnsfr_vals. 
+c     be explicitly passed from the host to the nodes for parallel
+c     processing, via subroutine trnsfr_vals.
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -75,7 +75,7 @@ c
       common /bin/ ibin,iblnk,iblnkfr,ip3dgrad
       common /memory/ memadd,memaddi
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /ghost/ irghost,iwghost
       common /noninertial/ xcentrot,ycentrot,zcentrot,xrotrate,
      .                     yrotrate,zrotrate,noninflag
@@ -148,7 +148,7 @@ c     Turbulent Prandtl number
       prt    = 0.9
       nkey   = nkey + 1
 c
-c     reference temperature for Sutherland's Law     
+c     reference temperature for Sutherland's Law
       cbar   = 198.6
       nkey   = nkey + 1
 c
@@ -172,9 +172,9 @@ c     complex perturbation to the unit Reynolds number, reue
       reue_img = 0.
       nkey     = nkey + 1
 c
-c     complex perturbation to the freestream temperature, tinf 
+c     complex perturbation to the freestream temperature, tinf
       tinf_img = 0.
-      nkey     = nkey + 1 
+      nkey     = nkey + 1
 c
 c     size of complex perturbation to grid
 c     (this should be consitant with the input complex grid)
@@ -234,9 +234,9 @@ c
       nkey     = nkey + 7
 c
 c     limit on ratio of minimum to maximum |eigenvalue| - the
-c     parameter for Harten's entropy fix or some variation 
+c     parameter for Harten's entropy fix or some variation
 c     thereof - see fhat for exact details. The value on the
-c     RHS is input, and that value for the LHS is taken as a 
+c     RHS is input, and that value for the LHS is taken as a
 c     factor of 2 times the RHS value (hence, epsa_l is NOT a keyword)
 c
       epsa_r   = 0.
@@ -410,9 +410,9 @@ c     non-inertial reference frame
       zrotrate_img = 0.
       nkey      = nkey + 1
 c
-c     flag to read (1) or skip reading (0) 2nd order-time turbulence 
-c     terms and dt in restart file (need to skip if using an older 
-c     time-accurate-with-2nd-order-time restart file which does not 
+c     flag to read (1) or skip reading (0) 2nd order-time turbulence
+c     terms and dt in restart file (need to skip if using an older
+c     time-accurate-with-2nd-order-time restart file which does not
 c     have them) - 1=default
 c
       itime2read = 1
@@ -466,7 +466,7 @@ c     (defaults=-1)
       tur10(7) = -1.
       nkey     = nkey + 7
 c
-c     value that epsilon or omega is set to for 2-eqn models if 
+c     value that epsilon or omega is set to for 2-eqn models if
 c     it goes below tur1cutlev
       if (ivmx .eq. 15) then
         tur1cut = -1.
@@ -502,7 +502,7 @@ c     (note: LHS uses 1st order in both cases)
       iturbord = 1
       nkey       = nkey + 1
 c
-c     value that k is set to for 2-eqn models if 
+c     value that k is set to for 2-eqn models if
 c     it goes below tur2cutlev
       tur2cut = 1.e-20
       nkey     = nkey + 1
@@ -544,8 +544,8 @@ c     EASMCC - EASM curvature correction in 2D sense only
       nkey     = nkey + 1
 c
 c     ipertavg - Average r,u,v,w,p and second moments
-      ipertavg = 0 
-      nkey     = nkey + 1 
+      ipertavg = 0
+      nkey     = nkey + 1
 
 c     icoarsemovie - write movie files of coarse planar and volume data
       icoarsemovie = 0
@@ -658,7 +658,7 @@ c     default=-1.
       eddy_visc_inf = -1.0
       nkey     = nkey + 1
 c
-c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant for LES 
+c     cs_smagorinsky is the (non-dynamic) Smagorinsky constant for LES
 c     (ivisc=25 + les_model=1)
 c     if set to zero, you get implicit LES (no model)
 c     typical values are 0.1-0.2
@@ -712,7 +712,7 @@ c     default=1 (ON)
 c
 c     i_turbprod_kterm is used to determine whether 2/3*rho*k term
 c     gets subtracted from turbulence production in ivisc=6,7 models
-c     (only does anything if ivisc=6 or 7, ikoprod=1, and 
+c     (only does anything if ivisc=6 or 7, ikoprod=1, and
 c     i_turbprod_kterm=1)
 c     default=0 (term not included)
       i_turbprod_kterm = 0
@@ -729,7 +729,7 @@ c     ismincforce overrides normal smin/initvist restart usage -
 c     chief use for this would be if restarting a solution on an altered
 c     grid of the same dimensions (unless you force smin to be recomputed,
 c     the new computation will have the WRONG min distances on the new
-c     grid!). Note that if this keyword is used, the user must also 
+c     grid!). Note that if this keyword is used, the user must also
 c     appropriately specify whether initvist should be called or not
 c     (it should be called if turb model is being changed upon restart)
 c     ismincforce=0 do not compute smin, do not call initvist
@@ -740,8 +740,8 @@ c     default=-1 (do not override normal usage)
       ismincforce = -1
       nkey     = nkey + 1
 c
-c     prod2d3dtrace forces Sij used in 2SijSij to be traceless; in 
-c     production term in ivmx=6,7,10,30,40 when ikoprod=1; and in 
+c     prod2d3dtrace forces Sij used in 2SijSij to be traceless; in
+c     production term in ivmx=6,7,10,30,40 when ikoprod=1; and in
 c     Wilcox06 stress-limiter term
 c                =0.5 in 2-D sense
 c                =0.333333 in 3-D sense
@@ -772,7 +772,7 @@ c         =1 scaling on
       les_wallscale = 0
       nkey     = nkey + 1
 c
-c     cs_wale is the (non-dynamic) WALE constant for LES 
+c     cs_wale is the (non-dynamic) WALE constant for LES
 c     (ivisc=25 + les_model=2)
 c     if set to zero, you get implicit LES (no model)
 c     typical values are 0.45-0.6
@@ -780,7 +780,7 @@ c     default=0.0
       cs_wale = 0.0
       nkey     = nkey + 1
 c
-c     cs_vreman is the (non-dynamic) Vreman constant for LES 
+c     cs_vreman is the (non-dynamic) Vreman constant for LES
 c     (ivisc=25 + les_model=3)
 c     if set to zero, you get implicit LES (no model)
 c     typical values are 0.025-0.1
@@ -821,10 +821,10 @@ c     and need to augment with keyword memadd.
       nkey     = nkey + 1
 c
 c     lowmem_ux=1 allows reversion to lower memory usage of ux array
-c     (i.e., only allocate this jdim*kdim*idim*9 array for velocity 
+c     (i.e., only allocate this jdim*kdim*idim*9 array for velocity
 c     derivatives if it is needed for a particular model)
 c     By default, after V6.5, the memory is always allocated and ux
-c     is always computed 
+c     is always computed
       lowmem_ux=0
       nkey     = nkey + 1
 c
@@ -875,7 +875,7 @@ c     default=.0005
       cmulim = .0005
       nkey     = nkey + 1
 c
-c     iaxi2planeturb used to force solve of field turb model eqns in j-k 
+c     iaxi2planeturb used to force solve of field turb model eqns in j-k
 c     plane only; only allowed if i2d=0 & idim=2
 c     default=0 (include i-dir)
       iaxi2planeturb=0
@@ -898,17 +898,17 @@ c     ipatch1st=1 forces patching interpolation to be 1st order (default=0)
       ipatch1st= 0
       nkey     = nkey + 1
 c
-c     isst2003=1 when ivisc=7 forces SST-2003 model, Menter, F. R., Kuntz, M., 
-c     and Langtry, R., "Ten Years of Industrial Experience with the SST 
-c     Turbulence Model," Turbulence, Heat and Mass Transfer 4, 
-c     ed: K. Hanjalic, Y. Nagano, and M. Tummers, Begell House, Inc., 2003, 
-c     pp. 625 - 632. 
+c     isst2003=1 when ivisc=7 forces SST-2003 model, Menter, F. R., Kuntz, M.,
+c     and Langtry, R., "Ten Years of Industrial Experience with the SST
+c     Turbulence Model," Turbulence, Heat and Mass Transfer 4,
+c     ed: K. Hanjalic, Y. Nagano, and M. Tummers, Begell House, Inc., 2003,
+c     pp. 625 - 632.
       isst2003=0
       nkey     = nkey + 1
 c
 c     issglrrw2012=1 when using ivisc=72 and want SSG/LRR-RSM-w2012 instead
-c     of WilcoxRSM-w2006; 
-c     issglrrw2012=2 if want SSG/LRR-RSM-w2012 with F1 (blend) forced 
+c     of WilcoxRSM-w2006;
+c     issglrrw2012=2 if want SSG/LRR-RSM-w2012 with F1 (blend) forced
 c     to be 1.0, resulting in essentially WilcoxRSM-w1988 (with generalized
 c     gradient diffusion)
 c     issglrrw2012=3 if want SSG/LRR-RSM-w2012 with simple diffusion
@@ -955,7 +955,7 @@ c   will not convect it)
 c
 c   i_specialtop_kmax1001=1 only for particular special BC on 1001
 c   specifying kmax wall velocity in conjunction with BC1001:
-c   v = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] + 
+c   v = a*{fac*(xc-x)+(1-fac)}*exp[cc-({(xc-x)/sig}**2)] +
 c       vtp*{0.5*(1-erf[(x-xerf)/sigerf])}
 c   and wc is for specifying crossflow
       i_specialtop_kmax1001=0
@@ -1086,7 +1086,7 @@ c     Check for the existence of the averaging files
  1012    iteravg = 1
          if( ipertavg .eq. 2 ) ipertavg = 1
  1013    continue
-         
+
 c     Check for the existence of the clcd.bin file
          if( iclcd .eq. 2 ) then
             isthere = .false.
@@ -1109,7 +1109,7 @@ c     Check for the existence of the clcd.bin file
  1014    close(150)
  1015    iclcd = 1
  1016    continue
-         
+
 c        the variables turbintensity_inf_percent and eddy_visc_inf
 c        do not go to the rest of the code; instead, if set, they
 c        modify tur10(2) and tur10(1), respectively
@@ -1250,7 +1250,7 @@ c
 #ifdef CGNS
 #else
 c
-c        cannot use cgns input unless the code has been 
+c        cannot use cgns input unless the code has been
 c        installed with -cgnsdir=...
 c
          if (icgns.eq.1) then
@@ -1623,27 +1623,27 @@ c
          read(inpstr(lc2:lcl),*) ipertavg
          if (ipertavg .ne. 0) iteravg = ipertavg
 c
-      else if (inpstr(lc1:lc2).eq.'icoarsemovie') then 
+      else if (inpstr(lc1:lc2).eq.'icoarsemovie') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) icoarsemovie
 c
-      else if (inpstr(lc1:lc2).eq.'i2dmovie') then 
+      else if (inpstr(lc1:lc2).eq.'i2dmovie') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) i2dmovie
 c
-      else if (inpstr(lc1:lc2).eq.'iclcd') then 
+      else if (inpstr(lc1:lc2).eq.'iclcd') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iclcd
 c
-      else if (inpstr(lc1:lc2).eq.'iskip_blocks') then 
+      else if (inpstr(lc1:lc2).eq.'iskip_blocks') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) iskip_blocks
 c
-      else if (inpstr(lc1:lc2).eq.'cfltauMax') then 
+      else if (inpstr(lc1:lc2).eq.'cfltauMax') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) cfltauMax
 c
-      else if (inpstr(lc1:lc2).eq.'cfltau0') then 
+      else if (inpstr(lc1:lc2).eq.'cfltau0') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) cfltau0
 c
@@ -1663,22 +1663,22 @@ c
       else if (inpstr(lc1:lc2).eq.'tmass') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         tmass = realval(1) 
+         tmass = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'yinert') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         yinert = realval(1) 
+         yinert = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'gaccel') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         gaccel = realval(1) 
+         gaccel = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'relax') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         relax = realval(1) 
+         relax = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'itrminc') then
          lc2 = lc2 +1
@@ -1687,22 +1687,22 @@ c
       else if (inpstr(lc1:lc2).eq.'dclda') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         dclda = realval(1) 
+         dclda = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'dcldd') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         dcldd = realval(1) 
+         dcldd = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'dcmda') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         dcmda = realval(1) 
+         dcmda = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'dcmdd') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) realval(1)
-         dcmdd = realval(1) 
+         dcmdd = realval(1)
 c
       else if (inpstr(lc1:lc2).eq.'ndgrd') then
          lc2 = lc2 +1
@@ -1858,7 +1858,7 @@ c
          read(inpstr(lc2:lcl),*) realval(1)
          snonlin_lim = abs(realval(1))
 c
-      else if (inpstr(lc1:lc2).eq.'isubit_r') then 
+      else if (inpstr(lc1:lc2).eq.'isubit_r') then
          lc2 = lc2 +1
          read(inpstr(lc2:lcl),*) isubit_r
 c
@@ -2071,7 +2071,7 @@ c
 
 c     Make sure we are running ddes if cddes is set
 
-      if( abs(cddes - 0.975d0) > 0.001d0 ) ides = 3 
+      if( abs(cddes - 0.975d0) > 0.001d0 ) ides = 3
       if( real(cddes) > 0.999d0) cddes = 0.999d0
       if( ides == 3 ) then
          write(*,*) 'Running ides with cddes = ', cddes

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -125,7 +125,7 @@ c
      .          cfdtot(maxcs),cfltot(maxcs),cfttot(maxcs),
      .          icsinfo(maxcs,9)
       dimension nnegb(nummem),rmstb(nummem),sumn(nummem),negn(nummem)
-c 
+c
       dimension igridg(maxbl)
       common /twod/ i2d
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
@@ -147,7 +147,7 @@ c
      .        cfyvsub,cfzvsub,cflvsub,cfdvsub,cftvsub,cfxmomsub,
      .        cfymomsub,cfzmomsub,cflmomsub,cfdmomsub,cftmomsub,
      .        cfxtotsub,cfytotsub,cfztotsub,cfdtotsub,cfltotsub,
-     .        cfttotsub 
+     .        cfttotsub
       common /igrdtyp/ ip3dgrd,ialph
 c
       jdim1 = jdim-1
@@ -176,9 +176,9 @@ c
          iflag = 1
          resd = 0.
          if (myid.eq.mblk2nd(nbl) .and. iadvance(nbl).ge.0) then
-            call l2norm(nbl,icyc,resd,0,jdim,kdim,idim,res,vol) 
-            if ((real(resd+resd) .eq. real(resd) .and. 
-     .         abs(real(resd)) .gt. 1.e-20) .or. 
+            call l2norm(nbl,icyc,resd,0,jdim,kdim,idim,res,vol)
+            if ((real(resd+resd) .eq. real(resd) .and.
+     .         abs(real(resd)) .gt. 1.e-20) .or.
      .         .not.(real(resd).lt.abs(real(resd)) .or.
      .         real(resd).ge.0.e0)) then
                nou(1) = min(nou(1)+1,ibufdim)
@@ -212,7 +212,7 @@ c        l2-norm of density residual EXCLUDING time terms
             call l2norm2(nbl,icyc,resd,0,jdim,kdim,idim,res,vol,
      .                   qc0,dqc0,q,blank)
             if ((real(resd+resd) .eq. real(resd) .and.
-     .         abs(real(resd)) .gt. 1.e-20) .or. 
+     .         abs(real(resd)) .gt. 1.e-20) .or.
      .         .not.(real(resd).lt.abs(real(resd)) .or.
      .         real(resd).ge.0.e0)) then
                nou(1) = min(nou(1)+1,ibufdim)
@@ -285,7 +285,7 @@ c
                   rmstx = rmstr(nres,l)*rmstr(nres,l)*float(nptsr)
                end if
                nptsr        = nptsr + jdim1*kdim1*idim1
-               rmstx        = rmstx 
+               rmstx        = rmstx
      .                      + sumn(l)*sumn(l)*float(jdim1*kdim1*idim1)
                rmstr(nres,l) = sqrt(  rmstx / float( nptsr) )
                nneg(nres,l)  = nneg(nres,l) + negn(l)
@@ -378,14 +378,14 @@ c           sum contributions of blocks on global level
 c
             if (myid.eq.myhost) then
                if (level.eq.lglobal) then
-                  chdw(nres)  = chdw(nres)  + chd       
+                  chdw(nres)  = chdw(nres)  + chd
                   swetw(nres) = swetw(nres) + swett(nbl)
                   clw(nres)   = clw(nres)   + clt(nbl)
-                  cmyw(nres)  = cmyw(nres)  + cmyt(nbl) 
+                  cmyw(nres)  = cmyw(nres)  + cmyt(nbl)
                   cdw(nres)   = cdw(nres)   + cdt(nbl)
-                  cmxw(nres)  = cmxw(nres)  + cmxt(nbl) 
-                  cmzw(nres)  = cmzw(nres)  + cmzt(nbl) 
-                  czw(nres)   = czw(nres)   + czt(nbl)  
+                  cmxw(nres)  = cmxw(nres)  + cmxt(nbl)
+                  cmzw(nres)  = cmzw(nres)  + cmzt(nbl)
+                  czw(nres)   = czw(nres)   + czt(nbl)
                   cyw(nres)   = cyw(nres)   + cyt(nbl)
                   cxw(nres)   = cxw(nres)   + cxt(nbl)
                   cdpw(nres)  = cdpw(nres)  + cdpt(nbl)
@@ -439,7 +439,7 @@ c
                   cfxv(ics)   = cfxvi
                   cfyv(ics)   = cfyvi
                   cfzv(ics)   = cfzvi
-                  cflv(ics)   = cflvi 
+                  cflv(ics)   = cflvi
                   cfdv(ics)   = cfdvi
                   cftv(ics)   = cftvi
                   cfxmom(ics) = cfxmomi
@@ -541,7 +541,7 @@ c
             end if
          end do
 c
-c        sum contributions over all control surfaces with inorm .ne. 0 
+c        sum contributions over all control surfaces with inorm .ne. 0
 c        (global level only)
 c
          if (myid.eq.myhost) then
@@ -602,16 +602,16 @@ c
                      cfltot(ncs+1) = cfltot(ncs+1) + cfltot(ics)
                      cfdtot(ncs+1) = cfdtot(ncs+1) + cfdtot(ics)
 c
-                     cftp(ncs+1)   = sqrt(cfxp(ncs+1)**2 
-     .                                  + cfyp(ncs+1)**2 
+                     cftp(ncs+1)   = sqrt(cfxp(ncs+1)**2
+     .                                  + cfyp(ncs+1)**2
      .                                  + cfzp(ncs+1)**2)
-                     cftv(ncs+1)   = sqrt(cfxv(ncs+1)**2 
-     .                                  + cfyv(ncs+1)**2 
+                     cftv(ncs+1)   = sqrt(cfxv(ncs+1)**2
+     .                                  + cfyv(ncs+1)**2
      .                                 + cfzv(ncs+1)**2)
-                     cftmom(ncs+1) = sqrt(cfxmom(ncs+1)**2 
-     .                                  + cfymom(ncs+1)**2 
+                     cftmom(ncs+1) = sqrt(cfxmom(ncs+1)**2
+     .                                  + cfymom(ncs+1)**2
      .                                  + cfzmom(ncs+1)**2)
-                     cfttot(ncs+1) = sqrt(cfxtot(ncs+1)**2 
+                     cfttot(ncs+1) = sqrt(cfxtot(ncs+1)**2
      .                                  + cfytot(ncs+1)**2
      .                                  + cfztot(ncs+1)**2)
 c
@@ -637,7 +637,7 @@ c
             if (icyc.eq.1) iflag = 1
             if (icyc.eq.2 .and. nbl.eq.nblendg) iflag = 1
             if (icyc.eq.ncyc .and. nbl.eq.nblstat)  iflag = 1
-            if (icyc/nwrest*nwrest.eq.icyc .and. nbl.eq.nblstat) 
+            if (icyc/nwrest*nwrest.eq.icyc .and. nbl.eq.nblstat)
      .         iflag = 1
             if ((icyc-1)/nwrest*nwrest.eq.(icyc-1) .and.
      .         nbl.eq.nblstag) iflag = 1
@@ -675,7 +675,7 @@ c
      .            nbl.eq.nblstag) iflag = 1
             end if
             if (ioutsub.eq.ncyc) then
-               if (nt.eq.1 .and. nbl.eq.nblstat) iflag = 1 
+               if (nt.eq.1 .and. nbl.eq.nblstat) iflag = 1
                if (nt.eq.2 .and. nbl.eq.nblendg) iflag = 1
                if (nt.eq.ntstep .and. nbl.eq.nblstat) iflag = 1
                if (nt/nwrest*nwrest.eq.nt  .and. nbl.eq.nblstat)
@@ -705,7 +705,7 @@ c
                if (nt/nwrest*nwrest.eq.nt .and. nbl.ge.nblstag)
      .            iflag = 1
             end if
-            if (iflag.gt.0) then 
+            if (iflag.gt.0) then
                if (iunst .eq. 0) then
                   if (ialph .ne. 0) then
                      write(11,2000) level,nbl,nres,real(rmst),
@@ -798,7 +798,7 @@ c
             end if
          end if
 c
-         if (iflag.gt.0) then 
+         if (iflag.gt.0) then
             do 8000 igrid=1,ngrid
             iskip = 0
             if (igrid.eq.1) iskip = 1
@@ -924,7 +924,7 @@ c
             end if
 
          end if
-            
+
 c
 c        turbulence residual
 c
@@ -959,7 +959,7 @@ c                 if (nptsrb.gt.0) then
 c                 end if
                end if
                nptsrb = nptsrb + jdim1*kdim1*idim1
-               rmsts1 = rmsts1 
+               rmsts1 = rmsts1
      .                + sumn(l)*sumn(l)*float(jdim1*kdim1*idim1)
                rmstb(l) = sqrt(  rmsts1 / float( nptsrb) )
                nnegb(l) = nnegb(l) + negn(l)
@@ -978,7 +978,7 @@ c              zero out values if this is the first block on the global level
                   cltsub   = 0.
                   cmytsub  = 0.
                   cmxtsub  = 0.
-                  cmztsub  = 0. 
+                  cmztsub  = 0.
                   cdtsub   = 0.
                   cztsub   = 0.
                   cytsub   = 0.
@@ -1214,16 +1214,16 @@ c
                      cfdtotsub = cfdtotsub + cfdtoti
                      cfltotsub = cfltotsub + cfltoti
 c
-                     cftpsub   = sqrt(cfxpsub**2 
-     .                              + cfypsub**2 
+                     cftpsub   = sqrt(cfxpsub**2
+     .                              + cfypsub**2
      .                              + cfzpsub**2)
-                     cftvsub   = sqrt(cfxvsub**2 
-     .                              + cfyvsub**2 
+                     cftvsub   = sqrt(cfxvsub**2
+     .                              + cfyvsub**2
      .                              + cfzvsub**2)
-                     cftmomsub = sqrt(cfxmomsub**2 
-     .                              + cfymomsub**2 
+                     cftmomsub = sqrt(cfxmomsub**2
+     .                              + cfymomsub**2
      .                              + cfzmomsub**2)
-                     cfttotsub = sqrt(cfxtotsub**2 
+                     cfttotsub = sqrt(cfxtotsub**2
      .                              + cfytotsub**2
      .                              + cfztotsub**2)
                   end if
@@ -1237,7 +1237,7 @@ c
 c
 c        output subiteration convergence if iwrit3 > 0
 c        iwrit3 > 0...density residual and forces (or cont. surf. data) only
-c        iwrit3 > 1...density residual and forces (or cont. surf. data) AND 
+c        iwrit3 > 1...density residual and forces (or cont. surf. data) AND
 c                     turbulence residual(s) (field eqn. turb. models only)
 c
          iwrit3 = 2

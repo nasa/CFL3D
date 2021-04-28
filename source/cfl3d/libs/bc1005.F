@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -77,15 +77,15 @@ c******************************************************************************
 c      j=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.3) then
-c 
+c
       do 300 i=ista,iend1
 c
       do 300 k=ksta,kend1
       pb           = q(1,k,i,5)
       qj0(k,i,1,1) = q(1,k,i,1)
-c 
+c
       contra       = q(1,k,i,2)*sj(1,k,i,1)
-     .              +q(1,k,i,3)*sj(1,k,i,2) 
+     .              +q(1,k,i,3)*sj(1,k,i,2)
      .              +q(1,k,i,4)*sj(1,k,i,3)+sj(1,k,i,5)
 c
       qj0(k,i,2,1) = q(1,k,i,2) - contra*sj(1,k,i,1)
@@ -169,7 +169,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qj0(k,i,1,2) = z1*q(1,k,i,1) + z2*q(j2,k,i,1) + z3*qj0(k,i,1,1)
@@ -201,20 +201,20 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c 
+c
 c******************************************************************************
 c      j=jdim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.4) then
-c 
+c
       do 600 i=ista,iend1
 c
       do 600 k=ksta,kend1
       pb           = q(jdim1,k,i,5)
       qj0(k,i,1,3) = q(jdim1,k,i,1)
-c 
+c
       contra       = q(jdim1,k,i,2)*sj(jdim,k,i,1)
-     .              +q(jdim1,k,i,3)*sj(jdim,k,i,2) 
+     .              +q(jdim1,k,i,3)*sj(jdim,k,i,2)
      .              +q(jdim1,k,i,4)*sj(jdim,k,i,3)+sj(jdim,k,i,5)
 c
       qj0(k,i,2,3) = q(jdim1,k,i,2) - contra*sj(jdim,k,i,1)
@@ -308,7 +308,7 @@ c
       if (j2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qj0(k,i,1,4) = z1*q(jdim1,k,i,1)+z2*q(j2,k,i,1)+z3*qj0(k,i,1,3)
@@ -340,7 +340,7 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c 
+c
 c******************************************************************************
 c      k=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
@@ -351,9 +351,9 @@ c
       do 900 j=jsta,jend1
       pb           = q(j,1,i,5)
       qk0(j,i,1,1) = q(j,1,i,1)
-c 
+c
       contra       = q(j,1,i,2)*sk(j,1,i,1)
-     .              +q(j,1,i,3)*sk(j,1,i,2) 
+     .              +q(j,1,i,3)*sk(j,1,i,2)
      .              +q(j,1,i,4)*sk(j,1,i,3)+sk(j,1,i,5)
 c
       qk0(j,i,2,1) = q(j,1,i,2) - contra*sk(j,1,i,1)
@@ -437,7 +437,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qk0(j,i,1,2) = z1*q(j,1,i,1) + z2*q(j,k2,i,1) + z3*qk0(j,i,1,1)
@@ -469,20 +469,20 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c 
+c
 c******************************************************************************
 c      k=kdim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.6) then
-c 
+c
       do 1200 i=ista,iend1
 c
       do 1200 j=jsta,jend1
       pb           = q(j,kdim1,i,5)
       qk0(j,i,1,3) = q(j,kdim1,i,1)
-c 
+c
       contra       = q(j,kdim1,i,2)*sk(j,kdim,i,1)
-     .              +q(j,kdim1,i,3)*sk(j,kdim,i,2) 
+     .              +q(j,kdim1,i,3)*sk(j,kdim,i,2)
      .              +q(j,kdim1,i,4)*sk(j,kdim,i,3)+sk(j,kdim,i,5)
 c
       qk0(j,i,2,3) = q(j,kdim1,i,2) - contra*sk(j,kdim,i,1)
@@ -576,7 +576,7 @@ c
       if (k2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qk0(j,i,1,4) = z1*q(j,kdim1,i,1)+z2*q(j,k2,i,1)+z3*qk0(j,i,1,3)
@@ -608,20 +608,20 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c 
+c
 c******************************************************************************
 c      i=1 boundary             inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.1) then
-c 
+c
       do 1500 k=ksta,kend1
 c
       do 1500 j=jsta,jend1
       pb           = q(j,k,1,5)
       qi0(j,k,1,1) = q(j,k,1,1)
-c 
+c
       contra       = q(j,k,1,2)*si(j,k,1,1)
-     .              +q(j,k,1,3)*si(j,k,1,2) 
+     .              +q(j,k,1,3)*si(j,k,1,2)
      .              +q(j,k,1,4)*si(j,k,1,3)+si(j,k,1,5)
 c
       qi0(j,k,2,1) = q(j,k,1,2) - contra*si(j,k,1,1)
@@ -705,7 +705,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1  =   2.0 +1.5*f23
-      z2  =       -0.5*f23   
+      z2  =       -0.5*f23
       z3  = -(2.0 +    f23)
 c
       qi0(j,k,1,2) = z1*q(j,k,1,1) + z2*q(j,k,i2,1) + z3*qi0(j,k,1,1)
@@ -736,12 +736,12 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
 c
       end if
-c 
+c
 c******************************************************************************
 c      i=idim boundary          inviscid surface                    bctype 1005
 c******************************************************************************
       if (nface.eq.2) then
-c 
+c
       do 1800 k=ksta,kend1
 c
       do 1800 j=jsta,jend1
@@ -749,7 +749,7 @@ c
       qi0(j,k,1,3) = q(j,k,idim1,1)
 c
       contra       = q(j,k,idim1,2)*si(j,k,idim,1)
-     .              +q(j,k,idim1,3)*si(j,k,idim,2) 
+     .              +q(j,k,idim1,3)*si(j,k,idim,2)
      .              +q(j,k,idim1,4)*si(j,k,idim,3)+si(j,k,idim,5)
 c
       qi0(j,k,2,3) = q(j,k,idim1,2) - contra*si(j,k,idim,1)
@@ -843,7 +843,7 @@ c
       if (i2.eq.1) f23 = 0.0
 c
       z1  =  -2.0 -1.5*f23
-      z2  =       +0.5*f23   
+      z2  =       +0.5*f23
       z3  = +(2.0 +    f23)
 c
       qi0(j,k,1,4) = z1*q(j,k,idim1,1)+z2*q(j,k,i2,1)+z3*qi0(j,k,1,3)

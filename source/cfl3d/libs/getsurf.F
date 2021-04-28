@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -30,12 +30,12 @@ c
 c***********************************************************************
 c     Purpose:  Set up a list (array) containing, for all deforming solid
 c     surface points, the x,y,z values at the surface point, as well as
-c     delta displacement at those points. the list structure is as 
+c     delta displacement at those points. the list structure is as
 c     folllows: each successive 9 entries in the list give,
 c     in order, the x, y, z, deltx, delty, deltz, xnm1, ynm1,
 c     znm1 values for the surface point (where xnm1, etc. are
-c     are the surface points at time n-1); these 9 data are repeated 
-c     for each solid surface point that undergoes deformation. Thus, 
+c     are the surface points at time n-1); these 9 data are repeated
+c     for each solid surface point that undergoes deformation. Thus,
 c     if there are a total of nsurf solid surface points that
 c     undergo deformation, the list will be of dimension 9*nsurf
 c***********************************************************************

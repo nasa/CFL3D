@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -79,7 +79,7 @@ c
       y8 = ymide(jcell+1,kcell,l)
       z8 = zmide(jcell+1,kcell,l)
 c
-c     compute normalized directed areas/unit normals of "from" cell 
+c     compute normalized directed areas/unit normals of "from" cell
 c     (corresponding values for "to" cell are stored in common/areas/)
 c
       call direct(x5,x6,x7,x8,y5,y6,y7,y8,z5,z6,z7,z8,
@@ -90,23 +90,23 @@ c
 c
 c     project current "from" cell node points onto plane defined by "to" cell
 c
-c     check inner product of unit normals for compatable orientation of "to" 
-c     and "from" cells before projection.  If not compatable, exit to try 
-c     a nearby "from" cell 
+c     check inner product of unit normals for compatable orientation of "to"
+c     and "from" cells before projection.  If not compatable, exit to try
+c     a nearby "from" cell
 c
       tol = .1
       prod = ap(1)*a(1) + ap(2)*a(2) + ap(3)*a(3)
 c
       if(abs(real(prod)) .gt. real(tol))then
         if(ic0.eq.0)then
-          call project(xc,yc,zc,x1,y1,z1,ap(1),ap(2),ap(3),x1,y1,z1)      
-          call project(xc,yc,zc,x2,y2,z2,ap(1),ap(2),ap(3),x2,y2,z2)      
-          call project(xc,yc,zc,x3,y3,z3,ap(1),ap(2),ap(3),x3,y3,z3)      
-          call project(xc,yc,zc,x4,y4,z4,ap(1),ap(2),ap(3),x4,y4,z4)      
-          call project(xc,yc,zc,x5,y5,z5,ap(1),ap(2),ap(3),x5,y5,z5)      
-          call project(xc,yc,zc,x6,y6,z6,ap(1),ap(2),ap(3),x6,y6,z6)      
-          call project(xc,yc,zc,x7,y7,z7,ap(1),ap(2),ap(3),x7,y7,z7)      
-          call project(xc,yc,zc,x8,y8,z8,ap(1),ap(2),ap(3),x8,y8,z8)      
+          call project(xc,yc,zc,x1,y1,z1,ap(1),ap(2),ap(3),x1,y1,z1)
+          call project(xc,yc,zc,x2,y2,z2,ap(1),ap(2),ap(3),x2,y2,z2)
+          call project(xc,yc,zc,x3,y3,z3,ap(1),ap(2),ap(3),x3,y3,z3)
+          call project(xc,yc,zc,x4,y4,z4,ap(1),ap(2),ap(3),x4,y4,z4)
+          call project(xc,yc,zc,x5,y5,z5,ap(1),ap(2),ap(3),x5,y5,z5)
+          call project(xc,yc,zc,x6,y6,z6,ap(1),ap(2),ap(3),x6,y6,z6)
+          call project(xc,yc,zc,x7,y7,z7,ap(1),ap(2),ap(3),x7,y7,z7)
+          call project(xc,yc,zc,x8,y8,z8,ap(1),ap(2),ap(3),x8,y8,z8)
         end if
       else
 c
@@ -117,14 +117,14 @@ c
         eta = eta + 1.
         return
       end if
-c  
+c
 c     use best coodinates to for inversion in "to" cell... toss out
-c     equation for which directed area ap(i) is maximum.  
+c     equation for which directed area ap(i) is maximum.
 c     special cases:
 c      a) two values of ap(i) are equal, and greater than the third.  In this
 c         case, the equation corresponding to the first max is thrown out.
 c      b) all three values of ap(i) are equal.  In this case, the x-equation
-c         is tossed out, and inversion performed using y-z coordinates.   
+c         is tossed out, and inversion performed using y-z coordinates.
 c
       itoss=imaxa
 c

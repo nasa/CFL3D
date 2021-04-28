@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,9 +28,9 @@ c
 c***********************************************************************
 c
 c     establishes zone-to-zone communication file for cfl3d multi-block
-c     applications with the generalized patch interface option 
+c     applications with the generalized patch interface option
 c
-c     If you find a coding error or have suggestions for improved 
+c     If you find a coding error or have suggestions for improved
 c     implementation, contact Bob Biedron, 757-864-2156
 c                                          r.t.biedron@larc.nasa.gov
 c
@@ -42,7 +42,7 @@ c            "grid.bin"    name specified by user in main input file
 c                          input grids in CFL3D format
 c                          x(jdim,kdim,ldim),y,z (binary)
 c
-c             unit 5       input file which contains setup information 
+c             unit 5       input file which contains setup information
 c                          (ascii) read from standard input
 c
 c  output files:
@@ -67,13 +67,13 @@ c                              points (may get huge file)
 c                          itrace < 0 recomended unless error in search is
 c                          suspected. itrace option slows down search.
 c
-c             unit 9       contains any points for which interpolation 
+c             unit 9       contains any points for which interpolation
 c                          coefficints were found outside the legal range
 c
 c             unit 10+n    plot3d diagnostic file (binary)
 c                          output if iifit < 0 on input file (unit 5)
 c                                             OR
-c                          diagnostic routine detects a potentially fatal 
+c                          diagnostic routine detects a potentially fatal
 c                          error in the calculated interpolation coefficients
 c                          see subroutine DIAGNOS for description of output
 c
@@ -217,7 +217,7 @@ c
 c
       intmax0 = nint0*(ncgmax+1)
 c
-      read(iunit5,*) 
+      read(iunit5,*)
       do n=1,nint0
          read(iunit5,*)int,ifit,limit,itmax,mcxie,mceta,ic0,iorph
       end do

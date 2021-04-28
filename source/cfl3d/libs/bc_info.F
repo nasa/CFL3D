@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -224,7 +224,7 @@ c       ngnew is the block number of the block periodic with block nbl
            nbl_chk   = isav_prd(lcntp,1)
            nface_chk = isav_prd(lcntp,2)
            nseg_chk  = isav_prd(lcntp,11)
-           if (nbl.eq.nbl_chk .and. nface.eq.nface_chk 
+           if (nbl.eq.nbl_chk .and. nface.eq.nface_chk
      .        .and. nseg.eq.nseg_chk) then
               if (real(period_miss(lcntp)).gt.real(epsrot)) then
                  nou(1) = min(nou(1)+1,ibufdim)
@@ -349,7 +349,7 @@ c
      .  call out1011(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .               nou,bou,nbuf,ibufdim)
 c
-      if (ibcinfo(nbl,nseg,1,2).eq.1012) 
+      if (ibcinfo(nbl,nseg,1,2).eq.1012)
      .  call out1012(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,2,
      .               nou,bou,nbuf,ibufdim)
 c
@@ -693,7 +693,7 @@ c
       ista = jbcinfo(nbl,nseg,2,2)
       iend = jbcinfo(nbl,nseg,3,2)
       jsta = jdim
-      jend = jdim 
+      jend = jdim
       ksta = jbcinfo(nbl,nseg,4,2)
       kend = jbcinfo(nbl,nseg,5,2)
       ldata= lwdat(nbl,nseg,4)
@@ -1494,7 +1494,7 @@ c*************************
 c     1-1 block boundaries
 c*************************
 c
-      if (abs(nbli).gt.0) then 
+      if (abs(nbli).gt.0) then
 c
 c     loop over all 1-1 interfaces
 c
@@ -2020,7 +2020,7 @@ c
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1001)ista,iend,ksta,kend
       end if
-c 
+c
       if (nface.eq.4) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1002)ista,iend,ksta,kend
@@ -2058,7 +2058,7 @@ c
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  1006 format(' ','  i=idim  1-pt extrapolation             type 1002',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
-      return 
+      return
       end
       subroutine out1003(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,myid)
@@ -2430,7 +2430,7 @@ c
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1001)ista,iend,ksta,kend
       end if
-c 
+c
       if (nface.eq.4) then
       nou(1) = min(nou(1)+1,ibufdim)
       write(bou(nou(1),1),1002)ista,iend,ksta,kend
@@ -2469,7 +2469,7 @@ c
  1006 format(' ','  i=idim  singular axis - extrapolation  type 1013',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
-      return 
+      return
       end
       subroutine out2002(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -2704,7 +2704,7 @@ c
  1008 format(11x,'P/Pinf set from file:')
  1009 format('           ',a60)
 c
-      return 
+      return
       end
       subroutine out2003(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -3370,7 +3370,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3001)
          end if
       end if
-c 
+c
       if (nface.eq.4) then
 c
 c        check that the required auxiliary data has been set
@@ -3494,7 +3494,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3001)
          end if
       end if
-c 
+c
       if (nface.eq.5) then
 c
 c        check that the required auxiliary data has been set
@@ -3618,7 +3618,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3002)
          end if
       end if
-c 
+c
       if (nface.eq.6) then
 c
 c        check that the required auxiliary data has been set
@@ -3742,7 +3742,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3002)
          end if
       end if
-c 
+c
       if (nface.eq.1) then
 c
 c        check that the required auxiliary data has been set
@@ -3866,7 +3866,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3003)
          end if
       end if
-c 
+c
       if (nface.eq.2) then
 c
 c        check that the required auxiliary data has been set
@@ -4106,7 +4106,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1001)ista,iend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1007) nblp 
+            write(bou(nou(1),1),1007) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4210,7 +4210,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1002)ista,iend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1008) nblp 
+            write(bou(nou(1),1),1008) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4314,7 +4314,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1003)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1009) nblp 
+            write(bou(nou(1),1),1009) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4418,7 +4418,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1004)ista,iend,jsta,jend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) nblp 
+            write(bou(nou(1),1),1010) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4522,7 +4522,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1005)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1011) nblp 
+            write(bou(nou(1),1),1011) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4577,7 +4577,7 @@ c   perform check on dthtx,y,z inputs:
 c   perform check on periodic block:
          if (jdim .ne. jdimp .or. kdim .ne. kdimp) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),'('' jdim,kdim,jdimp,kdimp='',4i5)') 
+            write(bou(nou(1),1),'('' jdim,kdim,jdimp,kdimp='',4i5)')
      .      jdim,kdim,jdimp,kdimp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'('' Block you are periodic with'',
@@ -4626,7 +4626,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1006)jsta,jend,ksta,kend
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1012) nblp 
+            write(bou(nou(1),1),1012) nblp
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1013) real(dthtx)
             nou(1) = min(nou(1)+1,ibufdim)
@@ -4778,7 +4778,7 @@ c
       else
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),*)' stopping...bcdata(4) = ',
-     .   bcdata(1,1,1,4),' should be +1, +2, or +3' 
+     .   bcdata(1,1,1,4),' should be +1, +2, or +3'
          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -4805,7 +4805,7 @@ c        check that the required auxiliary data has been set
      . ' incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
-c 
+c
          if (lijk .eq. 1 .or. lijk .eq. 3) then
 c           lijk ok
          else
@@ -5240,7 +5240,7 @@ c           lijk ok
          end if
 c
          if (filname.eq.'null') then
-            if (real(bcdata(1,1,1,1)) .le. 0) then 
+            if (real(bcdata(1,1,1,1)) .le. 0) then
                pratio = bcdata(1,1,1,2)
                nou(1) = min(nou(1)+1,ibufdim)
                write(bou(nou(1),1),1006)jsta,jend,ksta,kend
@@ -5341,7 +5341,7 @@ c
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
  4007 format(11x,'continued from block',i5)
 c
-      return 
+      return
       end
       subroutine out2007(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -5408,7 +5408,7 @@ c        check that the required auxiliary data has been set
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
          end if
-c 
+c
          if (filname.eq.'null') then
             rho1 = bcdata(1,1,1,1)
             u1   = bcdata(1,1,1,2)
@@ -5447,7 +5447,7 @@ c
          end if
 c
       end if
-c 
+c
       if (nface.eq.4) then
 c
 c        check to see if turbulence data is input (itrflg1/2 = 1) or
@@ -5888,7 +5888,7 @@ c
  2007 format(11x,'primative variables set from file:')
  2008 format('           ',a60)
 c
-      return 
+      return
       end
       subroutine out2008(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -5949,7 +5949,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),*)'  variable data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
-c 
+c
          if (filname.eq.'null') then
             val1  = bcdata(1,1,1,1)
             u1    = bcdata(1,1,1,2)
@@ -6679,7 +6679,7 @@ c
  4006 format(' ','  i=idim  set rho,u,v,w+rndm, extrap p   type 2038',
      .       '  j=',i5,',',i5,'  k=',i5,',',i5)
 c
-      return 
+      return
       end
       subroutine out2009(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -7838,7 +7838,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3001)
          end if
       end if
-c 
+c
       if (nface.eq.4) then
 c
 c        check that the required auxiliary data has been set
@@ -7942,7 +7942,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3001)
          end if
       end if
-c 
+c
       if (nface.eq.5) then
 c
 c        check that the required auxiliary data has been set
@@ -8046,7 +8046,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3002)
          end if
       end if
-c 
+c
       if (nface.eq.6) then
 c
 c        check that the required auxiliary data has been set
@@ -8150,7 +8150,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3002)
          end if
       end if
-c 
+c
       if (nface.eq.1) then
 c
 c        check that the required auxiliary data has been set
@@ -8254,7 +8254,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),3003)
          end if
       end if
-c 
+c
       if (nface.eq.2) then
 c
 c        check that the required auxiliary data has been set
@@ -8458,7 +8458,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),*)'  normal vectors cannot be zero'
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
-c 
+c
          if (filname.eq.'null') then
             vmag       = bcdata(1,1,1,1)
             rfreq      = bcdata(1,1,1,2)
@@ -8999,7 +8999,7 @@ c
  1014 format(11x,'turb1 (nondim) = ',e12.4)
  1015 format(11x,'turb2 (nondim) = ',e12.4)
 c
-      return 
+      return
       end
       subroutine out2102(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim,mdim,ndim,bcdata,
@@ -9061,7 +9061,7 @@ c        check that the required auxiliary data has been set
             write(bou(nou(1),1),*)'  pressure data incorrectly set '
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
-c 
+c
          if (filname.eq.'null') then
             pratio = bcdata(1,1,1,1)
             deltap = bcdata(1,1,1,2)
@@ -9086,7 +9086,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(deltap)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) 
+            write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
             if (iflag .eq. 1) then
               phioff = bcdata(1,1,1,5)
@@ -9107,7 +9107,7 @@ c
          end if
 c
       end if
-c 
+c
       if (nface.eq.4) then
 c
 c        check that the required auxiliary data has been set
@@ -9441,7 +9441,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),1009) real(deltap)
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),1010) 
+            write(bou(nou(1),1),1010)
      .            real(twopi)*real(rfreqp)/real(lref)
             if (iflag .eq. 1) then
               phioff = bcdata(1,1,1,5)
@@ -9511,7 +9511,7 @@ c
  4005 format(' ','  i=   1  time-varying pressure          type 2103')
  4006 format(' ','  i=idim  time-varying pressure          type 2103')
 c
-      return 
+      return
       end
       subroutine out9999(jdim,kdim,idim,ista,iend,jsta,jend,ksta,kend,
      .                  nface,nou,bou,nbuf,ibufdim)

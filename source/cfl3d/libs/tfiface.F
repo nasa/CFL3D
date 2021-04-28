@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -33,7 +33,7 @@ c
 c     this subroutine expects one and only pair of (i1,i2), (j1,j2), or
 c     (k1,k2) to contain identical indicies; the identical indicies
 c     determine which face the TFI is carried out on.
-c*********************************************************************** 
+c***********************************************************************
 c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
@@ -47,7 +47,7 @@ c
       dimension x2(jdim,kdim,idim),y2(jdim,kdim,idim),z2(jdim,kdim,idim)
       dimension arci(jdim,kdim,idim),arcj(jdim,kdim,idim),
      .          arck(jdim,kdim,idim)
-c 
+c
       dimension phi(2),psi(2),omg(2)
       common /zero/ iexp
 c
@@ -70,12 +70,12 @@ c
             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
          end if
 c
-c        eta projector  -  1st step 
+c        eta projector  -  1st step
 c
          do j=j1,j2
             do k=k1,k2
                denom = (arcj(j2,k,i) - arcj(j1,k,i))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  eta = 0.
                else
                  eta = (arcj(j,k,i)  - arcj(j1,k,i))
@@ -83,21 +83,21 @@ c
                end if
                psi(1) = eta
                psi(2) = 1.-eta
-               x1(j,k,i) = psi(2)*x(j1,k,i) 
+               x1(j,k,i) = psi(2)*x(j1,k,i)
      .                   + psi(1)*x(j2,k,i)
-               y1(j,k,i) = psi(2)*y(j1,k,i) 
+               y1(j,k,i) = psi(2)*y(j1,k,i)
      .                   + psi(1)*y(j2,k,i)
-               z1(j,k,i) = psi(2)*z(j1,k,i) 
+               z1(j,k,i) = psi(2)*z(j1,k,i)
      .                   + psi(1)*z(j2,k,i)
             end do
          end do
-c 
+c
 c        zeta projector  -  2nd step
 c
          do k=k1,k2
             do j=j1,j2
                denom = (arck(j,k2,i) - arck(j,k1,i))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  zeta = 0.
                else
                  zeta = (arck(j,k,i)  - arck(j,k1,i))
@@ -144,7 +144,7 @@ c
          do i=i1,i2
             do k=k1,k2
                denom = (arci(j,k,i2) - arci(j,k,i1))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  xi = 0.
                else
                  xi = (arci(j,k,i)  - arci(j,k,i1))
@@ -166,7 +166,7 @@ c
          do k=k1,k2
             do i=i1,i2
                denom = (arck(j,k2,i) - arck(j,k1,i))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  zeta = 0.
                else
                  zeta = (arck(j,k,i)  - arck(j,k1,i))
@@ -213,7 +213,7 @@ c
          do i=i1,i2
             do j=j1,j2
                denom = (arci(j,k,i2) - arci(j,k,i1))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  xi = 0.
                else
                  xi = (arci(j,k,i)  - arci(j,k,i1))
@@ -235,7 +235,7 @@ c
          do j=j1,j2
             do i=i1,i2
                denom = (arcj(j2,k,i) - arcj(j1,k,i))
-               if(real(denom).lt.real(tol)) then 
+               if(real(denom).lt.real(tol)) then
                  eta = 0.
                else
                  eta = (arcj(j,k,i)  - arcj(j1,k,i))
@@ -265,4 +265,4 @@ c
       end if
 c
       return
-      end 
+      end

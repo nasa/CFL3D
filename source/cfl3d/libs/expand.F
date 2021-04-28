@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -33,8 +33,8 @@ c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
-c    
-c      expand "from"  grid(s) at boundaries to insure that the 
+c
+c      expand "from"  grid(s) at boundaries to insure that the
 c      "to" grid is completely covered
 c
       dimension x1(mdim,ndim),y1(mdim,ndim),z1(mdim,ndim)
@@ -92,7 +92,7 @@ c      dz = .5*(z1(j,kmax1-2)-4.*z1(j,kmax1-1)+3.*z1(j,kmax1))
       yte(j+1,kmax1+2,l) = y1(j,kmax1)+factk2*dy/ds
       zte(j+1,kmax1+2,l) = z1(j,kmax1)+factk2*dz/ds
   220 continue
-c 
+c
       do 250 k=2,kmax1+1
       do 250 j=1,jmax1
       xte(j+1,k,l) = x1(j,k-1)

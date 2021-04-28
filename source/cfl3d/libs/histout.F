@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -78,7 +78,7 @@ c
      . '', ReUe='',e12.4)') real(xmach),real(alphw),real(reue)
       if (real(dt) .gt. 0) then
         write(12,'(''# Final res='',e12.4,
-     .   ''   Final time (for unsteady)='',f10.4)') 
+     .   ''   Final time (for unsteady)='',f10.4)')
      .    real(rms(ntt)),real(time)
       else
         write(12,'(''# Final res='',e12.4)') real(rms(ntt))
@@ -88,12 +88,12 @@ c     mean-flow convergence history file options:
 c     ihstry = 0....standard: a) ialph = 0 residual,cl,cd,cy,cmy
 c                             b) ialph = 1 residual,cl,cd,cz,cmz
 c            = 1....control surface: residual,mass flow,pressure force,
-c                   viscous force,thrust (momentum) force 
+c                   viscous force,thrust (momentum) force
 c                   (forces are sums in x+y+z directions)
 c            = 2....enhanced standard: ALL force/moment coefficients
 c                   are output (thus there is no need to distinguish
 c                   between ialpha=0 and ialpha=1)
-c 
+c
       if (ihstry.eq.0) then
          if (ialph .eq.0) then
             write(12,'(''# Final cl,cd,cy,cmy='',4e12.4)')
@@ -138,16 +138,16 @@ c           write(12,'(3x,i6,5e14.5)') n,log10(real(rms(n))),
                   filename = clcdp(1:len_trim(clcdp)) //
      $                 num(1:len_trim(num)) // ".dat"
                   open(unit=151,file=filename,form="formatted",
-     .                 status="unknown") 
+     .                 status="unknown")
                   write(151,'(''variables=it,Cl,Cd,Clt,Cdt,Cdp,Cdv'')')
-                  do n=1,ntt       
+                  do n=1,ntt
                      if (real(clcd(1,nn,n)) < 1e20) then
-                        write(151,'(3x,i6,6e15.7)') n, 
+                        write(151,'(3x,i6,6e15.7)') n,
      .                       real(clcd(1,nn,n)), real(clcd(2,nn,n)),
      .                       real(clw(n)), real(cdw(n)),
-     .                       real(cdpw(n)), real(cdvw(n)) 
+     .                       real(cdpw(n)), real(cdvw(n))
                      end if
-                  enddo            
+                  enddo
                   close(151)
                end do
             end if
@@ -198,7 +198,7 @@ c
      .    '', ReUe='',e12.4)') real(xmach),real(alphw),real(reue)
 c
          do l=1,nummem
-           write(13,'(''# Final turres'',i2,''='',e12.4)') 
+           write(13,'(''# Final turres'',i2,''='',e12.4)')
      +       l,real(rmstr(ntt,l))
          enddo
          if (real(dt) .gt. 0) then
@@ -269,9 +269,9 @@ c
          end if
  3200    continue
 c
-      end if 
+      end if
 c
-c     output history of aeroelastic data 
+c     output history of aeroelastic data
 c
       if (iunst.gt.1 .and. naesrf.gt.0) then
          write(34,2) (real(title(i)),i=1,20)

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -77,7 +77,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose:  Advance the solution in time using multigrid acceleration
-c     At each level in the multigrid procedure, all the blocks are 
+c     At each level in the multigrid procedure, all the blocks are
 c     advanced before moving to the next level.
 c***********************************************************************
 c
@@ -302,13 +302,13 @@ c
       common /trim/ dmtrmn,dmtrmnm,dlcln,dlclnm,trtol,cmy,cnw,alf0,
      .              alf1,dzdt,thtd0,thtd1,zrg0,zrg1,dtrmsmx,dtrmsmn,
      .              dalfmx,ddtmx,ddtrm0,ddtrm1,itrmt,itrminc,fp(4,4),
-     .              tp(4,4),zlfct,epstr,relax,ittrst 
+     .              tp(4,4),zlfct,epstr,relax,ittrst
       common /rigidbody/ irigb,irbtrim
       common /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze,
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
 c
 c      time step cycle:
 c
@@ -374,13 +374,13 @@ c
 c      nit      - number of solution updates to do at each level
 c                 of the multigrid cycle
 c
-c      mtt      - number of additional solution updates to do 
+c      mtt      - number of additional solution updates to do
 c                 on upward leg of the multigrid cycle
 c
 c      ioutsub  - flag to indicate at which point in the subiteration
 c                 loop to monitor global residual and force/moment data
 c                 (this is the residual and force/moment data that gets
-c                 written out to the main output file - unit 11 - and the 
+c                 written out to the main output file - unit 11 - and the
 c                 main convergence history file - unit 12. ioutsub is only
 c                 applicable to time accurate cases with subiteration)
 c                 =    1 : monitor at start of subiteration loop
@@ -412,7 +412,7 @@ c
 c      check storage for nsm and mit arrays
 c
       if (levt-levb+1.gt.5) then
-         write(11,1000) 
+         write(11,1000)
          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -451,8 +451,8 @@ c
  5021 continue
 c
 #if defined DIST_MPI
-c     all processors need to know the host's value of nblstat to 
-c     get same order of ramped cfl/dt output as sequential code 
+c     all processors need to know the host's value of nblstat to
+c     get same order of ramped cfl/dt output as sequential code
 c
       do 5025 nbl=1,nblock
       if (levt.ne.levelg(nbl)) go to 5025
@@ -479,7 +479,7 @@ c
       ioffset = maxbl
       itag_qc = 1
       itag_q1 = itag_qc + ioffset
-      itag_qv = itag_q1 + ioffset 
+      itag_qv = itag_q1 + ioffset
       itag_qt = itag_qv + ioffset
       itag_qr = itag_qt + ioffset
 c
@@ -576,7 +576,7 @@ c
      .                   ibufdim,igridg,iemg)
 #if defined DIST_MPI
 c
-c           rebroadcast ninter, since dynptch can change it (only needed 
+c           rebroadcast ninter, since dynptch can change it (only needed
 c           after first call to dynptch)
 c
             if (ncall .eq. 1) then
@@ -672,7 +672,7 @@ c
          end if
          if (cprec.ne.0.) then
             write(11,1055) cprec,uref,avn
-         end if 
+         end if
       end if
 c
 c     isklton=1/0 for verbose/minumal output during first timestep/multigrid
@@ -680,7 +680,7 @@ c     cycle
 c
       isklton = 1
 c
-c     ioutsub = 1/ncyc for global convergence history output at beginning/end 
+c     ioutsub = 1/ncyc for global convergence history output at beginning/end
 c     of subiteration loop
 c
       ioutsub = ncyc
@@ -906,7 +906,7 @@ c
      .                ibufdim,igridg,iemg)
 #if defined DIST_MPI
 c
-c        rebroadcast ninter, since dynptch can change it (only needed 
+c        rebroadcast ninter, since dynptch can change it (only needed
 c        after first call to dynptch)
 c
          if (ncall .eq. 1) then
@@ -975,7 +975,7 @@ c            higher levels to zero
                ncyc1(is) = 0
              end do
              write(11,*)
-             write(11,'(a,i5)') 
+             write(11,'(a,i5)')
      .       'Stopping: user-invoked stop file detected at cycle ',icyc
              write(11,*)
           end if
@@ -1052,7 +1052,7 @@ c
          ntt0     = ntt
          if ((real(dt).lt.0. .and. nt.eq.1) .or.
      .       (real(dt).ge.0. .and. icyc.eq.ioutsub)) then
-            ntt         = ntt + 1 
+            ntt         = ntt + 1
             rms(ntt)    = 0.
             clw(ntt)    = 0.
             cdw(ntt)    = 0.
@@ -1070,7 +1070,7 @@ c
             cdpw(ntt)   = 0.
             cdvw(ntt)   = 0.
             fmdotw(ntt) = 0.
-            cfttotw(ntt)= 0. 
+            cfttotw(ntt)= 0.
             cftmomw(ntt)= 0.
             cftpw(ntt)  = 0.
             cftvw(ntt)  = 0.
@@ -1373,7 +1373,7 @@ c
 #endif
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
         if (level .ge. lglobal .and. ntime .eq. nit) then
-          if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. and. 
+          if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. and.
      +        icyc .eq. ncyc)) then
             xnumavg=xnumavg+1.
             xnumavg2=xnumavg2+1.
@@ -1397,8 +1397,8 @@ c        local time step: ramp initial CFL number to a value fmax times larger.
 c        The time step distribution is recalculated for each cycle.
 c
          dttol = 1.e-6
-         if (iflagts.gt.0 .and. real(dt).lt.0 .and. icyc.gt.1) then 
-           if (nt.eq.1 .and. abs(real(dt)) .lt. 
+         if (iflagts.gt.0 .and. real(dt).lt.0 .and. icyc.gt.1) then
+           if (nt.eq.1 .and. abs(real(dt)) .lt.
      .         real(fmax)*abs(real(dt0))-real(dttol)) then
 c             ramp CFL on first block on top level
               if (level.eq.levt .and. nbl.eq.nblstat) then
@@ -1416,7 +1416,7 @@ c        The CFL number distribution is recalculated for each time step.
 c
          dttol = 1.e-6
          if (iflagts.gt.0 .and. real(dt).gt.0 .and. nt.gt.1) then
-            if (icyc.eq.1 .and. abs(real(dt)) .lt. 
+            if (icyc.eq.1 .and. abs(real(dt)) .lt.
      .         real(fmax)*abs(real(dt0))-real(dttol)) then
 c              ramp time step on first block on top level
                if (level.eq.levt .and. nbl.eq.nblstat) then
@@ -1440,7 +1440,7 @@ c        of the subiterations (i.e. the solution at the last
 c        time step) and dqc0 is the change in solution between
 c        the last time step and the next-to-last time step (needed
 c        for temporally second-order accurate solutions).
-c        also, if the grid is undergoing rotation, rotate initial 
+c        also, if the grid is undergoing rotation, rotate initial
 c        solution (i.e. the solution from the last time step) to
 c        correspond to the new grid position. this helps convergence
 c        of the subiterations, particularly if large timesteps are used.
@@ -1505,11 +1505,11 @@ c
          end if
 c
 c        compute residual = r(q)
-c          residual is comprised of: 
+c          residual is comprised of:
 c          1) flux contributions
-c          2) subiteration terms and 2nd order time terms 
+c          2) subiteration terms and 2nd order time terms
 c             (qc0 and dqc0; time accurate only)
-c          3) correction from finer level 
+c          3) correction from finer level
 c             (coarser levels only)
 c
 c        flux contributions
@@ -1560,7 +1560,7 @@ c
          end if
       else
 c
-c        insure ramped time step/cfl number info gets written 
+c        insure ramped time step/cfl number info gets written
 c        to the output file in the correct order
 c
          if (iflagts.gt.0 .and. abs(real(fmax)).gt.0. .and.
@@ -1708,7 +1708,7 @@ c
      .                  nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,
      .                  w(lvolk0),w(lxib),w(ltk0),w(lcmuv),
      .                  iadvance,nummem,w(lux))
-c 
+c
 c           update the overlapped values if chimera scheme is used
 c
             if (iovrlp(nbl).eq.1) then
@@ -1767,7 +1767,7 @@ c
 c              recieve the data on non-local nodes
 c
                nd_srce = mblk2nd(nbl)
-c              receive q data 
+c              receive q data
                do ll=1,5
                   mytag  = mytag_qb(ll) + nbl
                   call MPI_Irecv (qb(lig(nbl),ll,1), nvalqb,
@@ -1786,7 +1786,7 @@ c                 receive vist3d data
                   nreq = nreq + 1
                end if
                if (ivmx.ge.4) then
-c                 receive turb. data            
+c                 receive turb. data
                     do ll=1,nummem
                        mytag = mytag_qb(6+ll) + nbl
                        call MPI_Irecv (qb(lig(nbl),ll,3), nvalqb,
@@ -2057,12 +2057,12 @@ c
       kode   = 2
       mode   = 1
       level  = level - 1
-      ntime  = 0     
+      ntime  = 0
       nit    = mit(level-levb+1,iseq)
 c
       if (level.gt.levb) then
 c        not yet at bottom of cycle; continue downward leg
-         go to 9000 
+         go to 9000
       else
 c        at bottom of cycle; complete downward leg and set
 c        kxpand so that upward leg is done after last level
@@ -2184,7 +2184,7 @@ c
 c                 recieve the data on non-local nodes
 c
                   nd_srce = mblk2nd(nblf)
-c                 receive q data 
+c                 receive q data
                   do ll=1,5
                      mytag  = mytag_qb(ll) + nblf
                      call MPI_Irecv (qb(lig(nblf),ll,1), nvalqb,
@@ -2203,7 +2203,7 @@ c                    receive vist3d data
                      nreq = nreq + 1
                   end if
                   if (ivmx.ge.4) then
-c                    receive turb. data            
+c                    receive turb. data
                        do ll=1,nummem
                           mytag = mytag_qb(6+ll) + nblf
                           call MPI_Irecv (qb(lig(nblf),ll,3), nvalqb,
@@ -2520,28 +2520,28 @@ c   Open database
                    write(97) ngrid
 
                    if (ipertavg .eq. 1 .or. ipertavg .eq. 2)then
-                      write(11,2225) avgq2 
-                      write(11,2225) avgq2pert 
-                      rewind(95) 
-                      rewind(98) 
-                      write(95) ngrid 
-                      write(98) ngrid 
-                      write(95) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+                      write(11,2225) avgq2
+                      write(11,2225) avgq2pert
+                      rewind(95)
+                      rewind(98)
+                      write(95) ngrid
+                      write(98) ngrid
+                      write(95) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(96) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(96) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(97) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(97) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(98) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(98) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
+     $                     igrid=1,ngrid)
                    else
                       write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
      .                     jdimg(nblg(igrid)+mseq-iseq)-1,
@@ -2692,7 +2692,7 @@ c                 initialize eddy viscosity limit flag
                   if (nt.ge.ntstep) then
                      iwarneddy  = 0
                   else
-                     iwarneddy  = -1 
+                     iwarneddy  = -1
                   end if
                if (icgns .ne. 1) then
                   open(unit=2,file=restrt,form='unformatted',
@@ -2726,28 +2726,28 @@ c   Open database
                    write(97) ngrid
 
                    if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
-                      write(11,2225) avgq2 
-                      write(11,2225) avgq2pert 
-                      rewind(95) 
-                      rewind(98) 
-                      write(95) ngrid 
-                      write(98) ngrid 
-                      write(95) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+                      write(11,2225) avgq2
+                      write(11,2225) avgq2pert
+                      rewind(95)
+                      rewind(98)
+                      write(95) ngrid
+                      write(98) ngrid
+                      write(95) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(96) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(96) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(97) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(97) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
-                      write(98) (idimg(nblg(igrid)+mseq-iseq), 
-     .                     jdimg(nblg(igrid)+mseq-iseq), 
+     $                     igrid=1,ngrid)
+                      write(98) (idimg(nblg(igrid)+mseq-iseq),
+     .                     jdimg(nblg(igrid)+mseq-iseq),
      .                     kdimg(nblg(igrid)+mseq-iseq),
-     $                     igrid=1,ngrid) 
+     $                     igrid=1,ngrid)
                    else
                       write(96) (idimg(nblg(igrid)+mseq-iseq)-1,
      .                     jdimg(nblg(igrid)+mseq-iseq)-1,
@@ -2994,7 +2994,7 @@ c
       if (ipertavg .eq. 0) then
          if (real(dt).gt.0. .and. movabs.gt.0) then
             if ((movabs.gt.0 .and. (nt.eq.nt/movabs*movabs)) .or.
-     .           (iteravg.gt.0)) then 
+     .           (iteravg.gt.0)) then
                if (nt.eq.nt/movabs*movabs) then
                   lhdr   = 0
                   iwk1   = 1
@@ -3048,7 +3048,7 @@ c
       if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
          if ((real(dt).gt.0. .and. movabs.gt.0).or.
      $        (iteravg.gt.0)) then
-c     
+c
             if ((movabs.gt.0 .and. (nt.eq.nt/movabs*movabs)) .or.
      .           (iteravg.gt.0)) then
                lhdr   = 0
@@ -3069,8 +3069,8 @@ c
                do iii = 1,nwork
                   wk(iii) = 0.0
                end do
-c     
-               call qoutavg(iseq,lw,lw2,w,mgwk,wk,nwork, 
+c
+               call qoutavg(iseq,lw,lw2,w,mgwk,wk,nwork,
      .              nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
      .              ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
      .              nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
@@ -3099,17 +3099,17 @@ c
             end if
          end if
       end if
-c     
+c
       if (icoarsemovie .ne. 0) then
-c     
+c
          iflag_coarse = icoarsemovie
          mov_coarse = icoarsemovie
          iinc_coarse = inc_coarse(1)
          jinc_coarse = inc_coarse(2)
          kinc_coarse = inc_coarse(3)
-         
-         if (real(dt).gt.0. .and. iflag_coarse.gt.0) then                  
-            if (ntt.eq.ntt/mov_coarse*mov_coarse) then                      
+
+         if (real(dt).gt.0. .and. iflag_coarse.gt.0) then
+            if (ntt.eq.ntt/mov_coarse*mov_coarse) then
                lhdr   = 0
                iwk1   = 1
                iwk2   = iwk1  + 3*nblocks/lglobal
@@ -3128,7 +3128,7 @@ c
                do iii = 1,nwork
                   wk(iii) = 0.0
                end do
-               
+
                if (nt.eq.1) then
                   icallcrs=0
                   icall2d=0
@@ -3162,24 +3162,24 @@ c
                end do
             end if
          end if
-c     
+c
       end if
-c     
+c
       if (i2dmovie .ne. 0) then
 c
          iflag_2d = i2dmovie
-c     ! output snapshot every mov_2d time steps  
+c     ! output snapshot every mov_2d time steps
          mov_2d = i2dmovie
-         
+
          iinc_2d = inc_2d(1)
          jinc_2d = inc_2d(2)
          kinc_2d = inc_2d(3)
-         
-         if (real(dt).gt.0. .and. iflag_2d.gt.0) then                  
-            if (ntt.eq.ntt/mov_2d*mov_2d) then                        
+
+         if (real(dt).gt.0. .and. iflag_2d.gt.0) then
+            if (ntt.eq.ntt/mov_2d*mov_2d) then
                lhdr   = 0
                iwk1   = 1
-               iwk2   = iwk1  + 3*nblocks/lglobal                         
+               iwk2   = iwk1  + 3*nblocks/lglobal
                iwk3   = iwk2  + maxbl
                iwork1 = iwork - iwk3 + 1
                if (iwork1.le.0) then
@@ -3195,7 +3195,7 @@ c     ! output snapshot every mov_2d time steps
                do iii = 1,nwork
                   wk(iii) = 0.0
                end do
-               call qout_2d(iseq,lw,lw2,w,mgwk,wk,nwork,              
+               call qout_2d(iseq,lw,lw2,w,mgwk,wk,nwork,
      .              nplots,iovrlp,iibg,kkbg,jjbg,ibcg,lbg,
      .              ibpntsg,qb,lwdat,nbci0,nbcj0,nbck0,
      .              nbcidim,nbcjdim,nbckdim,jbcinfo,kbcinfo,
@@ -3215,7 +3215,7 @@ c     ! output snapshot every mov_2d time steps
      .              istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
      .              mxbcfil,iprnsurf,nt,
      .              mov_2d,iinc_2d,jinc_2d,kinc_2d,nummem)
-               
+
                do iii = 1,iwk3
                   iwk(iii) = 0
                end do

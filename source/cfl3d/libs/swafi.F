@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -26,7 +26,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Solve the block 5x5 tridiagonal equations for the 
+c     Purpose:  Solve the block 5x5 tridiagonal equations for the
 c     3-factor spatially-split algorithm in the I-direction.
 c     Modified for Weiss-Smith preconditioning by J.R. Edwards, NCSU
 c       cprec = 0 ---> original code used
@@ -197,12 +197,12 @@ cdir$ ivdep
             do 10011 izz=1,jdh
 c
 c           modifications for preconditioning
-c 
+c
             c2 = gamma*q(izz+jdh,kk,i,5)/q(izz+jdh,kk,i,1)
             c = sqrt(c2)
-            ekin = 0.5*(q(izz+jdh,kk,i,2)**2 + q(izz+jdh,kk,i,3)**2 
+            ekin = 0.5*(q(izz+jdh,kk,i,2)**2 + q(izz+jdh,kk,i,3)**2
      .                + q(izz+jdh,kk,i,4)**2)
-            ho = c2/gm1 + ekin 
+            ho = c2/gm1 + ekin
             vmag1 = 2.0*ekin
             vel2 = ccmax(vmag1,avn*uref**2)
             vel = sqrt(ccmin(c2,vel2))
@@ -243,9 +243,9 @@ c           modifications for preconditioning
 c
             c2 = gamma*q(izz,kk,i,5)/q(izz,kk,i,1)
             c = sqrt(c2)
-            ekin = 0.5*(q(izz,kk,i,2)**2 + q(izz,kk,i,3)**2 
+            ekin = 0.5*(q(izz,kk,i,2)**2 + q(izz,kk,i,3)**2
      .                + q(izz,kk,i,4)**2)
-            ho = c2/gm1 + ekin 
+            ho = c2/gm1 + ekin
             vmag1 = 2.0*ekin
             vel2 = ccmax(vmag1,avn*uref**2)
             vel = sqrt(ccmin(c2,vel2))
@@ -255,13 +255,13 @@ c
 c
             temp              = tfacp1*dtj(izz,kk,i)*  q(izz,kk,i,1)
             f(izz+js-1,iq1,1) = tfacp1*dtj(izz,kk,i)*res(izz,kk,i,1)
-     .                        + restmp  
+     .                        + restmp
             f(izz+js-1,iq1,5) = f(izz+js-1,iq1,1)*ekin
      .                         +temp*res(izz,kk,i,2)*q(izz,kk,i,2)
      .                         +temp*res(izz,kk,i,3)*q(izz,kk,i,3)
      .                         +temp*res(izz,kk,i,4)*q(izz,kk,i,4)
      .                  +tfacp1*gm1i*res(izz,kk,i,5)*dtj(izz,kk,i)
-     .                        + restmp*ho  
+     .                        + restmp*ho
             f(izz+js-1,iq1,2) = temp*res(izz,kk,i,2)
      .                                +q(izz,kk,i,2)*f(izz+js-1,iq1,1)
      .                        + restmp*q(izz,kk,i,2)

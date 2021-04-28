@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -35,12 +35,12 @@ c
 c***********************************************************************
 c
 c     The code CFL3D has evolved from the contributions of a number of
-c     researchers at NASA Langley, principally from the Computational 
+c     researchers at NASA Langley, principally from the Computational
 c     Fluids Lab, including AAMB, UAB, and ICASE. Points of contact for
-c     particular expertise in certain features of the code are listed 
+c     particular expertise in certain features of the code are listed
 c     below.
-c     
-c     
+c
+c
 c     POINTS OF CONTACT AND AREAS OF PARTICULAR EXPERTISE:
 c
 c     Kyle Anderson        NASA Langley AAMB            (757)864-2164
@@ -87,9 +87,9 @@ c          mesh deformation scheme
 c
 c***********************************************************************
 c
-c      Brief description of major code features/attributes : 
+c      Brief description of major code features/attributes :
 c
-c       (1) Finite volume discretization with q= (rho,u,v,w,p) at cell 
+c       (1) Finite volume discretization with q= (rho,u,v,w,p) at cell
 c           centers.
 c
 c       (2) Upwind-biased convective/pressure term differencing using
@@ -97,14 +97,14 @@ c           either flux-vector-splitting of Van Leer or flux-difference-
 c           splitting of Roe.
 c
 c       (3) Central diferencing of thin-layer Navier-Stokes terms with
-c           turbulence accounted for via zero-equation, one-equation or 
+c           turbulence accounted for via zero-equation, one-equation or
 c           two-equation models.
 c
 c       (4) Spatially-factored 3-factor implicit algorithm with either
 c           5x5 block inversion or diagonal inversions applicable to
 c           both steady and unsteady flows.
 c
-c       (5) Subiterations for reduction of linearization and 
+c       (5) Subiterations for reduction of linearization and
 c           factorization errors on the left hand side
 c
 c       (6) FAS multigrid acceleration for both steady and unsteady
@@ -112,11 +112,11 @@ c           flows.
 c
 c       (7) Local solution refinement via embedded meshes
 c
-c       (8) Domain decomposition using  C-0 continuous interfaces, 
+c       (8) Domain decomposition using  C-0 continuous interfaces,
 c           patched interfaces, and overlapped/embedded grids through
 c           the chimera scheme.
-c    
-c       (9) Boundary conditions can be set over subsets of block faces 
+c
+c       (9) Boundary conditions can be set over subsets of block faces
 c
 c      (10) Grid motion via translation or rotation; blocks may move in
 c           relative motion past one another (patched grids only)
@@ -159,7 +159,7 @@ c           Unit 22 must be available if using the (static) patched grid
 c           option (ninter < 0). Dynamic (i.e. vary with time) pathced
 c           interfaces are handled via the main input deck.
 c
-c           File names attached to the following unit numbers are not 
+c           File names attached to the following unit numbers are not
 c           set by the user, but are opened for output with hardwired
 c           names:
 c           23......cfl3d.subit_res
@@ -168,23 +168,23 @@ c           25......cfl3d.dynamic_patch
 c           27......cfl3d.alpha
 c           28-31...(opened in subroutine yplusout only if ifunc is
 c                   set > 0 in that subroutine)
-c           32......tempz3y2x1.inp (copy of input file, deleted at normal 
+c           32......tempz3y2x1.inp (copy of input file, deleted at normal
 c                   termination)
 c           33......aesurf.dat
 c           34......genforce.dat
 c           35......cfl3d.sd_res
 c           39......newsurf.p3d
 c           66......precfl3d.out
-c           101.....movie_coarse.g                     
-c           92......movie_coarse.q                      
-c           93......movie_2d.g                          
-c           94......movie_2d.q                          
-c           95......cfl3d_avg_ruvwp2_pert.p3d                
+c           101.....movie_coarse.g
+c           92......movie_coarse.q
+c           93......movie_2d.g
+c           94......movie_2d.q
+c           95......cfl3d_avg_ruvwp2_pert.p3d
 c           96......cfl3d_avgg.p3d
 c           97......cfl3d_avgq.p3d
-c           96......cfl3d_avgg_ruvwp.p3d                      
-c           97......cfl3d_avg_ruvwp.p3d                      
-c           98......cfl3d_avg_ruvwp2.p3d                     
+c           96......cfl3d_avgg_ruvwp.p3d
+c           97......cfl3d_avg_ruvwp.p3d
+c           98......cfl3d_avg_ruvwp2.p3d
 c           99......precfl3d.error / cfl3d.error
 c           102.....clcd.bin
 c           103.....subit.res
@@ -213,12 +213,12 @@ c        distance from a surface for use with 1 and 2 eq. turb.
 c        models), key off boundary condition type 2004/14/24/34/16 (viscous
 c        surface). At the current time, this is the only BC type in
 c        the standard suite of BC types that makes sense to include
-c        in findmin_new. However, in future, if other viscous surface 
+c        in findmin_new. However, in future, if other viscous surface
 c        BC's are added to the suite, then those BC types will also
 c        have to be included in findmin_new.
 c        NOTE: the old, slow method for finding the minimum distance
 c              has been eliminated from this version, and findmin_new
-c              has been extended to include the extra data needed for 
+c              has been extended to include the extra data needed for
 c              then Baldwin-Barth turb. model.
 c
 c     2) Subroutine metric (module lbcx) NO LONGER keys off various
@@ -228,27 +228,27 @@ c        may need to be adjusted in some cases (but to date has proven
 c        to be robust). "Trust but verify"
 c
 c     3) Storage space has been provided to store the acceleration terms
-c        for points on block boundaries. However, at this time, the 
-c        acceleration terms are set to zero in subroutines trans and 
+c        for points on block boundaries. However, at this time, the
+c        acceleration terms are set to zero in subroutines trans and
 c        rotate. For some high rotation rate problems, it may in be
-c        necessary to add the acceleration terms to the normal 
+c        necessary to add the acceleration terms to the normal
 c        pressure gradient at solid walls.
 c
-c     4) the subroutine getdhdr must be modified if any new bc's of the 
-c        2000 series are added (bc's that need user-specified data). 
+c     4) the subroutine getdhdr must be modified if any new bc's of the
+c        2000 series are added (bc's that need user-specified data).
 c        getdhdr sets up character variables that are used for headers
 c        in the output file for the 2000 series bc's
 c
-c     5) 10.**(-iexp) is machine zero; iexp is available in common 
+c     5) 10.**(-iexp) is machine zero; iexp is available in common
 c        block /zero/ and may be used for setting tolerences
 c
 c     6) Beware the expanding MY_MPI_REAL: this variable is used in
-c        MPI calls that pass real variables, but if double precision 
+c        MPI calls that pass real variables, but if double precision
 c        compilation is used, MY_MPI_REAL will expand to the longer
-c        MPI_DOUBLE_PRECISION. Thus, the MPI calls may appear to 
+c        MPI_DOUBLE_PRECISION. Thus, the MPI calls may appear to
 c        fit within 72 characters in the fortan statement as coded,
 c        but during compilation will expand to > 72 columns. The effect
-c        will typically be to hang the MPI process. 
+c        will typically be to hang the MPI process.
 c
 c     7) A dummy module, development.F is provided for testing code
 c        modifications/enhancements. This module is always compiled
@@ -257,22 +257,22 @@ c        subroutine. Subroutines placed in development.F ((including
 c        routines involving MPI), will supercede any other version of
 c        the routine in the code, with the exception of the driver
 c        routine (main.F).  NOTE: for code transfer, the packitup
-c        script temporarily replaces the current contents of 
+c        script temporarily replaces the current contents of
 c        development.F with a clean version, so that the packaged
 c        version has the short dummy routine. Upon completion of the
 c        packitup script, the prior contents of development.F are
 c        restored.
 c
-c     8) To help coordinate printout of the various processors, 
+c     8) To help coordinate printout of the various processors,
 c        an internal write buffer (array) is used, which is periodically
 c        flushed. The array, bou, is dimensioned as (ibufdim,nbuf),
 c        where nbuf is the number of output files that can be supported
-c        by the buffer, and ibufdim is the max number of 120 character 
-c        lines that can be stored in the file. Currently supported 
+c        by the buffer, and ibufdim is the max number of 120 character
+c        lines that can be stored in the file. Currently supported
 c        output files are:
 c
 c        ibuf    unit/file
-c           1    11  / main output (e.g. "cfl3d.out") 
+c           1    11  / main output (e.g. "cfl3d.out")
 c           2    09  / fort.9, aux. file for dynamic patching
 c           3    14  / baldwin-lomax output (e.g. "cfl3d.blomax")
 c           4    25  / dynamic patch output (e.g. "cfl3d.dynamic_patch")
@@ -291,7 +291,7 @@ c
 c        ibufdim...see 8) above
 c        nbuf......see 8) above
 c        mxbcfil...maximum number of bc file names for 2000 series bc's
-c                  i.e. up to mxbcfil bc files may be specified in the 
+c                  i.e. up to mxbcfil bc files may be specified in the
 c                  cfl3d input deck.
 c***********************************************************************
 c
@@ -404,10 +404,10 @@ c
          do mm=1,ibufdim
             bou(mm,ii) = ' '
          end do
-      end do 
+      end do
 c
 c     determine machine zero for use in setting tolerances
-c     (10.**(-iexp) is machine zero) 
+c     (10.**(-iexp) is machine zero)
 c
       icount = 0
       compare = 1.0
@@ -472,18 +472,18 @@ c
      .     status='unknown')
 c
 c     first copy the command-line input file to a temporary input file
-c     this is necessary because the input file must be read more 
+c     this is necessary because the input file must be read more
 c     more than once to accomodate dynamic memory allocation, and
 c     some operating systems do not permit a rewind of a file
 c     that has not been explicitly opened
 c
 c     NOTE: this assumes the cfl3d input file contains lines of no
 c           more than 80 characters!!!
-c 
+c
       !do n=1,9999
 c     use the the do-while loop to handle input files with
 c     more than 9999 lines
-      do while(.true.) 
+      do while(.true.)
          read(5,'(a80)',end=999) inpstring
          write(iunit5,'(a80)') inpstring
       end do
@@ -542,7 +542,7 @@ c
       open(unit=22,file=patch,form='unformatted',status='unknown')
 
 c
-c     remove the stop file if there is one 
+c     remove the stop file if there is one
 c
       open(unit=1234,iostat=istat1,file='stop',status='old')
       if (istat1 == 0) close(1234, status='delete')
@@ -595,7 +595,7 @@ c
       open(unit=14,file=blomx,form='formatted',status='unknown')
 c
 c     the following file names are not set from the input deck
-c     NOTE: unit 26 is reserved for boundary condition data files, 
+c     NOTE: unit 26 is reserved for boundary condition data files,
 c     the name(s) of which are read in via the input deck
 c
       subres    = 'cfl3d.subit_res'
@@ -610,17 +610,17 @@ c
          avgg      = 'cfl3d_avgg.p3d'
          avgq      = 'cfl3d_avgq.p3d'
       else
-         avgg      = 'cfl3d_avgg_ruvwp.p3d' 
-         avgq      = 'cfl3d_avg_ruvwp.p3d' 
+         avgg      = 'cfl3d_avgg_ruvwp.p3d'
+         avgq      = 'cfl3d_avg_ruvwp.p3d'
       end if
 
-      avgq2     = 'cfl3d_avg_ruvwp2.p3d'                             
-      avgq2pert = 'cfl3d_avg_ruvwp2_pert.p3d'                        
-      movcrsg   = 'movie_coarse.g'                              
-      movcrsq   = 'movie_coarse.q'                              
-      mov2dg    = 'movie_2d.g'                                  
-      mov2dq    = 'movie_2d.q'                                  
-      clcds     = 'clcd.bin'                                  
+      avgq2     = 'cfl3d_avg_ruvwp2.p3d'
+      avgq2pert = 'cfl3d_avg_ruvwp2_pert.p3d'
+      movcrsg   = 'movie_coarse.g'
+      movcrsq   = 'movie_coarse.q'
+      mov2dg    = 'movie_2d.g'
+      mov2dq    = 'movie_2d.q'
+      clcds     = 'clcd.bin'
       clcdp     = 'ClCd_'
 c
       subres =
@@ -648,7 +648,7 @@ c
       clcdp =
      $     output_dir(1:len_trim(output_dir)) // "/" // clcdp
 
-      avgg = 
+      avgg =
      $     output_dir(1:len_trim(output_dir)) // "/" // avgg
       avgq =
      $     output_dir(1:len_trim(output_dir)) // "/" // avgq
@@ -665,14 +665,14 @@ c
 
 
       if( isubit_r .ne. 0 ) then
-         open(unit=111,file="cfl3d.subit_r", 
+         open(unit=111,file="cfl3d.subit_r",
      .        form='formatted',status='unknown')
       endif
 
       inc_2d(:) = 0
       inc_coarse(:) = 0
       if( icoarsemovie .ne. 0 .or. i2dmovie .ne. 0 ) then
-         open(unit=110,file="coarse_movie.inp", 
+         open(unit=110,file="coarse_movie.inp",
      .        form='formatted',status='old')
          read(110,*)            ! inc_2d ... kinc_2d
          read(110,*) inc_2d
@@ -680,21 +680,21 @@ c
          read(110,*) inc_coarse
          close(110)
          if( icoarsemovie .ne. 0 ) then
-            open(unit=101,file=movcrsg,form='unformatted', 
-     .           status='unknown') 
-            open(unit=92,file=movcrsq,form='unformatted', 
-     .           status='unknown') 
+            open(unit=101,file=movcrsg,form='unformatted',
+     .           status='unknown')
+            open(unit=92,file=movcrsq,form='unformatted',
+     .           status='unknown')
          end if
          if( i2dmovie .ne. 0 ) then
-            open(unit=93,file=mov2dg,form='unformatted', 
-     .           status='unknown') 
-            open(unit=94,file=mov2dq,form='unformatted', 
-     .           status='unknown') 
+            open(unit=93,file=mov2dg,form='unformatted',
+     .           status='unknown')
+            open(unit=94,file=mov2dq,form='unformatted',
+     .           status='unknown')
          end if
       end if
       if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
-         open(unit=95,file=avgq2pert,form='unformatted', 
-     .        status='unknown') 
+         open(unit=95,file=avgq2pert,form='unformatted',
+     .        status='unknown')
          open(unit=98,file=avgq2,form='unformatted',status='unknown')
       end if
       if( iteravg .eq. 1 .or. iteravg .eq. 2) then
@@ -712,10 +712,10 @@ c
          allocate(blocks_clcd(2,1000))
          blocks_clcd(:,:) = 0
          read(110,*)            ! Cl calc #, block #
- 998     read(110,*,end=1999,err=1999) 
+ 998     read(110,*,end=1999,err=1999)
      .        blocks_clcd(:,nblocks_clcd+1)
-         if( blocks_clcd(1,nblocks_clcd+1) > 0 .and.  
-     .        blocks_clcd(1,nblocks_clcd+1) <= n_clcd .and.  
+         if( blocks_clcd(1,nblocks_clcd+1) > 0 .and.
+     .        blocks_clcd(1,nblocks_clcd+1) <= n_clcd .and.
      .        blocks_clcd(2,nblocks_clcd+1) > 0 ) then
             write(11,*) 'ClCd Calculation Data ',
      $           blocks_clcd(:,nblocks_clcd+1)

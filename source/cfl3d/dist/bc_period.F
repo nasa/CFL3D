@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -103,7 +103,7 @@ c              if mismatch > epsrot, print warning but do not stop!!!!
 c
       epsrot  = max(1.e-09,10.**(-iexp+1))
 c
-      if (ntime.gt.0 .and. nbcprd.gt.0) then 
+      if (ntime.gt.0 .and. nbcprd.gt.0) then
 c
 c***********************************************************************
 c        First Case: all data needed to set periodic bc lies on the
@@ -356,7 +356,7 @@ c           nblp is periodic (from) block
                   if (nface.eq.5 .or. nface.eq.6) maxdims = jdimp*idimp
 c
 c                 receive xyz data for checking mismatch
-c 
+c
                   if (isklton.eq.1) then
                      ldim = 3
                      np   = 1
@@ -425,7 +425,7 @@ c
                      kqintl = kcheck
                   end if
 c
-c                 receive turb. data 
+c                 receive turb. data
 c
                   if (ivmx.ge.4) then
                      ldim = nummem
@@ -449,7 +449,7 @@ c
                      kqintl = kcheck
                   end if
                end if
-            end if 
+            end if
             end if
          end do
 c
@@ -501,7 +501,7 @@ c           nblp is periodic (from) block
 c
                   if (isklton.eq.1) then
 c
-c                    set up mp array for one plane of grid-point data; 
+c                    set up mp array for one plane of grid-point data;
 c                    mp indicates the planes to be loaded into the work
 c                    array for transfer to another processor
 c
@@ -686,7 +686,7 @@ c
             end if
          end do
 c
-c        set periodic bc's 
+c        set periodic bc's
 c
          ndone  = 0
 c

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -26,7 +26,7 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose: postprocesses 2D/3D SURFACE cfl3d multi-frame plot3d
-c     files (generated when cfl3d is run with dt > 0 and abs(movie)>0) 
+c     files (generated when cfl3d is run with dt > 0 and abs(movie)>0)
 c     so as to have time as the third (k) direction in the output
 c     plot3d files  g.bin and q.bin - the output grid has iblanking
 c     and is 3d, multiblock.
@@ -47,8 +47,8 @@ c
       call asnfile(g_in, '-F f77 -N ieee', IER)
       call asnfile(q_in, '-F f77 -N ieee', IER)
 #endif
-      open(unit=1,file=g_in,form='unformatted',status='old')      
-      open(unit=2,file=q_in,form='unformatted',status='old')      
+      open(unit=1,file=g_in,form='unformatted',status='old')
+      open(unit=2,file=q_in,form='unformatted',status='old')
 c
 c     NOTE: ibflag indicates if input  plot3d files have iblank array
 c     ibflag = 0 no iblank in input grid file
@@ -66,7 +66,7 @@ c
 c
       write(6,*)'3D or 2D grid?...0=3D, 1=2d'
       read(5,*) i2d
-c            
+c
 c     read plot3d grid and solution files (3d/mg) to get sizing info
 c
       read(1) maxbl

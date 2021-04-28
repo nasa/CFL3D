@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,7 +28,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Check for symmetry boundary conditions in j, k or i 
+c     Purpose:  Check for symmetry boundary conditions in j, k or i
 c     directions in order to apply bctype 1011 (singular axis with
 c     half-plane symmetry)
 c***********************************************************************
@@ -55,7 +55,7 @@ c***********************************************************************
 c
       if(nface.eq.5.or.nface.eq.6) then
 c
-c       check for symmetry condition on j=1 face, adjacent to k-axis, 
+c       check for symmetry condition on j=1 face, adjacent to k-axis,
 c       within same i-range as the singular axis segment
 c
         jsym = 1
@@ -65,9 +65,9 @@ c
         ksta1 = jbcinfo(nbl,nseg,4,1)
         kend1 = jbcinfo(nbl,nseg,5,1)
         if((nface.eq.5 .and. ksta1.eq.1) .or.
-     .  (nface.eq.6 .and. kend1.eq.kdim)) then 
+     .  (nface.eq.6 .and. kend1.eq.kdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the j=1 face must have a symmetry condition in 
+c           this segment on the j=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             jbc = jbcinfo(nbl,nseg,1,1)
             if(jbc.ne.1001) jsym = 0
@@ -80,7 +80,7 @@ c
         end if
    10   continue
 c
-c       check for symmetry condition on j=jdim face, adjacent to k-axis, 
+c       check for symmetry condition on j=jdim face, adjacent to k-axis,
 c       within same i-range as the singular axis segment
 c
         do 11 nseg=1,nbcjdim(nbl)
@@ -91,11 +91,11 @@ c
         if((nface.eq.5 .and. ksta1.eq.1) .or.
      .  (nface.eq.6 .and. kend1.eq.kdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the j=jdim face must have a symmetry condition in 
+c           this segment on the j=jdim face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             jbc = jbcinfo(nbl,nseg,1,2)
-            if(jbc.ne.1001) jsym = 0 
-c  
+            if(jbc.ne.1001) jsym = 0
+c
 c           if(jbc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off jsym on jdim',
 c    .        ' segment ', nseg
@@ -120,7 +120,7 @@ c           this segment on the i=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             ibc = ibcinfo(nbl,nseg,1,1)
             if(ibc.ne.1001) isym = 0
-c   
+c
 c           if(ibc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off isym on i0',
 c    .        ' segment ', nseg
@@ -144,7 +144,7 @@ c           this segment on the i=idim face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             ibc = ibcinfo(nbl,nseg,1,2)
             if(ibc.ne.1001) isym = 0
-c   
+c
 c           if(ibc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off isym on idim',
 c    .        ' segment ', nseg
@@ -166,7 +166,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have symmetry conditions',
      .      ' in i or j directions'
-          else 
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1011 on ',
      .      'k=kdim boundary:'
@@ -185,7 +185,7 @@ c***********************************************************************
 c
       if(nface.eq.3 .or. nface.eq.4) then
 c
-c       check for symmetry condition in k=1 face, adjacent to j-axis, 
+c       check for symmetry condition in k=1 face, adjacent to j-axis,
 c       within same i-range as the singular axis segment
 c
         ksym = 1
@@ -197,10 +197,10 @@ c
         if((nface.eq.3 .and. jsta1.eq.1) .or.
      .  (nface.eq.4 .and. jend1.eq.jdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the k=1 face must have a symmetry condition in 
+c           this segment on the k=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             kbc = kbcinfo(nbl,nseg,1,1)
-            if(kbc.ne.1001) ksym = 0 
+            if(kbc.ne.1001) ksym = 0
 c
 c           if(kbc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off ksym on k0',
@@ -210,7 +210,7 @@ c
         end if
    30   continue
 c
-c       check for symmetry condition in k=kdim face, adjacent to j-axis, 
+c       check for symmetry condition in k=kdim face, adjacent to j-axis,
 c       within same i-range as the singular axis segment
 c
         do 31 nseg=1,nbckdim(nbl)
@@ -221,11 +221,11 @@ c
         if((nface.eq.3 .and. jsta1.eq.1) .or.
      .  (nface.eq.4 .and. jend1.eq.jdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the k=1 face must have a symmetry condition in 
+c           this segment on the k=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             kbc = kbcinfo(nbl,nseg,1,2)
             if(kbc.ne.1001) ksym = 0
-c   
+c
 c           if(kbc.ne.1001)
 c    .         write(61,*) 'block ',nbl,' turning off ksym on kdim',
 c    .         ' segment ', nseg
@@ -250,7 +250,7 @@ c           this segment on the i=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             ibc = ibcinfo(nbl,nseg,1,1)
             if(ibc.ne.1001) isym = 0
-c   
+c
 c           if(ibc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off isym on i0',
 c    .        ' segment ', nseg
@@ -274,7 +274,7 @@ c           this segment on the i=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             ibc = ibcinfo(nbl,nseg,1,2)
             if(ibc.ne.1001) isym = 0
-c   
+c
 c           if(ibc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off isym on idim',
 c    .        ' segment ', nseg
@@ -291,12 +291,12 @@ c
         else
           if(nface.eq.3) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*) ' error in applying bctype 1011 on ', 
+            write(bou(nou(1),1),*) ' error in applying bctype 1011 on ',
      .      'j=1 boundary:'
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have symmetry conditions',
      .      ' in i or k directions'
-          else   
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1011 on ',
      .      'j=jdim boundary:'
@@ -315,7 +315,7 @@ c***********************************************************************
 c
       if(nface.eq.1 .or. nface.eq.2) then
 c
-c       check for symmetry condition in j=1 face, adjacent to i-axis, 
+c       check for symmetry condition in j=1 face, adjacent to i-axis,
 c       within same k-range as the singular axis segment
 c
         jsym = 1
@@ -327,7 +327,7 @@ c
         if((nface.eq.1 .and. ista1.eq.1) .or.
      .  (nface.eq.2 .and. iend1.eq.idim)) then
           if(ksta1.lt.kend .and. kend1.gt.ksta) then
-c           this segment on the j=1 face must have a symmetry condition in 
+c           this segment on the j=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             jbc = jbcinfo(nbl,nseg,1,1)
             if(jbc.ne.1001) jsym = 0
@@ -340,7 +340,7 @@ c
         end if
    50   continue
 c
-c       check for symmetry condition in j=jdim face, adjacent to i-axis, 
+c       check for symmetry condition in j=jdim face, adjacent to i-axis,
 c       within same k-range as the singular axis segment
 c
         do 51 nseg=1,nbcjdim(nbl)
@@ -351,11 +351,11 @@ c
         if((nface.eq.1 .and. ista1.eq.1) .or.
      .  (nface.eq.2 .and. iend1.eq.idim)) then
          if(ksta1.lt.kend .and. kend1.gt.ksta) then
-c          this segment on the j=jdim face must have a symmetry condition in 
+c          this segment on the j=jdim face must have a symmetry condition in
 c          order to apply bctype 1011 - turn OFF symmetry flag if not
            jbc = jbcinfo(nbl,nseg,1,2)
-           if(jbc.ne.1001) jsym = 0 
-c   
+           if(jbc.ne.1001) jsym = 0
+c
 c          if(jbc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off jsym on jdim',
 c    .        ' segment ', nseg
@@ -380,7 +380,7 @@ c           this segment on the k=1 face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             kbc = kbcinfo(nbl,nseg,1,1)
             if(kbc.ne.1001) ksym = 0
-c   
+c
 c           if(kbc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off ksym on k0',
 c    .        ' segment ', nseg
@@ -404,7 +404,7 @@ c           this segment on the k=kdim face must have a symmetry condition in
 c           order to apply bctype 1011 - turn OFF symmetry flag if not
             kbc = kbcinfo(nbl,nseg,1,2)
             if(kbc.ne.1001) ksym = 0
-c   
+c
 c           if(kbc.ne.1001)
 c    .        write(61,*) 'block ',nbl,' turning off ksym on kdim',
 c    .        ' segment ', nseg
@@ -426,7 +426,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have symmetry conditions',
      .      ' in k or j directions'
-          else   
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1011 on ',
      .      'i=idim boundary:'

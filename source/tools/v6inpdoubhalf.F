@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -31,7 +31,7 @@ c     that is either for double the grid size or half the grid size.
 c
 c     This is convenient when, for example, one has a fine grid and would like
 c     to run 1/2 of the grid, and avoid working in a big memory queue (if one
-c     uses the fine grid with mesh sequencing option where all the iterations 
+c     uses the fine grid with mesh sequencing option where all the iterations
 c     are done on the coarser grid and none on the fine grid, the code runs
 c     the coarser grid only, but also requires more memory than if one could
 c     run on the coarse grid only).
@@ -353,7 +353,7 @@ c
             if (i2 .ne. 0) then
               if (jc .eq. 1) then
               if (float(i2/2) .eq. (float(i2)/2.)) then
-                write(6,'('' JS not MGable, zone='',i5)') n 
+                write(6,'('' JS not MGable, zone='',i5)') n
                 write(6,'('' new input file only partially written'')')
                 stop
               end if
@@ -1524,7 +1524,7 @@ c  Mov grid stuff - rotation:
         do n=1,ntrans
           read(2,*) ig,ir,fr,thx,thy,thz,x,y,z
           if (abs(x).gt.99. .or. abs(y).gt.99. .or. abs(z).gt.99. .or.
-     +        abs(thx).gt.99. .or. abs(thy).gt.99. .or. 
+     +        abs(thx).gt.99. .or. abs(thy).gt.99. .or.
      +        abs(thz).gt.99. .or. abs(fr).gt.99) then
             write(6,'('' Check NROTAT data section to make sure the'',
      +       '' numbers fit with given format!'')')

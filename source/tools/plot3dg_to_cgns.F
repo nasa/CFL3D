@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -25,7 +25,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c   Purpose: reads in plot3d-type (or cfl3d-type) unformatted grid file 
+c   Purpose: reads in plot3d-type (or cfl3d-type) unformatted grid file
 c   and writes out a CGNS ADF file.  Also reads in as input the 1-to-1
 c   section of CFL3D input file, for creating the 1-to-1 CGNS
 c   connectivity information.
@@ -107,7 +107,7 @@ c
       write(6,'(''  idm    = '',i3)') idm
       write(6,'(''  jdm    = '',i3)') jdm
       write(6,'(''  kdm    = '',i3)') kdm
-      write(6,'(''  n11    = '',i3)') n11  
+      write(6,'(''  n11    = '',i3)') n11
 c
 c     rewind and close cfl3d nput file
 c
@@ -693,14 +693,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -729,7 +729,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv1(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -844,14 +844,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv1(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -880,7 +880,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv1(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -995,14 +995,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -1031,7 +1031,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv2(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -1146,14 +1146,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv2(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -1182,7 +1182,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv2(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -1297,14 +1297,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -1333,7 +1333,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv3(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -1448,14 +1448,14 @@ c XXX
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCTunnelOutflow,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .eq. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
             call cg_boco_write_f(iccgr,ibase,iz(n),boconame,
      +        BCWallViscousHeatFlux,PointRange,2,ipnts,ibc,ier)
-          else if((ib .eq. 2004 .or. ib .eq. 2014) .and. 
+          else if((ib .eq. 2004 .or. ib .eq. 2014) .and.
      +            data(1) .ne. 0 .and.
      +            data(2) .eq. 0 .and. abs(iv3(n)) .gt. 0) then
             call cg_boco_write_f(iccg,ibase,iz(n),boconame,
@@ -1484,7 +1484,7 @@ c    +       '' CGNS yet'')') ib
      +        'ZoneBC_t',1,'BC_t',ibc,'end')
             write(texta,'(i6)') ib
             text=texta
-            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and. 
+            if((abs(ib) .eq. 2004 .or. abs(ib) .eq. 2014) .and.
      +          iv3(n) .lt. 0) then
               text=texta // ' + WallFunction'
               call cg_bc_wallfunction_write_f(iccg,ibase,iz(n),
@@ -1642,9 +1642,9 @@ c         write(6,'('' iranged='',6i4)') iranged(1,1),iranged(2,1),
 c    +      iranged(3,1),iranged(1,2),iranged(2,2),iranged(3,2)
           write(6,'(''    Pair:'')')
           write(6,'(''    zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)')
-     +     iblk1(n),ilo1(n),ihi1(n),jlo1(n),jhi1(n),klo1(n),khi1(n) 
+     +     iblk1(n),ilo1(n),ihi1(n),jlo1(n),jhi1(n),klo1(n),khi1(n)
           write(6,'(''    zone,  ilo,ihi,jlo,jhi,klo,khi='',i4,4x,6i4)')
-     +     iblk2(n),ilo2(n),ihi2(n),jlo2(n),jhi2(n),klo2(n),khi2(n) 
+     +     iblk2(n),ilo2(n),ihi2(n),jlo2(n),jhi2(n),klo2(n),khi2(n)
 c   call routine to get transform matrix
           call transget(ilo1(n),jlo1(n),klo1(n),ihi1(n),jhi1(n),
      +      khi1(n),isva1(n),isvb1(n),ilo2(n),jlo2(n),klo2(n),ihi2(n),
@@ -2061,11 +2061,11 @@ c
 c   do 1st varying index
           if      (isva1 .eq. 1 .and. isva2 .eq. 1) then
             itransform(1)=1
-            if((ihi1-ilo1)*(ihi2-ilo2) .lt. 0) 
+            if((ihi1-ilo1)*(ihi2-ilo2) .lt. 0)
      +        itransform(1)=-itransform(1)
           else if (isva1 .eq. 1 .and. isva2 .eq. 2) then
             itransform(1)=2
-            if((ihi1-ilo1)*(jhi2-jlo2) .lt. 0) 
+            if((ihi1-ilo1)*(jhi2-jlo2) .lt. 0)
      +        itransform(1)=-itransform(1)
           else if (isva1 .eq. 1 .and. isva2 .eq. 3) then
             itransform(1)=3

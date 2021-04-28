@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -65,7 +65,7 @@ c
 c
       dimension nou(nbuf)
       dimension q(jdim,kdim,idim,5),qi0(jdim,kdim,5,4),
-     .          qj0(kdim,idim-1,5,4), qk0(jdim,idim-1,5,4) 
+     .          qj0(kdim,idim-1,5,4), qk0(jdim,idim-1,5,4)
       integer blocks_clcd
       dimension rms(ncycmax),clw(ncycmax),cdw(ncycmax),cdpw(ncycmax),
      .          cdvw(ncycmax),cxw(ncycmax),cyw(ncycmax),czw(ncycmax),
@@ -166,9 +166,9 @@ c
       jki2  = 2*jki
       jki5  = 5*jki
       jkim5 = jkim*5
-      jk2   = jdim*kdim*2 
-      ki2   = kdim*idim1*2 
-      ji2   = jdim*idim1*2 
+      jk2   = jdim*kdim*2
+      ki2   = kdim*idim1*2
+      ji2   = jdim*idim1*2
       jk20  = jdim*kdim*20
       ki20  = kdim*idim1*20
       ji20  = jdim*idim1*20
@@ -198,7 +198,7 @@ c
       end if
 c
       if (myid.eq.myhost) then
-      if (iskip.gt.0) then 
+      if (iskip.gt.0) then
          write(11,6)nbl
       else
          write(11,7)nbl
@@ -231,7 +231,7 @@ c
       end if
       end if
       end if
-c                                             
+c
 #if defined DIST_MPI
 c
 c.....send/receive solution (q = primitive variables) to/on
@@ -309,7 +309,7 @@ c
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
       end if
-      if ((icgns .eq. 1 .and. iover .eq. 1) .or. 
+      if ((icgns .eq. 1 .and. iover .eq. 1) .or.
      .    (iteravg .eq. 1 .or. iteravg .eq. 2)) then
          if (myid .eq. mblk2nd(nbl)) then
             mytag = itag_blank + nbl
@@ -491,7 +491,7 @@ c
       if (iskip.gt.0) then
           write(2) (rmstr(n,1),n=1,ntt),(rmstr(n,2),n=1,ntt),
      .             (nneg(n,1), n=1,ntt),(nneg(n,2), n=1,ntt)
-          if (ivisc(1).ge.30 .or. ivisc(2).ge.30 .or. 
+          if (ivisc(1).ge.30 .or. ivisc(2).ge.30 .or.
      .        ivisc(3).ge.30) then
             write(2) nummem
             do l=3,nummem
@@ -825,16 +825,16 @@ c
      .                    nd_srce,mytag,mycomm,istat,ierr)
          end if
          if (ipertavg .eq. 1 .or. ipertavg .eq. 2) then
-            if (myid .eq. mblk2nd(nbl)) then                       
-               mytag = itag_q2avg + nbl                            
-               call MPI_Send(q2avg,jki5,MY_MPI_REAL,               
-     .              myhost,mytag,mycomm,ierr)             
-            else if (myid .eq. myhost) then                        
-               mytag = itag_q2avg + nbl                            
-               call MPI_Recv(q2avg,jki5,MY_MPI_REAL,               
-     .              nd_srce,mytag,mycomm,istat,ierr)      
+            if (myid .eq. mblk2nd(nbl)) then
+               mytag = itag_q2avg + nbl
+               call MPI_Send(q2avg,jki5,MY_MPI_REAL,
+     .              myhost,mytag,mycomm,ierr)
+            else if (myid .eq. myhost) then
+               mytag = itag_q2avg + nbl
+               call MPI_Recv(q2avg,jki5,MY_MPI_REAL,
+     .              nd_srce,mytag,mycomm,istat,ierr)
             end if
-         end if                                           
+         end if
 c
 #endif
 c
@@ -882,7 +882,7 @@ c     xnumavg is used to store the number of averaged iterations so far
                write(97) xmach,alpha,reue,xnumavg
                if (ialph .eq. 0) then
                   write(97) ((((qavg(j,k,i,m),i=1,idim-1),j=1,jdim-1),
-     +                 k=1,kdim-1),m=1,5) 
+     +                 k=1,kdim-1),m=1,5)
                else
                   write(97) (((qavg(j,k,i,1),i=1,idim-1),j=1,jdim-1),
      +                 k=1,kdim-1),
@@ -899,29 +899,29 @@ c     xnumavg is used to store the number of averaged iterations so far
          else
             if (myid .eq. myhost) then
                if (ialph .eq. 0) then
-                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
-     +                 (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
-     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim) 
-                  
-                  
+                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
+
+
                else
-                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
-     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim), 
-     +                 (((-y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim) 
+                  write(96)(((x(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((z(j,k,i),i=1,idim),j=1,jdim),k=1,kdim),
+     +                 (((-y(j,k,i),i=1,idim),j=1,jdim),k=1,kdim)
                end if
-               
+
                write(97) xmach,alpha,reue,xnumavg
-               write(98) xmach,alpha,reue,xnumavg2 
-               write(95) xmach,alpha,reue,xnumavg2 
+               write(98) xmach,alpha,reue,xnumavg2
+               write(95) xmach,alpha,reue,xnumavg2
                if(ialph .eq. 0)then
-                  write(97) ((((qavg(j,k,i,m),i=1,idim),j=1,jdim), 
-     +                 k=1,kdim),m=1,5) 
-c     
-                  write(98) ((((q2avg(j,k,i,m),i=1,idim),j=1,jdim), 
-     +                 k=1,kdim),m=1,5) 
-c     
+                  write(97) ((((qavg(j,k,i,m),i=1,idim),j=1,jdim),
+     +                 k=1,kdim),m=1,5)
+c
+                  write(98) ((((q2avg(j,k,i,m),i=1,idim),j=1,jdim),
+     +                 k=1,kdim),m=1,5)
+c
                   write(95) ((((q2avg(j,k,i,m)-qavg(j,k,i,m)**2,
-     +                 i=1,idim),j=1,jdim),k=1,kdim),m=1,5) 
+     +                 i=1,idim),j=1,jdim),k=1,kdim),m=1,5)
                else
                   write(97) (((qavg(j,k,i,1),i=1,idim),j=1,jdim)
      +                 ,k=1,kdim),
@@ -946,12 +946,12 @@ c
      +                 (((q2avg(j,k,i,5)-qavg(j,k,i,5)**2,i=1,idim),
      +                 j=1,jdim),k=1,kdim)
                endif            !end of ialph=0/1
-c     
+c
             end if              !end of myid=host
 
-         end if                 !end of ipertavg=1/2 
-      end if                    !end of iteravg=1/2 
-      
+         end if                 !end of ipertavg=1/2
+      end if                    !end of iteravg=1/2
+
 c clcd information
 c
       if (myid .eq. myhost .and. iskip.gt.0) then

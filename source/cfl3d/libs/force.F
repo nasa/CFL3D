@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -70,10 +70,10 @@ c**************************************************************************
 c
 c     for force computation on block nbl:
 c
-c     kbcinfo(nbl,nseg,6,1) > 0...add contribution from k=1,    segment nseg 
+c     kbcinfo(nbl,nseg,6,1) > 0...add contribution from k=1,    segment nseg
 c                           <=0...do not add contribution
 c
-c     kbcinfo(nbl,nseg,6,2) > 0...add contribution from k=kdim, segment nseg 
+c     kbcinfo(nbl,nseg,6,2) > 0...add contribution from k=kdim, segment nseg
 c                           <=0...do not add contribution
 c
 c     jbcinfo(nbl,nseg,6,1) > 0...add contribution from j=1,    segment nseg
@@ -112,16 +112,16 @@ c
       cosb  = cos(beta)
       sinb  = sin(beta)
 c
-      cl    = 0.e0 
-      cd    = 0.e0 
+      cl    = 0.e0
+      cd    = 0.e0
       cz    = 0.e0
-      cy    = 0.e0 
+      cy    = 0.e0
       cx    = 0.e0
-      cmy   = 0.e0 
+      cmy   = 0.e0
       cmx   = 0.e0
       cmz   = 0.e0
-      chd   = 0.e0 
-      swet  = 0.e0 
+      chd   = 0.e0
+      swet  = 0.e0
       cdp   = 0.e0
       cdv   = 0.e0
 c
@@ -132,7 +132,7 @@ c
       do 1 kk=1,2
 c
       if (kk.eq.1) then
-         nseg = nbck0(nbl) 
+         nseg = nbck0(nbl)
          k    = 1
          kc   = 1
       else
@@ -147,20 +147,20 @@ c
 c
       ist = kbcinfo(nbl,ns,2,kk)
       ifn = kbcinfo(nbl,ns,3,kk) - 1
-      jst = kbcinfo(nbl,ns,4,kk) 
+      jst = kbcinfo(nbl,ns,4,kk)
       jfn = kbcinfo(nbl,ns,5,kk) - 1
 c
       sgn = 1.0
       if(kk .gt. 1) sgn = -1.0
 c
-      do 10 i=ist,ifn 
+      do 10 i=ist,ifn
       cxl   = 0.e0
       cyl   = 0.e0
       czl   = 0.e0
       cmyl  = 0.e0
       cmxl  = 0.e0
       cmzl  = 0.e0
-      chdl  = 0.e0 
+      chdl  = 0.e0
       xas   = 0.e0
       yas   = 0.e0
       zas   = 0.e0
@@ -169,19 +169,19 @@ c
       cdpl  = 0.e0
 c
       do 15 j=jst,jfn
-c 
+c
       xa  = .25e0*( x(j,k,i) + x(j+1,k,i) + x(j,k,i+1) + x(j+1,k,i+1) )
       ya  = .25e0*( y(j,k,i) + y(j+1,k,i) + y(j,k,i+1) + y(j+1,k,i+1) )
       za  = .25e0*( z(j,k,i) + z(j+1,k,i) + z(j,k,i+1) + z(j+1,k,i+1) )
-c 
+c
       dcp = -(qk0(j,i,5,kk+kk-1)/p0-1.e0)*cpc*sk(j,k,i,4)
-      dcx = dcp*sk(j,k,i,1)*sgn 
-      dcy = dcp*sk(j,k,i,2)*sgn 
-      dcz = dcp*sk(j,k,i,3)*sgn 
+      dcx = dcp*sk(j,k,i,1)*sgn
+      dcy = dcp*sk(j,k,i,2)*sgn
+      dcz = dcp*sk(j,k,i,3)*sgn
 c     pressure drag
       dcdpl = dcx*cosa*cosb-dcy*sinb+dcz*sina*cosb
 c
-      dcdvl = 0. 
+      dcdvl = 0.
       if (ivisc(3).gt.0 .and. (abs(kbcinfo(nbl,ns,1,kk)).eq.2004 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2014 .or.
      .    abs(kbcinfo(nbl,ns,1,kk)).eq.2024 .or.
@@ -222,10 +222,10 @@ c
       dcdvl = dcdvl*fact
       dsw  = sk(j,k,i,4)*fact
 c
-      swetl = swetl+dsw 
-      cxl   = cxl+dcx 
-      cyl   = cyl+dcy 
-      czl   = czl+dcz 
+      swetl = swetl+dsw
+      cxl   = cxl+dcx
+      cyl   = cyl+dcy
+      czl   = czl+dcz
       cdpl  = cdpl + dcdpl
       cdvl  = cdvl + dcdvl
       cmyl  = cmyl-dcz*(xa-xmc)+dcx*(za-zmc)
@@ -238,18 +238,18 @@ c     integrated values
       cls   =-cxl*sina+czl*cosa
       cmys  = cmyl
       cmxs  = cmxl
-      cmzs  = cmzl 
-      swets = swetl 
-      cl    = cl+cls 
-      cd    = cd+cds 
+      cmzs  = cmzl
+      swets = swetl
+      cl    = cl+cls
+      cd    = cd+cds
       cz    = cz+czl
       cy    = cy+cyl
-      cx    = cx+cxl 
+      cx    = cx+cxl
       cmy   = cmy+cmys
       cmx   = cmx+cmxs
-      cmz   = cmz+cmzs 
+      cmz   = cmz+cmzs
       chd   = 1.0
-      swet  = swet+swets 
+      swet  = swet+swets
       cdp   = cdp + cdpl
       cdv   = cdv + cdvl
 c
@@ -528,9 +528,9 @@ c     inputting "correct" cell center location for the non-2-D-direction
       end if
 c
 c     note: the forces above are computed in the standard cfl3d coordinate
-c     system where z is "up". if ialph = 1, then must map these into a system 
+c     system where z is "up". if ialph = 1, then must map these into a system
 c     with y "up" so that when output, they are consistent with the input
-c     grid. If x,y,z is the standard cfl3d system and x',y',z' is the 
+c     grid. If x,y,z is the standard cfl3d system and x',y',z' is the
 c     input grid system (with x'=x), then for ialph .ne. 0 the transform
 c     z = y', y = -z' maps the input grid onto the standard cfl3d system
 c     (see also subroutine rp3d). Conversely z' = -y, y' = z' maps the
@@ -547,4 +547,4 @@ c
       end if
 c
       return
-      end 
+      end

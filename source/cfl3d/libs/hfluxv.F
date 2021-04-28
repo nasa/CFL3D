@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,8 +28,8 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Calculate right-hand residual contributions in the 
-c     K-direction due to the viscous terms when idf = 0. Calculate 
+c     Purpose:  Calculate right-hand residual contributions in the
+c     K-direction due to the viscous terms when idf = 0. Calculate
 c     implicit matrix terms when idf > 0.
 c***********************************************************************
 c
@@ -136,7 +136,7 @@ c
          end if
          if (i_nonlin.ne.0) then
            nou(1) = min(nou(1)+1,ibufdim)
-           write(bou(nou(1),1),'(''      snonlin_lim='',e19.8)') 
+           write(bou(nou(1),1),'(''      snonlin_lim='',e19.8)')
      +       snonlin_lim
          end if
       end if
@@ -165,7 +165,7 @@ cdir$ ivdep
       t(izz+jkv-1,18) = q(izz,k,ii,2)
       t(izz+jkv-1,19) = q(izz,k,ii,3)
       t(izz+jkv-1,20) = q(izz,k,ii,4)
-      t(izz+jkv-1,16) = q(izz,k,ii,5) 
+      t(izz+jkv-1,16) = q(izz,k,ii,5)
  1002 continue
    50 continue
    10 continue
@@ -195,8 +195,8 @@ c
       wk0(jc,m+12) = qk0(jj,ii,1,mm)
       wk0(jc,m+8)  = qk0(jj,ii,2,mm)
       wk0(jc,m+9)  = qk0(jj,ii,3,mm)
-      wk0(jc,m+10) = qk0(jj,ii,4,mm) 
-      wk0(jc,m+6)  = qk0(jj,ii,5,mm) 
+      wk0(jc,m+10) = qk0(jj,ii,4,mm)
+      wk0(jc,m+6)  = qk0(jj,ii,5,mm)
 c     m+5 flag indicates whether ghost cell or interface values stored in wk0
       wk0(jc,m+5)  =  bck(jj,ii,mb)
  6120 continue
@@ -213,8 +213,8 @@ cdir$ ivdep
       do 7005 izz=1,n
       t(izz,17) = 0.5e0*(t(izz,18)*t(izz,18)
      .                  +t(izz,19)*t(izz,19)
-     .                  +t(izz,20)*t(izz,20)) 
-      t(izz,1)  = 1.e0/t(izz,22) 
+     .                  +t(izz,20)*t(izz,20))
+      t(izz,1)  = 1.e0/t(izz,22)
       t(izz,16) = gpr*t(izz,16)*t(izz,1)/gm1
  7005 continue
       do 2121 m=0,10,10
@@ -223,7 +223,7 @@ cdir$ ivdep
       wk0(izz,m+7) = 0.5e0*(wk0(izz,m+8)*wk0(izz,m+8)
      .                     +wk0(izz,m+9)*wk0(izz,m+9)
      .                     +wk0(izz,m+10)*wk0(izz,m+10))
-      wk0(izz,m+1)  = 1.e0/wk0(izz,m+12) 
+      wk0(izz,m+1)  = 1.e0/wk0(izz,m+12)
       wk0(izz,m+6) = gpr*wk0(izz,m+6)*wk0(izz,m+1)/gm1
  1005 continue
  2121 continue
@@ -238,7 +238,7 @@ c
 cdir$ ivdep
       do 1006 izz=1,n
       t5       = gm1pr*t(izz,16)
-      t6       = sqrt(t5) 
+      t6       = sqrt(t5)
       t(izz,7) = c2bp*t5*t6/(c2b+t5)
  1006 continue
 c
@@ -258,39 +258,39 @@ cdir$ ivdep
       ab=1.+wk0(izz,5)
       bb=1.-wk0(izz,5)
       wk05        = gm1pr*0.5*(ab*wk0(izz,6)+bb*t(izz,16))
-      wk06        = sqrt(wk05) 
-      t(izz,14)   = c2bp*wk05*wk06/(c2b+wk05) 
+      wk06        = sqrt(wk05)
+      t(izz,14)   = c2bp*wk05*wk06/(c2b+wk05)
       ab=1.+wk0(izz,15)
       bb=1.-wk0(izz,15)
       wk05        = gm1pr*0.5*(ab*wk0(izz,16)+bb*t(izz+n-jv,16))
-      wk06        = sqrt(wk05) 
-      t(izz+n,14) = c2bp*wk05*wk06/(c2b+wk05) 
+      wk06        = sqrt(wk05)
+      t(izz+n,14) = c2bp*wk05*wk06/(c2b+wk05)
  1008 continue
 c
 c******************************************************************************
 c
-c t(15) : average jacobian (inverse volume) at cell interface 
+c t(15) : average jacobian (inverse volume) at cell interface
 c
       n1  = jdim*kdim1 + 1
       l1  = jdim*kdim-1
       do 200 ipl=1,npl
       ii  = i+ipl-1
       do 200 k=1,kdim
-      jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1 
-      jk  = (k-1)*jdim 
-      if (k.eq.1) then 
+      jkv = (k-1)*npl*jdim1 + (ipl-1)*jdim1
+      jk  = (k-1)*jdim
+      if (k.eq.1) then
 c     inverse volume at k=0 interface
-        do 7013 j=1,jdim1 
+        do 7013 j=1,jdim1
         t(j+jkv,15) = 2./(volk0(j,ii,1)+vol(j,1,ii))
  7013   continue
-      else if (k.eq.kdim) then 
+      else if (k.eq.kdim) then
 c     inverse volume at k=kdim interface
-        do 7113 j=1,jdim1 
+        do 7113 j=1,jdim1
         t(j+jkv,15) = 2./(volk0(j,ii,3)+vol(j,kdim1,ii))
  7113   continue
       else
 c     inverse volume at interior interfaces
-        do 1013 j=1,jdim1 
+        do 1013 j=1,jdim1
         t(j+jkv,15) = 2./(vol(j,k,ii)+vol(j,k-1,ii))
  1013   continue
       end if
@@ -298,13 +298,13 @@ c
 c******************************************************************************
 c
 c  t(25) - t(27) : components of grad(zeta)
-c  t1    : grad(zeta)/J 
+c  t1    : grad(zeta)/J
 c  t(25) : d(zeta)/dx
 c  t(26) : d(zeta)/dy
 c  t(27) : d(zeta)/dz
 c
-      do 1014 j=1,jdim1 
-      t1         = sk(j+jk,ii,4)*t(j+jkv,15) 
+      do 1014 j=1,jdim1
+      t1         = sk(j+jk,ii,4)*t(j+jkv,15)
       t(j+jkv,25) = sk(j+jk,ii,1)*t1
       t(j+jkv,26) = sk(j+jk,ii,2)*t1
       t(j+jkv,27) = sk(j+jk,ii,3)*t1
@@ -377,7 +377,7 @@ c
 cdir$ ivdep
       do 1022 izz=1,l0
 c  ratio of turbulent to laminar viscosity
-      t25 = t(izz,24)/t(izz,14) 
+      t25 = t(izz,24)/t(izz,14)
       t24 = 1.e0+t25*coef_eddy
 c
 c******************************************************************************
@@ -388,7 +388,7 @@ c
 c
 c******************************************************************************
 c
-c  t(14): (mach/re)*viscosity/J 
+c  t(14): (mach/re)*viscosity/J
 c
       t(izz,14) = xmre*t24*t(izz,14)/t(izz,15)
 c
@@ -402,7 +402,7 @@ c
 c
 c******************************************************************************
 c
-c  t(11) : t(14)*((d(zeta)/dx * d(u)/d(zeta)) 
+c  t(11) : t(14)*((d(zeta)/dx * d(u)/d(zeta))
 c               + (d(zeta)/dy * d(v)/d(zeta))
 c               + (d(zeta)/dz * d(w)/d(zeta)))/3
 c
@@ -416,8 +416,8 @@ cdir$ ivdep
 c
 c******************************************************************************
 c
-c  store off vmuk....viscosity coefficient (laminar + turbulent) on k=0 and 
-c  k=kdim boundaries for later use in force integration 
+c  store off vmuk....viscosity coefficient (laminar + turbulent) on k=0 and
+c  k=kdim boundaries for later use in force integration
       do 1923 ipl=1,npl
       ii=i+ipl-1
 cdir$ ivdep
@@ -432,7 +432,7 @@ c
 c
 c******************************************************************************
 c
-c  t(12) : contravariant velocity W at cell interfaces 
+c  t(12) : contravariant velocity W at cell interfaces
 c
 c     interior interfaces
 cdir$ ivdep
@@ -463,7 +463,7 @@ c
 c
 c******************************************************************************
 c
-c  calculate fluxes 
+c  calculate fluxes
 c
       do 3000 l=2,4
 c
@@ -474,7 +474,7 @@ cdir$ ivdep
       t(izz,16) = t(izz,5)*t(izz,l+6)+t(izz,l+23)*t(izz,11)
  1026 continue
 c
-c  (-)viscous flux =  Hv(k-1/2)-Hv(k+1/2) (momentum eqs.) 
+c  (-)viscous flux =  Hv(k-1/2)-Hv(k+1/2) (momentum eqs.)
 c
 cdir$ ivdep
       do 1027 izz=1,n
@@ -632,7 +632,7 @@ c             ignoring -2/3*rho*k*delij term
                 t23=t23p
               end if
               if (i_qcr2013 .eq. 1) then
-                xis2013 = s11star*s11star + s22star*s22star + 
+                xis2013 = s11star*s11star + s22star*s22star +
      +                    s33star*s33star +
      +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 s_mod = sqrt(2.*xis2013)
@@ -900,7 +900,7 @@ c
      +          +t(j+jkv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(j+jkv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jkv,15)*(t(j+jkv,14)*
      +          t(j+jkv,15)/xmre-t(j+jkv,24)+sigk1*t(j+jkv,24))*
@@ -1003,7 +1003,7 @@ c
      +          +t(j+jkv,26)*(u*t12 + v*t22 + w*t23)
      +          +t(j+jkv,27)*(u*t13 + v*t23 + w*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jkv,15)*(t(j+jkv,14)*
      +          t(j+jkv,15)/xmre-t(j+jkv,24)+sigk1*t(j+jkv,24))*
@@ -1099,7 +1099,7 @@ c
      +                       +0.5*(q(j,k,ii,3)+q(j,k-1,ii,3))*t23
      +                       +0.5*(q(j,k,ii,4)+q(j,k-1,ii,4))*t33))
 c   to get mulam, need mulam=t14*t15/xmre-t24
-c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term 
+c   (currently uses eddy viscosity mu_t (t(24)), even though diffusion term
 c   in k-eqn uses cmuc1*rho*k/omega or cmuc1*rho*k^2/epsilon)
      +         -xmre/t(j+jkv,15)*(t(j+jkv,14)*
      +          t(j+jkv,15)/xmre-t(j+jkv,24)+sigk1*t(j+jkv,24))*
@@ -1477,7 +1477,7 @@ c   to get mulam, need mulam=t14*t15/xmre-t24
             end if
  1285     continue
  1286   continue
-      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and. 
+      else if(i_tauijs .ne. 1 .and. i_nonlin .ne. 0 .and.
      +        level .ge. lglobal) then
         re=reue/xmach
 c   Add nonlinear terms to RHS
@@ -1524,7 +1524,7 @@ c            Find tauij values:
               w=0.5*(q(j,k,ii,4)+qk0(j,ii,4,1))*(1.-wk0(j+jkv2,5))+
      +            qk0(j,ii,4,1)*wk0(j+jkv2,5)
               zk_sa=0.
-              if (ivisc(3).eq.6 .or. ivisc(3).eq.7 .or. 
+              if (ivisc(3).eq.6 .or. ivisc(3).eq.7 .or.
      +            ivisc(3).eq.10.or. ivisc(3).eq.15) then
                 zk_sa=0.5*(zksav(j,k,ii,2)+tk0(j,ii,2,1))
               end if
@@ -1729,7 +1729,7 @@ c
  1295     continue
  1296   continue
       end if
-      if(i_tauijs .ne. 1 .and. 
+      if(i_tauijs .ne. 1 .and.
      +   (ivisc(3).eq.11.or.ivisc(3).eq.12.or.ivisc(3).eq.13.or.
      +    ivisc(3).eq.14.or.i_nonlin.ne.0)
      +    .and.level.ge.lglobal) then
@@ -1886,7 +1886,7 @@ cdir$ ivdep
       bk(izz,1,5,k) = bk(izz,1,5,k)-t(izz+js-1,11+k)+t(izz,11+k)
       ck(izz,1,5,k) = ck(izz,1,5,k)-t(izz+js-1,11+k)
  1062 continue
-cdir$ ivdep 
+cdir$ ivdep
       do 1063 izz=1,ns
       ak(izz,2,5,k)  = ak(izz,2,5,k)+t(izz+js-1,11+k)
  1063 continue

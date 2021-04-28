@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -35,19 +35,19 @@ c              closest solid surface (note that search region involves
 c              information across all the blocks for all solid segments)
 c
 c              This routine is much (MUCH!) faster than the old findmin
-c              routine for large grids ( > 10e6 points). For small or 
+c              routine for large grids ( > 10e6 points). For small or
 c              medium grids, it is slightly slower, although the result
-c              in all cases is believed to be more accurate, especially 
+c              in all cases is believed to be more accurate, especially
 c              where the grid is skewed.
 c
-c              Completely new version of the tlns3d routine disdr 
+c              Completely new version of the tlns3d routine disdr
 c              introduced by Larry Wigton (Boeing) May 1995. Uses
-c              routines written by Mac Ice (Boeing) based on a 
-c              recursive-box algorithm. This speeds up nearest 
+c              routines written by Mac Ice (Boeing) based on a
+c              recursive-box algorithm. This speeds up nearest
 c              point calculation.
 c
 c              This routine assumes the minumum distance at every point
-c              has previously been initialized to a large value, and 
+c              has previously been initialized to a large value, and
 c              that the number of viscous surface points (nsurf) has
 c              been counted
 c
@@ -118,8 +118,8 @@ c
       ntri  = iialloc(nou,bou,nbuf,ibufdim,myid,nsurf)
       iptri = iialloc(nou,bou,nbuf,ibufdim,myid,8*nsurf)
       isurf = 0
-      surfi = 0 
-      if (ivmx.eq.4 .or. ivmx.eq.25) 
+      surfi = 0
+      if (ivmx.eq.4 .or. ivmx.eq.25)
      .  surfi = iialloc(nou,bou,nbuf,ibufdim,myid,4*nsurf)
 c
 c***************************************************************************
@@ -223,21 +223,21 @@ c
                      mytag   = itag_xs + itag
                      call MPI_Irecv (xs, nvalxs,
      .                               MY_MPI_REAL,
-     .                               nd_srce,mytag, mycomm, 
+     .                               nd_srce,mytag, mycomm,
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
                      if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
-                        call MPI_Irecv(ixs, nvalbb, 
+                        call MPI_Irecv(ixs, nvalbb,
      .                                 MPI_INTEGER,
      .                                 nd_srce,mytag,mycomm,
      .                                 ireq_bb(nreq_bb),ierr)
                         nreq_bb = nreq_bb + 1
                      end if
 c
-                  else 
+                  else
 c
 c                    send the data to non-local nodes
 c
@@ -247,7 +247,7 @@ c
                            mytag   = itag_xs + itag
                            call MPI_Send (xs, nvalxs,
      .                                    MY_MPI_REAL,
-     .                                    nd_dest, mytag, 
+     .                                    nd_dest, mytag,
      .                                    mycomm, ierr)
                            if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
@@ -338,21 +338,21 @@ c
                      mytag   = itag_xs + itag
                      call MPI_Irecv (xs, nvalxs,
      .                               MY_MPI_REAL,
-     .                               nd_srce,mytag, mycomm, 
+     .                               nd_srce,mytag, mycomm,
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
                      if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
-                        call MPI_Irecv(ixs, nvalbb, 
+                        call MPI_Irecv(ixs, nvalbb,
      .                                 MPI_INTEGER,
      .                                 nd_srce,mytag,mycomm,
      .                                 ireq_bb(nreq_bb),ierr)
                         nreq_bb = nreq_bb + 1
                      end if
 c
-                  else 
+                  else
 c
 c                    send the data to non-local nodes
 c
@@ -362,7 +362,7 @@ c
                            mytag   = itag_xs + itag
                            call MPI_Send (xs, nvalxs,
      .                                    MY_MPI_REAL,
-     .                                    nd_dest, mytag, 
+     .                                    nd_dest, mytag,
      .                                    mycomm, ierr)
                            if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
@@ -453,14 +453,14 @@ c
                      mytag   = itag_xs + itag
                      call MPI_Irecv (xs, nvalxs,
      .                               MY_MPI_REAL,
-     .                               nd_srce,mytag, mycomm, 
+     .                               nd_srce,mytag, mycomm,
      .                               ireq_xs(nreq), ierr)
                      nreq = nreq + 1
 c
                      if (ivmx .eq.4 .or. ivmx.eq.25) then
                         nd_srce = mblk2nd(nbl)
                         mytag   = itag_ixs + itag
-                        call MPI_Irecv(ixs, nvalbb, 
+                        call MPI_Irecv(ixs, nvalbb,
      .                                 MPI_INTEGER,
      .                                 nd_srce,mytag,mycomm,
      .                                 ireq_bb(nreq_bb),ierr)
@@ -477,7 +477,7 @@ c
                            mytag   = itag_xs + itag
                            call MPI_Send (xs, nvalxs,
      .                                    MY_MPI_REAL,
-     .                                    nd_dest, mytag, 
+     .                                    nd_dest, mytag,
      .                                    mycomm, ierr)
                            if (ivmx .eq.4 .or. ivmx.eq.25) then
                               nd_dest = inode
@@ -591,7 +591,7 @@ c        the nearest point.
 c     4. Find the nearest point in this box, and compare with the
 c        previous nearest point. Return to step 3.
 c
-c     because the permanent storage space for for the minimum 
+c     because the permanent storage space for for the minimum
 c     distance array in cfl3d is sized for cell centers, and the
 c     distance calculated in calc_dist is to grid points, the
 c     returned minimum distance function from calc_dist is
@@ -624,7 +624,7 @@ c
             end if
          end if
 c
-c        coarser levels 
+c        coarser levels
 c
          ncg = ncgg(igrid)-j1
          if (ncg.gt.0) then
@@ -696,7 +696,7 @@ c
      .                   xs,nsurf,nbl,blank,bci,bcj,bck)
 c***********************************************************************
 c     Purpose:  this subroutine collects the solid surface points from
-c     a given segment on a block into the array xs. the points are put 
+c     a given segment on a block into the array xs. the points are put
 c     in the array as triplets (x,y,z) so that the addressing is
 c     xs(3,npts).
 c***********************************************************************
@@ -796,7 +796,7 @@ c
   600 kw = kmx
       kw1 = kmx-1
   601 do jw=n2beg,n2end
-        jj = min(jw,n2end-1) 
+        jj = min(jw,n2end-1)
         j1 = max(jw-1,n2beg)
         do iw=n1beg,n1end
           ii = min(iw,n1end-1)
@@ -822,7 +822,7 @@ c
      .                    x,y,z,nface,n1beg,n1end,n2beg,n2end,
      .                    xs,ixs,nsurf,nbl,blank,bci,bcj,bck)
 c***********************************************************************
-c     Purpose:  this subroutine collects the solid surface points from 
+c     Purpose:  this subroutine collects the solid surface points from
 c     a given segment on a block into the array xs. also puts
 c     index and block info into array ixs for use with Baldwin-Barth
 c     turbulence model.
@@ -936,7 +936,7 @@ c
   600 kw = kmx
       kw1 = kmx - 1
   601 do jw=n2beg,n2end
-        jj = min(jw,n2end-1) 
+        jj = min(jw,n2end-1)
         j1 = max(jw-1,n2beg)
         do iw=n1beg,n1end
           ii = min(iw,n1end-1)
@@ -1049,7 +1049,7 @@ c   stop searching when nearest bounding box is too far away
       testmin=1.0e34
       do 160 k=1,n
       xs=tsurf(l,1)
-      ys=tsurf(l,2)     
+      ys=tsurf(l,2)
       zs=tsurf(l,3)
 c     tsurf(l,4) contains 1) a large value for surface pts. that
 c     should not be minimum distance pts (see note in subroutine
@@ -1147,7 +1147,7 @@ c
  20     continue
         ixmax=ixmax-1
         do isurf=ixmin,ixmax
-          if (real(surf(isurf,2)) .eq. real(yps) .and. 
+          if (real(surf(isurf,2)) .eq. real(yps) .and.
      .        real(surf(isurf,3)) .eq. real(zps) .and.
      .        ntri(isurf) .ne. 4) then
             numtri=ntri(isurf)
@@ -1253,9 +1253,9 @@ c
       end do
       return
       end
-      subroutine distcc(jdim,kdim,idim,smingp,smincc) 
+      subroutine distcc(jdim,kdim,idim,smingp,smincc)
 c***********************************************************************
-c     Purpose: To average the distance function based at grid points 
+c     Purpose: To average the distance function based at grid points
 c              to one based at cell centers
 c***********************************************************************
 c
@@ -1282,7 +1282,7 @@ c
 c
       return
       end
-      subroutine distcg(jdimf,kdimf,idimf,sminf,jdim,kdim,idim,sminc) 
+      subroutine distcg(jdimf,kdimf,idimf,sminf,jdim,kdim,idim,sminc)
 c***********************************************************************
 c     Purpose: To collocate the fine-grid minimum distance function
 c              on a fine grid to a coarser grid
@@ -1582,7 +1582,7 @@ c
 		   iright = nbbv/2
 		   i1 = bbi(iright)
 		   i2 = bbi(iright+1)
- 101               if(real(wx(i1)).ne.real(wx(i2)) .or. 
+ 101               if(real(wx(i1)).ne.real(wx(i2)) .or.
      .                iright.ge.nbbv)goto 102
 			iright = iright + 1
                         if (iright .ge. nbbv) goto 102
@@ -1590,7 +1590,7 @@ c
 		        i2 = bbi(iright+1)
 			goto 101
  102		   continue
-		elseif (real(by).gt.real(bx) .and. 
+		elseif (real(by).gt.real(bx) .and.
      .                  real(by).gt.real(bz)) then
 		   call shells(nbbv,bbi,wy)
 		   iright = nbbv/2
@@ -1805,7 +1805,7 @@ c
       dbp=b1*p1+b2*p2+b3*p3
       s=(dab*dbp-dbb*dap)/den
       t=(dab*dap-daa*dbp)/den
-      if (real(s) .lt. 0 .or. real(t) .lt. 0 .or. 
+      if (real(s) .lt. 0 .or. real(t) .lt. 0 .or.
      .    real(t+s) .gt. 1) go to 100
       r1=p1-s*a1-t*b1
       r2=p2-s*a2-t*b2
@@ -1853,7 +1853,7 @@ c
       end
       subroutine heap_sort(n,arrin,indx)
 c***********************************************************************
-c     Purpose:  To sort a list of points 
+c     Purpose:  To sort a list of points
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -1862,13 +1862,13 @@ c
 c
       dimension arrin(n)
       integer indx(n)
-c      
+c
       do 11 j=1,n
          indx(j) = j
  11   continue
 c
       if(n .eq. 1)return
-c      
+c
       l = n/2 + 1
       ir= n
  10   continue
@@ -1907,7 +1907,7 @@ c
       subroutine bbarthcg(jdim,kdim,idim,jdimc,kdimc,idimc,xjb,xkb,xib,
      .                    blnum,xjbc,xkbc,xibc,blnumc)
 c***********************************************************************
-c     Purpose:  To set the i,j,k and block number indicies needed for 
+c     Purpose:  To set the i,j,k and block number indicies needed for
 c     the Baldwin-Barth model on coarser levels
 c***********************************************************************
 c
@@ -1920,7 +1920,7 @@ c
      .          xjbc(jdimc-1,kdimc-1,idimc-1),
      .          xkbc(jdimc-1,kdimc-1,idimc-1),
      .          xibc(jdimc,kdimc,idimc,2),
-     .          blnumc(jdimc-1,kdimc-1,idimc-1) 
+     .          blnumc(jdimc-1,kdimc-1,idimc-1)
 c
       jdim1 = jdim - 1
       kdim1 = kdim - 1
@@ -1997,13 +1997,13 @@ CDIR$ IVDEP
 c
 c     note: min. distance and ibbarth pointers are calculated/set
 c     for grid points. what cfl3d ultimately needs are cell-center
-c     values. the min. distance value is averaged elsewhere (by 
+c     values. the min. distance value is averaged elsewhere (by
 c     calling subroutine distcc in findmin_new). for the xib, xjb
 c     xkb and blnum pointers, we can't really average, so just take
 c     the easy way out and say that the cell center value of these
 c     pointers are the same as the grid point values with the same
 c     index. note also that iwrk(i) contains imx1*jmx1*kmx1 grid-
-c     point values, whereas xib....blnum can only be set for 
+c     point values, whereas xib....blnum can only be set for
 c     (imx1-1)*(jmx1-1)*(kmx1-1) values, so to keep the conversion
 c     straight, must loop over all j,k but skip when at the maximum
 c
@@ -2061,7 +2061,7 @@ c
  20     continue
         ixmax=ixmax-1
         do isurf=ixmin,ixmax
-          if (real(surf(isurf,2)) .eq. real(yps) .and. 
+          if (real(surf(isurf,2)) .eq. real(yps) .and.
      .        real(surf(isurf,3)) .eq. real(zps) .and.
      .        ntri(isurf) .ne. 4) then
               numtri=ntri(isurf)
@@ -2097,7 +2097,7 @@ c
      .                          ibbarth,nbl)
 c***********************************************************************
 c     Purpose:  To store coordinates of surface points in the surf
-c     array and to identify the neigbors of each surface pt. this 
+c     array and to identify the neigbors of each surface pt. this
 c     routine also stores the additional data needed for the Baldwin-
 c     Barth turbulence model.
 c***********************************************************************
@@ -2213,7 +2213,7 @@ c
       end do
       do j=1,4
       call move_integer(nsurf,ibbarth(1,j),iwrk(iperm),iwrk(itemp))
-      end do 
+      end do
       call ifree(nou,bou,nbuf,ibufdim,myid,nsurf)
       inv_iperm = iialloc(nou,bou,nbuf,ibufdim,myid,nsurf)
       do i=1,nsurf

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -63,13 +63,13 @@ c
      .              - 1.0*blank(jdim1,k,i)
    20 continue
       do 30 j=1,jdim
-      qk0(j,i,1,1) = (1.0-blank(j,1,i))*qk0(j,i,1,1) 
+      qk0(j,i,1,1) = (1.0-blank(j,1,i))*qk0(j,i,1,1)
      .              - 1.0*blank(j,1,i)
-      qk0(j,i,5,1) = (1.0-blank(j,1,i))*qk0(j,i,5,1) 
+      qk0(j,i,5,1) = (1.0-blank(j,1,i))*qk0(j,i,5,1)
      .              - 1.0*blank(j,1,i)
-      qk0(j,i,1,3) = (1.0-blank(j,kdim1,i))*qk0(j,i,1,3) 
+      qk0(j,i,1,3) = (1.0-blank(j,kdim1,i))*qk0(j,i,1,3)
      .              - 1.0*blank(j,kdim1,i)
-      qk0(j,i,5,3) = (1.0-blank(j,kdim1,i))*qk0(j,i,5,3) 
+      qk0(j,i,5,3) = (1.0-blank(j,kdim1,i))*qk0(j,i,5,3)
      .              - 1.0*blank(j,kdim1,i)
    30 continue
    10 continue
@@ -139,13 +139,13 @@ c
       epss = 1.0e+05
       do 110 i=1,idim1
       do 120 k=1,kdim
-c 
+c
       ib = int(blank(1,k,i))
 c
       if ((real(qj0(k,i,1,1)).le.real(epsz) .or.
      .     real(qj0(k,i,5,1)).le.real(epsz) .or.
-     .     real(qj0(k,i,1,1)).ge.real(epss) .or. 
-     .     real(qj0(k,i,5,1)).ge.real(epss)) .and. 
+     .     real(qj0(k,i,1,1)).ge.real(epss) .or.
+     .     real(qj0(k,i,5,1)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),200)
@@ -167,9 +167,9 @@ c
 c
       ib = int(blank(jdim1,k,i))
 c
-      if ((real(qj0(k,i,1,3)).le.real(epsz) .or. 
+      if ((real(qj0(k,i,1,3)).le.real(epsz) .or.
      .     real(qj0(k,i,5,3)).le.real(epsz) .or.
-     .     real(qj0(k,i,1,3)).ge.real(epss) .or. 
+     .     real(qj0(k,i,1,3)).ge.real(epss) .or.
      .     real(qj0(k,i,5,3)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -192,12 +192,12 @@ c
   120 continue
 c
       do 130 j=1,jdim
-c 
+c
       ib = int(blank(j,1,i))
 c
-      if ((real(qk0(j,i,1,1)).le.real(epsz) .or. 
+      if ((real(qk0(j,i,1,1)).le.real(epsz) .or.
      .     real(qk0(j,i,5,1)).le.real(epsz) .or.
-     .     real(qk0(j,i,1,1)).ge.real(epss) .or. 
+     .     real(qk0(j,i,1,1)).ge.real(epss) .or.
      .     real(qk0(j,i,5,1)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -220,9 +220,9 @@ c
 c
       ib = int(blank(j,kdim1,i))
 c
-      if ((real(qk0(j,i,1,3)).le.real(epsz) .or. 
+      if ((real(qk0(j,i,1,3)).le.real(epsz) .or.
      .     real(qk0(j,i,5,3)).le.real(epsz) .or.
-     .     real(qk0(j,i,1,3)).ge.real(epss) .or. 
+     .     real(qk0(j,i,1,3)).ge.real(epss) .or.
      .     real(qk0(j,i,5,3)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -230,7 +230,7 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),45) nbl,igridg(nbl),j,i,real(qk0(j,i,1,3)),
      .                           real(qk0(j,i,5,3))
-         if (real(qk0(j,i,1,3)).eq.-1.0 .and. 
+         if (real(qk0(j,i,1,3)).eq.-1.0 .and.
      .       real(qk0(j,i,5,3)).eq.-1.0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),100)
@@ -253,7 +253,7 @@ c
 c
       if ((real(qi0(j,k,1,1)).le.real(epsz) .or.
      .     real(qi0(j,k,5,1)).le.real(epsz) .or.
-     .     real(qi0(j,k,1,1)).ge.real(epss) .or. 
+     .     real(qi0(j,k,1,1)).ge.real(epss) .or.
      .     real(qi0(j,k,5,1)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -261,7 +261,7 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),55) nbl,igridg(nbl),j,k,real(qi0(j,k,1,1)),
      .                           real(qi0(j,k,5,1))
-         if (real(qi0(j,k,1,1)).eq.-1.0 .and. 
+         if (real(qi0(j,k,1,1)).eq.-1.0 .and.
      .       real(qi0(j,k,5,1)).eq.-1.0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),100)
@@ -277,9 +277,9 @@ c
 c
       ib = int(blank(j,k,idim1))
 c
-      if ((real(qi0(j,k,1,3)).le.real(epsz) .or. 
+      if ((real(qi0(j,k,1,3)).le.real(epsz) .or.
      .     real(qi0(j,k,5,3)).le.real(epsz) .or.
-     .     real(qi0(j,k,1,3)).ge.real(epss) .or. 
+     .     real(qi0(j,k,1,3)).ge.real(epss) .or.
      .     real(qi0(j,k,5,3)).ge.real(epss)) .and.
      .   ib.gt.0) then
          nou(1) = min(nou(1)+1,ibufdim)
@@ -287,7 +287,7 @@ c
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),65) nbl,igridg(nbl),j,k,real(qi0(j,k,1,3)),
      .                           real(qi0(j,k,5,3))
-         if (real(qi0(j,k,1,3)).eq.-1.0 .and. 
+         if (real(qi0(j,k,1,3)).eq.-1.0 .and.
      .       real(qi0(j,k,5,3)).eq.-1.0) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),100)

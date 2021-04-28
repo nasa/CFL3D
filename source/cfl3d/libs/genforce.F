@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,11 +29,11 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Integrate the generalized forces on the body for 
-c               aeroelastic analysis. Only pressure forces are 
-c               included. The computations of the generalized 
+c     Purpose:  Integrate the generalized forces on the body for
+c               aeroelastic analysis. Only pressure forces are
+c               included. The computations of the generalized
 c               forces are consistant with current methodolgy used
-c               calculating "regular" forces in subroutine force. 
+c               calculating "regular" forces in subroutine force.
 c***********************************************************************
 c
 #   ifdef CMPLX
@@ -91,7 +91,7 @@ c
       cpc   = 2.e0/(gamma*xmach*xmach)
 c
       cz    = 0.e0
-      cy    = 0.e0 
+      cy    = 0.e0
       cx    = 0.e0
 c
 c     loop over all aeroelastic surface segments (those with idfrmseg=99)
@@ -126,7 +126,7 @@ c
                sgn = 1.0
                if(kk .gt. 1) sgn = -1.0
 c
-               do 10 i=ist,ifn 
+               do 10 i=ist,ifn
                cxl   = 0.e0
                cyl   = 0.e0
                czl   = 0.e0
@@ -139,13 +139,13 @@ c
      .                +  xmdk(j,i+1,l+2,n2)+xmdk(j+1,i+1,l+2,n2))*.25
                zmdavg = (xmdk(j,i  ,l+3,n2)+xmdk(j+1,i  ,l+3,n2)
      .                +  xmdk(j,i+1,l+3,n2)+xmdk(j+1,i+1,l+3,n2))*.25
-c          
-               dcp = -(qk0(j,i,5,kk+kk-1)/p0-1.e0)*cpc*sk(j,k,i,4)
-               dcx = dcp*sk(j,k,i,1)*sgn 
-               dcy = dcp*sk(j,k,i,2)*sgn 
-               dcz = dcp*sk(j,k,i,3)*sgn 
 c
-c              only use contributions from points with interface 
+               dcp = -(qk0(j,i,5,kk+kk-1)/p0-1.e0)*cpc*sk(j,k,i,4)
+               dcx = dcp*sk(j,k,i,1)*sgn
+               dcy = dcp*sk(j,k,i,2)*sgn
+               dcz = dcp*sk(j,k,i,3)*sgn
+c
+c              only use contributions from points with interface
 c              (solid surface) boundary conditions, and only those
 c              points not blanked out
 c
@@ -154,7 +154,7 @@ c
                dcy  = dcy*fact
                dcz  = dcz*fact
 c
-               cxl   = cxl+dcx*xmdavg 
+               cxl   = cxl+dcx*xmdavg
                cyl   = cyl+dcy*ymdavg
                czl   = czl+dcz*zmdavg
 c
@@ -163,7 +163,7 @@ c
 c              integrated values
                cz    = cz+czl
                cy    = cy+cyl
-               cx    = cx+cxl 
+               cx    = cx+cxl
 c
    10          continue
 c
@@ -213,7 +213,7 @@ c
                dcy = dcp*sj(j,k,i,2)*sgn
                dcz = dcp*sj(j,k,i,3)*sgn
 c
-c              only use contributions from points with interface 
+c              only use contributions from points with interface
 c              (solid surface) boundary conditions, and only those
 c              points not blanked out
 c
@@ -281,7 +281,7 @@ c
                dcy = dcp*si(j,k,i,2)*sgn
                dcz = dcp*si(j,k,i,3)*sgn
 c
-c              only use contributions from points with interface 
+c              only use contributions from points with interface
 c              (solid surface) boundary conditions, and only those
 c              points not blanked out
 c
@@ -310,4 +310,4 @@ c
       end do
 c
       return
-      end 
+      end

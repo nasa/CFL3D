@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,7 +28,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Interpolate corrections for boundary values for all 
+c     Purpose:  Interpolate corrections for boundary values for all
 c     grids overlapped in the current mesh.
 c***********************************************************************
 c
@@ -63,7 +63,7 @@ c
       if (iipntsg(nbl) .eq. 0) return
 c
 c     qq is "augmented" q array of dimensions jdim+1 x kdim+1 x idim+1
-c     containing cell-center data at interior points and cell-face 
+c     containing cell-center data at interior points and cell-face
 c     center data at boundary points
 c
       call augmntq(q,jdim,kdim,idim,nbl,ldim,qj0,qk0,qi0,qq,
@@ -73,7 +73,7 @@ c
          do 12 n=1,ldim
          do 12 l=lsta,lend
 c
-c        set up interpolation coefficients 
+c        set up interpolation coefficients
 c
          s1 = qq(jjig(l)+1, kkig(l)+1, iiig(l)+1, n)
          s2 = qq(jjig(l)+1, kkig(l)+1, iiig(l)+2, n)
@@ -84,41 +84,41 @@ c
          s7 = qq(jjig(l)+2, kkig(l)+2, iiig(l)+2, n)
          s8 = qq(jjig(l)+2, kkig(l)+2, iiig(l)+1, n)
 c
-         a1 =  s1 
-         a2 = -s1+s2 
-         a3 = -s1+s4 
-         a4 = -s1+s5 
+         a1 =  s1
+         a2 = -s1+s2
+         a3 = -s1+s4
+         a4 = -s1+s5
          a5 =  s1-s2+s3-s4
          a6 =  s1-s2-s5+s6
          a7 =  s1-s4-s5+s8
-         a8 = -s1+s2-s3+s4+s5-s6+s7-s8 
+         a8 = -s1+s2-s3+s4+s5-s6+s7-s8
 c
-c        interpolate and store in qb array 
+c        interpolate and store in qb array
 c
-         qb(l,n,iset) = a1 + a2*dxintg(l) 
+         qb(l,n,iset) = a1 + a2*dxintg(l)
      .                + a3*dyintg(l)
      .                + a4*dzintg(l)
      .                + a5*dxintg(l)*dyintg(l)
      .                + a6*dxintg(l)*dzintg(l)
      .                + a7*dyintg(l)*dzintg(l)
-     .                + a8*dxintg(l)*dyintg(l)*dzintg(l) 
+     .                + a8*dxintg(l)*dyintg(l)*dzintg(l)
    12    continue
       else
          do 121 n=1,ldim
          do 121 l=lsta,lend
 c
-c        set up interpolation coefficients 
+c        set up interpolation coefficients
 c
          s1 = qq(jjig(l)+1, kkig(l)+1, 2,n)
          s4 = qq(jjig(l)+2, kkig(l)+1, 2,n)
          s5 = qq(jjig(l)+1, kkig(l)+2, 2,n)
          s8 = qq(jjig(l)+2, kkig(l)+2, 2,n)
-c 
-         a3 = -s1+s4 
-         a4 = -s1+s5 
+c
+         a3 = -s1+s4
+         a4 = -s1+s5
          a7 =  s1-s4-s5+s8
 c
-c        interpolate and store in qb array 
+c        interpolate and store in qb array
 c
          qb(l,n,iset) = s1+a3*dyintg(l)+a4*dzintg(l)+
      .                     a7*dyintg(l)*dzintg(l)
@@ -147,4 +147,4 @@ c
          write(bou(nou(1),1),*)'  qb points updated = ',iipntsg(nbl)
       end if
       return
-      end 
+      end

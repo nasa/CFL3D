@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -130,10 +130,10 @@ c
       jj = 0
       do 404 j=1,jdim1,2
       jj = jj+1
-      qq(jj,kk,ii,n)  = (qw(j,k,i,n)    +qw(j+1,k,i,n)    
+      qq(jj,kk,ii,n)  = (qw(j,k,i,n)    +qw(j+1,k,i,n)
      .                  +qw(j,k+1,i,n)  +qw(j+1,k+1,i,n))/
      .                   volc(jj,kk,ii)
-      qr(jj,kk,ii,n)  = (res(j,k,i,n)   +res(j+1,k,i,n)    
+      qr(jj,kk,ii,n)  = (res(j,k,i,n)   +res(j+1,k,i,n)
      .                  +res(j,k+1,i,n) +res(j+1,k+1,i,n))
       if ((ivisc(1).gt.1 .and. n.eq.1) .or. (ivisc(2).gt.1 .and. n.eq.1)
      .   .or. (ivisc(3).gt.1 .and. n.eq.1)) then
@@ -174,7 +174,7 @@ c
       jj = 0
       do 4040 j=1,jdim1,2
       jj = jj+1
-         tursavc(jj,kk,ii,n) = .25e0*(tursavf(j,k,i,n) 
+         tursavc(jj,kk,ii,n) = .25e0*(tursavf(j,k,i,n)
      .      +tursavf(j+1,k,i,n)+tursavf(j,k+1,i,n)+tursavf(j+1,k+1,i,n))
  4040 continue
       end if

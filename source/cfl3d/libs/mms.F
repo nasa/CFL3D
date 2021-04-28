@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -283,7 +283,7 @@ c   residuals
       i=1
       do j=3,jdim-3
         do k=3,kdim-3
-          if (real(ccabs(res(j,k,i,1)/vol(j,k,i))) .gt. 
+          if (real(ccabs(res(j,k,i,1)/vol(j,k,i))) .gt.
      +       real(res_1_max)) then
             res_1_max = ccabs(res(j,k,i,1)/vol(j,k,i))
             i_res_1_max=i
@@ -292,7 +292,7 @@ c   residuals
             res_1_max_alone=res(j,k,i,1)
             vol_1_max_alone=vol(j,k,i)
           end if
-          if (real(ccabs(res(j,k,i,2)/vol(j,k,i))) .gt. 
+          if (real(ccabs(res(j,k,i,2)/vol(j,k,i))) .gt.
      +       real(res_2_max)) then
             res_2_max = ccabs(res(j,k,i,2)/vol(j,k,i))
             i_res_2_max=i
@@ -301,7 +301,7 @@ c   residuals
             res_2_max_alone=res(j,k,i,2)
             vol_2_max_alone=vol(j,k,i)
           end if
-          if (real(ccabs(res(j,k,i,3)/vol(j,k,i))) .gt. 
+          if (real(ccabs(res(j,k,i,3)/vol(j,k,i))) .gt.
      +       real(res_3_max)) then
             res_3_max = ccabs(res(j,k,i,3)/vol(j,k,i))
             i_res_3_max=i
@@ -310,7 +310,7 @@ c   residuals
             res_3_max_alone=res(j,k,i,3)
             vol_3_max_alone=vol(j,k,i)
           end if
-          if (real(ccabs(res(j,k,i,4)/vol(j,k,i))) .gt. 
+          if (real(ccabs(res(j,k,i,4)/vol(j,k,i))) .gt.
      +       real(res_4_max)) then
             res_4_max = ccabs(res(j,k,i,4)/vol(j,k,i))
             i_res_4_max=i
@@ -319,7 +319,7 @@ c   residuals
             res_4_max_alone=res(j,k,i,4)
             vol_4_max_alone=vol(j,k,i)
           end if
-          if (real(ccabs(res(j,k,i,5)/vol(j,k,i))) .gt. 
+          if (real(ccabs(res(j,k,i,5)/vol(j,k,i))) .gt.
      +       real(res_5_max)) then
             res_5_max = ccabs(res(j,k,i,5)/vol(j,k,i))
             i_res_5_max=i
@@ -517,7 +517,7 @@ c=============================================================================80
       implicit complex(a-h,o-z)
 #   endif
       dimension x(jdim,kdim,idim), y(jdim,kdim,idim), z(jdim,kdim,idim),
-     +          vol(jdim,kdim,idim-1), res(jdim,kdim,idim), 
+     +          vol(jdim,kdim,idim-1), res(jdim,kdim,idim),
      +          smin(jdim-1,kdim-1,idim-1)
       dimension f(6)
 c
@@ -1605,7 +1605,7 @@ c
 c Initialize q
       do n=1,neq
         q(n)=0.
-      enddo 
+      enddo
 c
 c Spalart Constants
       sig    = 0.66667
@@ -1678,11 +1678,11 @@ c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon), 4=MS4(Lisbon)
         p_polyf(11)=0.
         p_polyf(12)=0.
         p_polyf(13)=0.
-        call exact_polyfg(u_scale, u_polyf, x, y, z, u, ux, uy, uz, 
+        call exact_polyfg(u_scale, u_polyf, x, y, z, u, ux, uy, uz,
      +              uxx, uyy, uzz, uxy, uxz, uyz )
-        call exact_polyfg(w_scale, w_polyf, x, y, z, w, wx, wy, wz, 
+        call exact_polyfg(w_scale, w_polyf, x, y, z, w, wx, wy, wz,
      +              wxx, wyy, wzz, wxy, wxz, wyz )
-        call exact_polyfg(p_scale, p_polyf, x, y, z, p, px, py, pz, 
+        call exact_polyfg(p_scale, p_polyf, x, y, z, p, px, py, pz,
      +              pxx, pyy, pzz, pxy, pxz, pyz )
       else if (ims_sol .eq. 1 .or. ims_sol .eq. 2 .or.
      +         ims_sol .eq. 4) then
@@ -1696,8 +1696,8 @@ c 0=polynomial, 1=MS1(Lisbon), 2=MS2(Lisbon), 4=MS4(Lisbon)
       end if
 c
 c Enforce constant adiabatic wall temperature (2D).
-      call total_temperature_2d( t, tx, tz, txx, tzz, txz, 
-     +                           u, ux, uz, uxx, uzz, uxz, 
+      call total_temperature_2d( t, tx, tz, txx, tzz, txz,
+     +                           u, ux, uz, uxx, uzz, uxz,
      +                           w, wx, wz, wxx, wzz, wxz )
 c
 c Density
@@ -1774,17 +1774,17 @@ c   Momentum equations - second term
 c
 c   Laminar energy equation
       xla_t = txx + tyy + tzz
-      vf5  = u*vf2 + v*vf3 + w*vf4                                 
-     +   - cgp*( xmu*xla_t + xmux*tx + xmuy*ty + xmuz*tz )         
-     +   - xmre*xmu*( ux*s2_xx + uy*s2_xy + uz*s2_xz              
-     +              + vx*s2_xy + vy*s2_yy + vz*s2_yz              
+      vf5  = u*vf2 + v*vf3 + w*vf4
+     +   - cgp*( xmu*xla_t + xmux*tx + xmuy*ty + xmuz*tz )
+     +   - xmre*xmu*( ux*s2_xx + uy*s2_xy + uz*s2_xz
+     +              + vx*s2_xy + vy*s2_yy + vz*s2_yz
      +              + wx*s2_xz + wy*s2_yz + wz*s2_zz - 2.0*d3*d )
       f(5) = f(5) + vf5
 c
 c   Spalart turbulence model equation
       if (ivmx .eq. 5) then
 c       Turbulence variable
-        call exact_zero(vt, vtx, vty, vtz, vtxx, vtyy, vtzz, vtxy, 
+        call exact_zero(vt, vtx, vty, vtz, vtxx, vtyy, vtzz, vtxy,
      +                  vtxz, vtyz )
         term = 1.0
         if (ims_sol .eq. 1) then
@@ -1829,10 +1829,10 @@ c       Momentum equations - second term
         f(4) = f(4) + tf4
 c
 c       Energy equation
-        f(5) = f(5) + u*tf2 + v*tf3 + w*tf4                           
-     +   - cgpt*( xmut*xla_t + xmutx*tx + xmuty*ty + xmutz*tz )     
-     +   - xmre*xmut*( ux*s2_xx + uy*s2_xy + uz*s2_xz              
-     +               + vx*s2_xy + vy*s2_yy + vz*s2_yz              
+        f(5) = f(5) + u*tf2 + v*tf3 + w*tf4
+     +   - cgpt*( xmut*xla_t + xmutx*tx + xmuty*ty + xmutz*tz )
+     +   - xmre*xmut*( ux*s2_xx + uy*s2_xy + uz*s2_xz
+     +               + vx*s2_xy + vy*s2_yy + vz*s2_yz
      +               + wx*s2_xz + wy*s2_yz + wz*s2_zz - 2.0*d3*d )
 c
         if (distf .ne. 0.) then
@@ -1876,7 +1876,7 @@ c   the following is slightly different between FUN3D and CFL3D:
 c         f_prod = cb1*(1.0-ft2)*sw*vt
 c         f_dest = xmre*( cb1*ft2/vkar2 - cw1*fw )*(vt/distance)**2
           f_prod = cb1*(1.0-ft2)*s*vt
-          f_dest = xmre*( cb1*((1.-ft2)*fv2+ft2)/vkar2 - 
+          f_dest = xmre*( cb1*((1.-ft2)*fv2+ft2)/vkar2 -
      +             cw1*fw )*(vt/distance)**2
 c   ------------------------------------------------------------
 c
@@ -1884,13 +1884,13 @@ c         ...Note: a model of pure diffusion (Laplacian operator)
 c         ...is with t_diff1=1, t_diff2=t_diff3=0, xnu=constant
 c         ...(Laplace equation is recovered with xmach=re=sig=1).
           cb21 = t_diff2 + t_diff3*cb2
-          f_diff = xmre_s*( ( t_diff1*xnu + t_diff2*vt )*xla_vt  
-     +                    + ( t_diff1*xnux + cb21*vtx )*vtx     
-     +                    + ( t_diff1*xnuy + cb21*vty )*vty     
+          f_diff = xmre_s*( ( t_diff1*xnu + t_diff2*vt )*xla_vt
+     +                    + ( t_diff1*xnux + cb21*vtx )*vtx
+     +                    + ( t_diff1*xnuy + cb21*vty )*vty
      +                    + ( t_diff1*xnuz + cb21*vtz )*vtz     )
           q(6) = vt
-          f(6) = t_conv*f_conv                            
-     +         - ( t_prod*f_prod + t_dest*f_dest )        
+          f(6) = t_conv*f_conv
+     +         - ( t_prod*f_prod + t_dest*f_dest )
      +         - f_diff
         else
           q(6) = vt
@@ -1963,7 +1963,7 @@ c=============================================================================80
       return
       end
 c
-      subroutine total_temperature_2d(t, tx, ty, txx, tyy, txy, 
+      subroutine total_temperature_2d(t, tx, ty, txx, tyy, txy,
      +                                u, ux, uy, uxx, uyy, uxy,
      +                                v, vx, vy, vxx, vyy, vxy  )
 c=============================== TOTAL_TEMPERATURE_2D ========================80
@@ -2032,7 +2032,7 @@ c   !...account for nondimensionalization in CFL3D
       return
       end
 c
-      subroutine exact_lisbon_ms2_u(scale, x, y, q, qx, qy, qxx, 
+      subroutine exact_lisbon_ms2_u(scale, x, y, q, qx, qy, qxx,
      +                              qyy, qxy)
 c=============================== EXACT_LISBON_MS2_U ==========================80
 c
@@ -2048,7 +2048,7 @@ c=============================================================================80
       return
       end
 c
-      subroutine exact_lisbon_ms2_v(scale, x, y, q, qx, qy, qxx, 
+      subroutine exact_lisbon_ms2_v(scale, x, y, q, qx, qy, qxx,
      +                              qyy, qxy )
 c=============================== EXACT_LISBON_MS2_V ==========================80
 c
@@ -2062,7 +2062,7 @@ c=============================================================================80
       qyy = qyy +  scale*dvdy2ms(x,y)
       qxy = qxy +  scale*dvdxyms(x,y)
       return
-      end 
+      end
 c
       subroutine exact_lisbon_ms2_p(scale, x, y, q, qx, qy )
 c=============================== EXACT_LISBON_MS2_P ==========================80
@@ -2199,7 +2199,7 @@ c
       t1=4.0*u1/sqrt(pi)*x2*x2*x2
       dudy3ms=t1*exp(-eta*eta)*(2.0*eta*eta-1.0)
       return
-      end 
+      end
 c
       function vms(x,y)
       sigma=4.0
@@ -2734,27 +2734,27 @@ c
       end
 c
       function user_derfc(x)
-      parameter(pv= 1.26974899965115684e+01, 
-     +          ph= 6.10399733098688199e+00, 
-     +          p0= 2.96316885199227378e-01, 
-     +          p1= 1.81581125134637070e-01, 
-     +          p2= 6.81866451424939493e-02, 
-     +          p3= 1.56907543161966709e-02, 
-     +          p4= 2.21290116681517573e-03, 
-     +          p5= 1.91395813098742864e-04, 
-     +          p6= 9.71013284010551623e-06, 
+      parameter(pv= 1.26974899965115684e+01,
+     +          ph= 6.10399733098688199e+00,
+     +          p0= 2.96316885199227378e-01,
+     +          p1= 1.81581125134637070e-01,
+     +          p2= 6.81866451424939493e-02,
+     +          p3= 1.56907543161966709e-02,
+     +          p4= 2.21290116681517573e-03,
+     +          p5= 1.91395813098742864e-04,
+     +          p6= 9.71013284010551623e-06,
      +          p7= 1.66642447174307753e-07)
-      parameter(q0= 6.12158644495538758e-02, 
-     +          q1= 5.50942780056002085e-01, 
-     +          q2= 1.53039662058770397e+00, 
-     +          q3= 2.99957952311300634e+00, 
-     +          q4= 4.95867777128246701e+00, 
-     +          q5= 7.41471251099335407e+00, 
-     +          q6= 1.04765104356545238e+01, 
+      parameter(q0= 6.12158644495538758e-02,
+     +          q1= 5.50942780056002085e-01,
+     +          q2= 1.53039662058770397e+00,
+     +          q3= 2.99957952311300634e+00,
+     +          q4= 4.95867777128246701e+00,
+     +          q5= 7.41471251099335407e+00,
+     +          q6= 1.04765104356545238e+01,
      +          q7= 1.48455557345597957e+01)
       y=x*x
-      y=exp(-y)*x*(p7/(y+q7)+p6/(y+q6) 
-     +  +p5/(y+q5)+p4/(y+q4)+p3/(y+q3) 
+      y=exp(-y)*x*(p7/(y+q7)+p6/(y+q6)
+     +  +p5/(y+q5)+p4/(y+q4)+p3/(y+q3)
      +  +p2/(y+q2)+p1/(y+q1)+p0/(y+q0))
       if(x < ph) y=y+2/(exp(pv*x)+1)
       user_derfc=y
@@ -2762,11 +2762,11 @@ c
       end
 c
       function user_derf(x)
-      parameter(p0= 1.12837916709551257e+00, 
-     +          p1=-3.76126389031833602e-01, 
-     +          p2= 1.12837916706621301e-01, 
-     +          p3=-2.68661698447642378e-02, 
-     +          p4= 5.22387877685618101e-03, 
+      parameter(p0= 1.12837916709551257e+00,
+     +          p1=-3.76126389031833602e-01,
+     +          p2= 1.12837916706621301e-01,
+     +          p3=-2.68661698447642378e-02,
+     +          p4= 5.22387877685618101e-03,
      +          p5=-8.49202435186918470e-04)
       y=abs(x)
       if(y .gt. 0.125) then
@@ -2801,19 +2801,19 @@ c
       cyyyy = polyfc(12)
       czzzz = polyfc(13)
 
-      q = q + scale*( c                                     
-     +      + cx*x + 0.5*cxx*(x**2) + 1./6.*cxxx*(x**3) 
-     +      + cy*y + 0.5*cyy*(y**2) + 1./6.*cyyy*(y**3) 
-     +      + cz*z + 0.5*czz*(z**2) + 1./6.*czzz*(z**3) 
-     +      + 1./12.*cxxxx*(x**4)                           
-     +      + 1./12.*cyyyy*(y**4)                           
+      q = q + scale*( c
+     +      + cx*x + 0.5*cxx*(x**2) + 1./6.*cxxx*(x**3)
+     +      + cy*y + 0.5*cyy*(y**2) + 1./6.*cyyy*(y**3)
+     +      + cz*z + 0.5*czz*(z**2) + 1./6.*czzz*(z**3)
+     +      + 1./12.*cxxxx*(x**4)
+     +      + 1./12.*cyyyy*(y**4)
      +      + 1./12.*czzzz*(z**4) )
 
-      qx =  qx + scale*( cx + cxx*x + 0.5*cxxx*(x**2) + 
+      qx =  qx + scale*( cx + cxx*x + 0.5*cxxx*(x**2) +
      +   1./3.*cxxxx*(x**3) )
-      qy =  qy + scale*( cy + cyy*y + 0.5*cyyy*(y**2) + 
+      qy =  qy + scale*( cy + cyy*y + 0.5*cyyy*(y**2) +
      +   1./3.*cyyyy*(y**3) )
-      qz =  qz + scale*( cz + czz*z + 0.5*czzz*(z**2) + 
+      qz =  qz + scale*( cz + czz*z + 0.5*czzz*(z**2) +
      +   1./3.*czzzz*(z**3) )
 
       qxx = qxx + scale*( cxx + cxxx*x + cxxxx*(x**2) )

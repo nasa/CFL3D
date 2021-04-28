@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -78,7 +78,7 @@ c
       kpc      = kp
 c
 c     to start search, use solution from last cell, if one exists; otherwise
-c     start by searching for minimum distance point over all "from" blocks 
+c     start by searching for minimum distance point over all "from" blocks
 c
       if (real(xie).lt.1. .or. real(eta).lt.1.) then
          call dsmin(jdim,kdim,nsub,jjmax,
@@ -118,7 +118,7 @@ c     find local xie, eta via Newton iteraton in current target cell jp,kp
 c
       if (itoss0 .eq. 0 ) then
 c
-c        call general routine which first determines the best direction 
+c        call general routine which first determines the best direction
 c        for inversion, then call Newton iteration routine
 c
          call xe(jdim,kdim,nsub,l,x,y,z,xmid,ymid,zmid,xmide,ymide,
@@ -238,14 +238,14 @@ c
       kinc = min( kinc , limit )
 c
       if (real(xie).gt.1.0) then
-         jp = jp + jinc  
+         jp = jp + jinc
       else if (real(xie).lt.0.) then
-         jp = jp - jinc  
+         jp = jp - jinc
       end if
       if (real(eta).gt.1.0) then
          kp = kp + kinc
       else if (real(eta).lt.0.) then
-         kp = kp - kinc 
+         kp = kp - kinc
       end if
 c
 c     keep within bounds of (expanded) "from" block
@@ -269,7 +269,7 @@ c
       jp = max( jp , js)
       kp = max( kp , ks)
 c
-c     account for any branch cuts 
+c     account for any branch cuts
 c
       jpc = jimage(l,jp,kp)
       kpc = kimage(l,jp,kp)
@@ -293,7 +293,7 @@ c     call trace(41,idum1,idum2,idum3,idum4,dum1,dum2,dum3)
       end if
 c
 c     check for frozen convergence: search routine keeps returning
-c     to the same point, without 0 < xie,eta < 1 at that point. if frozen, 
+c     to the same point, without 0 < xie,eta < 1 at that point. if frozen,
 c     attempt to break out of cycle by using minimum distance search
 c     in the current "from" block
 c
@@ -315,14 +315,14 @@ c
 1000  continue
 c
 c     search routine has been unsuccessful in the current "from" block; if
-c     all "from" blocks have not been searched, try another; if all "from" 
-c     blocks have been searched, use any previously obtained generalized 
-c     coordinates which were found in an expanded cell (ichk > 0)  
+c     all "from" blocks have not been searched, try another; if all "from"
+c     blocks have been searched, use any previously obtained generalized
+c     coordinates which were found in an expanded cell (ichk > 0)
 c     otherwise, exit to try a different basis function and start over
 c
       if (iatmpt.lt.lmax) then
 c
-c        find new starting cell by searching for minimum distance over 
+c        find new starting cell by searching for minimum distance over
 c        all "from" blocks not yet searched
 c
          lout(l) = 1
@@ -345,7 +345,7 @@ c     call trace(5,l,idum2,idum3,idum4,dum1,dum2,dum3)
          end if
          if (ichk.eq.1) then
 c
-c          point really does lie in the expanded cell of the "from" block 
+c          point really does lie in the expanded cell of the "from" block
 c          in which it was first found
 c
 c     call trace(7,l,idum2,idum3,idum4,dum1,dum2,dum3)
@@ -353,16 +353,16 @@ c     call trace(7,l,idum2,idum3,idum4,dum1,dum2,dum3)
          end if
          if (ichk.gt.1) then
 c
-c          point lies in the expanded zone of two or more grids, 
+c          point lies in the expanded zone of two or more grids,
 c          possibly due to small gap between blocks on "from" side.
 c          flag this case for later use in diagnostics routine
-           igap = 1    
+           igap = 1
            go to 5557
          end if
       end if
 5556  continue
 c
-c     search routine has been successful; however, if there are multiple 
+c     search routine has been successful; however, if there are multiple
 c     blocks on the "from" side of patch surface, check to see if:
 c     1) for interfaces flagged as C-0, the cell center coordinates of the
 c     "from" cell jp,kp match the coordinates of the "to" cell center to
@@ -420,7 +420,7 @@ c
           end if
 c
 c         find alternate block which may also contain the "to"
-c         cell center by using a minimum distance search in 
+c         cell center by using a minimum distance search in
 c         all "from" blocks not yet searched
 c
           lout(l) = 1

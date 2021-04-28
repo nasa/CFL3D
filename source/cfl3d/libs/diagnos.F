@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -98,7 +98,7 @@ c
       do 617 k=k21,k22-1
       do 617 j=j21,j22-1
       ll = (j22-j21)*(k-k21) + (j-j21+1)
-      l1=mblkpt(ll) 
+      l1=mblkpt(ll)
       if (l1.gt.0) then
       if(real(eta2(ll)).lt.1. .or. real(eta2(ll)).gt.kkmax1(l1)-2) then
         nou(2) = min(nou(2)+1,ibufdim)
@@ -106,7 +106,7 @@ c
      .             ''center j,k = '',2i4,'' found in "from" block '',
      .             i4)') icheck,j,k,l1
         nou(2) = min(nou(2)+1,ibufdim)
-        write(bou(nou(2),2),'(''   with eta = '',e14.7)') 
+        write(bou(nou(2),2),'(''   with eta = '',e14.7)')
      .        real(eta2(ll))
         nou(2) = min(nou(2)+1,ibufdim)
         write(bou(nou(2),2),'(''   in this "from" block, legal range'',
@@ -119,7 +119,7 @@ c
       do 618 j=j21,j22-1
       do 618 k=k21,k22-1
       ll = (j22-j21)*(k-k21) + (j-j21+1)
-      l1=mblkpt(ll) 
+      l1=mblkpt(ll)
       if (l1.gt.0) then
       if(real(xie2(ll)).lt.1. .or. real(xie2(ll)).gt.jjmax1(l1)-2)then
         nou(2) = min(nou(2)+1,ibufdim)
@@ -127,7 +127,7 @@ c
      .             '' center j,k = '',2i4,'' found in "from" block '',
      .             i4)') icheck,j,k,l1
         nou(2) = min(nou(2)+1,ibufdim)
-        write(bou(nou(2),2),'(''   with xie = '',e14.7)') 
+        write(bou(nou(2),2),'(''   with xie = '',e14.7)')
      .        real(xie2(ll))
         nou(2) = min(nou(2)+1,ibufdim)
         write(bou(nou(2),2),'(''   in this "from" block, legal range'',
@@ -292,7 +292,7 @@ c
 c
 c     ****** fifth check ******
 c
-c     check jacobians of grid in generalized coordinates for anomolies 
+c     check jacobians of grid in generalized coordinates for anomolies
 c     (negative areas)
 c
 c     not applicable in 2D cases or cases with orhan points!
@@ -332,7 +332,7 @@ c        if generalized coordinates differ by more than 1/2 grid dimensions
          jdif31 = abs(int(xie2(ll3) - xie2(ll)))
          kdif31 = abs(int(eta2(ll3) - eta2(ll)))
          ibrnch = 0
-         if (jdif24.gt.jtest .or. kdif24.gt.ktest 
+         if (jdif24.gt.jtest .or. kdif24.gt.ktest
      .      .or. jdif31.gt.jtest .or. kdif31.gt.ktest) ibrnch = 1
          if (ibrnch .eq. 0) then
             j11 = j
@@ -340,7 +340,7 @@ c        if generalized coordinates differ by more than 1/2 grid dimensions
             go to 1756
          end if
       end if
-1755  continue  
+1755  continue
 1754  continue
 1756  continue
       if(j11.lt.1 .or. k11.lt.1) go to 1750
@@ -420,7 +420,7 @@ c
      .           ' generalized-coordinate ')
 725   format(
      .'       mapping between the "to" and "from" grids')
-      if(nct .gt. 0) then  
+      if(nct .gt. 0) then
       nou(4) = min(nou(4)+1,ibufdim)
       write(bou(nou(4),4),*)'        Caution: this may indicate a',
      .' serious problem'
@@ -471,31 +471,31 @@ c
       xiec = float(jc)
       etac = float(kc)
 c
-      x11 =  x1(jc,kc,l1)      
-      y11 =  y1(jc,kc,l1)      
-      z11 =  z1(jc,kc,l1)      
-      x12 =  x1(jc+1,kc,l1)      
-      y12 =  y1(jc+1,kc,l1)      
-      z12 =  z1(jc+1,kc,l1)      
-      x13 =  x1(jc+1,kc+1,l1)      
-      y13 =  y1(jc+1,kc+1,l1)      
-      z13 =  z1(jc+1,kc+1,l1)      
-      x14 =  x1(jc,kc+1,l1)      
-      y14 =  y1(jc,kc+1,l1)      
+      x11 =  x1(jc,kc,l1)
+      y11 =  y1(jc,kc,l1)
+      z11 =  z1(jc,kc,l1)
+      x12 =  x1(jc+1,kc,l1)
+      y12 =  y1(jc+1,kc,l1)
+      z12 =  z1(jc+1,kc,l1)
+      x13 =  x1(jc+1,kc+1,l1)
+      y13 =  y1(jc+1,kc+1,l1)
+      z13 =  z1(jc+1,kc+1,l1)
+      x14 =  x1(jc,kc+1,l1)
+      y14 =  y1(jc,kc+1,l1)
       z14 =  z1(jc,kc+1,l1)
-      x15 =  x1mid(jc,kc,l1)      
-      y15 =  y1mid(jc,kc,l1)      
-      z15 =  z1mid(jc,kc,l1)      
-      x16 =  x1mid(jc,kc+1,l1)      
-      y16 =  y1mid(jc,kc+1,l1)      
-      z16 =  z1mid(jc,kc+1,l1)      
-      x17 =  x1mide(jc,kc,l1)      
-      y17 =  y1mide(jc,kc,l1)      
-      z17 =  z1mide(jc,kc,l1)      
-      x18 =  x1mide(jc+1,kc,l1)      
-      y18 =  y1mide(jc+1,kc,l1)      
+      x15 =  x1mid(jc,kc,l1)
+      y15 =  y1mid(jc,kc,l1)
+      z15 =  z1mid(jc,kc,l1)
+      x16 =  x1mid(jc,kc+1,l1)
+      y16 =  y1mid(jc,kc+1,l1)
+      z16 =  z1mid(jc,kc+1,l1)
+      x17 =  x1mide(jc,kc,l1)
+      y17 =  y1mide(jc,kc,l1)
+      z17 =  z1mide(jc,kc,l1)
+      x18 =  x1mide(jc+1,kc,l1)
+      y18 =  y1mide(jc+1,kc,l1)
       z18 =  z1mide(jc+1,kc,l1)
-c      
+c
       dx2 = x12 - x11
       dy2 = y12 - y11
       dz2 = z12 - z11
@@ -608,7 +608,7 @@ c     quadratic fit in xie, linear fit in eta
       c7  = 0.
       c8  = 0.
       end if
-c 
+c
 c     linear fit in xie,quadratic fit in eta
       if (ifit.eq.4) then
       a2  = dx2
@@ -644,13 +644,13 @@ c
       eta = etajk - etac
 c
       x2int(j,k,1) = x11 + a3*eta + eta*( a7*eta + a8*xie*eta )
-     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )  
+     .   + xie*( a2 + a4*eta + a5*xie + a6*xie*eta )
       y2int(j,k,1) = y11 + b3*eta + eta*( b7*eta + b8*xie*eta )
-     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )  
+     .   + xie*( b2 + b4*eta + b5*xie + b6*xie*eta )
       z2int(j,k,1) = z11 + c3*eta + eta*( c7*eta + c8*xie*eta )
-     .   + xie*( c2 + c4*eta + c5*xie + c6*xie*eta )  
+     .   + xie*( c2 + c4*eta + c5*xie + c6*xie*eta )
 c
-c     compute center of "to" cell directly from the "to" grid, consistent 
+c     compute center of "to" cell directly from the "to" grid, consistent
 c     with ifit
 c
       jl = 1
@@ -670,11 +670,11 @@ c
 c
 c     bi-linear
       if (ifit .eq. 1) then
-         x2c = 0.25*( x2(j,k,1) + x2(j+1,k,1) 
+         x2c = 0.25*( x2(j,k,1) + x2(j+1,k,1)
      .         + x2(j+1,k+1,1) + x2(j,k+1,1) )
-         y2c = 0.25*( y2(j,k,1) + y2(j+1,k,1) 
+         y2c = 0.25*( y2(j,k,1) + y2(j+1,k,1)
      .         + y2(j+1,k+1,1) + y2(j,k+1,1) )
-         z2c = 0.25*( z2(j,k,1) + z2(j+1,k,1) 
+         z2c = 0.25*( z2(j,k,1) + z2(j+1,k,1)
      .         + z2(j+1,k+1,1) + z2(j,k+1,1) )
       end if
 c     bi-quadratic
@@ -683,11 +683,11 @@ c     bi-quadratic
      .       -0.25*( x2(j,k,1)     + x2(j+1,k,1)
      .       +       x2(j+1,k+1,1) + x2(j,k+1,1) )
          y2c = 0.5* ( y5 + y6 + y7 + y8 )
-     .       -0.25*( y2(j,k,1)    + y2(j+1,k,1) 
+     .       -0.25*( y2(j,k,1)    + y2(j+1,k,1)
      .       +      y2(j+1,k+1,1) + y2(j,k+1,1) )
          z2c = 0.5* ( z5 + z6 + z7 + z8 )
-     .       -0.25*( z2(j,k,1)     + z2(j+1,k,1) 
-     .       +       z2(j+1,k+1,1) + z2(j,k+1,1) )      
+     .       -0.25*( z2(j,k,1)     + z2(j+1,k,1)
+     .       +       z2(j+1,k+1,1) + z2(j,k+1,1) )
       end if
 c     quadratic in xie, linear in eta
       if (ifit .eq. 3) then
@@ -741,7 +741,7 @@ c
       if (itoss0 .eq. 0) then
          call direct(x15,x16,x17,x18,y15,y16,y17,y18,z15,z16,z17,z18,
      .               a1,a2,a3,itoss,nou,bou,nbuf,ibufdim)
-      else 
+      else
          itoss = itoss0
       end if
       if(itoss.eq.1) then
@@ -764,9 +764,9 @@ c
         jerrmx = j
         kerrmx = k
       end if
-      if(real(xerr).gt.real(percnt) .or. 
+      if(real(xerr).gt.real(percnt) .or.
      .   real(yerr).gt.real(percnt) .or.
-     .   real(zerr).gt.real(percnt)) then 
+     .   real(zerr).gt.real(percnt)) then
         nbpt = nbpt + 1
 c
         nou(2) = min(nou(2)+1,ibufdim)
@@ -792,7 +792,7 @@ c
 726   format('     ',i4,' interpolated cell centers differ by',
      .' more than ',i3,' percent')
       nou(4) = min(nou(4)+1,ibufdim)
-      write(bou(nou(4),4),7261) 
+      write(bou(nou(4),4),7261)
 7261  format('          from those obtained directly from the grid',
      .' points')
       nou(4) = min(nou(4)+1,ibufdim)
@@ -814,7 +814,7 @@ c
      .' if the other diagnostic counts are'
       nou(4) = min(nou(4)+1,ibufdim)
       write(bou(nou(4),4),*) '           non-zero, a problem in the',
-     .' input or the grid is likely' 
+     .' input or the grid is likely'
       end if
 c
 c     ****** seventh check ******
@@ -873,13 +873,13 @@ c
       ynint = dny/d
       znint = dnz/d
 c
-c     inner product of the two unit normals; identical unit normals will 
-c     give an inner product of 1. 
+c     inner product of the two unit normals; identical unit normals will
+c     give an inner product of 1.
 c
       prod = xnfit*xnint + ynfit*ynint + znfit*znint
       prdsum = prdsum + prod
       if (real(prod) .lt. 1.-real(epsn) .or.
-     .    real(prod) .gt. 1.+real(epsn)) then 
+     .    real(prod) .gt. 1.+real(epsn)) then
         nnorm = nnorm + 1
       end if
       dn = prod - 1.
@@ -893,7 +893,7 @@ c
 c
       nou(4) = min(nou(4)+1,ibufdim)
       write(bou(nou(4),4),728) nnorm,int(real(epsn)*100)
-728   format('     ',i4,' normals at interpolated cell centers', 
+728   format('     ',i4,' normals at interpolated cell centers',
      .' differ by more than ',i3,' percent')
       nou(4) = min(nou(4)+1,ibufdim)
       write(bou(nou(4),4),*) '        from the normals at cell centers',
@@ -907,7 +907,7 @@ c
 730   format('       the average inner product',
      .' over the interface is ',e10.3)
 c
-      if(nnorm .gt. 0) then  
+      if(nnorm .gt. 0) then
       nou(4) = min(nou(4)+1,ibufdim)
       write(bou(nou(4),4),1222)
       nou(4) = min(nou(4)+1,ibufdim)
@@ -918,17 +918,17 @@ c
       end if
 c
 c     ****** eigth check ******
-c    
+c
 c     Following output for visual check of the interpolation procedure.
-c     Output, in order: the "from" grid(s), the "to" grid, and the "to" 
-c     cell centers found from generalized coordinate interpolation.  
+c     Output, in order: the "from" grid(s), the "to" grid, and the "to"
+c     cell centers found from generalized coordinate interpolation.
 c
 c     This diagnostic can be enabled by setting iifit < 0 in the input file.
-c     It is automatically enabled when the diagnostics detect a potential 
-c     problem with the interpolation coefficients, or if the search routine 
-c     fails. In the latter case, the last grid output is simply the "to" 
-c     cell center at which the search failed.  
-c     
+c     It is automatically enabled when the diagnostics detect a potential
+c     problem with the interpolation coefficients, or if the search routine
+c     fails. In the latter case, the last grid output is simply the "to"
+c     cell center at which the search failed.
+c
 552   continue
       if(iout .gt. 0) then
 c
@@ -970,11 +970,11 @@ c
 c     iwhole = 0 output original "from" grids
 c     iwhole = 1 output expanded "from" grids (useful for examining cases
 c                where the search routine has failured near a boundary)
-c     
+c
       iwhole = 0
 c
       maxx = 0
-      if (iwhole.eq.0) then 
+      if (iwhole.eq.0) then
          do l=1,lmax1
             if (xif1(l).eq.1) xif1(l) = xif1(l) + 1
             if (etf1(l).eq.1) etf1(l) = etf1(l) + 1
@@ -1050,7 +1050,7 @@ c
      .                   ((               1,j=j21,j22),k=k21,k22)
         end if
       end if
-      if(istop.eq.1) then 
+      if(istop.eq.1) then
         if(ialph.eq.0) then
           write(iunit,*) real(xc),real(yc),real(zc)
         else
@@ -1064,7 +1064,7 @@ c
      .          ((real(y2int(j,k,1)),j=j21,j22-1),k=k21,k22-1),
      .          ((real(z2int(j,k,1)),j=j21,j22-1),k=k21,k22-1)
         else
-          write(iunit,*) 
+          write(iunit,*)
      .          ((real(x2int(j,k,1)),j=j21,j22-1),k=k21,k22-1),
      .          ((real(z2int(j,k,1)),j=j21,j22-1),k=k21,k22-1),
      .          ((real(-y2int(j,k,1)),j=j21,j22-1),k=k21,k22-1)
@@ -1125,7 +1125,7 @@ c
       if(istop .gt. 0) call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c
-1222  format(12x,'possible causes:') 
+1222  format(12x,'possible causes:')
 1223  format(14x,'...mmcxie and/or mmceta incorrectly set')
 1224  format(14x,'..."from" block input data incorrectly set')
 1225  format(14x,'...small gaps between "from" blocks')

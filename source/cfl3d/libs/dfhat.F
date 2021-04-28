@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -58,7 +58,7 @@ cdir$ ivdep
       do 1000 n=1,nn
       rhoi  = 1.0/q(n,1)
       c2    = gamma*q(n,5)*rhoi
-      c     = sqrt(c2) 
+      c     = sqrt(c2)
       c2i   = 1.0/c2
       q22   = 0.5*(q(n,2)*q(n,2)+q(n,3)*q(n,3)+q(n,4)*q(n,4))
       h     = c2*gm1i+q22
@@ -96,16 +96,16 @@ c
       ayr3  = ay(n)*ruc3
       azr3  = az(n)*ruc3
 #else
-c 
+c
 c     preconditioning additions
 c
       vmag1 =  2.0*q22
       vel2 = ccmax(vmag1,avn*uref**2)
       vel = sqrt(ccmin(c2,vel2))
       vel = cprec*vel + (1.-cprec)*c
-      xm2 = (vel/c)**2   
+      xm2 = (vel/c)**2
       xmave = ubar/c
-      tt1 = 0.5*(1.+xm2)   
+      tt1 = 0.5*(1.+xm2)
       tt2 = 0.5*sqrt(xmave**2*(1.-xm2)**2 + 4.0*xm2)
 c
       e1u    = ubar
@@ -145,7 +145,7 @@ c
       ayr3  = ay(n)*ruc4
       azr3  = az(n)*ruc4
 #endif
-c 
+c
       df(n,1,1) = e1
       df(n,1,2) = ax(n)*ruc2
       df(n,1,3) = ay(n)*ruc2
@@ -156,7 +156,7 @@ c
       df(n,2,2) = ruc1+q(n,2)*df(n,1,2)+ax(n)*axr3
       df(n,2,3) =      q(n,2)*df(n,1,3)+ax(n)*ayr3
       df(n,2,4) =      q(n,2)*df(n,1,4)+ax(n)*azr3
-      df(n,2,5) =      q(n,2)*df(n,1,5)+ax(n)*rhor2 
+      df(n,2,5) =      q(n,2)*df(n,1,5)+ax(n)*rhor2
 c
       df(n,3,1) =      q(n,3)*df(n,1,1)
       df(n,3,2) =      q(n,3)*df(n,1,2)+ay(n)*axr3

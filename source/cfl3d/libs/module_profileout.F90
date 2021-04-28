@@ -7,16 +7,16 @@
 !
 !  Copyright 2001 United States Government as represented by the Administrator
 !  of the National Aeronautics and Space Administration. All Rights Reserved.
-! 
-!  The CFL3D platform is licensed under the Apache License, Version 2.0 
-!  (the "License"); you may not use this file except in compliance with the 
-!  License. You may obtain a copy of the License at 
-!  http://www.apache.org/licenses/LICENSE-2.0. 
-! 
-!  Unless required by applicable law or agreed to in writing, software 
-!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-!  License for the specific language governing permissions and limitations 
+!
+!  The CFL3D platform is licensed under the Apache License, Version 2.0
+!  (the "License"); you may not use this file except in compliance with the
+!  License. You may obtain a copy of the License at
+!  http://www.apache.org/licenses/LICENSE-2.0.
+!
+!  Unless required by applicable law or agreed to in writing, software
+!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+!  License for the specific language governing permissions and limitations
 !  under the License.
 !  ---------------------------------------------------------------------------
 !
@@ -30,33 +30,33 @@
 !
 MODULE module_profileout
   IMPLICIT NONE
-  
+
   TYPE output_parm
      character(len=40) :: name
      INTEGER :: iblk
      INTEGER :: istr,iend,jstr,jend,kstr,kend
      INTEGER :: wall_str,wall_end,wall_dir
   END TYPE output_parm
- 
+
   TYPE(output_parm),ALLOCATABLE :: oparm(:)
   TYPE(output_parm),ALLOCATABLE :: cfparm(:) ! for Cf cp output
   PRIVATE :: set_default
 CONTAINS
   SUBROUTINE profile_read_input(filename)
     CHARACTER(len=*),INTENT(in) :: filename
-    
+
     LOGICAL :: lexist
     INTEGER :: iost,iost1
     CHARACTER(len=170) :: cline,str,key
     REAL  :: rval
     INTEGER :: ncp_profs,nprofiles
-    
+
     INQUIRE(file=filename, exist=lexist)
     IF(.NOT.lexist) RETURN
-    
+
     ncp_profs = 0
     nprofiles = 0
-    
+
     DO WHILE(.TRUE.)
        OPEN(1235,file=filename, status='old')
        READ(1235,'(A)',iostat=iost)cline
@@ -77,10 +77,10 @@ CONTAINS
        CLOSE(1235)
        RETURN
     ENDIF
-    
+
     IF(nprofiles>0) ALLOCATE(oparm(nprofiles))
     IF(ncp_profs>0) ALLOCATE(cfparm(ncp_profs))
-    
+
     REWIND(1235)
     nprofiles = 0
     ncp_profs = 0
@@ -137,20 +137,20 @@ CONTAINS
       ENDDO
     END SUBROUTINE toupper
   END SUBROUTINE profile_read_input
-    
+
   SUBROUTINE set_default(istr,iend,imin,imax)
     INTEGER :: istr,iend
     INTEGER,intent(in) ::imin,imax
 
-    IF(istr==0) THEN 
+    IF(istr==0) THEN
        istr = imin
     ENDIF
     IF(iend==0) THEN
        iend = imax
     ENDIF
-    
+
   END SUBROUTINE set_default
-    
+
 
   SUBROUTINE profile_plot(jdim,kdim,idim,nummem,nblk,q,x,y,z,vist3d,ux,turre,smin)
     INTEGER,INTENT(in)::jdim,kdim,idim,nummem, nblk
@@ -158,7 +158,7 @@ CONTAINS
          q(jdim,kdim,idim,5),vist3d(jdim,kdim,idim),&
          ux(jdim,kdim,idim,9),turre(jdim,kdim,idim,nummem),&
          smin(jdim-1,kdim-1,idim-1)
-    
+
     INTEGER :: i,j,k,m,istr,jstr,kstr,iend,jend,kend,n
     REAL ::xc,yc,zc
     IF(.NOT.ALLOCATED(oparm)) RETURN
@@ -178,7 +178,7 @@ CONTAINS
           WRITE(*,*)"profile_plot: unknown nummem",oparm(n)%name,nummem
           CYCLE
        ENDIF
-       
+
        WRITE(1234,'(A)')'TITLE="'//TRIM(ADJUSTL(oparm(n)%name))//'"'
 
        istr =oparm(n)%istr
@@ -192,13 +192,13 @@ CONTAINS
        CALL set_default(istr,iend,1,idim-1)
        CALL set_default(jstr,jend,1,jdim-1)
        CALL set_default(kstr,kend,1,kdim-1)
-       
+
        WRITE(1234,'(A)')'ZONE T="'//TRIM(ADJUSTL(oparm(n)%name))
  !            '" I=', iend-istr+1, " J=",jend-jstr+1," K=", kend-kstr+1
        DO k=kstr,kend
           DO j=jstr,jend
              DO i=istr,iend
-                
+
                 xc = 0.125*(x(j,k,i)+x(j+1,k,i)+x(j,k+1,i)+x(j,k,i+1) + &
                      x(j+1,k+1,i) + x(j+1,k,i+1) + x(j,k+1,i+1)+x(j+1,k+1,i+1))
                 yc = 0.125*(y(j,k,i)+y(j+1,k,i)+y(j,k+1,i)+y(j,k,i+1) + &
@@ -212,20 +212,20 @@ CONTAINS
        ENDDO
        CLOSE(1234)
     END DO
-    
+
   END SUBROUTINE profile_plot
 
-  
+
   SUBROUTINE cfcp_plot(jdim,kdim,idim,nummem,nblk,q,x,y,z,vist3d,ux,turre,smin)
     INTEGER,INTENT(in)::jdim,kdim,idim,nummem, nblk
     REAL,INTENT(in) :: x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim),&
          q(jdim,kdim,idim,5),vist3d(jdim,kdim,idim),&
          ux(jdim,kdim,idim,9),turre(jdim,kdim,idim,nummem),&
          smin(jdim-1,kdim-1,idim-1)
-    
+
     INTEGER :: i,j,k,m,istr,jstr,kstr,iend,jend,kend,n
     REAL ::xc,yc,zc
-    
+
     COMMON /fluid2/ pr,prt,cbar
     REAL :: pr,prt,cbar
     COMMON /reyue/ reue,tinf,ivisc(3)
@@ -246,11 +246,11 @@ CONTAINS
     REAL :: dprev,uprev,ruprev,rho,rhou_ave,u_ave,theta,dstar,uinf
     REAL, parameter :: rinf=1.0
 
-    
+
 
 
     Re = Reue/xmach
-    
+
     IF(.NOT.ALLOCATED(cfparm)) RETURN
 
     DO n=1,SIZE(cfparm,1)
@@ -277,7 +277,7 @@ CONTAINS
        WRITE(1234,'(A)')'variables=x,y,z,cf,cp,theta,Re_theta,dstar,Re_dstar'
        WRITE(1234,'(A)')'ZONE T="'//TRIM(ADJUSTL(cfparm(n)%name))//'"' !//&
 !            '" I=', iend-istr+1, " J=",jend-jstr+1," K=", kend-kstr+1
-       
+
        DO i=istr,iend
           DO k=kstr,kend
              DO j=jstr,jend
@@ -285,7 +285,7 @@ CONTAINS
                 c2bp=c2b+1.0
                 tt=gamma*q(j,k,i,5)/q(j,k,i,1)
                 fnu=c2bp*tt*SQRT(tt)/(c2b+tt)
-                
+
                 vel = SIGN(SQRT(q(j,k,i,2)**2+q(j,k,i,3)**2+q(j,k,i,4)**2),q(j,k,i,2))
                 tau_w = fnu*ABS(vel)/ABS(smin(j,k,i))/Re
                 !utau = SQRT(tau_w/q(j,1,i,1))
@@ -311,12 +311,12 @@ CONTAINS
                    vel = SQRT(q(idx(2),idx(3),idx(1),2)**2+&
                                    q(idx(2),idx(3),idx(1),3)**2+&
                                    q(idx(2),idx(3),idx(1),4)**2)
-                   uinf = max(uinf,vel) 
+                   uinf = max(uinf,vel)
                 enddo
                 DO k1=cfparm(n)%wall_str,cfparm(n)%wall_end,&
                      SIGN(1,cfparm(n)%wall_end - cfparm(n)%wall_str)
                    idx(cfparm(n)%wall_dir) = k1
-                  
+
                    vel = SQRT(q(idx(2),idx(3),idx(1),2)**2+&
                                    q(idx(2),idx(3),idx(1),3)**2+&
                                    q(idx(2),idx(3),idx(1),4)**2)
@@ -331,7 +331,7 @@ CONTAINS
                    ruprev = rho*vel
                    WRITE(*,*)k1,theta,dstar,vel,xmach
                 ENDDO
-                
+
                 !Rel  = (0.5*(x(j,1,i)+x(j+1,1,i)) - x(jstart,1,i))*Reue
                 WRITE(1234,'(14(1x,es12.5))') xc,yc,zc,tau_w/(0.5*rho0*xmach**2),&
                      (q(j,k,i,5)-p0)/(0.5*rho0*xmach**2),theta, reue*theta,dstar,dstar*reue
@@ -343,4 +343,4 @@ CONTAINS
 
   END SUBROUTINE cfcp_plot
 END MODULE module_profileout
-  
+

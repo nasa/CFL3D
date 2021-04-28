@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,19 +29,19 @@ c
      .     myid,myhost,mycomm,nou,bou,nbuf,ibufdim,
      .     igrid,wk,idima,jdima,kdima,vj0,vk0,vi0,
      .     tj0,tk0,ti0,qavg,q2avg,nummem)
-c     
+c
 c     $Id$
-c     
+c
 c***********************************************************************
 c     Purpose:  Read the restart file for a block. iskip = 1 means this
 c     is the first block to be read in from the restart file;
 c     all other blocks have iskip = 0
 c***********************************************************************
-c     
+c
 #   ifdef CMPLX
       implicit complex(a-h,o-z)
 #   endif
-c     
+c
 #if defined DIST_MPI
 #     include "mpif.h"
 #   ifdef DBLE_PRECSN
@@ -59,9 +59,9 @@ c
 #   endif
       dimension istat(MPI_STATUS_SIZE)
 #endif
-c     
+c
       character*120 bou(ibufdim,nbuf)
-c     
+c
       dimension nou(nbuf)
       dimension q(jdim,kdim,idim,5),qi0(jdim,kdim,5,4),
      .     qj0(kdim,idim-1,5,4), qk0(jdim,idim-1,5,4),
@@ -86,7 +86,7 @@ c
       dimension q2avg(jdim,kdim,idim,5)
       dimension wk(idima+1,jdima+1,kdima+1)
       dimension irinddata(6)
-c     
+c
       common /ginfo2/ lq2avg,iskip_blocks,inc_2d(3),inc_coarse(3)
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
       common /cgns/ icgns,iccg,ibase,nzones,nsoluse,irind,jrind,krind
@@ -110,14 +110,14 @@ c
 
       common /random_input/ randomize
       real, allocatable :: harvest(:)
-c     
+c
       idim1 = idim-1
       jdim1 = jdim-1
       kdim1 = kdim-1
-c     
+c
 #if defined DIST_MPI
 c     set baseline tag values
-c     
+c
       ioffset      = maxbl
       itag_alpha   = 1
       itag_ntt     = itag_alpha   + ioffset
@@ -167,7 +167,7 @@ c
       itag_q2avg   = itag_xnum    + ioffset
       itag_xnum2   = itag_q2avg   + ioffset
       itag_clcd    = itag_xnum2   + ioffset
-c     
+c
       jki   = jdim*kdim*idim
       jkim  = jdim1*kdim1*idim1
       jki5  = 5*jki
@@ -182,9 +182,9 @@ c
       jk8   = jdim*kdim*8
       ki8   = kdim*idim1*8
       ji8   = jdim*idim1*8
-c     
+c
       if (myid.eq.myhost) then
-c     
+c
 #endif
          if (icgns .eq. 1) then
 #if defined CGNS
@@ -286,26 +286,26 @@ c     97 format(1x,15hrestarting on a,i5,3h x ,i5,3h x ,i5,5h grid)
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
          end if
-c     
+c
 c     write(15,100) real(titlw),real(xmachw),jt,kt,it,real(alphw),
 c     real(reuew),ntr,real(time)
 c     100 format(20a4/1x,e12.5,3i5,2e12.5,i5,e12.5)
-c     
+c
          ntt = ntr
-c     
+c
 c     use previous alpha as starting point if alpha-iteration is used
-c     
+c
          if (ialphit.gt.0) then
             alpha = alphw/radtodeg
 c     reset freestream for new alpha on host
             call init_mast
          end if
-c     
+c
          if (icgns .ne. 1) then
             if (ntr.le.ncycmax) then
-c     
+c
 c     Convergence data (residual,force coefficients, mass flow, etc.)
-c     
+c
                if (iskip.gt.0) then
                   read(2) (rms(n),     n=1,ntr),(clw(n),     n=1,ntr),
      .                 (cdw(n),     n=1,ntr),(cdpw(n),    n=1,ntr),
@@ -316,9 +316,9 @@ c
      .                 (cftmomw(n), n=1,ntr),(cftpw(n),   n=1,ntr),
      .                 (cftvw(n),   n=1,ntr),(cfttotw(n), n=1,ntr)
                end if
-c     
+c
             else
-c     
+c
                if (irest2 .eq. 1) then
                   if (iskip.gt.0) then
                      read(2) (dum,     n=1,ntr),(dum,     n=1,ntr),
@@ -331,7 +331,7 @@ c
      .                    (dum,     n=1,ntr),(dum,     n=1,ntr)
                   end if
                else
-c     
+c
                   write(11,1239)
  1239             format(/,1x,11hstopping...,
      .                 40hprevious number of iterations computed >,
@@ -340,18 +340,18 @@ c
                   write(11,*)' increase value of ncycmax to at LEAST ',
      .                 ntr+ncycmax
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
-c     
+c
                end if
             end if
          end if
 #if defined DIST_MPI
-c     
+c
       end if
-c     
+c
 c     send/receive data to/on the appropriate node
-c     
+c
       nd_dest = mblk2nd(nbl)
-c     
+c
       if (ialphit .gt. 0) then
          mytag = itag_alpha + nbl
          if (myid .eq. myhost) then
@@ -364,7 +364,7 @@ c     reset freestream for new alpha on compute  processors
             call init_mast
          end if
       end if
-c     
+c
       mytag = itag_ntt + nbl
       if (myid .eq. myhost) then
          call MPI_Send(ntt,1,MPI_INTEGER,
@@ -373,7 +373,7 @@ c
          call MPI_Recv(ntt,1,MPI_INTEGER,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_rms + nbl
       if (myid .eq. myhost) then
          call MPI_Send(rms,ntt,MY_MPI_REAL,
@@ -382,7 +382,7 @@ c
          call MPI_Recv(rms,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_clw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(clw,ntt,MY_MPI_REAL,
@@ -391,7 +391,7 @@ c
          call MPI_Recv(clw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cdw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cdw,ntt,MY_MPI_REAL,
@@ -400,7 +400,7 @@ c
          call MPI_Recv(cdw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cdpw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cdpw,ntt,MY_MPI_REAL,
@@ -409,7 +409,7 @@ c
          call MPI_Recv(cdpw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cdvw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cdvw,ntt,MY_MPI_REAL,
@@ -418,7 +418,7 @@ c
          call MPI_Recv(cdvw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cxw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cxw,ntt,MY_MPI_REAL,
@@ -427,7 +427,7 @@ c
          call MPI_Recv(cxw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cyw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cyw,ntt,MY_MPI_REAL,
@@ -436,7 +436,7 @@ c
          call MPI_Recv(cyw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_czw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(czw,ntt,MY_MPI_REAL,
@@ -445,7 +445,7 @@ c
          call MPI_Recv(czw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cmxw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cmxw,ntt,MY_MPI_REAL,
@@ -454,7 +454,7 @@ c
          call MPI_Recv(cmxw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cmyw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cmyw,ntt,MY_MPI_REAL,
@@ -463,7 +463,7 @@ c
          call MPI_Recv(cmyw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cmzw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cmzw,ntt,MY_MPI_REAL,
@@ -472,7 +472,7 @@ c
          call MPI_Recv(cmzw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_fmdotw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(fmdotw,ntt,MY_MPI_REAL,
@@ -481,7 +481,7 @@ c
          call MPI_Recv(fmdotw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cftmomw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cftmomw,ntt,MY_MPI_REAL,
@@ -490,7 +490,7 @@ c
          call MPI_Recv(cftmomw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cftpw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cftpw,ntt,MY_MPI_REAL,
@@ -499,7 +499,7 @@ c
          call MPI_Recv(cftpw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cftvw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cftvw,ntt,MY_MPI_REAL,
@@ -508,7 +508,7 @@ c
          call MPI_Recv(cftvw,ntt,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_cfttotw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(cfttotw,ntt,MY_MPI_REAL,
@@ -518,12 +518,12 @@ c
      .        myhost,mytag,mycomm,istat,ierr)
       end if
 #endif
-c     
+c
 c     Primative variables (rho,u,v,w,p)
-c     
+c
 #if defined DIST_MPI
       if (myid.eq.myhost) then
-c     
+c
 #endif
          if (icgns .ne. 1) then
             read(2) ((((q(j,k,i,l),j=1,jdim1),k=1,kdim1),
@@ -534,12 +534,12 @@ c
      .           ((((qj0(k,i,l,m),k=1,kdim1),i=1,idim1),l=1,5),m=1,4),
      .           ((((qk0(j,i,l,m),j=1,jdim1),i=1,idim1),l=1,5),m=1,4)
          end if
-c     
+c
 #if defined DIST_MPI
-c     
+c
 c     fill in edge values of q array for safety before passing
 c     the data to the appropriate node
-c     
+c
          do l=1,5
             do i=1,idim1
                k = kdim
@@ -558,13 +558,13 @@ c
                end do
             end do
          end do
-c     
+c
       end if
-c     
+c
 c     send/receive data to/on the appropriate node
-c     
+c
       nd_dest = mblk2nd(nbl)
-c     
+c
       mytag = itag_q + nbl
       if (myid .eq. myhost) then
          call MPI_Send(q,jki5,MY_MPI_REAL,
@@ -573,7 +573,7 @@ c
          call MPI_Recv(q,jki5,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       if (irghost .ne.0) then
          mytag = itag_qj0 + nbl
          if (myid .eq. myhost) then
@@ -583,7 +583,7 @@ c
             call MPI_Recv(qj0,ki20,MY_MPI_REAL,
      .           myhost,mytag,mycomm,istat,ierr)
          end if
-c     
+c
          mytag = itag_qk0 + nbl
          if (myid .eq. myhost) then
             call MPI_Send(qk0,ji20,MY_MPI_REAL,
@@ -592,7 +592,7 @@ c
             call MPI_Recv(qk0,ji20,MY_MPI_REAL,
      .           myhost,mytag,mycomm,istat,ierr)
          end if
-c     
+c
          mytag = itag_qi0 + nbl
          if (myid .eq. myhost) then
             call MPI_Send(qi0,jk20,MY_MPI_REAL,
@@ -602,7 +602,7 @@ c
      .           myhost,mytag,mycomm,istat,ierr)
          end if
       end if
-c     
+c
       mytag = itag_xmachw + nbl
       if (myid .eq. myhost) then
          call MPI_Send(xmachw,1,MY_MPI_REAL,
@@ -611,7 +611,7 @@ c
          call MPI_Recv(xmachw,1,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_reuew + nbl
       if (myid .eq. myhost) then
          call MPI_Send(reuew,1,MY_MPI_REAL,
@@ -620,7 +620,7 @@ c
          call MPI_Recv(reuew,1,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       mytag = itag_time + nbl
       if (myid .eq. myhost) then
          call MPI_Send(time,1,MY_MPI_REAL,
@@ -629,7 +629,7 @@ c
          call MPI_Recv(time,1,MY_MPI_REAL,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
       if (myid.eq.mblk2nd(nbl)) then
 #endif
          n   = jdim*kdim
@@ -646,25 +646,25 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)
             do 1011 i=1,idim
-c     
+c
 c     u/cref,v/cref,w/cref
-c     
+c
 c     dir$ ivdep
                do 1000 izz=1,n
                   q(izz,1,i,2) = q(izz,1,i,2)*xmach/xmachw
                   q(izz,1,i,3) = q(izz,1,i,3)*xmach/xmachw
                   q(izz,1,i,4) = q(izz,1,i,4)*xmach/xmachw
-c     
+c
 c     cp=constant
-c     
+c
                   q(izz,1,i,5) =  q(izz,1,i,5)*gamma
                   q(izz,1,i,5) = (q(izz,1,i,5)-1.e0)*xmach*
      $                 xmach/xmachw/xmachw
                   q(izz,1,i,5) = (q(izz,1,i,5)+1.e0)/gamma
  1000          continue
-c     
+c
 c     check for negative density,pressure
-c     
+c
                do 3235 j=1,jdim
                   do 3234 k=1,kdim
                      if (real(q(j,k,i,1)).le.0. .or.
@@ -680,12 +680,12 @@ c
                      end if
  3234             continue
  3235          continue
-c     
+c
  1011       continue
          end if
          if (reuew.ne.reue) then
             nou(1) = min(nou(1)+1,ibufdim)
-            write(bou(nou(1),1),*) 
+            write(bou(nou(1),1),*)
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),'(''WARNING:  ReUe inconsistency in'',
      .           '' restart file data Solution will proceed with '',
@@ -723,12 +723,12 @@ c
          end if
 c
 #if defined DIST_MPI
-c     
+c
       end if
 #endif
-c     
+c
 c     Turbulence quantities
-c     
+c
 #if defined DIST_MPI
       if (myid .eq. myhost) then
 #endif
@@ -762,7 +762,7 @@ c
          end if
 #if defined DIST_MPI
       end if
-c     
+c
       mytag = itag_iv1 + nbl
       if (myid .eq. myhost) then
          call MPI_Send(iv1,1,MPI_INTEGER,
@@ -787,7 +787,7 @@ c
          call MPI_Recv(iv3,1,MPI_INTEGER,
      .        myhost,mytag,mycomm,istat,ierr)
       end if
-c     
+c
 #endif
       if (iv1.ne.ivisc(1).or.iv2.ne.ivisc(2).or.
      .     iv3.ne.ivisc(3)) then
@@ -860,9 +860,9 @@ c         Note: this will only work if not time-accurate: see rrestg.F
           call termn8(myid,-1,ibufdim,nbuf,bou,nou)
         end if
       end if
-c     
+c
 c     Turbulence model convergence data
-c     
+c
       if (iskip.gt.0) then
          if (irest2 .eq. 1) then
 #if defined DIST_MPI
@@ -897,7 +897,7 @@ c
                end if
 #if defined DIST_MPI
             end if
-c     
+c
             mytag = itag_rmstr + nbl
             if (myid .eq. myhost) then
                call MPI_Send(rmstr,ntt*nummem,MY_MPI_REAL,
@@ -906,7 +906,7 @@ c
                call MPI_Recv(rmstr,ntt*nummem,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
             mytag = itag_nneg + nbl
             if (myid .eq. myhost) then
                call MPI_Send(nneg,ntt*nummem,MPI_INTEGER,
@@ -915,11 +915,11 @@ c
                call MPI_Recv(nneg,ntt*nummem,MPI_INTEGER,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
 #endif
          end if
       end if
-c     
+c
       if (icgns .eq. 1 .and. myid.eq.myhost) then
 #if defined CGNS
          call readturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
@@ -929,8 +929,8 @@ c
 #endif
       end if
       if (iread .eq. 0) then
-c     
-c     If diff turb model, DO NOT restart turb soln from quantities on 
+c
+c     If diff turb model, DO NOT restart turb soln from quantities on
 c     binary restart file
 c     (isminc=0 do not compute smin, do not call initvist
 c     1 compute smin, call initvist
@@ -938,9 +938,9 @@ c     2 compute smin, do not call initvist
 c     3 do not compute smin, call initvist)
 c     Need to call initvist if start from scratch or restart from a
 c     different turb model.  Need to call smin if start from scratch
-c     or restart from a non-field-eqn turb model or if restart but 
+c     or restart from a non-field-eqn turb model or if restart but
 c     mesh sequencing up to a finer level.
-c     
+c
          if (iv1.ge.2 .or. iv2.ge.2 .or. iv3.ge.2) then
 #if defined DIST_MPI
             if (myid.eq.myhost) then
@@ -957,7 +957,7 @@ c
             end if
 #endif
          end if
-c     
+c
          if (iv1.ge.4 .or. iv2.ge.4 .or. iv3.ge.4) then
 #if defined DIST_MPI
             if (myid.eq.myhost) then
@@ -975,7 +975,7 @@ c
                end if
 #if defined DIST_MPI
             end if
-c     
+c
             mytag = itag_smin + nbl
             if (myid .eq. myhost) then
                call MPI_Send(smin,jkim,MY_MPI_REAL,
@@ -984,7 +984,7 @@ c
                call MPI_Recv(smin,jkim,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
 #endif
             if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
      .          iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
@@ -1029,7 +1029,7 @@ c
          end if
          if (ismincforce .ne. -1) isminc=ismincforce
       else
-c     
+c
          if (isminc .ne. 2) then
             isminc=0
          end if
@@ -1058,7 +1058,7 @@ c
                end if
 #if defined DIST_MPI
             end if
-c     
+c
             mytag = itag_qv + nbl
             if (myid .eq. myhost) then
                call MPI_Send(vist3d,jki,MY_MPI_REAL,
@@ -1067,7 +1067,7 @@ c
                call MPI_Recv(vist3d,jki,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
             if (irghost .ne.0) then
                mytag = itag_vj0 + nbl
                if (myid .eq. myhost) then
@@ -1077,7 +1077,7 @@ c
                   call MPI_Recv(vj0,ki4,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
-c     
+c
                mytag = itag_vk0 + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(vk0,ji4,MY_MPI_REAL,
@@ -1086,7 +1086,7 @@ c
                   call MPI_Recv(vk0,ji4,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
-c     
+c
                mytag = itag_vi0 + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(vi0,jk4,MY_MPI_REAL,
@@ -1096,7 +1096,7 @@ c
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
             end if
-c     
+c
 #endif
          end if
          if (iv1.ge.4 .or. iv2.ge.4 .or. iv3.ge.4) then
@@ -1283,11 +1283,11 @@ c     Limit new epsilon to handle extremes
                   enddo
                end if
 #if defined DIST_MPI
-c     
+c
 c     end host section for tursav
-c     
+c
             end if
-c     
+c
             if (iv1.eq.30.or.iv2.eq.30.or.iv3.eq.30) then
               jki2  = 3*jki
               jk8   = jdim*kdim*12
@@ -1314,7 +1314,7 @@ c
                call MPI_Recv(tursav,jki2,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
             if (irghost .ne.0) then
                mytag = itag_tj0 + nbl
                if (myid .eq. myhost) then
@@ -1324,7 +1324,7 @@ c
                   call MPI_Recv(tj0,ki8,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
-c     
+c
                mytag = itag_tk0 + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(tk0,ji8,MY_MPI_REAL,
@@ -1333,7 +1333,7 @@ c
                   call MPI_Recv(tk0,ji8,MY_MPI_REAL,
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
-c     
+c
                mytag = itag_ti0 + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(ti0,jk8,MY_MPI_REAL,
@@ -1343,7 +1343,7 @@ c
      .                 myhost,mytag,mycomm,istat,ierr)
                end if
             end if
-c     
+c
             if (myid.eq.myhost) then
 #endif
                if (icgns .ne. 1) then
@@ -1352,7 +1352,7 @@ c
                end if
 #if defined DIST_MPI
             end if
-c     
+c
             mytag = itag_smin + nbl
             if (myid .eq. myhost) then
                call MPI_Send(smin,jkim,MY_MPI_REAL,
@@ -1361,7 +1361,7 @@ c
                call MPI_Recv(smin,jkim,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
+c
 #endif
             if (iv1.eq.4 .or. iv2.eq.4 .or. iv3.eq.4 .or.
      .          iv1.eq.25.or. iv2.eq.25.or. iv3.eq.25) then
@@ -1378,7 +1378,7 @@ c
                   end if
 #if defined DIST_MPI
                end if
-c     
+c
                mytag = itag_xjb + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(xjb,jkim,MY_MPI_REAL,
@@ -1424,7 +1424,7 @@ c
                   end if
 #if defined DIST_MPI
                end if
-c     
+c
                mytag = itag_cmuv + nbl
                if (myid .eq. myhost) then
                   call MPI_Send(cmuv,jkim,MY_MPI_REAL,
@@ -1437,19 +1437,19 @@ c
             end if
          end if
       end if
-c     
+c
 c     If irest2=1 (results when irest<0 on input), do not save
 c     previous histories; otherwise, do.
-c     
+c
       if (irest2 .eq. 1) then
          ntt = 0
          ntr = 0
       else
-c     
+c
 c     this was defined earlier for message passing
-c     
+c
 c     ntt = ntr
-c     
+c
       end if
 
       if (iteravg .eq. 2) then
@@ -1472,7 +1472,7 @@ c     need to switch y and z if ialph .ne. 0
                end if
             end if
 #if defined DIST_MPI
-c     
+c
             mytag = itag_qavg + nbl
             if (myid .eq. myhost) then
                call MPI_Send(qavg,jki5,MY_MPI_REAL,
@@ -1494,40 +1494,40 @@ c
             if (myid.eq.myhost) then
                read(97,end=1010,err=1010) dum,dum,dum,xnumavg
                read(97,end=1010,err=1010) ((((qavg(j,k,i,m),
-     +              i=1,idim),j=1,jdim),k=1,kdim),m=1,5) 
-c     
-               read(98,end=1010,err=1010) dum,dum,dum,xnumavg2
-               read(98,end=1010,err=1010) ((((q2avg(j,k,i,m), 
      +              i=1,idim),j=1,jdim),k=1,kdim),m=1,5)
-            
+c
+               read(98,end=1010,err=1010) dum,dum,dum,xnumavg2
+               read(98,end=1010,err=1010) ((((q2avg(j,k,i,m),
+     +              i=1,idim),j=1,jdim),k=1,kdim),m=1,5)
+
 c     need to switch y and z if ialph .ne. 0
                if (ialph .ne. 0) then
                   do i=1,idim
                      do j=1,jdim
                         do k=1,kdim
-c     
+c
                            temp=qavg(j,k,i,4)
                            qavg(j,k,i,4)=qavg(j,k,i,3)
                            qavg(j,k,i,3)=-temp
-c     
-                           temp=q2avg(j,k,i,4) 
-                           q2avg(j,k,i,4)=q2avg(j,k,i,3) 
-                           q2avg(j,k,i,3)=temp 
-c     
+c
+                           temp=q2avg(j,k,i,4)
+                           q2avg(j,k,i,4)=q2avg(j,k,i,3)
+                           q2avg(j,k,i,3)=temp
+c
                         enddo
                      enddo
                   enddo
                end if
             end if
-c     
+c
 #if defined DIST_MPI
-c     
+c
             mytag = itag_qavg + nbl
             if (myid .eq. myhost) then
-               call MPI_Send(qavg,jki5,MY_MPI_REAL, 
+               call MPI_Send(qavg,jki5,MY_MPI_REAL,
      .              nd_dest,mytag,mycomm,ierr)
             else if (myid .eq. mblk2nd(nbl)) then
-               call MPI_Recv(qavg,jki5,MY_MPI_REAL, 
+               call MPI_Recv(qavg,jki5,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
             mytag = itag_xnum + nbl
@@ -1538,31 +1538,31 @@ c
                call MPI_Recv(xnumavg,1,MY_MPI_REAL,
      .              myhost,mytag,mycomm,istat,ierr)
             end if
-c     
-            mytag = itag_q2avg + nbl 
-            if (myid .eq. myhost) then 
-               call MPI_Send(q2avg,jki5,MY_MPI_REAL, 
-     .              nd_dest,mytag,mycomm,ierr) 
-            else if (myid .eq. mblk2nd(nbl)) then 
-               call MPI_Recv(q2avg,jki5,MY_MPI_REAL, 
-     .              myhost,mytag,mycomm,istat,ierr) 
-            end if                 
-            mytag = itag_xnum2 + nbl 
-            if (myid .eq. myhost) then 
-               call MPI_Send(xnumavg2,1,MY_MPI_REAL, 
-     .              nd_dest,mytag,mycomm,ierr) 
-            else if (myid .eq. mblk2nd(nbl)) then 
-               call MPI_Recv(xnumavg2,1,MY_MPI_REAL, 
-     .              myhost,mytag,mycomm,istat,ierr) 
-            end if                 
-c     
+c
+            mytag = itag_q2avg + nbl
+            if (myid .eq. myhost) then
+               call MPI_Send(q2avg,jki5,MY_MPI_REAL,
+     .              nd_dest,mytag,mycomm,ierr)
+            else if (myid .eq. mblk2nd(nbl)) then
+               call MPI_Recv(q2avg,jki5,MY_MPI_REAL,
+     .              myhost,mytag,mycomm,istat,ierr)
+            end if
+            mytag = itag_xnum2 + nbl
+            if (myid .eq. myhost) then
+               call MPI_Send(xnumavg2,1,MY_MPI_REAL,
+     .              nd_dest,mytag,mycomm,ierr)
+            else if (myid .eq. mblk2nd(nbl)) then
+               call MPI_Recv(xnumavg2,1,MY_MPI_REAL,
+     .              myhost,mytag,mycomm,istat,ierr)
+            end if
+c
 #endif
          end if ! ipertavg
       end if ! iteravg
 c
 c     clcd information
 c
-              
+
       if (iskip.gt.0) then
          if (myid.eq.myhost) then
             if( iclcd .eq. 1 .or. iclcd .eq. 2 ) then
@@ -1572,26 +1572,26 @@ c
             end if
             if (iclcd .eq. 2) then
                read(102,end=1012,err=1012) i_clcd,iblocks_clcd,i_ntt
-c     
+c
                if (n_clcd .ne. i_clcd ) then
                   write(*,*) 'Inconsistent number of ClCd ',
      $                 'calcs in restart file ', n_clcd, i_clcd
                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                end if
-            
+
                read(102,end=1012,err=1012) clcd(1:2,1:i_clcd,1:i_ntt)
             end if
-         end if                 
+         end if
       end if
 
 #if defined DIST_MPI
-      mytag = itag_clcd + nbl 
+      mytag = itag_clcd + nbl
       if (myid.eq.myhost) then
          call MPI_Send(clcd,ntt*2*n_clcd,MY_MPI_REAL,
-     .        nd_dest,mytag,mycomm,ierr) 
-      else if (myid .eq. mblk2nd(nbl)) then 
-         call MPI_Recv(clcd,ntt*2*n_clcd,MY_MPI_REAL, 
-     .        myhost,mytag,mycomm,istat,ierr) 
+     .        nd_dest,mytag,mycomm,ierr)
+      else if (myid .eq. mblk2nd(nbl)) then
+         call MPI_Recv(clcd,ntt*2*n_clcd,MY_MPI_REAL,
+     .        myhost,mytag,mycomm,istat,ierr)
       end if
 #endif
 
@@ -1609,6 +1609,6 @@ c
      +     '' incorrect file'')')
       call termn8(myid,-1,ibufdim,nbuf,bou,nou)
 
-c     
+c
       return
       end

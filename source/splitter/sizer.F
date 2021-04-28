@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -30,7 +30,7 @@ c***********************************************************************
 c     Purpose: determine the parameters required for the block-splitting
 c              code
 c        note: the following parameters needed by the block splitter are
-c              set to very high values, and should be fine for any 
+c              set to very high values, and should be fine for any
 c              conceivable case (these are set near the bottom of this
 c              routine in case they ever need adjusting)
 c     mxbli....maximum number if 1-1 zonal interfaces
@@ -101,7 +101,7 @@ c
       read(iunit5,*) icflout,ironout,ibout,isdout
       read(iunit5,*)
 c
-c     read the either the cfl3d input file or the (plot3d) grid 
+c     read the either the cfl3d input file or the (plot3d) grid
 c     file to get the number of blocks and grid dimensions
 c
       if (cflinp.eq.'null') then
@@ -138,7 +138,7 @@ c
 c
          if (ititr.eq.0) then
             nskip = 8
-         else 
+         else
             nskip = 7
          end if
 c
@@ -179,7 +179,7 @@ c     shortcut to split all blocks the same as the single block input
          do nn = 1,nout
             read(iunit5,*) isblocin(nn)
             read(iunit5,*) ndirin(nn)
-            read(iunit5,*) 
+            read(iunit5,*)
          end do
       end if
 c

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Compute residual contributions for the 
+c     Purpose:  Compute residual contributions for the
 c     right-hand-side in the J-direction from the inviscid terms.
 c***********************************************************************
 c
@@ -81,7 +81,7 @@ c     fill temp arrays with boundary values
 c
       jj  = 1-jdim
 cdir$ ivdep
-      do 100 kk=1,kg 
+      do 100 kk=1,kg
       jj  = jj+jdim
       jj2 = jj+jdim1
       t(jj,20+l)  = qj0(kk,i,l,1)
@@ -131,7 +131,7 @@ c
       do 600 j=1,jdim
       t(j+kvl,1) = 0.0
   600 continue
-c 
+c
 c      gradient limiting - cell interface interpolations
 c
 cdir$ ivdep
@@ -155,7 +155,7 @@ cdir$ ivdep
       do 800 izz=1,nr
       t(izz+1,20+l) = q(izz,1,i,l)+t(izz,2)
       t(izz  ,25+l) = q(izz,1,i,l)-t(izz,1)
-  800 continue 
+  800 continue
  1000 continue
       end if
 c
@@ -242,9 +242,9 @@ c
          do 5432 k=1,kdim
          do 5432 j=1,jdim
          ic = jdim*kdim*(ipl-1) + (k-1)*jdim + j
-         if (real(t(ic,21)).lt.real(epsz) .or. 
+         if (real(t(ic,21)).lt.real(epsz) .or.
      .       real(t(ic,25)).lt.real(epsz) .or.
-     .       real(t(ic,21)).gt.real(epss) .or. 
+     .       real(t(ic,21)).gt.real(epss) .or.
      .       real(t(ic,25)).gt.real(epss)) then
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*)' on block ',nbl
@@ -316,7 +316,7 @@ c
      .20hdifference splitting)
 c
       call fhat(sj(1,i,1),sj(1,i,2),sj(1,i,3),sj(1,i,4),sj(1,i,5),
-     .          t(1,31),t(1,26),t(1,21),jkpro,nvtq) 
+     .          t(1,31),t(1,26),t(1,21),jkpro,nvtq)
 c
       else
 c
@@ -409,33 +409,33 @@ c
 cdir$ ivdep
          do 1016 izz=2,nr
          t(izz,41) = -(sj(izz+1,i,5)*sj(izz+1,i,4)
-     .             - sj(izz,i,5)*sj(izz,i,4))                     
+     .             - sj(izz,i,5)*sj(izz,i,4))
  1016    continue
 cdir$ ivdep
-         do 1017 izz=1,nr,jdim   
+         do 1017 izz=1,nr,jdim
          t(izz+jdim1,41) = -(sj(izz+jdim1,i,5)*sj(izz+jdim1,i,4)
      .                   - sj(izz+jdim1-1,i,5)*sj(izz+jdim1-1,i,4))
          t(izz,41)       = -(sj(izz+1,i,5)*sj(izz+1,i,4)
-     .                   - sj(izz,i,5)*sj(izz,i,4))                     
+     .                   - sj(izz,i,5)*sj(izz,i,4))
  1017    continue
 cdir$ ivdep
-         do 1018 izz=1,nr  
-         t(izz,36) = q(izz,1,i,1) 
-         t(izz,37) = q(izz,1,i,1)*q(izz,1,i,2) 
-         t(izz,38) = q(izz,1,i,1)*q(izz,1,i,3) 
-         t(izz,39) = q(izz,1,i,1)*q(izz,1,i,4) 
+         do 1018 izz=1,nr
+         t(izz,36) = q(izz,1,i,1)
+         t(izz,37) = q(izz,1,i,1)*q(izz,1,i,2)
+         t(izz,38) = q(izz,1,i,1)*q(izz,1,i,3)
+         t(izz,39) = q(izz,1,i,1)*q(izz,1,i,4)
          t(izz,40) = q(izz,1,i,5)*oogmo
      .             + 0.5*q(izz,1,i,1)*(q(izz,1,i,2)*q(izz,1,i,2)
      .             + q(izz,1,i,3)*q(izz,1,i,3)
-     .             + q(izz,1,i,4)*q(izz,1,i,4)) 
- 1018    continue 
+     .             + q(izz,1,i,4)*q(izz,1,i,4))
+ 1018    continue
          do 452 l=1,5
 cdir$ ivdep
          do 1019 izz=1,nr
-         res(izz,1,i,l) = res(izz,1,i,l) + t(izz,35+l)*t(izz,41) 
+         res(izz,1,i,l) = res(izz,1,i,l) + t(izz,35+l)*t(izz,41)
  1019    continue
   452    continue
-      end if  
+      end if
 c
 c      store finer-grid fluxes for enforcing conservation on coarser meshes
 c
@@ -459,7 +459,7 @@ c
       jk = jk+jdim
       qj0(k,ii,l,2) = t(jk,30+l)
   333 continue
-      end if      
+      end if
       if (jbctyp(2).eq.21) then
 c
       if (isklton.gt.0) then

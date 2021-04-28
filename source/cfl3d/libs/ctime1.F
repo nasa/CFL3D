@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -161,7 +161,7 @@ c
 c
       if (itur.ge.2) then
          do 450 k=1,kdim-1
-         izz           = jdim*(k-1) 
+         izz           = jdim*(k-1)
          do 400 j=1,jdim-1
          t(izz+j,1)    = t(izz+j,1) + vist3d(j,k,i)
   400    continue
@@ -281,11 +281,11 @@ c
 cdir$ ivdep
          do 1001 izz=1,n
          t(izz,10)    = dt2/t(izz,10)
-c   code can only do 1st order temporal for pseudo-time term (with 
+c   code can only do 1st order temporal for pseudo-time term (with
 c   subiterations).  Therefore, pseudo-time term is divided here by
 c   tfacp1.  In several subroutines in af3f, dtj is multiplied by
 c   tfacp1.
-         dtj(izz,1,i) = fact1*dtj(izz,1,i)/tfacp1 + 
+         dtj(izz,1,i) = fact1*dtj(izz,1,i)/tfacp1 +
      .                  fact2*vol(izz,1,i)/dttemp
  1001    continue
          dt2 = dt*dt

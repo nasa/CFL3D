@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -126,7 +126,7 @@ c
                   k21    = isav_pat(lcnt,5)
                   k22    = isav_pat(lcnt,6)
                   lqedge = isav_pat(lcnt,7)
-                  lqedgt = isav_pat(lcnt,8) 
+                  lqedgt = isav_pat(lcnt,8)
                   lqedgv = isav_pat(lcnt,9)
                   lqedgb = isav_pat(lcnt,10)
                   jmax2  = isav_pat(lcnt,11)
@@ -411,7 +411,7 @@ c
             end if
          end if
 c
-c        loop over all patch boundaries looking for blocks that 
+c        loop over all patch boundaries looking for blocks that
 c        need to send out info to other processors
 c
          ktl   = kqintl
@@ -446,8 +446,8 @@ c                    to a work array and send to the appropriate processor
 c
                      ldim = 5
                      lqintl = lw(1,nb_from)
-                     call get_bvals(jdim1, kdim1, idim1, jmax1, 
-     .                              kmax1, ldim, w(lqintl), wk(ktl), 
+                     call get_bvals(jdim1, kdim1, idim1, jmax1,
+     .                              kmax1, ldim, w(lqintl), wk(ktl),
      .                              mtype, iint1)
                      nvals = jmax1*kmax1*ldim
                      ktla = ktl + nvals
@@ -458,12 +458,12 @@ c
      .                  ' bc_patch....work array insufficient'
                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                      end if
-                     call get_bvals(jdim1, kdim1, idim1, jmax1, 
+                     call get_bvals(jdim1, kdim1, idim1, jmax1,
      .                              kmax1, ldim, w(lqintl), wk(ktla),
      .                              mtype, iint2)
                      mytag = itag_q + itag
                      ireq2 = ireq2 + 1
-                     call MPI_ISend(wk(ktl), 2*nvals, 
+                     call MPI_ISend(wk(ktl), 2*nvals,
      .                            MY_MPI_REAL,
      .                            nd_recv, mytag, mycomm,
      .                            ireq_snd(ireq2), ierr)
@@ -475,7 +475,7 @@ c
                      if (ivmx.ge.2) then
                          lqintv = lw(13,nb_from)
                          ldim = 1
-                         call get_bvals(jdim1, kdim1, idim1, jmax1, 
+                         call get_bvals(jdim1, kdim1, idim1, jmax1,
      .                                  kmax1, ldim, w(lqintv), wk(ktl),
      .                                  mtype, iint1)
                          nvals = jmax1*kmax1*ldim
@@ -487,12 +487,12 @@ c
      .                      ' bc_patch....work array insufficient'
                             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                          end if
-                         call get_bvals(jdim1, kdim1, idim1, jmax1, 
+                         call get_bvals(jdim1, kdim1, idim1, jmax1,
      .                                  kmax1, ldim, w(lqintv),wk(ktla),
      .                                  mtype, iint2)
                          mytag = itag_v + itag
                          ireq2 = ireq2 + 1
-                         call MPI_ISend(wk(ktl), 2*nvals, 
+                         call MPI_ISend(wk(ktl), 2*nvals,
      .                                MY_MPI_REAL,
      .                                nd_recv, mytag, mycomm,
      .                                ireq_snd(ireq2), ierr)
@@ -505,9 +505,9 @@ c
                      if (ivmx.ge.4) then
                          lqintt = lw(19,nb_from)
                          ldim = nummem
-                         call get_bvals(jdim1, kdim1, idim1, jmax1, 
+                         call get_bvals(jdim1, kdim1, idim1, jmax1,
      .                                  kmax1, ldim, w(lqintt), wk(ktl),
-     .                                  mtype, iint1)        
+     .                                  mtype, iint1)
                          nvals = jmax1*kmax1*ldim
                          ktla = ktl + nvals
                          kcheck = ktla + nvals
@@ -517,18 +517,18 @@ c
      .                      ' bc_patch....work array insufficient'
                             call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                          end if
-                         call get_bvals(jdim1, kdim1, idim1, jmax1, 
+                         call get_bvals(jdim1, kdim1, idim1, jmax1,
      .                                  kmax1, ldim, w(lqintt),wk(ktla),
      .                                  mtype, iint2)
                          mytag = itag_t + itag
                          ireq2 = ireq2 + 1
-                         call MPI_ISend(wk(ktl), 2*nvals, 
+                         call MPI_ISend(wk(ktl), 2*nvals,
      .                                MY_MPI_REAL,
      .                                nd_recv, mytag, mycomm,
      .                                ireq_snd(ireq2), ierr)
                          ktl = kcheck
                      end if
-                  end if 
+                  end if
                end if
                end if
             end do
@@ -570,14 +570,14 @@ c
             ndone = ndone + nrecvd
             do nnn=1,nrecvd
                lcnt   = keep_trac2(index_ar(nnn),1)
-               nb_to  = isav_pat(lcnt,1)        
+               nb_to  = isav_pat(lcnt,1)
                nfb    = isav_pat(lcnt,2)
                j21    = isav_pat(lcnt,3)
                j22    = isav_pat(lcnt,4)
                k21    = isav_pat(lcnt,5)
                k22    = isav_pat(lcnt,6)
                lqedge = isav_pat(lcnt,7)
-               lqedgt = isav_pat(lcnt,8) 
+               lqedgt = isav_pat(lcnt,8)
                lqedgv = isav_pat(lcnt,9)
                lqedgb = isav_pat(lcnt,10)
                jmax2  = isav_pat(lcnt,11)
@@ -614,7 +614,7 @@ c
                   lwk2    = lwk1 + jmax1*kmax1
                   lwk3    = lwk2 + jmax1*kmax1
                   lwk4    = lwk3 + jmax1*kmax1
-                  klimit  = lwk4 + jmax1*kmax1*5 - 1 
+                  klimit  = lwk4 + jmax1*kmax1*5 - 1
                   if (klimit.gt.nwork) then
                      nou(1) = min(nou(1)+1,ibufdim)
                      write(bou(nou(1),1),*)' stopping in bc_patch...',

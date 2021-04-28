@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,7 +28,7 @@ c
 c***********************************************************************
 c     Purpose: establishes zone-to-zone communication file for cfl3d
 c     multi-block applications with the generalized patch interface
-c     option 
+c     option
 c***********************************************************************
 c
       character*120 bou(ibufdim,nbuf)
@@ -622,7 +622,7 @@ c     y(jdim,kdim,idim)
       ns         = j*k*i
       lw(11,nbl) = lw(10,nbl)+ns
 c
-c     z(jdim,kdim,idim)          
+c     z(jdim,kdim,idim)
       ns         = j*k*i
       lw(12,nbl) = lw(11,nbl)+ns
 c
@@ -785,7 +785,7 @@ c
             end do
          end do
       end if
-c 
+c
       write(25,*)
       write(25,9998) patch
 9998  format(2x,26hwriting connectivity file:,/,2x,a60,/)

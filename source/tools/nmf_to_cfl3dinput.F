@@ -7,23 +7,23 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
       program nmf_to_cfl3dinput
 c
 c***********************************************************************
-c   Purpose: Reads in nmf file 
+c   Purpose: Reads in nmf file
 c   (.nmf=Neutral Map File) - see http://geolab.larc.nasa.gov/Volume/Doc/nmf.htm
 c   and writes out an initial-guess CFL3D-type input file.
 c***********************************************************************
@@ -154,7 +154,7 @@ c
         read(3,'(a10)',end=1010) namex
 c       write(6,'('' namex='',a10)') namex
         backspace 3
-        if (namex .eq. "ONE_TO_ONE" .or. 
+        if (namex .eq. "ONE_TO_ONE" .or.
      +      namex .eq. "one_to_one") then
           n_o=n_o+1
           read(3,*) nameo,i_one_to(n_o),if1,ilo1,ihi1,
@@ -256,13 +256,13 @@ c       write(6,'('' namex='',a10)') namex
             stop
           end if
           if (nameb .eq. "WALL" .or. nameb .eq. "wall" .or.
-     +        nameb .eq. "VISCOUS_SOLID" .or. 
+     +        nameb .eq. "VISCOUS_SOLID" .or.
      +        nameb .eq. "viscous_solid") then
             ibctype(ig,nbc(ig))=2004
-          else if (nameb .eq. "INVISCID" .or. 
-     +             nameb .eq. "inviscid" ) then 
+          else if (nameb .eq. "INVISCID" .or.
+     +             nameb .eq. "inviscid" ) then
             ibctype(ig,nbc(ig))=1005
-          else if (nameb .eq. "FARFIELD" .or. 
+          else if (nameb .eq. "FARFIELD" .or.
      +             nameb .eq. "farfield" .or.
      +             nameb .eq. "INFLOW"   .or.
      +             nameb .eq. "OUTFLOW" ) then
@@ -748,7 +748,7 @@ c       search thru all the 1-to-1 connections
         isum=0
         do m=1,n1to1_global
           if (i_one_to(m) .eq. n) then
-            if (irange(1,m) .eq. irange(4,m) .and. 
+            if (irange(1,m) .eq. irange(4,m) .and.
      +        (irange(1,m) .eq. 1)) then
               iseg=iseg+1
               jsta=min(irange(2,m),irange(5,m))
@@ -774,7 +774,7 @@ c       search thru all the 1-to-1 connections
         enddo
         if (nbc(n) .gt. 0) then
           do nn=1,nbc(n)
-            if ((ips(n,nn,1).eq.ips(n,nn,4)) .and. 
+            if ((ips(n,nn,1).eq.ips(n,nn,4)) .and.
      +          (ips(n,nn,1).eq.1)) then
               iseg=iseg+1
               jsta=min(ips(n,nn,2),ips(n,nn,5))
@@ -1442,7 +1442,7 @@ c       search thru all the 1-to-1 connections
       write(7,'(''         0    0.3000    0.3000    0.3000         0'',
      +  ''    0.3000    0.3000    0.3000'')')
       write(7,'(''      NCYC    MGLEVG     NEMGL     NITFO'')')
-      write(7,'(''      xxxx'',i10,''         0         0'')') 
+      write(7,'(''      xxxx'',i10,''         0         0'')')
      +  min(ncgmin+1,3)
       write(7,'(''      MIT1      MIT2      MIT3      MIT4      MIT5'',
      +  ''      MIT6      MIT7     MIT8'')')

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -30,16 +30,16 @@ c     $Id$
 c
 c***********************************************************************
 c     Purpose: Set inflow boundary conditions (typically for nozzle,
-c              duct or engine flows), given total pressure ratio, 
-c              total temperature and flow angle. The pressure is 
-c              extrapolated (zeroth order) from the interior of 
+c              duct or engine flows), given total pressure ratio,
+c              total temperature and flow angle. The pressure is
+c              extrapolated (zeroth order) from the interior of
 c              the domain, and the remaining variables are determined
 c              from the extrapolated pressure and the input data.
 c              Also can input up to two turbulence quantities.
 c
-c     pte   = total to free stream static pressure ratio at 
+c     pte   = total to free stream static pressure ratio at
 c             inlet (Ptotal/pinf)
-c     tte   = total to free stram static temperature ratio at 
+c     tte   = total to free stram static temperature ratio at
 c             inlet (Ttotal/tinf)
 c     alpe  = alpha angle of inlet flow, deg
 c     betae = beta angle of inlet flow, deg
@@ -81,7 +81,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data   
+c     this bc makes use of only one plane of data
 c
       ip    = 1
 c

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -30,7 +30,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose: To write the user-input modal surface out to a plot3d 
+c     Purpose: To write the user-input modal surface out to a plot3d
 c     file that can subsequently be viewed in order to help sort out
 c     any problems with the modal surface data.
 c***********************************************************************
@@ -57,7 +57,7 @@ c
      .        lxnm2,lynm2,lznm2,lxnm1,lynm1,lznm1,lqavg
       common /elastic/ ndefrm,naesrf
       common /igrdtyp/ ip3dgrd,ialph
-c 
+c
       if (iaes.gt.9) then
          if (nm.gt.99) then
             len1 = 20
@@ -213,23 +213,23 @@ c
                   kfn = jbcinfo(nbl1,ns,5,m)
                   write(iunitw,23111) ifn-ist+1,kfn-kst+1
                   if(ialph.eq.0) then
-                    do k = kst,kfn 
+                    do k = kst,kfn
                       do i = ist,ifn
                         write(iunitw,'(6(1x,e16.8))')
      .                      x(j,k,i),y(j,k,i),z(j,k,i),
      .                      real(xmdj(k,i,l+1,nm,iaes)),
      .                      real(xmdj(k,i,l+2,nm,iaes)),
-     .                      real(xmdj(k,i,l+3,nm,iaes)) 
+     .                      real(xmdj(k,i,l+3,nm,iaes))
                       enddo
                     enddo
                   else
-                    do k = kst,kfn 
+                    do k = kst,kfn
                       do i = ist,ifn
                         write(iunitw,'(6(1x,e16.8))')
      .                      x(j,k,i),z(j,k,i),-y(j,k,i),
      .                      real(xmdj(k,i,l+1,nm,iaes)),
      .                      real(xmdj(k,i,l+3,nm,iaes)),
-     .                     -real(xmdj(k,i,l+2,nm,iaes)) 
+     .                     -real(xmdj(k,i,l+2,nm,iaes))
                       enddo
                     enddo
                   end if

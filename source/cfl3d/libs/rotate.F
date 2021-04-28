@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -34,11 +34,11 @@ c     irot....modulation for rotational motion
 c             =  0 no rotation
 c             =  1 constant rotation speed
 c             =  2 sinusoidal variation of rotational displacement
-c             =  3 smooth increase in rotational displacement, 
+c             =  3 smooth increase in rotational displacement,
 c                  asypmtotically reaching a fixed rotational displacement
-c             = 99 modulation driven external to this routine: on 
-c                  input thetax,thetay,thetaz already contain new 
-c                  angular displacements, and omegx,omegy,omegz 
+c             = 99 modulation driven external to this routine: on
+c                  input thetax,thetay,thetaz already contain new
+c                  angular displacements, and omegx,omegy,omegz
 c                  already contain new rotational rates.
 c
 c     iupdat..flag to update grid position
@@ -65,7 +65,7 @@ c
       dimension x(jdim,kdim,idim),y(jdim,kdim,idim),z(jdim,kdim,idim),
      .          t(jdim*kdim*idim,3),tti(jdim*kdim,3,2),
      .          ttj(kdim*idim,3,2),ttk(jdim*idim,3,2),
-     .          t1(jdim*kdim*idim,3) 
+     .          t1(jdim*kdim*idim,3)
 c
       common /sklton/ isklton
 c
@@ -106,13 +106,13 @@ c***********************************************************************
 c
          if (time2 .ne. 0.) then
             theold = thxold
-         else 
+         else
             theold = 0.e0
          end if
 c
 c**************************************************
 c        calculate rotated y and z at grid points
-c        t1(1)=x (unaltered) t1(2)=y t1(3)=z 
+c        t1(1)=x (unaltered) t1(2)=y t1(3)=z
 c**************************************************
 c
          if (irot .ne. 99) then
@@ -170,7 +170,7 @@ c
    11    continue
 c
 c***************************************************
-c        calculate increment to acceleration of grid 
+c        calculate increment to acceleration of grid
 c        points on the block boundaries due to rotation
 c        and add to current values
 c        tti(1)=d2x/dt2 tti(2)=d2y/dt2 tti(3)=d2z/dt2
@@ -188,7 +188,7 @@ c        neglect acceleration for now
          tti(izz,3,ii) = tti(izz,3,ii) + 0.e0
  1002    continue
          i = i + idim - 1
-   13    continue   
+   13    continue
 c
 c        j0/jdim boundaries
 c
@@ -233,7 +233,7 @@ c
 c
 c**************************************************
 c        calculate rotated x and z at grid points
-c        t1(1)=x t1(2)=y (unaltered) t1(3)=z               
+c        t1(1)=x t1(2)=y (unaltered) t1(3)=z
 c**************************************************
 c
          if (irot .ne. 99) then
@@ -291,7 +291,7 @@ c
    21    continue
 c
 c***************************************************
-c        calculate increment to acceleration of grid 
+c        calculate increment to acceleration of grid
 c        points on the block boundaries due to rotation
 c        and add to current values
 c        tti(1)=d2x/dt2 tti(2)=d2y/dt2 tti(3)=d2z/dt2
@@ -309,7 +309,7 @@ c        neglect acceleration for now
          tti(izz,3,ii) = tti(izz,3,ii) + 0.e0
  2002    continue
          i = i + idim - 1
-   23    continue   
+   23    continue
 c
 c        j0/jdim boundaries
 c
@@ -412,7 +412,7 @@ c
    31    continue
 c
 c***************************************************
-c        calculate increment to acceleration of grid 
+c        calculate increment to acceleration of grid
 c        points on the block boundaries due to rotation
 c        and add to current values
 c        tti(1)=d2x/dt2 tti(2)=d2y/dt2 tti(3)=d2z/dt2
@@ -430,7 +430,7 @@ c        neglect acceleration for now
          tti(izz,3,ii) = tti(izz,3,ii) + 0.e0
  3002    continue
          i = i + idim - 1
-   33    continue   
+   33    continue
 c
 c        j0/jdim boundaries
 c
@@ -461,7 +461,7 @@ c        neglect acceleration for now
    35    continue
 c
 c
-      else 
+      else
 c
          if (isklton .gt. 0) then
             nou(1) = min(nou(1)+1,ibufdim)

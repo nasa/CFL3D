@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -28,7 +28,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Check for wraparound in j, k or i  directions in order 
+c     Purpose:  Check for wraparound in j, k or i  directions in order
 c     to apply bctype 1012 (singular axis - full plane)
 c***********************************************************************
 c
@@ -54,7 +54,7 @@ c***********************************************************************
 c
       if(nface.eq.5.or.nface.eq.6) then
 c
-c       check for wrap around in j direction, adjacent to k-axis, 
+c       check for wrap around in j direction, adjacent to k-axis,
 c       within same i-range as the singular axis segment
 c
         jwrap = 1
@@ -64,9 +64,9 @@ c
         ksta1 = jbcinfo(nbl,nseg,4,1)
         kend1 = jbcinfo(nbl,nseg,5,1)
         if((nface.eq.5 .and. ksta1.eq.1) .or.
-     .  (nface.eq.6 .and. kend1.eq.kdim)) then 
+     .  (nface.eq.6 .and. kend1.eq.kdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the j=1 face must have a wrap around in 
+c           this segment on the j=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             jbc = jbcinfo(nbl,nseg,1,1)
             if(jbc.ne.0) jwrap = 0
@@ -79,7 +79,7 @@ c
         end if
    10   continue
 c
-c       check for wrap around in j direction, adjacent to k-axis, 
+c       check for wrap around in j direction, adjacent to k-axis,
 c       within same i-range as the singular axis segment
 c
         do 11 nseg=1,nbcjdim(nbl)
@@ -90,11 +90,11 @@ c
         if((nface.eq.5 .and. ksta1.eq.1) .or.
      .  (nface.eq.6 .and. kend1.eq.kdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the j=jdim face must have a wrap around in 
+c           this segment on the j=jdim face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             jbc = jbcinfo(nbl,nseg,1,2)
-            if(jbc.ne.0) jwrap = 0 
-c  
+            if(jbc.ne.0) jwrap = 0
+c
 c           if(jbc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off jwrap on jdim',
 c    .        ' segment ', nseg
@@ -119,7 +119,7 @@ c           this segment on the i=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             ibc = ibcinfo(nbl,nseg,1,1)
             if(ibc.ne.0) iwrap = 0
-c   
+c
 c           if(ibc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off iwrap on i0',
 c    .        ' segment ', nseg
@@ -143,7 +143,7 @@ c           this segment on the i=idim face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             ibc = ibcinfo(nbl,nseg,1,2)
             if(ibc.ne.0) iwrap = 0
-c   
+c
 c           if(ibc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off iwrap on idim',
 c    .        ' segment ', nseg
@@ -165,7 +165,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have wrap around in i ',
      .      'or j directions'
-          else 
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1012 on ',
      .      'k=kdim boundary:'
@@ -184,7 +184,7 @@ c***********************************************************************
 c
       if(nface.eq.3 .or. nface.eq.4) then
 c
-c       check for wrap around in k direction, adjacent to j-axis, 
+c       check for wrap around in k direction, adjacent to j-axis,
 c       within same i-range as the singular axis segment
 c
         kwrap = 1
@@ -196,10 +196,10 @@ c
         if((nface.eq.3 .and. jsta1.eq.1) .or.
      .  (nface.eq.4 .and. jend1.eq.jdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the k=1 face must have a wrap around in 
+c           this segment on the k=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             kbc = kbcinfo(nbl,nseg,1,1)
-            if(kbc.ne.0) kwrap = 0 
+            if(kbc.ne.0) kwrap = 0
 c
 c           if(kbc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off kwrap on k0',
@@ -209,7 +209,7 @@ c
         end if
    30   continue
 c
-c       check for wrap around in k direction, adjacent to j-axis, 
+c       check for wrap around in k direction, adjacent to j-axis,
 c       within same i-range as the singular axis segment
 c
         do 31 nseg=1,nbckdim(nbl)
@@ -220,11 +220,11 @@ c
         if((nface.eq.3 .and. jsta1.eq.1) .or.
      .  (nface.eq.4 .and. jend1.eq.jdim)) then
           if(ista1.lt.iend .and. iend1.gt.ista) then
-c           this segment on the k=1 face must have a wrap around in 
+c           this segment on the k=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             kbc = kbcinfo(nbl,nseg,1,2)
             if(kbc.ne.0) kwrap = 0
-c   
+c
 c           if(kbc.ne.0)
 c    .         write(61,*) 'block ',nbl,' turning off kwrap on kdim',
 c    .         ' segment ', nseg
@@ -249,7 +249,7 @@ c           this segment on the i=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             ibc = ibcinfo(nbl,nseg,1,1)
             if(ibc.ne.0) iwrap = 0
-c   
+c
 c           if(ibc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off iwrap on i0',
 c    .        ' segment ', nseg
@@ -273,7 +273,7 @@ c           this segment on the i=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             ibc = ibcinfo(nbl,nseg,1,2)
             if(ibc.ne.0) iwrap = 0
-c   
+c
 c           if(ibc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off iwrap on idim',
 c    .        ' segment ', nseg
@@ -295,7 +295,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have wrap around in i ',
      .      'or k directions'
-          else   
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1012 on ',
      .      'j=jdim boundary:'
@@ -314,7 +314,7 @@ c***********************************************************************
 c
       if(nface.eq.1 .or. nface.eq.2) then
 c
-c       check for wrap around in j direction, adjacent to i-axis, 
+c       check for wrap around in j direction, adjacent to i-axis,
 c       within same k-range as the singular axis segment
 c
         jwrap = 1
@@ -326,7 +326,7 @@ c
         if((nface.eq.1 .and. ista1.eq.1) .or.
      .  (nface.eq.2 .and. iend1.eq.idim)) then
           if(ksta1.lt.kend .and. kend1.gt.ksta) then
-c           this segment on the j=1 face must have a wrap around in 
+c           this segment on the j=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             jbc = jbcinfo(nbl,nseg,1,1)
             if(jbc.ne.0) jwrap = 0
@@ -339,7 +339,7 @@ c
         end if
    50   continue
 c
-c       check for wrap around in j direction, adjacent to i-axis, 
+c       check for wrap around in j direction, adjacent to i-axis,
 c       within same k-range as the singular axis segment
 c
         do 51 nseg=1,nbcjdim(nbl)
@@ -350,11 +350,11 @@ c
         if((nface.eq.1 .and. ista1.eq.1) .or.
      .  (nface.eq.2 .and. iend1.eq.idim)) then
          if(ksta1.lt.kend .and. kend1.gt.ksta) then
-c          this segment on the j=jdim face must have a wrap around in 
+c          this segment on the j=jdim face must have a wrap around in
 c          order to apply bctype 1012 - turn OFF wraparound flag if not
            jbc = jbcinfo(nbl,nseg,1,2)
-           if(jbc.ne.0) jwrap = 0 
-c   
+           if(jbc.ne.0) jwrap = 0
+c
 c          if(jbc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off jwrap on jdim',
 c    .        ' segment ', nseg
@@ -379,7 +379,7 @@ c           this segment on the k=1 face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             kbc = kbcinfo(nbl,nseg,1,1)
             if(kbc.ne.0) kwrap = 0
-c   
+c
 c           if(kbc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off kwrap on k0',
 c    .        ' segment ', nseg
@@ -403,7 +403,7 @@ c           this segment on the k=kdim face must have a wrap around in
 c           order to apply bctype 1012 - turn OFF wraparound flag if not
             kbc = kbcinfo(nbl,nseg,1,2)
             if(kbc.ne.0) kwrap = 0
-c   
+c
 c           if(kbc.ne.0)
 c    .        write(61,*) 'block ',nbl,' turning off kwrap on kdim',
 c    .        ' segment ', nseg
@@ -425,7 +425,7 @@ c
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) '    must have wrap around in k ',
      .      'or j directions'
-          else   
+          else
             nou(1) = min(nou(1)+1,ibufdim)
             write(bou(nou(1),1),*) ' error in applying bctype 1012 on ',
      .      'i=idim boundary:'

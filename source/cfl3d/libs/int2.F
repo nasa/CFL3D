@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -29,7 +29,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Linearly interpolate q from one grid to ghost cells of  
+c     Purpose:  Linearly interpolate q from one grid to ghost cells of
 c     another grid using generalized coordinates.
 c***********************************************************************
 c
@@ -64,8 +64,8 @@ c
  1010 continue
  1000 continue
 c
-c     use injection (e.g. piecewise constant interpolation) if 
-c     solution is first order (ifo=0) 
+c     use injection (e.g. piecewise constant interpolation) if
+c     solution is first order (ifo=0)
 c
       factfo = 0.
       if (ifo.gt.0) factfo = 1.
@@ -363,6 +363,6 @@ c
  2021 continue
  2020 continue
  3820 continue
-      end if     
+      end if
       return
       end

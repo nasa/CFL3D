@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -158,7 +158,7 @@ c Set factor that multiplies the N-S CFL number, to determine CFL number
 c for the turbulence model (this typically can be 2 - 10... optimum value
 c is a function of the case).  If turb model seems to be having trouble
 c converging, lowering this factor may be one strategy to try. NOTE: factor
-c used only for steady state cases, not time accurate cases. 
+c used only for steady state cases, not time accurate cases.
 c
       factor=10.
 c
@@ -168,7 +168,7 @@ c
          factor = cflturb(1)
       end if
 c
-c Timestep for turb model - damp(j,k,i) 
+c Timestep for turb model - damp(j,k,i)
 c
       if (real(dt).lt.0) then
          do i=1,idim-1
@@ -263,7 +263,7 @@ c             do not allow ibb=0
           enddo
         enddo
       enddo
-c If this is 1st global subiteration for time-accurate computation, 
+c If this is 1st global subiteration for time-accurate computation,
 c save tursav (at time step n):
 c tursav2(j,k,i,1) is turb quantity
 c tursav2(j,k,i,3) is Delta turb quantity
@@ -424,11 +424,11 @@ c       Interior points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -480,11 +480,11 @@ c       K0 boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -535,11 +535,11 @@ c       KDIM boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -640,11 +640,11 @@ c       Interior points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -696,11 +696,11 @@ c       J0 boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -751,11 +751,11 @@ c       JDIM boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -857,11 +857,11 @@ c         Interior points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -913,11 +913,11 @@ c         I0 boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -968,11 +968,11 @@ c         IDIM boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -1119,11 +1119,11 @@ c         Interior points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1201,11 +1201,11 @@ c         K0 boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1282,11 +1282,11 @@ c         KDIM boundary points
      +          +volkl))
               zm=sk(j,k,i,3)*sk(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +volkl))
-              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) + 
+              xa=0.5*(sk(j,k+1,i,1)*sk(j,k+1,i,4) +
      +           sk(j,k,i,1)*sk(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) + 
+              ya=0.5*(sk(j,k+1,i,2)*sk(j,k+1,i,4) +
      +           sk(j,k,i,2)*sk(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) + 
+              za=0.5*(sk(j,k+1,i,3)*sk(j,k+1,i,4) +
      +           sk(j,k,i,3)*sk(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1382,11 +1382,11 @@ c         Interior points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1458,11 +1458,11 @@ c         J0 boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1533,11 +1533,11 @@ c         JDIM boundary points
      +          +voljl))
               zm=sj(j,k,i,3)*sj(j,k,i,4)/(0.5*(vol(j,k,i)
      +          +voljl))
-              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) + 
+              xa=0.5*(sj(j+1,k,i,1)*sj(j+1,k,i,4) +
      +           sj(j,k,i,1)*sj(j,k,i,4))/vol(j,k,i)
-              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) + 
+              ya=0.5*(sj(j+1,k,i,2)*sj(j+1,k,i,4) +
      +           sj(j,k,i,2)*sj(j,k,i,4))/vol(j,k,i)
-              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) + 
+              za=0.5*(sj(j+1,k,i,3)*sj(j+1,k,i,4) +
      +           sj(j,k,i,3)*sj(j,k,i,4))/vol(j,k,i)
 c
               ttpo=xp*xa+yp*ya+zp*za
@@ -1628,11 +1628,11 @@ c           Interior points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -1704,11 +1704,11 @@ c           I0 boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -1779,11 +1779,11 @@ c           IDIM boundary points
      +            +volil))
                 zm=si(j,k,i,3)*si(j,k,i,4)/(0.5*(vol(j,k,i)
      +            +volil))
-                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) + 
+                xa=0.5*(si(j,k,i+1,1)*si(j,k,i+1,4) +
      +             si(j,k,i,1)*si(j,k,i,4))/vol(j,k,i)
-                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) + 
+                ya=0.5*(si(j,k,i+1,2)*si(j,k,i+1,4) +
      +             si(j,k,i,2)*si(j,k,i,4))/vol(j,k,i)
-                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) + 
+                za=0.5*(si(j,k,i+1,3)*si(j,k,i+1,4) +
      +             si(j,k,i,3)*si(j,k,i,4))/vol(j,k,i)
 c
                 ttpo=xp*xa+yp*ya+zp*za
@@ -1871,7 +1871,7 @@ c    Update TURRE
             enddo
           enddo
         enddo
-c  
+c
         sumn=sqrt(sumn)/float((kdim-1)*(jdim-1)*(idim-1))
 c
         if(iwrite .eq. 1) then

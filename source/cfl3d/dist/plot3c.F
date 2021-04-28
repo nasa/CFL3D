@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -170,13 +170,13 @@ c        surface face centers
             jw = 0
             do 1500 j=j1,j2,j3
             jw = jw + 1
-            xg(jw,kw,1,1) = .25*(   x(j,k,i)   + x(j+1,k,i) 
+            xg(jw,kw,1,1) = .25*(   x(j,k,i)   + x(j+1,k,i)
      .                            + x(j,k+1,i) + x(j+1,k+1,i))
 c
-            xg(jw,kw,1,2) = .25*(   y(j,k,i)   + y(j+1,k,i) 
+            xg(jw,kw,1,2) = .25*(   y(j,k,i)   + y(j+1,k,i)
      .                            + y(j,k+1,i) + y(j+1,k+1,i))
 c
-            xg(jw,kw,1,3) = .25*(   z(j,k,i)   + z(j+1,k,i) 
+            xg(jw,kw,1,3) = .25*(   z(j,k,i)   + z(j+1,k,i)
      .                            + z(j,k+1,i) + z(j+1,k+1,i))
  1500       continue
          else if (j1.eq.j2) then
@@ -278,7 +278,7 @@ c
       blank2(j,k,i) = 1.
  2049 continue
 c
-c     iblank (blank2) array for generalized patch interface boundaries 
+c     iblank (blank2) array for generalized patch interface boundaries
 c
       if (abs(ninter).gt.0) then
          do 1600 inter = 1,abs(ninter)
@@ -478,7 +478,7 @@ c
             end if
 #           endif
          end if
-         if (ifunc.eq.4) then 
+         if (ifunc.eq.4) then
             if (ipsurf.eq.0) then
                write(11,'(''    plot3dg file is an xyz'',
      .         '' file at cell centers'')')
@@ -705,7 +705,7 @@ c
 #endif
 c
 c     load appropriate data into single precision array
-c   
+c
 c     ifunc...flag to determine whether a plot3d q file or plot3d function
 c             file is written. function files contain only one variable to
 c             be compatable with the current version of FAST

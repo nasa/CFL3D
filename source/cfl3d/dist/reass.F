@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -31,7 +31,7 @@ c     writ_buf used
 c     Written by Bob Bergeron, NASA Ames, 2005
 c***********************************************************************
 c
-cRJB...this code reassembles the cfl3d output 
+cRJB...this code reassembles the cfl3d output
 cRJB...from files (fort.8000s) and the cfl3d.out
 cRJB...written by the MLP version with to the following ppflags
 cRJB...could also be used for the MPI version
@@ -68,7 +68,7 @@ cRJB...31 updateg
 cRJB...32 dynptch
 cRJB...33 dynptch
 c...
-cRJB...the code reads and writes the (short) cfl3d.out until 
+cRJB...the code reads and writes the (short) cfl3d.out until
 cRJB...it finds a "ppflag" string and values written by the master onto cfl3d.out
 cRJB...then it reads the fort.8000s written by the workers and upon appropriate matching
 cRJB...of ppflag values, the code writes data for the value of ppflag(termed igo)
@@ -152,12 +152,12 @@ c     write(lunfio0,'(" reassembling for ",i6," distinct grids ")')ngridd
       if(j.gt.0 .and. nlunitc.lt.ngridd)then
 
 cRJB..obtain the ppflag flag which will
-cRJB..dictate how to read/write/insert the worker output 
+cRJB..dictate how to read/write/insert the worker output
         cigo(1:1)=outstr(9:9)
         cigo(2:2)=outstr(10:10)
         cigo(3:3)=outstr(11:11)
         read(cigo,*) igo
-cRJB...the MLP shortened cfl3d.out contains duplicate igos and 
+cRJB...the MLP shortened cfl3d.out contains duplicate igos and
 cRJB...at least one duplicate igo sequence: 4 8 9
 cRJB...written by the master in writ_buf
 cRJB...we process the worker files at the end of these sequences
@@ -277,8 +277,8 @@ cRJB...021005 for ivmx=2 ppflag 5 appears on 10-lets try first with 0 output on 
           if(ierror.gt.0)return
           igop=igo
          elseif(igop.eq.23)then
-cRJB...when we see 23, we have already written first block info 
-cRJB...            or  we have already written  last block info 
+cRJB...when we see 23, we have already written first block info
+cRJB...            or  we have already written  last block info
             backspace (10)
             nr=nr-1
             if(igo23.le.0)then
@@ -461,14 +461,14 @@ cRJB...so main loop will need two passes to process a given ppflag
          read(lunit,'(a)',err=998,end=997,iostat=ios)outstr
          nrec(lunitm)=nrec(lunitm)+1
          nrec0=-1
-cRJB...process does considerable backspacing, but experience indicates that 
+cRJB...process does considerable backspacing, but experience indicates that
 c nrec(lunitm) should contain the ppflag
          j2=index(outstr,"ppflag")
          if(j2.gt.0)then
-cRJB...we have found a ppflag on lunitm and so move 
+cRJB...we have found a ppflag on lunitm and so move
 cRJB...to the next ppflag on fort.10 and we expect the string to
 cRJB...be a ppflag-but suppose not(mgt reading restart)
-cRJB...lets test 
+cRJB...lets test
           read(10,'(a)',err=998,end=997)string
           j2=index(string,"ppflag")
           if(j2.gt.0)then
@@ -529,10 +529,10 @@ cRJB...backspace the "ppflag  27" and the "setting" and we are done with this lu
            enddo
           endif ! if(nous.gt.0)
 c
-cRJB...we do not go to the next lunit because some igo and igop combos requires several 
+cRJB...we do not go to the next lunit because some igo and igop combos requires several
 c      sequential reads/writes off the same lunit to duplicate the output
-cRJB...we are now going to test for the special cases and if the igo and igop combo is 
-c      NOT one of these special combos, then we should backspace the current lunit as 
+cRJB...we are now going to test for the special cases and if the igo and igop combo is
+c      NOT one of these special combos, then we should backspace the current lunit as
 c      soon as we know and read the next lunit to preserve the loop counter
 c
 cRJB...COMMENCE THE TEST FOR THE SPECIAL CASES
@@ -554,7 +554,7 @@ cRJB...lets test
 cRJB...the fort.10 string is output-but we should not backspace fort.10 if we write out
 cRJB...except on bb1-092205
 cRJB...one diff allow the correct bb1 output-
-cRJB...skip(PUNT) the write to fort.10 and backspace both fort.10 and lunit to avoid 
+cRJB...skip(PUNT) the write to fort.10 and backspace both fort.10 and lunit to avoid
 cRJB...duplicating the fort.10 in reass
 cRJB...(ngood is already 0 to allow backspace)
 cRJB...mgt reading restart
@@ -582,7 +582,7 @@ cRJB...bb1
 cRJB...decisions,decisions
 cRJB...testing below occurs after reading the first ppflag for this lunit
 cRJB...do we go to the next lunit or do we continue with this lunit?
-cRJB...j3>0 => we have just found a ppflag, so we should backspace and complete reading on lunit  
+cRJB...j3>0 => we have just found a ppflag, so we should backspace and complete reading on lunit
 cRJB...some special ppflags and cases make us pause before we do so...
 cRJB...igop.eq.8(&nous > 0) -> "adding residual correction" printout follows igop.eq.4
 cRJB...igop.eq.9 -> "AF" printout follows igop.eq.4
@@ -887,7 +887,7 @@ cRJB...moving fort.10-if it's a ppflag
                endif
 cRJB...an unusual case: cfl3d prints max residual and max vorticity BEFORE
 cRJB...the last block "updating with 3-D 3-factor scheme" wrapup
-cRJB...we check fort.10 for the printout 
+cRJB...we check fort.10 for the printout
                if(n.eq.ngridt)then
                  read(10,'(a)',err=998,end=997)string1
                  nr=nr+1
@@ -968,7 +968,7 @@ cRJB...COMPLETE THE TEST FOR THE SPECIAL CASES
           l27done=0
           else ! igo .eq.igop
 cRJB...a ppflag mismatch
-cRJB...entered with a ppflag value of igo from fort.10 and process read 
+cRJB...entered with a ppflag value of igo from fort.10 and process read
 cRJB...a different value of igop on the lunit
 cRJB...process should keep reading the lunits to find the proper igop
 cRJB...a ppflag mismatch should backspace on both fort.10 and lunit
@@ -1029,7 +1029,7 @@ cRJB...boundary conditions can follow type 9
           backspace(10)
           nr=nr-1
           igo=2
-          goto 100 
+          goto 100
          endif
 cRJB...igop =2 may involve printing bc or  may involve an 5star ENDING header printout
 cRJB...it will be a blank line and a line w/ 5star
@@ -1057,11 +1057,11 @@ cRJB...5star test fails-print bc
             backspace(10)
             nr=nr-1
             igo=2
-            goto 100 
+            goto 100
            endif
          else
           igo=2
-          goto 100 
+          goto 100
          endif
         else
          return

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -41,7 +41,7 @@ c
      .          nblon(mxbli),idimg(maxbl),jdimg(maxbl),kdimg(maxbl),
      .          isav_blk(2*mxbli,17),lw(65,maxbl)
 c
-      if(abs(nbli).gt.0) then 
+      if(abs(nbli).gt.0) then
 c
 c     loop over all 1-1 interfaces
 c
@@ -132,7 +132,7 @@ c
                         jse=jse+1
                      end if
 c
-c                 j = constant interface 
+c                 j = constant interface
 c
                   else if (isva(it,1,n)+isva(it,2,n) .eq. 4) then
                      lwt   = lw(2,ic_blk)
@@ -199,8 +199,8 @@ c
                   isav_blk(icount,3)  = ir
                   isav_blk(icount,4)  = ic_blk
                   isav_blk(icount,5)  = in_blk
-                  isav_blk(icount,6)  = jface 
-                  isav_blk(icount,7)  = jedge 
+                  isav_blk(icount,6)  = jface
+                  isav_blk(icount,7)  = jedge
                   isav_blk(icount,8)  = isva(it,1,n)+isva(it,2,n)
                   isav_blk(icount,9)  = lwt
                   isav_blk(icount,10) = iedge

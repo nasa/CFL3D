@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -139,7 +139,7 @@ c
 c
       if (icyc.ge.nitfo+1 .and. level.ge.lglobal) then
 c
-c     finest global grids or embedded  grids 
+c     finest global grids or embedded  grids
 c
          rkap(1) = rkap0(1)
          rkap(2) = rkap0(2)
@@ -182,8 +182,8 @@ c     local time step: ramp initial CFL number to a value fmax times larger.
 c     The time step distribution is recalculated for each cycle.
 c
       dttol = 1.e-6
-      if (iflagts.gt.0 .and. real(dt).lt.0 .and. icyc.gt.1) then 
-        if (nt.eq.1 .and. abs(real(dt)) .lt. 
+      if (iflagts.gt.0 .and. real(dt).lt.0 .and. icyc.gt.1) then
+        if (nt.eq.1 .and. abs(real(dt)) .lt.
      .      real(fmax)*abs(real(dt0))-real(dttol)) then
 c          ramp CFL on first block on top level
            if (level.eq.levt .and. nbl.eq.nblstat) then
@@ -201,7 +201,7 @@ c     The CFL number distribution is recalculated for each time step.
 c
       dttol = 1.e-6
       if (iflagts.gt.0 .and. real(dt).gt.0 .and. nt.gt.1) then
-        if (icyc.eq.1 .and. abs(real(dt)) .lt. 
+        if (icyc.eq.1 .and. abs(real(dt)) .lt.
      .      real(fmax)*abs(real(dt0))-real(dttol)) then
 c          ramp time step on first block on top level
            if (level.eq.levt .and. nbl.eq.nblstat) then
@@ -279,17 +279,17 @@ c
       if (icyc.eq.(icyc/1)*1 .and. level.ge.lglobal .and. ntime.le.nit)
      .    icall = 1
       if (lowmem_ux .eq. 1) then
-        if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or. 
+        if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11 .or.
      .      ivmx.eq.16 .or. ivmx.eq.72 .or.
-     .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10).and. 
-     .    ikoprod.eq.1) .or. 
+     .    ((ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10).and.
+     .    ikoprod.eq.1) .or.
      .    (ivmx.eq.7 .and. isstdenom.eq.1) .or.
      .    (ivmx.eq.7 .and. isst2003.eq.1) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstrc.gt.0) .or.
      .    ((ivmx.eq.6 .or. ivmx.eq.7) .and. isstsf.eq.1) .or.
-     .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or. 
-     .    ((ivmx.eq.5) .and. isarc3d.eq.1) .or. 
-     .    ((ivmx.eq.5) .and. isar.eq.1) .or. 
+     .    ((ivmx.eq.5) .and. isarc2d.eq.1) .or.
+     .    ((ivmx.eq.5) .and. isarc3d.eq.1) .or.
+     .    ((ivmx.eq.5) .and. isar.eq.1) .or.
      .    (ivmx.eq.6 .and. i_wilcox06.eq.1) .or.
      .    (ivmx.eq.6 .and. i_wilcox98.eq.1) .or.
      .    ides.ge.2 .or. i_nonlin.ne.0 .or. i_tauijs.ne.0) then
@@ -364,7 +364,7 @@ c   Baldwin-Lomax
       if (real(dt).lt.0.) then
          if (icyc.eq.ncyc) ipw = 1
          if (icyc.eq.ncyc .and. icyc.le.3) ipw = 2
-      else 
+      else
          if (icyc.eq.ioutsub) then
             if (nt.eq.ntstep) ipw = 1
             if (nt.eq.ntstep .and. ntstep.le.3) ipw = 2
@@ -377,7 +377,7 @@ c   Baldwin-Lomax
      .            nblt,x,y,z,blank,iover,bci,bcj,bck,
      .            nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl)
 c
-c   Johnson-King no longer available due to unsuitability for 
+c   Johnson-King no longer available due to unsuitability for
 c   multi-block grids
 c
       else if (ivmx .eq. 4) then
@@ -927,7 +927,7 @@ c          RSM not working in complex mode
              negn(n) = 0
            enddo
          else
-           call kws_main(jdim,kdim,idim,myid,myhost,nummem, 
+           call kws_main(jdim,kdim,idim,myid,myhost,nummem,
      $          tj0,tk0,ti0,xib,
      $          ux,
      $          sj,sk,si,vol,volj0,volk0,voli0,q,qj0,qk0,qi0,dtj,vist3d,
@@ -979,7 +979,7 @@ c
 cdir$ ivdep
       do 6 izz=1,nnpl
       res(izz+ist-1,l) = 0.0e0
-    6 continue 
+    6 continue
 c
 c     imult: multi-plane vectorization flag
 c            = 0 single plane at a time
@@ -1056,7 +1056,7 @@ c
       nvtq = npl*jdim*kdim
       kbctyp(1) = kbcinfo(nbl,1,1,1)
       kbctyp(2) = kbcinfo(nbl,1,1,2)
-      call hfluxr(i,npl,rkap(3),jdim,kdim,idim,res,q,qk0,sk,wk,nvtq, 
+      call hfluxr(i,npl,rkap(3),jdim,kdim,idim,res,q,qk0,sk,wk,nvtq,
      .            nv,nfajki(2),wfa,iwfa(niwfac),kbctyp,isf,nbl,bck,
      .            nou,bou,nbuf,ibufdim,myid,mblk2nd,maxbl,idefrm(nbl))
   210 continue
@@ -1194,7 +1194,7 @@ c
          kdww2 = kdim-2
          do 4588 ii=1,kdww2
          jj    = jj+jdim
- 4588    res(jkv+jdim+jj-1,l) = 0. 
+ 4588    res(jkv+jdim+jj-1,l) = 0.
 cdir$ ivdep
          do 551 izz=1,jdim+1
          res(izz+jkv+jdim*kdim1-1,l) = 0.e0
@@ -1277,10 +1277,10 @@ c
 
       if (iteravg .eq. 1 .or. iteravg .eq. 2) then
       if (level.ge.lglobal .and. ntime.eq.nit) then
-        if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. .and. 
+        if (real(dt) .lt. 0. .or. (real(dt) .gt. 0. .and.
      +      icyc .eq. ncyc)) then
 c   get iteration-averaged Q values and increment xnumavg
-c   note: the qavg values are kept as conserved variables, whereas 
+c   note: the qavg values are kept as conserved variables, whereas
 c   q values are primitive (this is done to avoid round-off differences
 c   during restarts, because the PLOT3D output is in conserved form)
           do i=1,idim-1
@@ -1296,7 +1296,7 @@ c   during restarts, because the PLOT3D output is in conserved form)
      +            q(j,k,i,1)*q(j,k,i,4))/xnumavg
                 qavg(j,k,i,5)=(qavg(j,k,i,5)*(xnumavg-1.)+
      +            (q(j,k,i,5)/gm1+0.5*(q(j,k,i,2)**2+
-     +            q(j,k,i,3)**2+q(j,k,i,4)**2)/q(j,k,i,1))
+     +            q(j,k,i,3)**2+q(j,k,i,4)**2)*q(j,k,i,1))
      +            )/xnumavg
               enddo
             enddo
@@ -1304,5 +1304,5 @@ c   during restarts, because the PLOT3D output is in conserved form)
         end if
       end if
       end if
-      return 
+      return
       end

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -71,7 +71,7 @@ c
 c     sort grids from largest to smallest
 c
       do igrid = 1, ngrid-1
-         do jgrid = igrid+1, ngrid 
+         do jgrid = igrid+1, ngrid
             if (iwrk(igrid,2) .lt. iwrk(jgrid,2)) then
                itmp          = iwrk(igrid,1)
                iwrk(igrid,1) = iwrk(jgrid,1)
@@ -84,12 +84,12 @@ c
       end do
 c
 c     option 1: allow embeded blocks to reside on any processor in
-c               order to load balance (some cases may not work 
+c               order to load balance (some cases may not work
 c               correctly, and is just about as slow as option 2)
 c
 c     option 2: restrict embeded blocks to the same processor as
 c               the block in which they are embeded (many cases
-c               won't load balance very well). 
+c               won't load balance very well).
 c
 c     option 2 is recommended at this point, 1 is only for testing
 c
@@ -134,7 +134,7 @@ c              block is not embeded
             end if
          end do
 c
-c        assign each embedded block to the same node as the block 
+c        assign each embedded block to the same node as the block
 c        into  which it is embeded
 c
          do jgrid = 1,ngrid

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -40,16 +40,16 @@ c
 c     $Id$
 c
 c***********************************************************************
-c     Purpose:  Read the restart file to get the required info for a 
-c     dynamic mesh (nflagg=1); read the restart file to get qc0 data 
+c     Purpose:  Read the restart file to get the required info for a
+c     dynamic mesh (nflagg=1); read the restart file to get qc0 data
 c     for 2nd order accurate restart (in time) (nflagg=0).
 c
 c     For rigid (non-deforming) grids undergoing prescribed motion,
 c     only the dynamic mesh parameters are needed, from which the
-c     last grid orientation (at t(n)) is reconstructed. 
+c     last grid orientation (at t(n)) is reconstructed.
 c
 c     For deforming grids, or grids without prescribed motion, a
-c     more complete output of the state of the entire grid system 
+c     more complete output of the state of the entire grid system
 c     is needed: the last grid definition (at t(n)) for first order
 c     in time, or, for second order in time, the grid definition at
 c     t(n-1) and the boundary displacements at t(n), from which the
@@ -200,7 +200,7 @@ c                  time-accurate restart files, which was missing this info)
          read(2) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
          end if
 c   NOTE: for ivmx .ge. 30, currently you CANNOT restart to/from a
-c   different ivmx; if this is ever allowed, then the following may 
+c   different ivmx; if this is ever allowed, then the following may
 c   read/write incorrectly!!!
          if (ivmx .ge. 30) then
           read(2) nummem_read
@@ -309,7 +309,7 @@ c
       else if (nflagg .eq. 1) then
 c
 c *******************************
-c        read dynamic mesh data   
+c        read dynamic mesh data
 c *******************************
 c
          if (myid.eq.myhost) then
@@ -427,22 +427,22 @@ c
 #endif
             end if
 c
-c              fix-up for change in moving grid parameters: 
+c              fix-up for change in moving grid parameters:
 c              change the block time counter (time2) to insure
 c              continuous displacement of grid at restart; this also
-c              insures that the grid resetting option (if used) will 
+c              insures that the grid resetting option (if used) will
 c              remain in sync. note: the value of time21 from the
-c              restart file is first decremented by dt1 since the last 
-c              thing that is done in subroutine mgblk before writing 
-c              the restart file is to increment time2, i.e the restart 
-c              file contains a displacement and a time21 that are 
+c              restart file is first decremented by dt1 since the last
+c              thing that is done in subroutine mgblk before writing
+c              the restart file is to increment time2, i.e the restart
+c              file contains a displacement and a time21 that are
 c              actually out of sync by dt1 (as is always the case
-c              *just* before the grid is updated). After time2 is 
+c              *just* before the grid is updated). After time2 is
 c              is scaled to maintain continuous displacement, dt1
 c              is added to the new time2.
 c
                if (irotat(nbl).eq.1) then
-                  if (abs(real(omegax1)).gt.0. .and. 
+                  if (abs(real(omegax1)).gt.0. .and.
      .               real(omegax(nbl)).ne.real(omegax1)) then
                      if (real(omegay1).eq.0. .and.
      .                  real(omegaz1).eq.0.) then
@@ -467,10 +467,10 @@ c
                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
  204                    format(/,3x,26h stopping...rotation speed,
      .                         34h change in more than one direction,
-     .                         /,3x,29h not allowed between restarts) 
+     .                         /,3x,29h not allowed between restarts)
                      end if
                   end if
-                  if (abs(real(omegay1)).gt.0. .and. 
+                  if (abs(real(omegay1)).gt.0. .and.
      .               real(omegay(nbl)).ne.real(omegay1)) then
                      if (real(omegax1).eq.0. .and.
      .                  real(omegaz1).eq.0.) then
@@ -487,7 +487,7 @@ c
                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                      end if
                   end if
-                  if (abs(real(omegaz1)).gt.0. .and. 
+                  if (abs(real(omegaz1)).gt.0. .and.
      .               real(omegaz(nbl)).ne.real(omegaz1)) then
                      if (real(omegax1).eq.0. .and.
      .                  real(omegay1).eq.0.) then
@@ -512,7 +512,7 @@ c
      .                  real(omegazmc1).eq.0.) then
                         time2mc1 = time2mc1 - dt1
                         time2mc11 = omegaxmc1/omegaxmc*time2mc1
-                        write(11,301) 
+                        write(11,301)
                         write(11,302) real(omegaxmc),real(omegaxmc1)
                         write(11,303) real(time2mc11),real(time2mc1)
                         time2mc1 = time2mc11 + dt
@@ -551,7 +551,7 @@ c
                         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                      end if
                   end if
-                  if (abs(real(omegazmc1)).gt.0. .and. 
+                  if (abs(real(omegazmc1)).gt.0. .and.
      .               real(omegazmc).ne.real(omegazmc1)) then
                      if (real(omegaxmc1).eq.0. .and.
      .                  real(omegaymc1).eq.0.) then
@@ -609,7 +609,7 @@ c
      .                       kcsi(nbl,is),kcsf(nbl,is)
                   end do
                   if (abs(ita) .gt. 1) then
-                     read(2) 
+                     read(2)
      .                    (((xnm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((ynm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim),
      .                    (((znm2(j,k,i),j=1,jdim),k=1,kdim),i=1,idim)

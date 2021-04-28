@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -77,7 +77,7 @@ c
          do mm=1,ibufdim
             bou(mm,ii) = ' '
          end do
-      end do 
+      end do
 c
 c***********************************************************************
 c     open files
@@ -535,7 +535,7 @@ c
       call echoinp(iunit5,iunit11,1)
       call echoinp(iunit5,iunit11,1)
       call echoinp(iunit5,iunit11,1)
-      ncyctot = 0 
+      ncyctot = 0
       do n=1,mseq
          read(iunit5,*) ncyc,idum1,idum2,idum3
          write(iunit11,'(4i10)') ncyc,idum1,idum2,idum3
@@ -588,7 +588,7 @@ c
          intmax0 = 1
          nsub10  = 1
          ninter  = 0
-      else 
+      else
          read(22) ninter
          do n=1,abs(ninter)
             read(22) nfb
@@ -655,7 +655,7 @@ c
                lbce(nbc) = 1
                call shortinp(jbcs(nbc),jbce(nbc),kbcs(nbc),kbce(nbc))
             end if
-         end do 
+         end do
 c
          do nn=1,nbcidim(n)
             ibctype = abs(ibcinfo(n,nn,1,2))
@@ -777,7 +777,7 @@ c
                   itype(nbc) = 1
                   if (limblk(ib,1,int) .eq. limblk(ib,4,int)) then
                      idir(nbc) = 3
-                     if (limblk(ib,1,int) .eq. ldimg(nbl)) 
+                     if (limblk(ib,1,int) .eq. ldimg(nbl))
      .                  idir(nbc) = -3
                      jbcs(nbc) = min(limblk(ib,2,int),limblk(ib,5,int))
                      jbce(nbc) = max(limblk(ib,2,int),limblk(ib,5,int))
@@ -813,7 +813,7 @@ c
 c        finally, convert all patch data to peg bc type 1
 c
          do int=1,abs(ninter)
-            if (igridg(nbl_to(int)).eq.n .and. 
+            if (igridg(nbl_to(int)).eq.n .and.
      .         levelg(nbl_to(int)).eq.1) then
                nbc        = nbc + 1
                itype(nbc) = 1
@@ -861,7 +861,7 @@ c
                      kbce(nbc) = -1
                      idir(nbc) = -2
                   end if
-               end if 
+               end if
             end if
          end do
 c
@@ -893,9 +893,9 @@ c
             write(7,'(7i5)') nbc,izeero,izeero,izeero,
      .                       izeero,i2d,izeero
          else
-            if (ialph .eq. 0) then 
+            if (ialph .eq. 0) then
                 write(7,'(7i5)') nbc,izeero,ione,izeero,
-     .                           izeero,i2d,izeero 
+     .                           izeero,i2d,izeero
             else
                 write(7,'(7i5)') nbc,izeero,izeero,ione,
      .                           izeero,i2d,izeero
@@ -977,7 +977,7 @@ c
 #endif
             read (inpfile, 100, err = 110) arg
  100        format (a80)
-            
+
             go to 111
  110        continue
             ierr = 1

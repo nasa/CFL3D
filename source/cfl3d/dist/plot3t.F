@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -185,7 +185,7 @@ c
 c
 #endif
 c***********************************************************************
-c     average grid points to get cell centers and load iinto 1st 3 
+c     average grid points to get cell centers and load iinto 1st 3
 c     locations of the single precision xg array
 c***********************************************************************
 c
@@ -242,7 +242,7 @@ c
       blank2(j,k,i) = 1.
  2049 continue
 c
-c     iblank (blank2) array for generalized patch interface boundaries 
+c     iblank (blank2) array for generalized patch interface boundaries
 c
       if (abs(ninter).gt.0) then
          do 1600 inter = 1,abs(ninter)
@@ -425,7 +425,7 @@ c
            if (i2d .eq. 1) then
               write(11,
      .         '(''  Defaults are production-term, uw, uu, ww'',
-     .         '' for 2D'')') 
+     .         '' for 2D'')')
            else
               write(11,
      .         '(''   Defaults are production-term, uw, uu, ww,'',
@@ -572,11 +572,11 @@ c     turbulent quantities
 c
 c     There are a variety of turbulent quantities that can be computed and printed
 c     out.  By default, only 5 (or 4, for 2-D) can be printed out at a time,
-c     into a PLOT3D Q-type file.  However, if the keyword ifunct is employed, 
-c     a function file is written instead, with "ifunct" number of variables.  
-c     Modify the section that assigns quantities to the "xw" arrays in order to 
+c     into a PLOT3D Q-type file.  However, if the keyword ifunct is employed,
+c     a function file is written instead, with "ifunct" number of variables.
+c     Modify the section that assigns quantities to the "xw" arrays in order to
 c     get what you want.  (See "Modify Here" section below.)
-c 
+c
       uprime=0.
       vprime=0.
       wprime=0.
@@ -712,7 +712,7 @@ c
               t23 = -2.*vist3d(j,k,i)*s23
               if (i_qcr2000 .eq. 1 .or. i_qcr2013 .eq. 1 .or.
      +            i_qcr2013v .eq. 1) then
-                denom=sqrt(ux(j,k,i,1)**2 + ux(j,k,i,2)**2 + 
+                denom=sqrt(ux(j,k,i,1)**2 + ux(j,k,i,2)**2 +
      +                     ux(j,k,i,3)**2 + ux(j,k,i,4)**2 +
      +                     ux(j,k,i,5)**2 + ux(j,k,i,6)**2 +
      +                     ux(j,k,i,7)**2 + ux(j,k,i,8)**2 +
@@ -743,7 +743,7 @@ c
                 t23=t23p
               end if
               if (i_qcr2013 .eq. 1) then
-                xis2013 = s11star*s11star + s22star*s22star + 
+                xis2013 = s11star*s11star + s22star*s22star +
      +                    s33star*s33star +
      +                    2.*s12*s12 + 2.*s13*s13 + 2.*s23*s23
                 t11=t11+ccr2*vist3d(j,k,i)*sqrt(2.*xis2013)
@@ -1001,7 +1001,7 @@ c            Find nonlinear tauij values (include estimate for k!):
      +           -4.*c_nonlin*vist3d(j,k,i)/denom*
      +                 ( s12*w13 + s22t*w23 + s13*w12 - s33t*w23)
             end if
-c            Calculate 2-eqn-specific production term (approx form in 
+c            Calculate 2-eqn-specific production term (approx form in
 c            certain circumstances). Default to vorticity-type:
             if (ivmx.eq.6 .or. ivmx.eq.7 .or. ivmx.eq.10 .or.
      +          ivmx.eq.16) then
@@ -1143,7 +1143,7 @@ c      S*k/epsilon:
         ske=sqrt(2.*xis)/(turre(j,k,i,1)*re*0.09)
       else if (ivmx.eq.8 .or. ivmx.eq.12 .or. ivmx .eq. 14) then
         ske=sqrt(2.*xis)/(turre(j,k,i,1)*re)
-      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or. 
+      else if (ivmx.eq.9 .or. ivmx.eq.10 .or. ivmx.eq.11 .or.
      .         ivmx.eq.13) then
         ske=sqrt(2.*xis)*turre(j,k,i,2)/(turre(j,k,i,1)*re)
       else if (ivmx.eq.15) then
@@ -1163,7 +1163,7 @@ c      Fd blending function for DDES
      +        ux(j,k,i,7)**2 + ux(j,k,i,8)**2 + ux(j,k,i,9)**2
       rd = (vist3d(j,k,i)+fnu)/(q(j,k,i,1)*sqrt(velterm)*0.41*0.41*
      +     dist*dist*re)
-      fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd)) 
+      fd = 1.0 - cctanh((8.0*rd)*(8.0*rd)*(8.0*rd))
 c      P(k)/epsilon:
       if (ivmx.eq.6 .or. ivmx.eq.7) then
         povere=pk/(turre(j,k,i,1)*turre(j,k,i,2)*re*0.09)
@@ -1246,16 +1246,16 @@ c      scalar invariant III:
       if (i2d .eq. 1) then
         if (ialph .eq. 0) then
         xiii=0.333333*(b11**3+b22**3+b33**3+3.*b11*b13**2+
-     +                                      3.*b33*b13**2) 
+     +                                      3.*b33*b13**2)
         else
         xiii=0.333333*(b11**3+b22**3+b33**3+3.*b11*b12**2+
-     +                                      3.*b22*b12**2) 
+     +                                      3.*b22*b12**2)
         end if
       else
         xiii=0.333333*(b11**3+b22**3+b33**3+
      +       3.*b11*b12**2+3.*b11*b13**2+
      +       3.*b22*b12**2+3.*b22*b23**2+
-     +       3.*b33*b13**2+3.*b33*b23**2+6.*b12*b13*b23) 
+     +       3.*b33*b13**2+3.*b33*b23**2+6.*b12*b13*b23)
       end if
 c      scalar invariant F ("flatness parameter"):
       ff=1.+9.*xii+27.*xiii
@@ -1271,7 +1271,7 @@ c      (not sure if this variable makes sense in 2-d)
         end if
       else
         qinvar=-0.5*(ux(j,k,i,1)**2+ux(j,k,i,5)**2+ux(j,k,i,9)**2+
-     +               2.*ux(j,k,i,2)*ux(j,k,i,4)+ 
+     +               2.*ux(j,k,i,2)*ux(j,k,i,4)+
      +               2.*ux(j,k,i,3)*ux(j,k,i,7)+
      +               2.*ux(j,k,i,6)*ux(j,k,i,8))
       end if
@@ -1400,7 +1400,7 @@ c     - if 2-D, only prints out the first 4
 c     If keyword ifunct is employed:
 c     - writes out "ifunct" number of variables to function file
 c     Note that the u, v, and w prime quantities are aligned with the x, y, and
-c     z axes OF THE GRID, respectively.  You must transform these quantities 
+c     z axes OF THE GRID, respectively.  You must transform these quantities
 c     appropriately if they are desired in a different coordinate system.
 c
 #    ifdef CMPLX
@@ -1552,7 +1552,7 @@ c
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,5)
             else
                write(4,'(5e14.6)') xmachw,alphww,reuew,timew
-               write(4,'(5e14.6)') 
+               write(4,'(5e14.6)')
      .         ((((xw(j,k,i,m),i=1,iw),j=1,jw),k=1,kw),m=1,4)
             end if
            else

@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -27,7 +27,7 @@ c
 c     $Id$
 c
 c***********************************************************************
-c      Purpose: Check information transferred from block (ir) to 
+c      Purpose: Check information transferred from block (ir) to
 c      qk0 array of block (it).
 c***********************************************************************
 c
@@ -68,7 +68,7 @@ c
       jer = limblk(ir,5)
       ksr = limblk(ir,3)
       ker = limblk(ir,6)
-c 
+c
 c     determine the side of the q array to transfer from
 c
 c     k = constant side
@@ -102,7 +102,7 @@ c
          kr = kloc1r
          if (kr.gt.1) kr = kdimr
 c
-         if ((isva(ir,1) .eq. isva(it,1)) .or. 
+         if ((isva(ir,1) .eq. isva(it,1)) .or.
      .       (isva(ir,2) .eq. isva(it,2))) then
 c
 c     i varies with i     and     j varies with j
@@ -124,16 +124,16 @@ c
                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                   end if
                   xyzn(ij,1) = .25*( xr(jlocr  ,kr,ilocr) +
-     .                               xr(jlocr  ,kr,ilocr+1) +  
-     .                               xr(jlocr+1,kr,ilocr) + 
+     .                               xr(jlocr  ,kr,ilocr+1) +
+     .                               xr(jlocr+1,kr,ilocr) +
      .                               xr(jlocr+1,kr,ilocr+1) )
-                  xyzn(ij,2) = .25*( yr(jlocr  ,kr,ilocr) + 
-     .                               yr(jlocr  ,kr,ilocr+1) +  
-     .                               yr(jlocr+1,kr,ilocr) + 
+                  xyzn(ij,2) = .25*( yr(jlocr  ,kr,ilocr) +
+     .                               yr(jlocr  ,kr,ilocr+1) +
+     .                               yr(jlocr+1,kr,ilocr) +
      .                               yr(jlocr+1,kr,ilocr+1) )
-                  xyzn(ij,3) = .25*( zr(jlocr  ,kr,ilocr) + 
-     .                               zr(jlocr  ,kr,ilocr+1) +  
-     .                               zr(jlocr+1,kr,ilocr) + 
+                  xyzn(ij,3) = .25*( zr(jlocr  ,kr,ilocr) +
+     .                               zr(jlocr  ,kr,ilocr+1) +
+     .                               zr(jlocr+1,kr,ilocr) +
      .                               zr(jlocr+1,kr,ilocr+1) )
   100          continue
   200       continue
@@ -172,7 +172,7 @@ c
   400          continue
   500       continue
          end if
-c  
+c
 c     j = constant side
 c
       else if (isva(ir,1)+isva(ir,2) .eq. 4) then
@@ -204,7 +204,7 @@ c
          jr = jloc1r
          if (jr.gt.1) jr = jdimr
 c
-         if ((isva(ir,1) .eq. isva(it,1)) .or. 
+         if ((isva(ir,1) .eq. isva(it,1)) .or.
      .       (isva(ir,2) .eq. isva(it,2))) then
 c
 c     i varies with i    and    k varies with j
@@ -225,17 +225,17 @@ c
      .               '  ij.gt.maxdims'
                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                   end if
-                  xyzn(ij,1) = .25*( xr(jr,klocr  ,ilocr) +  
-     .                               xr(jr,klocr  ,ilocr+1) +  
-     .                               xr(jr,klocr+1,ilocr) + 
+                  xyzn(ij,1) = .25*( xr(jr,klocr  ,ilocr) +
+     .                               xr(jr,klocr  ,ilocr+1) +
+     .                               xr(jr,klocr+1,ilocr) +
      .                               xr(jr,klocr+1,ilocr+1) )
-                  xyzn(ij,2) = .25*( yr(jr,klocr  ,ilocr) + 
-     .                               yr(jr,klocr  ,ilocr+1) +  
-     .                               yr(jr,klocr+1,ilocr) + 
+                  xyzn(ij,2) = .25*( yr(jr,klocr  ,ilocr) +
+     .                               yr(jr,klocr  ,ilocr+1) +
+     .                               yr(jr,klocr+1,ilocr) +
      .                               yr(jr,klocr+1,ilocr+1) )
-                  xyzn(ij,3) = .25*( zr(jr,klocr  ,ilocr) + 
-     .                               zr(jr,klocr  ,ilocr+1) +  
-     .                               zr(jr,klocr+1,ilocr) + 
+                  xyzn(ij,3) = .25*( zr(jr,klocr  ,ilocr) +
+     .                               zr(jr,klocr  ,ilocr+1) +
+     .                               zr(jr,klocr+1,ilocr) +
      .                               zr(jr,klocr+1,ilocr+1) )
   700          continue
   800       continue
@@ -261,20 +261,20 @@ c
                   end if
                   xyzn(ij,1) = .25*( xr(jr,klocr  ,ilocr) +
      .                               xr(jr,klocr  ,ilocr+1) +
-     .                               xr(jr,klocr+1,ilocr) + 
+     .                               xr(jr,klocr+1,ilocr) +
      .                               xr(jr,klocr+1,ilocr+1) )
-                  xyzn(ij,2) = .25*( yr(jr,klocr  ,ilocr) + 
+                  xyzn(ij,2) = .25*( yr(jr,klocr  ,ilocr) +
      .                               yr(jr,klocr  ,ilocr+1) +
-     .                               yr(jr,klocr+1,ilocr) + 
+     .                               yr(jr,klocr+1,ilocr) +
      .                               yr(jr,klocr+1,ilocr+1) )
-                  xyzn(ij,3) = .25*( zr(jr,klocr  ,ilocr) + 
+                  xyzn(ij,3) = .25*( zr(jr,klocr  ,ilocr) +
      .                               zr(jr,klocr  ,ilocr+1) +
-     .                               zr(jr,klocr+1,ilocr) + 
+     .                               zr(jr,klocr+1,ilocr) +
      .                               zr(jr,klocr+1,ilocr+1) )
  1000          continue
  1100       continue
          endif
-c 
+c
 c     i = constant side
 c
       else if (isva(ir,1)+isva(ir,2) .eq. 5) then
@@ -305,7 +305,7 @@ c
 c
          irn = iloc1r
          if (irn.gt.1) irn = idimr
-         if ((isva(ir,1) .eq. isva(it,1)) .or. 
+         if ((isva(ir,1) .eq. isva(it,1)) .or.
      .       (isva(ir,2) .eq. isva(it,2))) then
 c
 c     k varies with i    and    j varies with j
@@ -326,17 +326,17 @@ c
      .               ' ij.gt.maxdims'
                      call termn8(myid,-1,ibufdim,nbuf,bou,nou)
                   end if
-                  xyzn(ij,1) = .25*( xr(jlocr  ,klocr,irn) + 
-     .                               xr(jlocr  ,klocr+1,irn) +  
-     .                               xr(jlocr+1,klocr,irn) + 
+                  xyzn(ij,1) = .25*( xr(jlocr  ,klocr,irn) +
+     .                               xr(jlocr  ,klocr+1,irn) +
+     .                               xr(jlocr+1,klocr,irn) +
      .                               xr(jlocr+1,klocr+1,irn) )
-                  xyzn(ij,2) = .25*( yr(jlocr  ,klocr,irn) + 
-     .                               yr(jlocr  ,klocr+1,irn) +  
-     .                               yr(jlocr+1,klocr,irn) + 
+                  xyzn(ij,2) = .25*( yr(jlocr  ,klocr,irn) +
+     .                               yr(jlocr  ,klocr+1,irn) +
+     .                               yr(jlocr+1,klocr,irn) +
      .                               yr(jlocr+1,klocr+1,irn) )
-                  xyzn(ij,3) = .25*( zr(jlocr  ,klocr,irn) + 
-     .                               zr(jlocr  ,klocr+1,irn) +  
-     .                               zr(jlocr+1,klocr,irn) + 
+                  xyzn(ij,3) = .25*( zr(jlocr  ,klocr,irn) +
+     .                               zr(jlocr  ,klocr+1,irn) +
+     .                               zr(jlocr+1,klocr,irn) +
      .                               zr(jlocr+1,klocr+1,irn) )
  1300          continue
  1400       continue

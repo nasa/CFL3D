@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -59,7 +59,7 @@ c     tim(2,2)  = system time since last call to cputim()
 c     tim(3,2)  = wall clock time since last call to cputim()
 c     tim(1,3),tim(2,3) and tim(3,3) used for intermediate results
 c
-c     initialize 
+c     initialize
 c
       if (icall .eq. 0) then
          do j=1,3
@@ -73,7 +73,7 @@ c
 #if defined CRAY_TIME
 c
 c     timings for cray - note: user time is cpu time from the
-c     intrinsic "second" function, system time set to zero(!), 
+c     intrinsic "second" function, system time set to zero(!),
 c     and wall clock time set to user time.
 c
       t0 = second()

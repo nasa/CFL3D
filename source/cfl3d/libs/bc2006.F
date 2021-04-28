@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -35,19 +35,19 @@ c     Purpose:  Set pressure via radial equilibrium condition;
 c     extrapolate other quantities
 c
 c     The radial equilibrium equation is dp/dr = rho*vtheta**2/r
-c     where vtheta is the circumferential velocity component. given 
+c     where vtheta is the circumferential velocity component. given
 c     the pressure at one radius, the radial equilibrium equation is
-c     integrated to give the pressure at all other radii. Integration 
-c     is carried out via the trapezoidal rule. 
-c 
+c     integrated to give the pressure at all other radii. Integration
+c     is carried out via the trapezoidal rule.
+c
 c     contents of bcdata array for this boundary condition:
-c   
+c
 c     bcdata(m,n,ip,1) = block from which integration of equilibrium
 c                     equation is to be continued (if > 0)
 c     bcdata(m,n,ip,2) = p/pinf at the initial radial position
-c     bcdata(m,n,ip,3) = indicates coordinate index/direction for 
+c     bcdata(m,n,ip,3) = indicates coordinate index/direction for
 c                     integration (see below)
-c     bcdata(m,n,ip,4) = indicates which physical coordinate is held 
+c     bcdata(m,n,ip,4) = indicates which physical coordinate is held
 c                     constant for radial integration: 1=x, 2=y, 3=z
 c
 c     only the bcdata values on the boundaries m=1/mdim or
@@ -62,30 +62,30 @@ c            which direction integration is to be carried out:
 c            from 1 to max (ldir>0) or max to 1 (ldir<0)
 c
 c     nblc = bcdata(m,n,ip,1), block from which radial integration is
-c            to be continued, if non-zero. qi0c/qj0c/qk0c are the 
+c            to be continued, if non-zero. qi0c/qj0c/qk0c are the
 c            ghost-cell data in  block nblc, which has dimensions
 c            idimc,jdimc,kdimc
 c
 c     a check is made to determine if the data in the ghost cells
 c     of the adjacent block have not yet been set. this occurs in
 c     the first call to the subroutine if the block the integration
-c     is continued from has a larger block number than the current 
+c     is continued from has a larger block number than the current
 c     block. if not yet set, then the nearest interior point in the
-c     current block is used instead (this check is needed only for 
+c     current block is used instead (this check is needed only for
 c     cases where integration is continued from another block).
 c
-c                            
-c     NOTES:  
 c
-c     this boundary condition assumes that one coordinate 
+c     NOTES:
+c
+c     this boundary condition assumes that one coordinate
 c     direction on the block face is essentially radial and
-c     the other is essentially circumferential, and that 
-c     the integration is being carried out in the radial 
+c     the other is essentially circumferential, and that
+c     the integration is being carried out in the radial
 c     direction. as there is no way to verify this in the code,
 c     care must be exercised when using this bc to insure that
 c     this restriction and the ones below are met.
 c
-c     must have bcdata(m,n,ip,3) = bcdata(1,1,ip,3) for all boundary 
+c     must have bcdata(m,n,ip,3) = bcdata(1,1,ip,3) for all boundary
 c     indicies of m,n, i.e. direction of integration cannot
 c     change from point to point
 c
@@ -100,7 +100,7 @@ c     cannot be k=1 in both blocks)
 c
 c     the segment must run the entire length of the block face in
 c     the direction in which the integration is being carried
-c     out.  e.g. if the  integration is being carried out in the 
+c     out.  e.g. if the  integration is being carried out in the
 c     k-direction, then must have ksta = 1 and kend = kdim (this
 c     restriction applies only if the integration is being
 c     continued from another block)
@@ -145,7 +145,7 @@ c
       kend1 = kend-1
       iend1 = iend-1
 c
-c     this bc makes use of only one plane of data    
+c     this bc makes use of only one plane of data
 c
       ipp    = 1
 c
@@ -164,7 +164,7 @@ c
       else
          nou(1) = min(nou(1)+1,ibufdim)
          write(bou(nou(1),1),*)' stopping...bcdata(4) = ',
-     .   bcdata(1,1,1,4),' should be +1, +2, or +3' 
+     .   bcdata(1,1,1,4),' should be +1, +2, or +3'
          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
       end if
 c
@@ -202,10 +202,10 @@ c
             ii0  = 1
             iinc = 1
             iic  = idimc-1
-         else 
+         else
             i0   = iend
             is   = iend - 1
-            ie   = ista 
+            ie   = ista
             ii0  = iend - ista
             iinc = 0
             iic  = 1
@@ -286,10 +286,10 @@ c
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
-         else 
+         else
             k0   = kend
             ks   = kend - 1
-            ke   = ksta 
+            ke   = ksta
             kk0  = kend - ksta
             kinc = 0
             kkc  = 1
@@ -382,7 +382,7 @@ c
 c******************************************************************************
 c      j=jdim boundary   set pressure via radial equilibrium        bctype 2006
 c******************************************************************************
-c 
+c
       if (nface.eq.4) then
 c
       j = jdim - 1
@@ -409,10 +409,10 @@ c
             ii0  = 1
             iinc = 1
             iic  = idimc-1
-         else 
+         else
             i0   = iend
             is   = iend - 1
-            ie   = ista 
+            ie   = ista
             ii0  = iend - ista
             iinc = 0
             iic  = 1
@@ -493,10 +493,10 @@ c
             kk0  = 1
             kinc = 1
             kkc  = kdimc-1
-         else 
+         else
             k0   = kend
             ks   = kend - 1
-            ke   = ksta 
+            ke   = ksta
             kk0  = kend - ksta
             kinc = 0
             kkc  = 1
@@ -615,10 +615,10 @@ c
             ii0  = 1
             iinc = 1
             iic  = idimc-1
-         else 
+         else
             i0   = iend
             is   = iend - 1
-            ie   = ista 
+            ie   = ista
             ii0  = iend - ista
             iinc = 0
             iic  = 1
@@ -822,10 +822,10 @@ c
             ii0  = 1
             iinc = 1
             iic  = idimc-1
-         else 
+         else
             i0   = iend
             is   = iend - 1
-            ie   = ista 
+            ie   = ista
             ii0  = iend - ista
             iinc = 0
             iic  = 1
@@ -1381,7 +1381,7 @@ c
          dnxav = 0.5*(sj(j,km,i,1) + sj(j+1,km,i,1))
          dnyav = 0.5*(sj(j,km,i,2) + sj(j+1,km,i,2))
          dnzav = 0.5*(sj(j,km,i,3) + sj(j+1,km,i,3))
-         qthet = q(j,km,i,2)*dnxav + q(j,km,i,3)*dnyav 
+         qthet = q(j,km,i,2)*dnxav + q(j,km,i,3)*dnyav
      .         + q(j,km,i,4)*dnzav
          rav   = 0.5*(r1 + r0)
          dr    = r1 - r0
@@ -1414,5 +1414,5 @@ c   only need to do advanced model turbulence B.C.s on finest grid
       end if
       end if
 c
-      return 
+      return
       end

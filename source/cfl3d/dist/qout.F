@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -133,17 +133,17 @@ c
 c
 c***********************************************************************
 c     write output file in PLOT3D format
-c     in this routine, iptype = inpl3d(n,2), where n is the block number 
-c     iptype = 0...output q at grid points 
-c              1...output q cell centers 
+c     in this routine, iptype = inpl3d(n,2), where n is the block number
+c     iptype = 0...output q at grid points
+c              1...output q cell centers
 c              2...turbulence data at cell centers, output in place of
-c                  the standard plot3d q vector 
-c              3...smin at cell centers 
-c              4...vist3d at cell centers 
-c              5...cp at cell centers 
-c             -5...cp at grid points 
-c              6...p/pinf at cell centers 
-c             -6...p/pinf at grid points 
+c                  the standard plot3d q vector
+c              3...smin at cell centers
+c              4...vist3d at cell centers
+c              5...cp at cell centers
+c             -5...cp at grid points
+c              6...p/pinf at cell centers
+c             -6...p/pinf at grid points
 c***********************************************************************
 c
       if (nplot3d.gt.0 .or. nprint.gt.0) then
@@ -205,7 +205,7 @@ c
                write(bou(nou(1),1),'(''stopping...not enough integer '',
      .                        ''work space for subroutine bc_period'')')
                nou(1) = min(nou(1)+1,ibufdim)
-               write(bou(nou(1),1),'(''have, need = '',2i12)') 
+               write(bou(nou(1),1),'(''have, need = '',2i12)')
      .         iwork,iwk6
                call termn8(myid,-1,ibufdim,nbuf,bou,nou)
             end if
@@ -319,7 +319,7 @@ c
 c
 c           update chimera boundary conditions
 c
-c           don't update interior (fringe) points if cell center data 
+c           don't update interior (fringe) points if cell center data
 c           is to be output (this is needed to get cell center output
 c           identical to version 5)
 c
@@ -347,7 +347,7 @@ c
                end if
             end do
 c
-c           call qface to install face-center values in 
+c           call qface to install face-center values in
 c           the qi0/qj0/qk0 arrays
 c
             do nbl=1,nblock
@@ -448,7 +448,7 @@ c
       if (myid .eq. myhost) then
          if (ibin.eq.0) then
             if (i2d.eq.0) then
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=1,3),n=1,ncount)
@@ -457,7 +457,7 @@ c
      .              n=1,ncount)
                end if
             else
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4,'(3i5)') ((ip3ddim(i,n),i=2,3),n=1,ncount)
@@ -468,7 +468,7 @@ c
             end if
          else
             if (i2d.eq.0) then
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3) ((ip3ddim(i,n),i=1,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=1,3),n=1,ncount)
@@ -476,7 +476,7 @@ c
                   write(4) ((ip3ddim(i,n),i=1,3),ifuncuse,n=1,ncount)
                end if
             else
-               if (icall1.eq.0) 
+               if (icall1.eq.0)
      .         write(3) ((ip3ddim(i,n),i=2,3),n=1,ncount)
                if (ifuncuse.eq.0) then
                   write(4) ((ip3ddim(i,n),i=2,3),n=1,ncount)
@@ -496,7 +496,7 @@ c
       m = inpl3d(nnn,1)
       if (n.eq.m) nmap(n) = nnn
  1098 continue
- 1097 continue             
+ 1097 continue
 c
       if (myid.eq.myhost) then
          if (lhdr .gt. 0) write(11,1096)
@@ -734,7 +734,7 @@ c     not working in complex mode
          if (mblk2nd(nbl).eq.myid) then
 #endif
                   call lead(nbl,lw,lw2,maxbl)
-                  if(need_contplot) 
+                  if(need_contplot)
      $            call cont_plot(
      $                 nframes,jdim,kdim,idim,nummem,nbl
      $                 ,w(lq),w(lx),w(ly),w(lz),w(lvis),w(lux)
@@ -771,7 +771,7 @@ c
       endif
 c
 c     for stationary grid cases, set icall1 flag to prevent output
-c     of grid to plot3d file on subsequent calls (which occur only if 
+c     of grid to plot3d file on subsequent calls (which occur only if
 c     abs(movie) > 0).  For dynamic grid cases, grid is output every
 c     time plot3d routine is is called.
 c
@@ -827,7 +827,7 @@ c
       k1 = inpr(n,9)
       k2 = inpr(n,10)
       k3 = inpr(n,11)
-c  
+c
       iflag = 2
 c
       if (inpr(n,2).eq.0) then

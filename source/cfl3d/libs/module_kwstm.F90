@@ -7,20 +7,20 @@
 !
 !  Copyright 2001 United States Government as represented by the Administrator
 !  of the National Aeronautics and Space Administration. All Rights Reserved.
-! 
-!  The CFL3D platform is licensed under the Apache License, Version 2.0 
-!  (the "License"); you may not use this file except in compliance with the 
-!  License. You may obtain a copy of the License at 
-!  http://www.apache.org/licenses/LICENSE-2.0. 
-! 
-!  Unless required by applicable law or agreed to in writing, software 
-!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-!  License for the specific language governing permissions and limitations 
+!
+!  The CFL3D platform is licensed under the Apache License, Version 2.0
+!  (the "License"); you may not use this file except in compliance with the
+!  License. You may obtain a copy of the License at
+!  http://www.apache.org/licenses/LICENSE-2.0.
+!
+!  Unless required by applicable law or agreed to in writing, software
+!  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+!  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+!  License for the specific language governing permissions and limitations
 !  under the License.
 !  ---------------------------------------------------------------------------
 !
-!     
+!
 !     The k-omega Stress Transport Model Module
 !
 !     Author:  Xudong Xiao, Corvid Technologies, Inc
@@ -32,19 +32,19 @@ MODULE module_kwstm
   IMPLICIT NONE
   PRIVATE
 
-  ! total of 8 model constants for Wilcox model, c.f. 
-  REAL,SAVE :: &  !     
+  ! total of 8 model constants for Wilcox model, c.f.
+  REAL,SAVE :: &  !
        c1=9./5., &       !1
        c2=10./19., &     !2
        alpha=0.52, &  !3
        beta_0 = 0.0708,& !4
        beta_star = 0.09, &!5
        sigma=0.5, &      !6
-       sigma_star = 0.6, & ! 7 
+       sigma_star = 0.6, & ! 7
        sigma_d0 = 0.125    ! 8
   ! different constants for SSG/LRR (SSG/LRR-RSM-w2012 of Eisfeld (DLR)
   ! (see AIAA Paper 2012-0465):
-  REAL,SAVE :: &  !    
+  REAL,SAVE :: &  !
        alpha_o = 0.5556, &
        beta_o = 0.075, &
        sigma_w_o = 0.5, &
@@ -71,7 +71,7 @@ MODULE module_kwstm
        c5_e = 0.2, &
        d_e = 0.22, &
        d_sd_e = 1.62963
-  
+
   REAL :: alpha_hat, beta_hat, gamma_hat
 
   INTEGER,save :: nsubit = 1
@@ -85,8 +85,8 @@ MODULE module_kwstm
        kws_initvist,kws_read_parm,kws_plot,&
        kws_dump_movie,&
        kws_init_from_2eq,kws_save_2eq,need_contplot
-       
-  
+
+
   INTEGER,SAVE :: ux_signal = 0
 
   INTEGER ::myrank, myroot
@@ -96,7 +96,7 @@ MODULE module_kwstm
 
   integer,save :: kdiff= 0
   integer,save :: iopt=0  !
-   
+
   ! source term for k-equation
   REAL, ALLOCATABLE, DIMENSION(:,:,:) :: src_k
 
@@ -122,16 +122,16 @@ CONTAINS
 !      tu = tu_inf_percent/100.
 !   ENDIF
 ! END SUBROUTINE kws_set_tu
-  
+
 !   The following subroutine - NO LONGER USED!!!!
 ! SUBROUTINE kws_set_edinf(eddy_visc_inf)
 !   REAL, intent(in) :: eddy_visc_inf
-!   
+!
 !   IF(eddy_visc_inf>0) THEN
 !      xnu_ratio = eddy_visc_inf
 !   ENDIF
 ! END SUBROUTINE kws_set_edinf
-  
+
   !
   ! return the number of history variables needed for
   ! the stress model
@@ -156,7 +156,7 @@ CONTAINS
          tur10
     INTEGER :: i,j,k
 
-    
+
     DO i=1,idim-1
        DO k=1,kdim-1
           DO j=1,jdim-1
@@ -165,7 +165,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
     RETURN
 
   END SUBROUTINE kws_initvist
@@ -195,7 +195,7 @@ CONTAINS
 
     INTEGER,SAVE :: ivisited=0
 
-    if(ivisited==0) then 
+    if(ivisited==0) then
       call kws_read_parm(nou,bou,nbuf,ibufdim)
       ivisited = 1
     end if
@@ -203,7 +203,7 @@ CONTAINS
     return
 
   END SUBROUTINE kws_init
-  
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !     read parameters from the input file: kz_consts.dat
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -211,10 +211,10 @@ CONTAINS
     USE module_profileout,ONLY:profile_read_input
     !
     ! common blocks needed for this subroutine
-    ! 
+    !
     COMMON /mydist2/ nnodes,myhost,myid,mycomm
     INTEGER::nnodes,myhost,myid,mycomm
-    
+
     COMMON /maxiv/ ivmx  ! to get the turbulence model flag
     INTEGER :: ivmx
 
@@ -231,7 +231,7 @@ CONTAINS
     INTEGER :: ivisc
 
     COMMON /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze, &
-         iwarneddy,itime2read,itaturb,tur1cut,tur2cut,& 
+         iwarneddy,itime2read,itaturb,tur1cut,tur2cut,&
          iturbord,tur1cutlev,tur2cutlev
     REAL :: cflturb,edvislim,tur1cut,tur2cut, tur1cutlev,tur2cutlev
     INTEGER :: iturbprod,nsubturb,nfreeze, iwarneddy,itime2read,itaturb,iturbord
@@ -251,9 +251,9 @@ CONTAINS
 
     INQUIRE(file="kwstm.dat",exist=lexist)
     nsubit= nsubturb
-    IF(lexist) THEN       
+    IF(lexist) THEN
        OPEN(1234,file="kwstm.dat")
-       DO WHILE(.TRUE.) 
+       DO WHILE(.TRUE.)
           READ(1234,'(A)',iostat=iost)cline
           IF(iost/=0) EXIT
           IF(LEN_TRIM(cline)==0) cycle
@@ -312,9 +312,9 @@ CONTAINS
           case("ILDTS")
              ildts= rval ! used in the [fgh]fluxv subroutine
           CASE("FACTOR")
-             factor= rval 
+             factor= rval
           CASE("NSUBIT")
-             nsubit= nint(rval) 
+             nsubit= nint(rval)
           CASE("NFREQ")
              nfreq= NINT(rval) ! used in the [fgh]fluxv subroutine
           CASE("PROFILE")
@@ -367,17 +367,17 @@ CONTAINS
        write(120,'('' -----------------------------'')')
 
        call wr_parm("kdiff", real(kdiff))
-       
+
        write(120,'('' -----------------------------'')')
        write(120,'('' Realizability  0-off  1-on'')')
        write(120,'('' -----------------------------'')')
-       
+
        call wr_parm("ireal", real(irealizability))
-       
+
        write(120,'('' -----------------------------'')')
        write(120,'('' Miscellaneous'')')
        write(120,'('' -----------------------------'')')
-       
+
        CALL wr_parm("cflloc", real(cfl_loc))
        CALL wr_parm("pdratio", real(pdratio))
        CALL wr_parm("mutratio", real(xmutratio))
@@ -390,9 +390,9 @@ CONTAINS
        call wr_parm("contour_plot",real(ival))
 
        ival = 0
-       if(need_kwsplot) ival = 1         
+       if(need_kwsplot) ival = 1
        call wr_parm("CF_YPLUS_PLOT",real(ival))
-       
+
        write(120,'('' -----------------------------'')')
 
        close (120)
@@ -404,7 +404,7 @@ CONTAINS
       REAL,intent(in) :: rval
       write(120,'(a20,1x,es12.5)') key,rval
     END SUBROUTINE wr_parm
-    
+
     subroutine toupper(str)
       CHARACTER(len=*)::str
       INTEGER :: ibig,ismall
@@ -429,9 +429,9 @@ CONTAINS
   !    Turb:  the turbulence variables saved in W array, pointed by
   !           lw(19,nbl), c.f. pointers.F for details.
   ! output:
-  !    turb 
+  !    turb
   !    sumn: RMS of the residual of each turbulence quantity.
-  !    negn: number of occurances of negative quantities (only applies to 
+  !    negn: number of occurances of negative quantities (only applies to
   !           a) t11=-u'u', t22=-v'v', t33=-w'w', and omega
   !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -467,14 +467,14 @@ CONTAINS
     REAL, INTENT(out) :: sumn(nummem)
     INTEGER,intent(out) :: negn(nummem)
 
-    ! common block 
+    ! common block
     common /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax,nit,ntt, &
              idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag, &
-             iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv 
+             iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
     REAL :: title,rkap, xmach, alpha__,beta__,dt,fmax
     integer ::nit,ntt, &
              idiag,nitfo,iflagts,iflim,nres,levelb,mgflag, &
-             iconsf,mseq,ncyc1,levelt,nitfo1,ngam,nsm,iipv 
+             iconsf,mseq,ncyc1,levelt,nitfo1,ngam,nsm,iipv
     ! local variables, scalar ----
     INTEGER :: j,k,i,iv
 
@@ -500,8 +500,8 @@ CONTAINS
     INTEGER,save :: ntt_start=0
     INTEGER :: m
 !   INTEGER :: ione
-   
-    if(allocated(src_k)) then   
+
+    if(allocated(src_k)) then
        deallocate(src_k)
     endif
     allocate(src_k(jdim,kdim,idim))
@@ -515,8 +515,8 @@ CONTAINS
        ! let the cfl3d to set up correct ghost cell values
        RETURN
     ENDIF
-    
-    
+
+
     !if(nres<2000) return
     !write(300,*)level,icyc,jdim
     mylevel =level
@@ -564,11 +564,11 @@ CONTAINS
     ALLOCATE(fmu(0:jdim,0:kdim,0:idim))
 
     ALLOCATE(timestep(jdim-1,kdim-1,idim-1,nummem))
-    
+
     ! derivatives for c5 terms
     ALLOCATE(dbijdx (jdim-1,kdim-1,idim-1,6,3))
     ALLOCATE(dbijdxx(jdim-1,kdim-1,idim-1,6,3))
-    
+
 
 
     ! copy inner cell data from turb array to the turre
@@ -577,12 +577,12 @@ CONTAINS
     CALL fill_omega(jdim,kdim,idim, ux,omega)
     CALL fill_fmu(jdim,kdim,idim,q,qj0,qk0,qi0,fmu)
     CALL get_timestep(jdim,kdim,idim,dtj,vol,timestep,icyc,nummem)
-       
+
     IF(icyc==1) THEN
        CALL save_lasttimestep(jdim,kdim,idim,nummem, turb,&
             zksav2(1,1,1,1),zksav2(1,1,1,nummem+1))
     ENDIF
-    ! calculate the source terms for the 
+    ! calculate the source terms for the
     DO isub=1,nsubit
        source=0.0;
 !      CALL set_wallbc(jdim,kdim,idim,nummem,q, turb, smin, vist3d, tj0,tk0,ti0)
@@ -623,7 +623,7 @@ CONTAINS
 !             sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br)
 !        CALL kws_cijk0(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,&
 !             sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br)
-       
+
        CALL get_advection (jdim,kdim,idim,nummem,q,turre,sj,sk,si,vol,qj0,qk0,qi0,rhs,d,al,ar,bl,br)
        !CALL get_advection1 (jdim,kdim,idim,nummem,q,turre,sj,sk,si,vol,qj0,qk0,qi0,rhs)
        ! solve the (I - J dt )*\Delta Q  = Source*Dt
@@ -650,7 +650,7 @@ CONTAINS
        ENDIF
 
     ENDDO
-   
+
     IF(nfreq>0) THEN
        IF(MOD(ntt,nfreq)==0) THEN
           CALL kws_dump_movie(ntt/nfreq,jdim,kdim,idim,nummem,nbl,q,x,y,z,vist3d,ux,turb,turb,smin)
@@ -734,7 +734,7 @@ CONTAINS
 
     REAL ::  wij(jdim,6) ! vorticity tensor (skew symmetric)
     REAL ::  sij(jdim,6) ! traceless deformation tensor
-    REAL ::  sij_hat(jdim,6) ! sij - 0.5*duidxi * delta_ij (used in the 
+    REAL ::  sij_hat(jdim,6) ! sij - 0.5*duidxi * delta_ij (used in the
     REAL ::  sij0(jdim,6)! deformation tensor
     REAL ::  eps(jdim)   ! dissipation of tke,  \mu * zeta  (with density units in it)
     REAL :: mu_t(jdim)    ! turbulent eddyviscosity
@@ -827,21 +827,21 @@ CONTAINS
        ivisited=1
 #ifdef DEBUG_KZSTM_IDXTO6
        write(*,*)'idxto6:'
-       write(*,'(3(1x,I8))') idxto6(1,:) 
-       write(*,'(3(1x,I8))') idxto6(2,:) 
-       write(*,'(3(1x,I8))') idxto6(3,:) 
+       write(*,'(3(1x,I8))') idxto6(1,:)
+       write(*,'(3(1x,I8))') idxto6(2,:)
+       write(*,'(3(1x,I8))') idxto6(3,:)
        write(*,*)'wsgn'
-       write(*,'(3(1x,es12.5))') wsgn(1,:) 
-       write(*,'(3(1x,es12.5))') wsgn(2,:) 
-       write(*,'(3(1x,es12.5))') wsgn(3,:) 
+       write(*,'(3(1x,es12.5))') wsgn(1,:)
+       write(*,'(3(1x,es12.5))') wsgn(2,:)
+       write(*,'(3(1x,es12.5))') wsgn(3,:)
        write(*,*)"idxux:"
-       write(*,'(3(1x,I8))') idxux(1,:) 
-       write(*,'(3(1x,I8))') idxux(2,:) 
-       write(*,'(3(1x,I8))') idxux(3,:) 
+       write(*,'(3(1x,I8))') idxux(1,:)
+       write(*,'(3(1x,I8))') idxux(2,:)
+       write(*,'(3(1x,I8))') idxux(3,:)
        write(*,*)"krndelta:"
-       write(*,'(3(1x,es12.5))') krndelta(1,:) 
-       write(*,'(3(1x,es12.5))') krndelta(2,:) 
-       write(*,'(3(1x,es12.5))') krndelta(3,:) 
+       write(*,'(3(1x,es12.5))') krndelta(1,:)
+       write(*,'(3(1x,es12.5))') krndelta(2,:)
+       write(*,'(3(1x,es12.5))') krndelta(3,:)
 #endif
     endif
 
@@ -966,7 +966,7 @@ CONTAINS
           ENDDO
 
           DO j=1,jdim-1
-             ! fill wij 
+             ! fill wij
              wij(j,4) = 0.5*(ux(j,k,i,2) - ux(j,k,i,4)) ! w12=0.5*(uy - vx)
              wij(j,5) = 0.5*(ux(j,k,i,6) - ux(j,k,i,8)) ! w23=0.5*(vz - wy)
              wij(j,6) = 0.5*(ux(j,k,i,3) - ux(j,k,i,7)) ! w13=0.5*(uz - wx)
@@ -981,14 +981,14 @@ CONTAINS
              sij0(j,:) = sij(j,:)
              eps(j)   = beta_star*omega_var(j,k,i)*tke(j,k,i)
              divg     = ux(j,k,i,1)+ux(j,k,i,5)+ux(j,k,i,9)
-             sij(j,1) = sij(j,1) - 1./3.*divg 
-             sij(j,2) = sij(j,2) - 1./3.*divg 
-             sij(j,3) = sij(j,3) - 1./3.*divg 
-             
+             sij(j,1) = sij(j,1) - 1./3.*divg
+             sij(j,2) = sij(j,2) - 1./3.*divg
+             sij(j,3) = sij(j,3) - 1./3.*divg
+
              sij_hat(j,:) = sij0(j,:)
-             sij_hat(j,1) = sij_hat(j,1) - 0.5*divg 
-             sij_hat(j,2) = sij_hat(j,2) - 0.5*divg 
-             sij_hat(j,3) = sij_hat(j,3) - 0.5*divg 
+             sij_hat(j,1) = sij_hat(j,1) - 0.5*divg
+             sij_hat(j,2) = sij_hat(j,2) - 0.5*divg
+             sij_hat(j,3) = sij_hat(j,3) - 0.5*divg
           ENDDO
           DO j=1,jdim-1
              if ((i.ge.ilamlo .and. i.lt.ilamhi .and. &
@@ -1034,7 +1034,7 @@ CONTAINS
                         aij(idxto6(icur,n))*wij(j,idxto6(jcur,n))*wsgn(jcur,n) + &
                         aij(idxto6(jcur,n))*wij(j,idxto6(icur,n))*wsgn(icur,n)
                 ENDDO
-                prdij(m) = prdij(m)*cutoff 
+                prdij(m) = prdij(m)*cutoff
              enddo
              prd_real(j) = (prdij(1)+prdij(2)+prdij(3))*0.5
 
@@ -1064,10 +1064,10 @@ CONTAINS
                c1star_e_use=c1star_e
              end if
              DO m=1,6
-                !IF(m>3) 
+                !IF(m>3)
                 !prd_coef = 1.0
                 icur= idxto33_i(m)
-                jcur= idxto33_j(m) 
+                jcur= idxto33_j(m)
                 dij = 0
                 pij = prdij(m)
                 pp  = prd_real(j)
@@ -1078,7 +1078,7 @@ CONTAINS
                 ENDDO
                 if(m<=3) then
                   pij = pij - 2./3. *pp
-                  dij = dij - 2./3. *pp 
+                  dij = dij - 2./3. *pp
                 endif
 
                 aik_term      = aikakj(m)
@@ -1344,7 +1344,7 @@ CONTAINS
     ENDIF
 #endif
   END SUBROUTINE get_source
-  
+
   SUBROUTINE get_diffusion(jdim,kdim,idim,nummem,q, &
        qj0,qk0,qi0, &
        turre,tke,blend,&
@@ -1376,12 +1376,12 @@ CONTAINS
 
     !local variables
     INTEGER :: i,j,k,m
-  
+
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: xmut(MAX(jdim,kdim,idim))
     REAL:: xmu_ave,xmut_ave,vleft,vright,tke_ave,ome_ave,rho_ave
     REAL:: areax2,areay2,areaz2,area2,rvol,xma_re
-    
+
     REAL, parameter :: one_third = 0.3333333333333333
     REAL, PARAMETER :: two_third = 2./3.
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
@@ -1439,21 +1439,21 @@ CONTAINS
              rvol = 1./(0.5*(vleft + vright))
              xmu = xmu_ave+xmut(j)*d_use
              flux(j,1:6) = diff(j,1:6)*sj(j,k,i,4)**2*rvol*xmu
-             xcoef(j,1) = sj(j,k,i,4)**2*rvol*xmu 
+             xcoef(j,1) = sj(j,k,i,4)**2*rvol*xmu
 
              xmu = xmu_ave+xmut(j)*sigma_w_use
              flux(j,7) = diff(j,7)*sj(j,k,i,4)**2*rvol*xmu
-             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu 
+             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !CALL cap_xmut(xmut,0,jdim) 
+          !CALL cap_xmut(xmut,0,jdim)
           DO j=1,jdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(j+1,:)-flux(j,:))/(q(j,k,i,1)*vol(j,k,i))
 
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i)
              al(2,j,k,i) = -xma_re*xcoef(j,2)/vol(j,k,i)
              ar(2,j,k,i) = -xma_re*xcoef(j+1,2)/vol(j,k,i)
-             
+
              al(1,j,k,i) = -xma_re*xcoef(j,1)/vol(j,k,i)
              ar(1,j,k,i) = -xma_re*xcoef(j+1,1)/vol(j,k,i)
              DO m=1,6
@@ -1494,7 +1494,7 @@ CONTAINS
              rvol = 1./(0.5*(vleft + vright))
              xmu = xmu_ave+xmut(k)*d_use
              flux(k,1:6) = diff(k,1:6)*sk(j,k,i,4)**2*rvol*xmu
-             xcoef(k,1) = sk(j,k,i,4)**2*rvol*xmu 
+             xcoef(k,1) = sk(j,k,i,4)**2*rvol*xmu
              ! c5 term
              !xmu = xmu_ave*one_third*0.0 + c5*xmut(k)
              !flux(k,1:3) = flux(k,1:3)+0.5*(turre(j,k,i,1:3)-turre(j,k-1,i,1:3) +two_third* &
@@ -1504,23 +1504,23 @@ CONTAINS
 
              xmu = xmu_ave+xmut(k)*sigma_w_use
              flux(k,7) = diff(k,7)*sk(j,k,i,4)**2*rvol*xmu
-             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu 
+             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO k=1,kdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(k+1,:)-flux(k,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i)
              bl(2,j,k,i) = -xma_re*xcoef(k,2)/vol(j,k,i)
              br(2,j,k,i) = -xma_re*xcoef(k+1,2)/vol(j,k,i)
-             
+
              bl(1,j,k,i) = -xma_re*xcoef(k,1)/vol(j,k,i)
              br(1,j,k,i) = -xma_re*xcoef(k+1,1)/vol(j,k,i)
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(k,1)+xcoef(k+1,1))/vol(j,k,i)
              ENDDO
-                          
+
           ENDDO
        ENDDO
     ENDDO
@@ -1557,24 +1557,24 @@ CONTAINS
              rvol = 1./(0.5*(vleft + vright))
              xmu = xmu_ave+xmut(i)*d_use
              flux(i,1:6) = diff(i,1:6)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu
              xmu = xmu_ave+xmut(i)*sigma_w_use
              flux(i,7) = diff(i,7)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO i=1,idim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(i+1,:)-flux(i,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i)
 
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(i,1)+xcoef(i+1,1))/vol(j,k,i)
              ENDDO
           ENDDO
        ENDDO
-    ENDDO    
+    ENDDO
     ENDIF
 #ifdef DEBUG_KWSTM_GETDIFFU
     IF(mylevel==level_o.AND.MOD(myicyc,icyc_o)==0.or..false.) THEN
@@ -1618,12 +1618,12 @@ CONTAINS
 
     !local variables
     INTEGER :: i,j,k,m
-  
+
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: xmut(MAX(jdim,kdim,idim))
     REAL:: xmu_ave,xmut_ave,vleft,vright,tke_ave,ome_ave,rho_ave
     REAL:: areax2,areay2,areaz2,area2,rvol,xma_re
-    
+
     REAL, parameter :: one_third = 0.3333333333333333
     REAL, PARAMETER :: two_third = 2./3.
 
@@ -1646,7 +1646,7 @@ CONTAINS
 
           ENDDO
 
-          !CALL cap_xmut(xmut,0,jdim) 
+          !CALL cap_xmut(xmut,0,jdim)
           DO j=1,jdim
              IF(j==1) THEN
                 vleft = vj0(k,i,1)
@@ -1659,7 +1659,7 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
+
              areax2= (sj(j,k,i,1)*sj(j,k,i,4))**2
              areay2= (sj(j,k,i,2)*sj(j,k,i,4))**2
              areaz2= (sj(j,k,i,3)*sj(j,k,i,4))**2
@@ -1668,12 +1668,12 @@ CONTAINS
              xmut_ave= xmut(j)
              ! diffusion term in enstrophy equation
              diff(j,7) = xma_re*(xmu_ave+sigma*xmut_ave)*(turre(j,k,i,7) - turre(j-1,k,i,7))*area2
-             
+
              diff(j,1:6) = xma_re*(xmu_ave+sigma_star*xmut_ave)*(turre(j,k,i,1:6)-turre(j-1,k,i,1:6))*area2
-             
+
              ! the diffusion term hiding in the Phi_ij
              !diff(j,1:3) = diff(j,1:3)+0.5*xma_re*(xmu_ave+c5*xmut_ave)*(turre(j,k,i,1:3)-turre(j-1,k,i,1:3) +two_third* &
-             !     (tke(j,k,i)-tke(j-1,k,i)))*area2  
+             !     (tke(j,k,i)-tke(j-1,k,i)))*area2
              !diff(j,4:6) = diff(j,4:6)+ 0.5*xma_re*(xmu_ave+c5*xmut_ave)*(turre(j,k,i,4:6)-turre(j-1,k,i,4:6))*area2
           ENDDO
           DO m=1,7
@@ -1701,8 +1701,8 @@ CONTAINS
              xmut(k) = rho_ave*tke_ave/(ome_ave)
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO k=1,kdim
              IF(k==1) THEN
                 vleft = vk0(j,i,1)
@@ -1715,7 +1715,7 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
+
              areax2= (sk(j,k,i,1)*sk(j,k,i,4))**2
              areay2= (sk(j,k,i,2)*sk(j,k,i,4))**2
              areaz2= (sk(j,k,i,3)*sk(j,k,i,4))**2
@@ -1726,10 +1726,10 @@ CONTAINS
              ! diffusion term in enstrophy equation
              diff(k,7) = xma_re*(xmu_ave+sigma*xmut_ave)*(turre(j,k,i,7) - turre(j,k-1,i,7))*area2
              diff(k,1:6) = xma_re*(xmu_ave+sigma_star*xmut_ave)*(turre(j,k,i,1:6)-turre(j,k-1,i,1:6))*area2
-                          
+
              ! the diffusion term hiding in the Phi_ij
             ! diff(k,1:3) = diff(k,1:3)+0.5*xma_re*(xmu_ave+c5*xmut_ave)*(turre(j,k,i,1:3)-turre(j,k-1,i,1:3) + two_third*&
-            !      (tke(j,k,i)-tke(j,k-1,i)))*area2  
+            !      (tke(j,k,i)-tke(j,k-1,i)))*area2
             ! diff(k,4:6) = diff(k,4:6)+ 0.5*xma_re*(xmu_ave+c5*xmut_ave)*(turre(j,k,i,4:6)-turre(j,k-1,i,4:6))*area2
           ENDDO
           DO m=1,7
@@ -1739,7 +1739,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
     IF(i2d/=1 .and. iaxi2planeturb/=1) THEN
     ! diffusion terms in the i-direction
     DO k=1,kdim-1
@@ -1757,7 +1757,7 @@ CONTAINS
              ome_ave = 0.5*(turre(j,k,i,7)+turre(j,k,i-1,7))
              xmut(i) = rho_ave*tke_ave/(ome_ave)
           ENDDO
-          !CALL cap_xmut(xmut,0,idim) 
+          !CALL cap_xmut(xmut,0,idim)
           DO i=1,idim
              IF(i==1) THEN
                 vleft = vi0(j,k,1)
@@ -1770,7 +1770,7 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
+
              areax2= (si(j,k,i,1)*si(j,k,i,4))**2
              areay2= (si(j,k,i,2)*si(j,k,i,4))**2
              areaz2= (si(j,k,i,3)*si(j,k,i,4))**2
@@ -1780,7 +1780,7 @@ CONTAINS
              ! diffusion term in enstrophy equation
              diff(i,7) = xma_re*(xmu_ave+sigma*xmut_ave)*(turre(j,k,i,7) - turre(j,k,i-1,7))*area2
              diff(i,1:6) = xma_re*(xmu_ave+sigma_star*xmut_ave)*(turre(j,k,i,1:6)-turre(j,k,i-1,1:6))*area2
-             
+
              ! the diffusion term hiding in the Phi_ij
              !diff(i,1:3) = diff(i,1:3)+0.5*xma_re*(xmu_ave+c5*xmut_ave)*(turre(j,k,i,1:3)-turre(j,k,i-1,1:3) +two_third* &
              !     (tke(j,k,i)-tke(j,k,i-1)))*area2
@@ -1792,7 +1792,7 @@ CONTAINS
              ENDDO
           ENDDO
        ENDDO
-    ENDDO    
+    ENDDO
     ENDIF
 #ifdef CRAP
     IF(mylevel==level_o.AND.MOD(myicyc,icyc_o)==0) THEN
@@ -1812,12 +1812,12 @@ CONTAINS
   subroutine cap_xmut(xmut,istr,iend)
      integer,intent(in) :: istr,iend
      real,intent(inout) :: xmut(istr:iend)
-     
+
      integer :: i
      return
      do i=istr,iend
-        xmut(i) = SIGN(MAX(ABS(xmut(i)),0.01),xmut(i))!min(xmut(i),10.) 
-     enddo 
+        xmut(i) = SIGN(MAX(ABS(xmut(i)),0.01),xmut(i))!min(xmut(i),10.)
+     enddo
   end subroutine
   SUBROUTINE afsolver_i(jdim,kdim,idim,nummem,turre,q,qi0,fmu,tke,si,vol,vi0,timestep,source,rhs, &
                         issglrrw2012)
@@ -1830,7 +1830,7 @@ CONTAINS
          qi0(jdim,kdim,5,4),&
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
          timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
-    
+
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
     !common block needed
@@ -1842,7 +1842,7 @@ CONTAINS
     integer :: i2d
     COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
-    
+
     ! three diagonal terms
     REAL :: rlow(idim-1,nummem),diag(idim-1,nummem),rup(idim-1,nummem),rcol(idim-1)
     REAL :: up(idim-1),um(idim-1),uu
@@ -1855,7 +1855,7 @@ CONTAINS
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,vleft,vright
     REAL :: xlc,xrc,xmu_l, xmu_r, tll, trr, tcc,amul,amur
 
-    if(i2d==1) return 
+    if(i2d==1) return
     if(iaxi2planeturb==1) return
     xma_re = xmach/reue
     DO j=1,jdim-1
@@ -1916,7 +1916,7 @@ CONTAINS
              rv_l = 1./(0.5*(vleft + vol(j,k,i)))
              rv_r = 1./(0.5*(vright + vol(j,k,i)))
              rv_c = 1./vol(j,k,i)
-             
+
              xl= (si(j,k,i,1)*si(j,k,i,4))*rv_l
              yl= (si(j,k,i,2)*si(j,k,i,4))*rv_l
              zl= (si(j,k,i,3)*si(j,k,i,4))*rv_l
@@ -1928,10 +1928,10 @@ CONTAINS
              xc = 0.5*(si(j,k,i,1)*si(j,k,i,4)+si(j,k,i+1,1)*si(j,k,i+1,4))*rv_c
              yc = 0.5*(si(j,k,i,2)*si(j,k,i,4)+si(j,k,i+1,2)*si(j,k,i+1,4))*rv_c
              zc = 0.5*(si(j,k,i,3)*si(j,k,i,4)+si(j,k,i+1,3)*si(j,k,i+1,4))*rv_c
-      
+
              xlc = xl*xc + yl*yc + zl*zc
              xrc = xr*xc + yr*yc + zr*zc
- 
+
              amul=0.5*(fmu(j,k,i)+fmu(j,k,i-1))
              amur=0.5*(fmu(j,k,i)+fmu(j,k,i+1))
              xmu_l = amul+xmut(i)*sigma
@@ -1943,7 +1943,7 @@ CONTAINS
              rlow(i,7) = rlow(i,7) - tll*xma_re/q(j,k,i,1)
              diag(i,7) = diag(i,7) + (trr+tll)*xma_re/q(j,k,i,1)
              rup(i,7) = rup(i,7) - trr*xma_re/q(j,k,i,1)
-            
+
              xmu_l = amul+xmut(i)*sigma_star
              xmu_r = amur+xmut(i+1)*sigma_star
              trr   = xmu_r*xrc
@@ -1953,7 +1953,7 @@ CONTAINS
              rlow(i,1:6) = rlow(i,1:6) - tll*xma_re/q(j,k,i,1)
              diag(i,1:6) = diag(i,1:6) + (trr+tll)*xma_re/q(j,k,i,1)
              rup(i,1:6) = rup(i,1:6) - trr*xma_re/q(j,k,i,1)
-          enddo 
+          enddo
 
           DO m=1,nummem
              DO i=1,idim-1
@@ -1962,7 +1962,7 @@ CONTAINS
                 diag(i,m) = diag(i,m)*timestep(j,k,i,m) + 1.
              ENDDO
           ENDDO
-          
+
           DO m=1,nummem
              DO i=1,idim-1
                 rcol(i) = rhs(j,k,i,m)
@@ -1992,7 +1992,7 @@ CONTAINS
          !vi0(jdim,kdim,4), &
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
          timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
-    
+
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
     !common block needed
@@ -2000,7 +2000,7 @@ CONTAINS
     REAL :: reue,tinf
     COMMON /info/ title(20),rkap(3),xmach
     REAL::title,rkap,xmach
-   
+
     ! three diagonal terms
     REAL :: rlow(jdim-1,nummem),diag(jdim-1,nummem),rup(jdim-1,nummem),rcol(jdim-1)
     REAL :: up(jdim-1),um(jdim-1),uu
@@ -2011,7 +2011,7 @@ CONTAINS
     REAL:: rho_ave,tke_ave,ome_ave
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,vleft,vright
     REAL :: xlc,xrc,xmu_l, xmu_r, tll, trr, tcc,amul,amur
-    REAL :: re_xma 
+    REAL :: re_xma
     xma_re = xmach/reue; re_xma = 1./xma_re
     DO i=1,idim-1
        DO k=1,kdim-1
@@ -2070,7 +2070,7 @@ CONTAINS
              rv_l = 1./(0.5*(vleft + vol(j,k,i)))
              rv_r = 1./(0.5*(vright + vol(j,k,i)))
              rv_c = 1./vol(j,k,i)
-             
+
              xl= (sj(j,k,i,1)*sj(j,k,i,4))*rv_l
              yl= (sj(j,k,i,2)*sj(j,k,i,4))*rv_l
              zl= (sj(j,k,i,3)*sj(j,k,i,4))*rv_l
@@ -2082,10 +2082,10 @@ CONTAINS
              xc = 0.5*(sj(j,k,i,1)*sj(j,k,i,4)+sj(j+1,k,i,1)*sj(j+1,k,i,4))*rv_c
              yc = 0.5*(sj(j,k,i,2)*sj(j,k,i,4)+sj(j+1,k,i,2)*sj(j+1,k,i,4))*rv_c
              zc = 0.5*(sj(j,k,i,3)*sj(j,k,i,4)+sj(j+1,k,i,3)*sj(j+1,k,i,4))*rv_c
-      
+
              xlc = xl*xc + yl*yc + zl*zc
              xrc = xr*xc + yr*yc + zr*zc
- 
+
              amul=0.5*(fmu(j,k,i)+fmu(j-1,k,i))
              amur=0.5*(fmu(j,k,i)+fmu(j+1,k,i))
              xmu_l = amul+xmut(j)*sigma
@@ -2093,11 +2093,11 @@ CONTAINS
              trr   = xmu_r*xrc
              tll   = xmu_l*xlc
              tcc   = trr+tll
-            
+
              rlow(j,7) = rlow(j,7)-tll/q(j,k,i,1)*xma_re
              diag(j,7) = diag(j,7)+tcc/q(j,k,i,1)*xma_re
              rup(j,7) =   rup(j,7)-trr/q(j,k,i,1)*xma_re
-       
+
              xmu_l = amul+xmut(j)*sigma_star
              xmu_r = amur+xmut(j+1)*sigma_star
              trr   = xmu_r*xrc
@@ -2109,7 +2109,7 @@ CONTAINS
              rup(j,1:6) =  rup(j,1:6) - trr*xma_re/q(j,k,i,1)
           ENDDO
 
-          
+
           DO m=1,nummem
              DO j=1,jdim-1
                 rlow(j,m) = rlow(j,m)*timestep(j,k,i,m)
@@ -2128,7 +2128,7 @@ CONTAINS
              WRITE(2000+myrank,'(A,1x,2(1x,es12.5))')"xmut,xmet=",(xmut_ave(j),xmet(j),j=1,jdim)
              WRITE(2000+myrank,'(A,1x,7(1x,es12.5))')"turre=",&
                   (turre(j,k,i,1:7),j=-1,jdim+1)
-             
+
              CLOSE(2000+myrank)
 #endif
              CALL tri_solver(jdim-1,rlow(1,m),diag(1,m),rup(1,m),rcol,sol)
@@ -2168,7 +2168,7 @@ CONTAINS
          !vi0(jdim,kdim,4), &
          fmu(0:jdim,0:kdim,0:idim),source(jdim-1,kdim-1,idim-1,nummem),&
          timestep(jdim-1,kdim-1,idim-1,nummem),tke(0:jdim,0:kdim,0:idim)
-    
+
     REAL,INTENT(out) :: rhs(jdim-1,kdim-1,idim-1,nummem)
 
     !common block needed
@@ -2176,7 +2176,7 @@ CONTAINS
     REAL :: reue,tinf
     COMMON /info/ title(20),rkap(3),xmach
     REAL::title,rkap,xmach
-    
+
     ! three diagonal terms
     REAL :: rlow(kdim-1,nummem),diag(kdim-1,nummem),rup(kdim-1,nummem),rcol(kdim-1)
     REAL :: up(kdim-1),um(kdim-1),uu
@@ -2189,7 +2189,7 @@ CONTAINS
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,vleft,vright
     REAL :: xlc,xrc,xmu_l, xmu_r, tll, trr, tcc,amul,amur
     REAL :: re_xma
-    
+
     xma_re = xmach/reue; re_xma =1./xma_re
     iflag = 0
     DO i=1,idim-1
@@ -2248,7 +2248,7 @@ CONTAINS
              rv_l = 1./(0.5*(vleft + vol(j,k,i)))
              rv_r = 1./(0.5*(vright + vol(j,k,i)))
              rv_c = 1./vol(j,k,i)
-             
+
              xl= (sk(j,k,i,1)*sk(j,k,i,4))*rv_l
              yl= (sk(j,k,i,2)*sk(j,k,i,4))*rv_l
              zl= (sk(j,k,i,3)*sk(j,k,i,4))*rv_l
@@ -2260,10 +2260,10 @@ CONTAINS
              xc = 0.5*(sk(j,k,i,1)*sk(j,k,i,4)+sk(j,k+1,i,1)*sk(j,k+1,i,4))*rv_c
              yc = 0.5*(sk(j,k,i,2)*sk(j,k,i,4)+sk(j,k+1,i,2)*sk(j,k+1,i,4))*rv_c
              zc = 0.5*(sk(j,k,i,3)*sk(j,k,i,4)+sk(j,k+1,i,3)*sk(j,k+1,i,4))*rv_c
-      
+
              xlc = xl*xc + yl*yc + zl*zc
              xrc = xr*xc + yr*yc + zr*zc
- 
+
              amul=0.5*(fmu(j,k,i)+fmu(j,k-1,i))
              amur=0.5*(fmu(j,k,i)+fmu(j,k+1,i))
              xmu_l = amul+xmut(k)*sigma
@@ -2271,11 +2271,11 @@ CONTAINS
              trr   = xmu_r*xrc
              tll   = xmu_l*xlc
              tcc   = trr+tll
-            
+
              !for zeta equations
              !rhs(j,k,i,7) = rhs(j,k,i,7) + xma_re*(trr*turre(j,k+1,i,7) - tcc*turre(j,k,i,7) +tll*turre(j,k-1,i,7))/q(j,k,i,1)
              rlow(k,7) = rlow(k,7)-tll*xma_re/q(j,k,i,1)
-             diag(k,7) = diag(k,7)+tcc*xma_re/q(j,k,i,1) 
+             diag(k,7) = diag(k,7)+tcc*xma_re/q(j,k,i,1)
              rup(k,7) = rup(k,7)  -trr*xma_re/q(j,k,i,1)
 
              xmu_l = amul+xmut(k)*sigma_star
@@ -2285,7 +2285,7 @@ CONTAINS
              tcc   = trr+tll
              !rhs(j,k,i,1:6) = rhs(j,k,i,1:6) + xma_re*(trr*turre(j,k+1,i,1:6) - tcc*turre(j,k,i,1:6) +tll*turre(j,k-1,i,1:6))/q(j,k,i,1)
              rlow(k,1:6) = rlow(k,1:6)-tll*xma_re/q(j,k,i,1)
-             diag(k,1:6) = diag(k,1:6)+tcc*xma_re/q(j,k,i,1) 
+             diag(k,1:6) = diag(k,1:6)+tcc*xma_re/q(j,k,i,1)
              rup(k,1:6) = rup(k,1:6)  -trr*xma_re/q(j,k,i,1)
           ENDDO
 
@@ -2303,7 +2303,7 @@ CONTAINS
               ! - 0.5*(source(j,k,i,7) - abs(source(j,k,i,7)))/turre(j,k,i,7)
               diag(k,7) = diag(k,7) +2.*beta_0*re_xma*turre(j,k,i,7)
             end if
-          enddo 
+          enddo
 
           DO m=1,nummem
              DO k=1,kdim-1
@@ -2316,7 +2316,7 @@ CONTAINS
              DO k=1,kdim-1
                 rcol(k) = rhs(j,k,i,m)
              ENDDO
-             CALL tri_solver(kdim-1,rlow(1,m),diag(1,m),rup(1,m),rcol,sol)  
+             CALL tri_solver(kdim-1,rlow(1,m),diag(1,m),rup(1,m),rcol,sol)
              DO k=1,kdim-1
                 rhs(j,k,i,m) = sol(k)
              ENDDO
@@ -2339,7 +2339,7 @@ CONTAINS
   END SUBROUTINE afsolver_k
 
 !----------- internal (private) subroutines
-  
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2350,7 +2350,7 @@ CONTAINS
          tk0(jdim,idim-1,nummem,4),ti0(jdim,kdim,nummem,4)
 !   COMMON /twod/ i2d
 !   integer :: i2d
-    
+
 
     INTEGER :: i,j,k,iv
 
@@ -2366,7 +2366,7 @@ CONTAINS
 !         ENDDO
 !      ENDDO
 !   else
-    
+
     DO j=1,jdim-1
        DO k=1,kdim-1
           DO iv =1,nummem
@@ -2413,10 +2413,10 @@ CONTAINS
     INTEGER,INTENT(in) :: jdim,kdim,idim,nummem
     REAL,INTENT(in) :: turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem)
     REAL,INTENT(out) :: tke(0:jdim,0:kdim,0:idim),bij(0:jdim,0:kdim,0:idim,6)
-    
+
     INTEGER :: i,j,k,m
     REAL :: coef
-    
+
     DO i=0,idim
        DO k=0,kdim
           DO j=0,jdim
@@ -2449,7 +2449,7 @@ CONTAINS
              bij(j,k,i,m) = -0.5*(turre(j,k,i,m) +coef*tke(j,k,i))/tke(j,k,i)
           ENDDO
        ENDDO
-       
+
        DO j=1,jdim-1
           DO k=1,kdim-1
              i=0
@@ -2467,7 +2467,7 @@ CONTAINS
              bij(j,k,i,m) = -0.5*(turre(j,k,i,m) +coef*tke(j,k,i))/tke(j,k,i)
           ENDDO
        ENDDO
-       
+
     ENDDO
     RETURN
   END SUBROUTINE fill_tke
@@ -2619,7 +2619,7 @@ CONTAINS
 
     COMMON /fluid/ gamma,gm1,gp1,gm1g,gp1g,ggm1
     REAL ::  gamma,gm1,gp1,gm1g,gp1g,ggm1
-    
+
     COMMON /fluid2/ pr,prt,cbar
     REAL :: pr,prt,cbar
 
@@ -2647,13 +2647,13 @@ CONTAINS
           i=0
           tt=gamma*qi0(j,k,5,1)/qi0(j,k,1,1)
           fmu(j,k,i)=c2bp*tt*SQRT(tt)/(c2b+tt)
-          
+
           i=idim
           tt=gamma*qi0(j,k,5,3)/qi0(j,k,1,3)
           fmu(j,k,i)=c2bp*tt*SQRT(tt)/(c2b+tt)
        ENDDO
     ENDDO
-    
+
     DO j=1,jdim-1
        DO i=1,idim-1
           k=0
@@ -2735,7 +2735,7 @@ CONTAINS
     !
     ! Timestep for turb model
     !
-     
+
     IF (real(dt).LT.0) THEN
        DO m=1,nummem
        DO i=1,idim-1
@@ -2747,7 +2747,7 @@ CONTAINS
           ENDDO
        ENDDO
        ENDDO
-       iflag =1  
+       iflag =1
     ELSE
        !turbulence model advanced WITH physical time ONLY
        !(pseudo-time term NOT included, even for tau-TS in mean-
@@ -2787,7 +2787,7 @@ CONTAINS
              ENDDO
           ENDDO
           ENDDO
-          
+
        ENDIF
     ENDIF
   END SUBROUTINE get_timestep
@@ -2799,17 +2799,17 @@ CONTAINS
          sj(jdim,kdim,idim-1,5),sk(jdim,kdim,idim-1,5),&
          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1), &
          qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),qi0(jdim,kdim,5,4)
-    REAL,INTENT(inout):: rhs(jdim-1,kdim-1,idim-1,nummem),& 
+    REAL,INTENT(inout):: rhs(jdim-1,kdim-1,idim-1,nummem),&
          d(nummem,nummem,jdim,kdim,idim)
     REAL, INTENT(inout),DIMENSION(2,jdim,kdim,idim) :: al,ar,bl,br
-         
+
 
     COMMON /twod/ i2d
     INTEGER :: i2d
     COMMON /axisym/ iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     integer :: iaxi2plane,iaxi2planeturb,istrongturbdis,iforcev0
     COMMON /turbconv/ cflturb(7),edvislim,iturbprod,nsubturb,nfreeze, &
-         iwarneddy,itime2read,itaturb,tur1cut,tur2cut,& 
+         iwarneddy,itime2read,itaturb,tur1cut,tur2cut,&
          iturbord,tur1cutlev,tur2cutlev
     REAL :: cflturb,edvislim,tur1cut,tur2cut, tur1cutlev,tur2cutlev
     INTEGER :: iturbprod,nsubturb,nfreeze, iwarneddy,itime2read,itaturb,iturbord
@@ -2824,7 +2824,7 @@ CONTAINS
          qc(5,0:MAX(jdim,kdim,idim)),ul(MAX(idim,jdim,kdim)),ur(MAX(idim,jdim,kdim)),&
          lamb(MAX(jdim,kdim,idim))
 
-    
+
     order2 = 0
     if(iturbord==2) order2=1
     a = 1.0 + order2*0.5
@@ -2849,13 +2849,13 @@ CONTAINS
           ENDDO
 
           IF(turre(-1,k,i,1)==HUGE(turre(-1,k,i,1))) THEN
-             flux(:,1) = 0. 
+             flux(:,1) = 0.
           ENDIF
-          
+
           IF(turre(jdim+1,k,i,1)==HUGE(turre(jdim+1,k,i,1))) THEN
              flux(:,jdim) = 0.
           ENDIF
-             
+
           DO j=1,jdim-1
              al(:,j,k,i) = al(:,j,k,i) - 0.5*(ul(j)+lamb(j))/vol(j,k,i)
              ar(:,j,k,i) = ar(:,j,k,i) + 0.5*(ur(j+1)-lamb(j+1))/vol(j,k,i)
@@ -2887,11 +2887,11 @@ CONTAINS
           IF(turre(j,-1,i,1)==HUGE(turre(j,-1,i,1))) THEN
              flux(:,1) = 0.
           ENDIF
-          
+
           IF(turre(j,kdim+1,i,1)==HUGE(turre(j,-1,i,1))) THEN
              flux(:,kdim) = 0.
           ENDIF
-          
+
           DO k=1,kdim-1
              bl(:,j,k,i) = bl(:,j,k,i) - 0.5*(ul(k)+lamb(k))/vol(j,k,i)
              br(:,j,k,i) = br(:,j,k,i) + 0.5*(ur(k+1)-lamb(k+1))/vol(j,k,i)
@@ -2945,21 +2945,21 @@ CONTAINS
   END SUBROUTINE get_advection
 
   ! use fractional approach to update the source term
-  SUBROUTINE fractional(jdim,kdim,idim,nummem,rhs,turre,timestep,d,zksav) 
+  SUBROUTINE fractional(jdim,kdim,idim,nummem,rhs,turre,timestep,d,zksav)
     INTEGER,INTENT(in) :: jdim,kdim,idim,nummem
     REAL,INTENT(in) :: timestep(jdim-1,kdim-1,idim-1,nummem),zksav(jdim,kdim,idim,nummem)
     REAL, intent(inout) :: rhs(jdim-1,kdim-1,idim-1,nummem),d(nummem,nummem, jdim,kdim,idim),&
         turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem)
     integer :: i,j,k,m
     real :: v1(nummem),v2(nummem)
-    
+
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax
     REAL :: title,rkap,xmach,alpha__,beta__,dt,fmax
     COMMON /unst/ time,cfltau,ntstep,ita,iunst,cfltau0,cfltauMax
     REAL :: time, cfltau, cfltau0,cfltauMax
     INTEGER ::ntstep,ita,iunst
-   
-   
+
+
     DO m=1,nummem
        DO i=1,idim-1
           DO k=1,kdim-1
@@ -2971,10 +2971,10 @@ CONTAINS
           enddo
        enddo
     enddo
-   
+
 
     !diagonal solver
-    
+
     DO i=1,idim-1
        do k=1,kdim-1
           do j=1,jdim-1
@@ -3052,7 +3052,7 @@ CONTAINS
        ENDDO
     ENDDO
 
-    
+
     IF(iopt==0) THEN
 #ifdef DEBUG_KWSTM_PREPROCESS
        IF(mylevel==level_o.AND.MOD(myicyc,icyc_o)==0.OR..false.) THEN
@@ -3107,7 +3107,7 @@ CONTAINS
     REAL,INTENT(out) :: sumn(nummem)
     REAL,INTENT(inout):: turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem)
     INTEGER,intent(out) :: negn(nummem)
-    
+
     COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax,nit,ntt, &
          idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag, &
          iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -3145,7 +3145,7 @@ CONTAINS
        CALL dump_tecplot(jdim-1, kdim-1, idim-1, 1,jdim-1,1,kdim-1,1, rhs(1,1,1,7), "rhs","r7.plt")
     ENDIF
     DO m=1,nummem;
-       DO i=1,idim-1; 
+       DO i=1,idim-1;
           DO k=1,kdim-1;
              DO j=1,jdim-1
                 turb(j,k,i,m) = turre(j,k,i,m)+rhs(j,k,i,m)
@@ -3171,7 +3171,7 @@ CONTAINS
                 if(m==6.and.irealizability==1) then
                    t1133= sqrt(turb(j,k,i,1)*turb(j,k,i,3))
                    turb(j,k,i,m) = min(t1133, max(-t1133,turb(j,k,i,m)))
-                   !s13 = ux(j,k,i,3)+ux(j,k,i,7) 
+                   !s13 = ux(j,k,i,3)+ux(j,k,i,7)
                    !if(turb(j,k,i,m)*s13<0) turb(j,k,i,m) = 0
                 endif
                 IF(m==7) THEN
@@ -3207,7 +3207,7 @@ CONTAINS
        vtmax = 0
     endif
     IF(MOD(ntt,50)==49) THEN
-       DO i=1,idim-1; 
+       DO i=1,idim-1;
           DO k=1,kdim-1;
              DO j=1,jdim-1
                 IF(vist3d(j,k,i)>vtmax) THEN
@@ -3242,34 +3242,34 @@ CONTAINS
     DO i=2,nsize
        d(i) = d(i) - rlow(i)*rup(i-1)/d(i-1)
     ENDDO
-    
+
     ! forward sweep
     sol(1) = rhs(1)/d(1)
     DO i=2,nsize
        sol(i) = (rhs(i) - rlow(i)*sol(i-1))/d(i)
     ENDDO
-     
+
     DO i=1,nsize-1
        sol(i) = sol(i)*d(i)
     ENDDO
-    
+
     DO i=nsize-1,1,-1
        sol(i) = (sol(i) - rup(i)*sol(i+1))/d(i)
     ENDDO
-    
+
     RETURN
   END SUBROUTINE tri_solver
 
   ! tecplot file generation subroutine
   !    - dump j-k slice of a 3D array
-  
+
   SUBROUTINE dump_tecplot(jdim, kdim, idim, jstr,jend,kstr,kend,iplane, u, vname,fname)
     INTEGER,INTENT(in) :: jdim, kdim, idim,jstr,jend,kstr,kend,iplane
     REAL, INTENT(in) :: u(jdim,kdim,idim)
     CHARACTER(len=*), INTENT(in) :: vname, fname
 
     INTEGER :: j,k
-    
+
     OPEN(1234,file=TRIM(ADJUSTL(fname)))
     WRITE(1234,*)'Title="', TRIM(ADJUSTL(vname)),'"'
     WRITE(1234,*)'Variables="I", "J","', TRIM(ADJUSTL(vname)),'"'
@@ -3281,14 +3281,14 @@ CONTAINS
     ENDDO
     close(1234)
   END SUBROUTINE dump_tecplot
-          
+
   SUBROUTINE dump_tecplot_turb(jdim, kdim, idim,nummem, jstr,jend,kstr,kend,iplane, u,vist,fname)
     INTEGER,INTENT(in) :: jdim, kdim, idim,jstr,jend,kstr,kend,iplane,nummem
     REAL, INTENT(in) :: u(jdim,kdim,idim,nummem),vist(jdim,kdim,idim)
     CHARACTER(len=*), INTENT(in) :: fname
-    
+
     INTEGER :: j,k
-    
+
     OPEN(1234,file=TRIM(ADJUSTL(fname)))
     WRITE(1234,*)'Title="', TRIM(ADJUSTL(fname)),'"'
     WRITE(1234,*)'Variables="I", "J", "t11", "t22", "t33", "t12", "t23", "t13","zeta","mut"'
@@ -3324,7 +3324,7 @@ CONTAINS
     REAL::gamma,gm1,gp1,gm1g,gp1g,ggm1
     COMMON /info/ title(20),rkap(3),xmach
     REAL :: title,rkap,xmach
-    
+
     ! local variable
     CHARACTER(len=20) :: str,strframe
     character(len=120)::plt_title
@@ -3336,7 +3336,7 @@ CONTAINS
          tur10(7)
     REAL :: p0,rho0,c0,u0,v0,w0,et0,h0,pt0,rhot0,qiv,&
          tur10,vel1
-    
+
 
     if(.not.need_kwsplot) return
 
@@ -3362,7 +3362,7 @@ CONTAINS
           write(1236,'(4(1x,es12.5))') rel(j),tau_w/(0.5*q(j,kdim-1,i,1)*xmach**2),&
                (q(j,1,i,5)-p0)/(0.5*rho0*xmach**2), 0.5*(x(j,1,i)+x(j+1,1,i))
        ENDDO
-       close(1236) 
+       close(1236)
        j = jcut
        i = 1
        DO k=1,kdim-2
@@ -3433,9 +3433,9 @@ CONTAINS
    SUBROUTINE lu_ijk(a,n)
      INTEGER,INTENT(in) ::n
      REAL, INTENT(inout) :: a(n,n)
- 
+
      INTEGER:: i,j,k
- 
+
      DO i=1, n
         DO j=2,i
            a(i,j-1) = a(i,j-1)/a(j-1,j-1)
@@ -3443,26 +3443,26 @@ CONTAINS
               a(i,j) = a(i,j) - a(i,k)*a(k,j)
            ENDDO
         ENDDO
- 
+
         DO j=i+1,n
            DO k=1,i-1
               a(i,j) = a(i,j)-a(i,k)*a(k,j)
            ENDDO
         ENDDO
      ENDDO
- 
+
    END SUBROUTINE lu_ijk
- 
-   ! L(i,i) = 1.0 
+
+   ! L(i,i) = 1.0
    SUBROUTINE lu_solv(a,rhs,n,sol)
      INTEGER,INTENT(in) :: n
      REAL, INTENT(in) :: a(n,n)
      REAL, intent(in) :: rhs(n)
      REAL, intent(out) :: sol(n)
- 
+
      REAL :: sum
      INTEGER :: i,j
- 
+
      ! Lx = rhs
      DO i=1,n
         sum = 0
@@ -3482,7 +3482,7 @@ CONTAINS
      return
    END SUBROUTINE lu_solv
 
-   !  get terms needed for time-accurate calculation 
+   !  get terms needed for time-accurate calculation
    !  This subroutine performed:
    !      1) dq = qcur -qold
    !      2) qold <= qcur
@@ -3498,20 +3498,20 @@ CONTAINS
      INTEGER :: i
 
      IF(dt<=0) RETURN
-     
+
      IF(qold(1,1,1,1)==0.0) THEN
         dq = 0
      ELSE
         dq = qcur - qold
      ENDIF
-     
+
      qold = qcur
 
    END SUBROUTINE save_lasttimestep
 
    ! a : for j-direction (advection and diffusion)
    ! b : for k-direction (advection and diffusion)
-   
+
    SUBROUTINE sgs_solver_2d(jdim,kdim,idim,nummem,timestep, d,al,ar,bl,br,rhs)
      INTEGER, INTENT(in):: jdim,kdim,idim,nummem
      REAL, INTENT(inout) :: &
@@ -3527,7 +3527,7 @@ CONTAINS
 
      !DO i=1,idim-1
         DO k=1,kdim-1
-           DO j=1,jdim-1 
+           DO j=1,jdim-1
               !rhs(j,k,i,:) = rhs(j,k,i,:)!*timestep(j,k,i)
               d(:,:,j,k,i) = -d(:,:,j,k,i)!*timestep(j,k,i)
               do m=1,nummem
@@ -3549,8 +3549,8 @@ CONTAINS
            ENDDO
         ENDDO
      !ENDDO
-     
-    
+
+
      ! forward sweep
      DO k=1,kdim-1
         DO j=1,jdim-1
@@ -3572,7 +3572,7 @@ CONTAINS
      ! backward
      DO k=kdim-1,1,-1
         DO j=jdim-1,1,-1
-           y  = 0 
+           y  = 0
            IF(j<jdim-1) THEN
               y(1:6)  = y(1:6) + ar(1,j,k,i)*rhs(j+1,k,i,1:6)
               y(7) = y(7) + ar(2,j,k,i)*rhs(j+1,k,i,7)
@@ -3597,8 +3597,8 @@ CONTAINS
           q(jdim,kdim,idim,5),vist3d(jdim,kdim,idim),&
           ux(jdim-1,kdim-1,idim-1,9),turre(jdim,kdim,idim,nummem),&
           smin(jdim-1,kdim-1,idim-1),tursav(jdim,kdim,idim,nummem)
-     
-     
+
+
      ! common block
      COMMON /twod/ i2d
      INTEGER ::i2d
@@ -3631,7 +3631,7 @@ CONTAINS
 #ifdef CHECK_SOURCE_TERM
      !#ifdef DIST_MPI
      !IF(mblk2nd(nblk)==myid) THEN
-        !#endi 
+        !#endi
         WRITE(plt_title,'(2(1x,A,es12.5))')'Re=',reue,'Mach=',xmach
         WRITE(iunit,'(A)')'title="'//TRIM(ADJUSTL(plt_title))//'"'
         IF(nummem==7.OR.nummem==0) THEN
@@ -3646,7 +3646,7 @@ CONTAINS
                 '"13_prd","13_dis", "13_ck", "13_phi", "13_c7", "13_c4", "13_c3", "13_c1" , "13_c2",'//&
                 '"src1", "src2", "src3", "src4", "src5", "src6","src7",' // &
                 '"rhs1", "rhs2", "rhs3", "rhs4", "rhs5", "rhs6","rhs7"'
-                
+
         ELSEIF(nummem==2) THEN
            WRITE(iunit,'(A)')'variables="x","y","z","dist","q1", "q2", "q3", "q4", "q5", '//&
                 '"dudx","dudy","dudz","dvdx","dvdy","dvdz","dwdx","dwdy","dwdz", '//&
@@ -3678,7 +3678,7 @@ CONTAINS
                          fnuloc,0.0, (0.0, m=1,7)
                  ELSE
                     if(allocated(source_items).and.allocated(source)) then
-                     
+
                     WRITE(iunit,'(25(1x,es12.5))')xc,yc,zc,smin(j,k,i),q(j,k,i,1:5), ux(j,k,i,1:9),&
                          fnuloc,vist3d(j,k,i), turre(j,k,i,1:nummem),source_items(1:9,1:6,j,k,i),&
                          source(j,k,i,1:7),turre(j,k,i,1:7)-tursav(j,k,i,1:7)
@@ -3687,7 +3687,7 @@ CONTAINS
                          fnuloc,vist3d(j,k,i), turre(j,k,i,1:nummem),(0.0,m=1,54),&
                          (0.0,m=1,7),turre(j,k,i,1:7)-tursav(j,k,i,1:7)
                     endif
- 
+
                  ENDIF
               ENDDO
            ENDDO
@@ -3705,7 +3705,7 @@ CONTAINS
           q(jdim,kdim,idim,5),vist3d(jdim,kdim,idim),&
           ux(jdim-1,kdim-1,idim-1,9),turre(jdim,kdim,idim,nummem),tursav(jdim,kdim,idim,nummem),&
           smin(jdim-1,kdim-1,idim-1)
-     
+
      COMMON /info/ title(20),rkap(3),xmach,alpha__,beta__,dt,fmax,nit,ntt, &
          idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag, &
          iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
@@ -3713,11 +3713,11 @@ CONTAINS
      INTEGER :: nit,ntt, &
           idiag,nitfo,iflagts,iflim,nres,levelb,mgflag, &
           iconsf,mseq,ncyc1,levelt,nitfo1,ngam,nsm,iipv
-     
+
      INTEGER,SAVE :: iunit = 2009
      INTEGER,SAVE :: opened=-1
      CHARACTER(len=30) :: fname,cblk
-     
+
 !   ***dump movie file at end of cycle (with -END- in the name)
      IF (nframe==0) then
         fname='END'
@@ -3726,19 +3726,19 @@ CONTAINS
      ENDIF
 !   ***
      WRITE(cblk, '(I4.4)')nblk
-     
+
      OPEN(iunit,file="mov-"//TRIM(ADJUSTL(fname))//"-"//TRIM(ADJUSTL(cblk))//".plt")
      CALL kws_mov_block(jdim,kdim,idim,nummem,nblk,q,x,y,z,vist3d,ux,turre,tursav,&
           smin,iunit)
      close(iunit)
-     
+
    END SUBROUTINE kws_dump_movie
 
    ! generalized gradient-diffusion model for turb eqns 1-6, and
    ! "standard" diffusion for omega eqn (see AIAA 2012-0465)
    SUBROUTINE get_diff_gen(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,blend,&
         sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br,issglrrw2012)
-     
+
      INTEGER,INTENT(in) :: jdim,idim,kdim,nummem,issglrrw2012
      REAL,INTENT(in) :: q(jdim,kdim,idim,5),&
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem),&
@@ -3766,14 +3766,14 @@ CONTAINS
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
     INTEGER :: iii,jjj,kkk
-  
+
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: tijm(3,6),cijk(3,6),thalf(6)
     REAL:: xmut(MAX(jdim,kdim,idim))
     REAL:: xmu_ave,xmut_ave,vleft,vright,tke_ave,ome_ave,rho_ave
     REAL:: areax2,areay2,areaz2,area2,rvol,xma_re
     REAL:: sigma_w_use, d_use
-    
+
     REAL, parameter :: one_third = 0.3333333333333333
     REAL, PARAMETER :: two_third = 2./3.
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
@@ -3821,8 +3821,8 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
-             xmu = xmu_ave             
+
+             xmu = xmu_ave
              flux(j,1:6) = diff(j,1:6)*sj(j,k,i,4)**2*rvol*xmu  !laminar part diffusion
              xcoef(j,1) = sj(j,k,i,4)**2*rvol*(xmu+rho_ave/(0.09*ome_ave)*d_use)
              DO m=1,6
@@ -3849,20 +3849,20 @@ CONTAINS
                 flux(j,m) = flux(j,m)-d_use*rho_ave/(0.09*ome_ave)*&
                      (cijk(1,m)*sj(j,k,i,1)+cijk(2,m)*sj(j,k,i,2)+cijk(3,m)*sj(j,k,i,3))*sj(j,k,i,4)
              ENDDO
-             
+
              xmu = xmu_ave+xmut(j)*sigma_w_use
              flux(j,7) = diff(j,7)*sj(j,k,i,4)**2*rvol*xmu
-             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu 
+             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu
           ENDDO
-          
-          !CALL cap_xmut(xmut,0,jdim) 
+
+          !CALL cap_xmut(xmut,0,jdim)
           DO j=1,jdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(j+1,:)-flux(j,:))/(q(j,k,i,1)*vol(j,k,i))
-             
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i) 
+
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i)
              al(2,j,k,i) = -xma_re*xcoef(j,2)/vol(j,k,i)
              ar(2,j,k,i) = -xma_re*xcoef(j+1,2)/vol(j,k,i)
-             
+
              al(1,j,k,i) = -xma_re*xcoef(j,1)/vol(j,k,i)
              ar(1,j,k,i) = -xma_re*xcoef(j+1,1)/vol(j,k,i)
              DO m=1,6
@@ -3871,7 +3871,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
     ! diffusion terms in the k-direction
     DO i=1,idim-1
        DO j=1,jdim-1
@@ -3908,7 +3908,7 @@ CONTAINS
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
              !-----------------------------------------
-             xmu = xmu_ave             
+             xmu = xmu_ave
              flux(k,1:6) = diff(k,1:6)*sk(j,k,i,4)**2*rvol*xmu  !laminar part diffusion
              xcoef(k,1) = sk(j,k,i,4)**2*rvol*(xmu+rho_ave/(0.09*ome_ave)*d_use)
              DO m=1,6
@@ -3940,23 +3940,23 @@ CONTAINS
 
              xmu = xmu_ave+xmut(k)*sigma_w_use
              flux(k,7) = diff(k,7)*sk(j,k,i,4)**2*rvol*xmu
-             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu 
+             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO k=1,kdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(k+1,:)-flux(k,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i)
              bl(2,j,k,i) = -xma_re*xcoef(k,2)/vol(j,k,i)
              br(2,j,k,i) = -xma_re*xcoef(k+1,2)/vol(j,k,i)
-             
+
              bl(1,j,k,i) = -xma_re*xcoef(k,1)/vol(j,k,i)
              br(1,j,k,i) = -xma_re*xcoef(k+1,1)/vol(j,k,i)
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(k,1)+xcoef(k+1,1))/vol(j,k,i)
              ENDDO
-                          
+
           ENDDO
        ENDDO
     ENDDO
@@ -4031,10 +4031,10 @@ CONTAINS
 
              xmu = xmu_ave+xmut(i)*sigma_w_use
              flux(i,7) = diff(i,7)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
+          !call cap_xmut(xmut,0,kdim)
           DO i=1,idim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(i+1,:)-flux(i,:))/(q(j,k,i,1)*vol(j,k,i))
 
@@ -4049,9 +4049,9 @@ CONTAINS
              ENDDO
           ENDDO
        ENDDO
-    ENDDO    
+    ENDDO
     ENDIF
-    
+
     RETURN
    END SUBROUTINE get_diff_gen
 
@@ -4060,7 +4060,7 @@ CONTAINS
    ! using Launder-Reese-Rodi formulation. Equation(6.50) Wilcox Ed 3rd.
    SUBROUTINE kws_cijk(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,&
         sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br)
-     
+
      INTEGER,INTENT(in) :: jdim,idim,kdim,nummem
      REAL,INTENT(in) :: q(jdim,kdim,idim,5),&
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem),&
@@ -4087,13 +4087,13 @@ CONTAINS
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
-  
+
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: tijm(3,6),cijk(3,6),thalf(6)
     REAL:: xmut(MAX(jdim,kdim,idim))
     REAL:: xmu_ave,xmut_ave,vleft,vright,tke_ave,ome_ave,rho_ave
     REAL:: areax2,areay2,areaz2,area2,rvol,xma_re
-    
+
     REAL, parameter :: one_third = 0.3333333333333333
     REAL, PARAMETER :: two_third = 2./3.
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
@@ -4132,8 +4132,8 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
-             xmu = xmu_ave             
+
+             xmu = xmu_ave
              flux(j,1:6) = diff(j,1:6)*sj(j,k,i,4)**2*rvol*xmu  !laminar part diffusion
              xcoef(j,1) =  sj(j,k,i,4)**2*rvol*(xmu+xmut(j)*sigma_star)
              DO m=1,6
@@ -4166,20 +4166,20 @@ CONTAINS
                 flux(j,m) = flux(j,m)-sigma_star*xmut(j)/(tke_ave+1e-20)*&
                      (cijk(1,m)*sj(j,k,i,1)+cijk(2,m)*sj(j,k,i,2)+cijk(3,m)*sj(j,k,i,3))*sj(j,k,i,4)
              ENDDO
-             
+
              xmu = xmu_ave+xmut(j)*sigma
              flux(j,7) = diff(j,7)*sj(j,k,i,4)**2*rvol*xmu
-             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu 
+             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu
           ENDDO
-          
-          !CALL cap_xmut(xmut,0,jdim) 
+
+          !CALL cap_xmut(xmut,0,jdim)
           DO j=1,jdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(j+1,:)-flux(j,:))/(q(j,k,i,1)*vol(j,k,i))
-             
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i) 
+
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i)
              al(2,j,k,i) = -xma_re*xcoef(j,2)/vol(j,k,i)
              ar(2,j,k,i) = -xma_re*xcoef(j+1,2)/vol(j,k,i)
-             
+
              al(1,j,k,i) = -xma_re*xcoef(j,1)/vol(j,k,i)
              ar(1,j,k,i) = -xma_re*xcoef(j+1,1)/vol(j,k,i)
              DO m=1,6
@@ -4188,7 +4188,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
     ! diffusion terms in the k-direction
     DO i=1,idim-1
        DO j=1,jdim-1
@@ -4217,7 +4217,7 @@ CONTAINS
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
              !-----------------------------------------
-             xmu = xmu_ave             
+             xmu = xmu_ave
              flux(k,1:6) = diff(k,1:6)*sk(j,k,i,4)**2*rvol*xmu  !laminar part diffusion
              xcoef(k,1) =  sk(j,k,i,4)**2*rvol*(xmu+xmut(k)*sigma_star)
              DO m=1,6
@@ -4255,23 +4255,23 @@ CONTAINS
 
              xmu = xmu_ave+xmut(k)*sigma
              flux(k,7) = diff(k,7)*sk(j,k,i,4)**2*rvol*xmu
-             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu 
+             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO k=1,kdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(k+1,:)-flux(k,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i)
              bl(2,j,k,i) = -xma_re*xcoef(k,2)/vol(j,k,i)
              br(2,j,k,i) = -xma_re*xcoef(k+1,2)/vol(j,k,i)
-             
+
              bl(1,j,k,i) = -xma_re*xcoef(k,1)/vol(j,k,i)
              br(1,j,k,i) = -xma_re*xcoef(k+1,1)/vol(j,k,i)
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(k,1)+xcoef(k+1,1))/vol(j,k,i)
              ENDDO
-                          
+
           ENDDO
        ENDDO
     ENDDO
@@ -4307,26 +4307,26 @@ CONTAINS
              rvol = 1./(0.5*(vleft + vright))
              xmu = xmu_ave+xmut(i)*sigma_star
              flux(i,1:6) = diff(i,1:6)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu
              xmu = xmu_ave+xmut(i)*sigma
              flux(i,7) = diff(i,7)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO i=1,idim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(i+1,:)-flux(i,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i)
 
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(i,1)+xcoef(i+1,1))/vol(j,k,i)
              ENDDO
           ENDDO
        ENDDO
-    ENDDO    
+    ENDDO
     ENDIF
-    
+
     RETURN
    END SUBROUTINE kws_cijk
 
@@ -4335,7 +4335,7 @@ CONTAINS
    ! using Launder-Reese-Rodi formulation 1. Eq(6.49) Wilcox Ed 3rd.
    SUBROUTINE kws_cijk0(jdim,kdim,idim,nummem,q,qj0,qk0,qi0,turre,tke,&
         sj,sk,si,vol,vj0,vk0,vi0,fmu,rhs,d,al,ar,bl,br)
-     
+
      INTEGER,INTENT(in) :: jdim,idim,kdim,nummem
      REAL,INTENT(in) :: q(jdim,kdim,idim,5),&
          turre(-1:jdim+1,-1:kdim+1,-1:idim+1,nummem),&
@@ -4362,13 +4362,13 @@ CONTAINS
 
     !local variables
     INTEGER :: i,j,k,m,n,ii,jj,kk,mm,ik,jk,im,jm,km,ij
-  
+
     REAL:: diff(MAX(jdim,kdim,idim),nummem)
     REAL:: tijm(3,6),cijk(3,6),thalf(6)
     REAL:: xmut(MAX(jdim,kdim,idim))
     REAL:: xmu_ave,xmut_ave,vleft,vright,tke_ave,ome_ave,rho_ave
     REAL:: areax2,areay2,areaz2,area2,rvol,xma_re
-    
+
     REAL, parameter :: one_third = 0.3333333333333333
     REAL, PARAMETER :: two_third = 2./3.
     REAL :: rv_l, rv_r,rv_c,xl,yl,zl, xr,yr,zr,xc,yc,zc
@@ -4407,7 +4407,7 @@ CONTAINS
                 vright = vol(j,k,i)
              ENDIF
              rvol = 1./(0.5*(vleft + vright))
-             
+
              xmu = xmu_ave
              flux(j,1:6) = diff(j,1:6)*sj(j,k,i,4)**2*rvol*xmu  !laminar part diffusion
              xcoef(j,1) =  sj(j,k,i,4)**2*rvol*(xmu+xmut(j)*sigma_star)
@@ -4430,25 +4430,25 @@ CONTAINS
                    cijk(kk,m) = tijm(ii,jk)+tijm(jj,ik)+tijm(kk,ij)
                 ENDDO
              ENDDO
-             
+
              DO m=1,6
                 flux(j,m) = flux(j,m)+sigma_star*xmut(j)*&
                      (cijk(1,m)*sj(j,k,i,1)+cijk(2,m)*sj(j,k,i,2)+cijk(3,m)*sj(j,k,i,3))*sj(j,k,i,4)
              ENDDO
-             
+
              xmu = xmu_ave+xmut(j)*sigma
              flux(j,7) = diff(j,7)*sj(j,k,i,4)**2*rvol*xmu
-             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu 
+             xcoef(j,2) = sj(j,k,i,4)**2*rvol*xmu
           ENDDO
-          
-          !CALL cap_xmut(xmut,0,jdim) 
+
+          !CALL cap_xmut(xmut,0,jdim)
           DO j=1,jdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(j+1,:)-flux(j,:))/(q(j,k,i,1)*vol(j,k,i))
-             
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i) 
+
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(j+1,2) + xcoef(j,2))/vol(j,k,i)
              al(2,j,k,i) = -xma_re*xcoef(j,2)/vol(j,k,i)
              ar(2,j,k,i) = -xma_re*xcoef(j+1,2)/vol(j,k,i)
-             
+
              al(1,j,k,i) = -xma_re*xcoef(j,1)/vol(j,k,i)
              ar(1,j,k,i) = -xma_re*xcoef(j+1,1)/vol(j,k,i)
              DO m=1,6
@@ -4457,7 +4457,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
     ! diffusion terms in the k-direction
     DO i=1,idim-1
        DO j=1,jdim-1
@@ -4517,23 +4517,23 @@ CONTAINS
 
              xmu = xmu_ave+xmut(k)*sigma
              flux(k,7) = diff(k,7)*sk(j,k,i,4)**2*rvol*xmu
-             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu 
+             xcoef(k,2) = sk(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO k=1,kdim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(k+1,:)-flux(k,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(k+1,2) + xcoef(k,2))/vol(j,k,i)
              bl(2,j,k,i) = -xma_re*xcoef(k,2)/vol(j,k,i)
              br(2,j,k,i) = -xma_re*xcoef(k+1,2)/vol(j,k,i)
-             
+
              bl(1,j,k,i) = -xma_re*xcoef(k,1)/vol(j,k,i)
              br(1,j,k,i) = -xma_re*xcoef(k+1,1)/vol(j,k,i)
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(k,1)+xcoef(k+1,1))/vol(j,k,i)
              ENDDO
-                          
+
           ENDDO
        ENDDO
     ENDDO
@@ -4569,26 +4569,26 @@ CONTAINS
              rvol = 1./(0.5*(vleft + vright))
              xmu = xmu_ave+xmut(i)*sigma_star
              flux(i,1:6) = diff(i,1:6)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,1) = si(j,k,i,4)**2*rvol*xmu
              xmu = xmu_ave+xmut(i)*sigma
              flux(i,7) = diff(i,7)*si(j,k,i,4)**2*rvol*xmu
-             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu 
+             xcoef(i,2) = si(j,k,i,4)**2*rvol*xmu
           ENDDO
 
-          !call cap_xmut(xmut,0,kdim) 
-          
+          !call cap_xmut(xmut,0,kdim)
+
           DO i=1,idim-1
              rhs(j,k,i,:) = rhs(j,k,i,:) + xma_re*(flux(i+1,:)-flux(i,:))/(q(j,k,i,1)*vol(j,k,i))
-             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i) 
+             d(7,7,j,k,i) = d(7,7,j,k,i) - xma_re*(xcoef(i+1,2) + xcoef(i,2))/vol(j,k,i)
 
              DO m=1,6
                 d(m,m,j,k,i)= d(m,m,j,k,i) - xma_re*(xcoef(i,1)+xcoef(i+1,1))/vol(j,k,i)
              ENDDO
           ENDDO
        ENDDO
-    ENDDO    
+    ENDDO
     ENDIF
-    
+
     RETURN
    END SUBROUTINE kws_cijk0
 
@@ -4635,7 +4635,7 @@ CONTAINS
               tj0(k,i,7,1) = &
                    2.*(60.*fnu/(re**2*q(j,k,i,1)*beta_0*dist**2))- &
                    turb(j,k,i,7)
-              tj0(k,i,7,2) = 2*tj0(k,i,7,1) - turb(j,k,i,7) 
+              tj0(k,i,7,2) = 2*tj0(k,i,7,1) - turb(j,k,i,7)
            ENDIF
         ENDDO
      ENDDO
@@ -4696,16 +4696,16 @@ CONTAINS
                    2.*(60.*fnu/(re**2*q(j,k,i,1)*beta_0*dist**2))- &
                    turb(j,k,i,7)
               tk0(j,i,7,4) = 2*tk0(j,i,7,3)- turb(j,k,i,7)
-              
+
            ENDIF
         ENDDO
      ENDDO
-     
+
      IF(i2d==0) THEN
         STOP "to be implemented, set_wallbc"
      ENDIF
    END SUBROUTINE set_wallbc
- 
+
    subroutine redefine_shear(jdim,kdim,idim,nummem,ux,vist3d,turb)
       integer, intent(in) :: jdim,kdim,idim,nummem
       real, intent(in) :: ux(jdim-1,kdim-1,idim-1,9),vist3d(jdim,kdim,idim)
@@ -4721,7 +4721,7 @@ CONTAINS
     INTEGER ::nit,ntt, &
          idiag,nitfo,iflagts,iflim,nres,levelb,mgflag, &
          iconsf,mseq,ncyc1,levelt,nitfo1,ngam,nsm,iipv
-    
+
 
     integer :: i,j,k
     real :: re
@@ -4737,7 +4737,7 @@ CONTAINS
        enddo
     enddo
 
-   end subroutine 
+   end subroutine
 
 !   The following subroutine - NO LONGER USED!!!!
    SUBROUTINE kws_init_from_2eq(lfrom2eq,nbl,jdim,kdim,idim,&
@@ -4766,19 +4766,19 @@ CONTAINS
      tursav(:,:,:,1) = -tursav(:,:,:,1)*2./3.
    END SUBROUTINE kws_init_from_2eq
 
-   
+
 !   The following subroutine - NO LONGER USED!!!!
    SUBROUTINE kws_save_2eq(nbl,jdim,kdim,idim,nummem,vist3d, tursav)
      INTEGER,INTENT(in)  :: nbl,jdim, kdim, idim,nummem
      REAL :: vist3d(jdim,kdim,idim)
      REAL :: tursav(jdim,kdim,idim,nummem)
-     
+
      INTEGER :: j,k,i
      character(len=30) :: str
      COMMON /mydist2/ nnodes,myhost,myid,mycomm
      INTEGER::nnodes,myhost,myid,mycomm
 
-     
+
      IF(nummem/=2) return
      IF(myid ==myhost) THEN
         WRITE(11,*)"save 2-eq solution", nbl
@@ -4795,9 +4795,9 @@ CONTAINS
      INTEGER,INTENT(in)  :: jdim, kdim, idim,nummem,nbl
      REAL,INTENT(in) :: vist3d(jdim,kdim,idim),ux(jdim-1,kdim-1,idim-1,9),rho(jdim,kdim,idim)
      REAL,intent(inout) :: tursav(jdim,kdim,idim,nummem)
-     
+
      INTEGER :: j,k,i,m
-     
+
      REAL :: sij(6),xnu,sii,tke23
      COMMON /reyue/ reue,tinf
      REAL::reue,tinf
@@ -4846,8 +4846,8 @@ CONTAINS
      REAL, INTENT(in) :: sj(jdim,kdim,idim-1,5),sk(jdim,kdim,idim-1,5),&
           si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
      REAL,INTENT(out) :: dbijdx(jdim-1,kdim-1,idim-1,6,3)
-     
-     
+
+
      INTEGER :: j,k,i,m,n
      REAL :: dbdj(6),xj(3),dbdk(6),xk(3)
 
@@ -4869,11 +4869,11 @@ CONTAINS
                     dbijdx(j,k,i,m,n) = dbdj(m)*xj(n)
                  ENDDO
               ENDDO
-              
+
            ENDDO
         ENDDO
      ENDDO
-     
+
      !k-direction
      DO i=1,idim-1
         DO k=1,kdim-1
@@ -4891,7 +4891,7 @@ CONTAINS
                  DO n=1,3
                     dbijdx(j,k,i,m,n) = dbdk(m)*xk(n)+dbijdx(j,k,i,m,n)
                  ENDDO
-              ENDDO         
+              ENDDO
            ENDDO
         ENDDO
      ENDDO
@@ -4905,7 +4905,7 @@ CONTAINS
           si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
      REAL,INTENT(out) :: dbijdxx(jdim-1,kdim-1,idim-1,6,3)
 
-     
+
      INTEGER :: i,j,k,m,n,jp,jm,kp,km
      REAL ::dbdj(6,3),dbdk(6,3),xj(3),xk(3)
      !j-direction
@@ -4931,7 +4931,7 @@ CONTAINS
            ENDDO
         ENDDO
      ENDDO
-     
+
      !k-direction
      DO i=1,idim-1
         DO k=1,kdim-1
@@ -4957,7 +4957,7 @@ CONTAINS
         ENDDO
      ENDDO
 
-     
+
    END SUBROUTINE kws_dbij_dxx
    SUBROUTINE vel2ndderiv(idim,jdim,kdim,ux,vol,si,sj,sk,vx)
 !
@@ -4966,11 +4966,11 @@ CONTAINS
 !     this routine works with
 !     the ux() velocity derivatives already obtained at cell centers,
 !     taking central differences of them.  As a result of this,
-!     at boundaries, one-sided differencing is employed 
+!     at boundaries, one-sided differencing is employed
 !     (i.e., unlike sijrate2d, this routine
 !     does NOT account for BC information, so the derivatives are
-!     lower order at all block boundaries).  If the index in any 
-!     direction is 2, such as would occur for 2-D, then the derivative 
+!     lower order at all block boundaries).  If the index in any
+!     direction is 2, such as would occur for 2-D, then the derivative
 !     in that index direction is set to zero.
 !       vx(1)=d2u/dx2, vx(2)=d2u/dy2, vx(3)=d2u/dz2
 !       vx(4)=d2v/dx2, vx(5)=d2v/dy2, vx(6)=d2v/dz2

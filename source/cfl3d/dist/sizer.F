@@ -7,16 +7,16 @@ c  steady-state modes.
 c
 c  Copyright 2001 United States Government as represented by the Administrator
 c  of the National Aeronautics and Space Administration. All Rights Reserved.
-c 
-c  The CFL3D platform is licensed under the Apache License, Version 2.0 
-c  (the "License"); you may not use this file except in compliance with the 
-c  License. You may obtain a copy of the License at 
-c  http://www.apache.org/licenses/LICENSE-2.0. 
-c 
-c  Unless required by applicable law or agreed to in writing, software 
-c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
-c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
-c  License for the specific language governing permissions and limitations 
+c
+c  The CFL3D platform is licensed under the Apache License, Version 2.0
+c  (the "License"); you may not use this file except in compliance with the
+c  License. You may obtain a copy of the License at
+c  http://www.apache.org/licenses/LICENSE-2.0.
+c
+c  Unless required by applicable law or agreed to in writing, software
+c  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+c  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+c  License for the specific language governing permissions and limitations
 c  under the License.
 c  ---------------------------------------------------------------------------
 c
@@ -42,9 +42,9 @@ c     for parallel mode, memory is allocated identically on all
 c     processors, based on the maximum requirement on any of the nodes.
 c
 c     imode governs whether the routine is being used a a stand-alone
-c     preprocessor, or as part of the dynamic memory allocation in 
-c     cfl3d: 
-c    
+c     preprocessor, or as part of the dynamic memory allocation in
+c     cfl3d:
+c
 c     imode = 0  stand-alone preprocessor
 c             1  part of the dynamic memory allocation in cfl3d
 c***********************************************************************
@@ -55,14 +55,14 @@ c     maxnode0 - maximum number of cpus for parallel processing
 c     maxgr0   - maximum number of grids
 c     maxbl0   - maximum number of blocks = maxg*( 1 + ncg )
 c     maxseg0  - maximum number of segments specified per face
-c     nplots0  - maximum number of data sets to output via plot3d or 
+c     nplots0  - maximum number of data sets to output via plot3d or
 c                print options
-c     mxbli0   - max no of block interps for matching bdys, 
+c     mxbli0   - max no of block interps for matching bdys,
 c                including coarser levels
 c     ncycmax0 - maximum number of time-steps (cycles)
 c     intmx0   - maximum number of patch interfaces
 c     msub10   - maximum number of "from" blocks on a patch interface
-c     ibufdim0 - maximum internal buffer (array) size for storing 
+c     ibufdim0 - maximum internal buffer (array) size for storing
 c                output data
 c     nbuf0    - maximum number of internal buffers
 c     mxbcfil0 - maximum number of auxiliary files for setting 2000
@@ -303,7 +303,7 @@ c
      .                  iwarneddy,itime2read,itaturb,tur1cut,tur2cut,
      .                  iturbord,tur1cutlev,tur2cutlev
       common /deformz/ beta1,beta2,alpha1,alpha2,isktyp,negvol,meshdef,
-     .                 nsprgit,ndgrd,ndwrt 
+     .                 nsprgit,ndgrd,ndwrt
       common /curvat/ isarc2d,sarccr3,ieasmcc2d,isstrc,sstrc_crc,
      .        isar,crot,isarc3d
       common /avgdata/ xnumavg,iteravg,xnumavg2,ipertavg,iclcd,isubit_r
@@ -721,7 +721,7 @@ c     the patch file is opened (if needed) as unit 22 in global
       read(iunit5,'(a60)')restrt
 c
 c***********************************************************************
-c 
+c
       gamma    = 1.4e0
       gm1      = gamma-1.0e0
       gp1      = gamma+1.0e0
@@ -1055,7 +1055,7 @@ c
 c
 c***********************************************************************
 c
-c     evaluate requirements for temporary real array size 
+c     evaluate requirements for temporary real array size
 c     (work/wk array)
 c
 c***********************************************************************
@@ -1542,7 +1542,7 @@ c allocate for DES and DDES
                  inmx=0
                end if
                itemp=iwk59+inmx
-            else if(ivmx.eq.72) then 
+            else if(ivmx.eq.72) then
                itemp = 0
             end if
          end if
@@ -1660,7 +1660,7 @@ c
      .                             30*jdim*kdim +
      .                             24*jdim*idim +
      .                             24*kdim*idim
-           maxmem = maxmem+mem_updatedg 
+           maxmem = maxmem+mem_updatedg
          end if
          itemp  = maxmem + ltot(nbl)
          itempt = itempt + ltot(nbl)
@@ -1703,7 +1703,7 @@ c
       level  = level-1
       ntime  = 0
       nit    = mit(level-levb+1,iseq)
-      if (level.gt.levb) go to 9000 
+      if (level.gt.levb) go to 9000
       nit    = mit(1,iseq) + mtt
       kxpand = -1
       go to 9000
@@ -1751,7 +1751,7 @@ c
                   end if
             end if
  9638    continue
-         end if 
+         end if
       end if
  7020 continue
       end if
@@ -1875,7 +1875,7 @@ c
          write(66,*)'       parallel: itemp, need = ',itemp,
      .   mem_req_node(ii)
 c
-         itemp = ltot(nbl) + 2*jdim*kdim*idim*3 + jdim*kdim*3*2 
+         itemp = ltot(nbl) + 2*jdim*kdim*idim*3 + jdim*kdim*3*2
      .         + kdim*idim*3*2 + jdim*idim*3*2
          need  = max(need,itemp)
          ii = mblk2nd(nbl)
@@ -1884,7 +1884,7 @@ c
          write(66,*)'       parallel: itemp, need = ',itemp,
      .   mem_req_node(ii)
 c
-         itemp = ltot(nbl) + 2*jdim*kdim*idim*3 + jdim*kdim*6 
+         itemp = ltot(nbl) + 2*jdim*kdim*idim*3 + jdim*kdim*6
      .         + jdim*kdim*idim*5 + jdim*kdim*3*2
      .         + kdim*idim*3*2 + jdim*idim*3*2
          need  = max(need,itemp)
@@ -1902,7 +1902,7 @@ c
          write(66,*)' 23(xtbatb)      itemp, need = ',itemp,need
          write(66,*)'       parallel: itemp, need = ',itemp,
      .   mem_req_node(ii)
-      end if 
+      end if
 c
  3000 continue
 c
@@ -1955,7 +1955,7 @@ c           plot3t requirements
                if (ivmx.eq.8 .or. ivmx.eq.9 .or. ivmx.ge.11) then
                   itemp = jdw*kdw*idw*9 + jdim*kdim*idim + jdim*kdim*9
                else
-                  itemp = jdw*kdw*idw*9 + jdim*kdim*idim 
+                  itemp = jdw*kdw*idw*9 + jdim*kdim*idim
      .                  + (jdim-1)*(kdim-1)*(idim-1)*9 + jdim*kdim*9
                end if
             end if
@@ -2039,7 +2039,7 @@ c           plot3c requirements
       end do
 c
 c     determine i/o buffer size - defaults to the value that is
-c     used for this sizing routine, which should be large enough 
+c     used for this sizing routine, which should be large enough
 c     for all but the baldwin-lomax output file
 c
       libufdim = ibufdim0
@@ -2066,7 +2066,7 @@ c        need to add 1 to avoid spurious warning for last output entry
  3005 continue
 c
 c     the following memory allocation is needed for asynchronous
-c     message passing of the 1-1, patch, periodic, and embeded 
+c     message passing of the 1-1, patch, periodic, and embeded
 c     interface data. note that this memory has no correspondance
 c     in the sequential build of the code.
 c
@@ -2145,12 +2145,12 @@ c
 c
       if (icount_blk.gt.0  .or. icount_pat.gt.0 .or.
      .    icount_prd.gt.0  .or. icount_emb.gt.0 .or.
-     .    icount_dpat.gt.0 .or. icount_rad.gt.0) then 
+     .    icount_dpat.gt.0 .or. icount_rad.gt.0) then
          write(66,*)' -async are requirements for',
      .   ' asynchronous message passing, by node'
       end if
 
-c 
+c
 c     for 1-1 interfaces
 c
       if (icount_blk .gt. 0) then
@@ -2304,7 +2304,7 @@ c           itb is "to" block
 c           ifb is "from" block
             itemp1 = 0
             do intr = 1,icount_pat
-               lmax_val = isav_pat(intr,2) 
+               lmax_val = isav_pat(intr,2)
                do nf = 1,lmax_val
                   itb  = isav_pat(intr,1)
                   ifb  = isav_pat_b(intr,nf,1)
@@ -2509,7 +2509,7 @@ c
          write(66,*)' 27(int2)        itemp, need = ',itemp1,need
       end if
 c
-c     add space for timesave array in mgblk 
+c     add space for timesave array in mgblk
 c
       need = need + lmaxbl
       do ii = 1,nodel
@@ -2550,7 +2550,7 @@ c
 c
 c***********************************************************************
 c
-c     evaluate requirements for temporary integer array size 
+c     evaluate requirements for temporary integer array size
 c     (iwork/iwk array)
 c
 c***********************************************************************
@@ -2570,7 +2570,7 @@ c     in mgbl, to call pointers
       needi  = max(needi,needi_pnt)
 c
 c     in mgbl, to call setup
-      needi_set = 3*lmaxgr + lmaxbl*8 
+      needi_set = 3*lmaxgr + lmaxbl*8
       needi  = max(needi,needi_set)
 c
 c     in mgbl, to call mgblk
@@ -2612,17 +2612,17 @@ c     in setslave, to call setcorner
          call cntsurf(ns2016,maxbl0,maxgr0,maxseg0,ngrid,nblg,
      .                nbci0,nbcj0,nbck0,nbcidim,nbcjdim,
      .                nbckdim,ibcinfo,jbcinfo,kbcinfo,2016)
-         nsurf = ns2004 + ns2014 + ns2024 + ns2034 + ns1005 + ns1006 + 
+         nsurf = ns2004 + ns2014 + ns2024 + ns2034 + ns1005 + ns1006 +
      .           ns2016
          itempi = nsurf + needi_set
          needi  = max(needi,itempi)
       end if
 c
 c     in mgblk, to output movie data
-c 
+c
       imovie = 0
-      if (abs(movie).gt. 0) then     
-         imovie = lmaxbl + 3*lnplts 
+      if (abs(movie).gt. 0) then
+         imovie = lmaxbl + 3*lnplts
       end if
 c
 c     in mgblk, to call dynptch
@@ -3018,7 +3018,7 @@ c
          deallocate(jjmax1)
          deallocate(kkmax1)
          deallocate(iiint1)
-         deallocate(iiint2)    
+         deallocate(iiint2)
          deallocate(n14)
          deallocate(iwrk)
          deallocate(icsinfo)
@@ -3331,7 +3331,7 @@ c
       jdim1 = jdim-1
       kdim1 = kdim-1
       idim1 = idim-1
-c 
+c
 c     determine which walls to use, based on ibcinfo, jbcinfo, kbcinfo
 c
       ibcjmin=0
@@ -3341,14 +3341,14 @@ c
      .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2014 .or.
      .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2024 .or.
      .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2034 .or.
-     .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2016) ibcjmin=1 
+     .      abs(jbcinfo(nbl,mseg,1,1)) .eq. 2016) ibcjmin=1
       end do
       do mseg=1,nbcjdim(nbl)
         if (abs(jbcinfo(nbl,mseg,1,2)) .eq. 2004 .or.
      .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2014 .or.
      .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2024 .or.
      .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2034 .or.
-     .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2016) ibcjmax=1 
+     .      abs(jbcinfo(nbl,mseg,1,2)) .eq. 2016) ibcjmax=1
       end do
 c
       ibckmin=0
@@ -3392,7 +3392,7 @@ c
          ihead = 0
          do 1000 i=1,idim1
          do 1000 j=1,jdim1
-c 
+c
          kloop  = .80*kdim
          inmax  = kloop
 c
@@ -3401,12 +3401,12 @@ c
              if (j.eq.j/ilfreq1*ilfreq1.and.i.eq.i/ilfreq2*ilfreq2) then
                if (ihead.eq.0) then
                   n14 = n14 + 1
-               end if   
+               end if
                n14 = n14 + 1
                ihead = ihead+1
              end if
            end if
-         end if 
+         end if
 c
          if (iprint.ge.1) then
          if (j.eq.(j/ilfreq1)*ilfreq1.and.i.eq.(i/ilfreq2)*ilfreq2) then
@@ -3428,7 +3428,7 @@ c
          end if
          end if
  1000    continue
-c 
+c
          end if
 c
          if (ibckmax.eq.1) then
@@ -3501,7 +3501,7 @@ c
                 ihead = ihead+1
               end if
            end if
-         end if 
+         end if
 c
          if (iprint.ge.1) then
          if (k.eq.(k/ilfreq1)*ilfreq1.and.i.eq.(i/ilfreq2)*ilfreq2) then
@@ -3582,7 +3582,7 @@ c
          ihead = 0
          do 2000 k=1,kdim1
          do 2000 j=1,jdim1
-c 
+c
          iloop  = .80*idim
          inmax  = iloop
 c
@@ -3596,7 +3596,7 @@ c
                ihead = ihead+1
              end if
            end if
-         end if 
+         end if
 c
          if (iprint.ge.1) then
          if (j.eq.(j/ilfreq1)*ilfreq1.and.k.eq.(k/ilfreq2)*ilfreq2) then
@@ -3627,7 +3627,7 @@ c
          ihead = 0
          do 2007 k=1,kdim1
          do 2007 j=1,jdim1
-c 
+c
          iloop  = .80*idim
          iloop  = idim1-iloop+1
          iloop  = max(1,iloop)
@@ -3644,7 +3644,7 @@ c
                ihead = ihead+1
 	     end if
            end if
-         end if 
+         end if
 c
          if (iprint.ge.1) then
          if (j.eq.(j/ilfreq1)*ilfreq1.and.k.eq.(k/ilfreq2)*ilfreq2) then
@@ -3672,4 +3672,4 @@ c
       end if
 c
       return
-      end 
+      end
