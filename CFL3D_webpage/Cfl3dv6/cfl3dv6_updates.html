@@ -1,0 +1,147 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Updates/Corrections</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a NAME="top"></a></p>
+
+<hr>
+
+<center>
+<h2>Version 6 Updates and Corrections</h2>
+<p><strong>Date of last Version 6.X release:  
+<span style="color: maroon">Version 6.7 on February 1, 2017</span></strong></p>
+</center> 
+
+<hr>
+
+<!--<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#corr0">Current Updates</a>
+
+<li type=circle>Updates as of April 14, 2011 (start of Version 6.6).
+<ul>
+<li type=square><a href="cvs_diff_Apr_14_2011">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_Apr_14_2011">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of May 29, 2007 (start of Version 6.5).
+<ul>
+<li type=square><a href="cvs_diff_May_29_2007">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_May_29_2007">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of October 18, 2005 (start of Version 6.4).
+<ul>
+<li type=square><a href="cvs_diff_Oct_18_2005">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_Oct_18_2005">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of September 12, 2003 (start of Version 6.3).
+<ul>
+<li type=square><a href="cvs_diff_Sep_12_2003">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_Sep_12_2003">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of May 30, 2003 (start of Version 6.2).
+<ul>
+<li type=square><a href="cvs_diff_May_30_2003">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_May_30_2003">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of October 1, 2002 (start of Version 6.1).
+<ul>
+<li type=square><a href="cvs_diff_Oct_01_2002">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_Oct_01_2002">cvs "log" output</a></li>
+</ul>
+
+<li type=circle>Updates as of August 14, 2001.
+<ul>
+<li type=square><a href="cvs_diff_Aug_14_2001">cvs "diff" output</a></li>
+<li type=square><a href="cvs_log_Aug_14_2001">cvs "log" output</a></li>
+</ul>
+
+<li type=circle><a href="cfl3dv6_updates_23may2001.html">
+Updates as of May 23, 2001.</a>
+
+<li type=circle><a href="cfl3dv6_updates_02august2000.html">
+Updates as of August 2, 2000.</a>
+</ul>
+
+<p><strong>Current Updates</strong> are defined as updates made since the last Version 6 
+release date. These updates do not appear in the latest released version. Updates
+in this category will be moved to the "Updates as of ..." category when a new
+release is issued.</p>
+
+
+<p><strong>Updates as of <em>date</em></strong> are defined as updates incorporated into the
+release Version 6 as of that date. Release versions now have a date stamp
+appended to them. For example, cfl3dv6.ascii.Aug_14_2001 indicates the source 
+code as of August 14, 2001, and will contain all the updates up to and
+including that date. </p>-->
+<p>As of Version 6.7, updates are no longer posted to the website.
+
+<hr>
+<hr>
+
+
+<!--<p><a NAME="corr0"></a><strong><u>CURRENT UPDATES</u></strong>-->
+
+<!--<p><strong>Note: Each of the following updates has been given a subjective importance
+rating of <span style="color: maroon">LOW</span>, <span style="color: maroon">MODERATE</span>,
+or <span style="color: maroon">HIGH</span> in an attempt to help you determine how
+important it may be for you get it.
+To download the corrected versions of the subroutines, click on
+the link(s) after "Download the current version of" - you may need to use the "save
+link as" option in your browser.
+It is also important to be aware that selective updating may cause
+problems, if the same subroutine is involved in more than one update.
+In other words, to be safe you should make ALL updates up to
+and including the number of the one you are interested in.</strong><p>-->
+
+<!--<p> No Updates have been made to the latest version of the code. </p>-->
+<!--<br>&nbsp;
+<p><strong>Update 1 - bc2003.F, bc2007.F, bc2008.F, bc2009.F, bc2010.F, bc2019.F, bc2026.F:</strong><br>
+<strong><span style="color: green">IMPORTANCE:</span> <span style="color: maroon">LOW</span></strong><br>
+<strong><span style="color: green">TYPE:</span></strong> BUG FIX<br>
+<strong><span style="color: green">DESCRIPTION:</span></strong>
+If trying to specify readable turbulence BCs for ivisc=72 through one of these BCs, it will not work.
+Change needed (many places): set itrflg1 to 1 if the bcdata is .ne. 0 (rather than if it is .ge. 0)
+
+<p>To get the updated version of the routine(s), please contact the page curator (you must have current
+<a href="cfl3dv6_home.html#get">authorization</a>).
+</p>-->
+
+<!--
+<br>&nbsp;
+<p><strong>Update 2 - qout_2d.F, qoutavg.F, qout_coarse.F, qout.F.F:</strong><br>
+<strong><span style="color: green">IMPORTANCE:</span> <span style="color: maroon">HIGH</span></strong> (may cause problems with some sequential compiles)<br>
+<strong><span style="color: green">TYPE:</span></strong> BUG FIX<br>
+<strong><span style="color: green">DESCRIPTION:</span></strong>
+Several calls to MPI_ABORT need to have ifdef around them, for sequential compiles.
+
+<p>To get the updated version of the routine(s), please contact the page curator (you must have current
+<a href="cfl3dv6_home.html#get">authorization</a>).
+</p>
+
+<p>Detailed information is given in <a href="Updated_Code/update2.info">update2.info</a></p>
+
+<p><strong><a href="#top">Return to Top</a></strong></p>
+-->
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 07/10/2017
+<br>&nbsp;
+</body>
+</html>

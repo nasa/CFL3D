@@ -1,0 +1,34 @@
+#!MC
+$!DeActivateGraphics
+$!SetPath Stream   .
+$!SetPath Style    .
+$!SetPath DataFile .
+$!SetPath Bitdump  .
+$!SetPath ColorMap .
+$!SetPath TextGeom .
+$!SetPath Macro    .
+$!SetPath Equation .
+$!SetPath HardCopy .
+$!PrintPos X=59 Y=29 Scale=1 Orient Landscape
+$!ReadColorMap compare_cp_m6.map
+$!ReadStyleSheet compare_cp_m6.s01
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s02
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s03
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s04
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s05
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s06
+$!OpenWindow
+$!ReadDataFile fort.77
+$!ReadStyleSheet compare_cp_m6.s07
+$!ActivateGraphics
+$!RegenAll

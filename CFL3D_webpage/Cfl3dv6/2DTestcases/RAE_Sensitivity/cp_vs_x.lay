@@ -1,0 +1,19 @@
+#!MC
+$!DeActivateGraphics
+$!SetPath Stream   .
+$!SetPath Style    .
+$!SetPath DataFile .
+$!SetPath Bitdump  .
+$!SetPath ColorMap .
+$!SetPath TextGeom .
+$!SetPath Macro    .
+$!SetPath Equation .
+$!SetPath HardCopy .
+$!PrintPos X=59.2941 Y=59.2941 Scale=1 Orient Landscape
+$!ReadColorMap cp_vs_x.map
+$!ReadStyleSheet cp_vs_x.s01
+$!OpenWindow
+$!ReadDataFile cp_vs_x.dat
+$!ReadStyleSheet cp_vs_x.s02
+$!ActivateGraphics
+$!RegenAll

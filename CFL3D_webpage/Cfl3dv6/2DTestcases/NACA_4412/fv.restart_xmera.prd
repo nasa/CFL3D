@@ -1,0 +1,4 @@
+presentation_render_restart_version: 0
+presentaion_render: 0
+specular: 1.000000 0.500000
+specular_active:  comp_surf iso_surf streamline coord_surf boundary_surf particle_path

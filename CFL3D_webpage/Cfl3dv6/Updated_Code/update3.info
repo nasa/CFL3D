@@ -1,0 +1,13 @@
+
+
+
+dist/wrest.F
+----------------------------
+12a13,15
+> c     Note: this change ALONE is not in CVS because it went along with
+> c     a separate enhancement that is not being included until a future
+> c     code release.
+124c127
+<       itag_qavg2  = itag_qavg   + ioffset
+---
+>       itag_q2avg  = itag_qavg   + ioffset

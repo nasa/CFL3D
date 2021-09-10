@@ -1,0 +1,78 @@
+
+
+
+libs/gfluxv.F
+----------------------------
+revision 1.5
+date: 2011/08/23 19:14:51;  author: rumsey;  state: Exp;  lines: +6 -1
+rho needs to be defined for i_nonlin=1 and ivisc=6,7,10,or 15
+=============================================================================
+Index: gfluxv.F
+===================================================================
+retrieving revision 1.4
+retrieving revision 1.5
+diff -r1.4 -r1.5
+5c5
+< c     $Id: gfluxv.F,v 1.4 2010/10/14 15:44:38 rumsey Exp $
+---
+> c     $Id: gfluxv.F,v 1.5 2011/08/23 19:14:51 rumsey Exp $
+1089a1090,1091
+>               rho=0.5*(q(j,k,ii,1)+qj0(k,ii,1,1))*(1.-wj0(k+jkv2,5))+
+>      +            qj0(k,ii,1,1)*wj0(k+jkv2,5)
+1163a1166,1167
+>               rho=0.5*(q(j-1,k,ii,1)+qj0(k,ii,1,3))*(1.-wj0(k+jkv2,15))+
+>      +            qj0(k,ii,1,3)*wj0(k+jkv2,15)
+1237a1242
+>               rho=0.5*(q(j,k,ii,1)+q(j-1,k,ii,1))
+
+
+
+libs/hfluxv.F
+----------------------------
+revision 1.5
+date: 2011/08/23 19:14:52;  author: rumsey;  state: Exp;  lines: +6 -1
+rho needs to be defined for i_nonlin=1 and ivisc=6,7,10,or 15
+=============================================================================
+Index: hfluxv.F
+===================================================================
+retrieving revision 1.4
+retrieving revision 1.5
+diff -r1.4 -r1.5
+6c6
+< c     $Id: hfluxv.F,v 1.4 2010/10/14 15:44:38 rumsey Exp $
+---
+> c     $Id: hfluxv.F,v 1.5 2011/08/23 19:14:52 rumsey Exp $
+1106a1107,1108
+>               rho=0.5*(q(j,k,ii,1)+qk0(j,ii,1,1))*(1.-wk0(j+jkv2,5))+
+>      +            qk0(j,ii,1,1)*wk0(j+jkv2,5)
+1180a1183,1184
+>               rho=0.5*(q(j,k-1,ii,1)+qk0(j,ii,1,3))*(1.-wk0(j+jkv2,15))+
+>      +            qk0(j,ii,1,3)*wk0(j+jkv2,15)
+1254a1259
+>               rho=0.5*(q(j,k,ii,1)+q(j,k-1,ii,1))
+
+
+
+libs/hfluxv.F
+----------------------------
+revision 1.5
+date: 2011/08/23 19:14:51;  author: rumsey;  state: Exp;  lines: +6 -1
+rho needs to be defined for i_nonlin=1 and ivisc=6,7,10,or 15
+=============================================================================
+Index: ffluxv.F
+===================================================================
+retrieving revision 1.4
+retrieving revision 1.5
+diff -r1.4 -r1.5
+5c5
+< c     $Id: ffluxv.F,v 1.4 2010/10/14 15:44:38 rumsey Exp $
+---
+> c     $Id: ffluxv.F,v 1.5 2011/08/23 19:14:51 rumsey Exp $
+1079a1080,1081
+>               rho=0.5*(q(j,kk,i,1)+qi0(j,kk,1,1))*(1.-wi0(j+jiv2,5))+
+>      +            qi0(j,kk,1,1)*wi0(j+jiv2,5)
+1153a1156,1157
+>               rho=0.5*(q(j,kk,i-1,1)+qi0(j,kk,1,3))*(1.-wi0(j+jiv2,15))+
+>      +            qi0(j,kk,1,3)*wi0(j+jiv2,15)
+1227a1232
+>               rho=0.5*(q(j,kk,i,1)+q(j,kk,i-1,1))

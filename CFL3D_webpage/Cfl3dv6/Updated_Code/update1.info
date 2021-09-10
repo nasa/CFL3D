@@ -1,0 +1,45 @@
+
+
+
+libs/twoeqn.F
+----------------------------
+revision 1.43
+date: 2011/05/26 18:50:46;  author: rumsey;  state: Exp;  lines: +13 -7
+fix Wilcox06 version so the production term of the omega eqn uses omega rather than omegatilde
+=============================================================================
+Index: twoeqn.F
+===================================================================
+retrieving revision 1.42
+retrieving revision 1.43
+diff -r1.42 -r1.43
+18c18
+< c     $Id: twoeqn.F,v 1.42 2011/04/06 21:28:13 rumsey Exp $
+---
+> c     $Id: twoeqn.F,v 1.43 2011/05/26 18:50:46 rumsey Exp $
+2122,2124c2122,2123
+<               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1 .and.
+<      +            i_wilcox06_chiw .eq. 1) .or. ikoprod .eq. 1
+<      +            .or. isstrc .eq. 1) then
+---
+>               if ((ivmx .eq. 6 .and. i_wilcox06 .eq. 1)
+>      +            .or. ikoprod .eq. 1 .or. isstrc .eq. 1) then
+2140a2140,2146
+> c  the following forces use of omega rather than omegatilde in
+> c  omega production term for Wilcox06
+>               w06mult=1.0
+>               if (ivmx .eq. 6 .and. i_wilcox06 .eq. 1) then
+>                 wtilde=ccmax(turre(j,k,i,1),sqrt(2.*xis/cmuc2)*0.875/re)
+>                 w06mult=turre(j,k,i,1)/wtilde
+>               end if
+2196c2202
+<      +           2.*xis - f5*f4*re*betax*turre(j,k,i,1)**2
+---
+>      +           2.*xis*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2
+2203c2209
+<      +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*
+---
+>      +              vist3d(j,k,i)*q(j,k,i,1)*turre(j,k,i,2)*w06mult*
+2209c2215
+<      +          vor(j,k,i)**2 - f5*f4*re*betax*turre(j,k,i,1)**2
+---
+>      +          vor(j,k,i)**2*w06mult - f5*f4*re*betax*turre(j,k,i,1)**2

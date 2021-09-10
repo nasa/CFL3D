@@ -1,0 +1,423 @@
+#!MC 900
+$!VarSet |LFDSFN1| = '"p_vs_x_ss_sa.dat" "p_vs_x_ss_easmko.dat"'
+$!VarSet |LFDSVL1| = '"xH" "Pbot" "zH" "Ptop"'
+$!SETSTYLEBASE FACTORY
+$!PAPER 
+  BACKGROUNDCOLOR = WHITE
+  ISTRANSPARENT = YES
+  ORIENTPORTRAIT = YES
+  SHOWGRID = YES
+  SHOWRULER = YES
+  SHOWPAPER = YES
+  PAPERSIZE = LETTER
+  PAPERSIZEINFO
+    {
+    LETTER
+      {
+      WIDTH = 8.5
+      HEIGHT = 11
+      LEFTHARDCLIPOFFSET = 0.125
+      RIGHTHARDCLIPOFFSET = 0.125
+      TOPHARDCLIPOFFSET = 0.125
+      BOTTOMHARDCLIPOFFSET = 0.125
+      }
+    }
+  RULERSPACING = ONEINCH
+  PAPERGRIDSPACING = HALFINCH
+  REGIONINWORKAREA
+    {
+    X1 = -0.05
+    Y1 = -0.05
+    X2 = 8.55
+    Y2 = 11.05
+    }
+$!COLORMAP 
+  CONTOURCOLORMAP = SMRAINBOW
+$!COLORMAPCONTROL RESETTOFACTORY
+### Frame Number 1 ###
+$!READDATASET  '|LFDSFN1|' 
+  INCLUDETEXT = NO
+  INCLUDEGEOM = NO
+  VARLOADMODE = BYNAME
+  VARNAMELIST = '|LFDSVL1|' 
+$!REMOVEVAR |LFDSVL1|
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.1077
+    Y = 5.4814
+    }
+  WIDTH = 8.25
+  HEIGHT = 5.2931
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    BOX
+      {
+      BOXTYPE = FILLED
+      }
+    XYPOS
+      {
+      X = 57.511
+      Y = 31.796
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'EASM-ko' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ke' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -5
+    RANGEMAX = 10
+    GRSPACING = 5
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'x/H' 
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AXISPOSITION = 15
+    RANGEMIN = 0.3
+    RANGEMAX = 0.9
+    GRSPACING = 0.1
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'p/p_0' 
+      TEXTSHAPE
+        {
+        HEIGHT = 3.6
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 43.9182439678
+    Y = 79.7238001793
+    }
+  TEXT = 'Bottom Wall' 
+### Frame Number 2 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.1423
+    Y = 0.13891
+    }
+  WIDTH = 8.25
+  HEIGHT = 5.2931
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    SHOW = YES
+    BOX
+      {
+      BOXTYPE = FILLED
+      }
+    XYPOS
+      {
+      X = 57.511
+      Y = 31.796
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 3
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ko (#14)' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 3
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 3
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -5
+    RANGEMAX = 10
+    GRSPACING = 5
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'x/H' 
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AXISPOSITION = 15
+    RANGEMIN = 0.3
+    RANGEMAX = 0.9
+    GRSPACING = 0.1
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'p/p_0' 
+      TEXTSHAPE
+        {
+        HEIGHT = 3.6
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 29.238076886
+    Y = 90.4227066425
+    }
+  TEXT = 'MDRL Transonic Diffuser\nR=Pexit/Pinlet=0.72 (Strong Shock Case)' 
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 45.386239308
+    Y = 80.7037746633
+    }
+  TEXT = 'Top Wall' 
+$!REMOVEVAR |LFDSFN1|
+$!SETSTYLEBASE CONFIG

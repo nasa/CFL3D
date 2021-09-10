@@ -1,0 +1,265 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5C-SGI [en] (X11; I; IRIX64 6.5 IP30) [Netscape]">
+   <title>Block Splitter</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+<center>
+<h2>
+Block Splitting And Load Balancing</h2></center>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#split">Block And Input File Splitting</a></li>
+
+<li type=circle><a href="#convert">File Conversion</a></li>
+
+<li type=circle><a href="#balance">Load Balancing</a></li>
+</ul>
+
+<hr>
+<hr>
+
+<p><a NAME="split"><strong><u>BLOCK AND INPUT FILE SPLITTING</u></strong>
+
+<p>IF A LIMITER IS DESIRED, USE IFLIM=4. This will allow for consistent
+results with block splitting; iflim=3 is not recommended - iflim=4 is
+basically a correct implementation of iflim=3 for multiple blocks, and
+should now be viewed as the recommended limiter for any case that needs one.
+
+<p>Also, for exact consistency between split and unsplit grids, version 5
+emulation (i.e. "Install -v5) should not be used. Version 5  (and earlier
+versions) made an approximation for cell volumes at 1-1 block interfaces
+that has been eliminated in version 6 in favor of the exact treatment.
+
+<p>The input file part of the splitter works by first converting the
+unsplit CFL3D input file to a TLNS3D map file, splitting the
+TLNS3D map file, then converting the split TLNS3D map file back
+to a CFL3D input file.
+
+<p>Caveats: The conversions from the CFL3D input file to a TLNS3D
+            map file are not perfect! The user is urged check the
+              resulting split CFL3D input (and patch) files. A useful
+              check before actually splitting the files is to run this
+              splitter with the number of splittings = 0, and the
+              output grid file as null. This will cause to code to go
+              through the translations, but the "split" files will
+              have the same numbers of blocks, and the "split" grid
+              will not be output. A "diff" or "gdiff" will point
+              to translation-induced differences that should be
+              easier to sort out than when coupled with true splitting.
+              Note that the 2-step process almost always results in a
+              *reordering* of some boundary condition segments.
+
+<p><strong>Sample splitter input file:</strong>
+<p>This example splits block 1 in half in the i-direction, then splits each
+of the two resulting blocks in half in the j-direction; i.e. block 1 is
+split into 4 eqidimensioned blocks.
+
+<pre>
+INPUT (UNSPLIT) FILES
+cfl3d.inp
+ronnie.inp
+grid.unf
+sd_grid.unf
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+OUTPUT (SPLIT) FILES
+cfl3d.inp_split
+ronnie.inp_split
+grid_split.unf
+sd_grid_split.unf
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+NSPLITS
+2
+1
+1
+0
+1
+2
+0
+</pre>
+
+<p>Where:
+<dl>
+
+<p><strong><dt>cfl3d.inp</dt></strong>
+  <dd>cfl3d input file for the unsplit grid</dd>
+
+<p><strong><dt>ronnie.inp</dt></strong>
+  <dd>ronnie input file for the unsplit grid</dd>
+  <dd>if not a patched case, enter the word <strong>null</strong></dd>
+
+<p><strong><dt>grid.unf</dt></strong>
+  <dd>grid file for the unsplit grid; can be formatted or unformatted</dd>
+
+<p><strong><dt>sd_grid.unf</dt></strong>
+  <dd>sensitivity file for the unsplit grid</dd>
+  <dd>NOTE: Currently not supported in Version 6; the same
+      functionality is now handled via complex variables and a complex-valued
+      grid file (see below); enter the word <strong>null</strong></dd>
+
+<p><strong><dt>cfl3d.inp_split</dt></strong>
+  <dd>cfl3d input file for the split grid</dd>
+
+<p><strong><dt>ronnie.inp_split</dt></strong>
+  <dd>ronnie input file for the split grid</dd>
+  <dd>if not a patched case, enter the word <strong>null</strong></dd>
+
+<p><strong><dt>grid_split.unf</dt></strong>
+  <dd>grid file for the split grid; can be formatted or unformatted</dd>
+
+<p><strong><dt>sd_grid_split.unf</dt></strong>
+  <dd>sensitivity file for the split grid</dd>
+  <dd>NOTE: Currently not supported in Version 6; the same
+      functionality is now handled via complex variables and a complex-valued
+      grid file (see below); enter the word <strong>null</strong></dd>
+
+<p><strong><dt>icflver</dt></strong>
+  <dd>=&nbsp; 4 the cfl3d input file is a version 4.1 type</dd>
+  <dd>= -4 the cfl3d input file is a version 4.1hp type</dd>
+  <dd>=&nbsp; 5 the cfl3d input file is a version 5/6 type</dd>
+
+<p><strong><dt>ironver</dt></strong>
+  <dd>= 0 ronnie input file is the old style, with all
+      "from" blocks listed on one line</dd>
+  <dd>= 1 ronnie input file is the new style, with each
+      "from" block having it's own line</dd>
+  <dd>NOTE: a value for ironver must always be entered, even
+      if the case does not involve patched grids.</dd>
+
+<p><strong><dt>igrdfmt </dt></strong>
+  <dd>= 0 grid file is formatted</dd>
+  <dd>= 1 grid file is unformatted</dd>
+
+<p><strong><dt>isdfmt</dt></strong>
+  <dd>= 0 sensitivity file is formatted</dd>
+  <dd>= 1 sensitivity file is unformatted</dd>
+  <dd>NOTE: Currently not supported in Version 6; the same
+      functionality is now handled via complex variables and a complex-valued
+      grid file (see below);however a value is still required - use 0 or 1</dd>
+
+<p><strong><dt>nsplits</dt></strong>
+  <dd>number of grid splits to perform (can be 0 in order to convert
+      grid from formatted to unformatted or vice versa</dd>
+</dl>
+
+<p>Following the value of nsplits, nsplits triplets of integers
+must appear, one integer of the triplet per line:
+
+<dl>
+<p><strong><dt>iblk</dt></strong>
+  <dd>block number of the block to be split. NOTE: iblk
+      always refers to the original, unsplit block number</dd>
+
+<p><strong><dt>ldir</dt></strong>
+  <dd>= 1 split in the i-direction</dd>
+  <dd>= 2 split in the j-direction</dd>
+  <dd>= 3 split in the k-direction</dd>
+
+<p><strong><dt>index</dt></strong>
+  <dd>split the block in the ldir direction at this value
+      of the index</dd>
+  <dd>NOTE: use 0 for a quick way to split at the midpoint
+      of the ldir direction...HOWEVER: if you want to do
+      multiple splits in a particular coordinate direction,
+      then the 0 index shortcut cannot be used.</dd>
+  <dd>for example, if block 6 has 129 points in say, the i-direction,
+      and it is desired to split the block into 4 pieces in the
+      i-direction (3 splits), then one must use:
+  </dl>
+   <p><dd>NSPLITS</dd>
+      <dd>3</dd>
+      <dd>6</dd>
+      <dd>1</dd>
+      <dd>33</dd>
+      <dd>6</dd>
+      <dd>1</dd>
+      <dd>65</dd>
+      <dd>6</dd>
+      <dd>1</dd>
+      <dd>97</dd>
+</dl>
+
+<p>The 0 index shortcut could still be used in the j
+       and/or k directions provided there is only one split in
+       block 6 in either the j and/or k directions.</p>
+
+<p>For sensitivity (derivative) evaluation, CFL3Dv6 uses complex variables.
+For geometrical derivatives, this requires that the grid be complex-valued.
+To split a complex-valued grid, use SPLITTERCMPLX rather than SPLITTER. All
+the information above holds for the complex case, except that now both the
+split and unsplit grids are complex-valued.</p>
+
+<p><strong>ALWAYS check your output file from the CFL3D
+run for any evidence of "geometric mismatch" (i.e., look for this
+phrase in the flow solver output file)!  If this phrase is found, it may
+indicate incorrect 1-to-1 connectivity information in the input file.
+</strong></p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="convert"><strong><u>FILE CONVERSION</u></strong>
+
+<p>The splitter may also be used to convert files from formatted to
+formatted and vice versa, and from one cfl3d input file type to another.
+
+<p>For example, to convert the formatted grid file grid.fmt to the
+unformatted grid file grid.unf and at the same time convert the version 4
+input file   cfl3d.inp_v4 to a version 5/6 input file cfl3d.inp_v6:</p>
+
+<pre>
+INPUT (UNSPLIT) FILES
+cfl3d.inp_v4
+null
+grid.fmt
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      4         1         0         1
+OUTPUT (SPLIT) FILES
+cfl3d.inp_v6
+null
+grid.unf
+null
+ICFLVER   IRONVER   IGRDFMT    ISDFMT
+      5         1         1         1
+NSPLITS
+0
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="balance"><strong><u>LOAD BALANCING</u></strong>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 06/26/2014
+<br>&nbsp;
+</body>
+</html>

@@ -1,0 +1,10 @@
+(Note: starting in November 2012, CFL3D is being maintained under git, and no longer under CVS.)
+
+Bug in array declaration for bc2005 with more than 2 turb model eqns.
+
+diff bc2005.F bc2005.F_7
+82c82
+<       dimension vp(jdimp,kdimp,idimp),tp(jdimp,kdimp,idimp,2)
+---
+>       dimension vp(jdimp,kdimp,idimp),tp(jdimp,kdimp,idimp,nummem)
+

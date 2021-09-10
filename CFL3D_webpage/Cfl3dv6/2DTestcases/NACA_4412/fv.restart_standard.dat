@@ -1,0 +1,31 @@
+data_file_restart_version: 18
+format_type: 1
+data_format: 2
+multi-grid: 1
+iblanks: 1
+data_type: 1
+filename: /net/cmb35/scratch/biedron/Pegsus/2Box/New/plot3dg.bin_standard
+transient_set: 0
+dimensions: 2
+time_series: 0
+num_grids: 1
+grid_inc: 1
+grid_sel_flag: 1
+dataset_zoom: 1.000000
+dataset_loc: 0.000000 0.000000 0.000000
+dataset_angle_axis: 0.000000 0.000000 0.000000 1.000000
+dataset_scale: 1.000000 1.000000 1.000000
+dataset_rotate1: 4 0.000000
+dataset_rotate2: 5 0.000000
+dataset_rotate3: 6 0.000000
+dataset_translate: 0.000000 0.000000 0.000000
+dataset_dup_mode: 1
+format_type: 1
+data_format: 2
+multi-grid: 1
+iblanks: 1
+data_type: 2
+filename: /net/cmb35/scratch/biedron/Pegsus/2Box/New/plot3dq.bin_standard
+transient_set: 0
+dimensions: 2
+time_series: 0

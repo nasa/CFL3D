@@ -1,0 +1,12 @@
+(Note: starting in November 2012, CFL3D is being maintained under git, and no longer under CVS.)
+
+Bug in computation of gradients for axisymmetric 2-plane grids
+
+diff delv.F delv.F_9
+44a45,46
+>       common /twod/ i2d
+> c
+185c187
+<       if(idim .gt. 2) then
+---
+>       if(i2d .eq. 0) then

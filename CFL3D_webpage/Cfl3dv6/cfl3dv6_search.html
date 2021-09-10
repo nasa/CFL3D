@@ -1,0 +1,33 @@
+<html xml:lang="en" lang="en">
+ <head>
+  <title>Search</title>
+ </head>
+
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<hr>
+
+<p>
+<form method=POST action="cgi-bin/search.cgi">
+
+<center><table border>
+<tr>
+<th>Search For: </th><th><input type=text name="terms" size=40><br></th>
+</tr><tr>
+<th>Boolean: <select name="boolean">
+<option>AND
+<option>OR
+</select> </th> <th>Case <select name="case">
+<option>insensitive
+<option>sensitive
+</select><br></th>
+</tr><tr>
+<th colspan=2><input type=submit value="Search"> <input type=reset><br></th>
+</tr></table></form></center>
+<hr>
+<ul>
+<li><a href="./search.txt">Variable Set-Up For This Search</a>
+</ul>
+</body>
+</html>

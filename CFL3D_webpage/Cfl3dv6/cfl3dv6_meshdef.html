@@ -1,0 +1,1235 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6C-SGI [en] (X11; U; IRIX64 6.5 IP30) [Netscape]">
+   <title>Mesh Deformation</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+<center>
+<h2>
+Mesh Deformation</h2>
+<!--<img border=0 src="Gifs/construction.gif" alt="under construction">-->
+</center>
+
+<p><strong> NOTE: There is new mesh deformation input in 
+CFL3D version 6.4 and later that was not required in earlier versions of the code.  For that reason,
+input files from earlier versions for cases that require mesh deformation will not work in
+CFL3D version 6.4 or later.</strong></p>
+
+<p>It is recommended that the user refer to the
+<a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> page for additional information
+on mesh deformation capabilities. 
+<p>Interested users are also referred to the paper:
+"Finite Macro-Element Mesh Deformation in a
+Structured Multi-Block Navier-Stokes Code"
+<a href="FiniteMacroElemMeshDef.pdf">NASA/TM-2005-213789</a>... PDF file (2.6 MB)</p>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#Intro">Introduction</a></li>
+<li type=circle><a href="#Overv">Overview of Mesh Motion in CFL3D version 6.4 and later</a></li>
+<li type=circle><a href="#sub">Subgrids</a></li>
+<li type=circle><a href="#Expdec">Exponential Decay Method in CFL3D version 6.4 and later</a></li>
+<li type=circle><a href="#FMEM">Finite Macro-Element Method</a></li>
+<li type=circle><a href="#tfi">Transfinite Interpolation</a></li>
+<li type=circle><a href="#sample">Sample Input and Parameter Definitions</a>
+(note: new data section required as of 4/2000, and new parameters as of 10/2005)</li>
+<li type=circle><a href="#static">Static Mesh Deformation</a></li>
+</ul>
+
+<hr>
+<hr>
+ 
+ 
+<p><a NAME="Intro"></a><strong><u>INTRODUCTION</u></strong>
+
+<p>The Version 5 release contained the ability to move meshes in a rigid
+fashion, via translation and rotation. Version 6 extends this capability
+to include meshes that deform in response to one or more solid surfaces
+undergoing translation and rotation.  Both user prescribed surface rotation
+and translation and surface motion due to the response of a flexible structure
+can be performed. In the former case, the user can specify rigid translation
+or rotation (either sinusoidal or constant rate) of specified surfaces.
+Alternately the user may specify prescribed modal motion of part or all
+surfaces. In the latter case, linear structural model parameters are
+input to allow time-dependent, coupled fluid-structure simulations. The
+equations of structural dynamics must be diagonalized.  The surface
+motion in this case is governed by mode shapes input by the user.</p>
+ 
+Version 6.4 and later includes many bug fixes in the mesh motion and aeroelastic
+modules as well as many enhancements to the mesh deformation.  Enhancements
+include allowance for more complex combinations of solid surface segments,
+volume transfinite interpolation (TFI) of sub-grid based sub-blocks rather
+than volume TFI of the entire block. This later enhancement makes the
+mesh deformation more robust for more complex grid motion.  There is now
+a 1-1 blocking coincident point check that ensures that 1-1 blocking
+boundaries remain coincident as the overall mesh deforms.  There are also
+several new automated ways in which control points (or sub-grid points) can
+be generated.  One of these makes much more robust a similar option
+for automatic skip value generation in CFL3D v6.3 and earlier. The other
+allows the automatic creation of arbitrary control points based on
+index location that produces the minimum number of control points allowable.
+There are also several ways of deforming the mesh (or rather the control
+points).  One uses an exponential decay method.  This is similar to that in
+versions 6.3 and earlier.  This method is retained because it is fast and
+for small motion, quite robust.  The second way of deforming the mesh is
+by using the Finite-Macro Element method.  (See Bartels, R. E., "Finite
+Macro-Element Mesh Deformation in a Structured Multi-Block Navier-Stokes
+Code," NASA/TM-2005-213789, July 2005). This method of moving control points
+uses a finite element solution with fictitous material properties.
+ 
+<p>The following page describes the mesh deformation schemes within the code
+and their use in a stand-alone fashion, without aeroelastic coupling. The
+aeroelastic aspects are discussed under <a href="cfl3dv6_aeroelastic.html">
+Aeroelasticity</a>.
+ 
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+<hr>
+ 
+ 
+<p><a NAME="Overv"></a><strong><u>OVERVIEW OF MESH MOTION IN CFL3D VERSION 6.4 and later</u></strong>
+ 
+<p>The mesh is deformed using a two step method.  The first step moves
+control points, also called sub-grid or node points.  This first step
+can be performed by simply using an exponential decay function that
+transmits surface motion into the flow field in an exponentially
+decaying manner via control points. This approach is computationally fast, and robust
+for small motion.  It does not however retain grid orthogonality
+as a surface rotates.  An alternative way this first step can be performed
+is using the Finite Macro-Element method.  In this approach, sub-grid
+points are the node points of a finite element set. This set of points
+are solved using a fictitious material property that produces very
+stiff (infact essentially rigid) material near a moving surface and
+relatively plyable material away from a surface.  This approach is
+more computationally intensive, but produces relatively orthogonal
+grids as a surface rotates.  The second step in mesh deformation is
+composed of line transfinite interpolation between sub-grid points,
+surface TFI of sub-grid faces composed of four adjacent control points
+and volume TFI of sub-blocks composed of eight adjacent control points.
+The end result of this final step is the movement of all mesh points in
+the grid.  For more detail on the mesh deformation schemes, input parameters, tips on usage
+and examples see Bartels, R. E., Rumsey, C. L., Biedron, R. T., "User's Guide for
+CFL3D v6.4 - Course Notes," to be released as a TM. See <a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> page.
+ 
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+<hr>
+ 
+
+<p><a NAME="sub"></a><strong><u>SUBGRIDS</u></strong>
+ 
+<p>The use of a "sub-grid" is the key to a relatively
+painless multiblock mesh deformation capability. The original idea of using
+a sub-grid set of points
+is due to Hartwich, P. M. and Agrawal, S., "Method for Perturbing Patched Grids
+in Aeroelastic And Design Optimization Applications," AIAA-97-2038-CP, 1997.
+The use of sub-grid points in CFL3D version 6.4 and later starts from the concept of
+master surface point and slave control point.  As discussed in that publication
+flow field control point motion is tied to the motion of the nearest surface
+point. This is the extent to which the current mesh motion follows the
+Hartwich, Agrawal paper. The current exponential decay function is
+defined differently than that by Hartwich-Agrawal.  There is also a Finite
+Macro-Element method by which sub-grid points can be moved.  These will
+be discussed in another section.
+ 
+<p>The control or node points are a sub-grid of the entire mesh. For multiple-block
+grids, each block has its own control points. There are
+several ways control points can be generated.  
+
+<p><strong>OPTION 1 for creating control points.</strong> The <strong>preferred approach</strong> is to have the code automatically
+generate the minimum number of control points. For this option set <strong>nskip = 0</strong> and
+<strong>isktyp = -2</strong> or <strong>2</strong>. For example, the input  
+
+<pre>
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit
+       0       -2      1.0      1.0     1.0     0.05         0
+    grid    iskip    jskip    kskip
+ moving grid data - multi-motion coupling
+  ncoupl
+       0
+   slave   master    xorig  yorig zorig
+</pre>
+
+<p>uses the Exponential Decay Method (<strong>isktyp = -2</strong> or <strong>-1</strong>) with this option
+for creating control points.   On the otherhand, the input 
+
+<pre>
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit
+       0        2      1.0      1.0     1.0     0.05         0
+    grid    iskip    jskip    kskip
+ moving grid data - multi-motion coupling
+  ncoupl
+       0
+   slave   master    xorig  yorig zorig
+</pre>
+
+<p>uses the Finite Macro-Element Method (<strong>isktyp = 2</strong> or <strong>1</strong>) with this option
+for creating control points. This will result in the minimum
+number of control points possible (at non-constant intervals) consistent with
+placing control points at each boundary segment and 1-1 blocking segment extremity.
+In this case, the code generates the indices of all control points rather than
+interval skip values. 
+The values of control point indices it calculates
+will be found in the 'cfl3d.out' section that reflects input. 
+
+<p>This method works well in most cases.  In a few cases in which the Finite Macro-Element Method is
+used, it can create macro-elements that are not well defined. (i.e. elements with negative volumes)
+This can be fixed by either using Option 2 for automatically creating control points by using skip values 
+or by customizing control
+points by using Option 4.  This last approach can be easily done by using the keyword 'meshdef 1'. 
+When this keyword is used, the automatically generated control points are output into the file
+'meshdef.inp'.  The data in the file 'meshdef.inp' can be pasted into the cfl3d input, and index locations added as necessary
+to better define macro-elements.  (This is essentially Option 4 for creating control points) 
+  It is recommended that the
+user refer to the 'User's Guide for CFL3D Version 6.4 - Course Notes', specifically Example 2
+in the 'Deforming Mesh' section. 
+See <a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> page for specific input
+parameters and tips on using this option.  There are other very powerful features 
+available with this option and the other options such as added customization, 
+code operation of mesh deformation
+without the flow solver (for mesh motion debugging) that allow for very efficient 
+flow field computations with deforming mesh. 
+
+<p><strong>OPTION 2 for creating control points.</strong> Another way to create control points is to have
+the code generate skip values to create control points at constant intervals throughout each block.
+In this case index skip values <strong>iskip</strong>, <strong>jskip</strong> and <strong>kskip</strong> 
+are generated by the code for the i, j and k directions.
+For code generated skip values set <strong>nskip = 0</strong>
+and <strong>isktyp = -1</strong> or <strong>1</strong>. For example, the input 
+
+
+
+<pre>
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit
+       0        1      1.0      1.0     1.0     0.05         0
+    grid    iskip    jskip    kskip
+ moving grid data - multi-motion coupling
+  ncoupl
+       0
+   slave   master    xorig  yorig zorig
+</pre>
+
+
+
+<p>uses the Finite Macro-Element Method (<strong>isktyp = 2</strong> or <strong>1</strong>) with this option
+for creating skip values. 
+
+<p><strong>OPTION 3 for creating control points.</strong>  If the user is intent upon inputing skip values, set <strong>nskip = ngrid</strong>
+and <strong>isktyp = -1</strong> or <strong>1</strong>. It is not possible to make 
+specific instructions about the required
+value of the skip parameters, owing to the many possible configurations and
+layouts of grid blocks.
+The all important rule is to remember that the skip values chosen must result in control points at all
+boundary condition segment and 1-1 blocking segment extremities and all block boundaries.  The easiest
+way to input your own skip values is to first use Option 2 for creating control points and pasting
+the output skip values into the input file and customizing. 
+
+<p>Several simple 
+examples are given below (under "Skip-value examples")
+to help illustrate the concepts.  Skip-value examples:
+ 
+<ul>
+<p><li>
+A 2D C-grid around an airfoil, with dimensions idim x jdim x
+kdim = 2 x 193 x 41. The surface of the airfoil is on the k = 1 boundary,
+between j = 33 and j = 161.</p>
+ 
+<ul>
+ 
+<p><li type=circle>
+The skip value for the i-direction is a non-issue, since the only
+value that will divide evenly into idim - 1 is iskip = 1.</li>
+ 
+<p><li type=circle>
+In the k-direction, the "delta" between the inner and outer boundaries
+is 40, and is the appropriate value for kskip. Note that any value that divides
+evenly into 40 would also have been a candidate for kskip, but it is always
+best to choose the maximum.</li>
+ 
+<p><li type=circle>
+In the j-direction, there are 4 "deltas" to note (although 2 are
+identical): 1) 32 points lie between the downstream boundary
+at j = 1 and the lower trailing edge point at j = 33; 2) 128
+points lie between the lower TE and the upper TE point at j = 161;
+3) 32 points lie between the upper TE point and the downstream
+boundary at j = 192; 4) 192 points (i.e. jdim - 1) lie between the boundaries
+at j = 1 and j = 193.
+The value of jskip is chosen as the largest common divisor of 32, 128, and 192.
+Thus, jskip = 32. Note that starting at j = 1 and adding jskip = 32 gets to
+the lower TE point, from there, adding 4 x jskip gets to the upper TE point,
+and finally adding another jskip points gets to the downstream boundary at
+j = 193, thus statisfying requirements 1) and 3) above.</li>
+</ul>
+</li>
+ 
+<p><li>
+A 3D C-H grid around a wing with straight LE and TE,
+with dimensions idim x jdim x
+kdim = 65 x 193 x 41. The surface of the airfoil is on the k = 1 boundary,
+between j = 33 and j = 161 (the j and k dimensions and layout are exactly
+the same as the 2D example above). The symmetry plane lies at i=1, and the
+wing tip at i=41.</p>
+ 
+<ul>
+<p><li type=circle>
+Only the i-direction differs from the example above, so the jskip and kskip
+values are the same. In the i-direction, 64 points lie between the symmetry
+plane and the outer boundary at i = 65, and 40 points lie between the symmetry
+plane and the wing tip. The largest common divisor of 64 and 40 is 8,
+so iskip = 8. There are no spanwise breakpoints to take into account owing
+to the straight LE and TE</li>
+</ul>
+ 
+<p><li>
+A 3D C-H grid around a wing with straight LE and TE,
+consisting of 8 blocks each of dimension
+idim x jdim x kdim = 33 x 97 x 21. This is the same case as above, only
+split for parallel processing. The k0 boundary conditions for the split-grid
+input file are as follows:
+ 
+<pre>
+k0:   grid   segment    bctype      ista      iend      jsta      jend     ndata
+         1         1         0         1        33         1        97         0
+         2         1         0         1        33         1        97         0
+         3         1         0         1        33         1        97         0
+         4         1         0         1        33         1        97         0
+         5         1         0         1        33        65        97         0
+         5         2      1005         1        33         1        65         0
+         6         1      1005         1         9         1        65         0
+         6         2         0         1         9        65        97         0
+         6         3         0         9        33         1        97         0
+         7         1         0         9        33         1        97         0
+         7         2         0         1         9         1        33         0
+         7         3      1005         1         9        33        97         0
+         8         1      1005         1        33        33        97         0
+         8         2         0         1        33         1        33         0
+</pre>
+ 
+<p><li type=circle>Focusing on the solid surface segments, with BC type 1005
+for this inviscid case, we find the deltas in the i-direction of 32 and 8,
+of with the largest common divisor is 8. This also divides evenly into idim - 1
+= 32. Thus, iskip = 8.
+ 
+<p><li type=circle>Again focusing on the solid surface segments, we see that
+all the deltas in the j-direction are 64. However, this does not divide
+evenly into jdim - 1 = 96; thus, we take jskip as the largest common divisor
+of 64 and 96, or jskip = 32. There are no spanwise breakpoints to take
+into account owing to the straight LE and TE
+ 
+<p><li type=circle>In the k-direction, the maximum value of
+kdim-1 = 20 may be used.
+</ul>
+ 
+<p>It is recommended that the user consult the 'User's Guide for CFL3D Version 6.4 - Course Notes'. 
+See <a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> page for more specific details on how to create input for this option.
+ 
+<p><strong>OPTION 4 for creating control points.</strong> The final way that control points can 
+be input is in which the user inputs index locations of control points.
+For this option set <strong>nskip = ngrid</strong> and
+<strong>isktyp = -2</strong> or <strong>2</strong>.  
+This is a very powerful option and is useful for customizing the control points to a specific problem. 
+It can be used to customize the index locations of control points already generated by the code using one of
+the options discussed above. The
+user is very strongly urged to consult the 'User's Guide for CFL3D Version 6.4 - Course Notes' on
+'Surface Motion - Deforming Mesh' (<a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> ) for short cuts and tips for customizing control point locations that
+can create very robust mesh motion with a fairly small number of control points.  The following is an example of
+user input of control points:
+
+<pre>
+MOVING GRID DATA - DATA FOR FIELD/MULTIBLOCK MESH MOVEMENT
+NSKIP  ISKTYP  BETA1  ALPHA1  BETA2  ALPHA2 ISPRNIT
+2          -2  1.000  0.900   1.000   0.050      2
+GRID ISKIP  JSKIP    KSKIP
+   GRID   NIND   NJND   NKND
+      1      2     18      2
+************************** I NODE INDICES ****************************
+      1      2
+************************** J NODE INDICES ****************************
+      1     49     50    103    137    173    223    273    297    317
+    373    423    473    543    609    696    697    745
+************************** K NODE INDICES ****************************
+      1     57
+   GRID   NIND   NJND   NKND
+      2      2     11      2
+************************** I NODE INDICES ****************************
+      1      2
+************************** J NODE INDICES ****************************
+      1     49     50    137    145    281    325    461    548    549
+    597
+************************** K NODE INDICES ****************************
+      1     89
+ MOVING GRID DATA - MULTI-MOTION COUPLING
+  NCOUPL
+       0
+  SLAVE    MASTER    XORIG  YORIG ZORIG
+</pre>
+ 
+<p>  The input case above has 2 blocks. (<strong>nskip = 2</strong>)  The Exponential Decay Method has been selected. (<strong>isktyp = -2</strong>) 
+Note that up to 10 indices per line are allowed (500 total).  The first and last i, j, k index correspond to the first and last 
+block index.   
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+<hr>
+ 
+ 
+<p><a NAME="Expdec"></a><strong><u>EXPONENTIAL DECAY METHOD IN CFL3D VERSION 6.4 and later</u></strong>
+ 
+ 
+<p>(For this option the input parameter <strong>isktyp</strong> must be set to <strong>-1</strong> or <strong>-2</strong>) 
+
+<p>The motion of the points in the sub-grid are "slaved" to the
+motion of the closest solid surface control point. Let (xc<sub>i</sub>,yc<sub>i</sub>,
+zc<sub>i</sub>) be the coordinates of the i<sup>th</sup> sub-grid point,
+and let
+(xs<sub>j</sub>,ys<sub>j</sub>,zs<sub>j</sub>) be the nearest surface
+control point.  The distance |dr<sub>ij</sub>| from the nearest 
+surface control point to the i<sup>th</sup> sub-grid point is determined at each time step according to:
+ 
+<p><center>|dr<sub>ij</sub>| = sqrt((xc<sub>i</sub> - xs<sub>j</sub>)<sup>2</sup>
++(yc<sub>i</sub> - ys<sub>j</sub>)<sup>2</sup>) +
+(zc<sub>i</sub> - zs<sub>j</sub>)<sup>2</sup>))</center></p>
+ 
+<p>Each
+point in the sub-grid is moved to its new position at
+t<sup>n+1</sup> from its old position at t<sup>n</sup> according to
+ 
+<p><center>
+ xc<sub>i</sub><sup>n+1</sup> - xc<sub>i</sub><sup>n</sup> =
+ D<sub>ij</sub>(xs<sub>j</sub><sup>n+1</sup>-xs<sub>j</sub><sup>n</sup>)    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)
+</center></p>
+ 
+<p>Similar expressions
+are used for for yc<sub>i</sub><sup>n+1</sup> and zc<sub>i</sub><sup>n+1</sup>.
+The damping function  D<sub>ij</sub> is given by:
+ 
+<p><center>
+D<sub>ij</sub> =
+min[1,e<sup>-A</sup>]</center></p>
+ 
+<p>with
+ 
+<p><center>A = beta2(|dr<sub>ij</sub>|/|dr|<sub>max</sub>-alpha2)</center></p>
+ 
+ 
+ 
+<p>Beta2 is a user-specified parameter, typically ranging from 1 to 10 that
+controls the rate of decay outside the inner region controlled by alpha2. Alpha2 is
+also a user specified parameter, typically 0.005 to 0.05. Within the region
+alpha2 |dr|<sub>max</sub> the surface motion is transmitted to control points unabated. These two parameters
+control the rate of decay of motion away from moving surfaces.  Too rapid a rate
+of decay (beta2 too large, alpha2 too small) results in the possibility of surface
+points moving through nearby control points.  Too low a rate of decay (beta2 too small,
+alpha2 too large) results in the possibility of surface deformation being transmitted too
+far into the flow field with possible penetration of opposing surfaces.
+ 
+ 
+<p>Once the delta displacements for the  sub-grid points are determined from
+Eq. 1, arclength based <a href="#tfi">TFI</a> is used to interpolate these delta displacements
+along lines
+connecting the corners of the sub-grids. The faces of the sub-grids are then
+filled in via arclength based TFI, and finally the delta displacements interior
+to the sub-grids are determined using arclength based TFI between sub-grid faces.
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="FMEM"></a><strong><u>FINITE MACRO-ELEMENT METHOD</u></strong>
+ 
+<p>(For this option the input parameter <strong>isktyp</strong> must be set to <strong>1</strong> or <strong>2</strong>) 
+
+
+<p> For more information users are referred to the paper:
+"Finite Macro-Element Mesh Deformation in a
+Structured Multi-Block Navier-Stokes Code"
+<a href="FiniteMacroElemMeshDef.pdf">NASA/TM-2005-213789</a>... PDF file (2.6 MB)</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+
+<hr>
+
+<p><a NAME="tfi"></a><strong><u>TRANSFINITE INTERPOLATION</u></strong>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="sample"></a><strong><u>SAMPLE INPUT AND PARAMETER DEFINITIONS</u></strong>
+
+<ul>
+
+<li type=circle><p><strong>Notes:</strong></p>
+
+<ol>
+<p><li>Deforming grids can only be utilized in time-accurate mode, i.e.
+<strong>dt > 0</strong></li>
+
+<p><li>The mesh movement flag, <strong>iunst</strong>, must be set greater than or
+equal to 2 if
+deforming meshes are used.</li>
+
+<p><li>Rigid mesh rotation/translation <strong>may</strong> be used in combination
+with deforming meshes, at least for simple combinations (e.g all meshes
+rotate rigidly and all translate with deformation). Set iunst = 3 to
+allow rigid and deforming meshes simultaneously. In addition, the parameters
+in the new "moving grid data - multi-motion coupling" section must be set
+to provide proper coupling between the rigid and deforming motions.</li>
+
+<p><li>As of April 2000, a new input section, "moving grid data - multi-motion coupling",
+is required. Exisiting input files for cases with mesh deformation will
+need to have the following lines appended to the end:<br>
+
+<pre>
+moving grid data - multi-motion coupling
+ ncoupl
+      0
+  slave   master    xorig  yorig zorig 
+</pre>
+
+
+<p>This is the default for no coupling of rigid and deforming mesh motions
+
+</li>
+
+<p><li>The lines of input shown in the following examples must appear
+<strong><em>after</em></strong> the control surface data section (line types LT31 through
+LT32 in the terminology of the Version 5 User Manual)</li>
+
+</ol>
+</li>
+
+<p><li type=circle><p><strong>Example 1: Single-zone, 2D grid with one moving 
+surface, mesh deformation only (iunst=2):</strong></p>
+
+<pre>
+ moving grid data - deforming surface (forced motion):
+  ndefrm
+       1
+    lref
+  1.0000
+    grid   idefrm    rfreq u/omegax v/omegay w/omegaz    xorig    yorig    zorig
+       1        2   0.0500   0.0000  10.0000   0.0000   0.2500   0.0000   0.0000
+    grid     icsi     icsf     jcsi     jcsf     kcsi     kcsf
+       1        1       49       25       49        1        1
+ moving grid data - aeroelastic surface (aeroelastic motion):
+  naesrf
+       0
+  iaesrf    ngrid    grefl     uinf     qinf   nmodes iskyhook
+    freq    gmass     damp x0(2n-1)   x0(2n)  gf0(2n)
+  moddfl      amp     freq       t0
+    grid     iaei     iaef     jaei     jaef     kaei     kaef
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       1       -1      1.0      1.0     1.0     0.05         0 
+    grid    iskip    jskip    kskip
+       1        1        4       48
+ moving grid data - multi-motion coupling
+  ncoupl
+       0
+   slave   master    xorig  yorig zorig
+</pre>
+
+<p>Note that there are four sections to the deforming mesh input:
+1) deforming surface (forced motion), 2) aeroelastic surface (aeroelastic
+motion), 3) data for field/multiblock mesh movement, and 4) multi-motion coupling. 
+Sections 3 and 4 are applicable (and needed)
+whether the mesh deformation occurs via forced motion or
+aeroelastic motion. Section 1 is analogous to the forced translation and
+rotation sections for rigid meshes, except that here one section handles
+both rotation and translation.
+
+<p>For any problem
+in which the aeroelastic option is not used (which is the focus of this
+section), the aeroelastic input section should appear as shown above - 
+the only numerical value which should appear is the value of 
+naesrf, the number of aeroelastic surfaces - zero.
+
+<p>The following definitions apply:
+
+<p><u>1) DEFORMING SURFACE SECTION</u>
+
+<dl>
+<p><dt><strong>ndefrm</strong></dt>
+  <dd>number of deforming surfaces; if ndefrm = -1, then the code will
+  automatically take all solid surfaces in the mesh to be
+  deforming surfaces. A solid surface is one with one of the following
+  bc types: 1005,1006,2004.</dd>
+
+<p><dt><strong>lref</strong></dt>
+  <dd>the "grid equivalent" of the dimensional reference length used to
+  define the reduced frequency in the following line. For example, if the
+  input value of the reduced frequency of surface motion was based on the
+  (dimensional) chord of the wing, and in the grid, the chord of the wing 
+  is 2, then <strong>lref = 2.0</strong>.</dd>
+</dl>
+
+<p><strong>abs(ndefrm)</strong> sets of the parameters 
+<strong>grid, idefrm, freq, u/omegax, ...zorig</strong>
+must appear; if <strong>ndefrm = -1</strong>, then the input value of <strong>grid</strong> serves
+merely as a placeholder; and any value may be used, including zero,
+while the values input for the remaining parameters are applied to all
+solid surfaces:
+
+<dl>
+
+<p><dt><strong>grid</strong></dt>
+  <dd>grid block containing the moving surface.</dd>
+
+<p><dt><strong>idefrm</strong></dt>
+  <dd>type of surface motion:</dd>
+  <dd> = 1 translation</dd>
+  <dd> = 2 rotation<dd>
+
+<p><dt><strong>freq</strong></dt>
+  <dd>reduced frequency of the surface motion<dd>
+
+<p><dt><strong>u/omegax</strong></dt>
+  <dd>x-component of surface translational velocity if <strong>idefrm = 1</strong></dd>
+  <dd>x-component of surface rotational velocity if <strong>idefrm = 2</strong></dd>
+
+<p><dt><strong>v/omegay</strong></dt>
+  <dd>y-component of surface translational velocity if <strong>idefrm = 1</strong></dd>
+  <dd>y-component of surface rotational velocity if <strong>idefrm = 2</strong></dd>
+
+<p><dt><strong>w/omegaz</strong></dt>
+  <dd>z-component of surface translational velocity if <strong>idefrm = 1</strong></dd>
+  <dd>z-component of surface rotational velocity if <strong>idefrm = 2</strong></dd>
+
+<p><dt><strong>xorig</strong></dt>
+  <dd>x-coordinate of origin of the rotation axis; a value must always be 
+  input, even for translation (<strong>idefrm = 1</strong>)</dd>
+
+<p><dt><strong>yorig</strong></dt>
+  <dd>y-coordinate of origin of the rotation axis (same comments apply as for
+  xorig)</dd>
+
+<p><dt><strong>zorig</strong></dt>
+  <dd>z-coordinate of origin of the rotation axis (same comments apply as for
+  xorig)</dd>
+
+</dl>
+
+<p><strong>abs(ndefrm)</strong> sets of the parameters grid, icsi, icsf, jcsi, jscf, kcsi,
+kcsf must appear; if <strong>ndefrm = -1</strong>, then the input values serve
+merely as placeholders, and any value may be used, including zero:
+
+<dl>
+
+<p><dt><strong>grid</strong></dt>
+  <dd>grid block containing the moving surface.</dd>
+
+<p><dt><strong>icsi</strong></dt>
+  <dd>starting index of the deforming surface segment in the i-direction</dd>
+
+<p><dt><strong>icsf</strong></dt>
+  <dd>ending index of the deforming surface segment in the i-direction</dd>
+
+<p><dt><strong>jcsi</strong></dt>
+  <dd>starting index of the deforming surface segment in the j-direction</dd>
+
+<p><dt><strong>jcsf</strong></dt>
+  <dd>ending index of the deforming surface segment in the j-direction</dd>
+
+<p><dt><strong>kcsi</strong></dt>
+  <dd>starting index of the deforming surface segment in the k-direction</dd>
+
+<p><dt><strong>kcsf</strong></dt>
+  <dd>ending index of the deforming surface segment in the k-direction</dd>
+
+</dl>
+
+<p><u>2) AEROELASTIC SURFACE SECTION</u>
+
+<p><dt><strong>For definitions of the input variables in the aeroelastic surface 
+section, see <a href="cfl3dv6_aeroelastic.html">
+Aeroelasticity</a></strong></dt>
+
+<p><u>3) FIELD/MULTIBLOCK MESH MOVEMENT SECTION</u>
+
+<dl>
+
+<p><dt><strong>nskip</strong></dt>
+  <dd>number of grid blocks for which you wish to override the
+  default sub-grid dimensions. If <strong>nskip = 0</strong> and <strong>abs(isktyp) = 1</strong>, the code will set
+  the maximum skip values for the particular case at hand. 
+  If <strong>nskip = 0</strong> and <strong>abs(isktyp) = 2</strong> the code will determine the minimum
+  number of control points possible consistent with placing control points at
+  all boundary condition and 1-1 blocking segment extremities.  This results
+  in non constant intervals between control points.  This is the
+  recommended value for a first attempt. Note that some cases
+  will work better with one approach and others better with the other.
+  There is a quick way to test the mesh scheme apart from the flow solver by
+  using the keyword <strong>'meshdef 1'</strong>.  This way the mesh deformation that works best for 
+  a particular problem can be quickly determined with a minimum of computing.
+  Note that if <strong>nskip = -1</strong>, then the skip
+  values for all zones in the grid wil be given the user-specified skip values. </dd>
+
+<p><dt><strong>isktyp</strong></dt>
+  <dd>control parameter that specifies the mesh deformation scheme to use and how control points
+     are created.  If <strong>isktyp = -1</strong> or <strong>1</strong> skip values are either input by the user  (if <strong>nskip = ngrid</strong>) or generated by the
+     code (if <strong>nskip = 0</strong>).  If <strong>isktyp = -2</strong> or <strong>2</strong> control point indices are either input by the user
+      (if <strong>nskip = ngrid</strong>) or generated by the code (if <strong>nskip = 0</strong>) If <strong>isktyp < 0</strong> the Exponential Decay Method is used.
+     If <strong>isktyp > 0</strong> the Finite Macro-Element Method is used. </dd> 
+
+<p><dt><strong>beta1</strong></dt>
+  <dd>decay parameter for material properties with the Finite Macro-Element Method. Smaller values cause
+  the surface movement to propagate further into the field (stiffer material); larger values
+  lead to less movement of field points. Values for beta1 are somewhat case dependent;
+  try <strong>beta1 = 1.0-10.0</strong> as a starting point.</dd> 
+
+<p><dt><strong>alpha1</strong></dt>
+  <dd>relaxation parameter for Gauss-Seidel iterative scheme used with the Finite Macro-Element Method. </dd> 
+
+
+<p><dt><strong>beta2</strong></dt>
+  <dd>decay parameter used in the Exponential Decay Method for region outside that specified by alpha2. </dd> 
+
+<p><dt><strong>alpha2</strong></dt>
+  <dd>parameter used in the Exponential Decay Method to control the 
+   distance away from moving surfaces that motion is transmitted unabated. </dd> 
+
+
+<p><dt><strong>nsprgit</strong></dt>
+  <dd>number of relaxation sweeps using the spring analogy mesh scheme applied
+  to control points (used only with the Exponential Decay Method). </dd> 
+
+<p><dt><strong>grid</strong></dt>
+  <dd>grid block for which the default sub-grid spacing is to be
+  overwritten. If <strong>nskip = -1</strong>, any value for grid is acceptable,
+  since in that case it is merely a placeholder.</dd>
+ 
+<p><dt><strong>iskip</strong></dt>
+  <dd>number of points to skip in the i-direction when creating the 
+  sub-grid. Zero is a shortcut for idim-1. For 2D cases the input
+  value in this direction is always ignored and a value of 1 (i.e. idim-1) is
+  used.</dd>
+
+<p><dt><strong>jskip</strong></dt>
+  <dd>number of points to skip in the j-direction when creating the
+  sub-grid. Zero is a shortcut for jdim-1.</dd>
+
+<p><dt><strong>kskip</strong></dt>
+  <dd>number of points to skip in the k-direction when creating the
+  sub-grid. Zero is a shortcut for kdim-1.</dd></p>
+
+</dl>
+
+<p><u>4) MULTI-MOTION COUPLING SECTION</u>
+
+<dl>
+
+<p><dt><strong>ncoupl</strong></dt>
+  <dd>number of grid blocks for which you wish to couple mesh deformation
+  to rigid mesh motion, or, to couple two modes of mesh deformation (i.e 
+  deforming rotation plus deforming rotation). For cases without coupled
+  motion (the overwhelming majority of cases), set <strong>ncoupl = 0</strong>.
+
+<p><dt><strong>slave</strong></dt>
+  <dd>grid number of the slave grid; the slave grid's mesh motion is
+  coupled to the master grid's mesh motion.
+  The slave and master may be the same grid</dd>
+
+<p><dt><strong>master</strong></dt>
+  <dd>grid number of the master grid; the master grid's mesh motion is
+  influences the slave grid's mesh motion.
+  The slave and master may be the same grid</dd>
+
+<p><dt><strong>yorig</strong></dt>
+  <dd>y-coordinate of the rotation center of the slave mesh.</dd>
+
+<p><dt><strong>yorig</strong></dt>
+  <dd>y-coordinate of the rotation center of the slave mesh.</dd>
+
+<p><dt><strong>zorig</strong></dt>
+  <dd>z-coordinate of the rotation center of the slave mesh.</dd>
+
+</dl>
+</li>
+<br>
+
+<li type=circle><p><strong>Example 2: Single-zone, 2D grid with one moving surface,
+compound mesh deformation (rotation PLUS translation, iunst=2):</strong></p>
+
+<p>Because two modes of deforming mesh motion are used simultaneously, 
+the data under "multi-motion coupling" must be set. In this case the
+slave grid and master grid are identical.
+
+<p>note: examples 2-4 result in identical motion of the airfoil, but the resulting
+off-surface mesh motions are quite different
+
+<pre>
+moving grid data - deforming surface (forced motion)
+ ndefrm
+      2
+   lref
+    1.0
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+      1      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+      1      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+      1      1      2       41     217        1       1
+      1      1      2       41     217        1       1
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      0
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  moddfl     amp     freq       t0
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+    grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+      1
+  slave   master    xorig  yorig zorig
+      1        1       1.     0.    0.
+</pre>
+</li>
+
+
+<li type=circle><p><strong>Example 3: Single-zone, 2D grid with one moving surface,
+mesh deformation (rotation about x=1.0) PLUS rigid mesh translation (iunst=3):</strong></p>
+
+<p>Because rigid and deforming mesh motion are used simultaneously,
+the data under "multi-motion coupling" must be set. In this case the
+slave grid and master grid are identical.
+
+<p>note: examples 2-4 result in identical motion of the airfoil, but the resulting
+off-surface mesh motions are quite different
+
+<pre>
+ moving grid data - translation
+  ntrans
+       1
+    lref
+  1.0000
+ grid itrans     rfreq      xmag      ymag      zmag
+    1      2   0.05000   0.00000     0.000   0.10000
+ grid     dxmax     dymax     dzmax
+    1    0.0000    0.0000    0.0000
+ moving grid data - rotation
+  nrotat
+       0
+    lref
+ grid irotat     rfreq    thxmag    thymag    thzmag    xorig    yorig    zorig
+ grid    thxmax    thymax    thzmax
+moving grid data - deforming surface (forced motion)
+ ndefrm
+      1
+   lref
+    1.0
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+      1      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+      1      1      2       41     217        1       1
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      0
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  moddfl     amp     freq       t0
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+   grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+      1
+  slave   master    xorig  yorig zorig
+      1        1       1.     0.    0.
+</pre>
+</li>
+
+<li type=circle><p><strong>Example 4: Single-zone, 2D grid with one moving surface,
+mesh deformation (translation) PLUS rigid mesh rotation about x=1.0 (iunst=3):</strong></p>
+
+<p>Because rigid and deforming mesh motion are used simultaneously,
+the data under "multi-motion coupling" must be set. In this case the
+slave grid and master grid are identical.
+
+<p>note: examples 2-4 result in identical motion of the airfoil, but the resulting
+off-surface mesh motions are quite different
+
+<pre>
+ moving grid data - translation
+  ntrans
+       0
+    lref
+ grid itrans     rfreq      xmag      ymag      zmag
+ grid     dxmax     dymax     dzmax
+ moving grid data - rotation
+  nrotat
+       1
+    lref
+  1.0000
+ grid irotat     rfreq    thxmag    thymag    thzmag    xorig    yorig    zorig
+    1      2   0.05000   0.00000  10.00000   0.00000   1.0000   0.0000   0.0000
+ grid    thxmax    thymax    thzmax
+    1    0.0000    0.0000    0.0000
+moving grid data - deforming surface (forced motion)
+ ndefrm
+      1
+   lref
+    1.0
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+      1      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+      1      1      2       41     217        1       1
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      0
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  moddfl     amp     freq       t0
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+   grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+      1
+  slave   master    xorig  yorig zorig
+      1        1       1.     0.    0.
+</pre>
+</li>
+
+
+<li type=circle><p><strong>Example 5: 16-zone, 2D grid; only zones 10-15 have 
+rotating solid surfaces;
+no input shortcuts are used; mesh deformation only (iunst=2):</strong></p>
+
+<pre>
+ moving grid data - deforming surface (forced motion):
+ ndefrm
+      6
+   lref
+    1.0
+    grid   idefrm    rfreq u/omegax v/omegay w/omegaz    xorig    yorig    zorig
+     10         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+     11         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+     12         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+     13         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+     14         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+     15         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+   grid      icsi     icsf     jcsi     jcsf     kcsi     kcsf
+     10         1        2        1       25        1        1
+     11         1        2        1       33        1        1
+     12         1        2        1       33        1        1
+     13         1        2        1       33        1        1
+     14         1        2        1       33        1        1
+     15         1        2        9       33        1        1
+ moving grid data - aeroelastic surface (aeroelastic motion):
+  naesrf
+       0
+  iaesrf    ngrid    grefl     uinf     qinf   nmodes iskyhook
+    freq    gmass     damp x0(2n-1)   x0(2n)  gf0(2n)
+  moddfl      amp     freq       t0
+    grid     iaei     iaef     jaei     jaef     kaei     kaef
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+      16       -1      1.0      1.0     1.0     0.05         0 
+    grid    iskip    jskip    kskip
+       1        1       32       48
+       2        1        8       48
+       3        1       32       48
+       4        1       32       48
+       5        1       32       48
+       6        1       32       48
+       7        1        8       48
+       8        1       32       48
+       9        1       32       48
+      10        1        8       48
+      11        1       32       48
+      12        1       32       48
+      13        1       32       48
+      14        1       32       48
+      15        1        8       48
+      16        1       32       48
+moving grid data - multi-motion coupling
+ ncoupl
+      0
+  slave   master    xorig  yorig zorig
+</pre>
+</li>
+
+<li type=circle><p><strong>Example 6: The same 16-zone, 2D grid as example 5, 
+but using input shortcuts:</strong></p>
+
+<pre>
+ moving grid data - deforming surface (forced motion):
+ ndefrm
+     -1
+   lref
+    1.0
+   grid    idefrm    rfreq u/omegax v/omegay w/omegaz    xorig    yorig    zorig
+      0         2     0.05      0.0   10.000      0.0     0.25      0.0      0.0
+   grid      icsi     icsf     jcsi     jcsf     kcsi     kcsf
+      0         0        0        0        0        0        0
+ moving grid data - aeroelastic surface (aeroelastic motion):
+  naesrf
+       0
+  iaesrf    ngrid    grefl     uinf     qinf   nmodes iskyhook
+    freq    gmass     damp x0(2n-1)   x0(2n)  gf0(2n)
+  moddfl      amp     freq       t0
+    grid     iaei     iaef     jaei     jaef     kaei     kaef
+ moving grid data - data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+    grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+      0
+  slave   master    xorig  yorig zorig
+</pre>
+</li>
+
+<li type=circle><p><strong>Example 7: 16-zone, 2D grid; zones 10-15 have rotating
+PLUS translating solid surfaces (iunst=2):</strong></p>
+
+<p>In this case of dual-mode mesh deformation, it is sufficient to couple
+the motion of all blocks to the motion of the first block with a deforming
+surface segment. 
+
+<pre>
+moving grid data - deforming surface (forced motion)
+ ndefrm
+     12
+   lref
+    1.0
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+     10      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     10      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     11      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     11      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     12      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     12      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     13      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     13      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     14      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     14      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     15      1        0.05     0.0   0.000    0.10   1.00    0.0   0.0
+     15      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+     10      1      2        1      25        1       1
+     10      1      2        1      25        1       1
+     11      1      2        1      33        1       1
+     11      1      2        1      33        1       1
+     12      1      2        1      33        1       1
+     12      1      2        1      33        1       1
+     13      1      2        1      33        1       1
+     13      1      2        1      33        1       1
+     14      1      2        1      33        1       1
+     14      1      2        1      33        1       1
+     15      1      2        9      33        1       1
+     15      1      2        9      33        1       1
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      0
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes    iskyhk
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  moddfl     amp     freq       t0
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+   grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+     16
+  slave   master    xorig  yorig zorig
+      1       10       1.     0.    0.
+      2       10       1.     0.    0.
+      3       10       1.     0.    0.
+      4       10       1.     0.    0.
+      5       10       1.     0.    0.
+      6       10       1.     0.    0.
+      7       10       1.     0.    0.
+      8       10       1.     0.    0.
+      9       10       1.     0.    0.
+     10       10       1.     0.    0.
+     11       10       1.     0.    0.
+     12       10       1.     0.    0.
+     13       10       1.     0.    0.
+     14       10       1.     0.    0.
+     15       10       1.     0.    0.
+     16       10       1.     0.    0.
+</pre>
+</li>
+
+
+<li type=circle><p><strong>Example 8: 16-zone, 2D grid; zones 10-15 have rotating
+solid surfaces; all zones subject to translation (iunst=3):</strong></p>
+
+<pre>
+ moving grid data - translation
+  ntrans
+      16
+    lref
+  1.0000
+ grid itrans     rfreq      xmag      ymag      zmag
+    1      2   0.05000   0.00000   0.00000   0.10000
+    2      2   0.05000   0.00000   0.00000   0.10000
+    3      2   0.05000   0.00000   0.00000   0.10000
+    4      2   0.05000   0.00000   0.00000   0.10000
+    5      2   0.05000   0.00000   0.00000   0.10000
+    6      2   0.05000   0.00000   0.00000   0.10000
+    7      2   0.05000   0.00000   0.00000   0.10000
+    8      2   0.05000   0.00000   0.00000   0.10000
+    9      2   0.05000   0.00000   0.00000   0.10000
+   10      2   0.05000   0.00000   0.00000   0.10000
+   11      2   0.05000   0.00000   0.00000   0.10000
+   12      2   0.05000   0.00000   0.00000   0.10000
+   13      2   0.05000   0.00000   0.00000   0.10000
+   14      2   0.05000   0.00000   0.00000   0.10000
+   15      2   0.05000   0.00000   0.00000   0.10000
+   16      2   0.05000   0.00000   0.00000   0.10000
+ grid     dxmax     dymax     dzmax
+    1    0.0000    0.0000    0.0000
+    2    0.0000    0.0000    0.0000
+    3    0.0000    0.0000    0.0000
+    4    0.0000    0.0000    0.0000
+    5    0.0000    0.0000    0.0000
+    6    0.0000    0.0000    0.0000
+    7    0.0000    0.0000    0.0000
+    8    0.0000    0.0000    0.0000
+    9    0.0000    0.0000    0.0000
+   10    0.0000    0.0000    0.0000
+   11    0.0000    0.0000    0.0000
+   12    0.0000    0.0000    0.0000
+   13    0.0000    0.0000    0.0000
+   14    0.0000    0.0000    0.0000
+   15    0.0000    0.0000    0.0000
+   16    0.0000    0.0000    0.0000
+ moving grid data - rotation
+  nrotat
+       0
+    lref
+ grid irotat     rfreq    thxmag    thymag    thzmag    xorig    yorig    zorig
+ grid    thxmax    thymax    thzmax
+moving grid data - deforming surface (forced motion)
+ ndefrm
+      6
+   lref
+    1.0
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+     10      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     11      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     12      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     13      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     14      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+     15      2        0.05     0.0  10.000    0.00   1.00    0.0   0.0
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+     10      1      2        1      25        1       1
+     11      1      2        1      33        1       1
+     12      1      2        1      33        1       1
+     13      1      2        1      33        1       1
+     14      1      2        1      33        1       1
+     15      1      2        9      33        1       1
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      0
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes    iskyhk
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  moddfl     amp     freq       t0
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit 
+       0       -1      1.0      1.0     1.0     0.05         0 
+   grid    iskip    jskip    kskip
+moving grid data - multi-motion coupling
+ ncoupl
+     16
+  slave   master    xorig  yorig zorig
+      1       10       1.     0.    0.
+      2       10       1.     0.    0.
+      3       10       1.     0.    0.
+      4       10       1.     0.    0.
+      5       10       1.     0.    0.
+      6       10       1.     0.    0.
+      7       10       1.     0.    0.
+      8       10       1.     0.    0.
+      9       10       1.     0.    0.
+     10       10       1.     0.    0.
+     11       10       1.     0.    0.
+     12       10       1.     0.    0.
+     13       10       1.     0.    0.
+     14       10       1.     0.    0.
+     15       10       1.     0.    0.
+     16       10       1.     0.    0.
+</pre>
+</li>
+
+
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="static"></a><strong><u>STATIC MESH DEFORMATION</u></strong>
+
+<p>Static mesh deformation refers to the ability to import a new surface mesh
+into the code, and deform the input (baseline) volume grid to the new surface
+in the  steady state mode. This new capability has application to design
+as well as static aeroelastic computations. The images below illustrate
+the new steady state mesh deformation capability on a blended wing/body
+configuration:
+
+<ul>
+<li type=square><a href="Gifs/sweep.gif">
+bwb_sweep.gif</a></li>
+<li type=square><a href="Gifs/camber.gif">
+bwb_camber.gif</a></li>
+<li type=square><a href="Gifs/shear+twist.gif">
+bwb_shear+twist.gif</a></li>
+</ul>
+
+<p>In the above examples, new surface grids were generated using the baseline
+surface and the <a href="http://fmad-www.larc.nasa.gov/mdob/MDOB/hilites/hl.99/MASSOUD_9.99.html">MASSOUD</a> geometry parameterization code.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

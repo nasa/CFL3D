@@ -1,0 +1,153 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6C-SGI [en] (X11; U; IRIX64 6.5 IP30) [Netscape]">
+   <title>Miscellanous Utilities for CFL3D</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<hr>
+<center>
+<h2>
+Miscellanous Utilities for CFL3D</h2></center>
+
+<hr>
+<hr>
+<p>
+Currently, the following tools are available along with CFL3D.  These files
+are all compiled using the <strong>make cfl3d_tools</strong> command (see "Building 
+Executables" on the index bar at the left of the CFL3D webpage).
+</p>
+<ul>
+  <li type=circle>Tools:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>Get_FD.F</strong></dt>
+         <dd> This program reads two CFL3D restart files and calculate finite
+              differences of force and moment coefficients; it is used to validate
+              complex-variable approach for determining solution derivatives. </dd>
+      <dt><strong>INGRID_to_p3d.F</strong></dt>
+         <dd> This program converts PEGSUS 4.x INGRID file to a PLOT3D file that
+              can be used in CFL3D. Note that the INGRID file must correspond
+              to grid points rather than "augmented" cell centers. </dd>
+      <dt><strong>XINTOUT_to_ovrlp.F</strong></dt>
+         <dd> This program converts the XINTOUT overset grid interpolation file
+              from PEGSUS to the <strong>ovrlp.bin</strong> file used by CFL3D. </dd>
+      <dt><strong>cfl3d_to_pegbc.F</strong></dt>
+         <dd> This program creates a <strong>peg.bc.raw</strong> file for use with PEGSUS 5.x. </dd>
+      <dt><strong>cgns_to_cfl3dinput.F</strong></dt>
+         <dd> This program reads a CGNS file and creates a PLOT3D-type grid as well
+              as a best-guess for a CFL3D input file.</dd>
+      <dt><strong>everyother_xyz.F</strong></dt>
+         <dd> This program reads a grid and creates an every-other-point grid.  This
+              can be useful in combination with the program v6inpdoubhalf.F, in order
+              to reduce the required CFL3D run-time memory when you are only
+              running on a coarser-level grid (and not taking it up to the finer
+              level(s).</dd> 
+      <dt><strong>grid_perturb.F</strong></dt>
+         <dd> This program generates a real-valued grid (PLOT3D multiblock form)
+              by reading in a real-valued grid (PLOT3D multiblock form) and a
+              corresponding real-valued matrix of grid-sensitivity derivatives
+              (PLOT3D multiblock function file form, with 3*ndv variables for
+              the x,y,z components of the ndv design variables).  The code
+              Get_FD.F may be used with the two restart files to determine
+              d(Cl)/d(DV), d(Cd)/d(DV), etc. </dd>
+      <dt><strong>grid_perturb_cmplx.F</strong></dt>
+         <dd> This program generates a complex-valued grid (PLOT3D multiblock form)
+              by reading in a real-valued grid (PLOT3D multiblock form) and a
+              corresponding real-valued matrix of grid-sensitivity derivatives
+              (PLOT3D multiblock function file form, with 3*ndv variables for
+              the x,y,z components of the ndv design variables).  
+              The output grid may be read into the complex version of CFL3D
+              (cfl3dcmplx_mpi or cfl3dcmplx_seq) to determine the solution
+              derivatives with respect to the chosen design variable. </dd>
+      <dt><strong>initialize_field.F</strong></dt>
+         <dd> This program creates a <strong>restart.bin</strong> restart file in which you can
+              specify specific initial conditions, region by region.  This can
+              be useful when "freestream everywhere" is not a desirable initial
+              condition.</dd>
+      <dt><strong>moovmaker.F</strong></dt>
+         <dd> This program reads the PLOT3D files output by CFL3D when the <strong>MOVIE</strong>
+              parameter is used for 2-D datasets (or 3-D datasets surface-only), 
+              and creates new PLOT3D files with time as the third (k) direction.</dd>
+      <dt><strong>p3d_to_INGRID.F</strong></dt>
+         <dd> This program converts either PLOT3D or CFL3D type grids into either
+              INGRID type grids that can be used with PEGSUS 4.x, or PLOT3D
+              type grids that can be used with PEGSUS 5.x. The converted grids
+              can contain either the grid points as given in the input grids,
+              or "augmented" cell centers of the input grids. </dd>
+      <dt><strong>p3d_to_cfl3drst.F</strong></dt>
+         <dd> This program reads PLOT3D files and creates an approximate <strong>restart.bin</strong>
+              restart file.  This can be useful if: (1) you are given a PLOT3D Q-file
+              from another code, and you wish to use it as a basis for starting
+              CFL3D, or (2) you have lost the CFL3D restart file, but you still
+              have the PLOT3D Q-file.</dd>
+      <dt><strong>plot3dg_to_cgns.F</strong></dt>
+         <dd> This program reads a PLOT3D grid file and a CFL3D input file and
+              creates a CGNS file (with grid, BC, and 1-to-1 connectivity information
+              in it).</dd>
+      <dt><strong>v6_restart_mod.F</strong></dt>
+         <dd> This program reads a <strong>restart.bin</strong> restart file and manipulates it.  It can
+              switch between unformatted and formatted (which is useful if you need
+              to transfer the restart file to a machine of different architecture).
+              It can also write out the restart file either the same size, half the size,
+              or double the size.  Going to half size is useful if one wishes to restart
+              from a fine grid solution and run on a coarser level.  User can choose 
+              to coarsen/refine only particular index directions, if desired.  
+              The program cannot both coarsen and refine different directions 
+              simultaneously.</dd>
+      <dt><strong>v6inpdoubhalf.F</strong></dt>
+         <dd> This program reads a CFL3D input file and creates a new input file
+              appropriate for a grid of either half or double the size.
+              This can be useful in combination with the program everyother_xyz.F when
+              running on coarser grid levels, and you wish to reduce the run-time memory
+              required.</dd>
+      <dt><strong>cgns_readhist.F</strong></dt>
+         <dd> This program reads the convergence history information (residual, CL, CD, etc.)
+              from a CGNS file and writes it to a formatted file.</dd>
+      <dt><strong>cfl3d_to_nmf.F</strong></dt>
+         <dd> This program reads a CFL3D input file and translates the BC and 1-to-1 information
+              to a neutral map file (nmf) format - see 
+              http://geolab.larc.nasa.gov/Volume/Doc/nmf.htm
+              (available only <em>after</em> Version 6.5).</dd>
+      <dt><strong>nmf_to_cfl3dinput.F</strong></dt>
+         <dd> This program reads a neutral map file (nmf) and creates a best-guess for a 
+              CFL3D input file.  See
+              http://geolab.larc.nasa.gov/Volume/Doc/nmf.htm
+              (available only <em>after</em> Version 6.5).</dd>
+      <dt><strong>cfl3dinp_to_FVBND.F</strong></dt>
+         <dd> This program reads a CFL3D input file and creates a Fieldview
+              .fvbnd file (useful for finding and plotting viscous/inviscid walls).
+              (available only <em>after</em> Version 6.5).</dd>
+      <dt><strong>gridswitchijk.F</strong></dt>
+         <dd> Reads a PLOT3D grid and switches j,k,i to i,j,k (also transposes y and z if desired).
+              This is typically helpful if you have a 2-plane grid with
+              k as the 2-D direction (CFL3D wants it to be i).
+              (available only <em>after</em> Version 6.6).</dd>
+      <dt><strong>v6inpswitchijk.F</strong></dt>
+         <dd> This program reads a CFL3D V6 input file and outputs another input
+              file that transposes i to j, j to k, and k to i.
+              This is typically helpful if you have a 2-plane case with
+              k as the 2-D direction (CFL3D wants it to be i), and you used an
+              automatic tool such as cgns_to_cfl3dinput to create an input file
+              from the k-as-2D-direction initial case.
+              (available only <em>after</em> Version 6.6).</dd>
+
+    </ul>
+</ul>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

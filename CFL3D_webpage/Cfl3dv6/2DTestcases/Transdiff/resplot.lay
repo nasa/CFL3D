@@ -1,0 +1,293 @@
+#!MC 900
+$!VarSet |LFDSFN1| = '"res1.dat" "res2.dat"'
+$!VarSet |LFDSVL1| = '"V1" "V2" "V3" "V4" "V5" "V6"'
+$!SETSTYLEBASE FACTORY
+$!PAPER 
+  BACKGROUNDCOLOR = WHITE
+  ISTRANSPARENT = YES
+  ORIENTPORTRAIT = YES
+  SHOWGRID = YES
+  SHOWRULER = YES
+  SHOWPAPER = YES
+  PAPERSIZE = LETTER
+  PAPERSIZEINFO
+    {
+    LETTER
+      {
+      WIDTH = 8.5
+      HEIGHT = 11
+      LEFTHARDCLIPOFFSET = 0.125
+      RIGHTHARDCLIPOFFSET = 0.125
+      TOPHARDCLIPOFFSET = 0.125
+      BOTTOMHARDCLIPOFFSET = 0.125
+      }
+    }
+  RULERSPACING = ONEINCH
+  PAPERGRIDSPACING = HALFINCH
+  REGIONINWORKAREA
+    {
+    X1 = -0.05
+    Y1 = -0.05
+    X2 = 8.55
+    Y2 = 11.05
+    }
+$!COLORMAP 
+  CONTOURCOLORMAP = SMRAINBOW
+$!COLORMAPCONTROL RESETTOFACTORY
+### Frame Number 1 ###
+$!READDATASET  '|LFDSFN1|' 
+  INCLUDETEXT = NO
+  INCLUDEGEOM = NO
+  VARLOADMODE = BYNAME
+  VARNAMELIST = '|LFDSVL1|' 
+$!REMOVEVAR |LFDSVL1|
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.1077
+    Y = 5.5852
+    }
+  WIDTH = 8.25
+  HEIGHT = 4.8782
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-2]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    BOX
+      {
+      BOXTYPE = FILLED
+      }
+    XYPOS
+      {
+      X = 48.641
+      Y = 77.243
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 1
+    YAXISVAR = 3
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASMko (#14)' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 1
+    YAXISVAR = 3
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = 10
+    RANGEMAX = 1500
+    GRSPACING = 500
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'iterations' 
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    RANGEMIN = -0.04
+    RANGEMAX = 0.04
+    GRSPACING = 0.02
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'Mass(out)-Mass(in)' 
+      }
+    }
+$!XYAXIS 
+  DEPXTOYRATIO = 1
+### Frame Number 2 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.1077
+    Y = 0.41558
+    }
+  WIDTH = 8.25
+  HEIGHT = 4.8782
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-2]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    SHOW = YES
+    BOX
+      {
+      BOXTYPE = FILLED
+      }
+    XYPOS
+      {
+      X = 48.641
+      Y = 77.243
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASMko (#14)' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = 10
+    RANGEMAX = 1500
+    GRSPACING = 500
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'iterations' 
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    RANGEMIN = -10
+    RANGEMAX = -2
+    GRSPACING = 1
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'log(Res)' 
+      }
+    }
+$!XYAXIS 
+  DEPXTOYRATIO = 1
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 30.9158080467
+    Y = 90.6720309939
+    }
+  TEXT = 'MDRL Transonic Diffuser\nR=Pexit/Pinlet=0.72 (Strong Shock Case)' 
+$!REMOVEVAR |LFDSFN1|
+$!SETSTYLEBASE CONFIG

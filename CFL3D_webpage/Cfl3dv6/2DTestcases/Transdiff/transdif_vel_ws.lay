@@ -1,0 +1,820 @@
+#!MC 900
+$!VarSet |LFDSFN1| = '"u_vs_y_ws_sa.dat" "u_vs_y_ws_easmko.dat"'
+$!VarSet |LFDSVL1| = '"j" "yH" "U2.882" "zH" "U4.611" "wH" "U6.340" "sH" "U7.493"'
+$!SETSTYLEBASE FACTORY
+$!PAPER 
+  BACKGROUNDCOLOR = WHITE
+  ISTRANSPARENT = YES
+  ORIENTPORTRAIT = YES
+  SHOWGRID = YES
+  SHOWRULER = YES
+  SHOWPAPER = YES
+  PAPERSIZE = LETTER
+  PAPERSIZEINFO
+    {
+    LETTER
+      {
+      WIDTH = 8.5
+      HEIGHT = 11
+      LEFTHARDCLIPOFFSET = 0.125
+      RIGHTHARDCLIPOFFSET = 0.125
+      TOPHARDCLIPOFFSET = 0.125
+      BOTTOMHARDCLIPOFFSET = 0.125
+      }
+    }
+  RULERSPACING = ONEINCH
+  PAPERGRIDSPACING = HALFINCH
+  REGIONINWORKAREA
+    {
+    X1 = -0.05
+    Y1 = -0.05
+    X2 = 8.55
+    Y2 = 11.05
+    }
+$!COLORMAP 
+  CONTOURCOLORMAP = SMRAINBOW
+$!COLORMAPCONTROL RESETTOFACTORY
+### Frame Number 1 ###
+$!READDATASET  '|LFDSFN1|' 
+  INCLUDETEXT = NO
+  INCLUDEGEOM = NO
+  VARLOADMODE = BYNAME
+  VARNAMELIST = '|LFDSVL1|' 
+$!REMOVEVAR |LFDSVL1|
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 4.3131
+    Y = 2.4835
+    }
+  WIDTH = 4.0273
+  HEIGHT = 4.0273
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 5
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ko (#14)' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 5
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 5
+    YAXISVAR = 4
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -100
+    RANGEMAX = 310
+    GRSPACING = 100
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'U (m/s)' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 5
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AUTOGRID = NO
+    AXISPOSITION = 15
+    RANGEMIN = 0
+    RANGEMAX = 1
+    GRSPACING = 0.2
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'y/H' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 40.5351561335
+    Y = 91.2138333205
+    }
+  TEXT = 'x/H=4.611' 
+### Frame Number 2 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.12611
+    Y = 6.512
+    }
+  WIDTH = 4.0273
+  HEIGHT = 4.0273
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 7
+    YAXISVAR = 6
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ko (#14)' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 7
+    YAXISVAR = 6
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 7
+    YAXISVAR = 6
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -100
+    RANGEMAX = 310
+    GRSPACING = 100
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'U (m/s)' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 5
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AUTOGRID = NO
+    AXISPOSITION = 15
+    RANGEMIN = 0
+    RANGEMAX = 1
+    GRSPACING = 0.2
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'y/H' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 38.8164241333
+    Y = 91.2127997445
+    }
+  TEXT = 'x/H=6.340' 
+### Frame Number 3 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 4.3131
+    Y = 6.5293
+    }
+  WIDTH = 4.0273
+  HEIGHT = 4.0273
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 9
+    YAXISVAR = 8
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ko (#14)' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 9
+    YAXISVAR = 8
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 9
+    YAXISVAR = 8
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -100
+    RANGEMAX = 310
+    GRSPACING = 100
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'U (m/s)' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 5
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AUTOGRID = NO
+    AXISPOSITION = 15
+    RANGEMIN = 0
+    RANGEMAX = 1
+    GRSPACING = 0.2
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'y/H' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 39.6755605274
+    Y = 91.212892569
+    }
+  TEXT = 'x/H=7.493' 
+### Frame Number 4 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 0.125
+    Y = 2.449
+    }
+  WIDTH = 4.0273
+  HEIGHT = 4.0273
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-3]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    SHOW = YES
+    TEXTSHAPE
+      {
+      HEIGHT = 4
+      }
+    BOX
+      {
+      BOXTYPE = FILLED
+      MARGIN = 4
+      }
+    XYPOS
+      {
+      X = 18.996
+      Y = 67.98
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 3
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [2]
+  NAME = 'EASM-ko (#14)' 
+  ASSIGN
+    {
+    ZONE = 4
+    XAXISVAR = 3
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = RED
+    LINEPATTERN = DASHED
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYMAP  [3]
+  NAME = 'exp' 
+  ASSIGN
+    {
+    ZONE = 1
+    XAXISVAR = 3
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = RED
+    }
+  SYMBOLS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  BARCHARTS
+    {
+    COLOR = RED
+    FILLCOLOR = RED
+    }
+  ERRORBARS
+    {
+    COLOR = RED
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -100
+    RANGEMAX = 310
+    GRSPACING = 100
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'U (m/s)' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 5
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    AUTOGRID = NO
+    AXISPOSITION = 15
+    RANGEMIN = 0
+    RANGEMAX = 1
+    GRSPACING = 0.2
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 4
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TITLEMODE = USETEXT
+      TEXT = 'y/H' 
+      TEXTSHAPE
+        {
+        HEIGHT = 5
+        }
+      OFFSET = 8
+      }
+    }
+$!XYAXIS 
+  GRIDAREA
+    {
+    EXTENTS
+      {
+      X1 = 15
+      }
+    }
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 36.6957352634
+    Y = 91.2138333205
+    }
+  TEXT = 'x/H=2.882' 
+### Frame Number 5 ###
+$!CREATENEWFRAME 
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = GREEN
+  XYPOS
+    {
+    X = 0.91079
+    Y = 1.4023
+    }
+  WIDTH = 6.5746
+  HEIGHT = 1.0028
+$!FRAMENAME  = 'Frame 002' 
+$!SKETCHAXIS 
+  DEPXTOYRATIO = 1
+  XDETAIL
+    {
+    RANGEMIN = 0
+    RANGEMAX = 6.55622704112
+    GRSPACING = 1
+    }
+  YDETAIL
+    {
+    RANGEMIN = 0
+    RANGEMAX = 1
+    GRSPACING = 0.1
+    }
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 17.8947368421
+    Y = 16.8168168168
+    }
+  TEXTSHAPE
+    {
+    HEIGHT = 18
+    }
+  TEXT = 'MDRL Transonic Diffuser\nR=Pexit/Pinlet=0.82 (Weak Shock Case)' 
+$!REMOVEVAR |LFDSFN1|
+$!SETSTYLEBASE CONFIG

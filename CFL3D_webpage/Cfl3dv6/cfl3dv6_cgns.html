@@ -1,0 +1,396 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>CGNS Implementation</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr><center><h2>CGNS Implementation</h2></center><hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#what">What is CGNS?</a></li>
+
+<li type=circle><a href="#why">Why CGNS?</a></li>
+
+<li type=circle><a href="#how">How CGNS has been implemented into CFL3D</a></li>
+
+<li type=circle><a href="#example">Example CGNS File</a></li>
+
+<li type=circle><a href="#try">How to try CGNS</a></li>
+
+<li type=circle><a href="#aux">Auxiliary Programs</a></li>
+
+<li type=circle><a href="#diff">What Difference Does CGNS Make?</a></li>
+
+<li type=circle><a href="#problems">Known Problems</a></li>
+
+<li type=circle><a href="#disclaim">Disclaimer</a></li>
+</ul>
+
+<hr>
+<hr>
+
+<p><a NAME="what"><u><strong>WHAT IS CGNS?</strong></u>
+
+<p>CGNS, which stands for "CFD General Notation
+System," was originally developed in the mid-1990's as a joint
+effort between Boeing, MDC, and NASA.  
+It is an effort to <em>standardize</em>
+CFD input and output, including grid, flow solution,
+connectivity, BC's, and auxiliary information (in much the
+same way that the PLOT3D-format has become the de-facto
+standard for grids and flow solutions).  CGNS also allows
+for file-stamping and user-inserted-commenting.  It employs
+either ADF (Advanced Data Format) from Boeing or HDF-5 from NCSA, two systems 
+which create unformatted
+files that are portable across computer platforms.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="why"><u><strong>WHY CGNS?</strong></u>
+
+<p>CGNS will eventually eliminate most of the "translator"
+programs now necessary when working between machines
+and between CFD codes.  Also, it eventually may allow for the
+results from one code to be easily restarted using another
+code.  It will hopefully therefore save a lot of time (and
+money).  In particular, it is hoped that future grid-generation
+packages will generate grids WITH ALL CONNECTIVITY AND BC
+INFORMATION INCLUDED as part of a CGNS file, saving a lot
+of time and avoiding potential costly errors in setting
+up this information after-the-fact.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="how"><u><strong>HOW CGNS HAS BEEN IMPLEMENTED INTO CFL3D:</strong></u>
+
+<p>Basically, what the current implementation of CGNS in CFL3D
+means is that the old GRID and RESTART files are now replaced
+with one CGNS file.  The input file is unchanged (except for
+the filename on line 2, which now refers to the CGNS file rather
+than a "standard" grid file).  All old cases that could be run
+before with CFL3D should still run with CGNS and give identical
+results.
+
+<p>Changes to the original CFL3D code are relatively minimal.
+However, extra "high-level" routines that access the CGNS
+calls have been added in the file cgnstools.F.  Starting with Version 6.4,
+CGNS-related output is no longer mixed in with the standard output file
+(cfl3d.out), but is now written to a separate file (cgnsinfo.out).
+
+<p>All of the extra routines required to read and write the CGNS
+file utilize the "mid-level library" 
+(see <a href="http://www.cgns.org">http://www.cgns.org</a>).
+The user is responsible for downloading the CGNS library
+directly from the CGNS website and installing it appropriately.
+In the CFL3D code, the parameter
+"icgns" controls whether CGNS files are used or not.
+
+<p>With CGNS, CFL3D no longer needs to read from or write
+to a separate restart file.  However, the input file has
+purposefully been kept unchanged (i.e., line 14 of the input file,
+which specifies the file name of the restart file when CGNS is not
+used, is read in but ignored when CGNS is employed).  For now,
+CFL3D still gets the BC's and 1-to-1 information from the standard
+input file.  (This information is also put in the CGNS file,
+although it is not used by CFL3D.)  It is assumed that in the
+future, one may desire to read these items from the CGNS file, and
+shorten the standard input file.  But we have deferred this for now.
+
+<p>Some advantages to the fact that the restart file is a CGNS file 
+are:</br>
+<ul>
+<li type=circle>There is only one file to keep track of, valid for both 
+restarting and for postprocessing.</li>
+<li type=circle>EVERYTHING is included in the restart file, and all
+quantities are very well-described, so there is no more worrying about what
+has been written to the PLOT3D file.</li>
+<li type=circle>If you use the input parameter <strong>iwrest</strong> to write out the
+restart file every so often, you can easily plot the CGNS restart
+file as the code is running, to keep track of how the solution is 
+going.</li>
+</ul>
+
+<p>In other words, with CGNS, some day all that user will need is the CGNS file
+to get anything and everything he/she wants, from restarting
+to postprocessing.  In fact, many commercial postprocessors already
+support CGNS files.  However, CFL3D
+still prints out the "usual" PLOT3D-type files, in case they
+are needed, as well as other auxiliary files (like cfl3d.res,
+cfl3d.out, etc.) that are normally printed out.  But, really,
+EVERYTHING is contained in the CGNS file!  This is particularly
+useful because (a) all flow solution variables and turbulence
+information is in one file, and (b) if you want to keep track of 
+your solution's progress as it is running, you can use the 
+<strong>iwrest</strong> parameter to write out the CGNS file (=restart file)
+periodically and look at it via a postprocessor.
+
+<p>The user is encouraged to obtain the CGNS file viewer
+"adfviewer" (available from the CGNS website).  It is very easy
+to use and should be self-explanatory.
+
+<p>Note that when CFL3D is run with mesh sequencing, AND IS STOPPED
+AT A LEVEL LOWER THAN THE FINEST GRID, there is no easy way to
+handle this with CGNS, since the CGNS file contains the FINE grid
+only.  With "standard" CFL3D, the restart file would contain the
+coarser grid and solution only.  With CGNS, it was decided to write
+out the coarse-grid FlowSolution ON THE FINE GRID, with data
+repeated in neighboring cells.  Hence, if you plot the solution,
+it will be identical to the coarse grid solution, only all the
+fine-grid gridpoints will be used.  A node called "Information"
+under "FlowSolution" says something like:
+             Every-2nd-cell solution (1 level down)
+
+<p>Note that PATCHING and OVERSET
+information have not yet been included in the CGNS-part of CFL3D.
+I.e., the CGNS files are purposefully missing this information.
+The user can still run patched and overset cases with CGNS,
+but the patched/overset connectivity information (which is
+created by ronnie/maggie and placed in separate binary files)
+is never put into the CGNS file itself.  This is similar to
+the "normal" mode of running CFL3D.  In the "normal" mode,
+the user must have available a grid file, restart file,
+patched-info file, and overset-info file when running with
+patched/overset.  With CGNS, the user must have available a
+CGNS file, patched-info file, and overset-info file.
+
+<p>Also, the "IMOVIE" option currently writes out multiple-time
+flowfield information to the plot3d file only, and not to the CGNS
+file. Similarly, when using <strong>iteravg</strong> to compute a running
+long-time-average of the solution, this is currently only written
+to the plot3d files cfl3d_avgg.p3d and cfl3d_avgq.p3d, and not
+to the CGNS file.
+
+<p>Also note that when using a CGNS grid file, <strong>NGRID</strong> 
+(whose sign usually determines whether a grid of type CFL3D or 
+PLOT3D is being read) in the CFL3D input file can be 
+either + or -; i.e., its sign is irrelevant.
+
+<p>Finally, CFL3D currently writes out solution information to
+the CGNS file both at CELL CENTERS as well as within one rind cell
+at all boundaries.  This is necessary in the long-term so that
+plotting packages will be able to extract correct BOUNDARY data
+(e.g., velocity=0 on solid surfaces) from the CGNS file.  However,
+note that at the current time the BCs are not updated immediately
+prior to writing out the CGNS file, so the rind cells are "behind"
+by one iteration; this can mean "imperfect" matching at interfaces
+or slightly non-zero velocities on solid surfaces when plotting
+from the CGNS file, particularly if the solution is far from
+convergence.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                              
+<hr>
+                                                                                                              
+<p><a NAME="example"><u><strong>EXAMPLE CGNS FILE:</strong></u>
+
+<p>Example screen shots from adfviewer showing the layout of a typical CGNS file
+from CFL3D are given here (this is a single zone case):
+
+<ul>
+<li type=circle>
+   <a href="CGNS/snapshot_libversion.png">adfviewer screen 1</a>: overall file
+   layout with CGNS library version number shown </li>
+<li type=circle>
+   <a href="CGNS/snapshot_base.png">adfviewer screen 2</a>: overall file
+   layout with data in CGNS base node shown </li>
+<li type=circle>
+   <a href="CGNS/snapshot_zone.png">adfviewer screen 3</a>: overall file
+   layout with data in CGNS zone node shown </li>
+<li type=circle>
+   <a href="CGNS/snapshot_inputfile.png">adfviewer screen 4</a>: capture of CFL3D entire
+   input file </li>
+<li type=circle>
+   <a href="CGNS/snapshot_simtype.png">adfviewer screen 5</a>: simulation type 
+   (indicating steady-state type run)</li>
+<li type=circle>
+   <a href="CGNS/snapshot_dataclass.png">adfviewer screen 6</a>: dataclass 
+   (indicating that CFL3D is a nondimensional code) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_residuals.png">adfviewer screen 7</a>: residual history 
+   (one of the many data convergence histories saved)</li>
+<li type=circle>
+   <a href="CGNS/snapshot_reynolds.png">adfviewer screen 8</a>: Reynolds number
+   (one of the many reference state parameters saved) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_zonetype.png">adfviewer screen 9</a>: zone type
+   (indicating CFL3D uses structured grids) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_bc.png">adfviewer screen 10</a>: one of the zone's 
+   boundary conditions </li>
+<li type=circle>
+   <a href="CGNS/snapshot_connectivity.png">adfviewer screen 11</a>: shows the zone's
+   1-to-1 connectivity </li>
+<li type=circle>
+   <a href="CGNS/snapshot_coordlink.png">adfviewer screen 12</a>: grid coordinates
+   node (which in this case are in a separate linked file) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_coordinates.png">adfviewer screen 13</a>: x-coordinates
+   of the grid (which in this case are in a separate linked file) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_boundaryvalues.png">adfviewer screen 14</a>: sample CFL3D boundary
+   value (under a UserDefined node)... this is not a standard CGNS quantity, but is needed by CFL3D) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_governingeqns.png">adfviewer screen 15</a>: governing equations
+   part of FlowEquationSet node </li>
+<li type=circle>
+   <a href="CGNS/snapshot_flowsolution.png">adfviewer screen 16</a>: flow solution,
+   showing grid location </li>
+<li type=circle>
+   <a href="CGNS/snapshot_fsinfo.png">adfviewer screen 17</a>: flow solution,
+   showing grid level the solution was computed on </li>
+<li type=circle>
+   <a href="CGNS/snapshot_fsrind.png">adfviewer screen 18</a>: flow solution,
+   showing locations of rind data (1 row each for jlo, jhi, klo, and khi) </li>
+<li type=circle>
+   <a href="CGNS/snapshot_fsmomentum.png">adfviewer screen 19</a>: flow solution,
+   showing x-momentum field quantities (including rind data) </li>
+</ul>
+
+<p>You can download the actual CGNS file used to obtain the above screen shots here:
+<a href="CGNS/ExampleN4412cgns.tar.gz">ExampleN4412cgns.tar.gz</a>... gzipped tar file
+(1.6 MB). This file was created using CGNS Version 2.4 software, with ADF method of
+data storage (HDF-5 method is also an available option).</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                          
+                                                                                                          
+<hr>
+                                                                                                          
+<p><a NAME="try"><u><strong>HOW TO TRY CGNS:</strong></u>
+
+<ul>
+<li type=circle>STEP 1: Go to <a href="http://www.cgns.org">http://www.cgns.org</a>
+and download the latest version of CGNS.</li>
+<li type=circle>STEP 2: Compile CGNS on your system by following CGNS's
+instructions.</li>
+<li type=circle>STEP 3: Compile (or re-compile) CFL3D using<br>
+./Install -cgnsdir=dir2<br>
+where dir2 is your location for your CGNS directory.</li>
+<li type=circle>STEP 4a: If you do not already have a CGNS grid, then perform
+this step to create one. Type "make cfl3d_tools."
+Then use the code <strong>plot3dg_to_cgns</strong> (in Tools/)
+to translate your PLOT3D-type or CFL3D-type grid to a CGNS grid
+(you must also have available the corresponding CFL3D input file).</li>
+<li type=circle>STEP 4b: If you already have a CGNS grid, then you must create a CFL3D input file.
+Use the code <strong>cgns_to_cfl3dinput</strong> (in Tools/)
+to read the CGNS file and create a first-guess skeleton input file with most of the needed relevant
+information in it.</li>
+<li type=circle>STEP 5: Make the CFL3D code ("make cfl3d_mpi" or "make cfl3d_seq").</li>
+<li type=circle>STEP 6: Be sure your CFL3D input file has: (a) replaced the gridfile
+name in line 1 with the CGNS filename you want to use, and (b) added the keyword
+"icgns 1". Note that there is no longer a restart.bin
+file written (it is still in the input file, but it is not used... the
+CGNS file now has all the restart information in it).</li>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="aux"><u><strong>AUXILIARY PROGRAMS:</strong></u>
+
+<p>Three auxiliary programs are currently available in CFL3D's "Tools" directory.
+These programs are all you need to get started using CGNS!
+
+<pre>
+plot3dg_to_cgns.F............program to convert a "standard" grid
+                             file to a CGNS grid file (also needs
+                             to read CFL3D input file in order to
+                             capture BC and 1-to-1 connectivity info)
+
+cgns_to_cfl3dinput.F.........program to read an existing CGNS file
+                             and create a first-guess skeleton CFL3D
+                             input file with most of the needed 
+                             relevant information in it
+
+cgns_readhist.F..............program to read an existing CGNS file
+                             and write out its convergence history
+                             information to a separate formatted file
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="diff"><u><strong>WHAT DIFFERENCE DOES CGNS MAKE?</strong></u>
+
+<p>Notice, in running CFL3D under CGNS, there is now only ONE
+file (the CGNS file) rather than TWO (grid+restart).  This
+CGNS file contains the grid and the solution.  It is used for
+restarting, and, if you have a CGNS-compatable postprocessor,
+for visualizing as well.  (Note:  if you are using a LINK or
+LINKS within your CGNS file, then more than one CGNS files are
+needed).
+
+<p>The CGNS file is A MACHINE-INDEPENDENT file.  You can port
+this file to any machine anywhere, and any code that is
+CGNS-compliant will be able to read it.
+
+<p>So now you can easily run CFL3D on different machines and
+transfer the grids and solutions back and forth without need for
+special translators.  You can also run a case and send the resulting
+CGNS file to a fellow engineer across the country (who has a
+CGNS-compatable postprocessor), and they will be able to easily
+view it, without worry about what machine it ran on.  In the
+future, as more and more CFD codes become CGNS-compliant, it will
+be easier to restart solutions from one code to another.
+
+
+<hr>
+
+<p><a NAME="problems"><u><strong>KNOWN PROBLEMS</strong></u>
+
+<ul>
+<li type=circle>Problems can sometimes occur when using LINKS within
+CGNS files (a link is useful if you wish to keep the
+GridCoordinates in a separate CGNS file from the solution).
+Links seem to work as long as you always work on the same
+machine where the link was created, but you currently cannot,
+for example, create a linked CGNS file on a machine of one
+type then use it on a different one (e.g., SGI --> CRAY or
+vice versa).  Another problem is that currently the file
+you link to MUST have read-write permission (it cannot be
+read-only).</li>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="disclaim"><u><strong>DISCLAIMER</strong></u>
+
+<p>Please let us know if you have any problems or find any bugs with
+CFL3D's implementation of CGNS.
+We also welcome comments as to the usefulness of the CGNS
+system. 
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

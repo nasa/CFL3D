@@ -1,0 +1,3702 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Updates/Corrections</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<body background="Gifs/page.gif">
+
+<p><a NAME="top"></a></p>
+
+<hr>
+
+<center>
+<h2>Version 6.0 Updates and Corrections</h2>
+<p><strong>Date of last Version 6.0 release: Aug  2, 2000</strong></p>
+</center> 
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#corr0">Updates as of May 23, 2001.</a>
+</ul>
+
+<hr>
+<hr>
+
+
+<p><a NAME="corr0"></a><strong><u>UPDATES AS OF MAY 23, 2001</u></strong>
+
+<p>The changes described below affect the following routines, subsequent to the
+version released on August 2, 2000:
+
+<pre>
+  cfl3dv6/source/cfl3d/libs/twoeqn.F
+  cfl3dv6/source/cfl3d/libs/umalloc.F
+  cfl3dv6/source/cfl3d/libs/moddefl.F
+  cfl3dv6/source/cfl3d/libs/global.F
+  cfl3dv6/source/cfl3d/libs/global0.F
+  cfl3dv6/source/cfl3d/dist/qout.F
+  cfl3dv6/source/cfl3d/dist/resp.F
+</pre>
+
+<pre>
+--------------------
+--------------------
+SUMMARY OF CHANGES :
+--------------------
+--------------------
+
+Number:           1
+
+Version:          6.0
+
+Type:                Error     Problem     Modification/enhancement   X Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    twoeqn.F
+
+Change: (2 places)
+
+c Next line for constant cmu; second line for variable cmu:
+c           cmu = fmu*cmuc1
+
+To:
+
+c Uncomment next line for constant cmu:
+c           cmuj=-cmuc1
+
+
+Why Changed: Use correct value for constant cmu case; NOTE: this was and remains a 
+             comment, so unless you went in and removed the comment to make this
+             statement executable, the correction will not alter any results.
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           2
+
+Version:          6.0
+
+Type:                Error     Problem     Modification/enhancement   X Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    umalloc.F
+
+Change: 
+
+  12  format('requested ', i10, ' words, (',i10, ' bytes)')
+  13  format('requested ', i15, ' words, (',i15, ' bytes)')
+  14  format('prior to this call, total allocation was',
+     .        i15, ' bytes')
+
+To:
+
+  12  format('requested ', i10, ' words, (',i11, ' bytes)')
+  13  format('requested ', i15, ' words, (',i16, ' bytes)')
+  14  format('prior to this call, total allocation was',
+     .        i16, ' bytes')
+
+Why Changed: Expanded the integer fields for the "bytes" data since
+             if the number of words just fits the field, then a factor
+             of 4 or 8 times that number may exceed the field.
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           3
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    moddefl.F
+
+Change:
+
+                  cmy     = cmyt + cnwt*(xorig(1)-xmc0)
+To:
+
+c
+c                 assumes ialph = 0
+c                 crefrb was set equal to cref in init_rb
+                  cmy     = cmyt + cnwt*(xorig(1)-xmc0)/crefrb
+
+Why Changed: Use correct nondimensionalization for moment coefficient when performing
+             rigid-body mode calculations.
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           4
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs/
+
+Subroutine(s):    global.F
+
+Change:
+
+         if (nplot3d.lt.0) then
+            np3dhold = abs(nplot3d)
+
+To:
+
+         np3dhold = abs(nplot3d)
+         if (nplot3d.lt.0) then
+
+Change:
+
+         do 136 n=1,nplot3d
+
+To:
+
+         np3dread = max(nplot3d,np3dhold)
+         do 136 n=1,np3dread
+
+After:
+
+         else
+            if (n.le.np3dhold) then
+               read(iunit5,*) idum,iptyp,(idum,l=3,11)
+            end if
+         end if
+
+Add:
+
+         if (n.le.nplot3d) then
+
+Before:
+
+c
+  136    continue
+
+Add:
+
+c
+         end if
+
+Why Changed: Corrected a read error that occured if nplot3d was negative, but the
+             magnitude was greater than the total number of solid surfaces in the
+             grid. 
+
+Change Date:  October 12, 2000
+
+--------------------
+--------------------
+
+Number:           5
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global0.F
+
+Change:
+
+         nplots0 = nsol
+         if (abs(i2d).gt.0) nplots0 = maxgr0
+
+To:
+
+         nplots0 = max(nsol,abs(nplot3d))
+         if (abs(i2d).gt.0) nplots0 = max(maxgr0,abs(nplot3d))
+
+Why Changed: Corrected a read error that occured if nplot3d was negative, but the
+             magnitude was greater than the total number of solid surfaces in the
+             grid.
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           6
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    qout.F
+
+Change:
+
+         call blnkfr(nbl,iibg,kkbg,jjbg,ibpntsg,lbg,iitot,w(lblk),
+     .               jdim,kdim,idim,maxbl,1.)
+
+To:
+
+         if (mblk2nd(nbl).eq.myid .and. iovrlp(nbl).ne.0) then
+            call blnkfr(nbl,iibg,kkbg,jjbg,ibpntsg,lbg,iitot,w(lblk),
+     .                  jdim,kdim,idim,maxbl,1.)
+         end if
+
+Change:
+
+         call blnkfr(nbl,iibg,kkbg,jjbg,ibpntsg,lbg,iitot,w(lblk),
+     .               jdim,kdim,idim,maxbl,0.)
+
+To:
+
+         if (mblk2nd(nbl).eq.myid .and. iovrlp(nbl).ne.0) then
+            call blnkfr(nbl,iibg,kkbg,jjbg,ibpntsg,lbg,iitot,w(lblk),
+     .                  jdim,kdim,idim,maxbl,0.)
+         end if
+
+Why Changed: For parallel processing, subroutine blnkfr should not be called
+             by any processor that does not own the blank data for block nbl
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           7
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    resp.F
+
+Before:
+
+      return
+      end
+
+Add:
+
+#ifdef CRAY_TIME then
+#else
+#   ifdef IBM then
+               if (myid.eq.myhost) call flush_(11)
+               if (real(dt).ge.0.) then
+                  if (myid.eq.myhost) call flush_(23)
+                  if (myid.eq.myhost) call flush_(24)
+               end if
+#   else
+               if (myid.eq.myhost) call flush(11)
+               if (real(dt).ge.0.) then
+                  if (myid.eq.myhost) call flush(23)
+                  if (myid.eq.myhost) call flush(24)
+               end if
+#   endif
+#endif
+c
+
+Why Changed: Added buffer flushes so that residual, Cl, Cd, etc. from the last
+             completed iteration/time step appears in the main output file
+             (and cfl3d.subit_res/cfl3d.subit_turres files for time-accurate cases)
+             as soon as availble, so that convergence can be monitored as the 
+             computation proceeds. 
+
+Change Date: October 12, 2000
+
+--------------------
+--------------------
+
+Number:           8
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/splitter
+
+Subroutine(s):    tlns3d_to_cfl3d.F
+
+Change:
+
+      call readkey(ititr,myid,ibufdim,nbuf,bou,nou,99,-1)
+
+To:
+
+      call readkey(ititr,myid,ibufdim,nbuf,bou,nou,7,-1)
+
+Why Changed: Write keyword data to the split input file...without the fix, the
+             keyword data got written to the splitter.error file
+
+Change Date: January 24, 2001
+
+--------------------
+--------------------
+
+Number:           9
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/splitter
+
+Subroutine(s):    cfl3d_to_tlns3d.F
+
+Change:
+
+      call readkey(ititr,myid,ibufdim,nbuf,bou,nou,99,-1)
+
+To:
+
+      call readkey(ititr,myid,ibufdim,nbuf,bou,nou,-99,-1)
+
+Why Changed: Eliminate one of two extraneous echoes of the keyword data 
+             to the splitter.error file. Upon successful completion, the
+             splitter.error file should *not* contain an echo of the keyword
+             data. Note that even with this change, one echo of the data
+             will appear, along with the usual "error code 0" line. While 
+             not a big deal, it is in violation of the contents standard
+             for the .error files for successful completion. To bring the
+             splitter.error file into full compliance with the standard for
+             this particular situation is not deemed worth the effort at
+             this point.
+
+Change Date: January 24, 2001
+
+--------------------
+--------------------
+
+Number:           10
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    readkey.F
+
+
+Change:
+
+      else if (inpstr(lc1:lc2).eq.'pr_t') then
+
+To:
+
+      else if (inpstr(lc1:lc2).eq.'prt') then
+
+Why Changed: Keyword check is incorrect...leads to a false error message
+             about the keyword not being supported.
+
+Change Date: January 30, 2001
+
+--------------------
+--------------------
+
+Number:           11
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/build/tools/seq
+
+Subroutine(s):    makefile
+
+After:
+
+        ln -s $(CFLSRC_S)/outbuf.F  .
+Add:  (careful to make sure a tab is used for spacing, not blanks!)
+
+        ln -s $(CFLSRC_S)/cgnstools.F  .
+
+Change:
+
+SOURCE9 = readkey.F global0.F termn8.F parser.F outbuf.F cfl3d_to_pegbc.F
+
+To:
+
+SOURCE9 = readkey.F global0.F cgnstools.F termn8.F parser.F outbuf.F cfl3d_to_pegbc.F
+
+Why Changed: Compilation error of cfl3d_to_pegbc because cfl3d_to_pegbc uses
+             global0. In turn, global0, when the cgns option is invoked 
+             during installation (i.e Install -cgnsdir=directory),
+             uses routine getntr from cgnstools, and this file was not
+             linked. No such compilation error occued if the cgns option
+             was not invoked. 
+
+Change Date: February 7, 2001
+
+--------------------
+--------------------
+
+Number:           12
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/tools
+
+Subroutine(s):    plot3dg_to_cgns.F
+
+Change:
+
+      if (nplot3d .gt. 0) then
+      do n=1,nplot3d
+
+To:
+
+      if (abs(nplot3d) .gt. 0) then
+      do n=1,abs(nplot3d)
+
+Change:
+
+      if (nprint .gt. 0) then
+      do n=1,nprint
+
+To:
+
+      if (abs(nprint) .gt. 0) then
+      do n=1,abs(nprint)
+
+Why Changed: If nplot3d<0 or nprint<0 input options used, the plot3d to cgns
+             converter would encounter an error when it tried to read past the
+             plot3d/nprint sections near the bottom of the input file.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           13
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    setup.F
+
+After:
+
+      end if
+c   ***CGNSend
+ 8988       continue
+
+Add:
+
+c
+c           set iflagg = 0 if steady state (dt < 0)
+c
+            if (real(dt) .lt. 0.) iflagg = 0
+c
+
+After:
+
+         read(2,end=8989) iflagg
+c   ***CGNSstart
+      else
+#if defined CGNS
+      if (irest.gt.0) then
+      call getiflagg(iccg,ibase,nsoluse,iflagg)
+      end if
+#endif
+      end if
+c   ***CGNSend
+
+Add:
+
+c
+c        set iflagg = 0 if steady state (dt < 0)
+c
+         if (real(dt) .lt. 0.) iflagg = 0
+c
+
+Why Changed: set iflagg to be consistant with the input dt (i.e. steady if dt<0)
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           14
+
+Version:          6.0
+
+Type:                Error     Problem     Modification/enhancement   X Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist  and cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    trnsfr_vals.F and barth3d.F, blomax.F,global.F,readkey.F,
+                  spalart.F, twoeqn.F
+
+Change:
+
+      common /turbconv/ nsubturb,cflturb,nfreeze,edvislim,iturbprod
+
+To:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze
+
+Why Changed: Improper ordering of real and integer variables in common block
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           15
+
+Version:          6.0
+
+Type:                Error     Problem     Modification/enhancement   X Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F
+
+Before:
+
+            call updatedg(lw,lw2,w,mgwk,wk,nwork,iupdat,iseq,maxbl,
+
+Add:
+
+            iupdat = 1
+
+Why Changed: Insure that iupdat flag is set
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           16
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    setup.F
+
+After:
+
+c
+c        read in modal surface definitions
+c
+         do iaes=1,naesrf
+            nmodes = int(aesrfdat(5,iaes))
+
+Add:
+
+c
+c           setup for plot3d output of modal surface definitions
+c
+            if (myid.eq.myhost) then
+               idum    = 1
+               jdum    = 1
+               kdum    = 1
+               mxaedum = 1
+               nmddum  = 1
+               nbldum  = 1
+               lwk1    = 1
+               lwk2    = lwk1 + idum*jdum*kdum
+               lwk3    = lwk2 + idum*jdum*kdum
+               lwk4    = lwk3 + kdum*idum*6*nmddum*mxaedum
+               lwk5    = lwk4 + kdum*idum*6*nmddum*mxaedum
+               lwk6    = lwk5 + kdum*idum*6*nmddum*mxaedum
+               do nm=1,nmodes
+                  iunitw  = 200+nm
+                  call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
+     .                         nsegdfrm,iaesurf,jbcinfo,kbcinfo,
+     .                         ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
+     .                         nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
+     .                         wk(lwk1),wk(lwk2),wk(lwk3),wk(lwk4),
+     .                         wk(lwk5),wk(lwk6),jdum,kdum,idum,
+     .                         mxaedum,nmddum,nbldum,iunitw,0)
+               end do
+            end if
+c
+
+After:
+
+               iaesrf = 0
+               do is=1,nsegdfrm(nbl)
+                  iaesrf = iaesrf + iaesurf(nbl,is)
+               end do
+
+Add:
+
+#if defined DIST_MPI
+c
+c              need to send grid back to host for modal surface
+c              plot3d data
+c
+               if (iaesrf.ne.0) then
+                  nnn = jdim*kdim*idim*3
+                  mytag = 1
+                  nd_srce = mblk2nd(nbl)
+                  if (myid.eq.mblk2nd(nbl)) then
+                     call MPI_Send (w(lx), nnn, MY_MPI_REAL,
+     .                              myhost, mytag, mycomm, ierr)
+                  else if (myid.eq.myhost) then
+                     call MPI_Recv (w(lx), nnn, MY_MPI_REAL,
+     .                              nd_srce, mytag, mycomm, istat, ierr)
+                  end if
+               end if
+#endif
+
+After:
+
+                  do nm = 1,nmodes
+                     call modread(idim,jdim,kdim,nm,nbl,iunit,jbcinfo,
+     .                            kbcinfo,ibcinfo,nbcj0,nbcjdim,nbck0,
+     .                            nbckdim,nbci0,nbcidim,maxbl,maxseg,
+     .                            nmds,w(jst),w(kst),w(ist),iaes,maxaes)
+
+Add:
+
+                     iunitw = 200+nm
+                     call pltmode(nm,iaes,nblg,ngrid,maxgr,maxbl,
+     .                            nsegdfrm,iaesurf,jbcinfo,kbcinfo,
+     .                            ibcinfo,nbcj0,nbcjdim,nbck0,nbckdim,
+     .                            nbci0,nbcidim,maxseg,maxsegdg,lw,lw2,
+     .                            w(lx),w(ly),w(lz),w(jst),
+     .                            w(kst),w(ist),jdim,kdim,idim,
+     .                            maxaes,nmds,nbl,iunitw,1)
+c                    close(iunitw)
+
+Before:
+
+         end do
+      end if
+c
+c********************************************************
+c     read restart data on mseq-1 level from finest level
+c     i.e. the highest level computed on in the last run
+c********************************************************
+
+
+Add:
+
+            do nm=1,nmodes
+               close(200+nm)
+            end do
+
+Why Changed: For aeroelastic cases, dump out the input modal surface data into
+             a plot3d file that can be subsequently viewed to detect errors
+             in input modal data.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           17
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/build/cfl/libs and cfl3dv6/build/cflcmplx/libs
+
+Subroutine(s):    makefile
+
+Add to the list of files in FSRC_LIBS = statement:  pltmode.F
+
+Also make sure the new subroutine pltmode.F is added to the 
+cfl3dv6/source/libs directory
+
+Why Changed: Modify makefile to accomodate new pltmode routine (see Number 16)
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           18
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    umalloc.F, umalloc_c.F, umalloc_r.F
+
+Change:
+
+      ipoint = malloc(n_bytes)
+
+To:
+
+#  ifdef IBM
+      ipoint = malloc(%val(n_bytes))
+#  else
+      ipoint = malloc(n_bytes)
+#  endif
+
+
+Why Changed: Allow memory allocation routine to be used on IBM rs600
+             architecture.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           19
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    ufree.F, ufree_c.F, ufree_r.F
+
+Change:
+
+      call free(ipoint)
+
+To:
+
+#   ifdef IBM
+      call free(%val(ipoint))
+#   else
+      call free(ipoint)
+#   endif
+
+Why Changed: Allow memory deallocation routine to be used on IBM rs600
+             architecture.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           20
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    outbuf.F
+
+Change:
+
+      call flush(iunit)
+
+To:
+
+#ifdef CRAY_TIME then
+#else
+#   ifdef IBM then
+      call flush_(iunit)
+#   else
+      call flush(iunit)
+#   endif
+#endif
+
+Why Changed: Allow buffer flushing on IBM rs6000 architecture; also don't
+             need to flush on cray
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           21
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    init_ae.F
+
+After:
+
+               gforcnm(m,iaes) = 0.
+               xxn(m,iaes)     = x0(m,iaes)
+
+Add:
+
+               xs(m,iaes)      = x0(m,iaes)
+
+Why Changed: To initialize xs array.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           22
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    intrbc.F
+
+After:
+
+      common /sklton/ isklton
+      common /twod/ i2d
+
+Add:
+
+      common /zero/iexp
+c
+c     10.**(-iexp) is machine zero
+c
+      qlimit  = 10.**(-iexp)
+
+After:
+
+  121    continue
+      end if
+
+Add:
+
+c
+c     limit negative rho,p,vist3d,turb values to a small positive value
+c
+      if (iset.eq.1) then
+         do n=1,5,4
+            do l=lsta,lend
+               if (real(qb(l,n,iset)) .lt. 0.) qb(l,n,iset) = qlimit
+            end do
+         end do
+      else
+         do n=1,ldim
+            do l=lsta,lend
+               if (real(qb(l,n,iset)) .lt. 0.) then
+                  qb(l,n,iset) = qlimit
+               end if
+            end do
+         end do
+      end if
+
+Why Changed: Limit qb to prevent non-physical values in extreme cases.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           23
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Subroutine(s):    setcorner.F
+
+After:
+
+      common /deformz/ beta1,ismooth,negvol
+
+Add:
+
+      common /fsum/ sref,cref,bref,xmc,ymc,zmc
+
+Change:
+
+         dm     = wk(lsmin+4)**2 + wk(lsmin+5)**2 + wk(lsmin+6)**2
+
+To:
+
+c        dm     = wk(lsmin+4)**2 + wk(lsmin+5)**2 + wk(lsmin+6)**2
+         dm     = sref
+
+Why Changed: This term sets the scaling for off surface movement of the corner
+             points in the mesh-movement scheme. Using dm=sref appears to be a 
+             better choice for scaling subsequent to the move over to tracking
+             incremental motion of the surface, rather than absolute motion.
+             The old scaling (bases on nearest surface point motion) is left
+             for reference in case dm=sref proves not as robust as it appeared
+             during testing.
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           24
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    augmntq
+
+After:
+
+c     fill in block faces (excluding for now the edges and corners)
+c     if ghost-cell data is not available, use duplicate interior
+c     data to fill in the block face info.
+
+Add:
+
+c
+c     note: eddy viscosity and turbulence quantities are always
+c     stored at cell centers, so must override the bcj/k/i arrays
+c
+      visflg = 1.
+      if (ldim .ne. 5) visflg = 0.
+
+Change: (note: similar change for bck and bci)
+
+                  aa = 1. + bcj(k,i,1)
+                  bb = 1. - bcj(k,i,1)
+                  cc = 1. + bcj(k,i,2)
+                  dd = 1. - bcj(k,i,2)
+
+To: (note: similar change for bck and bci)
+
+                  aa = 1. + bcj(k,i,1)*visflg
+                  bb = 1. - bcj(k,i,1)*visflg
+                  cc = 1. + bcj(k,i,2)*visflg
+                  dd = 1. - bcj(k,i,2)*visflg
+
+
+Why Changed: eddy viscosity is always stored at cell centers, regardless 
+             of the bc flag arrays, so modify accordingly
+
+Change Date: February 8, 2001
+
+--------------------
+--------------------
+
+Number:           25
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    rrest.F cgnstools.F
+
+Change: (in all output statements)
+
+     Warning
+
+To:
+
+      WARNING
+
+Why Changed: to give a consistant warning messsage style; user can now
+             do one "grep" on WARNING and get all warning messages that 
+             the code may have generated
+
+Change Date: February 14, 2001
+
+--------------------
+--------------------
+
+Number:           26
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs cfl3dv6/source/maggie
+
+Subroutine(s):    arc.F, metric.F, rechk.F, xe2.F maggie.F
+
+Change: (in all output statements)
+
+     warning
+
+To:
+
+      WARNING
+
+Why Changed: to give a consistant warning messsage style; user can now
+             do one "grep" on WARNING and get all warning messages that 
+             the code may have generated
+
+Change Date: February 14, 2001
+
+--------------------
+--------------------
+
+Number:           27
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    trnsfr_vals.F, babarth3d.F, blomax.F, global.F, readkey.F,
+                  spalart.F, twoeqn.F  
+
+Change:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze
+
+Add:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy
+
+Why Changed: Allow checking of whether the final eddy viscosities have
+             been limited to edvislim. If this limiting is done when the
+             solution is nearly converged, the solution may be in error.
+             Note that such limitiing is not uncommon during a start from
+             scratch of a restart with a different turbulence model. In the
+             vast majority of cases, the default value of edvislim is large
+             enough that the eddy viscosity is not limited during the final
+             stages of convergence, only during initial transients.
+
+Change Date: February 16, 2001
+
+--------------------
+--------------------
+
+Number:           28
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F
+
+After:
+
+      common /rigidbody/ irigb,irbtrim
+
+Add:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy
+
+After:
+
+c
+c     write restart file if non time-accurate
+c
+      if (real(dt).lt.0.0) then
+         if (level.eq.levt) then
+            if (icyc.ge.ncyc .or. icyc/nwrest*nwrest.eq.icyc) then
+               if (myid .eq. myhost) then
+
+add:
+
+c                 initialize eddy viscosity limit flag
+                  if (icyc.ge.ncyc) then
+                     iwarneddy  = 0
+                  else
+                     iwarneddy  = -1
+                  end if
+
+After:
+
+c
+c     write restart file if time-accurate
+c
+      if (real(dt).gt.0.0) then
+         if (level.eq.levt) then
+            if (nt.ge.ntstep .or. nt/nwrest*nwrest.eq.nt) then
+               if (myid .eq. myhost) then
+
+Add:
+
+c                 initialize eddy viscosity limit flag
+                  if (nt.ge.ntstep) then
+                     iwarneddy  = 0
+                  else
+                     iwarneddy  = -1
+                  end if
+
+
+Why Changed: Allow checking of whether the final eddy viscosities have
+             been limited to edvislim. If this limiting is done when the
+             solution is nearly converged, the solution may be in error.
+             Note that such limitiing is not uncommon during a start from
+             scratch of a restart with a different turbulence model. In the
+             vast majority of cases, the default value of edvislim is large
+             enough that the eddy viscosity is not limited during the final
+             stages of convergence, only during initial transients. 
+
+Change Date: February 16, 2001
+
+--------------------
+--------------------
+
+Number:           29
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    wrest.F
+
+After:
+
+      common /ghost/ irghost,iwghost
+
+Add:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy
+
+Before:
+
+c   ***CGNSstart
+         if (icgns .ne. 1) then
+c   ***CGNSend
+         write(11,'(''   writing vist3d data to restart file'',
+     .   '', block'',i5)') nbl
+         write(2) (((vist3d(j,k,i),j=1,jdim1),k=1,kdim1),i=1,idim1)
+         if (iwghost .ne. 0)
+     .   write(2) ((((vi0(j,k,l,m),j=1,jdim),k=1,kdim),l=1,1),m=1,4),
+     .            ((((vj0(k,i,l,m),k=1,kdim),i=1,idim1),l=1,1),m=1,4),
+     .            ((((vk0(j,i,l,m),j=1,jdim),i=1,idim1),l=1,1),m=1,4)
+
+Add:
+
+c
+c           check to see if eddy viscosity has been limited
+c
+            if (iwarneddy .ne. -1 ) then
+               do j=1,jdim1
+                  do k=1,kdim1
+                     do i=1,idim1
+                        if (real(vist3d(j,k,i)).eq.real(edvislim)) then
+                           iwarneddy = 1
+                        end if
+                     end do
+                  end do
+               end do
+            end if
+
+Why Changed: Allow checking of whether the final eddy viscosities have
+             been limited to edvislim. If this limiting is done when the
+             solution is nearly converged, the solution may be in error.
+             Note that such limitiing is not uncommon during a start from
+             scratch of a restart with a different turbulence model. In the
+             vast majority of cases, the default value of edvislim is large
+             enough that the eddy viscosity is not limited during the final
+             stages of convergence, only during initial transients.
+
+Change Date: February 16, 2001
+
+--------------------
+--------------------
+
+Number:           30
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    yplusout.F
+
+After:
+
+      common /ypinfo/ ypsumb,ypsumsqb,ypmaxb,ypminb,dnmaxb,dnminb,ypchk,
+     .                nptsb,jypmaxb,kypmaxb,iypmaxb,jypminb,kypminb,
+     .                iypminb,jdnmaxb,kdnmaxb,idnmaxb,jdnminb,
+     .                kdnminb,idnminb,nypchkb
+
+Add:
+
+      common /turbconv/ cflturb,edvislim,iturbprod,nsubturb,nfreeze,
+     .                  iwarneddy
+
+After:
+
+            write(11,108) real(ypavt),real(ypstdt),nypchkt,nptst
+
+Add:
+
+            if (iwarneddy .gt. 0) then
+               write(11,113) edvislim
+            end if
+
+After:
+
+  112 format(/,1x,'writing 2d data file surf_y+_2d.fmt',
+     .       ' (x,y,y+,dn,turb. visc.)')
+
+Add:
+
+  113 format(/,1x,'WARNING: final value of eddy viscosity has been',
+     .         1x,'limited at one or more',
+     .       /,1x,'points to ',e10.3,'.  Unless this run is far from',
+     .        ,1x,'convergence, increase',
+     .       /,1x,'edvislim via keyword input for subsequent runs')
+
+Why Changed: Allow checking of whether the final eddy viscosities have
+             been limited to edvislim. If this limiting is done when the
+             solution is nearly converged, the solution may be in error.
+             Note that such limitiing is not uncommon during a start from
+             scratch of a restart with a different turbulence model. In the
+             vast majority of cases, the default value of edvislim is large
+             enough that the eddy viscosity is not limited during the final
+             stages of convergence, only during initial transients.
+
+Change Date: February 16, 2001
+
+--------------------
+--------------------
+
+Number:           31
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+                  cfl3dv6/source/cfl3d/libs
+                  cfl3dv6/source/splitter
+
+Subroutine(s):    mgbl.F,mgblk.F,newalpha.F,rrest.F,trnsfr_vals.F,
+                  global.F,readkey.F
+                  tlns3d_to_cfl3d.F,cfl3d_to_tlns3d.F
+
+Change:
+
+      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast
+
+To:
+
+      common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+     .        icycupdt,dcldal,alphalast
+
+Why Changed: Add new parameters for improved fixed Cl option
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           32
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgbl.F
+
+Change:
+
+      if (ialphit.ne.0 .and. myid.eq.myhost) then
+            write(27,'(''       it    log(res)           cl'',
+     .      ''            alpha'')')
+      end if
+
+To:
+
+      if (ialphit.ne.0 .and. myid.eq.myhost) then
+            write(27,'(''       it    log(res)           cl'',
+     .      ''            alpha        d(cl)/d(a)used'',
+     .      ''  d(cl)/d(a)computed'')')
+      end if
+
+Why Changed: Add new output for improved fixed Cl option
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           33
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F
+
+After:
+
+      nttlast = ntt+1
+
+Add:
+
+      alphalast=alpha
+
+Why Changed: Needed for improved fixed Cl option
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           34
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    trnsfr_vals.F
+
+After:
+
+         work(nlast+34) = irghost
+         work(nlast+35) = iwghost
+
+Add:
+
+         work(nlast+36) = dalim
+         work(nlast+37) = icycupdt
+         work(nlast+38) = dcldal
+
+After:
+
+         irghost   = int(work(nlast+34))
+         iwghost   = int(work(nlast+35))
+
+Add:
+
+         dalim     = work(nlast+36)
+         icycupdt  = int(work(nlast+37))
+         dcldal    = work(nlast+38)
+
+Why Changed: Needed for improved fixed Cl option
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           35
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    newalpha.F 
+
+Numerous changes to improve fixed-Cl option; justget new routine
+
+Why Changed: Needed for improved fixed Cl option
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           36
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    readkey.F
+
+Change:
+
+      resupdt  = 40
+
+To:
+
+      resupdt  = -40
+
+Why Changed: -40 indicates a highly converved state and should be
+             the default, so that no updates are done by default;
+             with +40 as the default, updates get done every cycle
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           37
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    readkey.F
+
+After:
+
+c
+c     flag to write ghost-cell data to restart file (1) or not (0)
+c     newer version 6 restart files will have ghost-cell data;
+c     restart files from beta version 6 do not, nor do version 5
+c     restart files. default is to write ghost-cell data
+c
+      iwghost   = 1
+      nkey      = nkey + 1
+
+Add:
+
+c
+c     limit of alpha change (deg.) per update
+c
+      dalim     = 5.0
+      nkey      = nkey + 1
+c
+c     no. of cycles between alpha updates (if set > 0, this
+c     method takes precedence over resupdt)
+c
+      icycupdt  = 0
+      nkey      = nkey + 1
+c
+c     user input value for dcl/dalpha
+c
+      dcldal    = 6.2831853
+      nkey      = nkey + 1
+
+After:
+
+c
+      else if (inpstr(lc1:lc2).eq.'iwghost') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) iwghost
+
+Add:
+
+c
+      else if (inpstr(lc1:lc2).eq.'dalim') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         dalim = realval(1)
+c
+      else if (inpstr(lc1:lc2).eq.'icycupdt') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) icycupdt
+c
+      else if (inpstr(lc1:lc2).eq.'dcldal') then
+         lc2 = lc2 +1
+         read(inpstr(lc2:lcl),*) realval(1)
+         dcldal = realval(1)
+
+
+Why Changed: Needed for improved fixed Cl option where user can set number
+             of cycles between alpha updates instead of change of residual
+             bewteen updates; also user is now responsible for inputting 
+             a reasonable guess for dcl/dalpha (lift curve slope)
+
+Change Date: March 16, 2001
+
+
+--------------------
+--------------------
+
+Number:           38
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/tools
+
+Subroutine(s):    p3d_to_INGRID.F
+
+Change:
+
+                  read(1) (xx,ll=1,jdim(n)*kdim(n)*ldim(n)),
+     .                    (yy,ll=1,jdim(n)*kdim(n)*ldim(n)),
+     .                    (zz,ll=1,jdim(n)*kdim(n)*ldim(n))
+
+To:
+
+                  read(1,*) (xx,ll=1,jdim(n)*kdim(n)*ldim(n))
+     .                      (yy,ll=1,jdim(n)*kdim(n)*ldim(n)),
+     .                      (zz,ll=1,jdim(n)*kdim(n)*ldim(n))
+
+Why Changed: Reading a formatted file at this point, so need ,*
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           39
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global.F
+
+Change:
+
+     .                  zorgae0,icouple)
+
+To:
+
+     .                  zorgae0,icouple,iprnsurf)
+
+Change:
+
+      if (nprint.ne.0) then
+c
+         iflag = 0
+         if (nprint.lt.0) then
+            iflag  = 1
+         end if
+
+To:
+
+      if (nprint.ne.0) then
+c
+         iflag = 0
+         iprnsurf = 0
+         if (nprint.lt.0) then
+            iflag  = 1
+            if (i2d.eq.0) iprnsurf = 1
+         end if
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           40
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgbl.F
+
+Change: (in call to global)
+
+     .               idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,zorgae0,
+     .               icouple)
+
+To:
+
+     .               idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,zorgae0,
+     .               icouple,iprnsurf)
+
+Change: (in call to trnsfr_vals)
+
+     .                 iaesurf,maxsegdg,xorgae0,yorgae0,zorgae0,
+     .                 icouple)
+
+To:
+
+     .                 iaesurf,maxsegdg,xorgae0,yorgae0,zorgae0,
+     .                 icouple,iprnsurf)
+
+Change: (in call to mgblk)
+
+     .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
+     .              yorgae0,zorgae0,icouple)
+
+To:
+
+     .              iaesurf,maxsegdg,nmaster,aehist,timekeep,xorgae0,
+     .              yorgae0,zorgae0,icouple,iprnsurf)
+
+Change: (in call to qout)
+
+     .                   istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .                   mxbcfil)
+
+To:
+
+     .                   istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .                   mxbcfil,iprnsurf)
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           41
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F
+
+Change: (in subroutine argument list)
+
+     .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
+     .                 timekeep,xorgae0,yorgae0,zorgae0,icouple)
+
+To:
+
+     .                 idfrmseg,iaesurf,maxsegdg,nmaster,aehist,
+     .                 timekeep,xorgae0,yorgae0,zorgae0,icouple,
+     .                 iprnsurf)
+
+Change: (in call to qout; 2 places)
+
+     .             istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .             mxbcfil)
+
+To:
+
+     .             istat_size,vormax,ivmax,jvmax,kvmax,bcfiles,
+     .             mxbcfil,iprnsurf)
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           42
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    qout.F
+
+Change: (in subroutine argument list)
+
+     .                istat2_pa,istat2_pe,istat2_em,istat_size,
+     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil)
+
+To:
+
+     .                istat2_pa,istat2_pe,istat2_em,istat_size,
+     .                vormax,ivmax,jvmax,kvmax,bcfiles,mxbcfil,iprnsurf)
+
+Change:
+
+               call plot3c(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
+     .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),w(ly),
+     .                     w(lz),wk(ixwk),wk(ibwk),w(lblk),wk(ixgk),
+     .                     iflag,w(lvis),w(lvi0),w(lvj0),w(lvk0),
+     .                     iovrlp(nbl),nbl,nmap,w(lsnk0),ifunc,n,
+     .                     jdw,kdw,idw,
+     .                     nplots,jdimg,kdimg,idimg,nblcg,jsg,ksg,isg,
+     .                     jeg,keg,ieg,ninter,iindex,intmax,nsub1,
+     .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
+     .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
+     .                     mblk2nd,inpl3d,nblock,nblkpt,ip3dsurf)
+
+To:
+
+               call plot3c(jdim,kdim,idim,i1,i2,i3,j1,j2,j3,k1,k2,k3,
+     .                     w(lq),w(lqi0),w(lqj0),w(lqk0),w(lx),w(ly),
+     .                     w(lz),wk(ixwk),wk(ibwk),w(lblk),wk(ixgk),
+     .                     iflag,w(lvis),w(lvi0),w(lvj0),w(lvk0),
+     .                     iovrlp(nbl),nbl,nmap,w(lsnk0),ifunc,n,
+     .                     jdw,kdw,idw,
+     .                     nplots,jdimg,kdimg,idimg,nblcg,jsg,ksg,isg,
+     .                     jeg,keg,ieg,ninter,iindex,intmax,nsub1,
+     .                     maxxe,nblk,nbli,limblk,isva,nblon,mxbli,
+     .                     thetay,maxbl,maxgr,myid,myhost,mycomm,
+     .                     mblk2nd,inpl3d,nblock,nblkpt,iprnsurf)
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           43
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    trnsfr_vals.F
+
+Change: (in subroutine argument list)
+
+     .                       idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,
+     .                       zorgae0,icouple)
+
+To:
+
+     .                       idfrmseg,iaesurf,maxsegdg,xorgae0,yorgae0,
+     .                       zorgae0,icouple,iprnsurf)
+
+After:
+
+         iwork(nlast+51) = ip3dsurf
+         iwork(nlast+52) = ismooth
+
+Add:
+
+         iwork(nlast+53) = iprnsurf
+
+Change:
+
+         nlast = nlast + 52
+
+To:
+
+         nlast = nlast + 53
+
+Change:
+
+      nvals = 53*maxbl + 117       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+
+To:
+
+      nvals = 53*maxbl + 118       + 9*maxbl*maxsegdg + 48*maxbl*maxseg
+
+After:
+
+         ip3dsurf = iwork(nlast+51)
+         ismooth  = iwork(nlast+52)
+
+Add:
+
+         iprnsurf = iwork(nlast+53)
+
+Change:
+
+         nlast = nlast + 52
+
+To:
+
+         nlast = nlast + 53
+
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           44
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    sizer.F
+
+Change: (in call to global)
+
+     .            idfrmseg,iaesurf,maxsegdg0,xorgae0,yorgae0,zorgae0,
+     .            icouple)
+
+To:
+
+     .            idfrmseg,iaesurf,maxsegdg0,xorgae0,yorgae0,zorgae0,
+     .            icouple,iprnsurf)
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output.
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           45
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    plot3c.F
+
+Change: (all occurances)
+
+        ip3dsurf
+
+To:
+        ipsurf
+
+Why Changed: Need a flag to indicate cell-face center data for print
+             output that is distinct from that for plot3d output; in this
+             routine, the change from ip3dsurf to ipsurf is really cosmetic, 
+             to reflect the fact that when the subroutine is called, the
+             parameter may pertain to plot3d surface data (ipsurf==ip3dsurf)
+             or print out data (ipsurf==iprnsurf)
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           46
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    resp.F
+
+Change: (2 places)
+
+                  call csurf(jdim,kdim,idim,x,y,z,sk,sj,si,q,ics,
+     .                       q(1,2),q(1,3),q(1,4),vmuk,vmuj,vmui,vol,
+     .                       bcj,bck,bci,blank,xtbj,xtbk,xtbi,
+     .                       iuns,ncs,icsinfo,sxi,syi,szi,stoti,
+     .                       pavi,ptavi,tavi,ttavi,xmavi,fmdoti,
+     .                       cfxpi,cfypi,cfzpi,cfdpi,cflpi,cftpi,
+     .                       cfxvi,cfyvi,cfzvi,cfdvi,cflvi,cftvi,
+     .                       cfxmomi,cfymomi,cfzmomi,cfdmomi,cflmomi,
+     .                       cftmomi,cfxtoti,cfytoti,cfztoti,cfdtoti,
+     .                       cfltoti,cfttoti,maxcs)
+
+To:
+
+                  call csurf(jdim,kdim,idim,x,y,z,sk,sj,si,q,ics,
+     .                       q(1,2),q(1,3),q(1,4),vmuk,vmuj,vmui,vol,
+     .                       bcj,bck,bci,blank,xtbj,xtbk,xtbi,
+     .                       iuns,ncs,icsinfo,sxi,syi,szi,stoti,
+     .                       pavi,ptavi,tavi,ttavi,xmavi,fmdoti,
+     .                       cfxpi,cfypi,cfzpi,cfdpi,cflpi,cftpi,
+     .                       cfxvi,cfyvi,cfzvi,cfdvi,cflvi,cftvi,
+     .                       cfxmomi,cfymomi,cfzmomi,cfdmomi,cflmomi,
+     .                       cftmomi,cfxtoti,cfytoti,cfztoti,cfdtoti,
+     .                       cfltoti,cfttoti,maxcs,qj0,qk0,qi0)
+
+Why Changed: Use cell-face center data to evaluate control surface
+             data for cells on solid boundaries
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           46
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    csurf.F
+
+Change:
+
+      subroutine csurf(jdim,kdim,idim,x,y,z,sk,sj,si,q,ics,
+     .                 ub,vb,wb,vmuk,vmuj,vmui,vol, bcj,bck,bci,
+     .                 blank,xtbj,xtbk,xtbi,iuns,ncs,icsinfo,
+     .                 sx,sy,sz,stot,pav,ptav,tav,ttav,xmav,fmdot,
+     .                 cfxp,cfyp,cfzp,cfdp,cflp,cftp,cfxv,cfyv,cfzv,
+     .                 cfdv,cflv,cftv,cfxmom,cfymom,cfzmom,cfdmom,
+     .                 cflmom,cftmom,cfxtot,cfytot,cfztot,cfdtot,
+     .                 cfltot,cfttot,maxcs)
+
+To:
+
+      subroutine csurf(jdim,kdim,idim,x,y,z,sk,sj,si,q,ics,
+     .                 ub,vb,wb,vmuk,vmuj,vmui,vol, bcj,bck,bci,
+     .                 blank,xtbj,xtbk,xtbi,iuns,ncs,icsinfo,
+     .                 sx,sy,sz,stot,pav,ptav,tav,ttav,xmav,fmdot,
+     .                 cfxp,cfyp,cfzp,cfdp,cflp,cftp,cfxv,cfyv,cfzv,
+     .                 cfdv,cflv,cftv,cfxmom,cfymom,cfzmom,cfdmom,
+     .                 cflmom,cftmom,cfxtot,cfytot,cfztot,cfdtot,
+     .                 cfltot,cfttot,maxcs,qj0,qk0,qi0)
+
+
+After:
+
+c     Purpose:  Integrate control surface mass flow and momemtum/forces
+c               Original coding by R. Cedar, GE Aircraft Engines
+
+Add:
+
+c
+c               Modified 3/01 by R. Biedron to use either cell-face
+c               values or cell-center values at zonal boundaries,
+c               depending on bc flag (bcj/bck/bci).
+
+After:
+
+      dimension bcj(kdim,idim-1,2),bck(jdim,idim-1,2),bci(jdim,kdim,2)
+
+Add:
+
+      dimension qj0(kdim,idim-1,5,4),qk0(jdim,idim-1,5,4),
+     .          qi0(jdim,kdim,5,4)
+
+Change: (similar changes for j=constant and i=constant surfaces)
+
+c******************************************************************
+c     forces on k=constant surfaces
+c******************************************************************
+c
+      if (kst.eq.kfn+1) then
+         k    = kst
+         kc   = k
+         kcm1 = k - 1
+c
+         if (k.eq.1) then
+            k    = k
+            kc   = 1
+            kcm1 = 1
+         end if
+c
+         if (k.eq.kdim) then
+            k    = kdim
+            kc   = kdim - 1
+            kcm1 = kdim - 1
+         end if
+
+To:
+
+c******************************************************************
+c     forces on k=constant surfaces
+c******************************************************************
+c
+      if (kst.eq.kfn+1) then
+         k    = kst
+         kc   = k
+         kcm1 = k - 1
+         m = 0
+c
+         if (k.eq.1) then
+            k    = k
+            kc   = 1
+            kcm1 = 1
+            m    = 1
+            mm   = 1
+         end if
+c
+         if (k.eq.kdim) then
+            k    = kdim
+            kc   = kdim - 1
+            kcm1 = kdim - 1
+            m    = 2
+            mm   = 3
+         end if
+
+Change: (similar changes for j=constant and i=constant surfaces)
+
+         dcp  = -(0.5*(q(j,kc,i,5)+q(j,kcm1,i,5))/p0
+     .          -1.e0)*cpc*sk(j,k,i,4)
+
+To:
+
+         if (m .ne. 0) then
+            aa = 1. +  bck(j,i,m)
+            bb = 1. -  bck(j,i,m)
+            dcp  = -(0.5*(aa*qk0(j,i,5,mm) + bb*q(j,kc,i,5))/p0
+     .             -1.e0)*cpc*sk(j,k,i,4)
+         else
+            dcp  = -(0.5*(q(j,kc,i,5)+q(j,kcm1,i,5))/p0
+     .             -1.e0)*cpc*sk(j,k,i,4)
+         end if
+
+Change: (similar changes for j=constant and i=constant surfaces)
+
+            q1  = 0.5*( q(j,kc,i,1) + q(j,kcm1,i,1))
+            q2  = 0.5*( q(j,kc,i,2) + q(j,kcm1,i,2)) / xmach
+            q3  = 0.5*( q(j,kc,i,3) + q(j,kcm1,i,3)) / xmach
+            q4  = 0.5*( q(j,kc,i,4) + q(j,kcm1,i,4)) / xmach
+            p1  = 0.5*( q(j,kc,i,5) + q(j,kcm1,i,5)) * gamma
+
+To:
+
+            if (m .ne. 0) then
+               aa = 1. +  bck(j,i,m)
+               bb = 1. -  bck(j,i,m)
+               q1 = 0.5*(aa*qk0(j,i,1,mm)
+     .                        +      bb*q(j,kc,i,1))
+               q2 = 0.5*(aa*qk0(j,i,2,mm)
+     .                        +      bb*q(j,kc,i,2)) / xmach
+               q3 = 0.5*(aa*qk0(j,i,3,mm)
+     .                        +      bb*q(j,kc,i,3)) / xmach
+               q4 = 0.5*(aa*qk0(j,i,4,mm)
+     .                        +      bb*q(j,kc,i,4)) / xmach
+               p1 = 0.5*(aa*qk0(j,i,5,mm)
+     .                        +      bb*q(j,kc,i,5)) * gamma
+            else
+               q1  = 0.5*( q(j,kc,i,1) + q(j,kcm1,i,1))
+               q2  = 0.5*( q(j,kc,i,2) + q(j,kcm1,i,2)) / xmach
+               q3  = 0.5*( q(j,kc,i,3) + q(j,kcm1,i,3)) / xmach
+               q4  = 0.5*( q(j,kc,i,4) + q(j,kcm1,i,4)) / xmach
+               p1  = 0.5*( q(j,kc,i,5) + q(j,kcm1,i,5)) * gamma
+            end if
+
+Why Changed: Use cell-face center data to evaluate control surface
+             data for cells on solid boundaries
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           47
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/precfl3d  cfl3dv6/source/ronnie
+
+Subroutine(s):    usrint.F                 termn8.F 
+
+Change:
+
+#   ifdef FLUSHFLAG then
+
+To:
+
+#   ifdef IBM then
+
+Why Changed: Use the correct call to the flush routine on IBM platforms
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           48
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/splitter
+
+Subroutine(s):    cfl3d_to_tlns3d.F, tlns3d_to_cfl3d.F
+
+Change:
+
+      common /precon1/ iprecon,cprec,uref,avn
+
+To:
+
+      common /precon1/ cprec,uref,avn,iprecon
+
+Why Changed: Use proper order for real and integer data in common block
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           49
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/splitter
+
+Subroutine(s):    cfl3d_to_tlns3d.F
+
+After:
+
+  165 continue
+
+Add:
+
+c
+c     iniitialize imap array
+c
+      do iii = 1,msegt
+         do nnsg = 1,msegn
+            do ibl = 1,mbloc
+               imap(iii,nnsg,ibl) = 0
+            end do
+         end do
+      end do
+
+After:
+
+         if (ifchk6 .eq. 0)
+     .      write(6,*)'WARNING: block ',ibloc,
+     .                ' face kmax, has no bc data'
+
+Add:
+
+         ifill = 0
+
+
+Change:
+
+      write(20,'("  nseg  ivisb1 ivisb2 ivisb3"
+
+To:
+
+      write(20,'("  nseg  ivisb1 ivisb2 ivisb3",
+
+Change:
+
+      write(20,'("  nbt  nst   typ  nft 1tmn 1tmx 2tmn 2tmx  "
+
+To:
+
+      write(20,'("  nbt  nst   typ  nft 1tmn 1tmx 2tmn 2tmx  ",
+
+Why Changed: initialize some variables and correct syntax
+
+Change Date: March 16, 2001
+
+--------------------
+--------------------
+
+Number:           50
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global.F
+
+Change:
+
+ 198 format('('' you MUST use subiterations (ncyc>1) to get,
+     .31h second-order accuracy in time!'')')
+
+To:
+
+  198 format('('' you MUST use subiterations (ncyc>1) to get'',
+     .'' second-order accuracy in time!'')')
+
+Why Changed: Output formatting error
+
+Change Date: March 20, 2001
+
+--------------------
+--------------------
+
+Number:           51
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/tools
+
+Subroutine(s):
+
+The following utility codes have been added to the tools suite:
+
+everyother_xyz.f........creates a coarser grid (every other point,
+                        including semi-coarsening capability)
+initialize_field.f......creates CFL3D restart file with user-specified
+                        initial field
+p3d_to_cfl3drst.f.......creates CFL3D restart file from a PLOT3D Q-file
+v6_restart_mod.f........creates a coarser CFL3D restart file (every other
+                        point, including semi-coarsening capability), 
+                        and/or changes between formatted/unformatted
+v6inpdoubhalf.f.........creates a new CFL3D input file for use with a 
+                        grid with every other point, or double the points
+                        (includes semi-coarsening capability)
+
+Why Changed: Add functionality
+
+Change Date: March 23, 2001
+
+--------------------
+--------------------
+
+Number:           52
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global2.F
+
+Change:
+
+            npts   = iindx(int,2*nfbl+4)
+            nst    = iindx(int,2*nfbl+5)
+            ntot   = nst + npts - 1
+            lmxxe  = lmxxe + ntot
+         end do
+         if (lmaxxe .gt. 1) then
+
+To:
+
+            npts   = iindx(int,2*nfbl+4)
+            nst    = iindx(int,2*nfbl+5)
+            ntot   = nst + npts - 1
+         end do
+         lmxxe  = ntot
+         if (lmaxxe .gt. 1) then
+
+
+Why Changed: Memory requirement computed incorrectly as summation, rather
+             than as largest (last) value; could lead to huge memory 
+             requirement for large patch cases with ronnie or large
+             dynamic patching cases within cfl3d.
+
+Change Date: April 10, 2001
+
+--------------------
+--------------------
+
+Number:           53
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    cputim.F
+
+After:
+
+      real*4 tim(3,3),tm(3)
+
+Add:
+
+      real*4 walltime
+
+After:
+
+c
+c.....output the collective timings for this run
+c
+      if (icall .lt. 0) then
+c
+#if defined DIST_MPI
+         if (myid.eq.myhost) then
+c
+#endif
+
+Add:
+
+c
+c           correct wall time for > 24  hour runs
+c
+            walltime = tim(3,1)
+            ndays = int(real(tim(1,1))+real(tim(2,1)))/86400
+            if (ndays .gt. 0) walltime = walltime + ndays*86400
+
+Change: (in the icall .lt. 0 section)
+
+            write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .      0,real(tim(1,1)),real(tim(2,1)),
+     .      real(tim(1,1))+real(tim(2,1)),real(tim(3,1))
+
+To:
+
+            write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .      0,real(tim(1,1)),real(tim(2,1)),
+     .      real(tim(1,1))+real(tim(2,1)),real(walltime)
+
+After: (in the icall .lt. 0 section)
+
+               call MPI_Recv (tim_nd,9,MPI_REAL,inode,mytag,mycomm,
+     .                        istat,ierr)
+
+Add:
+
+c
+c              correct wall time for > 24  hour runs
+c
+               walltime = tim_nd(3,1)
+               ndays = int(real(tim_nd(1,1))+real(tim_nd(2,1)))/86400
+               if (ndays .gt. 0) walltime = walltime + ndays*86400
+
+Change: (in the icall .lt. 0 section)
+
+               write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .         inode,real(tim_nd(1,1)),real(tim_nd(2,1)),
+     .         real(tim_nd(1,1))+real(tim_nd(2,1)),
+     .         tim_nd(3,1)
+
+To:
+
+               write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .         inode,real(tim_nd(1,1)),real(tim_nd(2,1)),
+     .         real(tim_nd(1,1))+real(tim_nd(2,1)),
+     .         walltime
+
+
+Change:
+
+            nhrs  = tim(3,1) / 3600
+            nsecs = tim(3,1) - nhrs * 3600
+
+To:
+
+            nhrs  = walltime / 3600
+            nsecs = walltime - nhrs * 3600
+
+After:
+
+c
+c.....print time since last call to this routine
+c
+      if (icall .eq. 2) then
+c
+#if defined DIST_MPI
+         if (myid.eq.myhost) then
+c
+#endif
+
+Add:
+
+c
+c           correct wall time for > 24  hour runs
+c
+            walltime = tim(3,2)
+            ndays = int(real(tim(1,2))+real(tim(2,2)))/86400
+            if (ndays .gt. 0) walltime = walltime + ndays*86400
+
+Change: (in the icall .eq. 2 section)
+
+            write(iunit,'(/,a50,/,/,
+     .      "   node      user    system     total    wall clock")')
+     .      string
+            write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .      0,real(tim(1,2)),real(tim(2,2)),
+     .      real(tim(1,2))+real(tim(2,2)),real(tim(3,2))
+
+To:
+
+            write(iunit,'(/,a50,/,/,
+     .      "   node      user    system     total    wall clock")')
+     .      string
+            write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .      0,real(tim(1,2)),real(tim(2,2)),
+     .      real(tim(1,2))+real(tim(2,2)),real(walltime)
+
+After: (in the icall .eq. 2 section)
+
+               call MPI_Recv (tim_nd,9,MPI_REAL,inode,mytag,mycomm,
+     .                        istat,ierr)
+
+Add:
+
+c
+c              correct wall time for > 24  hour runs
+c
+               walltime = tim_nd(3,2)
+               ndays = int(real(tim_nd(1,2))+real(tim_nd(2,2)))/86400
+               if (ndays .gt. 0) walltime = walltime + ndays*86400
+
+Change: (in the icall .eq. 2 section)
+
+               write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .         inode,real(tim_nd(1,2)),real(tim_nd(2,2)),
+     .         real(tim_nd(1,2))+real(tim_nd(2,2)),real(tim_nd(3,2))
+
+To:
+
+               write(iunit,'(" ",i6,3f10.2,f12.2)')
+     .         inode,real(tim_nd(1,2)),real(tim_nd(2,2)),
+     .         real(tim_nd(1,2))+real(tim_nd(2,2)),real(walltime)
+
+
+Why Changed: Report correct total wall time for runs lasting longer than
+             24 hours
+
+Change Date: April 10, 2001
+
+--------------------
+--------------------
+
+Number:           54
+
+Version:          6.0
+
+Type:              X Error     Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global2.F
+
+Change:
+
+         iindx(int,2*nfb+5) = iindx(int-1,2*nfb1+5)+iindx(int,2*nfb+4)
+      end if
+ 1703 continue
+
+To:
+
+         iindx(int,2*nfb+5) = iindx(int-1,2*nfb1+5)
+     .                      + iindx(int-1,2*nfb1+4)
+      end if
+ 1703 continue
+
+
+Why Changed: Incorrect calculation of index caused code to stop with 
+             "insufficient memory" message. This bug became apparent
+             only after the change made in Number 52.
+
+Change Date: April 17, 2001
+
+--------------------
+--------------------
+
+Number:           55
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    deform.F
+
+Delete: (all occurances)
+
+         jskp2 = je-js
+         kskp2 = ke-ks
+         iskp2 = ie-is
+
+Change: (all occurances)
+
+        jskp2  kskp2  iskp2  
+
+To:
+
+        jskp   kskp  iskp   
+
+Why Changed: This negates a previous change (Number 136 of
+             <a href="cfl3dv6_updates_02august2000.html">Updates as of August 2, 2000</a>).
+             The previous change was removed because it caused deformed 
+             single and split-block grids to be different even when using
+             the same "skip" values for both single and split-block
+             cases.
+
+Change Date: April 17, 2001
+
+--------------------
+
+Number:           56
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    qinter.F
+
+Change:
+
+         call addx(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,w(lq1c),
+     .             wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
+     .             nou,bou,nbuf,ibufdim)
+         if (ivmx.ge.4) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),260)
+           call addxv(w(lxib),w(lturc),w(lvis),w(lvisc),
+     .                jdim,kdim,idim,jj2,kk2,ii2)
+         end if
+
+To:
+
+         call addx(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,w(lq1c),
+     .             wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
+     .             nou,bou,nbuf,ibufdim,5)
+         if (ivmx.ge.4) then
+           nou(1) = min(nou(1)+1,ibufdim)
+           write(bou(nou(1),1),260)
+           call addx(w(lxib),w(lturc),jdim,kdim,idim,jj2,kk2,ii2,
+     .             w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
+     .             nou,bou,nbuf,ibufdim,2)
+           call addx(w(lvis),w(lvisc),jdim,kdim,idim,jj2,kk2,ii2,
+     .             w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nblz,w(lblk),
+     .             nou,bou,nbuf,ibufdim,1)
+         end if
+
+Change:
+
+            call add2x(w(lq),wk(iwk5),jdim,kdim,idim,jj2,kk2,ii2,
+     .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .                 js,ks,is,je,ke,ie,ipass,nbl,nblc)
+            if (ivmx.ge.4) then
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),300)
+               call add2xv(w(lxib),wk(iwk7),w(lvis),wk(iwk6),
+     .                     jdim,kdim,idim,jj2,kk2,ii2,js,ks,is,
+     .                     je,ke,ie)
+            end if
+
+To:
+
+            call add2x(w(lq),wk(iwk5),jdim,kdim,idim,jj2,kk2,ii2,
+     .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .                 js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .                 nou,bou,nbuf,ibufdim,5)
+            if (ivmx.ge.4) then
+               nou(1) = min(nou(1)+1,ibufdim)
+               write(bou(nou(1),1),300)
+               call add2x(w(lxib),wk(iwk7),jdim,kdim,idim,jj2,kk2,ii2,
+     .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .                 js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .                 nou,bou,nbuf,ibufdim,2)
+               call add2x(w(lvis),wk(iwk6),jdim,kdim,idim,jj2,kk2,ii2,
+     .                 w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .                 js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .                 nou,bou,nbuf,ibufdim,1)
+            end if
+
+Change:
+
+         call add2x(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,
+     .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .              js,ks,is,je,ke,ie,ipass,nbl,nblc)
+         if (ivmx.ge.4) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),300)
+            call add2xv(w(lxib),w(lturc),w(lvis),w(lvisc),
+     .                  jdim,kdim,idim,jj2,kk2,ii2,js,ks,is,
+     .                  je,ke,ie)
+         end if
+
+To:
+
+         call add2x(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,
+     .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .              js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .              nou,bou,nbuf,ibufdim,5)
+         if (ivmx.ge.4) then
+            nou(1) = min(nou(1)+1,ibufdim)
+            write(bou(nou(1),1),300)
+            call add2x(w(lxib),w(lturc),jdim,kdim,idim,jj2,kk2,ii2,
+     .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .              js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .              nou,bou,nbuf,ibufdim,2)
+            call add2x(w(lvis),w(lvisc),jdim,kdim,idim,jj2,kk2,ii2,
+     .              w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),wk(iwk4),
+     .              js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .              nou,bou,nbuf,ibufdim,1)
+         end if
+
+
+Why Changed: Improved interpolation of turbulence data from courser level
+             to finer during mesh sequencing; new approach uses modified
+             version of addx to perform function of old addxv, which is
+             no longer used
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           57
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    wrest.F
+
+Change: (in the subroutine argument list)
+
+     .                 idima,jdima,kdima,bcj,bck,bci,vj0,vk0,vi0,
+     .                 tj0,tk0,ti0)
+
+To:
+
+     .                 tj0,tk0,ti0,blank,iwk,iwork,iover,
+     .                 nou,bou,nbuf,ibufdim)
+
+Before:
+
+      dimension q(jdim,kdim,idim,5),qi0(jdim,kdim,5,4),
+
+Add:
+
+      character*120 bou(ibufdim,nbuf)
+c
+      dimension nou(nbuf)
+
+After:
+
+      dimension bci(jdim,kdim,2),bcj(kdim,idim-1,2),bck(jdim,idim-1,2),
+     .          vj0(kdim,idim-1,1,4),vk0(jdim,idim-1,1,4),
+     .          vi0(jdim,kdim,1,4),tj0(kdim,idim-1,2,4),
+     .          tk0(jdim,idim-1,2,4),ti0(jdim,kdim,2,4)
+
+Add:
+
+      dimension blank(jdim,kdim,idim),iwk(iwork)
+
+After:
+
+#if defined CGNS
+      write(11,'('' CGNS write in wrest'')')
+      call writesoln(iccg,ibase,igrid,idima,jdima,kdima,idim,
+     +  jdim,kdim,wk,q,qj0,qk0,qi0,bcj,bck,bci,i2d,nsoluse)
+
+Add:
+
+c     write overset holes
+      if (iover .eq. 1) then
+c     first, find out how many holes
+        n=0
+        do k=1,kdim-1
+        do j=1,jdim-1
+        do i=1,idim-1
+          if(blank(j,k,i) .eq. 0.) then
+            n=n+1
+          end if
+        enddo
+        enddo
+        enddo
+        npnts=n
+        if (npnts .gt. 0) then
+        if (iwork .lt. npnts*3) then
+          write(11,'('' not enough memory for CGNS blank'',
+     +      '' write.'')')
+          write(11,'('' iwork in iwk='',i6,''.  Needed = '',i6)')
+     +      iwork,npnts*3
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+        end if
+        call writeblnk(iccg,ibase,igrid,idim,jdim,kdim,npnts,iwk,
+     .                     blank)
+        end if
+      end if
+
+Why Changed: Add iblank info to CGNS file
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           58
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    rrest.F
+
+Change: 
+
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+          stop
+
+To:
+
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+
+Change:
+
+          write(11,'('' ERROR, cgns restart file has different'',
+     +      '' nondimensionalization'')')
+          write(11,'('' vk0w='',e15.5)') vk0w
+          write(11,'('' Stopping.'')')
+          stop
+
+To:
+
+          write(11,'('' ERROR, cgns restart file has different'',
+     +      '' nondimensionalization'')')
+          write(11,'('' vk0w='',e15.5)') vk0w
+          write(11,'('' Stopping.'')')
+          call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+
+Why Changed: Use call to termn8 rather than stop as a more graceful
+             stopping procedure.
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+
+Number:           59
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F
+
+Change:
+
+               call addx(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,
+     .                   w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nbl,w(lblk),
+     .                   nou,bou,nbuf,ibufdim)
+
+To:
+
+               call addx(w(lq),w(lqc),jdim,kdim,idim,jj2,kk2,ii2,
+     .                   w(lq1c),wk(iwk1),wk(iwk2),wk(iwk3),nbl,w(lblk),
+     .                   nou,bou,nbuf,ibufdim,5)
+
+Change:
+
+                        call add2x(w(lq),wk(iwk6),jdim,kdim,
+     .                  idim,jc,kc,ic,wk(iwk5),wk(iwk1),
+     .                  wk(iwk2),wk(iwk3),wk(iwk4),
+     .                  js,ks,is,je,ke,ie,ipass,nbl,nblz)
+
+To:
+
+                        call add2x(w(lq),wk(iwk6),jdim,kdim,
+     .                  idim,jc,kc,ic,wk(iwk5),wk(iwk1),
+     .                  wk(iwk2),wk(iwk3),wk(iwk4),
+     .                  js,ks,is,je,ke,ie,ipass,nbl,nblz,
+     .                  nou,bou,nbuf,ibufdim,5)
+
+Change:
+
+                     call add2x(w(lq),w(lqc),jdim,kdim,idim,
+     .                          jc,kc,ic,w(lq1c),wk(iwk1),wk(iwk2),
+     .                          wk(iwk3),wk(iwk4),js,ks,is,
+     .                          je,ke,ie,ipass,nbl,nblz)
+
+To:
+
+                     call add2x(w(lq),w(lqc),jdim,kdim,idim,
+     .                          jc,kc,ic,w(lq1c),wk(iwk1),wk(iwk2),
+     .                          wk(iwk3),wk(iwk4),js,ks,is,
+     .                          je,ke,ie,ipass,nbl,nblz,
+     .                          nou,bou,nbuf,ibufdim,5)
+
+Change: (2 places)
+
+                  call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
+     .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
+     .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
+     .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
+     .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
+c   ***CGNSstart
+c    .            thetay,maxbl,myid,myhost,mycomm,mblk2nd)
+     .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
+     .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
+     .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0))
+
+To: (2 places)
+
+                  call wrest(nbl,jdim,kdim,idim,w(lq),w(lqj0),w(lqk0),
+     .            w(lqi0),ncycmax,rms,clw,cdw,cdpw,cdvw,cxw,cyw,czw,
+     .            cmxw,cmyw,cmzw,fmdotw,cftmomw,cftpw,cftvw,cfttotw,
+     .            rmstr1,rmstr2,nneg1,nneg2,iskipz,w(lvis),w(lxib),
+     .            w(lsnk0),w(lsni0),w(lxkb),w(lnbl),w(lcmuv),
+c   ***CGNSstart
+c    .            thetay,maxbl,myid,myhost,mycomm,mblk2nd)
+     .            thetay,maxbl,myid,myhost,mycomm,mblk2nd,igrid,wk,
+     .            idima,jdima,kdima,w(lbcj),w(lbck),w(lbci),w(lvj0),
+     .            w(lvk0),w(lvi0),w(ltj0),w(ltk0),w(lti0),w(lblk),
+     .            iwk,iwork,iovrlp(nbl),nou,bou,nbuf,ibufdim)
+
+Why Changed: To be in sync with changes 56 and 57 above
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           60
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+
+Remove routine(s):
+
+addxv.F  add2xv.F
+
+Note: the makefiles in the build/cfl/libs directory needs to be 
+      modified to reflect the absence of these two routines.
+
+Why Changed: No longer required because of changes 56 and 59 above
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           61
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    addx.F
+
+Change: (in subroutine argument list)
+
+     .                blank,nou,bou,nbuf,ibufdim)
+
+To:
+
+     .                blank,nou,bou,nbuf,ibufdim,ll)
+
+Change:
+
+      dimension q(jdim,kdim,idim,5),qq(jj2,kk2,ii2,5),
+     .          q1(jj2,kk2,ii2,5)
+      dimension dq(jdim,kdim,idim,5),wq(jj2,kk2,ii2,5),
+     .          wqj(jdim,kk2,ii2,5),blank(jdim,kdim,idim)
+
+To:
+
+      dimension q(jdim,kdim,idim,ll),qq(jj2,kk2,ii2,ll),
+     .          q1(jj2,kk2,ii2,ll)
+      dimension dq(jdim,kdim,idim,ll),wq(jj2,kk2,ii2,ll),
+     .          wqj(jdim,kk2,ii2,ll),blank(jdim,kdim,idim)
+
+After:
+
+c
+c      interpolate solution to finer mesh (imode=0)
+c
+c      interpolate correction to finer mesh (imode=1)
+
+Add:
+
+c
+c     Note:  mode=1 must ONLY be used for ll=5 (primitive variables):
+      if(mode .ne. 0 .and. ll .ne. 5) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''mode must = 0 when ll .ne. 5 in'',
+     .     '' addx'')')
+         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+
+Change: (in do loops 5, 10, 20, 80, and 105; only loop 5 shown below)
+
+      do 5 n=1,5
+
+To:
+
+      do 5 n=1,ll
+
+Change:
+
+      call fill(jdim,kdim,idim,q)
+
+To:
+
+      call fill(jdim,kdim,idim,q,ll)
+
+Why Changed: To allow q, eddy viscosity, and turbulence data to all
+             be interpolated from coarser to finer levels using the
+             same routine, thereby eliminating the addxv routine (which
+             used a cruder inteopolation scheme)
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           62
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    add2x.F
+
+Change: (in subroutine argument list)
+
+     .                 wqj,wqjk,js,ks,is,je,ke,ie,ipass,nbl,nblc)
+
+To:
+
+     .                 wqj,wqjk,js,ks,is,je,ke,ie,ipass,nbl,nblc,
+     .                 nou,bou,nbuf,ibufdim,ll)
+
+Change:
+
+      dimension q(jdim,kdim,idim,5)
+      dimension qc(jj2,kk2,ii2,5),q1(jj2,kk2,ii2,5)
+      dimension dq(jdim,kdim,idim,5), wq(jj2,kk2,ii2,5),
+
+To:
+
+      character*120 bou(ibufdim,nbuf)
+c
+      dimension nou(nbuf)
+      dimension q(jdim,kdim,idim,ll)
+      dimension qc(jj2,kk2,ii2,ll),q1(jj2,kk2,ii2,ll)
+      dimension dq(jdim,kdim,idim,ll), wq(jj2,kk2,ii2,ll),
+
+After:
+
+c
+c      interpolate solution from coarser mesh to
+c       finer embedded mesh (mode=0)
+c
+c      interpolate correction from coarser mesh to
+c        finer embedded mesh (mode=1)
+
+
+Add:
+
+c     Note:  mode=1 must ONLY be used for ll=5 (primitive variables):
+      if(mode .ne. 0 .and. ll .ne. 5) then
+         nou(1) = min(nou(1)+1,ibufdim)
+         write(bou(nou(1),1),'(''mode must = 0 when ll .ne. 5 in'',
+     .     '' addx'')')
+         call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+      end if
+
+Change: (in do loops 5, 10, 20, 80, and 105; only loop 5 shown below)
+
+      do 5 n=1,5
+
+To:
+
+      do 5 n=1,ll
+
+Change:
+
+      call fill(jdim,kdim,idim,q)
+
+To:
+
+      call fill(jdim,kdim,idim,q,ll)
+
+Why Changed: To allow q, eddy viscosity, and turbulence data to all
+             be interpolated from global to embeded levels using the
+             same routine, thereby eliminating the add2xv routine (which
+             used a cruder inteopolation scheme)
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           63
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    fill.F
+
+Change:
+
+      subroutine fill(jdim,kdim,idim,q)
+
+To:
+
+      subroutine fill(jdim,kdim,idim,q,ll)
+
+Change:
+
+      dimension q(jdim,kdim,idim,5)
+
+To:
+
+      dimension q(jdim,kdim,idim,ll)
+
+Change:
+
+      do 3227 l=1,5
+
+To:
+
+      do 3227 l=1,ll
+
+Why Changed: As a consequence of changes 61 and 62 above
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           64
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    collq.F
+
+Change:
+
+      call fill(jj2,kk2,ii2,qq)
+
+To:
+
+      call fill(jj2,kk2,ii2,qq,5)
+
+Why Changed: As a consequence of change 63 above
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           65
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global0.F
+
+Change:
+
+           call getntr(grid,ntr)
+
+To:
+
+           call getntr(grid,ntr,istp)
+           if (istp .eq. 1) then
+             call termn8(myid,-99,ibufdim0,nbuf0,bou,nou)
+           end if
+
+Why Changed: Gracefully exit if a cgns error is encountered when using mpi
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           66
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    cgnstools.F (note: unlike most .F files, cgnstools contains
+                  multiple subroutines)
+
+Change:
+
+      subroutine getntr(cgnsdesired,ntr)
+
+To:
+
+      subroutine getntr(cgnsdesired,ntr,istp)
+
+Change:
+
+c     Purpose: Opens CGNS data file for READ ONLY, gets ntr,
+c     then closes it. NOTE: ibase is assumed to be 1
+c
+c   INPUT:
+c     cgnsdesired.....name of CGNS file to open (character*80)
+c
+c   OUTPUT:
+c     ntr.............number of iterations run so far
+
+To:
+
+c     Purpose: Opens CGNS data file for READ ONLY, gets ntr,
+c     then closes it. NOTE: ibase is assumed to be 1
+c     (This routine is called during the precfl3d phase of
+c     execution, so error messages are written to unit 66)
+c
+c   INPUT:
+c     cgnsdesired.....name of CGNS file to open (character*80)
+c
+c   OUTPUT:
+c     ntr.............number of iterations run so far
+c     istp............=0 no error, =1 error (integer)
+
+After:
+
+      character*80 cgnsdesired
+      character*32 name2
+c
+
+Add:
+
+      istp=0
+
+Change:
+
+c   Open CGNS file
+      call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
+      if (ier .ne. 0) then
+        write(11,'('' Error opening CGNS file'')')
+        write(11,'('' Make sure the file on 1st line of input IS'',
+     +   '' a cgns file!'')')
+        call cg_error_exit_f
+      end if
+
+To:
+
+c   Open CGNS file
+      call cg_open_f(cgnsdesired,MODE_READ,iccg,ier)
+      if (ier .ne. 0) then
+        write(66,'('' Error opening CGNS file'')')
+        write(66,'('' Make sure the file on 1st line of input IS'',
+     +   '' a cgns file!'')')
+        call cg_error_print_f
+        istp=1
+        return
+      end if
+
+Change:
+
+c   Goto base index
+      ibase=1
+      call cg_goto_f(iccg,ibase,ier,'end')
+      if (ier .ne. 0) call cg_error_exit_f
+
+To:
+
+c   Goto base index
+      ibase=1
+      call cg_goto_f(iccg,ibase,ier,'end')
+      if (ier .ne. 0) then
+        write(66,'('' Error attempting to find CGNSBase_t node'')')
+        write(66,'('' Make sure the CGNS file is written correctly'',
+     +   '' (according to SIDS standards)'')')
+        call cg_error_print_f
+        istp=1
+        return
+      end if
+
+Change:
+
+c   Read number of iterations of data in ConvergenceHistory node
+      call cg_convergence_read_f(ntr,name2,ier)
+      if (ier .ne. 0) then
+         write(11,'('' ConvergenceHistory node does not exist.'')')
+         write(11,'(''   setting ntr=0 and continuing'')')
+         ntr=0
+         return
+      end if
+c
+c   Close CGNS file
+      call cg_close_f(iccg,ier)
+      if (ier .ne. 0) call cg_error_exit_f
+
+To:
+
+c   Read number of iterations of data in ConvergenceHistory node
+      call cg_convergence_read_f(ntr,name2,ier)
+      if (ier .ne. 0) then
+c        ConvergenceHistory node does not exist...
+c        setting ntr=0 and continuing:
+         ntr=0
+      end if
+c
+c   Close CGNS file
+      call cg_close_f(iccg,ier)
+      if (ier .ne. 0) then
+        call cg_error_print_f
+        istp=1
+        return
+      end if
+
+Change:
+
+      subroutine reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  q,bci,bcj,bck,qi0,qj0,qk0,ldim,luse,iflag,wk)
+c**********************************************************************
+c     Purpose: Given q array, reorder solution j,k,i to i,j,k (include
+
+
+To:
+
+      subroutine reordsln(nfac,i2d,idima,jdima,kdima,idim,jdim,kdim,
+     +  q,bci,bcj,bck,qi0,qj0,qk0,ldim,luse,iflag,wk)
+c**********************************************************************
+c     Purpose: Given q array, reorder solution i,j,k to j,k,i (include
+
+
+Before:
+
+      subroutine writeturb(iccg,ibase,igrid,nsoluse,idima,jdima,kdima,
+     +   idim,jdim,kdim,ivisc,wk,vist3d,tursav,smin,xjb,xkb,
+     +   xib,blnum,cmuv,vj0,vk0,vi0,tj0,tk0,ti0,i2d,
+     +   xmach,reue)
+
+Add: (new subroutine)
+
+
+      subroutine writeblnk(iccg,ibase,igrid,idim,jdim,kdim,npnts,ipnt,
+     .                     blank)
+c***********************************************************************
+c     Purpose: Writes OversetHoles info (at cell centers) to CGNS data 
+c     base for zone number "igrid" (does this only if the zone in 
+c     question has overset information)
+c     The CGNS file must be already opened in "MODE_MODIFY" mode.
+c
+c   INPUTS:
+c      iccg.............CGNS file index number (determined outside this
+c                       routine) (integer)
+c      ibase............CGNS base index number (determined outside this
+c                       routine) (integer)
+c      igrid............zone (or grid) number (integer)
+c      idim,jdim,kdim...actual (GRIDPOINT) dimensions of existing data
+c                       for this zone (integers)
+c      npnts............number of points where blank=0 in this zone
+c                       (integer)
+c      ipnt.............input as work array, used internal to this 
+c                       routine for storing OversetHoles info,
+c                       must be at least of size (3*npnts) in the
+c                       call to this routine (integer)
+c      blank............cell-centered blank-values, in (j,k,i) order 
+c                       0.0=blanked, 1.0=not-blanked (real)
+c   OUTPUTS:
+c      none
+c***********************************************************************
+c
+#     include "cgnslib_f.h"
+c
+      dimension blank(jdim,kdim,idim)
+      dimension ipnt(3,npnts)
+c
+c   Create integer array where there are holes:
+      n=0
+      do k=1,kdim-1
+      do j=1,jdim-1
+      do i=1,idim-1
+        if(blank(j,k,i) .eq. 0.) then
+          n=n+1
+          ipnt(1,n)=i
+          ipnt(2,n)=j
+          ipnt(3,n)=k
+        end if
+      enddo
+      enddo
+      enddo
+      npnts=n
+c   Write OversetHoles
+      if (npnts .gt. 0) then
+        call cg_hole_write_f(iccg, ibase, igrid, 'OversetHoles',
+     +                       CellCenter, PointList, 1, npnts, ipnt,
+     +                       iindex, ier)
+        if (ier .ne. 0) call cg_error_exit_f
+      end if
+c
+      return
+      end
+c
+
+Why Changed: Gracefully exit if a cgns error is encountered when using mpi,
+             also, add iblank data to cgns file
+
+Change Date: May 1, 2001
+
+--------------------
+--------------------
+
+Number:           67
+
+Version:          6.0
+
+Type:                Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    mgblk.F, setup.F
+
+Change: (2 places in mgblk, 1 place in setup)
+
+                 if (ier .ne. 0) call cg_error_exit_f
+
+to:
+
+                 if (ier .ne. 0) then
+                   call cg_error_print_f
+                   call termn8(myid,-1,ibufdim,nbuf,bou,nou)
+                 end if
+
+Why Changed: Gracefully exit if a cgns error is encountered when using mpi.
+
+Change Date: May 8, 2001
+
+--------------------
+--------------------
+
+Number:           68
+
+Version:          6.0
+
+Type:              X Error     Problem   X Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global0.F
+
+Change: (in subroutine  argument list)
+
+     .                   maxsegdg0,ntr,nnodes,nou,bou,iunit11)
+
+To:
+
+     .                   maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
+     .                   idm0,jdm0,kdm0)
+
+Change:
+
+      nread = maxgr0+1
+c
+c     read grid dims section
+      do n=1,nread
+         call echoinp(iunit5,iunit11,1)
+      end do
+
+To:
+
+      idm0 = 0
+      jdm0 = 0
+      kdm0 = 0
+      read(iunit5,*)
+      nread = maxgr0
+      do n=1,nread
+         read(iunit5,*) idm,jdm,kdm
+         if (idm.gt.idm0) then
+            idm0 = idm
+         end if
+         if (jdm.gt.jdm0) then
+            jdm0 = jdm
+         end if
+         if (kdm.gt.kdm0) then
+            kdm0 = kdm
+         end if
+      end do
+      nread = maxgr0+1
+
+Why Changed: Pass myid to the subroutine; otherwise it is undefined.
+             Also, compute and return the max dimensions over all 
+             zones (for use in plot3d_to_cgns)
+
+Change Date: May 10, 2001
+
+--------------------
+--------------------
+
+Number:           69
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+                  cfl3dv6/source/precfl3d
+                  cfl3dv6/source/tools
+
+Subroutine(s):    main.F (in cfl3d/dist and precfl3d directories)
+                  cfl3d_to_pegbc.F (in tools directory)
+
+Change: (in call to global0)
+
+     .             maxsegdg0,ntr,nnodes,nou,bou,iunit11)
+
+To:
+
+     .             maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
+     .             idm0,jdm0,kdm0)
+
+Why Changed: Pass myid to the subroutine; otherwise it is undefined (see
+             change number 68).
+
+Change Date: May 10, 2001
+
+--------------------
+--------------------
+
+Number:           70
+
+Directory(s):     cfl3dv6/source/tools
+
+Subroutine(s):    plot3d_to_cgns.F
+
+After:
+
+#ifdef CGNS
+      character*80 file2
+
+Add:
+
+      parameter (ibufdim0=2000,nbuf0=4,mxbcfil0=100)
+c
+      character*120 bou(ibufdim0,nbuf0)
+c
+      dimension nou(nbuf0)
+c
+      common /unit5/ iunit5
+      common /info/ title(20),rkap(3),xmach,alpha,beta,dt,fmax,nit,ntt,
+     .        idiag(3),nitfo,iflagts,iflim(3),nres,levelb(5),mgflag,
+     .        iconsf,mseq,ncyc1(5),levelt(5),nitfo1(5),ngam,nsm(5),iipv
+      common /zero/ iexp
+      common /mydist2/ nnodes,myhost,myid,mycomm
+
+
+Change:
+
+      call global0(nblock,idm,jdm,kdm,n11)
+
+To:
+
+c
+c     determine machine zero for use in setting tolerances
+c     (10.**(-iexp) is machine zero)
+c
+      icount = 0
+      compare = 1.0
+      do i = 1,20
+         icount = icount + 1
+         add = 1.
+         do n=1,i
+            add = add*.1
+         enddo
+         x11 = compare + add
+         if (x11.eq.compare)then
+            iexp = i-1
+            goto 4010
+         end if
+      end do
+ 4010 continue
+c
+c     set dummy value of xmach since subroutine readkey uses it
+c     (but is not actually needed for this code)
+c
+      xmach = 0.5
+c
+      iunit5  = 3
+      iunit11 = 99
+      myid    = 0
+      nnodes  = 1
+      call global0(nplots0,maxnode0,n11,lbcprd0,lbcemb0,
+     .             lbcrad0,maxbl0,nblock,maxseg0,maxcs0,ncycmax0,
+     .             intmax0,nsub10,intmx0,mxxe0,mptch0,msub10,
+     .             ibufdim0,nbuf0,mxbcfil0,nmds0,maxaes0,
+     .             maxsegdg0,ntr,nnodes,nou,bou,iunit11,myid,
+     .             idm,jdm,kdm)
+
+Delete: subroutine global0
+
+   NOTE: the version of global0 to delete is the one INSIDE of 
+         plot3d_to_cgns.F, NOT the one in the cfl3dv6/source/cfl3d/libs
+         directory!)
+
+Why Changed: Reuse the same global0 routine that is used elsewhere within
+             the cfl3d suite of codes (specifically, in cfl3d, precfl3d, and
+             cfl3d_to_pegbc), rather than have one that is only slightly
+             different, just for use in plot3d_to_cgns
+
+Change Date: May 10, 2001
+
+--------------------
+--------------------
+
+Number:           71
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/libs
+
+Subroutine(s):    global2.F
+
+Change:
+
+  155    format(1x,28herror in input, mseq, ncgmax,2i5)
+         stop
+
+ To:
+
+  155    format(1x,28herror in input, mseq, ncgmax,2i5)
+         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+
+Why Changed: Use termn8 rather than stop to insure mpi processes are cleanly
+             terminated in the event of a code stop 
+
+Change Date: May 11, 2001
+
+--------------------
+--------------------
+
+Number:           72
+
+Version:          6.0
+
+Type:                Error   X Problem     Modification/enhancement     Other
+                  ---       ---         ---                          ---
+
+Directory(s):     cfl3dv6/source/cfl3d/dist
+
+Subroutine(s):    yplusout.F
+
+Change:
+
+  113 format(/,1x,'WARNING: final value of eddy viscosity has been',
+     .         1x,'limited at one or more',
+     .       /,1x,'points to ',e10.3,'.  Unless this run is far from',
+     .        ,1x,'convergence, increase',
+     .       /,1x,'edvislim via keyword input for subsequent runs')
+
+To:
+
+  113 format(/,1x,'WARNING: final value of eddy viscosity has been',
+     .         1x,'limited at one or more',
+     .       /,1x,'points to ',e10.3,'.  Unless this run is far from',
+     .         1x,'convergence, increase',
+     .       /,1x,'edvislim via keyword input for subsequent runs')
+
+Why Changed: DEC Alpha compiler complained about extra comma.
+
+Change Date: May 11, 2001
+
+--------------------
+--------------------
+
+</pre>
+
+<p><strong><a href="#top">Return to Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

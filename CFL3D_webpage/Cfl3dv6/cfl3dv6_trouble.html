@@ -1,0 +1,111 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6C-SGI [en] (X11; U; IRIX64 6.5 IP30) [Netscape]">
+   <title>Troubleshooting</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+<hr>
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<h1 align=center>Troubleshooting CFL3D</h1>
+
+<ul>
+
+<p>This page gives some hints and ideas for what to do when you experience trouble running
+CFL3D.  This page is far from all-inclusive; it is only a modest attempt to capture
+some of the experience from running the code.</p>
+
+<p>CFL3D is designed to recognize when
+obvious mistakes in input are made: these errors will be reported to you either
+in the file <strong>cfl3d.error</strong>, <strong>precfl3d.out</strong>, or in the standard output file (usually called
+<strong>cfl3d.out</strong>, but set by the user).  Even when the code runs successfully, the
+user should <em>always</em> check the standard output file for WARNING messages, geometric mismatches,
+and other messages and/or error reports.</p>
+
+<p>The ideas given below are mostly for when the code blows up, and
+the code's output "advice" is not very helpful (floating point exception, NaN detected, etc.).
+Additional troubleshooting ideas are also
+given in the Version 5.0 manual in Chapter 10, which can be reached by
+clicking on the "Version 5.0 Manual" button in the Index list at left.</p>
+
+<ul>
+<li type=circle>
+<p>Most of the time, problems running the code can be traced to the use of a poor grid.
+The grid should look "nice."  There should be "gentle" stretching factors, the grid should
+be as orthogonal looking as possible, and dramatic changes in distance or orientation
+from one grid line to the next should be avoided.  Furthermore, the grid
+minimum spacing (at walls) should be appropriate to the problem you are running.
+For turbulent computations, this means having a minimum y+ level less than or roughly 1.  Wall
+functions can also be employed for grids coarser than this, but wall functions are not recommended
+in general.  The grid far-field extent (for freestream type calculations) should be
+far enough from the body of interest.  Depending on the case, this can be at least
+50 chords or body-lengths away.</li>
+
+<li type=circle>
+<p>The first thing to try after a case blows up is to lower the magnitude of the CFL number or time step
+(<strong>dt</strong> in the input file).  Typically you want CFL number to be somewhere between 2-5,
+but sometimes you need to lower it to get a solution going.  If you have to lower CFL
+number to less than 0.2, then something else is probably wrong and you might want to
+try a different strategy. If you are running time-accurately, then lowering the time
+step can help, but if it has to be lowered so far that the solution hardly progresses in
+a reasonable time, then you might want to
+try a different strategy, like using a different number of subiterations (set by <strong>ncyc</strong> for
+time-accurate runs) or using a different time-stepping
+scheme (set by <strong>ita</strong>). </li>
+
+<li type=circle>
+<p>Running on a coarser level of the grid sometimes helps get the solution going
+(i.e., using <strong>mseq</strong> as described in the Manual).  </li>
+
+<li type=circle>
+<p>For turbulent computations, try running a more robust turbulence model first (such 
+as SA (<strong>ivisc</strong>=5)), then restarting from that. </li>
+
+<li type=circle>
+<p>For turbulent computations that blow up, there are many Keyword inputs that can be employed (see
+"New Features" page for more information).  Changing some of these may help when a turbulent computation
+fails.  The default parameters in CFL3D have been set to work for <em>a wide variety</em> of typical
+cases, but there are no guarantees, of course.  Playing with some of the turbulence model parameters
+may help for particular problems.  For example, setting the Keyword input <strong>tur1cut</strong>
+and/or <strong>tur2cut</strong> to -1.0 may help by keeping the particular 2-equation turbulent quantity at a reasonable
+level, rather than allowing it to take on a very low limited level in
+regions of troublesome convergence.  The Keyword
+input <strong>nfreeze</strong> can sometimes help by freezing the turbulence levels for a while. The
+Keyword input <strong>nsubturb</strong> can be used to perform additional turbulence model
+inner iterations during each time step (or subiteration). </li>
+
+<li type=circle>
+<p>For very high Mach number hypersonic flows that blow up, 
+first be sure that the flux limiter <strong>iflim</strong> is turned on (e.g.,
+<strong>iflim(i) = iflim(j) = iflim(k)</strong> = 4).  Also, try setting the Keyword input <strong>epsa_r</strong> to 0.3 or
+so (entropy fix). Other strategies include running with flux-vector splitting (<strong>ifds</strong>=0),
+creeping up on the Mach number, and/or using mesh sequencing.</li>
+
+<li type=circle>
+<p>For very low Mach number flows (M < 0.05 or so) that blow up, 
+or for flows that have large regions of very low Mach number flow, 
+try preconditioning (described on the "New Features" web page). </li>
+
+<li type=circle>
+<p>Finally, be sure you have the latest version of CFL3D, and keep up with the important Updates posted on
+the "Updates" web page. </li>
+
+</ul>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

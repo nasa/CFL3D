@@ -1,0 +1,278 @@
+#!MC 900
+$!VarSet |LFDSFN1| = '"flatplate_sa.dat" "flatplate_sst.dat" "flatplate_easmko.dat"'
+$!VarSet |LFDSVL1| = '"log(y+)" "u+"'
+$!SETSTYLEBASE FACTORY
+$!PAPER 
+  BACKGROUNDCOLOR = WHITE
+  ISTRANSPARENT = YES
+  ORIENTPORTRAIT = NO
+  SHOWGRID = YES
+  SHOWRULER = YES
+  SHOWPAPER = YES
+  PAPERSIZE = LETTER
+  PAPERSIZEINFO
+    {
+    LETTER
+      {
+      WIDTH = 8.5
+      HEIGHT = 11
+      LEFTHARDCLIPOFFSET = 0.125
+      RIGHTHARDCLIPOFFSET = 0.125
+      TOPHARDCLIPOFFSET = 0.125
+      BOTTOMHARDCLIPOFFSET = 0.125
+      }
+    }
+  RULERSPACING = ONEINCH
+  PAPERGRIDSPACING = HALFINCH
+  REGIONINWORKAREA
+    {
+    X1 = -0.05
+    Y1 = -0.05
+    X2 = 11.05
+    Y2 = 8.55
+    }
+$!COLORMAP 
+  CONTOURCOLORMAP = SMRAINBOW
+$!COLORMAPCONTROL RESETTOFACTORY
+### Frame Number 1 ###
+$!READDATASET  '|LFDSFN1|' 
+  INCLUDETEXT = NO
+  INCLUDEGEOM = NO
+  VARLOADMODE = BYNAME
+  VARNAMELIST = '|LFDSVL1|' 
+$!REMOVEVAR |LFDSVL1|
+$!FRAMELAYOUT 
+  SHOWBORDER = NO
+  SHOWHEADER = NO
+  HEADERCOLOR = RED
+  XYPOS
+    {
+    X = 1
+    Y = 0.25
+    }
+  WIDTH = 9
+  HEIGHT = 8
+$!FRAMEMODE  = XY
+$!FRAMENAME  = 'Frame 001' 
+$!DELETEXYMAPS 
+$!ACTIVEXYMAPS  =  [1-4]
+$!GLOBALXY 
+  DATALABELS
+    {
+    DISTANCESKIP = 5
+    }
+  LEGEND
+    {
+    SHOW = YES
+    BOX
+      {
+      BOXTYPE = FILLED
+      }
+    XYPOS
+      {
+      X = 46.949
+      Y = 31.695
+      }
+    }
+$!XYMAP  [1]
+  NAME = 'SA' 
+  ASSIGN
+    {
+    ZONE = 2
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = GREEN
+    }
+  SYMBOLS
+    {
+    COLOR = BLACK
+    FILLCOLOR = GREEN
+    SIZE = 1.5
+    LINETHICKNESS = 0.2
+    }
+  BARCHARTS
+    {
+    COLOR = GREEN
+    FILLCOLOR = GREEN
+    }
+  ERRORBARS
+    {
+    COLOR = GREEN
+    }
+$!XYMAP  [2]
+  NAME = 'SST' 
+  ASSIGN
+    {
+    ZONE = 5
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = GREEN
+    }
+  SYMBOLS
+    {
+    SYMBOLSHAPE
+      {
+      GEOMSHAPE = DEL
+      }
+    COLOR = BLACK
+    FILLCOLOR = GREEN
+    SIZE = 1.5
+    LINETHICKNESS = 0.2
+    }
+  BARCHARTS
+    {
+    COLOR = GREEN
+    FILLCOLOR = GREEN
+    }
+  ERRORBARS
+    {
+    COLOR = GREEN
+    }
+$!XYMAP  [3]
+  NAME = 'EASM-ko' 
+  ASSIGN
+    {
+    ZONE = 8
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    SHOW = NO
+    COLOR = GREEN
+    }
+  SYMBOLS
+    {
+    SYMBOLSHAPE
+      {
+      GEOMSHAPE = GRAD
+      }
+    COLOR = BLACK
+    FILLCOLOR = GREEN
+    SIZE = 1.5
+    LINETHICKNESS = 0.2
+    }
+  BARCHARTS
+    {
+    COLOR = GREEN
+    FILLCOLOR = GREEN
+    }
+  ERRORBARS
+    {
+    COLOR = GREEN
+    }
+$!XYMAP  [4]
+  NAME = '&ZN&' 
+  ASSIGN
+    {
+    ZONE = 3
+    XAXISVAR = 1
+    YAXISVAR = 2
+    }
+  LINES
+    {
+    COLOR = BLACK
+    LINETHICKNESS = 0.4
+    }
+  SYMBOLS
+    {
+    SHOW = NO
+    COLOR = BLUE
+    FILLCOLOR = BLUE
+    LINETHICKNESS = 0.2
+    }
+  BARCHARTS
+    {
+    COLOR = BLUE
+    FILLCOLOR = BLUE
+    }
+  ERRORBARS
+    {
+    COLOR = BLUE
+    }
+$!XYAXIS 
+  XDETAIL 1
+    {
+    RANGEMIN = -1
+    RANGEMAX = 6
+    GRSPACING = 1
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        FONT = HELVBOLD
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 3.6
+        }
+      }
+    }
+$!XYAXIS 
+  YDETAIL 1
+    {
+    RANGEMIN = 0
+    RANGEMAX = 30
+    GRSPACING = 5
+    TICKLABEL
+      {
+      TEXTSHAPE
+        {
+        FONT = HELVBOLD
+        }
+      }
+    GRIDLINES
+      {
+      SHOW = YES
+      }
+    TITLE
+      {
+      TEXTSHAPE
+        {
+        HEIGHT = 3.6
+        }
+      }
+    }
+$!XYAXIS 
+  DEPXTOYRATIO = 1
+$!XYLAYERS 
+  SHOWSYMBOLS = YES
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 27.2933616483
+    Y = 95.3810623853
+    }
+  TEXTSHAPE
+    {
+    HEIGHT = 24
+    }
+  TEXT = 'Flat Plate Velocity Profiles' 
+$!ATTACHTEXT 
+  XYPOS
+    {
+    X = 27.3540489642
+    Y = 90.2727754237
+    }
+  TEXTSHAPE
+    {
+    HEIGHT = 20
+    }
+  TEXT = 'M = 0.20   Re = 6 x 10^6   X = 0.8' 
+$!REMOVEVAR |LFDSFN1|
+$!SETSTYLEBASE CONFIG

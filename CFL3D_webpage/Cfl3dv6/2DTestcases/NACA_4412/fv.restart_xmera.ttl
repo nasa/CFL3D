@@ -1,0 +1,16 @@
+title_restart_version: 2
+number_of_titles: 1
+title_type: 1
+font: -1
+color: 2
+x_pos: -0.427387
+y_pos: -0.885050
+z_pos: 0.000000
+text_size: 12
+text_dir: 1
+text_len: 14
+CFL3D + PEGSUS
+arr_width: 1.000000
+arr_height: 1.200000
+arr_slope: 0.000000
+visibility: 1

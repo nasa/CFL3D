@@ -1,0 +1,964 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Patched and Overset Capabilities</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr><center><h2>Patched and Overset Capabilities</h2></center><hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#intro">Introduction</a></li>
+
+<li type=circle><a href="#patch">Patching (Ronnie)</a></li>
+
+<li type=circle><a href="#overset">Overset (Maggie)</a></li>
+
+<li type=circle><a href="#pegasus">Overset (Pegasus)</a></li>
+
+<li type=circle><a href="#disclaim">Disclaimer</a></li>
+</ul>
+
+<p>See <a href="cfl3dv6_testcases.html">Test Cases</a> 
+for a few simple examples demonstrating patched and overset
+capablity.<p>
+
+<hr>
+<hr>
+
+<p><a NAME="intro"><u><strong>INTRODUCTION</strong></u>
+
+<p>CFL3D has the capability to perform computation on both
+patched and overset grids.  For both methods, interpolant
+files must be generated prior to the CFL3D run, which tell
+the code how the grid zones are connected to each other.
+For patched grids, the preprocessor program "Ronnie" is used.
+For overset grids, the original preprocessor program
+"Maggie" can be used, or an alternative is to employ
+the widely-known "Pegasus" software (developed for use with
+the Overflow CFD code).  However, using Pegasus has limitations:
+Pegasus currently finds interpolants only for grid points,
+whereas CFL3D is a cell-center code.  Therefore, in order
+to use Pegasus, one has to "trick" it by first translating
+the standard grid to a grid with points located at the cell centers.
+This process is described below.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="patch"><u><strong>PATCHING (RONNIE)</strong></u>
+
+<p>The preprocessor program "Ronnie" is included with the
+CFL3D package.  There is no manual for Ronnie per se,
+nor is it described in any detail in the CFL3D manual.
+The following serves as the limited instructions
+currently available:</p>
+
+<p>
+<pre>
+     GENERAL NOTES ON PATCHING:
+
+         i) The spacing normal to a block interface should be continuous
+            through the interface.  This need not be strictly true, but
+            the closer the better.
+        ii) A pair of local coordinates xie,eta with corresponding discrete
+            values j,k are introduced on each side of a patch interface. The
+            table below shows the relationships between these local coordinates
+            and the the global (block) coordinate indices i,j,k.  Patch
+            interfaces may lie along (global) coordinate surfaces i=constant,
+            j=constant or k=constant.
+
+               Patch Interface Type (Global)    Global index    Local index
+   
+                     i=constant                       j           j (xie)
+                                                      k           k (eta)
+
+                     j=constant                       k           j (xie)
+                                                      i           k (eta)
+
+                     k=constant                       j           j (xie)
+                                                      i           k (eta)
+
+       iii) For any of the ninter interpolations, more than one block may
+            lie on the "from" side of a patch interface (ifrom > 1, see below).
+            If so, then each "from" block will have its own local xie,eta
+            coordinate system; however as there is only one block for each
+            "to" side, only one xie,eta system is defined on that side of the
+            interface.
+        iv) Viscous surfaces should correspond (in local coordinates) to
+            j=1 (xie=0) and/or k=1 (eta=0). 
+
+         v) The patch algorithm works as follows: for each cell node on
+            the "to" side, a local polynomial fit (see below) relates the
+            physical coordinates x,y,z to the patch surface coordinates
+            xie,eta on the "to" side.  The "to" cell centers xc,yc,zc are
+            then backed out by setting xie,eta to 0.5,0.5.  Similarly, on
+            the "from" side, a polynomal fit relates the physical coordinates
+            of each cell node to the local coordinates on that side.  A search
+            is then done on the "from" side to find the xie,eta coordinates
+            xiec,etac corresponding to xc,yc,zc.  If requested, corrections
+            to xiec and etac are done to insure that the xie=0 and/or eta=0
+            boundaries on either side of the patch interface are coincident
+            (this is especially important on viscous boundaries).  
+
+
+
+
+
+
+
+             EXPLANATION OF INPUT PARAMETERS FOR RONNIE PREPROCESOR
+
+  ****************************** LINE TYPE ONE ******************************
+
+      input/output files - up to 60 characters long,starting in column 1
+
+      in order, must specify names for the following files (one per line):
+
+            grid.......................................................binary
+
+            output.....................................................ascii 
+
+            output (interpolation coeff's read in by cfl3d)............binary
+
+
+  ****************************** LINE TYPE TWO ******************************
+      ioflag and itrace - NOTE:  This line type is new... older versions
+            of ronnie.f did not read this line!
+ 
+            ioflag = 1 allows new input format as indicated below
+                   = 0 for the old input format (where all the "from"
+                     blocks are on one line)
+
+            itrace = -1....no tracing
+                   =  0....save trace from last cell only
+                   = +1....save trace from all cells searched so far
+                           (may give big file!)
+
+            itrace .ne. -1 primarily intended for the code developer
+
+  ****************************** LINE TYPE THREE ***************************
+
+     title describing case
+
+
+  ****************************** LINE TYPE FOUR ****************************
+
+     ngrid   - number of grids input = abs(ngrid)
+             > 0  cfl3d grid format
+             < 0  plot3d/tlns3d format (3d/whole/mg)
+
+               CFL3D format (alpha measured in x-z plane):
+                do 10 n=1,ngrid
+                read() jdim(n),kdim(n),idim(n)
+                read() (((x(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n)),
+              .        (((y(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n)),
+              .        (((z(i,j,k),j=1,jdim(n)),k=1,kdim(n)),i=1,idim(n))
+        10      continue
+
+
+               PLOT3D/TLNS3D format (alpha measured in x-y plane):
+                read() ngrid
+                read() (idim(n),jdim(n),kdim(n),n=1,ngrid)
+                do 10 n=1,ngrid
+                read() (((x(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n)),
+              .        (((y(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n)),
+              .        (((z(i,j,k),i=1,idim(n)),j=1,jdim(n)),k=1,kdim(n))
+        10      continue
+
+          Note: CFL3D assumes that alpha is measured in the x-z plane. Thus,
+                for an aircraft-like configuration, x runs "streamwise", y runs
+                "spanwise" and z runs "normal". CFL3D style grids are assumed
+                to follow this convention. An alternative convention is
+                to have z run "spanwise" and y run "normal", so that alpha is
+                measured in the x-y plane (TLNS3D uses this convention). The
+                second convention is used by default for PLOT3D-style grids.
+                PLOT3D grids with alpha measured in the x-z can be accommodated
+                by altering the parameter ialph in subroutine rp3d:
+
+                ialph = 0 alpha measured in x-z plane for PLOT3D-style grids
+                      > 0 alpha measured in x-y plane for PLOT3D-style grids
+
+                remember to change ialph back for the next case!
+
+
+  **************************** LINE TYPE FIVE ******************************
+                 (DATA FOR LINE TYPE FIVE REPEATED NGRID TIMES)
+
+
+     ncg  - number of coarser grids to construct for multigrid/mesh 
+             sequencing  (= 0 for embedded mesh)
+
+     iem  - embedded mesh flag
+          = 0 for global grid
+          = l level of this embedded grid above global grid level
+
+     grid dimensions:
+     idim - number of points in i-direction
+
+     jdim - number of points in j-direction
+
+     kdim - number of points in k-direction
+
+
+  **************************** LINE TYPE SIX *****************************
+
+     ninter - total number of block interpolations
+
+     NOTE:  A patched grid with two-way communication between the grids on 
+            either side of the patch requires block interpolations in both
+            directions.  For example, a three-block grid with two blocks on
+            one side and the remaining block on the other side of a single
+            patch interface would require ninter=3, whereas a three-block 
+            grid with two patch interfaces (one block on either side of each
+            interface) would require ninter=4.  Each of the ninter 
+            interpolations corresponds to interpolating "to" a particular
+            boundary of a given block "from" the boundaries of one or more
+            different blocks.
+
+  *************************** LINE TYPE SEVEN ****************************
+             (DATA FOR LINE TYPE SEVEN REPEATED NINTER TIMES)
+
+        int - interplolation number
+
+      iifit - type of fit
+            = 1 bi-linear fit
+            = 2 serendipity (degenerate) bi-quadratic fit
+            = 3 quadratic fit in xie, linear fit in eta 
+            = 4 linear fit in xie, quadratic fit in eta
+
+        NOTE: if iifit is negative on input (with absolute value equal to
+              one of the four values above), then a plot3d file is output
+              for this patch interface. The file is in /mg/for format, and,
+              in order, contains: all the "from" interfaces, the "to" interface
+              and the interpolated cell centers of the "to" interface.
+  
+     llimit - maximum step size (number of cells) to use in search routine
+     iitmax - maximum number of iterations allowed to find each "to" cell 
+     mmcxie - flag to indicate whether the xie=0 boundaries on either side 
+              of the patch interface are to be rendered coincident. (generally
+              required if xie=0 corresponds to a viscous surface).
+            = 0   do not render the xie=0 boundaries coincident
+            > 100 render the xie=0 boundaries coincident
+            1-100 the code will try to decide whether or not the boundaries 
+                  should be rendered coincident.  The larger the value, the 
+                  greater the number differences between the two boundaries
+                  can be before deciding they should not be rendered 
+                  coincident.
+              Note: for multiple "from" blocks, in which multiple xie,eta 
+                    coordinate systems are defined, the proper xie=0 boundary
+                    to consider is the one closest to the xie=0 boundary on 
+                    the "to" side.
+     mmceta - same as mmcxie, but pertaining to the eta=0 boundary.
+
+       iic0 - flag for C-0 continuous boundaries; an extra diagnostic 
+              check is performed on the interpolation coefficients to 
+              insure that local values of xie and eta are equal to 0.5
+              (to within a set tolerance). Also resets iifit, mmcxie,
+              mmceta to values most robust for C-0 interfaces. Also, the
+              flag turns off the projection step in the inversion routine. 
+
+     iiorph - flag to allow points which cannot be located by the search
+              routine to be flagged as "orphan" points, and to be marked
+              as being "interpolated" from block 0. 
+              
+            = 0  do not allow orhpan points.
+            = 1  allow orphan points
+
+              The coding in CFL3D (version 4.0 and later)
+              is such that points marked as interpolated from block 0 are 
+              in fact *not* interpolated. USE THIS OPTION WITH CAUTION!!
+              The option can be useful in certain situations, for example,
+              for exposed flap edges. However, extreme care must be taken
+              since with the orphan option turned on, ronnie has no way of
+              telling the differnece between points that really are orphans
+              and those that are outside the legal range of xi and eta due 
+              to other factors - like input errors. Thus, it is strongly
+              suggested that iifit be set negative on input, so that plot3d
+              output is generated. If the orphan flag is set, then the plot3d
+              output is written in mg/for/blank format. The last two grids
+              in the resulting fort.xx plot3d files are the interpolated cell
+              centers for the non-orphan points and the cell centers of the
+              orphan points. These plot3d files must be checked to make sure
+              that the orphan points have been set correctly. NOTE: shearing
+              or arc-length corrections to render viscous surfaces cannot be
+              done when orphans are present. If portions of the boundaries
+              need to be rendered coincident, then a block face containing 
+              orphans should be broken up into multiple segments, with orphan
+              points segregated into specific segments. Then, those segments
+              that do not contain oprhan points may be rendered coincident 
+              with an opposing block via the mmcxie and mmeta parameters.
+ 
+ 
+     GENERAL GUIDELINES:
+
+             iifit: This is the most important parameter for successful 
+                    completion of the search routine.  For viscous grids,
+                    a general rule of thumb is to use a quadratic fit in 
+                    the local coordinate corresponding to the tangential 
+                    direction along the viscous surface, and a linear fit 
+                    in the local coordinate  corresponding to the viscous
+                    direction.  Alternatively, use a quadratic fit in the
+                    local direction for which the grid curvature is highest.
+                    Patch surfaces with high curvature in both directions may
+                    require the bi-quadratic fit, but experience shows this
+                    is the most difficult option to converge the search with.
+                    If the user has chosen a particular fit (other than a 
+                    bi-linear fit) and the search routine is not successful 
+                    using that fit for a particular "to" cell, the code 
+                    will back off and try a lower order fit for that cell,
+                    and print a message as to what type of fit it is using.
+                    For the next cell, the fit returns to the input value.
+                    If this happens for a large number of cells, its probably 
+                    best to start over, using whatever fit (if any) the code 
+                    finds to work in the problem cells.   
+
+                    C-0 meshes are best done with iifit = 1 
+
+            llimit: 1 is the most robust value; larger values can speed the
+                    search but can lead to problems in certain pathalogical 
+                    cases.
+
+            iitmax: This should be a number on the order of the maximum
+                    dimension of the patch interface. Larger values of llimit
+                    can get by with smaller values of iitmax. If the recommended
+                    value of llimit = 1 is used, then just take iitmax as the
+                    max dimension any patch interface.
+
+        mmcxie/eta: These input parameters (as well as iifit) require that the 
+                    user have a clear picture of the local patch interface
+                    coordinate system (see notes ii-iv above).  In many 
+                    cases, but certainly not all, the boundaries should be
+                    rendered coincident.  Important exceptions include cases
+                    in which the global coordinates run in different 
+                    directions on either side of the patch interface, and
+                    some (but not all) cases in which more than one block
+                    lies on the "from" side.  It is recommended that the user
+                    decide before hand whether the boundaries should be 
+                    rendered coincident and use a value of mmcxie/eta of
+                    0 or > 100 accordingly.
+
+
+  *************************** LINE TYPE EIGHT ****************************
+             (DATA FOR LINE TYPE EIGHT REPEATED NINTER TIMES)
+  This section is input in one of two ways, depending on the value of ioflag
+
+        int - interplolation number
+
+        ito - block number/topology of "to" surface
+              ("to" refers to the block being interpolated)
+              See note below.
+
+       xie1 - starting index in xie for which interpolation coefficients 
+              will be found on "to" side of interface
+ 
+       xie2 - ending index in xie for which interpolation coefficients
+              will be found on "to" side of interface
+
+       eta1 - starting index in eta for which interpolation coefficients  
+              will be found on "to" side of interface
+ 
+       eta2 - ending index in eta for which interpolation coefficients
+              will be found on "to" side of interface
+
+       NOTE:  if the entire range is desired, a shortcut is to input zeros
+              for the begining and ending indicies
+
+        nfb - number of block boundaries which make up the "from" side of the
+              patch surface ("from" refers to the block(s) from which the
+              interpolations are made)
+                      
+      ifrom - block number/topology of "from" surface(s)
+
+     NOTE:  The general form is ifrom (or ito) = Nmn, 
+            where N  indicates the global block number of the block
+                  m  indicates the generalized coodinate which is constant
+                     along the patch surface (m=1 implies i=const, m=2 implies
+                     j=const, and m=3 implies k=const), and 
+                  n  indicates on which of the two possible m=constant surfaces
+                     the patch occurs (n=1 implies the patch occurs on m=1,
+                     while n=2 implies the patch occurs on m=mmax) e.g :
+
+            = 0111 patching occurs along the i=1 boundary  of block 1
+
+            = 0112 patching occurs along the i=imax boundary of block 1
+
+            = 0121 patching occurs along the j=1 boundary of block 1
+                        
+            = 0122 patching occurs along the j=jmax boundary of block 1
+  
+            = 0131 patching occurs along the k=1 boundary of block 1
+                        
+            = 0132 patching occurs along the k=kmax boundary of block 1
+
+   The following are examples of the two input methods.  
+
+ioflag=0:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB  FROM  FROM  FROM  FROM...
+   1  0112      0     0      0      0     1  0411
+   2  0212      0     0      0      0     1  0411
+   3  0312      1   113      0      0     1  0411
+   4  0312    113   245      0      0     1  0411
+   5  0312    245   337      0      0     1  0411
+   6  0411      0     0      0      0     3  0112  0212  0312
+   7  0412      0     0      0      0     1  0511
+   8  0511      0     0      0      0     1  0412
+
+ioglag=1:
+
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB (one per int)
+      FROM   XIE1  XIE2   ETA1   ETA2       (repeat nfb times for each int)
+   1  0112      0     0      0      0     1
+      0411      0     0      0      0
+   2  0212      0     0      0      0     1
+      0411      0     0      0      0
+   3  0312      1   113      0      0     1
+      0411      0     0      0      0
+   4  0312    113   245      0      0     1
+      0411      0     0      0      0
+   5  0312    245   337      0      0     1
+      0411      0     0      0      0
+   6  0411      0     0      0      0     3
+      0112      0     0      0      0
+      0212      1    21      1     97
+      0312      0     0      0      0
+   7  0412      0     0      0      0     1
+      0511      0     0      0      0
+   8  0511      0     0      0      0     1
+      0412      0     0      0      0
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="overset"><u><strong>OVERSET (MAGGIE)</strong></u>
+
+<p>The preprocessor program "Maggie" is included with the
+CFL3D package.  There is no manual for Maggie per se,
+nor is it described in any detail in the CFL3D manual.
+The following serves as the limited instructions
+currently available:</p>
+
+<p>
+<pre>
+                   EXPLANATION OF INPUT PARAMETERS FOR MAGGIE
+
+
+  ****************************** INITIAL LINES ******************************
+
+     input/output files:
+       binary grid file
+       maggie.out
+       ovrlp.bin (this is the file needed by cfl3d)
+       plot3d file for viewing maggie results
+
+
+  ****************************** LINE TYPE ONE ******************************
+
+     title describing case
+
+
+  ****************************** LINE TYPE TWO ******************************
+
+     nmesh  - number of grids
+
+     iplt3d - plot3d flag
+            = 0 no plot3d output
+            = 1 plot3d files will be output for all grids
+
+
+  ***************************** LINE TYPE THREE *****************************
+                (DATA FOR LINE TYPE THREE REPEATED NMESH TIMES)
+
+     jmax   - number of grid points in the j-direction corresponding to the
+              j-direction in CFL3D
+
+     kmax   - number of grid points in the k-direction corresponding to the
+              k-direction in CFL3D
+
+     lmax   - number of grid points in the l-direction corresponding to the
+              i-direction in CFL3D
+
+     noutr  - flag to indicate if outer boundary requires interpolated data
+            = 0 no
+            = 1 yes
+
+     nhole  - number of holes to be created
+
+     nobtyp - number of computational-coordinate planes defining outer
+              boundary points to be interpolated (zero if noutr = 0)
+
+
+  ****************************** LINE TYPE FOUR *****************************
+                (DATA FOR LINE TYPE FOUR REPEATED NMESH TIMES)
+
+     jsrs - starting index in j-direction for the search of the overlap data
+
+     jsre - ending index in j-direction for the search of the overlap data
+
+     ksrs - starting index in k-direction for the search of the overlap data
+
+     ksre - ending index in k-direction for the search of the overlap data
+
+     lsrs - starting index in l-direction for the search of the overlap data
+
+     lsre - ending index in l-direction for the search of the overlap data
+
+     NOTE:  When the above parameters are set to zero, the search range
+            will include the entire grid. (recommended)
+
+
+  ****************************** LINE TYPE FIVE *****************************
+       (LINE TYPES FIVE-EIGHT MUST BE REPEATED AS A GROUP FOR EACH HOLE)
+
+     mesh      - current mesh number
+
+     hole no.  - hole number in current mesh
+
+     ihbtyp(m) - number of computational-coordinate planes in mesh m to define
+                 hole in current mesh
+                 (m = 1,nmesh)
+
+
+  ****************************** LINE TYPE SIX ******************************
+                                     nmesh
+  (FOR LINE TYPE SIX, A TOTAL OF    SUM[IHBTYP(i)]    LINES NEED TO BE INPUT)
+                                      i=1
+
+     mesh - mesh number of mesh defining hole
+
+     jh1  - starting location in j-direction for definition of hole 
+
+     jh2  - ending location in j-direction for definition of hole
+
+     kh1  - starting location in k-direction for definition of hole
+
+     kh2  - ending location in k-direction for definition of hole
+
+     lh1  - starting location in l-direction for definition of hole
+
+     lh2  - ending location in l-direction for definition of hole
+
+     NOTES:  1) ONE pair of the three sets of indicies (jh1,jh2 or kh1,kh2 or
+                lh1,lh2) must have the same starting and ending values, since
+                this line type defines surfaces that will (approximately) define
+                the hole.
+
+             2) The pair of indicies that has the same starting and ending 
+                values should be negative if the outward pointing normal is
+                in the direction of decreasing computational coordinate.
+
+             3) the indicies are to be specified in terms of grid point
+                values - note that this is in contrast to how outer
+                boundaries are specified in line type 9.
+
+             4) A shorthand for specifying the entire range of an index
+                is to use 0 and 1 as the begining and ending values.
+
+  ***************************** LINE TYPE SEVEN *****************************
+     nlist  - total number of grids to search
+
+     lst(m) - grid number to search for target cells associated with
+              fringe points
+              (m=1,nmesh)
+
+
+  ***************************** LINE TYPE EIGHT *****************************
+     iorph  - flag to set how orphan points (if any) are handled
+            = 0  use value at nearest neighbor in donor mesh (zeroth order 
+                 interpoltion)
+            = 1  extrapolate from nearest neighbor in donor mesh
+            = 2  extrapolate from nearest neighbor in donor mesh, unless
+                 the resulting extrapolation coefficients fall outside the
+                 generally acceptable range -0.5 to 1.5. for such points
+                 the nearest neighbor is used instead (recommended)
+
+     ihole  - flag to repeat search for stencil points if the first search
+              turns up
+              a stencil which contains one or more hole points (illegal stencil)
+            = 0  do not repeat search
+            = 1  repeat search in meshes other than the one in which the illegal
+                 stencil was found. NOTE: only applicable if nlist > 1.
+            
+
+
+  ***************************** LINE TYPE NINE *****************************
+   (LINE TYPES NINE-ELEVEN MUST BE REPEATED AS A GROUP FOR EACH GRID NEEDING
+    BOUNDARY INFORMATION)
+                                     nmesh
+  (FOR LINE TYPE NINE, A TOTAL OF    SUM[NOBTYP(i)]    LINES NEED TO BE INPUT)
+                                      i=1
+
+     mesh - current mesh number
+
+     jo1  - cell center starting location in j-direction for definition of
+            outer boundary points to be interpolated
+
+     jo2  - cell center ending location in j-direction for definition of 
+            outer boundary points to be interpolated
+
+     ko1  - cell center starting location in k-direction for definition of 
+            outer boundary points to be interpolated
+
+     ko2  - cell center ending location in k-direction for definition of 
+            outer boundary points to be interpolated
+
+     lo1  - cell center starting location in l-direction for definition of 
+            outer boundary points to be interpolated
+
+     lo2  - cell center ending location in l-direction for definition of 
+            outer boundary points to be interpolated
+
+     NOTES: 1) The shorhand convention of 0,1 for specifying the full range
+            of an index, as described under line type 6, is also applicable
+            to the specification of the outer boundary.
+
+            2) The indicies specified under line type eight refer to cell-center
+            grid; indicies in all other line types refer to actual grid. If
+            the grid has (point) dimensions JDIM*KDIM*LDIM, then the
+            corresponding cell center grid has dimensions JDIM-1*KDIM-1*LDIM-1.
+            The outer boundaries created via this line type generally should 
+            extend beyond the range of cell center dimensions, e.g. for a 
+            J-boundary, the cell center boundary points should have values
+            JDIM and JDIM+1 or 0 and -1. Maggie will extrapolate x,y,z 
+            coordinates for these newly defined cell centers based on the
+            local stretching rates in the existing grid, and then attempt
+            to determine interpolation coefficients from another block based
+            on these x,y,z coordinates. There may be situations, however, where
+            the extraopated x,y,z coordinates may be inappropriate (for example,
+            they may "punch through" a nearby solid surface or symmetry plane).
+            In that case, an alternative approach is to set the indicies for
+            the outer boundaries to be  JDIM-2 and JDIM-1 or 1 and 2, as 
+            appropriate.  This alternative approach is less well tested in
+            terms of usage in CFL3D. The bottom line is that acceptable
+            outer boundary indicies are (for the J direction): 0,-1 or 1,0
+            and JDIM,JDIM+1 or JDIM-2,JDIM-1.
+            
+
+            As a specific example, consider the following:
+
+            Say a particular block (say blk 2)  has (point) dimensions jxkxl =
+            33x65x17. That means the cell center indicies are 32x64x16. 
+            Furthermore, assume the outer  k-boundary (i.e. near the k=65 grid 
+            point) needs to receive data from some other block. There are 
+            already 64 cells in the k-direction, so the standard outer boundary
+            definition would be to extrapolate the grid to create 2 layers
+            of ghost cells at the outer k-boundary, with these ghost cells
+            centers having indicies k=65 and k=66. Then the maggie input would be:
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+            MESH       JO1       JO2       KO1       KO2       LO1       LO2
+               2         1        32        65        66         1        16
+
+            or using the shorthand 0/1 for the J and L directions:
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+            MESH       JO1       JO2       KO1       KO2       LO1       LO2
+               2         0         1        65        66         0         1
+
+
+            If it is necessary to connect the inner k-boundary to another grid 
+            (near the k=1 grid line), then note that the existing cell centers 
+            start at 1, so the preferred method is to specify ghost cells
+            0 and -1. Thus
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+             MESH       JO1       JO2       KO1       KO2       LO1       LO2
+                2         1        32         0        -1         1        16
+
+            or using the shorthand 0/1 for the J and L directions (be careful
+            not to confuse the shorhand notation 0,1 with the ghost cell location
+            0,-1):
+
+            OUTER BOUNDARY POINTS (CELL CENTER) TO BE INTERPOLATED:
+             MESH       JO1       JO2       KO1       KO2       LO1       LO2
+                2         0         1         0        -1         0         1
+
+  ****************************** LINE TYPE TEN *****************************
+
+     nlist  - total number of grids to search
+
+     lst(m) - grid number to search for target cells associated with
+              outer boundary points
+              (m=1,nmesh)
+  ***************************** LINE TYPE ELEVEN *****************************
+     iorph  - flag to set how orphan points (if any) are handled
+            = 0  use value at nearest neighbor in donor mesh 
+                 (zeroth order interp.)
+            = 1  extrapolate from nearest neighbor in donor mesh
+
+     ihole  - flag to repeat search for stencil points if the first search
+              finds a stencil which contains one or more hole points 
+            = 0  do not repeat search
+            = 1  repeat search in meshes other than the one in which the illegal
+                 stencil was found. NOTE: only applicable if nlist > 1.
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="pegasus"><u><strong>OVERSET (PEGASUS):</strong></u>
+
+<p>A very crude procedure has been developed to utilize the popular
+software Pegasus 5.1, in conjunction with CFL3D for overset grids.
+(Note that the Pegasus 5.1 software does not come with the CFL3D 
+package - it must be obtained from 
+<a href="http://people.nas.nasa.gov/~rogers/home.html">NASA Pegasus/Tools Page</a>.)  
+The following
+instructional procedure is based on Pegasus 5.1.  This procedure
+may or may not change with later releases of Pegasus.
+This procedure currently only works for 3-D cases.  There
+is currently no automatic procedure for employing Pegasus 5.1 in
+conjunction with CFL3D that works for 2-D cases.  For an example 
+of using an earlier version (Pegasus 4.1) for a 2-D case, see 
+the NACA 4412 Airfoil test case in 
+<a href="cfl3dv6_testcases.html">Test Cases</a>.
+</p>
+
+<p>The following procedure was set up assuming that the user
+is starting with an Overflow case already set up.  In other words,
+an existing PLOT3D grid exists (for use with Overflow), as well
+as an Overflow input file and a Pegasus 5.1 input file. Be sure that
+the precision of the PLOT3D grid matches the compilation precision
+of all the codes (for example, if CFL3D and its tools are compiled
+double precision, then the PLOT3D grid must also be double precision).
+Double precision is recommended for everything.</p>
+
+<p>Special note: In conjunction with this methodology for obtaining
+overset interpolants, it has been noticed that the CFL3D solutions can sometimes suffer
+from initial-condition-dependent hysteresis.  In other words, restarting
+a case from a previous converged solution at a different angle-of-attack
+can converge to a slightly different result than if run from scratch.
+See, for example, the appendix of Journal of Aircraft, Vol. 45, No. 3,
+pp. 762-780.  The precise cause of this initial-condition-induced
+hysteresis is not known.  We therefore recommend that when using this crude
+procedure for overset grids, runs always be
+performed from scratch.</p>
+
+<p>
+<pre>
+Using Pegasus 5.1 with CFL3D for 3-D cases:
+
+1. Use the program p3d_to_INGRID (found in CFL3D's "Tools" directory):
+
+p3d_to_INGRID
+  y
+  1        <-- Pegasus 5
+  grid.peg5  <-- name of grid to create
+  1        <-- augmented  
+  0        <-- preserve indices
+  1
+  nameofoverflowgrid
+  1
+
+2. Begin to run through Pegasus 5.1 procedure:
+
+peg_setup
+1
+1
+overflowinputfile
+grid.peg5
+5
+
+Note: if you do not have an overflowinputfile, then you must
+make/modify the peg.in file by hand to input all the BCs and
+other necessary information, and also you must run:
+   peg_hole_surf
+to generate the holecutter file.
+
+3. Make mods to pegasus input file (peg.in), and run it:
+
+You MUST set ORPHFIX = .F. in the peg.in file!
+(Also, near some TE regions, one may need to increase the 
+index by 1 in peg.in, to account for the fact that the 
+indices on the original Overflow grid are offset by one, 
+compared to the CFL3D enhanced cell-center grid.)
+Also, sometimes it is necessary to set FRINGE=2.
+Then, run pegasus 5.1:
+
+pegasus5 < peg.in > peg.out &
+
+4. Do a check:
+
+Check log.xxxx.xxxx (near bottom) to see how many orphans.
+If it worked correctly, there should not be too many.
+
+5. Create "ORPHAN" file:
+
+peg_orph
+4
+2
+ORPHAN
+5
+
+6. Now, need to edit "ORPHAN" file to supply missing zones, e.g.:
+
+ Orphan points for mesh: FUSELAGE1     dimensions =     98   142    98
+     no.      j    k    l
+
+(Need insert of 4 lines total for each zone not mentioned -
+2 lines + 2 empty lines.  Get the names of the missing
+zones from peg.in.  This is necessary because currently
+XINTOUT_to_ovrlp reads the ORPHAN file in order as if each
+zone was accounted for, but peg_orph only writes info for a zone
+if there are >= 1 orphans in it.)
+
+The names or dimensions do not have to be correct,...
+there just needs to be a "place-holder" for each zone.
+
+7. Run program XINTOUT_to_ovrlp (found in "Tools" directory):
+
+XINTOUT_to_ovrlp
+  5        <-- Pegasus 5
+  grid.peg5
+  0        <-- 3-D
+  0        <-- maggie / CFL3D
+
+This code creates the stencil file "ovrlp.bin", needed when
+running CFL3D.  
+(This also writes the files source_chk.unf & orphan_chk.unf 
+(MG, UNF) for checking the final resulting holes, fringes,
+etc.)  (source_chk.unf has IBLANK also.)
+
+8. Cleanup:
+
+To delete WORK and X_DIR files, etc:
+peg_setup
+2
+5
+
+9. Grid transform:
+
+Using the above procedure as written, it is also necessary 
+to transform the original PLOT3D grid (for Overflow) to a 
+different ordering (for CFL3D):
+
+      read(20) ngrid
+      read(20) (jdimg(n),kdimg(n),idimg(n),n=1,ngrid)
+      do n=1,ngrid
+        jd = jdimg(n)
+        kd = kdimg(n)
+        id = idimg(n)
+        read(20) (((x(j,k,i),j=1,jd),k=1,kd),i=1,id),
+     .           (((y(j,k,i),j=1,jd),k=1,kd),i=1,id),
+     .           (((z(j,k,i),j=1,jd),k=1,kd),i=1,id)
+      enddo
+
+      write(25) ngrid
+      write(25) (idimg(n),jdimg(n),kdimg(n),n=1,ngrid)
+      do n=1,ngrid
+        jd = jdimg(n)
+        kd = kdimg(n)
+        id = idimg(n)
+        idout = id
+        if (i2d .ne. 0) idout = 2
+        write(25) (((x(j,k,i),i=1,idout),j=1,jd),k=1,kd),
+     .            (((y(j,k,i),i=1,idout),j=1,jd),k=1,kd),
+     .            (((z(j,k,i),i=1,idout),j=1,jd),k=1,kd)
+      enddo
+
+A crude tool exists to perform the above grid conversion, and also
+to create a <strong>rough</strong> first-guess CFL3D input file from an OVERFLOW
+input file.  The tool is:
+</pre>
+<a href="overflow_to_cfl3d.F">overflow_to_cfl3d.F</a>.
+<pre>
+This tool is supplied for your convenience, but it is not
+guaranteed or supported in any way.  If there are "new" namelist
+parameters used in your OVERFLOW input file, the tool may not
+recognize them.
+
+Remember, this is a crude tool!  After you run it, you will need 
+to edit the CFL3D input file created.  For example, you will need
+to set sref, cref, etc. appropriately.
+Also, this tool often can incorrectly set BC and/or 1-to-1 indices
+that occur in the MIDDLE of a face: e.g., 1-33, 34-75
+should be changed to 1-33, 33-75 for CFL3D!
+ 
+Also, you should go through the CFL3D input file in detail and
+check ALL BCs!  This tool sometimes assigns
+incorrect BCs (like 1000 rather than 1003).
+Also, check IVISC: it may be the wrong number, and you may
+want it ON in all 3 directions, not just one.
+
+10. Running CFL3D:
+
+When running CFL3D, use the translated grid created in step 9,
+along with the <strong>overlp.bin</strong> file created in step 7.
+In the input file, you probably will want to set the keyword input
+parameter "<strong>iblnkfr 0</strong>".
+
+If the code fails to run and you get an error message like:  
+
+After analysis, most probable cause is: boundary data not set.
+
+for one or more of the overlapped boundaries, then it is likely that the 
+Pegasus procedure failed.  This error message means that BC information
+is not available for all or part of the boundary in question.  In other 
+words, the interpolants may not have been acquired properly.  Check the 
+Pegasus procedure to make sure there was sufficient overlapping
+on all boundaries. Also, check the cfl3d input file to make sure
+that <strong>iovrlp</strong> has been set to 1 on all zones where overlapping
+occurs.
+
+An important note: if the grid has overlapping ON the body, then
+CFL3D's force routine ends up double-counting the overlapped
+areas (this issue is discussed in the CFL3D User's Manual in
+section 3.7).  If desired, one can use OVERFLOW-type tools such
+as <strong>mixsur</strong> and <strong>overint</strong> to postprocess the CFL3D
+solution, to account for this overlap.  (Note that if using an existing
+<strong>mixsur.in</strong> file from OVERFLOW, its indices must be switched
+because of the index switching performed in step 9 on the grid.
+For example, if the original <strong>mixsur.in</strong> file from OVERFLOW
+had <strong>IBDIR</strong> = 3, then it must be changed to 1, and the
+two indices at the end of the list (LS, LE), must be moved to
+the beginning of the list (JS, JE).)  The postprocessing is performed
+on CFL3D's <strong>plot3dg.bin</strong> and <strong>plot3dq.bin</strong> files, which 
+must first be translated to double precision and renamed <strong>grid.in</strong> 
+and <strong>q.save</strong> (double precision is recommended for <strong>mixsur</strong> 
+and <strong>overint</strong>.)
+
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="disclaim"><u><strong>DISCLAIMER</strong></u>
+
+<p>The above instructions and procedures were written with the best
+intentions.  In particular, the Maggie software is very old and
+sometimes fails in some overset cases.  Also, as can be seen,
+the procedure for employing Pegasus is very ad hoc, and easily
+prone to possible errors.
+Also, the above procedure for employing Pegasus 5.1 in conjunction
+with CFL3D does NOT work for 2-D cases.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

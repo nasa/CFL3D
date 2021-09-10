@@ -1,0 +1,63 @@
+comp_surf_restart_version: 10
+num_of_grids: 1
+num_of_walls_per_grid: 1
+dataset: *
+start_grid: *
+end_grid: *
+min: *
+max: *
+inc: 1
+curr: 128
+min: *
+max: *
+inc: 1
+curr: 48
+min: *
+max: *
+inc: 1
+curr: 1
+direction_plane: 3
+display_type: 3
+color: 1
+light_source: 0
+visibility: 1
+line_thickness: 1
+surface_type: 2
+transparency: 0.000000
+thresh_switch: 0
+vector_type: 0
+scalar_funct: "Mach number [PLOT3D]"
+vector_funct: "Momentum Vectors [PLOT3D]"
+thresh_funct: "Density (Q1)"
+scalar_min_max: 0.000000e+00 1.310710e+00
+thresh_min_max: 4.733345e-01 1.305600e+00
+vector_len_scale: 1.000000e+00
+vector_head_scaling: 0
+vector_head_scale: 1.000000e+00
+vector_head_type: 3
+vector_u_min_max: -5.806370e-02 7.966348e-01
+vector_v_min_max: -2.444673e-01 6.547502e-01
+vector_w_min_max: 0.000000e+00 0.000000e+00
+show_mesh: 0
+vector_display_type: 1
+contours: 0
+legend_title: 0
+legend_type: 1
+legend_label_color: 1
+legend_font: -205
+legend_text_size: 10
+legend_decimal_places: 3
+legend_xpos: 0.980000
+legend_ypos: 0.980000
+legend_btw_label_spacing: 0.050000
+legend_numerical_format: 1
+number_of_contours:  32
+contour_label_type:  2
+spectrum_type:  1
+spectrum_num_labels:  2
+spectrum_width:  0.050000
+spectrum_height:  5.000000
+surface_scale: 1.000000
+surface_angle: 0.000000
+surface_axis: 0.000000 0.000000 1.000000
+surface_trans: 0.000000 0.000000 0.000000

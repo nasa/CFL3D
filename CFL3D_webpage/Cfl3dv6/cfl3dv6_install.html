@@ -1,0 +1,314 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Installation</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+
+<center><h2>Installing CFL3Dv6</h2></center>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#install">Installation</a></li>
+
+<li type=circle><a href="#alias">Some Suggested Aliases</a></li>
+
+<li type=circle><a href="#summary">Executive Summary</a></li>
+</ul>
+
+<p>The "executive summary" summarizes the basic installation
+procedure and may be all you really want to know</p>
+
+<hr>
+<hr>
+
+<p><a NAME="install"></a><strong><u>INSTALLATION</u></strong>
+
+<p>To install CFL3v6 on a particular machine, you must first get it from:
+<ul>
+
+ <li type=circle><a href="https://github.com/NASA/CFL3D" target="blank">https://github.com/NASA/CFL3D</a>
+</ul>
+
+<!--<p>Make sure that:
+<ul>
+ <li type=circle>./ is in your path; if not, you will have to explicitly prepend ./ to
+all the commands below</ul>-->
+
+<p><strong>STEP 1)</strong>
+
+<p>You should have the
+following directory structure:</p>
+<pre>
+<strong>
+                            cfl3d directory structure:
+
+                                 top directory
+                                      |
+                             -------------------
+                             |        |        |
+                           SOURCE   BUILD   HEADER
+                             |
+      --------------------------------------------
+      |       |         |      |         |       |
+    CFL3D  PRECFL3D  RONNIE  MAGGIE  SPLITTER  TOOLS 
+      |
+   -------
+   |     |
+  DIST  LIBS
+
+
+                          build directory structure:
+
+                                    BUILD
+                                      |
+        ----------------------------------------------------------------
+        |             |        |      |      |    |     |      |       |
+       CFL        CFLCMPLX  PRECFL  PRERON  RON  MAG  TOOLS  SPLIT SPLITCMPLX
+        |             |        |      |      |    |     |      |       |
+    ---------    ----------    |      |      |    |     |      |       |
+    |   |   |    |    |   |    |      |      |    |     |      |       |
+  LIBS SEQ MPI  LIBS SEQ MPI  SEQ    SEQ    SEQ  SEQ   SEQ    SEQ     SEQ
+</strong>
+</pre>
+
+<p>The source directory and its associated
+subdirectories hold the source code for CFL3D and its supporting codes. The
+build directory is used to create execuatbles from the code in the source
+directories. Some pieces of source code get copied into the build
+directories, while other pieces of source code get soft-linked to the build
+directories. Thus,  source code appears visible in the build directories;
+however, if the user desires to make any permanent changes to the source
+code, the changes need to be made an the source code directory level, not
+the build directory level.
+
+<p>Next, cd to the build directory.
+Make sure the script file Install has execute permission.
+
+<p><strong>STEP 2)</strong>
+
+<p><span style="color: maroon"><strong>NOTE: the Install script is very old, and may or may not create a workable
+makefile for your particular machine.  Also, CFL3D has mostly been used on
+Linux-type machines; there is no option for compiling on a Windows machine.</strong></span>
+
+<p>Type:
+
+   <dd><strong>Install [options]</strong></dd>
+
+<p>Where [options] may be one or more of the following:
+
+<dl>
+<p><dt>-no_opt
+  <dd>create  executables with little optimization but fast compilation
+<p><dt>-single
+  <dd>create single precision executables
+<p><dt>-noredirect
+  <dd>disallow redirected input file; often needed for SP2 and
+      for Linux with MPI (<strong>generally recommended for MPI</strong> - see note below)
+<p><dt>-mpichdir=<em>dir1</em>
+  <dd>use MPICH on a workstation cluster; <em>dir1</em> is the directory
+      where mpich is located - not used on MPP machines
+<p><dt>-purify
+  <dd>fortran memory checker: need 3rd party license for this
+<p><dt>-fastio
+  <dd>fast I/O option when using MPI: creates <strong>cfl3d.out.reass</strong> file 
+      (in place of standard output file)... this option may help speed up some
+      very large MPI runs by writing output to local files then reassembling
+      at the end, rather than sending the output back to the master for
+      writing-on-the-fly (acknowledgment: Robert Bergeron, NASA Ames)
+<p><dt>-cgnsdir=<em>dir2</em>
+  <dd>allow the use of CGNS files instead of the standard
+      grid/restart files; <em>dir2</em> is the directory where
+      the CGNS libraries are located; the directory should contain the file
+      cgnslib_f.h as well as the subdirectory appropriate to the system you are running
+      on (for example subdirectory LINUX/) with the library file libcgns.a in it
+<p><dt>-linux_compiler_flags=<em>flag</em>
+  <dd>sets up to compile using special compiler flags for use on Linux
+      operating systems only; <em>flag</em> is currently Intel, PG, Lahey, or Alpha
+      (Intel is currently the default)
+<p><dt>-help
+  <dd>print out the Install options
+
+</dl>
+
+<p>Note: the directory paths for either the mpichdir or cgnsdir options 
+should be either absolute paths or paths relative to the installation
+directory; the use of ~ to denote a home directory is not allowed.
+
+<ul>
+<p><li type=circle>If -no_opt is not specified, various compiler optimization levels are
+used to speed execution but results in slower compilation.</li>
+ 
+<p><li type=circle>If -mpichdir=dir1 is not used, then it is assumed "native" MPI is
+available, and will use a default  location for the necessary MPI
+libraries.</li>
+
+<p><li type=circle>If -single is not used, then double precision exectables will be
+created at the make [   ] command.</li>
+
+<p><li type=circle>If -noredirect is not used, then input file redirection will be
+allowed, i.e. you can use:
+  <strong>cfl3d_seq < </strong> <strong> filename.inp</strong>
+to tell CFL3D to use the input data in the
+file filename.inp. Otherwise, with the -noredirect option invoked, the input file <strong>must</strong> be named
+<strong>cfl3d.inp</strong> when running the code. Unfortunately, the SP2 and many Linux systems cannot
+deal with file redirection in many cases when MPI is used, so the -noredirect
+option needs to be added. <strong> Our current recommendation is: on the SP2 and on Linux
+systems, always install with -noredirect when using MPI,
+always name the input file cfl3d.inp, and never use file redirection
+(just type the executable name).</strong></li>
+
+<p><li type=circle>If -cgnsdir=dir2 is used, then you must download
+the free CGNS system from
+(<a href="http://www.CGNS.org">CGNS Home Page</a>).  Compile CGNS
+according to the instructions.
+Using a CGNS file requires that the CFL3D input
+file contain the keyword <strong>icgns 1</strong> 
+(see <a href="http://cfl3dv6_new.html"> New Features</a>) in addition to
+having installed the code with the -cgnsdir option. It is the user's
+responsibility to download the CGNS software from the CGNS website and
+insure it is installed correctly in the user-specified directory dir2.
+NOTE: while you are free to specify the name of the directory dir2,
+please note that the CFL3D Install file makes the following assumptions
+about this directory: 1) that it contains a file called cgnslib_f.h and
+2) that it contains a subdirectory with a specific name assigned by
+CGNS for your particular system, in which is located the file libcgns.a.
+Please insure that the subdirectory assigned by the CFL3D Install file
+matches the name of the subdirectory created by CGNS for your particular system.
+Also NOTE: if you would like to use CGNS but do not have a CGNS grid
+available, you can create one using the program plot3dg_to_cgns in the
+Tools/ directory (compiled using <strong>make cfl3d_tools</strong>).
+</li>
+
+<p><li type=circle>NOTE FOR LINUX USERS: due to the variability of 
+Linux installations, available compilers, etc., it is not possible to
+set FFLAGS, FTN, etc varables universally once Linux has been identified 
+as the OS: the default flags are currently set for the Intel compiler.
+Note the default Fortran compiler for Linux is currently set
+as mpif77 - if this does not work, you will need to change this
+to a compiler that is available on your machine: 
+e.g. ifc, pgf90, etc.  For certain implementations of MPI on Linux you may 
+need to use the -noredirect install option to turn off input file 
+redirection.</li>
+
+<p><li type=circle>A known problem exists for MPI on alphas using myrinet.
+The following 2 lines of code in main.F cause an error:
+<pre>
+sysfile = 'rm -f stop'
+call system(sysfile)
+</pre>
+If you are running under these circumstances, you will need to comment out
+these 2 lines of code, and manually delete the "stop" file if it exists.
+prior to your run.</li>
+</ul>
+
+<p>Standard installation on all MPPs (except for the SP2), Cray C90, and
+stand-alone workstations would simply be:
+
+<dl>
+  <dd><strong>Install</strong></dd>
+</dl>
+
+<p>This  will create a makefile set up for optimized compilation, 
+double precision,
+using native MPI libraries when needed. <strong>Note: the install script assumes some
+very basic locations for the MPI directories - you may need to alter these for
+your own particular system</strong>.
+
+<p>Standard installation on a Linux machine with Intel compiler would be:
+
+<dl>
+   <dd><strong>Install -noredirect -linux_compiler_flags=Intel</strong></dd>
+</dl>
+
+<!--<p>This  will create a makefile set up for optimzed compilation,
+double precision,
+using the MPI routines contained in the MPICH libraries when needed.
+-->
+
+
+<p>The Install script works by querying the current machine for its
+achitecture,
+then sets up the various compilation flags based on the architecture, and
+creates a file called makefile by edititing the Makefile.in file and inserting
+the proper compiler flags. This eliminates the need for multiple makefiles
+that are typical of other versions of CFL3D.
+
+
+<p>At this point CFL3Dv6 has been installed on your machine and you should have
+a makefile suited to the particular machine on which you are running.  At
+the end of the install script, several messages are written out, indicating
+which platform it thinks you are using, where it assumes the mpi directories
+are, etc. The  script will also suggest you type make to see  a description
+of the various make options. The next  step is to build the executables you
+want <a href="cfl3dv6_build.html">Building Executables</a>.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<!--<hr>
+
+
+<p><a NAME="alias"></a><strong><u>SOME SUGGESTED ALIASES</u></strong>
+
+<p>Once you have CFL3Dv6 installed on your machine, you may want to make
+an alias
+to the build directory, since compilation of the various executables will
+always be done in that directory. If you tend to edit the source code
+frequently, you may want to make a similar alias to the source directory.
+Such aliases will relieve you from having to type or remember the whole path.
+Some examples include:</p>
+
+<dl>
+  <dd>alias build "cd ~myhome/cfl3dv6/build"</dd>
+  <dd>alias code  "cd ~myhome/cfl3dv6/source/cfl3d/dist"</dd>
+</dl>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>-->
+
+
+<hr>
+
+<p><a NAME="summary"></a><strong><u>EXECUTIVE SUMMARY</u></strong>
+
+<p>To install the CFL3Dv6 system:
+ 
+<dl>
+   <p><dd>cd build</dd>
+
+   <p><dd>Install [options]</dd></p>
+</dl>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<hr>
+
+<strong><u>NEXT, SEE:</u></strong>
+
+<p><a href="cfl3dv6_build.html">Building Executables</a>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 05/01/2018
+<br>&nbsp;
+</body>
+</html>

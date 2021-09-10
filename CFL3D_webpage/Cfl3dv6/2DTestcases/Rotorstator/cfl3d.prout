@@ -1,0 +1,162 @@
+
+
+ Control Surface  1
+ ===================
+
+ Grid  7 (Block 13)  i =  1,  2  j = 61, 61  k =  1, 23  iwall =   0  Normal =   1
+
+ x-area =   0.6059E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.6059E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9670E+00         Pt/Pinf =   0.9727E+00
+ T/Tinf      =   0.9902E+00         Tt/Tinf =   0.9918E+00
+ Mach number =   0.9127E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.63539E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.58233E+02   0.00000E+00   0.00000E+00   0.58233E+02   0.00000E+00  -0.58233E+02
+ Thrust force       0.13651E+02   0.00000E+00   0.92439E+01   0.16486E+02   0.92439E+01   0.13651E+02
+ Total force       -0.44582E+02   0.00000E+00   0.92439E+01   0.45530E+02   0.92439E+01  -0.44582E+02
+
+
+
+ Control Surface  2
+ ===================
+
+ Grid  9 (Block 17)  i =  1,  2  j = 61, 61  k =  1, 23  iwall =   0  Normal =   1
+
+ x-area =   0.6059E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.6059E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9669E+00         Pt/Pinf =   0.9725E+00
+ T/Tinf      =   0.9904E+00         Tt/Tinf =   0.9920E+00
+ Mach number =   0.9097E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.63013E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.58426E+02   0.00000E+00   0.00000E+00   0.58426E+02   0.00000E+00  -0.58426E+02
+ Thrust force       0.13432E+02   0.00000E+00   0.92323E+01   0.16299E+02   0.92323E+01   0.13432E+02
+ Total force       -0.44994E+02   0.00000E+00   0.92323E+01   0.45931E+02   0.92323E+01  -0.44994E+02
+
+
+
+ Control Surface  3
+ ===================
+
+ Grid 11 (Block 21)  i =  1,  2  j = 61, 61  k =  1, 23  iwall =   0  Normal =   1
+
+ x-area =   0.6059E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.6059E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9670E+00         Pt/Pinf =   0.9727E+00
+ T/Tinf      =   0.9903E+00         Tt/Tinf =   0.9919E+00
+ Mach number =   0.9166E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.63142E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.58339E+02   0.00000E+00   0.00000E+00   0.58339E+02   0.00000E+00  -0.58339E+02
+ Thrust force       0.13489E+02   0.00000E+00   0.94251E+01   0.16455E+02   0.94251E+01   0.13489E+02
+ Total force       -0.44850E+02   0.00000E+00   0.94251E+01   0.45830E+02   0.94251E+01  -0.44850E+02
+
+
+
+ Control Surface  4
+ ===================
+
+ Grid 13 (Block 25)  i =  1,  2  j = 61, 61  k =  1, 23  iwall =   0  Normal =   1
+
+ x-area =   0.6059E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.6059E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9671E+00         Pt/Pinf =   0.9728E+00
+ T/Tinf      =   0.9901E+00         Tt/Tinf =   0.9918E+00
+ Mach number =   0.9224E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.64171E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.58168E+02   0.00000E+00   0.00000E+00   0.58168E+02   0.00000E+00  -0.58168E+02
+ Thrust force       0.13927E+02   0.00000E+00   0.94443E+01   0.16827E+02   0.94443E+01   0.13927E+02
+ Total force       -0.44241E+02   0.00000E+00   0.94443E+01   0.45237E+02   0.94443E+01  -0.44241E+02
+
+
+
+ Control Surface  5
+ ===================
+
+ Grid  1 (Block  1)  i =  1,  2  j =  1,  1  k =  1, 23  iwall =   0  Normal =   0
+
+ x-area =   0.8078E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.8078E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9998E+00         Pt/Pinf =   0.1004E+01
+ T/Tinf      =   0.9988E+00         Tt/Tinf =   0.9999E+00
+ Mach number =   0.7311E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.84399E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.57626E+00   0.00000E+00   0.00000E+00   0.57626E+00   0.00000E+00  -0.57626E+00
+ Thrust force       0.17618E+02   0.00000E+00  -0.40741E-03   0.17618E+02  -0.40741E-03   0.17618E+02
+ Total force        0.17042E+02   0.00000E+00  -0.40741E-03   0.17042E+02  -0.40741E-03   0.17042E+02
+
+
+
+ Control Surface  6
+ ===================
+
+ Grid  3 (Block  5)  i =  1,  2  j =  1,  1  k =  1, 23  iwall =   0  Normal =   0
+
+ x-area =   0.8078E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.8078E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9998E+00         Pt/Pinf =   0.1003E+01
+ T/Tinf      =   0.9988E+00         Tt/Tinf =   0.9999E+00
+ Mach number =   0.7311E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.84399E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.57778E+00   0.00000E+00   0.00000E+00   0.57778E+00   0.00000E+00  -0.57778E+00
+ Thrust force       0.17618E+02   0.00000E+00   0.30991E-03   0.17618E+02   0.30991E-03   0.17618E+02
+ Total force        0.17040E+02   0.00000E+00   0.30991E-03   0.17040E+02   0.30991E-03   0.17040E+02
+
+
+
+ Control Surface  7
+ ===================
+
+ Grid  5 (Block  9)  i =  1,  2  j =  1,  1  k =  1, 23  iwall =   0  Normal =   0
+
+ x-area =   0.8078E+01 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.8078E+01
+
+ Mass averaged properties
+ P/Pinf      =   0.9998E+00         Pt/Pinf =   0.1003E+01
+ T/Tinf      =   0.9988E+00         Tt/Tinf =   0.9999E+00
+ Mach number =   0.7311E-01
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.84408E+01
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.58191E+00   0.00000E+00   0.00000E+00   0.58191E+00   0.00000E+00  -0.58191E+00
+ Thrust force       0.17622E+02   0.00000E+00   0.97729E-04   0.17622E+02   0.97729E-04   0.17622E+02
+ Total force        0.17040E+02   0.00000E+00   0.97729E-04   0.17040E+02   0.97729E-04   0.17040E+02
+
+
+
+ Totals for all sufaces (global level) with normal .ne. 0
+ ========================================================
+
+ x-area =   0.2424E+02 y-area =   0.0000E+00 z-area =   0.0000E+00 total-area =   0.2424E+02
+
+ Mass flow / (rhoinf*vinf*(L_R)**2) =    0.25386E+02
+
+                      x-force       y-force       z-force   resultant-force lift-force    drag-force
+ Pressure force    -0.23317E+03   0.00000E+00   0.00000E+00   0.23317E+03   0.00000E+00  -0.23317E+03
+ Viscous force      0.00000E+00   0.00000E+00   0.00000E+00   0.00000E+00   0.00000E+00   0.00000E+00
+ Thrust force       0.54499E+02   0.00000E+00   0.37345E+02   0.66067E+02   0.37345E+02   0.54499E+02
+ Total force       -0.17867E+03   0.00000E+00   0.37345E+02   0.18253E+03   0.37345E+02  -0.17867E+03
+

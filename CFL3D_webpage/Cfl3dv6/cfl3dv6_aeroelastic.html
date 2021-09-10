@@ -1,0 +1,246 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6C-SGI [en] (X11; U; IRIX64 6.5 IP30) [Netscape]">
+   <title>Unsteady Aeroelasticity</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+<center>
+<h2>
+Unsteady Aeroelasticity</h2>
+<!-- <img border=0 src="Gifs/construction.gif" alt="under construction">-->
+</center>
+
+<p>It is recommended that the user refer to the
+<a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a> page for additional information
+on unsteady aeroelasticity capabilities.</p>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#method">Description of Methodology</a></li>
+<li type=circle><a href="#sample">Sample Input and Parameter Definitions</a></li>
+</ul>
+
+<hr>
+<hr>
+
+<p><a NAME="method"></a><strong><u>DESCRIPTION OF METHODOLOGY</u></strong>
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Peter Hartwich of Boeing Phantom
+Works, Long Beach, for suggesting and providing the model routines for
+coupling the CAPTSD structural solver with CFL3D.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<p><a NAME="sample"></a><strong><u>SAMPLE INPUT AND PARAMETER DEFINITIONS</u></strong>
+
+<ul>
+
+<li type=circle><p><strong>Notes:</strong></p>
+
+<ol>
+<p><li>Aeroelastic analysis can only be utilized in time-accurate mode, i.e.
+<strong>dt > 0</strong></li>
+
+<p><li>The mesh movement flag, <strong>iunst</strong>, must be set equal to 2.</li> 
+
+<p><li>If iunst=2, the following lines in the input file must appear
+<strong><em>after</em></strong> the control surface data section (line types LT31 through
+LT32 in the terminology of the Version 5 User Manual) in order to enable
+the aeroelastic option:</li></p>
+
+</ol>
+
+<li type=circle><p><strong>Example: Single-zone, 2D grid with one aeroelastic
+ surface:</strong></p>
+
+<pre>
+moving grid data - deforming surface (forced motion)
+ ndefrm
+      0
+   lref
+   grid idefrm      rfreqi  omegax  omegay  omegaz  xorig  yorig zorig
+   grid   icsi   icsf     jcsi    jcsf     kcsi    kcsf
+moving grid data - aeroelastic surface (aeroelastic motion)
+ naesrf
+      1
+ iaesrf    ngrid    grefl      uinf      qinf    nmodes    iskyhk
+      1       -1 1.333333      393.      155.         2         0
+    freq   gmass     damp x0(2*n-1)   x0(2*n)   gf0(2*n)
+  21.363      1.       0.        0.        0.         0.
+  32.421      1.       0.        0.        0.         0.
+  moddfl     amp     freq       t0
+       0      0.       0.       0.
+       0      0.       0.       0.
+   grid     iaei     iaef     jaei    jaef      kaei      kaef
+      1        0        0        0       0         0         0
+moving grid data - skip data for field/multiblock mesh movement
+   nskip   isktyp    beta1   alpha1    beta2   alpha2  nsprgit
+       0       -1      1.0      1.0     1.0     0.05         0
+   grid    iskip    jskip    kskip
+</pre>
+
+<p>In all deforming mesh applications, the additional input is broken up into
+three sections, as illustrated in the example above: 1) forced motion, 2)
+aeroelastic motion, and moving grid data.
+
+<p>For any problem
+in which the forced motion is not used, but the aeroelastic response of 
+one or more surfaces is desired (which is the focus of this
+section), the forced-motion input section should appear as shown above -
+the only numerical value which should appear is the value of
+ndefrm, the number of surfaces undergoing forced motion - zero.
+
+<p>The following definitions apply for the aeroelastic section:
+
+<dl>
+<p><dt><strong>naesrf</strong></dt>
+  <dd>number of aeroelastic surfaces; each aeroelastic surface is represented
+  as a distinct set of modal shapes. Most typically, naesrf = 1, but for
+  example, naesrf = 2 would allow the wing to be represented with one set of
+  mode shapes, while the tail could be represented with a different set of
+  mode shapes. All of the remaining data is repeated as a block for each of
+  the aeroelastic surfaces from 1 to naesrf.</dd>
+
+<p><dt><strong>iaesrf</strong></dt>
+  <dd>the aeroelastic surface for which the data is being set</dd>
+
+<p><dt><strong>ngrid</strong></dt>
+  <dd>the number of grids which contain the aeroelastic surface <strong>iaesrf</strong>. If
+  <strong>ngrid = -1</strong>, then the aeroelastic surface is assumed to be comprised of all
+  solid surfaces (i.e. bc types 1005, 1006 or 2004) within the entire grid system.
+  Thus, <strong>ngrid = -1</strong> is appropriate only for <strong>naesrf = 1</strong>.</dd>
+
+<p><dt><strong>grefl</strong></dt>
+  <dd>the reference length, in grid units, used to nondimensionalize the 
+  reduced frequency associated with the mode shapes of the aeroelastic surface.</dd>
+
+<p><dt><strong>uinf</strong></dt>
+  <dd>reference flow speed used to nondimensionalize the reduced frequency.</dd>
+
+<p><dt><strong>qinf</strong></dt>
+  <dd>reference dynamic pressure used to nondimensionalize the gneralized forces.</dd>
+
+<p><dt><strong>nmodes</strong></dt>
+  <dd>number of modes used to represent the aeroelastic surface.</dd>
+
+<p><dt><strong>iskyhk</strong></dt>
+  <dd>flag to indicate the use of the "skyhook" terms. <strong>NOT YET IMPLEMENTED</strong>.
+  However, a value must still be input as a placeholder (any value will do).</dd>
+
+</dl>
+
+<p>The lines following <strong>freq gmass ... gf0</strong> are repeated <strong>nmodes</strong> times,
+with data arranged from mode 1 to mode <strong>nmode</strong>:
+
+<dl>
+<p><dt><strong>freq</strong></dt>
+  <dd>the wind-off natural freqency of the mode.</dd>
+
+<p><dt><strong>gmass</strong></dt>
+  <dd>the generalized mass to include for the mode.</dd>
+
+<p><dt><strong>damp</strong></dt>
+  <dd>the damping factor of the mode</dd>
+
+<p><dt><strong>x0(2*n-1)</strong></dt>
+  <dd>the initial generalized displacement of the mode; if non-zero, will
+      overide the value in the restart file (if restarting). this allows
+      the mode to be perturbed for dynamic response studies</dd>
+
+<p><dt><strong>x0(2*n)</strong></dt>
+  <dd>the initial generalized velocity of the mode; if non-zero, will
+      overide the value in the restart file (if restarting). this allows
+      the mode to be perturbed for dynamic response studies</dd>
+
+<p><dt><strong>gf0(2*n)</strong></dt>
+  <dd>the generalized force to include for the mode.</dd>
+</dl>
+
+<p>The lines following <strong>moddfl amp ... t0</strong> are repeated <strong>nmodes</strong> times,
+with data arranged from mode 1 to mode <strong>nmode</strong>:
+
+<dl>
+<p><dt><strong>moddfl</strong></dt>
+  <dd>type of time-varying modal perturbation desired:</dd>
+  <dd>= 0, no perturbation</dd>
+  <dd>= 1, harmonic (sinusoidal) perturbation</dd>
+  <dd>= 2, Gassian pulse</dd>
+  <dd>= 3, step pulse</dd>
+
+<p><dt><strong>amp</strong></dt>
+  <dd>amplitude of modal perturbation. use any value as a placeholder if
+  <strong>moddfl = 0</strong></dd>
+
+<p><dt><strong>freq</strong></dt>
+  <dd>reduced frequncy of modal perturbation if <strong>moddfl = 1</strong></dd>
+  <dd>half-width of Gaussian pulse if <strong>moddfl = 2</strong></dd>
+  <dd>use any value as a placeholder for <strong>moddfl = 0 or 4</strong></dd>
+
+<p><dt><strong>t0</strong></dt>
+  <dd>time about which Gaussian pulse is centered if <strong>moddfl = 2</strong></dd>
+  <dd>time at which step pulse starts is centered if <strong>moddfl = 3</strong></dd>
+  <dd>use any value as a placeholder for <strong>moddfl = 0, 1, or 4</strong></dd>
+</dl>
+
+<p>The lines following <strong>grid iaei ... kaef</strong> are repeated <strong>|ngrid|</strong> times:
+
+<dl>
+<p><dt><strong>grid</strong></dt>
+  <dd>grid containing all or part of the current aeroelastic surface <strong>iaesrf</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+  
+
+<p><dt><strong>iaei</strong></dt>
+  <dd>starting i-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+<p><dt><strong>iaef</strong></dt>
+  <dd>ending i-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+<p><dt><strong>jaei</strong></dt>
+  <dd>starting j-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+<p><dt><strong>jaef</strong></dt>
+  <dd>ending j-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+<p><dt><strong>kaei</strong></dt>
+  <dd>starting k-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+<p><dt><strong>kaef</strong></dt>
+  <dd>ending k-index of the current aeroelastic surface in zone <strong>grid</strong>.
+  use any value as a placeholder if <strong>ngrid = -1</strong>.</dd>
+
+</dl>
+
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

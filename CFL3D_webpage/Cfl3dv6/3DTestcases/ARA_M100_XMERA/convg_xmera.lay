@@ -1,0 +1,28 @@
+#!MC
+$!DeActivateGraphics
+$!SetPath Stream   .
+$!SetPath Style    .
+$!SetPath DataFile .
+$!SetPath Bitdump  .
+$!SetPath ColorMap .
+$!SetPath TextGeom .
+$!SetPath Macro    .
+$!SetPath Equation .
+$!SetPath HardCopy .
+$!PrintPos X=59.2941 Y=59.2941 Scale=1 Orient Landscape
+$!ReadColorMap convg_xmera.map
+$!ReadStyleSheet convg_xmera.s01
+$!OpenWindow
+$!ReadDataFile look
+$!ReadStyleSheet convg_xmera.s02
+$!OpenWindow
+$!ReadDataFile look
+$!ReadStyleSheet convg_xmera.s03
+$!OpenWindow
+$!ReadDataFile look
+$!ReadStyleSheet convg_xmera.s04
+$!OpenWindow
+$!ReadDataFile look
+$!ReadStyleSheet convg_xmera.s05
+$!ActivateGraphics
+$!RegenAll

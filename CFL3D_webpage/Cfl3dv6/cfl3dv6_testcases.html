@@ -1,0 +1,4855 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Test Cases</title>
+</head>
+<! <body bgcolor="#FFFFFF"> 
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr><center><h2>Test/Validation Cases</h2></center><hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+  <li type=circle>2D Cases</li>
+    <ul>
+      <li type=square><a href="#flatplate">Flat Plate (steady)</a></li>
+      <li type=square><a href="#flatplateskew">Flat Plate with Grid Skew Effect (steady;
+          demonstration of effect of grid skewing)</a></li>
+      <li type=square><a href="#flatplateyplus">Flat Plate with Min Y+ Effect (steady;
+          demonstration of effect of different minimum wall spacing)</a></li>
+      <li type=square><a href="#backstep">Backward Facing Step 
+          (steady; patched grids)</a></li>
+      <li type=square><a href="#transdif">Transonic Diffuser (steady)</a></li>
+      <li type=square><a href="#airbox">NACA 4412 Airfoil
+          (steady; point-match and overset grids)</a></li>
+      <li type=square><a href="#raederiv">RAE 2822 Airfoil
+          (steady; derivatives with respect to alpha)</a></li>
+      <li type=square><a href="#embed">Supersonic Ramp
+          (steady; inviscid; embedded grids)</a></li>
+      <li type=square><a href="#cylinder">Circular Cylinder
+          (unsteady; demonstration of temporal accuracy)</a></li>
+      <li type=square><a href="#n0012">NACA 0012 Airfoil
+          (steady; demonstration of spatial accuracy)</a></li>
+      <li type=square><a href="#ejector">Ejector Nozzle Jet
+          (steady; point-match grid)</a></li>
+      <li type=square><a href="#pitch">Sinusoidally Pitching Airfoil
+          (unsteady; demonstration of moving grid capability)</a></li>
+      <li type=square><a href="#rotor">Rotor-Stator Simulation
+          (unsteady; demonstration of sliding patched interface capability)</a></li>
+      <li type=square><a href="#hump">Wall-Mounted Hump Model
+          (unsteady; demonstration of flow control through time-dependent BCs)</a></li>
+      <li type=square><a href="#curvature">Curved Wall
+          (demonstration of curvature correction model SARC)</a></li>
+    </ul>
+
+  <li type=circle>3D Cases</li>
+    <ul>
+      <li type=square><a href="#axibump">Axisymmetric Bump 
+          (steady; "2.5D")</a></li>
+      <li type=square><a href="#onera">ONERA M6 Wing (steady)</a></li>
+      <li type=square><a href="#ara">ARA M100 Wing-Body 
+          (steady; point-match grid)</a></li>
+      <li type=square><a href="#ara_xmera">ARA M100 Wing-Body
+          (steady; overset grid)</a></li>
+      <li type=square><a href="#delta">Delta Wing
+          (steady; demonstration of CGNS capability)</a></li>
+    </ul>
+  <li type=circle><a href="#test">Test Information</a></li>
+</ul>
+
+<p>All test cases are available for downloading as Unix compressed tar 
+files containing grid, input, and auxiliary files.
+Note that the files for the 3D cases can be quite large.</p>
+
+<hr>
+<hr>
+
+
+<p><a NAME="flatplate"></a><strong><u>FLAT PLATE</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a semi-infinite flat plate is modeled at Reynolds number
+     6 million per unit length. Inflow is set
+     by specifying total pressure, total temperature, and Mach number. 
+     Results using using SA, SST, and EASM-ko turbulence models 
+     (#5, #7, and #14) are compared with theoretical
+     data found one of the standard fluid mechanics references (White, 
+     "Viscous Fluid Flow,"  1974). The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Flatplate/flatplate_grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Flatplate/flatplate_vel.gif">
+           Velocity vectors</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Flatplate/Flatplate.tar.Z">
+     Flatplate.tar.Z (76 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Flatplate.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Flatplate.tar</strong></dd>
+  <p>This will create a subdirectory "Flatplate".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>grdflat5.fmt</strong></dt>
+         <dd>single-block grid (cfl3d type, formatted)
+             of dimensions j x k x i = 65 x 97 x 2</dd>
+      <dt><strong>grdflat5.inp</strong></dt>
+         <dd>cfl3d input file; total pressure, temperature and Mach number
+             set at inflow, using the SST turbulence model. Results for the
+             other turbulence models shown below can be obtained by simply 
+             changing ivisc(k) to the appropriate value, e.g.
+             ivisc(k) = 5 for SA and ivisc(k) = 14 for EASM-ko. (Note:
+             for two equation models on this case, one
+             should add the keyword <strong>edvislim 100000.</strong> to avoid possible
+             convergence problems during the initial part of the run.)</dd>
+      <dt><strong>split.inp_1blk</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the flat plate case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grdflat5.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">10.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplate/cfl3d.res_sst">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplate/flatplate_convg_sst.gif">plot</a>
+       </td>
+       <td align="center">September 25 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA</td>
+       <td align="center">1</td>
+       <td align="center">12 min</td>
+       <td align="center">10.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplate/cfl3d.res_sa">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplate/flatplate_convg_sa.gif">plot</a>
+       </td>
+       <td align="center">September 25 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">EASM-ko</td>
+       <td align="center">1</td>
+       <td align="center">16 min</td>
+       <td align="center">11.5 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplate/cfl3d.res_easmko"> cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplate/flatplate_convg_easmko.gif">plot</a>
+       </td>
+       <td align="center">September 25 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with theoretical results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Theory</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, SA and EASM-ko</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplate/flatplate_cf.gif">
+         Cf vs x</a><br>
+         <a href="2DTestcases/Flatplate/flatplate_u+.gif">
+         u+ vs y+</a>
+       </td>
+       <td align="center">
+         Theoretical data contained<br>
+         within postprocessing programs</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Flatplate/getcf_flat.f">
+         FORTRAN program 1 (cf vs x)</a><br>
+         <a href="2DTestcases/Flatplate/getu+_flat.f">
+         FORTRAN program 2 (u+ vs y+)</a>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN programs will extract the computed
+     results from the printout (cfl3d.prout) and plot3d (plot3dg.bin and plot3dq.bin)
+     files generated by CFL3D. The output files are formatted TECPLOT files,
+     which should be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <li>Note that the EASM-ko was re-calibrated in 9/2002.
+Use of ivisc=14 in versions prior to V6.1 will not agree with the 
+results given here.
+     </ol>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="flatplateskew"></a><strong><u>FLAT PLATE WITH GRID SKEW EFFECT</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a semi-infinite flat plate is modeled at Reynolds number
+     6 million per unit length. This is
+     essentially the same as the previous flat plate case, except here the
+     effect of grid skewness on the solution is demonstrated.  The SA
+     turbulence model is employed on 4 different grids with varying
+     amounts of skewness.
+     The following figure illustrates the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Flatplateskew/grids.gif">Grids</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Flatplateskew/Flatplateskew.tar.Z">
+     Flatplateskew.tar.Z (246 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Flatplateskew.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Flatplateskew.tar</strong></dd>
+  <p>This will create a subdirectory "Flatplateskew".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>grdflat5.fmt</strong>, <strong>grdflat5_skew15.fmt</strong>, <strong>grdflat5_skew30.fmt</strong>,
+             <strong>grdflat5_skew45.fmt</strong></dt>
+         <dd>single-block grids (cfl3d type, formatted)
+             of dimensions j x k x i = 65 x 97 x 2</dd>
+      <dt><strong>grdflat5_noskew.inp</strong>, <strong>grdflat5_15.inp</strong>, <strong>grdflat5_30.inp</strong>,
+             <strong>grdflat5_45.inp</strong></dt>
+         <dd>cfl3d input files; total pressure, temperature and Mach number
+             set at inflow, using the SA turbulence model. To avoid 
+             finite-trailing-edge effects, the total drag for this case is 
+             integrated only over the range 0 < x < 0.8333.</dd>
+      <dt><strong>split.inpnoskew</strong>, <strong>split.inp15</strong>, <strong>split.inp30</strong>, <strong>split.inp45</strong></dt>
+         <dd>inputs to block splitter that convert the single-block
+             formatted grids to single block unformatted grids that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the flat plate case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inpnoskew </strong><br>
+        <strong>splitter < </strong> <strong> split.inp15 </strong><br>
+        <strong>splitter < </strong> <strong> split.inp30 </strong><br>
+        <strong>splitter < </strong> <strong> split.inp45 </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grdflat5_noskew.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grdflat5_15.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grdflat5_30.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grdflat5_45.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done independently, i.e., finish one before
+         starting another if running in the same directory, and remember to save
+         results between each run as needed.)
+      </p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Normal grid</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateskew/sa.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateskew/sa_convg.gif">plot</a>
+       </td>
+       <td align="center">July 21 04</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">15-deg skew grid</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateskew/sa_skew15.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateskew/sa_skew15_convg.gif">plot</a>
+       </td>
+       <td align="center">July 21 04</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">30-deg skew grid</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateskew/sa_skew30.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateskew/sa_skew30_convg.gif">plot</a>
+       </td>
+       <td align="center">July 21 04</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">45-deg skew grid</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateskew/sa_skew45.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateskew/sa_skew45_convg.gif">plot</a>
+       </td>
+       <td align="center">July 21 04</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparisons of results on the different grids:</li>
+     <p>Comparative results are shown in terms of 
+<a href="2DTestcases/Flatplateskew/cf_skew.gif">skin friction coefficient</a>,
+<a href="2DTestcases/Flatplateskew/vel_skew.gif">velocity profile</a>, and
+<a href="2DTestcases/Flatplateskew/drag_skew.gif">drag coefficient</a>.
+It is shown that there is some impact from skewed grids,
+but the influence is very small (up to 45-deg skew).  
+The drag coefficient plot also shows
+the effect of grid density for this case:  this integrated quantity is
+converging to a solution of approximately 0.003175 on an
+infinite grid. The spatial convergence rate is approximately 2nd order
+(the variation is nearly linear plotted against 1/gridpoints, which is
+proportional to Delta(h)<sup>2</sup>.  The error from an extrapolated
+infinite grid is approximately 0.4% on the 65 x 97 grid, 1.8% on the 
+33 x 49 grid, and 6.8% on the 17 x 25 grid. 
+     </p>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>If you try to switch the turbulence model and run, for example, with
+         SST, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.
+     </li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="flatplateyplus"></a><strong><u>FLAT PLATE WITH MIN Y+ EFFECT</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a semi-infinite flat plate is modeled at Reynolds number
+     6 million per unit length. This is
+     similar to the previous two flat plate cases, except here the
+     effect of changing the grid minimum spacing at the wall is demonstrated.  The SA
+     and SST turbulence models are employed on 6 different grids with varying
+     minimum wall spacings (all grids are 65 x 97 in size).
+     Unlike the previous flat plate cases, this case is also slightly different in that it
+     (a) uses Riemann farfield-type BC at the inflow rather than setting
+     total conditions, (b) solves using the new feature of FULL NAVIER-STOKES rather
+     than thin-layer, and (c) uses constant temperature wall (set at the freestream
+     total temperature), rather than using adiabatic wall.
+     </p>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Flatplateyplus/Flatplateyplus.tar.gz">
+     Flatplateyplus.tar.gz (62 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Flatplateyplus.tar.gz</strong></dd>
+  <dd><strong>tar -xvf Flatplateyplus.tar</strong></dd>
+  <p>This will create a subdirectory "Flatplateyplus".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>grid_y+.02.fmt</strong>, <strong>grid_y+.23.fmt</strong>, <strong>grid_y+.51.fmt</strong>,
+             <strong>grid_y+1.15.fmt</strong>, <strong>grid_y+2.3.fmt</strong>, <strong>grid_y+4.6.fmt</strong></dt>
+         <dd>single-block grids (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 65 x 97</dd>
+      <dt><strong>grid_y+.02sa.inp</strong>, <strong>grid_y+.23sa.inp</strong>, <strong>grid_y+.51sa.inp</strong>,
+             <strong>grid_y+1.15sa.inp</strong>, <strong>grid_y+2.3sa.inp</strong>, <strong>grid_y+4.6sa.inp</strong>,
+          <strong>grid_y+.02sst.inp</strong>, <strong>grid_y+.23sst.inp</strong>, <strong>grid_y+.51sst.inp</strong>,
+             <strong>grid_y+1.15sst.inp</strong>, <strong>grid_y+2.3sst.inp</strong>, <strong>grid_y+4.6sst.inp</strong></dt>
+         <dd>cfl3d input files for SA and SST; here the total drag is 
+             integrated over the entire range 0 < x < 1</dd>
+      <dt><strong>splity+.02.inp</strong>, <strong>splity+.23.inp</strong>, <strong>splity+.51.inp</strong>, <strong>splity+1.15.inp</strong>,
+             <strong>splity+2.3.inp</strong>, <strong>splity+4.6.inp</strong></dt>
+         <dd>inputs to block splitter that convert the single-block
+             formatted grids to single block unformatted grids that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the flat plate case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> splity+.02.inp </strong><br>
+        <strong>splitter < </strong> <strong> splity+.23.inp </strong><br>
+        <strong>splitter < </strong> <strong> splity+.51.inp </strong><br>
+        <strong>splitter < </strong> <strong> splity+1.15.inp </strong><br>
+        <strong>splitter < </strong> <strong> splity+2.3.inp </strong><br>
+        <strong>splitter < </strong> <strong> splity+4.6.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.02sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.23sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.51sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+1.15sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+2.3sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+4.6sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.02sst.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.23sst.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+.51sst.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+1.15sst.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+2.3sst.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> grid_y+4.6sst.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done independently, i.e., finish one before
+         starting another if running in the same directory, and remember to save
+         results between each run as needed.)
+      </p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=0.02</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.02_sa.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateyplus/grid_y+.02_sa.gif">plot</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=0.23</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.23_sa.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=0.51</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.51_sa.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=1.15</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+1.15_sa.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=2.3</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+2.3_sa.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA, y+=4.6</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+4.6_sa.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=0.02</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.02_sst.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Flatplateyplus/grid_y+.02_sst.gif">plot</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=0.23</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.23_sst.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=0.51</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+.51_sst.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=1.15</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+1.15_sst.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=2.3</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+2.3_sst.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, y+=4.6</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">13.9 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Flatplateyplus/grid_y+4.6_sst.res">cfl3d.res</a>
+       </td>
+       <td align="center">Feb 28 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparisons of results on the different grids:</li>
+     <p>Comparative results are shown in terms of 
+<a href="2DTestcases/Flatplateyplus/cd_cfl3d.gif">drag coefficient</a> and
+<a href="2DTestcases/Flatplateyplus/cf_cfl3d.gif">skin friction coefficient</a>.
+(Recall that for the flat plate, all the drag is due to skin friction.)
+It is shown that the SST model is more sensitive to minimum wall grid spacing on a given
+grid size than the
+SA model (this is a well-known result; see, e.g., Bardina et al, NASA TM-110446, 1997).  
+This greater sensitivity is likely related to the particular implementation of the wall
+boundary condition on omega.  Currently, CFL3D uses the same approximate omega boundary condition
+as Bardina et al., as recommended by Menter (NASA TM 103975, 1992).
+Generally, when running turbulent computations,
+it is preferable to have a grid with minimum y+ spacing of no more than approximately 1
+at walls.  For the SA model for this case, the drag on the grid with y+ of about 1.15
+is different from the result on the y+=0.02 grid by less than 1%.  For the SST model,
+the difference is about 3.8%.
+     </p>
+     <p>Further insight can be obtained by looking at the results not only on the finest
+grids (65 x 97), but also from the coarser grid levels.  These results were obtained during the 
+mesh sequencing operation during the run.  Figures are shown in terms of
+<a href="2DTestcases/Flatplateyplus/cd_cfl3d_3gridSA.gif">3-grid drag coefficient for SA</a> and
+<a href="2DTestcases/Flatplateyplus/cd_cfl3d_3gridSST.gif">3-grid drag coefficient for SST</a>.
+     </p>
+<p>For SA, the drag coefficient generally decreases as the grid is refined (as 1/grdpts approaches 0).
+The lowest slope for this decrease occurs for the family of grids derived from the fine grid 
+with y+=0.02, but there is not
+much difference between the three families of grids: y+=0.02, 0.23, and 0.51.  For the family
+of grids with larger y+, the variation is greater (although all grid families tend
+toward the same answer on an infinitely refined grid).  This SA result is a demonstration that
+supports the commonly held truism that one should use grids with y+ levels less than 1
+(unless employing wall functions).  Such a use will yield greater accuracy
+(in skin friction) on a given grid level.  Note, however, that when
+these grids were created, the farfield extent of the grids was kept
+approximately the same.  As a result, the grid stretching in the wall normal
+direction for each of the grids is different (approximately 1.2295, 1.18,
+1.17, 1.151, 1.1377, and 1.128 for y+=0.02 through 4.6, respectively).
+Thus, the grid with the finest wall normal spacing also has the largest stretching factor.
+It is possible that very large stretching factors may negatively influence the code's accuracy, so 
+use of y+ values that are "too small" may end up having negative consequences.
+     </p>
+<p>For SST, the picture is not as clear. Here, the greater sensitivity of the model to
+minimum y+ can be seen.  (Recall that this greater sensitivity is likely due to the approximate
+wall boundary condition on omega.) On the 3 grids with the smallest fine-grid y+ (0.02, 0.2, and 0.51),
+the results generally tend toward a similar infinitely-refined result, although it appears that a finer grid level
+than 65 x 97 would be needed to better demonstrate asymptotic convergence.  For the
+grids whose fine level has a y+ greater than 1, the results appear
+less consistent.  Here it is unclear whether additional finer grid levels would yield consistent
+results or not.  In any case, this study clearly demonstrates the need to use grids with
+y+ less than 1 for the SST model.
+     </p>
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <br>
+     <li>The wall normal grid stretching was stopped for these grids when the aspect ratio
+         of the cells exceeded 1.</li>
+     <li>The y+ values given here are approximate averages.  Clearly, the y+ at each location on the plate
+         will vary.  CFL3D computes the min, max, and
+         average y+ values for turbulent computations, and
+         these statistics are always output to the bottom of the <strong>cfl3d.out</strong> standard output file.
+         More detailed numbers (such as the y+ value at each wall location) can be output
+         to the <strong>cfl3d.prout</strong> auxiliary file.</li>
+     <li>Although the new capability (as of V6.4) of full Navier-Stokes (<strong>ifullns</strong>=1) was run for these cases,
+         it has almost no influence on the results, as expected.
+         </li>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+
+
+
+<p><a NAME="backstep"></a><strong><u>BACKWARD FACING STEP</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a backward-facing step is modeled. A velocity profile
+     is specified at the inflow plane via a  BC data file. This case employs 
+     patched grids that must be pre-processed with the "ronnie" grid patching
+     code provided as part of the cfl3d package.  The experimental data is
+     taken from Driver, AIAA J., Vol 23 No 2, 1985, pp. 163-171.
+     The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Backstep/grid.gif">Grid (overview)</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Backstep/grid_2.gif">Grid (corner detail)</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Backstep/mach_contours.gif">Mach Contours</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Backstep/mach_contours_2.gif">
+           Mach Contours (corner detail)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Backstep/Backstep.tar.gz">
+     Backstep.tar.gz (123 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Backstep.tar.gz</strong></dd>
+  <dd><strong>tar -xvf Backstep.tar</strong></dd>
+  <p>This will create a subdirectory "Backstep".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>step_grdgen.fmt</strong></dt>
+         <dd>2 block patched grid (plot3d type, formatted)<br>
+             block 1 dimensions i x j x k = 2 x 25  x 65<br>
+             block 2 dimensions i x j x k = 2 x 129 x 113</dd>
+      <dt><strong>step_grdgen.inp</strong></dt>
+         <dd>CFL3D input file; an inflow velocity profile upstream of the
+             step is set using bc type 2008. The profile is set for the
+             Menter SST model.
+      <dt><strong>bc2008.data</strong></dt>
+         <dd>data file that CFL3D reads to set the inflow profile (valid for SST or Wilcox
+             k-omega models only)</dd>
+      <dt><strong>ron_step_grdgen.inp</strong></dt>
+         <dd>RONNIE (patched grid preprocessor) input file</dd>
+      <dt><strong>split.inp_1blk</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the backward facing step case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk </strong><br>
+        <strong>ronnie < </strong> <strong> ron_step_grdgen.inp</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> step_grdgen.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST</td>
+       <td align="center">1</td>
+       <td align="center">21 min</td>
+       <td align="center">23.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Backstep/cfl3d.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Backstep/conv.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST</td>
+       <td align="center">
+         <a href="2DTestcases/Backstep/cf_vs_x.gif">
+         Cf vs x</a><br>
+         <a href="2DTestcases/Backstep/cp_vs_x.gif">
+         Cp vs x</a>
+       <td align="center">
+         <a href="2DTestcases/Backstep/cflower.exp.dat">
+         cflower.exp.dat</a><br>
+         <a href="2DTestcases/Backstep/cplower.exp.dat">
+         cplower.exp.dat</a><br>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Backstep/postproc.f">
+         FORTRAN program</a><br>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN programs will extract the computed
+     results from the printout (cfl3d.prout) file generated by CFL3D. 
+     The output files are formatted TECPLOT files,
+     which should be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+ 
+<p><a NAME="transdif"></a><strong><u>TRANSONIC DIFFUSER</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Transonic flow through a converging diverging diffuser is modeled.
+     Varying the exit pressure leads to different shock positions and strengths.
+     Two exit-static-pressure to inlet-total-pressure ratios are considered, 
+     giving a weak shock and a strong shock condition, the latter of which
+     results in separated flow on the top wall of the diffuser. Results using
+     the "workhorse" Spalart-Allmaras turbulence model and a non-linear k-w EASM
+     model are plotted with the experimental data. 
+     A complete description of this case can be found in the <a href=
+     "http://www.grc.nasa.gov/WWW/wind/valid/transdif/transdif02/transdif02.html" target="_blank">
+     NPARC Alliance Validation Archive</a>. The following figures illustrate
+     the case:</p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Transdiff/transdiff_grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Transdiff/transdiff_ws_mach.gif">
+           Mach Contours (weak shock case)</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Transdiff/transdiff_ss_mach.gif">
+           Mach Contours (strong shock case)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Transdiff/Transdiff.tar.Z">
+     Transdiff.tar.Z (77 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Transdiff.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Transdiff.tar</strong></dd>
+  <p>This will create a subdirectory "Transdiff".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>transdiff_p3d.fmt</strong></dt>
+         <dd>single-block grid (plot3d, multigrid, whole, formatted)
+             of dimensions i x j x k = 2 x 81 x 53</dd>
+      <dt><strong>cfl3d.inp_ws</strong></dt>
+         <dd>cfl3d input file; exit pressure set for the weak-shock case
+             and the Spalart-Allmaras turbulence model. Results for the
+             EASM-ko turbulence model shown below can be obtained by simply
+             changing ivisc(k) to 14.</dd>
+      <dt><strong>cfl3d.inp_ss</strong></dt>
+         <dd>cfl3d input file; exit pressure set for the strong-shock case
+             and the Spalart-Allmaras turbulence model. Results for the
+             EASM-ko turbulence model shown below can be obtained by simply
+             changing ivisc(k) to 14.</dd>
+      <dt><strong>split.inp_1blk</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the weak-shock and strong-shock cases, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_ws &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_ss &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done independently, i.e., finish one before
+         starting another if running in the same directory, and remember to save
+         results between each run as needed.)
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Weak Shock, SA</td>
+       <td align="center">1</td>
+       <td align="center">5 min</td>
+       <td align="center">6.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/cfl3d.res_ws_sa">cfl3d.res</a><br>
+         <a href="2DTestcases/Transdiff/transdiff_convg_ws.gif">plot</a>
+       </td>
+       <td align="center">March 21 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">Weak Shock, EASM-ko</td>
+       <td align="center">1</td>
+       <td align="center">5 min</td>
+       <td align="center">7.2 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/cfl3d.res_ws_easmko">cfl3d.res</a>
+       </td>
+       <td align="center">March 21 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">Strong Shock, SA</td>
+       <td align="center">1</td>
+       <td align="center">2.3 min</td>
+       <td align="center">6.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/cfl3d.res_ss_sa">cfl3d.res</a><br>
+         <a href="2DTestcases/Transdiff/transdiff_convg_ss.gif">plot</a>
+       </td>
+       <td align="center">September 9 03</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">Strong Shock, EASM-ko</td>
+       <td align="center">1</td>
+       <td align="center">2.5 min</td>
+       <td align="center">7.2 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/cfl3d.res_ss_easmko">cfl3d.res</a>
+       </td>
+       <td align="center">September 9 03</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Weak Shock</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/transdif_p_ws.gif">
+         P vs x</a><br>
+         <a href="2DTestcases/Transdiff/transdif_vel_ws.gif">
+         Velocity Profiles</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/sajwpres.data">sajwpres.data</a><br>
+         <a href="2DTestcases/Transdiff/sajwvel.data">sajwvel.data</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">Strong Shock</td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/transdif_p_ss.gif">
+         P vs x</a><br>
+         <a href="2DTestcases/Transdiff/transdif_vel_ss.gif">
+         Velocity Profiles</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/Transdiff/sajspres.data">sajspres.data</a><br>
+         <a href="2DTestcases/Transdiff/sajsvel.data">sajsvel.data</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Transdiff/compare_cfd_exp_transdiff.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed
+     results from the plot3d files generated
+     by CFL3D (with <strong>nplot3d = -1</strong>) and the experimental
+     data files. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <br>
+     <li>For this internal flow case, the difference in mass flow between
+         inlet and exit is monitored as a convergence criterion (in addition
+         to residual). This is achieved by setting ihstry=1 and specifying
+         control surfaces at the inlet and outlet.</li>
+     <li>If you try to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+</ul>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="airbox"></a><strong><u>NACA 4412 AIRFOIL</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Flow around an NACA airfoil section is computed using a "standard"
+     body fitted C-grid as well as with "chimera" overset grids,
+     using the SA turbulence model. For the 
+     overset case, the standard grid is used near the airfoil, with
+     two nesting "box" grids providing connection to the far field. In
+     both cases, the outer boundary is located at nominally the same
+     distance away from the airfoil. However, the shapes of the outer
+     boundaries differ between the two cases. Input files are provided
+     for generating the overset connectivity data using either MAGGIE
+     (provided as part of the CFL3D release package) 
+     of the widely-used PEGSUS code. The experimental data is
+     taken from Coles and Wadcock, AIAA J., Vol 17 No 4, 1979, pp. 321-329.
+     The following figures illustrate the case:</p>
+     
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/grid_standard_4412.gif">
+           Standard Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/soln_standard_4412.gif">
+           Mach Contours,Standard Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/grid_xmera_4412.gif">
+           Chimera Grid using Pegsus</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/soln_xmera_4412.gif">
+           Mach Contours, Chimera Grid using Pegsus</a>
+
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/grid_xmera_4412_mag.gif">
+           Chimera Grid using Maggie</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/NACA_4412/soln_xmera_4412_mag.gif">
+           Mach Contours, Chimera Grid using Maggie</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/NACA_4412/NACA_4412.tar.Z">
+     NACA_4412.tar.Z (887 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip NACA_4412.tar.Z</strong></dd>
+  <dd><strong>tar -xvf NACA_4412.tar</strong></dd>
+  <p>This will create a subdirectory "NACA_4412".</p>
+
+  <li type=circle> The tar file contains the following items:</li>
+     <p>
+     <dl>
+     <dl>
+       <dt><strong>4412_standard.fmt</strong></dt>
+          <dd>1-block "standard" grid (plot3d, multigrid, whole, formatted)<br>
+              block 1 dimensions i x j x k = 2 x 257 x 81<br>
+          </dd>
+       <dt><strong>4412_xmera.fmt</strong></dt>
+          <dd>3-block "chimera" grid (plot3d, multigrid, whole, formatted)<br>
+              block 1 dimensions i x j x k = 2 x 225 x  57<br>
+              block 2 dimensions i x j x k = 2 x 113 x  73<br>
+              block 3 dimensions i x j x k = 2 x  49 x 113<br>
+          </dd>
+       <dt><strong>cfl3d.inp_standard</strong></dt>
+           <dd>cfl3d input file for standard-grid case</dd>
+       <dt><strong>cfl3d.inp_xmera</strong></dt>
+           <dd>cfl3d input file for chimera-grid case</dd>
+       <dt><strong>split.inp_standard</strong></dt>
+          <dd>input to block splitter that converts 4412_standard.fmt
+              to an unformatted grid that can be read by CFL3D</dd>
+       <dt><strong>split.inp_xmera</strong></dt>
+          <dd>input to block splitter that converts 4412_xmera.fmt
+              to an unformatted grid that can be read by CFL3D</dd>
+       <dt><strong>peg41.inp</strong></dt>
+          <dd>input to PEGSUS <strong>4.1</strong> that generates the overset grid
+              connectivity file "XINTOUT". The <a href="cfl3dv6_tools.html">
+              conversion tool</a>
+              p3d_to_INGRID can be used to convert the formatted grid-point
+              file into the unformatted cell-center file "INGRID"
+              file that is input to PEGSUS. The conversion tool
+              XINTOUT_to_ovrlp can be used to convert the output file from
+              PEGSUS to the "ovrlp.bin" file required by CFL3D for the
+              chimera-grid case</dd>
+       <dt><strong>maggie.inp</strong></dt>
+          <dd>input to MAGGIE that generates overset grid connectivity
+              file "ovrlp.bin" required by CFL3D for the chimera-grid case</dd>
+       <dt><strong>mag1.h</strong></dt>
+          <dd>parameter file for MAGGIE; must be placed in the cfl3dv6/header
+              directory before compiling MAGGIE</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the standard-grid case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_standard </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_standard &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the overset-grid case using MAGGIE to generate the 
+     overset connectivity file, copy mag1.h to the header directory and
+     compile MAGGIE. Then type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_xmera  </strong><br>
+        <strong>maggie < </strong> <strong> maggie.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_xmera &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the overset-grid case using PEGSUS to generate the
+     overset connectivity file, compile PEGSUS as appropriate (in the
+     instructions below, it is assumed the PEGSUS executable is called
+     pegsus41). You will also need a couple of utilities from the cfl3d tools
+     directory, so make sure you have compiled cfl3d_tools.  Then type:
+     (user inputs shown in <strong>bold</strong>, interactive
+     prompts for input shown in <em>italics</em>)</li>
+     <p>
+     <dl> 
+     <dl>
+ <strong>splitter < </strong> <strong> split.inp_xmera</strong><br>
+ <strong>p3d_to_INGRID</strong>
+   <pre>
+   <em>file defaults:</em>
+   <em>   input grid files are plot3d type</em>
+   <em>   input grid files are unformatted</em>
+   <em>   output INGRID/plot3d file is unformatted</em>
+
+   <em>do you wish to use these defaults (y/n)?</em>
+   <em>   (alternate options include formatted</em>
+   <em>   files and cfl3d-type input grid files)</em>
+   <strong>y</strong>
+
+   <em>choose the type of output file to create</em>
+   <em>enter 0 to create an INGRID file (for PEGSUS 4.x)</em>
+   <em>enter 1 to create a plot3d file  (for PEGSUS 5.x)</em>
+   <strong>0</strong>
+
+   <em>enter the name of the output file to create (up to 80 char.)</em>
+   <strong>INGRID</strong>
+
+   <em>enter 0 to create an output file with grid points</em>
+   <em>enter 1 to create an output file with augmented cell centers</em>
+   <strong>1</strong>
+
+   <em>enter 0 to preserve input-grid i,j,k index definitions in the output grid</em>
+   <em>you may want this option if you have an existing PEGSUS input file that</em>
+   <em>was generated for OVERFLOW</em>
+   <em>  Note: this will require the following translation of</em>
+   <em>  indicies between CFL3D and PEGSUS input files:</em>
+   <em>            PEGSUS   CFL3D</em>
+   <em>              J    =   I</em>
+   <em>              K    =   J</em>
+   <em>              L    =   K</em>
+
+   <em>enter 1 to swap input-grid i,j,k index definitions in the output grid</em>
+   <em>  Note: this will require NO translation of</em>
+   <em>  indicies between CFL3D and PEGSUS input files:</em>
+   <em>            PEGSUS   CFL3D</em>
+   <em>              L    =   I</em>
+   <em>              J    =   J</em>
+   <em>              K    =   K</em>
+   <strong>1</strong>
+
+   <em>enter number of separate grid files to convert into one output file</em>
+   <strong>1</strong>
+   <em>enter 0 to specify a name for each mesh</em>
+   <em>enter 1 to  use default names (grid.n)</em>
+   <strong>0</strong>
+
+   <em>beginning processing of grid file number   1</em>
+
+   <em>input name of unformatted plot3d grid file to read (up to 80 
+          characters)   </em>
+   <strong>4412_xmera.unf</strong>
+
+   <em>enter 0 if a   single-grid plot3d file</em>
+   <em>enter 1 if a multiple-grid plot3d file</em>
+   <strong>1</strong>
+
+   <em>required array sizes: maxbl =      3</em>
+   <em>                       lmax =      4</em>
+   <em>                       jmax =    226</em>
+   <em>                       kmax =    114</em>
+
+
+   <em>input name (up to 40 char.) for zone    1</em>
+   <strong>wing</strong>
+
+   <em>reading zone    1</em>
+   <em>  input dimensions    2 225  57</em>
+   <em>writing zone    1 with name wing</em>
+   <em>  output dimensions  226  58   4</em>
+
+   <em>input name (up to 40 char.) for zone    2</em>
+   <strong>box1</strong>
+
+   <em>reading zone    2</em>
+   <em>  input dimensions    2 113  73</em>
+   <em>writing zone    2 with name box1</em>
+   <em>  output dimensions  114  74   4</em>
+
+   <em>input name (up to 40 char.) for zone    3</em>
+   <strong>box2</strong>
+
+   <em>reading zone    3</em>
+   <em>  input dimensions    2  49 113</em>
+   <em>writing zone    3 with name box2</em>
+   <em>  output dimensions   50 114   4</em>
+
+   <em>conversion of grid file   1 complete</em>
+
+   <em>conversion of all grid files completed</em>
+
+   <em>the INGRID output file:</em>
+   <em>INGRID</em>                                                                          
+   <em>contains (augmented) cell centers of the input grid(s)</em>
+   <em>note: the mesh names in the INGRID file contain 40 characters</em>
+   <em>make sure the PEGSUS parameter ICHAR is set to 40</em>
+   </pre>
+
+        <strong>pegsus41 < </strong>  <strong>peg41.inp > </strong><strong>peg41.out</strong></br>
+
+        <strong>XINTOUT_to_ovrlp</strong>
+
+   <pre>
+   <em>enter 4 if pegsus version 4.X was used</em>
+   <em>enter 5 if pegsus version 5.X was used</em>
+   <strong>4</strong>
+
+   <em>enter the name of the COMPOUT file created by PEGSUS</em>
+   <em>(unless you have renamed it, enter COMPOUT)</em>
+   <strong>COMPOUT</strong>
+
+   <em>enter 0 to leave overset data as 3d</em>
+   <em>enter 1 to convert overset data to 2d (2 i-planes)</em>
+   <strong>1</strong>
+
+   <em>enter 0 to use the maggie/CFL3D-ijk index definition</em>
+   <em>enter 1 to use the pegsus/OVERFLOW-jkl index definition</em>
+   <strong>0</strong>
+
+      (additional output from XINTOUT_to_ovrlp is omitted...
+      no further user input is needed)
+   </pre>   
+
+   <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_xmera &</strong><br>
+
+   </dl>
+   </dl>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Standard</td>
+       <td align="center">1</td>
+       <td align="center">17 min</td>
+       <td align="center">30.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/cfl3d.res_standard">cfl3d.res</a><br>
+         <a href="2DTestcases/NACA_4412/convg_standard.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">Chimera (MAGGIE)</td>
+       <td align="center">1</td>
+       <td align="center">17 min</td>
+       <td align="center">32.6 MB</td>
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/cfl3d.res_xmeraMAG">cfl3d.res</a>
+       </td>
+       <td align="center">January 24 03</td>
+       <td align="center">Octane2<sup>5</td>
+     </tr>
+     <tr align="center">
+       <td align="center">Chimera (Pegsus)</td>
+       <td align="center">1</td>
+       <td align="center">21 min</td>
+       <td align="center">34.1 MB</td>
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/cfl3d.res_xmera">cfl3d.res</a><br>
+         <a href="2DTestcases/NACA_4412/convg_xmera.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">both Standard<br>
+                          and Chimera (Pegsus)
+       </td>
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/cp_vs_x_4412.gif">Cp vs x/c</a><br>
+         <a href="2DTestcases/NACA_4412/u_vs_y_4412.gif">Velocity Profiles</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/4412.cpexp">4412.cpexp</a><br>
+         <a href="2DTestcases/NACA_4412/4412.velexp">4412.velexp</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/NACA_4412/compare_cfd_exp_4412.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed results for 
+     either the standard or chimera cases from the plot3d files generated
+     by CFL3D (with <strong>nplot3d = -1</strong>) and the experimental
+     data files. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The overset-grid case is run using a W-cycle (as is the standard
+         grid case); this type of multigrid cycle does not always work for
+         overset grids (V-cycle is recommended in the Version 5 User's Manual).
+     </li>
+     <p>
+     <li>Mesh sequencing cannot be used with overset grids in CFL3D; in order
+         to have a direct comparison with the overset-grid case, the
+         standard-grid case is also run without mesh sequencing, contrary
+         to recommended practice.
+     </li>
+     <p>
+     <li>When comparing timings, note that the overset grid contains roughly
+         26,000 cells compared to the standard grid with roughly 20,500 cells.
+     </li>
+     <p>
+     <li>The provided MAGGIE and PEGSUS input files were set up
+         to provide resulting hole and outer boundaries as nearly identical
+         as possible. The resulting solutions are very similar; therefore,
+         only the Chimera results using Pegsus interpolation stencils are
+         given in the tables (except for the MAGGIE residual history file).
+     </li>
+     <p>
+     <li>Both the spelling and the case used for the zone names when
+         generating the INGRID file is important - they must match those
+         in the PEGSUS input file.
+     </li>
+     <p>
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="raederiv"></a><strong><u>RAE 2822 AIRFOIL</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Transonic viscous flow around an RAE 2822 airfoil is modeled with
+     Menter's SST model. This case also appears in the
+     <a href="http://fmad-www.larc.nasa.gov/~rumsey/CFL3D/psfiles.html">
+     Version 5 Users Manual</a>; the difference
+     here is that sensitivity (i.e. derivatives) of the solution with respect
+     to angle of attack are calculated along with the standard solution. 
+     Input files are provided to calculate
+     the sensitivity in two ways: 1) via complex variables, and 2) via finite
+     differences. See the <a href="cfl3dv6_new.html#complex">New Features</a>
+     page for additional information and results.  The experimental data is
+     taken from Cook, McDonald, and Firmin, AGARD-AR-138, 1979, p. A6.
+     The following figures illustrate the case:</p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/RAE_Sensitivity/rae_grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/RAE_Sensitivity/rae_mach.gif">
+           Mach Contours</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/RAE_Sensitivity/RAE_Sensitivity.tar.gz">
+     RAE_Sensitivity.tar.gz (311 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip RAE_Sensitivity.tar.gz</strong></dd>
+  <dd><strong>tar -xvf RAE_Sensitivity.tar</strong></dd>
+  <p>This will create a subdirectory "RAE_Sensitivity".</p>
+
+  <li type=circle> The tar file contains the following items:</li>
+     <p>
+     <dl>
+     <dl>
+       <dt><strong>rae10.fmt</strong></dt>
+          <dd>single-block grid (plot3d, multigrid, whole, formatted)
+              of dimensions i x j x k = 2 x 257 x 97</dd>
+       <dt><strong>cfl3d.inp</strong></dt>
+          <dd>cfl3d input file for derivatives via complex variables.</dd>
+       <dt><strong>cfl3d.inp_+a</strong></dt>
+          <dd>cfl3d input file for a +10e-6 perturbation to the angle
+              of attack, to be used for calculating the derivatives
+              via finite differences.</dd>
+       <dt><strong>cfl3d.inp_-a</strong></dt>
+          <dd>cfl3d input file for a -10e-6 perturbation to the angle
+              of attack, to be used for calculating the derivatives
+              via finite differences.</dd>
+       <dt><strong>split.inp</strong></dt>
+          <dd>input to block splitter that converts the single-block
+              formatted grid to a single-block unformatted grid that
+              can be read by CFL3D</dd>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the complex case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3dcmplx_seq < </strong> <strong> cfl3d.inp &</strong><br>
+     </dl>
+     </dl>
+
+  <p><strong>NOTE:</strong> As of March, 2007, the Intel Version 9 compiler has major problems
+with complex cases in CFL3D (the resulting executable <strong>does not work</strong> for this case).  If you
+use Intel, consider compiling with a different version.</p>
+
+  <br>
+
+  <li type=circle> To run the finite-difference case, type:
+     (you will also need Get_FD from the cfl3d tools directory;
+     user inputs shown in <strong>bold</strong>, interactive prompts for
+     input shown in <em>italics</em>; be sure to finish one run before starting the next
+     if running in the same directory)</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_+a &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_-a &</strong><br>
+        <strong>Get_FD</strong>
+
+     <pre>
+     <em>enter first restart file to extract history data from</em>
+     <em>this should be the "+" step file</em>
+     <strong>restart.bin_+a</strong>
+
+     <em>enter second restart file to extract history data from</em>
+     <em>this should be the "-" step file</em>
+     <strong>restart.bin_-a</strong>
+
+     <em>enter step size</em>
+     <strong>1.e-6</strong>
+
+     <em>finite diffs to be calculated with central diffs</em>
+     <em>enter file name for output finite differences</em>
+     <strong>Finite_Diff_1.e-6</strong>
+
+     <em>enter 0 to output convergence of dcy/ddv,dcmy/ddv</em>
+     <em>enter 1 to output convergence of dcz/ddv,dcmz/ddv</em>
+     <strong>0</strong>
+     </pre>
+
+     </dl>
+     </dl>
+
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Derivative History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Complex</td>
+       <td align="center">1</td>
+       <td align="center">2 hr, 22 min</td>
+       <td align="center">75.2 MB</td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/cfl3d.res">cfl3d.res</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/convg_soln.gif">plot</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/cfl3d.sd_res">cfl3d.sd_res</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/convg_grad.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane 2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">FD<br>
+                             +alpha<br>
+                             -alpha</td>
+       <td align="center">1</td>
+       <td align="center">39 min (+a)<br>
+                          38 min (-a)</td>
+       <td align="center">37.7 MB<br>
+                          both</td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/cfl3d.res_+a">cfl3d.res_+a</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/cfl3d.res_-a">cfl3d.res_-a</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/convg_soln_+a.gif">plot_+a</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/convg_soln_-a.gif">plot_-a</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/Finite_Diff_1.e-6">
+         Finite_Diff_1.e-6</a><br>
+         <a href="2DTestcases/RAE_Sensitivity/convg_grad_fd.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Complex
+       </td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/cp_vs_x_2822.gif">Cp vs x/c</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/2822.cpexp">2822.cpexp</a><br>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/RAE_Sensitivity/compare_cfd_exp_2822.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed results for
+     any of the cases from the plot3d files generated
+     by CFL3D and the experimental
+     data file. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The complex code generates both the solution and the derivative
+         simultaneously; the solution convergence is found in the usual
+         cfl3d.res file, while the derivatives of Cl, Cd, etc. may be
+         found in cfl3d.sd_res.
+     </li>
+     <p>
+     <li>The complex derivatives require twice the memory of a single
+         analysis, and roughly 3 times the CPU time of a single analysis.
+         Thus, a finite-difference derivative requires 2 times the CPU
+         time of a single analysis; this is the typical cost differential
+         (but see the following note).
+     </li>
+     <p>
+     <li>For this particular case, the finite-difference results were
+         accurately obtained with an "arbitrary" step size of 10e-6. However,
+         more than one case has been encountered where several different
+         <a href="Gifs/m6_complex_vs_fd.gif">finite-difference step sizes</a> 
+         must be tried before one that gives accurate derivatives is found.
+         If one factors in the trial and error test of step size that may
+         be required, the cost of finite differences can easily be more than
+         2 times the CPU time of a single analysis. 
+     </li>
+     <p>
+     <li>A complex step size of 10e-7 was used to obtain the derivatives
+         with the complex version of CFL3D. To date, there has been no case
+         for which 10e-7 was insufficient for the complex step.
+     </ol>
+
+   <br>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="embed"></a><strong><u>SUPERSONIC RAMP</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Supersonic flow over an inviscid ramp (Euler flow) is modeled. 
+     This case demonstrates the use of embedded meshes.
+     The following figure illustrates the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Ramp/gridview.gif">Grid</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Ramp/Ramp.tar.Z">
+     Ramp.tar.Z (134 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Ramp.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Ramp.tar</strong></dd>
+  <p>This will create a subdirectory "Ramp".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>ramp_noembed.fmt</strong></dt>
+         <dd>single-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 73 x 45
+             for no embedding case</dd>
+      <dt><strong>ramp_noembed.inp</strong></dt>
+         <dd>cfl3d input file for no embedding case</dd>
+      <dt><strong>split_noembed.inp</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D (for no embedding case)</dd>
+      <dt><strong>ramp_embed.fmt</strong></dt>
+         <dd>multi-block embedded grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 73 x 45,
+             2 x 33 x 21, 2 x 33 x 25, 2 x 29 x 21, 2 x 49 x 25,
+             and 2 x 29 x 29 for embedding case</dd>
+      <dt><strong>ramp_embed.inp</strong></dt>
+         <dd>cfl3d input file for embedding case</dd>
+      <dt><strong>split_embed.inp</strong></dt>
+         <dd>input to block splitter that converts the multi-block
+             formatted grid to a multi-block unformatted grid that
+             can be read by CFL3D (for embedding case)</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the ramp case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split_noembed.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> ramp_noembed.inp &</strong><br>
+        <strong>splitter < </strong> <strong> split_embed.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> ramp_embed.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: finish one cfl3d_seq run before starting the next.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">no embedding</td>
+       <td align="center">1</td>
+       <td align="center">1 min</td>
+       <td align="center">4.1 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Ramp/cfl3d.res_noembed">cfl3d.res</a><br>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">embedding (restart)</td>
+       <td align="center">1</td>
+       <td align="center">3 min</td>
+       <td align="center">6.7 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Ramp/cfl3d.res_embed">cfl3d.res</a><br>
+         <a href="2DTestcases/Ramp/convergence.gif">plot</a>
+       </td>
+       <td align="center">July 29 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p> No comparison is made with experiment.  This 
+         case is included primarily as a simple example to 
+         demonstrate the use of embedded grids.</p>
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <li>We have chosen to run this case in 2 stages:  first, we ran only on the
+global level (no embedded meshes).  For this, the input file
+ramp_noembed.inp was used.  Results from this run can be found in 
+<a href="2DTestcases/Ramp/results1.gif">plot1</a>.
+Next, we restarted with the embedded meshes included, using input
+file ramp_embed.inp.  Results from this run can be found in 
+<a href="2DTestcases/Ramp/results2.gif">plot2</a>.
+     </li>
+     <li>Subsequent restarts, if desired, should have the "INEWG"
+parameters in the ramp_embed_2.inp input file all set to zero.
+     </li>
+     <li>When using embedded meshes, each subsequent embedded 
+     mesh level must be exactly double the
+     spacing in each of the coordinate directions (j and k for 2-D,
+     j, k, and i for 3-D) as the previous level.
+     </li>
+     <li>Embedded mesh cases CANNOT be run in parallel (requires data
+passing throughout the volume rather than just at the boundaries, so is
+unsuitable for the message passing approach).
+     </li>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="cylinder"></a><strong><u>CIRCULAR CYLINDER</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a circular cylinder is modeled at a Reynolds
+     number of 10,000, with the Spalart-Allmaras turbulence model
+     employed (at this low a Re, the turbulence is primarily confined
+     to the wake region).  This case is given to demonstrate the temporal order
+     property of the code.  Using ITA = 2 or -2, CFL3D employs a
+     2nd order backward difference scheme.  (Prior to Version 6.1,
+     turbulence models were advanced in time with a 1st order
+     accurate backward difference scheme regardless of the temporal order of 
+     accuracy of the mean flow equations.  This lower order accuracy
+     in the turbulence models made the 
+     code overall less than 2nd order in time.  Starting in
+     Version 6.1, the turbulence models are advanced with the same
+     temporal accuracy as the mean flow equations
+     so that 2nd order temporal accuracy can now
+     be achieved for time-accurate turbulent flows.)
+     The following figures illustrates the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Cylinder/grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Cylinder/mach.gif">Typical Mach number</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Cylinder/viscosity.gif">Typical eddy viscosity</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Cylinder/Timeaccstudy.tar.Z">
+     Timeaccstudy.tar.Z (187 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Timeaccstudy.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Timeaccstudy.tar</strong></dd>
+  <p>This will create a subdirectory "Timeaccstudy".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>cyl_129x81.fmt</strong></dt>
+         <dd>single-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 129 x 81</dd>
+      <dt><strong>cyl_start_1.inp</strong></dt>
+      <dt><strong>cyl_start_2.inp</strong></dt>
+      <dt><strong>cyl_start_3.inp</strong></dt>
+      <dt><strong>cyl_0.2.inp</strong></dt>
+      <dt><strong>cyl_0.1.inp</strong></dt>
+      <dt><strong>cyl_0.05.inp</strong></dt>
+      <dt><strong>cyl_0.025.inp</strong></dt>
+      <dt><strong>cyl_0.0125.inp</strong></dt>
+         <dd>cfl3d input files</dd>
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the circular cylinder time-accuracy study, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_start_1.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_start_2.inp &</strong> (perturbs flow so goes unsteady quicker)<br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_start_3.inp &</strong><br>
+        <strong>cp restart.bin restart.binIC</strong> (saves restart file for subsequent use)<br>
+     </dl>
+      <p>(Note: each cfl3d_seq run should be done sequentially, i.e., finish one before
+         starting the next.)
+     <dl>
+<p>The following commands run various time steps, always starting
+from the same restart file:
+     </dl>
+     <dl>
+        <strong>cp restart.binIC restart.bin</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_0.2.inp&</strong><br>
+        <strong>cp restart.binIC restart.bin</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_0.1.inp&</strong><br>
+        <strong>cp restart.binIC restart.bin</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_0.05.inp&</strong><br>
+        <strong>cp restart.binIC restart.bin</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_0.025.inp&</strong><br>
+        <strong>cp restart.binIC restart.bin</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cyl_0.0125.inp&</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done independently, i.e., finish one before
+         starting another if running in the same directory, and remember to save
+         results between each run.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">initial run</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">17.5 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_start_1">cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">perturbation run</td>
+       <td align="center">1</td>
+       <td align="center">3 min</td>
+       <td align="center">17.5 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_start_2">cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">run to achieve periodicity</td>
+       <td align="center">1</td>
+       <td align="center">6 hr, 16 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_start_3"> cfl3d.res</a><br>
+         <a href="2DTestcases/Cylinder/residual.gif">plot</a>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">dt=0.2</td>
+       <td align="center">1</td>
+       <td align="center">3 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_0.2"> cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">dt=0.1</td>
+       <td align="center">1</td>
+       <td align="center">6 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_0.1"> cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">dt=0.05</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_0.05"> cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">dt=0.025</td>
+       <td align="center">1</td>
+       <td align="center">26 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_0.025"> cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">dt=0.0125</td>
+       <td align="center">1</td>
+       <td align="center">49 min</td>
+       <td align="center">17.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Cylinder/cfl3d.res_0.0125"> cfl3d.res</a><br>
+       </td>
+       <td align="center">Aug 6 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Demonstration of 2nd order temporal accuracy and 
+comparison with experiment:</li>
+     <p>
+Using lift and drag coefficients, the 2nd order temporal order 
+convergence rate
+is shown in <a href="2DTestcases/Cylinder/error_cl.gif">clerrorplot</a> and
+<a href="2DTestcases/Cylinder/error_cd.gif">cderrorplot</a>.  These results
+can be post-processed using the FORTRAN postprocessing program
+<a href="2DTestcases/Cylinder/geterror.f"> FORTRAN program</a>
+(hardwired for use with this particular case).<br>
+     </p>
+
+     <p>
+   Using a time step of dt=0.4 on this 129 x 81 grid (2-D),
+the Strouhal number St = n*d/u_inf comes out to be 0.236.
+(In CFL3D's nondimensional units, St = d/(M_inf*T), where
+d = nondimensional cylinder diameter = 1.0, M_inf = 0.2,
+and T = the nondimensional time for one period.)  The
+computed average drag coefficient on the cylinder is about 1.76.
+(These levels for St and Cd are not necessarily spatially or
+temporally converged enough.  129 x 81 is a rather coarse
+grid, and dt=0.4 yields only 53 steps per period.)
+     </p>
+
+     <p>
+   In experiments at Re = 10,000, St is roughly 0.2 and
+average drag coefficient is near 1.0-1.2 (see Cox et al,
+Theoret. Comput. Fluid Dynamics (1998) 12: 233-253).
+Thus, 2-D CFD yields too-high levels for St and Cd (overall
+conclusions are similar even
+if one were to use finer grids and lower time steps).
+However, experiments for Re > 200 or so always have
+inherent three-dimensionality (spanwise structures), so
+3-D computations would be necessary to reproduce the physics,
+including St and Cd.
+     </p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The method of perturbation used in cyl_start_2.inp, to get the
+cylinder to go unsteady quicker, uses an "artificial" wall BC of
+Euler (1005) over half of the cylinder for 50 iterations.  Be sure NEVER
+TO INITIATE A SOLUTION FROM SCRATCH (irest=0) using this technique!  If
+you do, the minimum distance function, which keys off of the BC type,
+will be INCORRECT for the entire computation - including subsequent
+restarts - even after the perturbation is removed.)
+     </li>
+     <p>
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="n0012"></a><strong><u>NACA 0012</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic flow past a NACA 0012 airfoil is modeled at a Reynolds
+     number of 10,000,000 and Mach number of 0.3, with the Spalart-Allmaras turbulence model
+     employed and transition specified at x/c=2.5 percent chord.  
+     This case is given to demonstrate the global 2nd order spatial order
+     property of the code.  Using RKAP0 = 1/3, CFL3D employs a
+     3rd order upwind-biased difference scheme on the Euler fluxes.
+     However, the viscous terms are treated 2nd order, so the resulting
+     global order of accuracy of CFL3D ends up being approximately 2nd order.
+     This case also demonstrates the use of mesh sequencing in CFL3D
+     (starting on a coarse level grid, and running successively finer
+     and finer grids).  An extra-fine 1025x513 C-grid was used; its minimum
+     spacing at the wall was such that the y+ at the first point off the
+     wall was approximately 0.1 on the finest (1025x513) level and 2.3 on the coarsest
+     (65x33) level.  The following figures illustrates the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/N0012/grid.gif">Grid</a> (every 4th point shown for clarity)
+        </li>
+        <li type=square>
+           <a href="2DTestcases/N0012/mach.gif">Typical Mach number</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/N0012/cp.t0.gif">Surface pressure coefficient</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/N0012/cp.t0_close.gif">Surface pressure coefficient (close-up near L.E.)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/N0012/Spaceaccstudy.tar.Z">
+     Spaceaccstudy.tar.Z (5.76 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Spaceaccstudy.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Spaceaccstudy.tar</strong></dd>
+  <p>This will create a subdirectory "Spaceaccstudy".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>n0012_1025.fmt</strong></dt>
+         <dd>single-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 1025 x 513</dd>
+      <dt><strong>n0012t0.inp_1</strong></dt>
+      <dt><strong>n0012t0.inp_2</strong></dt>
+      <dt><strong>n0012t0.inp_3</strong></dt>
+      <dt><strong>n0012t0.inp_4</strong></dt>
+      <dt><strong>n0012t0.inp_5</strong></dt>
+         <dd>cfl3d input files</dd>
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> Before beginning, note that
+these runs, and especially the 2 finest-level runs, can be quite time-consuming
+because of the large number of grid points combined with the large
+number of cycles used to iterate to convergence (see note 1 below).  
+To run the NACA 0012 space-accuracy study, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_1 &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_2 &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_3 &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_4 &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_5 &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done sequentially, i.e., finish one before
+         starting the next.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">65x33 grid</td>
+       <td align="center">1</td>
+       <td align="center">26 min</td>
+       <td align="center">655.0 MB</td>
+       <td align="center">
+         <a href="2DTestcases/N0012/n0012_65t0.res">cfl3d.res</a><br>
+       </td>
+       <td align="center">Nov 9 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">129x65 grid</td>
+       <td align="center">1</td>
+       <td align="center">1 hr, 22 min</td>
+       <td align="center">657.0 MB</td>
+       <td align="center">
+         <a href="2DTestcases/N0012/n0012_129t0.res">cfl3d.res</a><br>
+       </td>
+       <td align="center">Nov 9 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">257x129 grid</td>
+       <td align="center">1</td>
+       <td align="center">7hr, 19 min</td>
+       <td align="center">659.0 MB</td>
+       <td align="center">
+         <a href="2DTestcases/N0012/n0012_257t0.res">cfl3d.res</a><br>
+       </td>
+       <td align="center">Nov 9 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">513x257 grid</td>
+       <td align="center">1</td>
+       <td align="center">37 hr, 11 min</td>
+       <td align="center">661.0 MB</td>
+       <td align="center">
+         <a href="2DTestcases/N0012/n0012_513t0.res">cfl3d.res</a><br>
+       </td>
+       <td align="center">Nov 11 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">1025x513 grid</td>
+       <td align="center">1</td>
+       <td align="center">179 hr, 13 min</td>
+       <td align="center">785.5 MB</td>
+       <td align="center">
+         <a href="2DTestcases/N0012/n0012_1025t0.res">cfl3d.res</a><br>
+         <a href="2DTestcases/N0012/residual.gif">plot</a>
+       </td>
+       <td align="center">Nov 18 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Demonstration of 2nd order spatial accuracy and 
+comparison with experiment:</li>
+     <p>
+Using drag coefficients, the 2nd order spatial order 
+convergence rate
+is shown in <a href="2DTestcases/N0012/error_cd.gif">cderrorplot</a>.
+These results can be post-processed using the FORTRAN postprocessing program
+<a href="2DTestcases/N0012/geterror.f"> FORTRAN program</a>
+(hardwired for use with this particular case).<br>
+     </p>
+
+     <p>
+A plot of the CFD predicted drag coefficients in comparison with
+experiment is given in <a href="2DTestcases/N0012/mccroskey.gif">cd_vs_exp</a>.
+The experiment is taken from McCroskey, W. J.,
+"A Critical Assessment of Wind Tunnel Results for the NACA 0012 Airfoil",
+AGARD CP-429, July 1988, pp. 1.1-1.21.  It is given as a range of drag
+values measured over several different wind tunnel experiments, as a
+function of Reynolds number.  The converged CFD result lies within the data band.
+This plot also shows how the CFD results converge with grid refinement.
+To summarize, the result on the 65x33 grid is 18.6% in error from
+the extrapolated solution on an infinitely-refined grid, 129x65 is 3.4%
+in error, 257x129 is 0.74% in error, 513x257 is 0.20% in error, and
+1025x513 is 0.05% in error.  This grid-sensitivity analysis indicates
+that a grid of size 257x129 for this 2-D case is sufficient to capture
+the drag to within less than 1% of its "exact" (no discretization error) value.
+     </p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>Each successive grid level was run for at least 10000
+multigrid cycles.  This is significantly more than is usually necessary
+to achieve an adequate level of convergence!  However, this particular
+case does not converge very well past the first 2-order drop in residual;  
+also, for performing this
+spatial accuracy study, it was desired to insure that the drag levels
+were converged to very tight accuracy (in the current case they were
+converged to within less than delta cd = 5.e-7).  For a less restrictive
+convergence criterion, each grid level could be run an order of magnitude
+fewer cycles (1000 each as opposed to 10000 each), 
+and cd would be obtained to within less than
+delta cd = 5.e-6 in this case.
+     </li>
+     <p>
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="ejector"></a><strong><u>EJECTOR NOZZLE JET</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>A subsonic 2-D jet flow entrains and mixes with a secondary
+     outer flow.  Inflow is set by specifying total pressure and total 
+     temperature.  Results using using SA, SST, and EASM-ko turbulence models 
+     (#5, #7, and #14) are compared with experimental
+     data from Gilbert and Hill, NASA CR-2251, 1973.  See also
+     Georgiadis et al, AIAA 99-0748, 1999.
+     The following figure shows the grid:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Ejectornozzle/grid.gif">Grid</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Ejectornozzle/Ejectornozzle.tar.gz">
+     Ejectornozzle.tar.gz (181 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Ejectornozzle.tar.gz</strong></dd>
+  <dd><strong>tar -xvf Ejectornozzle.tar</strong></dd>
+  <p>This will create a subdirectory "Ejectornozzle".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>nozzle.p3dfmt</strong></dt>
+         <dd>3-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 31 x 41, 2 x 31 x 71, 
+             2 x 101 x 121</dd>
+      <dt><strong>nozzle.inp</strong></dt>
+         <dd>cfl3d input file; using the SST turbulence model. Results for the
+             other turbulence models shown below can be obtained by simply 
+             changing ivisc(k) to the appropriate value, e.g.
+             ivisc(k) = 5 for SA and ivisc(k) = 14 for EASM-ko</dd>
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the 3-block
+             formatted grid to a 3-block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the ejector nozzle case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> nozzle.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST</td>
+       <td align="center">1</td>
+       <td align="center">60 min</td>
+       <td align="center">21.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/cfl3d.res_sst">cfl3d.res</a><br>
+         <a href="2DTestcases/Ejectornozzle/convg_sst.gif">plot</a>
+       </td>
+       <td align="center">September 24 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SA</td>
+       <td align="center">1</td>
+       <td align="center">59 min</td>
+       <td align="center">21.8 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/cfl3d.res_sa">cfl3d.res</a><br>
+         <a href="2DTestcases/Ejectornozzle/convg_sa.gif">plot</a>
+       </td>
+       <td align="center">September 24 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">EASM-ko</td>
+       <td align="center">1</td>
+       <td align="center">78 min</td>
+       <td align="center">23.3 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/cfl3d.res_easmko">cfl3d.res</a><br>
+         <a href="2DTestcases/Ejectornozzle/convg_easmko.gif">plot</a>
+       </td>
+       <td align="center">September 24 02</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experiment:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SST, SA and EASM-ko</td>
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/u_vs_y.gif">
+         u vs y</a><br>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/u_vs_yexp.dat">
+         u_vs_yexp.dat</a><br>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Ejectornozzle/translate_u_prout.f">
+         FORTRAN program</a><br>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN program will extract the computed
+     results from the printout (cfl3d.prout) file generated by CFL3D 
+     at the approximate locations (nearest gridpoints)
+     corresponding with the experimental 
+     data. The output files are formatted TECPLOT files.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <li>This case has nozzle total pressure divided by atmospheric
+static pressure of 2.44, with total temperature = 644 R.  The 
+secondary flow has a total pressure equal to atmospheric and a
+temperature of 550 R.  At the outflow used by this grid, the
+static pressure divided by the atmospheric static pressure is
+taken to be 0.9131.  However, in CFL3D, we wish to choose a reference 
+condition that corresponds with a non-zero Mach number: in this case it is 
+taken to be M=0.22, which is the approximate Mach number at the secondary 
+flow inlet in this grid.  (Corresponding Reynolds number is taken to
+be approximately 1.64 million per unit "one" of the grid, which is 
+in feet.)  Using M=0.22 and isentropic relations, one can find that 
+Pt/Pref = 1.0343 and Tt/Tref = 1.0097.  These numbers are used as
+inflow conditions for the secondary flow.  Because the "atmosphere"
+in this case has zero flow and Pt = constant from
+the atmosphere through to the secondary flow inlet, Patm/Pref = 1.0343 
+and Tatm/Tref = 1.0097.  At the nozzle inlet,
+Pt/Patm = 2.44 so Pt/Pref = (Pt/Patm)*(Patm/Pref) = 2.5237.  Also
+Tt/Tatm = 1.17091 so Tt/Tref = (Tt/Tatm)*(Tatm/Tref) = 1.1822.  At
+the outflow, P/Pref = (P/Patm)*(Patm/Pref) = 0.9444.
+     </li>
+     <li>Note that the EASM-ko was re-calibrated in 9/2002.
+Use of ivisc=14 in versions prior to V6.1 will not agree with the 
+results given here.
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="pitch"></a><strong><u>SINUSOIDALLY PITCHING AIRFOIL</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Turbulent flow past a NACA 0012 airfoil sinusoidally oscillating in 
+     pitch is modeled. The unsteady motion is accomplished by moving the
+     grid itself (unsteady time metric terms are included in CFL3D's 
+     formulation). Mach number is 0.6 and Reynolds number is 4.8 million.
+     The Spalart-Allmaras turbulence model is employed.
+     The frequency of pitching oscillation is 50.32 Hz.
+     The experimental data is AGARD Case 3 taken from Landon, AGARD-R-702, 1982.
+     The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Pitch/grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Pitch/cpplot_5.95.gif">Pressure contours at
+            alpha=5.95 deg (increasing)</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Pitch/cpplot_2.43.gif">Pressure contours at
+            alpha=2.43 deg (decreasing)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Pitch/Pitch0012.tar.Z">
+     Pitch0012.tar.Z (391 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Pitch0012.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Pitch0012.tar</strong></dd>
+  <p>This will create a subdirectory "Pitch0012".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>n0012_257.fmt</strong></dt>
+         <dd>1 block grid (plot3d type, formatted)<br>
+             dimensions i x j x k = 2 x 257 x 97</dd>
+      <dt><strong>n0012_ss.inp</strong></dt>
+         <dd>CFL3D input file to generate a steady-state "starting" 
+             solution at alpha=4.86 deg.
+      <dt><strong>n0012_pitch.inp</strong></dt>
+         <dd>CFL3D input file to run pitching airfoil through approx. 6
+             cycles and stop near alpha=5.95 deg (increasing).
+      <dt><strong>n0012_pitch2.inp</strong></dt>
+         <dd>CFL3D input file to continue running pitching airfoil and
+             stop near alpha=2.43 deg (decreasing).
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the pitching airfoil case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012_ss.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012_pitch.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012_pitch2.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done sequentially, i.e., finish one before
+         starting the next.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">steady</td>
+       <td align="center">1</td>
+       <td align="center">27 min</td>
+       <td align="center">49.4 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Pitch/cfl3d_ss.res">cfl3d_ss.res</a><br>
+       </td>
+       <td align="center">January 21 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">pitching</td>
+       <td align="center">1</td>
+       <td align="center">4hr, 47 min</td>
+       <td align="center">60.3 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Pitch/cfl3d.res">cfl3d.res</a><br>
+       </td>
+       <td align="center">January 21 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">pitching<br>
+                          (continuation)</td>
+       <td align="center">1</td>
+       <td align="center">25 min</td>
+       <td align="center">60.3 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Pitch/cfl3d2.res">cfl3d2.res</a><br>
+         <a href="2DTestcases/Pitch/conv.gif">plot</a>
+       </td>
+       <td align="center">January 21 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SA</td>
+       <td align="center">
+         <a href="2DTestcases/Pitch/clalpha.gif">
+         Cl vs alpha</a><br>
+         <a href="2DTestcases/Pitch/cmalpha.gif">
+         Cm vs alpha</a><br>
+         <a href="2DTestcases/Pitch/cp5.95.gif">
+         Cp vs x/c at 5.95 deg</a><br>
+         <a href="2DTestcases/Pitch/cp2.43.gif">
+         Cp vs x/c at 2.43 deg</a><br>
+       <td align="center">
+         <a href="2DTestcases/Pitch/alphaclcm_exp.dat">
+         alphaclcm_exp.dat</a><br>
+         <a href="2DTestcases/Pitch/cp_exp_5.95.dat">
+         cp_exp_5.95.dat</a><br>
+         <a href="2DTestcases/Pitch/cp_exp_2.43.dat">
+         cp_exp_2.43.dat</a><br>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Pitch/getalpha.f">
+         FORTRAN program</a><br>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN program (hardwired for this case) will compute the alphas
+     from the iteration numbers in the residual file (cfl3d.res) generated by CFL3D. </p>
+
+     <p>For this case we did not perform a time step study, in
+     which the time step and/or number of subiterations is varied to
+     determine their effect on the solution.  The time step used (dt=0.4)
+     corresponds to between 161-162 time steps per cycle.  
+     Six subiterations were used per time step.  The convergence history
+     with subiterations is output by CFL3D to the files 
+     <a href="2DTestcases/Pitch/cfl3d.subit_res">cfl3d.subit_res</a> for
+     density residual and forces/moments, and to
+     <a href="2DTestcases/Pitch/cfl3d.subit_turres">cfl3d.subit_turres</a> for
+     turbulence model residual.  These files do not maintain a
+     running history; they are reset for each successive restart.  The files
+     given here correspond to the final run using <strong>n0012_pitch2.inp</strong>. </p>
+
+     <p>Sample plots showing typical subiteration convergence for this case
+     are given here:</p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Pitch/res_subit.gif">Density residual subiteration
+           convergence</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Pitch/cl_subit.gif">Cl subiteration convergence</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Pitch/turres_subit.gif">Turbulence model residual
+           subiteration convergence</a>
+        </li>
+     </ul>
+
+  <br>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <li>For this case, the frequency of pitching
+     oscillation is 50.32 Hz.  Chordlength in the experiment was 0.33333 ft.  Assuming
+     speed of sound to be 1084 ft/sec, this yields a nondimensional
+     frequency of 0.01547.  Thus, the angle of attack of the
+     airfoil is governed by:
+     alpha=alpha0 + alpha1*sin(2*pi*kr*t/Lref)
+     where alpha0= 4.86 deg,
+      alpha1= 2.44 deg,
+      kr    = 0.01547,
+      Lref  = 1 (the chord is unit one in the grid),
+      t     = nondimensional time.
+     We take nondimensional time step of 0.4 (which corresponds with 
+     dimensional time 0.000123 sec).
+     </li>
+     <li>It may or may not be necessary to restart an unsteady run such as
+     this from a steady-state solution.  However, doing so often allows you
+     to achieve repeatable periodicity faster.  Note from current results
+     showing Cl and Cm vs alpha that periodicity in these quantities
+     is achieved within approximately one cycle in this case.
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="rotor"></a><strong><u>ROTOR-STATOR SIMULATION</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>This case simulates, in two dimensions, the unsteady flow through a
+single stage turbine in which the ratio of stator to rotor blades
+is 3:4.  The case exercises a number of capabilities of CFL3D
+including unsteady flow, moving (translating) zones, dynamic
+patching between zones in relative motion, and grid overlapping.
+The Spalart-Allmaras turbulence model is employed.
+</p>
+
+<p>This grid models a generic rotor-stator configuration in 2-d
+(which does not correspond to any experimental configuration),
+with the moving rotor row downstream of the stationary
+stator row.  The grid consists
+of fourteen zones with a total of 18374 points in one plane. The
+grid zones communicate with one another through both patching and
+overlapping. At a time step of 1.0, it takes 270 time steps for
+the eight rotor zones (containing four blades) to completely
+traverse the six stator zones (containing three blades). The
+rotor zones are reset after each complete traverse. The input
+file is set for 1500 time steps (using five multigrid sub-iterations
+per time step), which is sufficient to establish a time-periodic
+solution.
+</p>
+
+<p>The 2-d simulation assumes a nominal axial velocity of 75 feet/second.
+The inlet Mach number is 0.07, and the Reynolds number/inch is
+100,000.  The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Rotorstator/grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Rotorstator/machresult.gif">Mach Contours</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Rotorstator/Rotorstator.tar.Z">
+     Rotorstator.tar.Z (305 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Rotorstator.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Rotorstator.tar</strong></dd>
+  <p>This will create a subdirectory "Rotorstator".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>rotstat.fmt</strong></dt>
+         <dd>14 block overset grid (plot3d type, formatted)<br>
+             block 1 dimensions i x j x k = 2 x 55 x 23<br>
+             block 2 dimensions i x j x k = 2 x 61 x 21<br>
+             block 3 dimensions i x j x k = 2 x 55 x 23<br>
+             block 4 dimensions i x j x k = 2 x 61 x 21<br>
+             block 5 dimensions i x j x k = 2 x 55 x 23<br>
+             block 6 dimensions i x j x k = 2 x 61 x 21<br>
+             block 7 dimensions i x j x k = 2 x 61 x 23<br>
+             block 8 dimensions i x j x k = 2 x 61 x 21<br>
+             block 9 dimensions i x j x k = 2 x 61 x 23<br>
+             block 10 dimensions i x j x k = 2 x 61 x 21<br>
+             block 11 dimensions i x j x k = 2 x 61 x 23<br>
+             block 12 dimensions i x j x k = 2 x 61 x 21<br>
+             block 13 dimensions i x j x k = 2 x 61 x 23<br>
+             block 14 dimensions i x j x k = 2 x 61 x 21</dd>
+      <dt><strong>rotstat.inp</strong> and <strong>rotstat_new.inp</strong></dt>
+         <dd>CFL3D input files</dd>
+      <dt><strong>maggie.inp</strong></dt>
+         <dd>input to MAGGIE that generates overset grid connectivity file 
+            "ovrlp.bin" required by CFL3D</dd>
+      <dt><strong>mag1.h</strong></dt>
+         <dd>parameter file for MAGGIE; must be placed in the 
+             cfl3dv6/header directory before compiling MAGGIE</dd>
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the 14-block
+             formatted grid to a 14-block unformatted grid that
+             can be read by CFL3D</dd>
+      <dt><strong>README</strong></dt>
+         <dd>file that describes changes to the code after V6.3
+             that require differences in the input file</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the rotor-stator case, copy mag1.h to the header directory and
+    compile MAGGIE. Then type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>maggie < </strong> <strong> maggie.inp</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> rotstat.inp &</strong> (for V6.3 or earlier;
+              see Note 3 below)<br>
+        <strong>cfl3d_seq < </strong> <strong> rotstat_new.inp &</strong> (for V6.3 with 
+              updates, or later versions)<br>
+     </dl>
+     </dl>
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">rotor-stator</td>
+       <td align="center">1</td>
+       <td align="center">1 hr, 28 min</td>
+       <td align="center">23.7 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Rotorstator/cfl3d.res">cfl3d.res</a><br>
+         <a href="2DTestcases/Rotorstator/convg.gif">plot</a>
+       </td>
+       <td align="center">January 24 03</td>
+       <td align="center">Octane2<sup>5</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p> No comparison is made with experiment.  This
+         case is included primarily as a simple example to
+         demonstrate the use of moving grids with sliding patched interfaces.</p>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>Boundary condition type 2003 is used to specify
+total pressure and total temperature at the inlet.  From isentropic
+flow relations or tables, for an inlet flow Mach number of 0.07,
+M_inlet = 0.07, Pt_inlet/Pinf = 1.0035, Tt_inlet/Tinf = 1.0010.
+Also, alphae = betae = 0 (purely axial flow is assumed).
+Boundary condition type 2002 is used to specify an exit pressure,
+which is taken to be pexit/pinf = 0.967 for this case.
+     </li>
+     <li>The inflow Mach number used in boundary condition type
+2003 is an estimate; if the exit pressure were not set correctly
+for this internal flow case,
+the computed inflow Mach number would not be close to the specified
+inflow value (when a time-periodic state is reached or at
+convergence in steady state). By specifying control surfaces at
+the inflow plane, the user is able to verify (in cfl3d.prout)
+after the computation
+is complete that the average inflow Mach number is approximately
+0.073; this was deemed to be close enough to the desired value.
+If desired, the exit pressure could be adjusted (raised in this
+case) and the solution re-run until a new time-periodic solution
+(and a new inlet Mach number) is established.
+     </li>
+     <li>The input grid is in PLOT3D format, with y
+as the "up" direction (ialph = 1; z is the spanwise, 2-d direction).
+For Version 6.3 or earlier, the grid motion parameters must be set as if z is the
+"up" direction. This is because: whenever the input grid has y
+as the "up" direction, CFL3D internally swaps y and z so that the
+code always computes on a grid in which z is "up".
+This "quirk" has been corrected in Updates to Version 6.3, so
+when using official versions of the code AFTER 6.3, one sets
+grid motion parameters as if y is "up".
+     </li>
+     <li>The translational velocity for this simulation
+is taken to be 96.6 ft/sec.
+This gives (uaxial/wtrans) = 75/96.6 = 0.78.
+The input value wtrans is wtrans/ainf, so with the reference Mach
+number 0.07, wtrans = 0.07/0.78 = (-)0.0897 (the negative gives a
+downward rotor motion).
+     </li>
+     <li>In order to be able to run an arbitrarily long simulation, the
+grid resetting option was employed. The top-to-bottom length of
+the grid is 24.23514 inches and the rotor and stator zones start
+out in alignment, so dzmax = 24.23514. Thus the rotor zones are
+reset whenever the displacement exceeds 24.23514 inches.
+     </li>
+     <li>CFL3D's overset grid preprocessor MAGGIE
+to date does not have dynamic memory capability.  Thus you must
+ensure that mag1.h is sized appropriately for the problem at hand,
+and you must recompile MAGGIE for each different case.  A mag1.h
+file is supplied for the current case:  it must be placed in
+the cfl3dv6/header directory before compiling MAGGIE (if you have
+previously compiled MAGGIE, then (1) replace mag1.h in
+cfl3dv6/header, (2) go to cfl3dv6/build and type
+"make scrubmaggie", (3) type "make linkmaggie", (4) type
+"make maggie").
+     </li>
+     <li>An error was discovered in MAGGIE in January 2003; be
+sure you have the most up-to-date version of maggie.F before attempting
+this case.
+     </li>
+     <li>Among other things, the 
+<a href="2DTestcases/Rotorstator/cfl3d.out">cfl3d.out</a>
+output file lists geometric mismatch values
+for 1-to-1 blockings when they exceed certain criteria.  When these
+occur, they indicate imperfect matching of the 1-to-1 blocks, and
+the user should check to make sure there are no problems
+with the grid or the input file.  In the present case, several small
+mismatches are present, which were deemed to be small enough to
+be ignored.  In addition, the user will notice that there are
+also some large geometric mismatch values of approximately 24.235.  However,
+these are present because 1-to-1 interfacing has been utilized to connect
+the periodic faces, which is OK to do in 2-d because there is no
+angular rotation involved (the top of zone 5 matches
+with the bottom of zone 1, and the top of zone 13 matches
+with the bottom of zone 7).  Therefore these
+mismatch values in this case represent the distance between the periodic
+faces.  (Note that BC type 2005 could
+have been used instead on these periodic faces.)
+     </li>
+     <li>The mass flow is monitored in this case by employing control
+surfaces in the input file.  The resulting mass flow and other
+statistics are output to 
+<a href="2DTestcases/Rotorstator/cfl3d.prout">cfl3d.prout</a>.  At the end of the
+run in this case, the mass flow through the downstream
+plane of the four outer rotor grids is:
+Mass flow / (rhoinf*vinf*(L_R)**2) = 0.25386E+02.
+     </li>
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="hump"></a><strong><u>HUMP-MODEL FLOW CONTROL SIMULATION</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>This is the oscillatory (synthetic jet) control case from the 
+CFDVAL Workshop Case 3 
+(see the <a href="http://cfdval2004.larc.nasa.gov">CFDVAL website</a>). 
+The conditions are as follows:
+M=0.1, Re=936,000 per chord length of hump, zero-net-mass-flux oscillatory
+suction/blowing, frequency = 138.5 Hz.
+The Spalart-Allmaras turbulence model is employed.
+Currently, although the fine grid
+is of size:  793x217, 161x121, 65x121, 49x217 (for the 4 zones, respectively),
+it is currently only run for this test 1-level-down (using every other gridpoint in
+each coordinate direction):  397x109, 81x61, 33x61, 25x109.
+</p>
+
+<p>The experiment is nominally 2-d. (Note that tunnel blockage due to side-plates
+needs to be taken into account in the 2-d simulation.  This is currently done by
+shaping the top tunnel wall to account for a tunnel area decrease.)
+The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Hump/SetupBW.gif">Experimental Setup</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Hump/grid.gif">Grid Near Control Slot (fine grid)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Hump/Humpcase.tar.gz">
+     Humpcase.tar.gz (3.6 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Humpcase.tar.gz</strong></dd>
+  <dd><strong>tar -xvf Humpcase.tar</strong></dd>
+  <p>This will create a subdirectory "Humpcase".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>hump2_e_newtop.fmt</strong></dt>
+         <dd>4 block grid (plot3d type, formatted)<br>
+             block 1 dimensions i x j x k = 2 x 793 x 217<br>
+             block 2 dimensions i x j x k = 2 x 161 x 121<br>
+             block 3 dimensions i x j x k = 2 x 65 x 121<br>
+             block 4 dimensions i x j x k = 2 x 49 x 217</dd>
+      <dt><strong>hump2_e_oscillate_newtop.inp_1</strong>, 
+          <strong>hump2_e_oscillate_newtop.inp_2</strong>, and 
+          <strong>hump2_e_oscillate_newtop.inp_3</strong></dt>
+         <dd>CFL3D input files</dd>
+      <dt><strong>split.inp</strong></dt>
+         <dd>input to block splitter that converts the 4-block
+             formatted grid to a 4-block unformatted grid that
+             can be read by CFL3D</dd>
+      <dt><strong>README</strong></dt>
+         <dd>file that describes the case</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the hump case (on 1-level-down grid), type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> hump2_e_oscillate_newtop.inp_1 &</strong> <br>
+        <strong>cfl3d_seq < </strong> <strong> hump2_e_oscillate_newtop.inp_2 &</strong> <br>
+        <strong>cfl3d_seq < </strong> <strong> hump2_e_oscillate_newtop.inp_3 &</strong> <br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done sequentially, i.e., finish one before
+         starting the next.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">hump (steady, no control)</td>
+       <td align="center">1</td>
+       <td align="center">13 min</td>
+       <td align="center">251 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Hump/cfl3d.res_1">cfl3d.res</a><br>
+       </td>
+       <td align="center">February 8 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">hump (unsteady, 7 cycles)</td>
+       <td align="center">1</td>
+       <td align="center">4 hrs, 30 min</td>
+       <td align="center">292 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Hump/cfl3d.res_2">cfl3d.res</a><br>
+       </td>
+       <td align="center">February 8 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">hump (unsteady, 1 cycle)</td>
+       <td align="center">1</td>
+       <td align="center">41 min</td>
+       <td align="center">303 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Hump/cfl3d.res_3">cfl3d.res</a><br>
+         <a href="2DTestcases/Hump/convg.gif">plot</a>
+       </td>
+       <td align="center">February 8 07</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Hump with SA</td>
+       <td align="center">
+         <a href="2DTestcases/Hump/cp_avg.gif">
+         Long-time-average Cp vs x</a><br>
+         <a href="2DTestcases/Hump/cp_instant.gif">
+         Instantaneous Cp vs x near 140 deg in cycle</a><br>
+       <td align="center">
+         <a href="2DTestcases/Hump/osc_cp_avg.dat">
+         osc_cp_avg.dat</a><br>
+         <a href="2DTestcases/Hump/osc_cp_instant.dat">
+         osc_cp_instant.dat</a><br>
+       </td>
+     </tr>
+     </table>
+
+     <p>The instantaneous data is extracted at the end of the run from the final
+     data files output by CFL3D.  For example, instantaneous Cp can be obtained from the
+     <a href="2DTestcases/Hump/cfl3d.prout">cfl3d.prout</a> file.  More detailed
+     instantaneous flowfield information can be obtained from the usual PLOT3D-output files.
+     Long-time-average flowfield data are stored in the files cfl3d_avgg.p3d and
+     cfl3d_avgq.p3d, when the keyword <strong>iteravg</strong> is activated.</p>
+
+     <p>The long-time-average Mach contours are shown in
+     <a href="2DTestcases/Hump/mach_avg.gif"> Long-time-average Mach contours</a>,
+     and the instantaneous vorticity contours at the end of the final run are shown in
+     <a href="2DTestcases/Hump/vort_instant.gif"> Instantaneous vorticity contours</a>.</p>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The flow-control BC is set at the bottom of the cavity for this case.  
+For oscillatory control, CFL3D uses BC number 2028 (see
+<a href="cfl3dv6_new.html#bc2008">New Features</a> for more details on this).
+Using this BC, the input freq that corresponds to 138.5 Hz is 0.16812.
+The peak velocity amplitude at the
+bottom of the cavity is set to rho*w=.001 (nondimensionalized by freestream density
+and freestream speed of sound).  This level of blowing was chosen in an attempt
+to approximate the peak velocity out of slot (Ujetmax) during blowing part of
+cycle of approximately 26 m/s.  (Note that BC number 2028 extrapolates both
+density and pressure from the interior of the domain: this may not be appropriate
+for some uses, such as setting an oscillatory BC directly at a wall jet exit location.)
+     </li>
+     <li>In this case, the overall flowfield was first established to a reasonable degree with
+no-flow through the cavity.  Then, this solution was restarted time-accurately
+with oscillatory blowing/suction.  The time step was set for 360 steps per
+cycle of blowing/suction.  A total of 20 subiterations per time step were
+employed.  This was run for 7 cycles (until the periodic
+flow was established fairly well).  Then, finally, 1 cycle was run in the
+third restart to obtain averaged statistics over 1 cycle (using the keyword
+input iteravg=1).
+     </li>
+     <li>A description on the usage of keyword <strong>iteravg</strong> can be found in
+<a href="cfl3dv6_new.html#Qavg">New Features</a>.
+     </li>
+     <li>One can see from the long-time-average Cp vs x results that the CFD predicts
+too large a time-averaged separation bubble behind the hump.  This is a consistent
+problem seen with nearly all Reynolds-averaged Navier-Stokes (RANS) models for this case
+(see some of the summary papers given at
+the <a href="http://cfdval2004.larc.nasa.gov">CFDVAL website</a>).  All RANS turbulence
+models investigated to date have been seen to yield turbulent shear stress levels
+in the separated shear region that are much too low in magnitude.
+     </li>
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+
+</ul>
+
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="curvature"></a><strong><u>CURVED WALL</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>2-D subsonic flow through a curved duct (based on the So-Mellor experiment
+     from J Fluid Mech 60 (part 1), 1973, pp. 43-62) is modeled at Reynolds number
+     36417 per inch and a nominal Mach number of 0.063 in the channel.  In this case,
+     the inflow is specified as a "turbulent boundary layer" by specifying crude
+     inflow boundary conditions using BC2008, including turbulence.  This is done to insure that
+     the flow is fully turbulent well before it reaches the curved region of the duct.
+     Both the Spalart-Allmaras (SA) and SA with rotation and curvature correction
+     (SARC) models are employed, to demonstrate the influence of curvature for
+     this flow.  It should be noted that the outer wall shape was not given in the
+     experimental reference, but was derived by using an
+     optimization method in order to achieve the desired inner wall pressure distribution
+     from experiment (see Int J Heat and Fluid Flow 22, 2001, pp. 573-582).  As a
+     consequence, the wall shape is not perfectly smooth, and solution results end up
+     being somewhat "wavy."  This case is being simulated with viscous inner wall and inviscid
+     outer wall boundary conditions.  The following figures illustrate the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="2DTestcases/Curvature/somellor_grid.gif">Grid showing every other point</a>
+        </li>
+        <li type=square>
+           <a href="2DTestcases/Curvature/mach-vel.gif">
+           Mach contours and velocity vectors (not all shown) for SA case</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="2DTestcases/Curvature/SoMellor.tar.gz">
+     SoMellor.tar.gz (849 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip SoMellor.tar.gz</strong></dd>
+  <dd><strong>tar -xvf SoMellor.tar</strong></dd>
+  <p>This will create a subdirectory "SoMellor".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>somellor_eul.p3dform</strong></dt>
+         <dd>single-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 2 x 257 x 161</dd>
+      <dt><strong>somellor_sa.inp</strong> and <strong>somellor_sarc.inp</strong></dt>
+         <dd>CFL3D input files; note that these require the inflow BC file 
+             bc2008.data to run.</dd>
+      <dt><strong>split_form_to_unform.inp</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+      <dt><strong>bc2008.data</strong></dt>
+         <dd>file needed by CFL3D for specifying inflow profiles in
+             this case; this data is also included in a more readable
+             format below in "Inflow profile specification"
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the curved wall case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split_form_to_unform.inp </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> somellor_sa.inp &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> somellor_sarc.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>(Note: each run should be done independently, i.e., finish one before
+         starting another if running in the same directory, and remember to save
+         results between each run as needed.)
+      <p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">SA</td>
+       <td align="center">1</td>
+       <td align="center">19 min</td>
+       <td align="center">63.1 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Curvature/cfl3d.res_sa">cfl3d.res</a><br>
+         <a href="2DTestcases/Curvature/residual_sa.gif">plot</a>
+       </td>
+       <td align="center">January 17 08</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">SARC</td>
+       <td align="center">1</td>
+       <td align="center">22 min</td>
+       <td align="center">67.1 MB</td>
+       <td align="center">
+         <a href="2DTestcases/Curvature/cfl3d.res_sarc">cfl3d.res</a><br>
+         <a href="2DTestcases/Curvature/residual_sarc.gif">plot</a>
+       </td>
+       <td align="center">January 17 08</td>
+       <td align="center">Linux Workstation<sup>7</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">So Mellor experiment</td>
+       <td align="center">
+         <a href="2DTestcases/Curvature/cpplot.gif">
+         Cp vs s</a><br>
+         <a href="2DTestcases/Curvature/cfplot.gif">
+         Cf vs s</a>
+       </td>
+       <td align="center">
+         <a href="2DTestcases/Curvature/cp_exp.dat">
+         cp_exp.dat</a><br>
+         <a href="2DTestcases/Curvature/cfu24_exp.data.dat">
+         cfu24_exp.data.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="2DTestcases/Curvature/cpget_somellor.f">
+         FORTRAN program 1 (cp vs s)</a><br>
+         <a href="2DTestcases/Curvature/cfget_somellor.f">
+         FORTRAN program 2 (cf vs s)</a><br>
+         <a href="2DTestcases/Curvature/bcinflow.data">
+         Inflow profile specification</a>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN programs will extract the computed
+     results from the printout files (named cfl3d.prout) generated by CFL3D.
+     The output files are formatted TECPLOT files,
+     which should be easily adapted to other plotting packages as well.
+     The Inflow profile specifications are given as a more readable version of
+     bc2008.data (the file used by CFL3D in conjunction with SA and SARC).  
+     A plot of the admittedly crude u velocity and
+     nu_wiggle (Spalart-Allmaras turbulence variable) inflow profiles can be seen by clicking
+     <a href="2DTestcases/Curvature/bcinflow.gif">here</a>.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     <li>Note that the Cp is referenced to the Cp value at the inflow.  Also, experimental
+     results are given in terms of "s", the distance along the channel inner wall.
+     </li>
+     <li>The file bc2008.data was created specifically for use with SA or SARC.
+     It is incorrect to use it in conjunction with different turbulence models, because
+     the turbulence variables would be improperly specified.  To run with a different
+     turbulence model, the inflow profile specification would have to be used to
+     create a new bc2008.data file with appropriate turbulence values.
+     </li>
+     <li>The default "cr3" constant for the SARC model in CFL3D is taken to be 0.6, based
+     on this and other tests conducted with the model.  In AIAA Journal 38(5), 2000, p.784-792
+     and in Aerospace Sci. Technol. 5, 1997, p.297-302 the value of cr3=1.0 is used, but
+     the authors of those references admit that this and 
+     other constants used by the model are "open to refinement."
+     We found cr3=1.0 to yield too large a correction.  It is given by keyword parameter 
+     <strong>sarccr3</strong> (see <a href="cfl3dv6_new.html#keyword">New Features</a>),
+     so the user can adjust it to be different from 0.6 if desired.
+     <li>If you try to switch turbulence model, to run with a two-equation
+         model, it may be necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.</li>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="axibump"></a><strong><u>AXISYMMETRIC BUMP</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Transonic flow past a "bump" is modeled in 3-D using 2 computational
+     planes (separated by an angle of 1 degree), with periodic boundary
+     conditions.  Menter's SST turbulence model is employed.  The experimental
+     data is from Bachalo, W., Johnson, D., "An Investigation of Transonic
+     Turbulent Boundary Layer Separation Generated on an Axisymmetric Flow
+     Model," AIAA 79-1479, 1979.</p>
+     <ul>
+        <li type=square>
+           <a href="3DTestcases/Axibump/axibump_grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="3DTestcases/Axibump/axibump_mach.gif">
+           Mach number contours</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="3DTestcases/Axibump/Axibump.tar.gz">
+     Axibump.tar.gz (222 kB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Axibump.tar.gz</strong></dd>
+  <dd><strong>tar -xvf Axibump.tar</strong></dd>
+  <p>This will create a subdirectory "Axibump".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>bumpgrd.fmt</strong></dt>
+         <dd>single-block grid (plot type, formatted)
+             of dimensions i x j x k = 2 x 181 x 101</dd>
+      <dt><strong>bumpperiodic.inp</strong></dt>
+         <dd>cfl3d input file; periodic boundary conditions</dd>
+      <dt><strong>bumpperiodic.inp_3blk</strong></dt>
+         <dd>cfl3d input file for a 3 block grid</dd>
+      <dt><strong>split.inp_1blk</strong></dt>
+         <dd>input to block splitter that converts the single-block
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+      <dt><strong>split.inp_3blk</strong></dt>
+         <dd>input to block splitter that splits/converts the single-block
+             formatted grid to a 3 block block unformatted grid that
+             can be read by CFL3D. Note: this splitter input file is
+             set up to only split the grid, not the input file - an
+             already split input file is provided in the tar file. This
+             is because the splitter does not handle the periodic boundary
+             condition correctly (a known limitation with the splitter), and
+             as a result, some correction to the split input file generated
+             by splitter is needed.</dd>
+
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the single block axisymmetric bump case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> bumpperiodic.inp &</strong><br>
+     </dl>
+     </dl>
+      <p>
+
+  <li type=circle> To run the 3 block case on 3 processors (+ 1 host),
+     type:</li>
+     <p>
+     <dl>
+     <dl>
+     <strong>splitter < </strong> <strong> split.inp_3blk </strong><br>
+        <strong>mpirun -np 4 cfl3d_mpi < </strong> <strong> bumpperiodic.inp_3blk &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">1</td>
+       <td align="center">33 min</td>
+       <td align="center">33.2 MB</td>
+       <td align="center">
+         <a href="3DTestcases/Axibump/cfl3d.res">cfl3d.res</a><br>
+         <a href="3DTestcases/Axibump/axibump_convg.gif">plot</a>
+       </td>
+       <td align="center">Aug 09 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">3 Block</td>
+       <td align="center">3 (+ host)</td>
+       <td align="center">11 min</td>
+       <td align="center">11.8 MB<br>
+                          (per proc)</td>
+       <td align="center">
+         <a href="3DTestcases/Axibump/cfl3d.res_3blk">cfl3d.res</a><br>
+         <a href="3DTestcases/Axibump/axibump_convg_3blk.gif">plot</a>
+       </td>
+       <td align="center">Aug 09 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">
+         <a href="3DTestcases/Axibump/axibump_cp.gif">
+         Cp vs x</a><br>
+       </td>
+       <td align="center">
+         <a href="3DTestcases/Axibump/bumpcp_exp.dat"> 
+         bumpcp_exp.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="3DTestcases/Axibump/getcp_bump.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+
+     <p>The FORTRAN program will extract the computed
+     results for the <strong>1 block case</strong> from the printout (cfl3d.prout)
+     file generated by CFL3D. The output 
+     is a formatted TECPLOT file, as is the experimental data file;
+     these should be easily adapted to other plotting packages as well.</p>
+
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <ol>
+     </ol>
+
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="onera"></a><strong><u>ONERA M6 WING</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>This widely-used test case consists 
+     of an isolated wing in a transonic free stream of Mach 0.84 at an angle
+     of attack of 3.06 degrees with a Reynolds number of 11.7 million based
+     on mean aerodynamic chord (MAC).  In the experiment, MAC=0.64607 m.
+     The current grid is nondimensionalized to make the semispan 1 unit (in
+     the experiment it is 1.1963 m),
+     so the MAC of the current grid is 0.54 units.
+     The Spalart-Allmaras turbulence model is employed.
+     The experimental data is
+     taken from Schmitt and Charpin, AGARD-AR-138, 1979, p. B1.
+     The following figures illustrate the case:</p>
+     <ul>
+        <li type=square>
+           <a href="3DTestcases/ONERA_M6/m6surfgrid.gif">
+           Surface Grid</a>
+        </li>
+        <li type=square>
+           <a href="3DTestcases/ONERA_M6/m6surfpress.gif">
+           Cp Contours (upper surface)</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file <a href="3DTestcases/ONERA_M6/ONERA_M6.tar.Z">
+      ONERA_M6.tar.Z (17.9 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip ONERA_M6.tar.Z</strong></dd>
+  <dd><strong>tar -xvf ONERA_M6.tar</strong></dd>
+  <p>This will create a subdirectory "ONERA_M6".</p>
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>m6i289.fmt.gr</strong></dt>
+         <dd>single-block grid (plot3d, multigrid, whole, formatted)
+             of dimensions i x j x k = 289 x 65 x 49</dd>
+      <dt><strong>cfl3d.inp_1blk</strong></dt>
+         <dd>cfl3d input file for the single-block grid. You may want to 
+             reduce the number of iterations in the fine level to zero for
+             your initial run.</dd>
+      <dt><strong>split.inp_1blk</strong></dt>
+         <dd>input to block splitter that converts the single-block 
+             formatted grid to a single block unformatted grid that
+             can be read by CFL3D</dd>
+      <dt><strong>split.inp_32blk</strong></dt>
+         <dd>input to block splitter that splits/converts the single-block
+             formatted grid to a 32 block unformatted grid that can be read
+             by CFL3D; also generates the corresponding input file 
+             cfl3d.inp_32blk</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the single-block case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk  </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_1blk &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the 32 block case on 8 processors (+ 1 host),
+     type:</li>
+     <p>
+     <dl>
+     <dl>
+     <strong>splitter < </strong> <strong> split.inp_32blk </strong><br>
+        <strong>mpirun -np 9 cfl3d_mpi < </strong> <strong> cfl3d.inp_32blk &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">1</td>
+       <td align="center">14 hr, 21 min</td>
+       <td align="center">364.8 MB</td>
+       <td align="center">
+         <a href="3DTestcases/ONERA_M6/cfl3d.res_1blk">cfl3d.res</a><br>
+         <a href="3DTestcases/ONERA_M6/convg_1blk.gif">plot</a>
+       </td>
+       <td align="center">Aug 05 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">32 Block</td>
+       <td align="center">8 (+ host)</td>
+       <td align="center">1 hr, 40 min
+       <td align="center">49.2 MB<br>
+                          (per proc)
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ONERA_M6/cfl3d.res_32blk">cfl3d.res</a><br>
+         <a href="3DTestcases/ONERA_M6/convg_32blk.gif">plot</a>
+       </td>
+       <td align="center">Aug 04 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">
+         <a href="3DTestcases/ONERA_M6/compare_cp_m6.gif">Cp vs x/c</a>
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ONERA_M6/exp.dat">exp.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="3DTestcases/ONERA_M6/compare_cfd_exp_m6.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed
+     results for the <strong>1 block case</strong> from the plot3d files generated
+     by CFL3D (with <strong>nplot3d = -1</strong>) and the experimental
+     data files. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The Cp vs x/c at eta = 0.99 is not shown in the comparison 
+         plots with experimental data below because of space limitations 
+         on a single page. However, the extraction program provided
+         does output both the computed and experimental results at this
+         station.
+     </li>
+     <li>If you try to switch the turbulence model and run, for example, with
+         SST, it is necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and 
+         setting it to, say, 100000.
+     </li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="ara"></a><strong><u>ARA M100 WING-BODY (point-match grid)</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p> This case is from M. P. Carr and K. C. Pallister, "Pressure distributions measured
+     on Research Wing M100 mounted on an axisymmetric body,"
+     AGARD AR-138-ADDENDUM, Addendum to AGARD AR 138, Experimental Data Base for Computer 
+     Program Assessment, July 1984.
+<!--     A complete description of this case,
+     along with additional computational grids may be found in the
+     <a href="http://hpccp-www.larc.nasa.gov/madic-ccp/wingBody.html">
+     MADIC Wing Body Test Archive</a>.-->
+     The case considered here is the one
+     corresponding to an angle of attack of 2.873 degrees, Mach 0.8027,
+     and a chord Reynolds number of 13.1 million. The Spalart-Allmaras 
+     turbulence model is employed. This test case utilizes
+     point-matched grids; the following case uses the same geometry, but
+     employing overset (chimera) grids. The following figures
+     illustrate the case:</p>
+     <ul>
+        <li type=square>
+           <a href="3DTestcases/ARA_M100/m100surfgrid.gif">Surface Grid</a>
+        </li>
+        <li type=square>
+           <a href="3DTestcases/ARA_M100/m100surfpress.gif">Cp Contours</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file <a href="3DTestcases/ARA_M100/ARA_M100.tar.Z">
+     ARA_M100.tar.Z (17.6 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip ARA_M100.tar.Z</strong></dd>
+  <dd><strong>tar -xvf ARA_M100.tar</strong></dd>
+  <p>This will create a subdirectory "ARA_M100".</p>
+
+  <li type=circle> The tar file contains the following items:</li>
+     <p>   
+     <dl>
+     <dl>
+       <dt><strong>m100sbj57k49twfix.gridp3d_fmt</strong></dt>
+          <dd>single-block grid (plot3d, multigrid, whole, formatted)
+              of dimensions i x j x k = 321 x 57 x 49</dd>
+       <dt><strong>cfl3d.inp_1blk</strong></dt>
+          <dd>cfl3d input file for the single-block grid. You may want to
+              reduce the number of iterations in the fine level to zero for
+              your initial run.</dd>
+       <dt><strong>split.inp_1blk</strong></dt>
+          <dd>input to block splitter that converts the single-block
+              formatted grid to a single-block unformatted grid that
+              can be read by CFL3D</dd>
+       <dt><strong>split.inp_16blk</strong></dt>
+          <dd>input to block splitter that splits/converts the single-block
+              formatted grid to a 16 block unformatted grid that can be read by 
+              CFL3d; also creates the corresponding input file,
+              cfl3d.inp_16blk</dd>
+     </dl>
+     </dl>
+  
+  <br>
+
+  <li type=circle> To run the single-block case, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_1blk  </strong><br>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_1blk &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the 16 block case on 16 processors (+ 1 host),
+       type:</li>
+     <p>
+     <dl> 
+     <dl>
+        <strong>splitter < </strong> <strong> split.inp_16blk </strong><br>
+        <strong>mpirun -np 17 cfl3d_mpi < </strong> <strong> cfl3d.inp_16blk &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">1</td>
+       <td align="center">6 hr, 34 min</td>
+       <td align="center">357.0 MB</td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/cfl3d.res_1blk">cfl3d.res</a><br>
+         <a href="3DTestcases/ARA_M100/convg_1blk.gif">plot</a>
+       </td>
+       <td align="center">Sep 10 03</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block </br> FVS</td>
+       <td align="center">1</td>
+       <td align="center"> 73 hr, 55 min </td>
+       <td align="center">357.0 MB</td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/cfl3d.res_1blk_fvs">cfl3d.res</a><br>
+         <a href="3DTestcases/ARA_M100/convg_1blk_fvs.gif">plot</a>
+       </td>
+       <td align="center">Aug 01 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     <tr align="center">
+       <td align="center">16 Block</td>
+       <td align="center">8 (+ host)</td>
+       <td align="center">2 hr, 20 min
+       <td align="center">46.1 MB<br>
+                          (per proc)
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/cfl3d.res_16blk">cfl3d.res</a><br>
+         <a href="3DTestcases/ARA_M100/convg_16blk.gif">plot</a>
+       </td>
+       <td align="center">Jul 23 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/compare_cp_m100.gif">Cp vs x/c</a>
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/exp.dat">exp.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">1 Block</br>FVS</td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/compare_cp_m100_fvs.gif">Cp vs x/c</a>
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/exp.dat">exp.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="3DTestcases/ARA_M100/compare_cfd_exp_m100.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed
+     results for the <strong>1 block case</strong> from the plot3d files generated
+     by CFL3D (with <strong>nplot3d = -1</strong>) and the experimental
+     data files. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>The Cp extraction program provided above works correctly for all
+         but the first spanwise cut on which experimental data is available
+         (eta = 0.019). Thus, this cut is not presented in the comparison
+         with experimental data; rather the comparison starts at the
+         second spanwise cut, eta = 0.123. Also, the comparison at eta = 0.939
+         is not shown because of space limitations on a single page.
+         However, the extraction program does output both the computed
+         and experimental results at these stations.
+     </li>
+     <li>The tables above show results for Flux Vector Splitting (FVS) in
+         addition to the standard (and recommended) Flux Difference Splitting.
+         As it turns out, the more dissipative FVS agrees much better with the
+         experimental data at stations 2y/B = 0.455 and 2y/B = 0.633. The 
+         input file provided for this case is set up to run FDS; to run
+         FVS instead, the CFL number needs to be lowered to 1. (dt = -1.0),
+         and the flux-splitting flag, ifds, needs to be set to 0 in each
+         of the three directions. In addition, to compensate for the lower
+         CFL number, 1000 fine-level iterations were used, rather than 750.
+     </li>
+     <li>If you try to switch the turbulence model and run, for example, with
+         SST, it is necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.
+     </li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="ara_xmera"></a><strong><u>ARA M100 WING-BODY (overset grid)</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p> This case is from M. P. Carr and K. C. Pallister, "Pressure distributions measured
+     on Research Wing M100 mounted on an axisymmetric body,"
+     AGARD AR-138-ADDENDUM, Addendum to AGARD AR 138, Experimental Data Base for Computer 
+     Program Assessment, July 1984.
+<!--     A complete description of this case,
+     along with additional computational grids may be found in the
+     <a href="http://hpccp-www.larc.nasa.gov/madic-ccp/wingBody.html">
+     MADIC Wing Body Test Archive</a>.--> 
+     The case considered here is the one
+     corresponding to an angle of attack of 2.873 degrees, Mach 0.8027,
+     and a chord Reynolds number of 13.1 million. The Spalart-Allmaras
+     turbulence model is employed.  This test case utilizes
+     overset (chimera) grids; the preceding case uses the same geometry, but
+     employing point-matched grids. The off-body grids differ between the two
+     cases, although the wing surface grids are identical. The following figures
+     illustrate the case:</p>
+     <ul>
+        <li type=square>
+           <a href="3DTestcases/ARA_M100_XMERA/m100surfgrid_xmera.gif">
+           Surface Grid</a>
+        </li>
+        <li type=square>
+           <a href="3DTestcases/ARA_M100_XMERA/m100surfpress_xmera.gif">
+           Cp Contours</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file 
+      <a href="3DTestcases/ARA_M100_XMERA/ARA_M100_XMERA.tar.Z">
+      ARA_M100_XMERA.tar.Z (12.9 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip ARA_M100_XMERA.tar.Z</strong></dd>
+  <dd><strong>tar -xvf ARA_M100_XMERA.tar</strong></dd>
+  <p>This will create a subdirectory "ARA_M100_XMERA".</p>
+
+  <li type=circle> The tar file contains the following items:</li>
+     <p>  
+     <dl>
+     <dl>
+       <dt><strong>m100_xmera_6blk.fmt</strong></dt>
+          <dd>6-block "chimera" grid (plot3d, multigrid, whole, formatted)<br>
+              block 1 dimensions i x j x k = 161 x 25 x 49<br>
+              block 2 dimensions i x j x k = 217 x 21 x 49<br>
+              block 3 dimensions i x j x k = 217 x 21 x 49<br>
+              block 4 dimensions i x j x k = 145 x 21 x 49<br>
+              block 5 dimensions i x j x k =  73 x 73 x 41<br>
+              block 6 dimensions i x j x k =  73 x 41 x 41
+       <dt><strong>cfl3d.inp_xmera</strong></dt>
+          <dd>cfl3d input file for the 6-block chimera grid</dd>
+       <dt><strong>split.inp_xmera</strong></dt>
+          <dd>input to block splitter that converts the 6-block
+              formatted grid to a 6-block unformatted grid that
+              can be read by CFL3D</dd>
+       <dt><strong>peg41.inp</strong></dt>
+          <dd>input to PEGSUS <strong>4.1</strong> that generates the overset grid
+              connectivity file "XINTOUT". The <a href="cfl3dv6_tools.html">
+              conversion tool</a>
+              p3d_to_INGRID can be used to convert the formatted grid-point
+              file into the unformatted cell-center file "INGRID"
+              file that is input to PEGSUS. The conversion tool
+              XINTOUT_to_ovrlp can be used to convert the output file from
+              PEGSUS to the "ovrlp.bin" file required by CFL3D for the
+              chimera-grid case</dd>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the overset-grid case using PEGSUS to generate the
+     overset connectivity file, compile PEGSUS as appropriate (in the
+     instructions below, it is assumed the PEGUS executable is called
+     pegsus41). You will also need a couple of utilities from the cfl3d tools
+     directory, so make sure you have compiled cfl3d_tools.  Then type:
+     (user inputs shown in <strong>bold</strong>, interactive
+     prompts for input shown in <em>italics</em>)</li>
+     <p>
+     <dl>
+     <dl>
+ <strong>splitter < </strong> <strong> split.inp_xmera</strong><br>
+ <strong>p3d_to_INGRID</strong>
+   <pre>
+   <em>file defaults:</em>
+   <em>   input grid files are plot3d type</em>
+   <em>   input grid files are unformatted</em>
+   <em>   output INGRID/plot3d file is unformatted</em>
+
+   <em>do you wish to use these defaults (y/n)?</em>
+   <em>   (alternate options include formatted</em>
+   <em>   files and cfl3d-type input grid files)</em>
+   <strong>y</strong>
+
+   <em>choose the type of output file to create</em>
+   <em>enter 0 to create an INGRID file (for PEGSUS 4.x)</em>
+   <em>enter 1 to create a plot3d file  (for PEGSUS 5.x)</em>
+   <strong>0</strong>
+
+   <em>enter the name of the output file to create (up to 80 char.)</em>
+   <strong>INGRID</strong>
+
+   <em>enter 0 to create an output file with grid points</em>
+   <em>enter 1 to create an output file with augmented cell centers</em>
+   <strong>1</strong>
+
+   <em>enter 0 to preserve input-grid i,j,k index definitions in the output grid</em>
+   <em>you may want this option if you have an existing PEGSUS input file that</em>
+   <em>was generated for OVERFLOW</em>
+   <em>  Note: this will require the following translation of</em>
+   <em>  indicies between CFL3D and PEGSUS input files:</em>
+   <em>            PEGSUS   CFL3D</em>
+   <em>              J    =   I</em>
+   <em>              K    =   J</em>
+   <em>              L    =   K</em>
+
+   <em>enter 1 to swap input-grid i,j,k index definitions in the output grid</em>
+   <em>  Note: this will require NO translation of</em>
+   <em>  indicies between CFL3D and PEGSUS input files:</em>
+   <em>            PEGSUS   CFL3D</em>
+   <em>              L    =   I</em>
+   <em>              J    =   J</em>
+   <em>              K    =   K</em>
+   <strong>1</strong>
+
+   <em>enter number of separate grid files to convert into one output file</em>
+   <strong>1</strong>
+   <em>enter 0 to specify a name for each mesh</em>
+   <em>enter 1 to  use default names (grid.n)</em>
+   <strong>0</strong>
+
+   <em>beginning processing of grid file number   1</em>
+
+   <em>input name of unformatted plot3d grid file to read (up to 80
+          characters)   </em>
+   <strong>m100_xmera_6blk.unf</strong>
+
+   <em>enter 0 if a   single-grid plot3d file</em>
+   <em>enter 1 if a multiple-grid plot3d file</em>
+   <strong>1</strong>
+
+   <em>required array sizes: maxbl =      6</em>
+   <em>                       lmax =    218</em>
+   <em>                       jmax =     74</em>
+   <em>                       kmax =     50</em>
+
+
+   <em>input name (up to 40 char.) for zone    1</em>
+   <strong>FUSE</strong>
+
+   <em>reading zone    1</em>
+   <em>  input dimensions  161  25  49</em>
+   <em>writing zone    1 with name FUSE</em>
+   <em>  output dimensions   26  50 162</em>
+   <em> done writing grid 2*1</em>
+
+   <em>input name (up to 40 char.) for zone    2</em>
+   <strong>WING_IN</strong>
+
+   <em>reading zone    2</em>
+   <em>  input dimensions  217  21  49</em>
+   <em>writing zone    2 with name WING_IN</em>
+   <em>  output dimensions   22  50 218</em>
+   <em> done writing grid 2*2</em>
+
+   <em>input name (up to 40 char.) for zone    3</em>
+   <strong>WING_OUT</strong>
+
+   <em>reading zone    3</em>
+   <em>  input dimensions  217  21  49</em>
+   <em>writing zone    3 with name WING_OUT</em>
+   <em>  output dimensions   22  50 218</em>
+   <em> done writing grid 2*3</em>
+
+   <em>input name (up to 40 char.) for zone    4</em>
+   <strong>BOX1</strong>
+
+   <em>reading zone    4</em>
+   <em>  input dimensions  145  21  49</em>
+   <em>writing zone    4 with name BOX1</em>
+   <em>  output dimensions   22  50 146</em>
+   <em> done writing grid 2*4</em>
+
+   <em>input name (up to 40 char.) for zone    5</em>
+   <strong>BOX2</strong>
+
+   <em>reading zone    5</em>
+   <em>  input dimensions   73  73  41</em>
+   <em>writing zone    5 with name BOX2</em>
+   <em>  output dimensions   74  42  74</em>
+   <em> done writing grid 2*5</em>
+
+   <em>input name (up to 40 char.) for zone    6</em>
+   <strong>BOX3</strong>
+
+   <em>reading zone    6</em>
+   <em>  input dimensions   73  41  41</em>
+   <em>writing zone    6 with name BOX3</em>
+   <em>  output dimensions   42  42  74</em>
+   <em> done writing grid 2*6</em>
+
+   <em>conversion of grid file   1 complete</em>
+
+   <em>conversion of all grid files completed</em>
+
+   <em>the INGRID output file:</em>
+   <em>INGRID</em>
+   <em>contains (augmented) cell centers of the input grid(s)</em>
+   <em>note: the mesh names in the INGRID file contain 40 characters</em>
+   <em>make sure the PEGSUS parameter ICHAR is set to 40</em>
+   </pre>
+
+        <strong>pegsus41 < </strong>  <strong>peg41.inp > </strong><strong>peg41.out</strong></br>
+
+        <strong>XINTOUT_to_ovrlp</strong>
+
+   <pre>
+   <em>enter 4 if pegsus version 4.X was used</em>
+   <em>enter 5 if pegsus version 5.X was used</em>
+   <strong>4</strong>
+
+   <em>enter the name of the COMPOUT file created by PEGSUS</em>
+   <em>(unless you have renamed it, enter COMPOUT)</em>
+   <strong>COMPOUT</strong>
+
+   <em>enter 0 to leave overset data as 3d</em>
+   <em>enter 1 to convert overset data to 2d (2 i-planes)</em>
+   <strong>0</strong>
+
+   <em>enter 0 to use the maggie/CFL3D-ijk index definition</em>
+   <em>enter 1 to use the pegsus/OVERFLOW-jkl index definition</em>
+   <strong>0</strong>
+
+      (additional output from XINTOUT_to_ovrlp is omitted...
+      no further user input is needed)
+   </pre>
+
+   </dl>
+   </dl>
+
+  <li type=circle> To run the case on a single processor, type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>cfl3d_seq < </strong> <strong> cfl3d.inp_xmera &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle> To run the case on 6 processors (+ 1 host),type:</li>
+     <p>
+     <dl>
+     <dl>
+        <strong>mpirun -np 7 cfl3d_mpi < </strong> <strong> cfl3d.inp_xmera &</strong><br>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">6 Block</td>
+       <td align="center">6 (+ host)</td>
+       <td align="center">5hr, 32min</td>
+       <td align="center"> 135.4 MB<br>
+                          (per proc)
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100_XMERA/cfl3d.res">cfl3d.res</a><br>
+         <a href="3DTestcases/ARA_M100_XMERA/convg_xmera.gif">plot</a>
+       </td>
+       <td align="center">Aug 09 02</td>
+       <td align="center">Origin 2000<sup>4</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+  <br>
+
+  <li type=circle>Comparison with experimental data:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">Plots</th>
+       <th align="center">Exp. Data</th>
+     </tr>
+     <tr align="center">
+       <td align="center">6 Block</td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100_XMERA/compare_cp_m100.gif">Cp vs x/c</a>
+       </td>
+       <td align="center">
+         <a href="3DTestcases/ARA_M100_XMERA/exp.dat">exp.dat</a>
+       </td>
+     </tr>
+     <tr align="center">
+       <td align="center">
+         <a href="3DTestcases/ARA_M100_XMERA/compare_cfd_exp_m100_xmera_6blk.f">
+         FORTRAN program</a>
+       </td>
+     </tr>
+     </table>
+     <p>The FORTRAN program will extract the computed
+     results for the <strong>6 block case</strong> from the plot3d files generated
+     by CFL3D (with <strong>nplot3d = -1</strong>) and the experimental
+     data files. The output is a formatted TECPLOT file, which should
+     be easily adapted to other plotting packages as well.</p>
+     </dl>
+     </dl>
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>Mesh sequencing cannot be used with overset grids in CFL3D.
+     </li>
+     <li>If you try to switch the turbulence model and run, for example, with
+         SST, it is necessary to limit the maximum eddy viscosity by
+         employing the keyword <strong>edvislim</strong> and
+         setting it to, say, 100000.
+     </li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="delta"></a><strong><u>Delta Wing</u></strong>
+
+<ul>
+
+  <li type=circle>Description:</li>
+     <p>Subsonic laminar flow past a delta wing at 20.5 degrees angle of attack 
+     is modeled at a Reynolds number of 0.5 million and and Mach number of 0.3.
+     This case is given to demonstrate the CGNS capability in CFL3D.
+     CGNS stands for CFD General Notation System.  It is a method for
+     standardizing CFD input and output, including grid, flow solution, 
+     connectivity, BC's, and auxiliary information.  The method is in the process
+     of becoming an international ISO standard.  It is
+     machine-independent, and will eventually eliminate most of the translator 
+     programs now necessary when working between machines and between CFD
+     codes. Also, it eventually may allow for the results from one code to be 
+     easily restarted using another code.  See the CGNS link on the Index bar
+     of the CFL3D web page for more information.
+     For this particular case, a grid size of 37x65x65 was used.
+     The following figures illustrates the case:
+     </p>
+     <ul>
+        <li type=square>
+           <a href="3DTestcases/Delta/grid.gif">Grid</a>
+        </li>
+        <li type=square>
+           <a href="3DTestcases/Delta/delta.gif">Vorticity and surface streamlines</a>
+        </li>
+     </ul>
+
+  <br>
+
+  <li>Download tar file
+     <a href="3DTestcases/Delta/Delta_cgns.tar.Z">
+     Delta_cgns.tar.Z (1.65 MB)</a>
+  </li>
+  <p>Then type:</p>
+  <dd><strong>gunzip Delta_cgns.tar.Z</strong></dd>
+  <dd><strong>tar -xvf Delta_cgns.tar</strong></dd>
+  <p>This will create a subdirectory "Delta_cgns".</p>
+
+
+  <li type=circle> The tar file contains the following items:</li>
+    <p>
+    <dl>
+    <dl>
+      <dt><strong>delta.fmt</strong></dt>
+         <dd>single-block grid (plot3d type, formatted)
+             of dimensions i x j x k = 37 x 65 x 65</dd>
+      <dt><strong>delta_cgns.inp</strong></dt>
+         <dd>CFL3D input file - note keyword input "icgns 1" and "delta.cgns"
+             CGNS file used as grid name input</dd>
+      <dt><strong>plot3dg_to_cgns.inp</strong></dt>
+         <dd>input to plot3dg_to_cgns tool that converts the single-block
+             formatted grid to a CGNS grid file</dd>
+    </dl>
+    </dl>
+
+  <br>
+
+  <li type=circle> To run the case, use the following steps:</li>
+     <p>
+     <strong>Step 1:</strong><br>
+<p>
+Go to <a href="http://www.cgns.org"> www.cgns.org</a> and download CGNS 
+(under "Download the Software"), and follow the instructions to compile
+it for your machine.  The CGNS library is freely available open
+software.  Be sure to download the latest version of the CGNS library.
+Ultimately, you should end up with a directory called something
+like:  cgnslib_x.x/.  In here you should have a file called
+cgnslib_f.h, and the compiled library libcgns.a should be in a subdirectory
+appropriately named for whatever system you are running on.  
+See the Install file (in the
+build directory) under "CGNS_LLIBDIR=" for the subdirectory names currently
+expected by CFL3D for each machine.  It is not guaranteed that this default name
+is correct... you may need to change this default name, depending on
+what name is created by the CGNS software for your machine.
+</p>
+<p>
+When you install CFL3D, use the command "Install -cgnsdir=...",
+where "..." specifies the location of the cgnslib_x.x/ directory
+(for example: Install -cgnsdir=../../bin/cgnslib_x.x).
+If you have already installed CFL3D without CGNS, you must
+re-install it.
+</p>
+
+     <p>
+     <strong>Step 2:</strong><br>
+<p>
+Be sure to make cfl3d_tools in the build directory, so that the
+tool "plot3dg_to_cgns" is created.  Then type:
+</p>
+     <strong>plot3dg_to_cgns < plot3dg_to_cgns.inp</strong><br>
+     <dl>
+<p>
+(translates formatted grid file in PLOT3D format to CGNS grid file
+named delta.cgns). Note that a small change was made to the
+plot3dg_to_cgns.F code prior to the general release of CFL3D Version 6.4;
+this change requires an additional line of input.  Therefore, if the above
+command yields an error, be sure that you have the latest version
+of plot3dg_to_cgns.F.
+</p>
+     <p>
+     <strong>Step 3:</strong><br>
+<p>
+Next, type:
+</p>
+     <strong>cfl3d_seq < delta_cgns.inp &</strong><br>
+<p>
+Running with CGNS means that one file (the CGNS file) contains the
+grid, solution, and all necessary restart information.  Thus, the
+"restart.bin" file is not needed, although it is still kept in
+the input file.  Note that you can make use of
+links in CGNS in order to have the grid as a separate file from
+the solution file, if desired.  But in this case everything is
+still accessed through a single file name.  If your post-processing software
+supports CGNS, then you can plot results directly from the CGNS
+file also!  However, note that CFL3D currently still outputs standard
+PLOT3D-type files for postprocessing, if desired.
+</p>
+
+  <br>
+
+  <li type=circle>Expected Results:</li>
+     <p>
+     <dl>
+     <dl>
+     <table border cellpadding=4>
+     <tr align="center">
+       <th align="center">Case</th>
+       <th align="center">No. Processors</th>
+       <th align="center">Run Time</th>
+       <th align="center">Memory</th>
+       <th align="center">Convergence History</th>
+       <th align="center">Test Date</th>
+       <th align="center">Test Machine</th>
+     </tr>
+     <tr align="center">
+       <td align="center">Delta wing</td>
+       <td align="center">1</td>
+       <td align="center">24 min</td>
+       <td align="center">61.6 MB</td>
+       <td align="center">
+         <a href="3DTestcases/Delta/cfl3d.res">cfl3d.res</a><br>
+         <a href="3DTestcases/Delta/resid.gif">plot</a>
+       </td>
+       <td align="center">Sep 22 05</td>
+       <td align="center">Linux Workstation<sup>6</sup></td>
+     </tr>
+     </table>
+     </dl>
+     </dl>
+
+   <br>
+
+  <li type=circle>How to view CGNS file:</li>
+     <p>
+After running CFL3D, the file delta.cgns will contain the grid and flow solution.
+(If desired, the final resulting CGNS file for this case can be obtained from the following link:
+     <a href="3DTestcases/Delta/delta.cgns.gz">
+     delta.cgns.gz (8.07 MB)</a>.)
+</p>
+<p>
+The delta.cgns CGNS file can be viewed using special CGNS
+viewing software, "adfviewer," available from <a href="http://www.cgns.org"> www.cgns.org</a>. 
+The adfviewer software displays the CGNS file, and allows the user to
+query and even manipulate it.  A sample screen is shown in the
+<a href="3DTestcases/Delta/snap.gif">adfviewer screen</a>.  
+Additional details can be found by clicking on the CGNS link on the Index bar to the left.
+However, it is not necessary to be able to view the CGNS file; it
+can be treated simply as a restart file (like the usual restart.bin file).
+But it is better than the usual restart file because it contains more
+archival information (including date-stamping, comments on how the solution was
+obtained, BC information, and a record of the input file(s) employed).<br>
+     </p>
+     </dl>
+     </dl>
+
+
+  <li type=circle> Notes:</li>
+     <p>
+     <ol>
+     <li>When using a CGNS grid file, NGRID (whose sign usually determines
+whether a grid of type CFL3D or PLOT3D is being read) in the delta_cgns.inp
+input file can be either
++ or -; i.e., its sign is irrelevant.
+     </li>
+     <li>If someone supplies you with a CGNS grid file, then the
+initial translation step (step 2, using plot3dg_to_cgns) is unnecessary.
+However, you must still create a CFL3D input file, including any 1-to-1
+and BC information. The code <strong>cgns_to_cfl3dinput.F</strong> in the Tools/
+directory can help obtain a first-guess skeleton input file, with
+most of the needed relevant information in it.
+     </li>
+     <li>Although not used for this delta wing case, note 
+that PATCHING and OVERSET information have not yet been included in 
+the CGNS-part of CFL3D. I.e., the CGNS files are purposefully missing this 
+information. The user can still run patched and overset cases with CGNS, 
+but the patched/overset connectivity information 
+is never put into the CGNS file itself. This is similar to the "normal" mode 
+of running CFL3D. In the "normal" mode, the user must have available a grid file, 
+restart file, patched-info file, and overset-info file when running with 
+patched/overset. With CGNS, the user must have available a CGNS file,
+patched-info file, and overset-info file.
+     </li>
+     <li>CFL3D can be installed with CGNS using "Install -cgnsdir=...", even
+if you plan to only rarely use CGNS.  By default, the keyword input "icgns"
+is zero (meaning no CGNS).  The user must set "icgns 1" in the CFL3D input
+file in order to turn on the CGNS capability.
+     </li>
+     </ol>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="test"></a><strong><u>TEST INFORMATION</u></strong>
+
+<ul>
+  <li type=circle>Test Platforms</li>
+  <p>
+  <dl>
+  <dl>
+  <table border cellpadding=4>
+  <tr align="center">
+    <th align="center">Test Platform No.</th>
+    <th align="center">Type</th>
+    <th align="center">Vita</th>
+    <th align="center">Notes</th>
+  </tr>
+  <tr align="center">
+    <td align="center">1</td>
+    <td align="center">SGI Origin 2000</td>
+    <td align="center">32 procs @250 MHz<br>
+                       4MB Lev2 cache<br>
+                       24.5GB RAM total
+    </td>
+    <td align="center">timings vary with<br>
+                       system load
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">2</td>
+    <td align="center">SGI Origin 2000</td>
+    <td align="center">4 procs @250 MHz<br>
+                       4MB Lev2 cache<br>
+                       4.6GB RAM total
+    </td>
+    <td align="center">timings vary with<br>
+                       system load
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">3</td>
+    <td align="center">SGI Origin 2000</td>
+    <td align="center">8 procs @250 MHz<br>
+                       4MB Lev2 cache<br>
+                       9.2GB RAM total
+    </td>
+    <td align="center">timings vary with<br>
+                       system load
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">4</td>
+    <td align="center">SGI Origin 2000</td>
+    <td align="center">16 procs @250 MHz<br>
+                       4MB Lev2 cache<br>
+                       16.3GB RAM total
+    </td>
+    <td align="center">timings vary with<br>
+                       system load
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">5</td>
+    <td align="center">SGI Octane2</td>
+    <td align="center">2 procs @360 MHz<br>
+                       2MB Lev2 cache<br>
+                       2.3GB RAM total
+    </td>
+    <td align="center">timings vary with<br>
+                       system load
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">6</td>
+    <td align="center">Linux Workstation</td>
+    <td align="center">2 procs @2.4 GHz<br>
+                       2GB DDR RAM total
+    </td>
+    <td align="center">various compilers used<br>
+    </td>
+  </tr>
+  <tr align="center">
+    <td align="center">7</td>
+    <td align="center">Linux Workstation</td>
+    <td align="center">2 dual-core procs @3.0 GHz<br>
+                       4GB FB-dims RAM total
+    </td>
+    <td align="center">various compilers used<br>
+    </td>
+  </tr>
+  </table>
+  </dl>
+  </dl>
+
+</ul>
+
+<strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 07/12/2021
+<br>&nbsp;
+</body>
+</html>

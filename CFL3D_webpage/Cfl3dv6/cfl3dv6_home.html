@@ -1,0 +1,407 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+   <title>CFL3DV6</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+<center>
+<h2>
+<span style="font-weight: 700; font-size: x-large; color: blue">CFL3D Version 6.7</span></h2>
+
+<p><strong><h>Welcome to the CFL3D Version 6 Home Page!</h>
+</center></strong></p>
+
+<hr>
+
+<p><strong>CFL3D
+is a structured-grid, cell-centered, upwind-biased, Reynolds-averaged Navier-Stokes (RANS) code. It can be run
+in parallel on multiple grid zones with point-matched, patched, overset, or embedded connectivities. Both
+multigrid and mesh sequencing are available in time-accurate or steady-state modes.</strong>
+
+<p>CFL3D 
+has been used to support numerous NASA programs since the late 1980s. It continues to be used today, particularly
+for validation and verification activities such as those documented on the
+<a href="https://turbmodels.larc.nasa.gov" target="blank">NASA Langley Turbulence Modeling Resource (TMR) website</a>.
+</p>
+
+<p>Two U.S. Postage Stamps, issued in 2006, commemorate X-Planes, a series 
+of experimental vehicles involving NASA, the U.S. military, and aerospace companies. The
+computer-generated images shown on the stamps were produced from results using the CFL3D code
+(computed by the NASA Langley Geometry Laboratory).</p>
+     <table width="675" border="0">
+     <center>
+       <tr align="center" valign="bottom">
+        <p><img src="Gifs/06_xplaneexpress_300s.jpg" height="250" border="3" title="X-Plane US postage stamp Express Mail" alt="X-Plane US postage stamp Express Mail">
+           <img src="Gifs/06_xplanepriority_300s.jpg" height="250" border="3" title="X-Plane US postage stamp Priority Mail" alt="X-Plane US postage stamp Priority Mail"></p>
+           </td>
+       </tr>
+     </center>
+     </table>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#intro">Introduction</a></li>
+<li type=circle><a href="#enhance">Major Enhancements in Version 6</a></li>
+<li type=circle><a href="#general">General Features of the CFL3D Flow Solver</a></li>
+<li type=circle><a href="#get">Obtain a Copy of the Code</a></li>
+<li type=circle><a href="#backgrnd">More About Version 6</a></li>
+<li type=circle><a href="#prepost">Grid Generators and Post-Processors</a></li>
+<li type=circle><a href="#related">Related Web Sites</a></li>
+<li type=circle><a href="#contact">Points of Contact</a></li>
+</ul>
+
+<hr>
+<hr>
+
+<p><a NAME="intro"></a><strong><u>INTRODUCTION</u></strong>
+
+<p>These pages provide the documentation for the newest version of <strong>CFL3D</strong>,
+<strong>Version 6.7</strong>. CFL3D is a long-standing Navier-Stokes CFD code 
+developed at NASA Langley Research Center for solving 2-D or
+3-D flows on structured grids. The code has been in existence since the
+late 1980's, is very reliable and stable, and has many
+capabilities and options. We invite you to start off by perusing the Test Cases and
+Image Gallery, by clicking on the buttons to the left.
+
+<p><strong>Version 6.7</strong> (released on February 1, 2017) represents only relatively minor upgrades
+over <strong>Version 6.6</strong> (released on April 14, 2011). Most of the changes
+reflect minor bug fixes or new capabilities, particularly with respect to several new
+keyword input capabilities.  See
+<a href="cfl3dv6_new.html">New Features</a> for details on these.
+
+<p>There is no formal User's manual available for Version 6, but
+there is a manual for Version 5 and virtually all
+of this documentation is also applicable to Version 6.
+There are many options in V6 that were not available in V5, and a few that are
+handled slightly differently. Usage of these new options is described in
+<a href="cfl3dv6_new.html">New Features</a>.
+You may download a pdf file of the Version 5 User's Manual 
+(either by chapter or in total) 
+by clicking on the "Version 5 Manual" selection in the index to the left.
+
+<!--<p>CFL3Dv6 has the same functionality as CFL3Dv5, with the added ability of
+parallel execution. Although the restart file for Version 6 differs from
+that of Version 5 (and from the Beta Version 6), Version 5 / Beta Version 6
+restart files are readable by use of the 
+<a href="cfl3dv6_new.html#keyword">keyword</a> "irghost".
+With few <a href="cfl3dv6_new.html#diffs">exceptions</a>,
+input file formats are exactly the same for the two versions.</p>
+-->
+
+<!--<p>
+A new GUI for PAB3D, CFL3D and TLNS3D has been developed by Analytical Services & 
+Materials, Inc., and is available to NASA and its contractors.
+From the release announcement:
+
+<ul>
+<pre>
+"Large and small companies, research organizations and educational
+institutions are increasingly using CFD codes. The Unified Process
+Management System (UPMS) provide a valuable tool for the use of NASA's
+CFD codes. Each of these CFD codes has specific formats for input files.
+Simple modifications in problem definition often require extensive
+alterations to these formats.  Often, users have to be trained by CFD code
+suppliers to enable them to model the problem correctly and to use the
+various options available in the code efficiently. It becomes difficult
+for a user to be familiar with more than one code.  The Unified Process
+Management System was developed in conjunction with NASA under a SBIR
+phase II research and development contract." 
+</pre>
+</ul>
+
+You may wish to try this new tool; the link to the UPMS web site can be found in 
+the <a href="#related">Related Web Sites</a> section.
+-->
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="enhance"></a><strong><u>MAJOR ENHANCEMENTS IN VERSION 6</u></strong>
+
+<ul>
+<li type=circle>Runs on both serial and parallel computers (via MPI)</li>
+
+<li type=circle>Dynamic memory allocation</li>
+
+<li type=circle>Multiblock mesh deformation for moving grids</li>
+
+<li type=circle>Improved unsteady aeroelastic analysis capability</li>
+
+<li type=circle>Low Mach number preconditioning</li>
+
+<li type=circle>CGNS (CFD General Notation System) compatablitiy</li>
+
+<li type=circle>Utilizes complex variables for evaluation of solution derivatives</li>
+
+<li type=circle>Option for full Navier-Stokes capability</li>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="general"></a><strong><u>GENERAL FEATURES OF THE CFL3D FLOW SOLVER</u></strong>
+
+<ul>
+<li type=circle>2-D or 3-D grid topologies
+<li type=circle>Inviscid, laminar, and/or turbulent flows</li>
+<li type=circle>Steady or unsteady (including moving-grid) flows</li>
+<li type=circle>Multiple block options:</li>
+    <ul>
+    <li type=square>1-1 blocking</li>
+    <li type=square>patching</li>
+    <li type=square>overlapping</li>
+    <li type=square>embedding</li>
+    </ul>
+<li type=circle>Convergence acceleration options:</li>
+    <ul>
+    <li type=square>multigrid</li>
+    <li type=square>mesh sequencing</li>
+    </ul>
+<li type=circle>Turbulence model options:</li>
+    <ul>
+    <li type=square>Baldwin-Lomax</li>
+    <li type=square>Baldwin-Lomax with Degani-Schiff Modification</li>
+    <li type=square>Baldwin-Barth</li>
+    <li type=square>Spalart-Allmaras (including DES option)</li>
+    <li type=square>Wilcox k-omega</li>
+    <li type=square>Menter's k-omega SST</li>
+    <li type=square>Abid k-epsilon</li>
+    <li type=square>Explicit Algebraic Stress Model (EASM) k-epsilon and k-omega variations</li>
+    <li type=square>K-enstrophy</li>
+    <li type=square>Reynolds stress model</li>
+    </ul>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="get"></a><strong><u>OBTAIN A COPY OF THE CODE</u></strong>
+
+<p>
+CFL3D is available from:
+<ul>
+<a href="https://github.com/NASA/CFL3D" target="blank">https://github.com/NASA/CFL3D</a>
+</ul>
+
+<!--<p><a NAME="are_you_sure">
+<p>Before requesting the code, you should consider the following;
+
+<ul>
+
+<p><li type=circle>You will need substantial computing resources, depending of course on the 
+size of the problem you are trying to solve.  The code typically requires a Linux cluster 
+or "supercomputer" for moderate to large size problems; we provide no support for 
+compilation on Windows or Mac OS machines.</li>
+
+<p><li type=circle>You need to provide the code with a 3D volume structured grid. No grid 
+generation software is provided with the CFL3D code.  Generally speaking you will need a 
+commercial grid generation package as well as postprocessing visualization tools
+(see <a href="#prepost">Grid Generators and Post-Processors</a>).
+And you need to be proficient 
+enough with the grid generation package to know how to create high-quality grids.</li>
+
+<p><li type=circle>As with all general capability CFD codes, there is a fairly steep 
+learning curve to CFL3D; prior experience in CFD is helpful.</li>
+
+</ul>-->
+
+<!--<ol>
+
+<p><li>Send e-mail
+to Bob Biedron or Chris Rumsey
+requesting CFL3D Version 6.  You must include the following information:</li></p>
+<ul>
+<li> Your name</li>
+<li> Your complete contact information (address, phone number, and e-mail address)</li>
+<li> Your company affiliation, including department or branch (if applicable)</li>
+<li> A brief description of your planned usage of the code</li>
+</ul>
+
+<p><li>Your request will be forwarded internally to a NASA Software Releasing
+Authority (SRA). The SRA will determine whether or not the code may be released
+to the you; if so, the SRA will e-mail or FAX a Usage Agreement to
+you to fill out, sign and return to the SRA.</lI>
+
+<p><li>After the SRA has granted permission, the code will be provided to the
+you electronically. In addition, you will be added to the Version 6 user list,
+and will recieve any updates and/or corrections that occur.</li>
+
+</ol>
+
+<p><strong>Note: If you are already an approved user of the Version 6 code, and would like to update
+to the latest point release, only step 1 above is necessary.</strong>
+
+<p>Conditions of use:</p>
+
+<ul>
+<li type=circle> Do not distribute any part of the code outside of your 
+working group</li>
+<li type=circle>Report any bugs you may find</li>
+<li type=circle>CFL3D is restricted to use within the United States</li>
+<li type=circle>Abide by any additional conditions in the usage
+agreement</li>
+</ul>
+-->
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="backgrnd"></a><strong><u>MORE ABOUT VERSION 6</u></strong>
+
+<p><strong>CFL3Dv6</strong> can be run in either the standard (sequential) mode or in distributed/
+parallel mode. Whereas in the sequential mode all blocks at all multigrid levels
+reside on one processor, in the distributed/parallel mode each processor will 
+have one or more grid blocks residing on it. The coarser levels required for 
+multigrid reside on the same processor as the finer parent block. The 
+computations for a particular grid block are not currently 
+split among multiple processors. As a result, <strong>single-block grids
+cannot be run in parallel</strong>. However, a <a href="cfl3dv6_splitter.html">
+Block Splitter</a> tool is provided to facilitate conversion
+of an existing grid and input file to run in a parallel environment.
+
+<p>The parallel code utilizes the Message Passing Interface <a href="http://www.mcs.anl.gov/mpi">(MPI)</a>. The required MPI
+libraries may be "native" ones that exist on parallel processors such as the
+Origin 2000, the SP2 or the T3E, or, for workstation clusters, the portable MPI
+implementation, <a href="http://www.mcs.anl.gov/mpi/mpich/index.html">MPICH</a>.</p>
+
+<p>The code displays reasonably good scalability with increasing
+processor count for load balanced cases. Scaling tests have been conducted on
+<a href="Gifs/o2k.gif">SGI Origin 2000</a>,
+<a href="Gifs/t3e.gif">CRAY T3E</a>,
+and <a href="Gifs/beowulf.gif">"Beowulf" Pentium</a> systems.
+
+
+<!--<p>Initial development of <strong>CFL3dv6</strong> was done under contract to Computer Sciences
+Corporation, with Jerry Mall carrying out the initial port of Version 5.0
+to MPI. The basic structure of the code was modeled after the earlier parallel
+version, <strong>CFL3Dv4.1hp</strong>. After the code was passed back to NASA, additional
+modifications were made to implement the full range of features available in
+the standard release of Version 5.0, as well as to add the additional features
+that are described within this document.
+
+<p>Along the way P. Sundaram and collegues at Boeing Phantom Works-Long Beach
+made significant contributions by aggressive application of the parallel code.
+James Hager of BPW-LB provided a number of helpful suggestions for improvement.
+Thomas Faulkner of MRJ Technology Solutions has done extensive benchmarking of
+the earlier <strong>CFL3DV4.1hp</strong> on the NAS Origin 2000 and NAS Whitney
+cluster and provided valuable feedback on code performance.</p>-->
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="prepost"></a><strong><u>GRID GENERATORS AND POST-PROCESSORS</u></strong>
+
+<p>
+CFL3D does not include grid generation capability; a separate grid generator must
+be obtained.  CFL3D can work with grids in any one of 3 formats:
+CGNS, PLOT3D, or CFL3D.  
+
+<p>
+CFL3D also does not provide postprocessing visualization
+tools.  For output, the code can create results in two widely-used
+formats:  CGNS and/or PLOT3D (there is also some limited Tecplot output capability).  
+<!--<em>(These links will open new windows.)</em></p>
+
+<ul>
+
+<li type=circle><a href="http://www.altair.com" target="blank">
+ALTAIR (HYPERMESH)</a></li>
+
+<li type=circle><a href="http://www.ansys.com/products/icemcfd.asp" target="blank">
+ANSYS ICEM-CFD (ICEM-CFD, VISUAL3)</a></li>
+
+<li type=circle><a href="http://www.ensight.com" target="blank">
+CEI (ENSIGHT)</a></li>
+
+<li type=circle><a href="http://www.ilight.com" target="blank">
+INTELLIGENT LIGHT (FIELDVIEW)</a></li>
+
+<li type=circle><a href="http://www.llnl.gov/visit/" target="blank">
+LLNL (VISIT)</a></li>
+
+<li type=circle><a href="http://www.pointwise.com/gridgen/" target="blank">
+POINTWISE (GRIDGEN)</a></li>
+
+<li type=circle><a href="http://www.tecplot.com" target="blank">
+TECPLOT (TECPLOT)</a></li>
+
+</ul>-->
+
+<hr>
+
+<p><a NAME="related"></a><strong><u>RELATED WEB SITES</u></strong>
+<p><em>(These links will open new windows.)</em></p>
+
+<ul>
+
+<!--<li type=circle><a href="http://aaac.larc.nasa.gov/tsab/cfdlarc/" target="blank">
+CFD Resources At NASA Langley Research Center</a>
+</li>-->
+
+<li type=circle><a href="http://www.cfd-online.com/Resources/" target="blank">
+CFD Online</a>
+</li>
+
+<!--<li type=circle><a href="http://www.nas.nasa.gov/~faulkner/cfd_perf.html">
+Performance Measurements of Two Computational Fluid Dynamics Applications
+on a CRAY Origin 2000</a>
+<br><em>(this link will take you outside of larc.nasa.gov)</em></li>
+-->
+
+<!--<li type=circle><a href="http://www.nas.nasa.gov/~faulkner/whitney.html">
+Early Experiences Porting Two Computational Fluid Dynamics Applications to the
+Whitney Cluster</a>
+<br><em>(this link will take you outside of larc.nasa.gov)</em></li>
+-->
+
+<!--<li type=circle><a href="http://www.nas.nasa.gov/~faulkner/PTOOLslides/slides.html">
+Real Life Parallel Tool Use</a>
+<br><em>(this link will take you outside of larc.nasa.gov)</em></li>
+-->
+
+<!--<li type=circle><a href="http://www.asm-usa.com/products/UPMS/ASM-UPMS.html" target="blank">
+UPMS (Unified Process Management System): a unified graphical user interface for CFL3D, PAB3D and TLNS3D</a>
+</li>
+-->
+
+<!--<li type=circle><a href="http://www-berkeley.ansys.com/interfaces/cfl3d.html" target="blank">
+ANSYS ICEM-CFD CFL3D Interface</a>
+</li>-->
+
+<li type=circle><a href="http://www.cgns.org" target="blank">
+CFD General Notation System (CGNS)</a>
+</li>
+
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 07/10/2017
+<br>&nbsp;
+</body>
+</html>

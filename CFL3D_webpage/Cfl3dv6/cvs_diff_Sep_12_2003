@@ -1,0 +1,1282 @@
+Index: README
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/README,v
+retrieving revision 1.8
+retrieving revision 1.7
+diff -r1.8 -r1.7
+17,22c17
+<    where [options] = 
+<              -single                (to create a makefile for single precision
+<                                      executables. Note: the default double
+<                                      precision makefile can be changed to
+<                                      create single precision executables
+<              -no_opt                (to create unoptimized executables with
+---
+>    where [options] = -no_opt        (to create unoptimized executables with
+24c19
+<              -noredirect            (to dissallow redirected input file;
+---
+>                      -noredirect    (to dissallow redirected input file;
+26,31c21
+<              -purify                (to compile using Rational Software's 
+<                                      Purify memory checker
+<                                      - must have a licence for Purify
+<                                      - this option only effective on SGI 
+<                                        platform)
+<              -mpichdir=DIRm         (to use mpich on a workstation
+---
+>                      -mpichdir=DIRm (to use mpich on a workstation
+36c26
+<              -cgnsdir=DIRc          (to use CGNS standard files in place of
+---
+>                      -cgnsdir=DIRc  (to use CGNS standard files in place of
+39,53c29,38
+<              -linux_compiler_flags=
+<                PG,Intel,Lahey,Alpha  (to chose the proper compiler FLAGS Linux
+<                                       machines; the compiler will be named with
+<                                       the generic name mpif77...you must either
+<                                       explicitly change the name in the 
+<                                       makefile that is generated via the 
+<                                       Install command or make sure that mpif77
+<                                       points to the correct compiler on your 
+<                                       system. NOTE: the default is Intel, i.e
+<                                       if you use the Intel ifc compiler on your
+<                                       Linux machine, you do not need to specify
+<                                       this option; if your default compiler is
+<                                       the Portland Group pgf90 compiler, then 
+<                                       you should use -linux_compiler_flags=PG)
+<              -help                    (to list the above options)
+---
+>                      -single        (to create a makefile for single precision
+>                                      executables. Note: the default double
+>                                      precision makefile can be changed to 
+>                                      create single precision executables
+>                                      simply by editing a few lines)
+>                      -f77           (to use the FORTRAN77 compiler rather than
+>                                      the FORTRAN90 compiler. Note that CFL3D
+>                                      is a FORTRAN77 code. This option should
+>                                      only be needed for those machines without
+>                                      a FORTRAN90 compiler)
+Index: build/Install
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/Install,v
+retrieving revision 1.24
+retrieving revision 1.20
+diff -r1.24 -r1.20
+4c4
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+56a57,58
+> #   -f77           use f77 as fortran compiler (default is f90)
+> #
+63,64c65,66
+< #   -help          get a list of the options above.
+< #
+---
+> # script by r.t.biedron 6/97
+> #          revision 1.1 8/99
+88a91
+>     -f77)               do_f90=no ;;
+93,106d95
+<     -help*)
+<        cat << usage_end
+< usage: Install  [options]
+<        where [options] may be one or more of the following:
+<        -single
+<        -no_opt
+<        -noredirect
+<        -purify
+<        -mpichdir=DIR  where DIR is the mpich base directory
+<        -cgnsdir=DIR   where DIR is the cgns base directory
+<        -linux_compiler_flags=(PG,Intel,Lahey,Alpha) for Linux
+<        -help
+< usage_end
+<        exit 1 ;;
+110c99
+<        where [options] may be one or more of the following:
+---
+>        where options may be one or more of the following:
+112a102
+>        -f77
+118d107
+<        -help
+355c344
+< # 3) CRAY governs the timing function: there appears to be
+---
+> # 3) CRAY_TIME governs the timing function: there appears to be
+357c346
+< #    use subroutine cputim. CRAY switches the calls to etime and
+---
+> #    use subroutine cputim. CRAY_TIME switches the calls to etime and
+361,362c350,351
+< #    set to user time. NOTE: CRAY is now also used to select the
+< #    appropriate memory allocationion message for the Crays
+---
+> #    set to user time. NOTE: CRAY_TIME is now also used to select the
+> #    appropriate memory allocation call for the Crays
+395c384,385
+< # 1) CGNS enables code to read cgns files - set if cgnsdir is specified
+---
+> # 1) F77 forces the use of the f77 compiler instead of the default f90.
+> # 2) CGNS enables code to read cgns files - set if cgnsdir is specified
+434a425,428
+>   if [ $do_f90 = no ]; then
+>      FTN="f77"
+>   fi
+> 
+543c537
+<   CPPOPT_SP="-DASN_P3D -DCRAY -DWKSTN_OFF"
+---
+>   CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+564c558
+<   CPPOPT_SP="-DASN_P3D -DCRAY -DWKSTN_OFF"
+---
+>   CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+580c574
+<   CPPOPT_SP="-DCRAY -DT3E"
+---
+>   CPPOPT_SP="-DCRAY_TIME -DT3E"
+621a616
+> 
+623d617
+<   CPPOPT_SP="-DP3D_SINGLE -DSGI"
+666d659
+<   CPPOPT_SP="-DP3D_SINGLE -DSUN"
+688c681
+<   CPPOPT_SP="-DADP_OFF -DP3D_SINGLE -DHP"
+---
+>   CPPOPT_SP="-DADP_OFF -DP3D_SINGLE"
+716d708
+<   CPPOPT_SP="-DP3D_SINGLE -DALPHA"
+749c741
+<   CPPOPT_SP="-DP3D_SINGLE -DLINUX"
+---
+>   CPPOPT_SP="$CPPOPT_SP -DLINUX"
+774d765
+<   CPPOPT_SP="-DP3D_SINGLE -DINTEL"
+843d833
+<      CPPOPT_SP="-DP3D_SINGLE -DPG"
+873d862
+<      CPPOPT_SP="-DP3D_SINGLE -DLAHEY"
+903d891
+<      CPPOPT_SP="-DP3D_SINGLE -DALPHA"
+Index: build/cfl/libs/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/cfl/libs/makefile,v
+retrieving revision 1.8
+retrieving revision 1.7
+diff -r1.8 -r1.7
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+96,97c96
+< 	pltmode.F      bcnonin.F      initnonin.F     resnonin.F \
+<         my_flush.F
+---
+> 	pltmode.F      bcnonin.F      initnonin.F     resnonin.F
+Index: build/cfl/libs/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/cfl/libs/makefile_cpp,v
+retrieving revision 1.9
+retrieving revision 1.8
+diff -r1.9 -r1.8
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+103,104c103
+< 	pltmode.f      bcnonin.f      initnonin.f    resnonin.f \
+<         my_flush.f
+---
+> 	pltmode.f      bcnonin.f      initnonin.f    resnonin.f
+Index: build/cflcmplx/libs/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/cflcmplx/libs/makefile,v
+retrieving revision 1.8
+retrieving revision 1.7
+diff -r1.8 -r1.7
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+97c97
+< 	resnonin.F     my_flush.F
+---
+> 	resnonin.F
+Index: build/cflcmplx/libs/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/cflcmplx/libs/makefile_cpp,v
+retrieving revision 1.9
+retrieving revision 1.8
+diff -r1.9 -r1.8
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+104c104
+< 	resnonin.f     my_flush.f
+---
+> 	resnonin.f
+Index: build/precfl/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/precfl/seq/makefile,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+38d37
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+56c55
+< 	 cgnstools.F   setseg.F         my_flush.F       main.F
+---
+> 	 cgnstools.F   setseg.F         main.F
+Index: build/precfl/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/precfl/seq/makefile_cpp,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+38d37
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+63c62
+< 	 cgnstools.f   setseg.f         my_flush.f       main.f
+---
+> 	 cgnstools.f   setseg.f         main.f
+Index: build/preron/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/preron/seq/makefile,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+22d21
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+35,36c34
+< 	 sizer.F      outbuf.F    ccomplex.F  my_flush.F \
+< 	 main_pre.F 
+---
+> 	 sizer.F      outbuf.F    ccomplex.F  main_pre.F 
+Index: build/preron/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/preron/seq/makefile_cpp,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+22d21
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+42,43c41
+< 	 sizer.f      outbuf.f    ccomplex.f  my_flush.f \
+< 	 main_pre.f 
+---
+> 	 sizer.f      outbuf.f    ccomplex.f  main_pre.f 
+Index: build/ron/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/ron/seq/makefile,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+48d47
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+67c66
+< 	 pre_patch.F  sizer.F      ccomplex.F   my_flush.F   main.F
+---
+> 	 pre_patch.F  sizer.F      ccomplex.F   main.F
+Index: build/ron/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/ron/seq/makefile_cpp,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+48d47
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+74c73
+< 	 pre_patch.f  sizer.f      ccomplex.f   my_flush.f   main.f
+---
+> 	 pre_patch.f  sizer.f      ccomplex.f   main.f
+Index: build/split/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/split/seq/makefile,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+19d18
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+37,38c36
+< 	 readkey.F          parser.F      outbuf.F     my_flush.F \
+< 	 main.F
+---
+> 	 readkey.F          parser.F      main.F       outbuf.F 
+Index: build/split/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/split/seq/makefile_cpp,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+19d18
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+44,45c43
+< 	 readkey.f          parser.f      outbuf.f     my_flush.f \
+< 	 main.f
+---
+> 	 readkey.f          parser.f      main.f       outbuf.f
+Index: build/splitcmplx/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/splitcmplx/seq/makefile,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+20d19
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+38,39c37,38
+< 	 umalloc_c.F        readkey.F     parser.F        outbuf.F \
+< 	 my_flush.F         main_cmplx.F
+---
+> 	 umalloc_c.F        readkey.F     parser.F \
+> 	 main_cmplx.F       outbuf.F
+Index: build/splitcmplx/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/splitcmplx/seq/makefile_cpp,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+20d19
+< 	ln -s $(CFLSRC_S)/my_flush.F .
+45,46c44,45
+< 	 umalloc_c.f        readkey.f     parser.f        outbuf.f \
+< 	 my_flush.f         main_cmplx.f
+---
+> 	 umalloc_c.f        readkey.f     parser.f \
+> 	 main_cmplx.f       outbuf.f
+Index: build/tools/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/tools/seq/makefile,v
+retrieving revision 1.6
+retrieving revision 1.5
+diff -r1.6 -r1.5
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+22d21
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+36c35
+< 	readkey.F global0.F cgnstools.F termn8.F parser.F outbuf.F my_flush.F
+---
+> 	readkey.F global0.F cgnstools.F termn8.F parser.F outbuf.F
+Index: build/tools/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/build/tools/seq/makefile_cpp,v
+retrieving revision 1.7
+retrieving revision 1.6
+diff -r1.7 -r1.6
+1c1
+< #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> #     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+22d21
+< 	ln -s  $(CFLSRC_S)/my_flush.F .
+43c42
+< 	readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f my_flush.f
+---
+> 	readkey.f global0.f cgnstools.f termn8.f parser.f outbuf.f
+Index: source/cfl3d/dist/cputim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/cputim.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+44c44
+< #if defined CRAY
+---
+> #if defined CRAY_TIME
+101c101
+< #if defined CRAY
+---
+> #if defined CRAY_TIME
+Index: source/cfl3d/dist/dynptch.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/dynptch.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+20c20
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+464c464,468
+<             call my_flush(25)
+---
+> #   ifdef IBM
+>             call flush_(25)
+> #   else
+>             call flush(25)
+> #   endif
+Index: source/cfl3d/dist/mgbl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/mgbl.F,v
+retrieving revision 1.14
+retrieving revision 1.13
+diff -r1.14 -r1.13
+53c53
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+326c326
+< #ifdef CRAY
+---
+> #ifdef CRAY_TIME
+Index: source/cfl3d/dist/resp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/resp.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+24c24
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+1244,1248c1244,1259
+<       if (myid.eq.myhost) call my_flush(11)
+<       if (real(dt).ge.0.) then
+<          if (myid.eq.myhost) call my_flush(23)
+<          if (myid.eq.myhost) call my_flush(24)
+<       end if
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>                if (myid.eq.myhost) call flush_(11)
+>                if (real(dt).ge.0.) then
+>                   if (myid.eq.myhost) call flush_(23)
+>                   if (myid.eq.myhost) call flush_(24)
+>                end if
+> #   else
+>                if (myid.eq.myhost) call flush(11)
+>                if (real(dt).ge.0.) then
+>                   if (myid.eq.myhost) call flush(23)
+>                   if (myid.eq.myhost) call flush(24)
+>                end if
+> #   endif
+> #endif
+Index: source/cfl3d/dist/rrestg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/rrestg.F,v
+retrieving revision 1.9
+retrieving revision 1.8
+diff -r1.9 -r1.8
+18c18
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+103d102
+<       common /maxiv/ ivmx
+171d169
+<          if (ivmx .ge. 4) then
+174,176d171
+<          else
+<          read(2) ((((dum,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
+<          end if
+184c179
+<      +     ialph,qc0,tursav2,dtold,ivmx)
+---
+>      +     ialph,qc0,tursav2,dtold)
+212d206
+<          if (ivmx .ge. 4) then
+229d222
+<          end if
+245d237
+<       if (ivmx .ge. 4) then
+254d245
+<       end if
+Index: source/cfl3d/dist/sizer.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/sizer.F,v
+retrieving revision 1.13
+retrieving revision 1.12
+diff -r1.13 -r1.12
+12c12
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+724,725c724,725
+< #ifdef CRAY
+< c     cray always double precision
+---
+> #ifdef CRAY_TIME
+> c     cray_time implies cray (always double precision)
+Index: source/cfl3d/dist/termn8.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/termn8.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+109,124c109,145
+<       call my_flush(3)
+<       call my_flush(4)
+<       call my_flush(11)
+<       call my_flush(12)
+<       call my_flush(13)
+<       call my_flush(14)
+<       call my_flush(15)
+<       call my_flush(17)
+<       call my_flush(20)
+<       call my_flush(23)
+<       call my_flush(24)
+<       call my_flush(25)
+<       call my_flush(66)
+<       call my_flush(96)
+<       call my_flush(97)
+<       call my_flush(99)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>       call flush_(3)
+>       call flush_(4)
+>       call flush_(11)
+>       call flush_(12)
+>       call flush_(13)
+>       call flush_(14)
+>       call flush_(15)
+>       call flush_(17)
+>       call flush_(20)
+>       call flush_(23)
+>       call flush_(24)
+>       call flush_(25)
+>       call flush_(66)
+>       call flush_(96)
+>       call flush_(97)
+>       call flush_(99)
+> #   else
+>       call flush(3)
+>       call flush(4)
+>       call flush(11)
+>       call flush(12)
+>       call flush(13)
+>       call flush(14)
+>       call flush(15)
+>       call flush(17)
+>       call flush(20)
+>       call flush(23)
+>       call flush(24)
+>       call flush(25)
+>       call flush(66)
+>       call flush(96)
+>       call flush(97)
+>       call flush(99)
+> #   endif
+143a165
+> #endif
+Index: source/cfl3d/dist/umalloc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/umalloc.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+35c35,36
+< #ifdef CRAY
+---
+> #ifdef CRAY_TIME
+> c     cray_time implies cray
+69c70,77
+<          call my_flush(6)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>          call flush_(6)
+> #   else
+>          call flush(6)
+> #   endif
+> #endif
+77c85
+< c        call my_flush(6)
+---
+> c        call flush(6)
+Index: source/cfl3d/dist/umalloc_c.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/umalloc_c.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+36c36,37
+< #ifdef CRAY
+---
+> #ifdef CRAY_TIME
+> c     cray_time implies cray
+70c71,78
+<          call my_flush(6)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>          call flush_(6)
+> #   else
+>          call flush(6)
+> #   endif
+> #endif
+78c86
+< c        call my_flush(6)
+---
+> c        call flush(6)
+Index: source/cfl3d/dist/umalloc_r.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/umalloc_r.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+34c34,35
+< #ifdef CRAY
+---
+> #ifdef CRAY_TIME
+> c     cray_time implies cray
+64c65,72
+<          call my_flush(6)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>          call flush_(6)
+> #   else
+>          call flush(6)
+> #   endif
+> #endif
+72c80
+< c        call my_flush(6)
+---
+> c        call flush(6)
+Index: source/cfl3d/dist/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/usrint.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+35,47c35,66
+<       call my_flush(3)
+<       call my_flush(4)
+<       call my_flush(11)
+<       call my_flush(12)
+<       call my_flush(13)
+<       call my_flush(14)
+<       call my_flush(15)
+<       call my_flush(17)
+<       call my_flush(20)
+<       call my_flush(23)
+<       call my_flush(24)
+<       call my_flush(25)
+<       call my_flush(99)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>       call flush_(3)
+>       call flush_(4)
+>       call flush_(11)
+>       call flush_(12)
+>       call flush_(13)
+>       call flush_(14)
+>       call flush_(15)
+>       call flush_(17)
+>       call flush_(20)
+>       call flush_(23)
+>       call flush_(24)
+>       call flush_(25)
+>       call flush_(99)
+> #   else
+>       call flush(3)
+>       call flush(4)
+>       call flush(11)
+>       call flush(12)
+>       call flush(13)
+>       call flush(14)
+>       call flush(15)
+>       call flush(17)
+>       call flush(20)
+>       call flush(23)
+>       call flush(24)
+>       call flush(25)
+>       call flush(99)
+> #   endif
+> #endif
+Index: source/cfl3d/dist/wrestg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/dist/wrestg.F,v
+retrieving revision 1.6
+retrieving revision 1.5
+diff -r1.6 -r1.5
+16c16
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+85d84
+<       common /maxiv/ ivmx
+140d138
+<          if (ivmx .ge. 4) then
+150d147
+<          end if
+165d161
+<             if (ivmx .ge. 4) then
+168,171d163
+<             else
+<             zero=0.
+<             write(2) ((((zero,j=1,jdim1),k=1,kdim1),i=1,idim1),l=1,2)
+<             end if
+177,178c169
+<      +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
+<      +                ivmx)
+---
+>      +                jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
+Index: source/cfl3d/libs/abciz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/abciz.F,v
+retrieving revision 1.4
+retrieving revision 1.2
+diff -r1.4 -r1.2
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+Index: source/cfl3d/libs/ccomplex.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/ccomplex.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+5c5
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+14c14
+< #   else
+---
+> #else
+19c19
+< #   ifdef CRAY
+---
+> #ifdef CRAY_TIME
+21c21
+< #   else
+---
+> #else
+27c27
+< #   endif
+---
+> #endif
+Index: source/cfl3d/libs/cgnstools.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/cgnstools.F,v
+retrieving revision 1.11
+retrieving revision 1.10
+diff -r1.11 -r1.10
+2c2
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+4637,4638c4637
+<      +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph,
+<      +                   ivmx)
+---
+>      +                   jdim,kdim,wk,qc0,tursav2,nsoluse,i2d,ialph)
+4682d4680
+< c      ivmx............ turb model number for CFL3D (integer)
+4789d4786
+<       if (ivmx .ge. 4) then
+4812d4808
+<       end if
+4819c4815
+<      +                   ialph,qc0,tursav2,dtold,ivmx)
+---
+>      +                   ialph,qc0,tursav2,dtold)
+4852d4847
+< c      ivmx............ turb model number for CFL3D (integer)
+4967,4968c4962
+< c   is reading an older file, or if last run was not turbulent)
+<       if (ivmx .ge. 4) then
+---
+> c   is reading an older file)
+5004d4997
+<       end if
+Index: source/cfl3d/libs/global.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/global.F,v
+retrieving revision 1.14
+retrieving revision 1.13
+diff -r1.14 -r1.13
+29c29
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+447,448c447,448
+<         write(iunit11,'('' WARNING: DES SHOULD be run 3-D (i2d=0)'')')
+< c        call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+---
+>         write(iunit11,'('' DES must be run 3-D (i2d=0)'')')
+>         call termn8(myid,ierrflg,ibufdim,nbuf,bou,nou)
+Index: source/cfl3d/libs/global0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/global0.F,v
+retrieving revision 1.6
+retrieving revision 1.5
+diff -r1.6 -r1.5
+8c8
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+735c735,742
+<       call my_flush(iunit11)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>       call flush_(iunit11)
+> #   else
+>       call flush(iunit11)
+> #   endif
+> #endif
+Index: source/cfl3d/libs/outbuf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/outbuf.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+20c20,27
+<       call my_flush(iunit)
+---
+> #ifdef CRAY_TIME
+> #else
+> #   ifdef IBM
+>       call flush_(iunit)
+> #   else
+>       call flush(iunit)
+> #   endif
+> #endif
+Index: source/cfl3d/libs/resnonin.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/resnonin.F,v
+retrieving revision 1.3
+retrieving revision 1.2
+diff -r1.3 -r1.2
+4c4
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+153,154c153
+< 
+<       return 
+---
+>  
+Index: source/cfl3d/libs/spalart.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/spalart.F,v
+retrieving revision 1.9
+retrieving revision 1.7
+diff -r1.9 -r1.7
+7c7
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+809,815c809
+< c
+< c Modification to allow DES to run in 2d
+< c
+<               if( i2d .ne. 1 ) then
+<                  delta = ccmax(delta,deltai)
+<               end if
+<  
+---
+>               delta = ccmax(delta,deltai)
+850,852c844
+< c             fix for single prec. via TLNS3D via FUN3D via Tim Barth
+<               fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+< c old         fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+---
+>               fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+867,871c859
+< c             fix for single prec. via TLNS3D via FUN3D vi Tim Barth
+<               dfw=((1.+cw3**6)/(gg**6+cw3**6))**(1./6.) -
+<      .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
+<               dfw=dfw*dgg
+< c old         dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+---
+>               dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+914,916c902
+< c               fix for single prec. via TLNS3D via FUN3D via Tim Barth
+< c               fw=gg*((1.+cw3**6)/(gg**6+cw3**6))**(1./6.)
+< c old           fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+---
+> c               fw=((gg**(-6)+cw3**(-6))/(1.+cw3**(-6)))**(-1./6.)
+958,962c944
+< c               fix for single prec. via TLNS3D via FUN3D vi Tim Barth
+< c               dfw=((1.+cw3**6)/(gg**6+cw3**6))**(1./6.) -
+< c    .            ((1.+cw3**6)**(1./6.)/((gg**6+cw3**6)**(7./6.)))*gg**6
+< c               dfw=dfw*dgg
+< c old           dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+---
+> c               dfw=(gg**(-7)/(1.+(cw3**(-6))))*(fw**7)*dgg
+Index: source/cfl3d/libs/tfiedge.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/tfiedge.F,v
+retrieving revision 1.4
+retrieving revision 1.2
+diff -r1.4 -r1.2
+4c4
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+27,33d26
+<       common /zero/ iexp
+< c
+< c     tolerance for switch to linear blending function
+< c     (10.**(-iexp) is machine zero)
+< c
+<       tol = max(1.e-07,10.**(-iexp+1))
+< c
+52d44
+<          denom = (arci(j,k,i2)- arci(j,k,i1))
+54,59c46,47
+<             if(real(denom).lt.real(tol)) then
+<               eta = 0.
+<             else
+<               eta = (arci(j,k,i) - arci(j,k,i1))
+<      .               / denom
+<             end if
+---
+>             eta = (arci(j,k,i) - arci(j,k,i1))
+>      .          / (arci(j,k,i2)- arci(j,k,i1))
+74d61
+<          denom = (arcj(j2,k,i)- arcj(j1,k,i))
+76,81c63,64
+<             if(real(denom).lt.real(tol)) then
+<               eta = 0.
+<             else
+<               eta = (arcj(j,k,i) - arcj(j1,k,i))
+<      .               / denom
+<             end if
+---
+>             eta = (arcj(j,k,i) - arcj(j1,k,i))
+>      .          / (arcj(j2,k,i)- arcj(j1,k,i))
+96d78
+<          denom = (arck(j,k2,i)- arck(j,k1,i))
+98,103c80,81
+<             if(real(denom).lt.real(tol)) then
+<               eta = 0.
+<             else
+<               eta = (arck(j,k,i) - arck(j,k1,i))
+<      .               / denom
+<             end if
+---
+>             eta = (arck(j,k,i) - arck(j,k1,i))
+>      .          / (arck(j,k2,i)- arck(j,k1,i))
+Index: source/cfl3d/libs/tfiface.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/cfl3d/libs/tfiface.F,v
+retrieving revision 1.4
+retrieving revision 1.2
+diff -r1.4 -r1.2
+5c5
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+30,36d29
+<       common /zero/ iexp
+< c
+< c     tolerance for switch to linear blending function
+< c     (10.**(-iexp) is machine zero)
+< c
+<       tol = max(1.e-07,10.**(-iexp+1))
+< c
+55,61c48,49
+<                denom = (arcj(j2,k,i) - arcj(j1,k,i))
+<                if(real(denom).lt.real(tol)) then 
+<                  eta = 0.
+<                else
+<                  eta = (arcj(j,k,i)  - arcj(j1,k,i))
+<      .                  / denom
+<                end if
+---
+>                eta = (arcj(j,k,i)  - arcj(j1,k,i))
+>      .             / (arcj(j2,k,i) - arcj(j1,k,i))
+77,83c65,66
+<                denom = (arck(j,k2,i) - arck(j,k1,i))
+<                if(real(denom).lt.real(tol)) then 
+<                  zeta = 0.
+<                else
+<                  zeta = (arck(j,k,i)  - arck(j,k1,i))
+<      .                  / denom
+<                end if
+---
+>                zeta = (arck(j,k,i)  - arck(j,k1,i))
+>      .              / (arck(j,k2,i) - arck(j,k1,i))
+124,130c107,108
+<                denom = (arci(j,k,i2) - arci(j,k,i1))
+<                if(real(denom).lt.real(tol)) then 
+<                  xi = 0.
+<                else
+<                  xi = (arci(j,k,i)  - arci(j,k,i1))
+<      .                / denom
+<                end if
+---
+>                xi = (arci(j,k,i)  - arci(j,k,i1))
+>      .            / (arci(j,k,i2) - arci(j,k,i1))
+146,152c124,125
+<                denom = (arck(j,k2,i) - arck(j,k1,i))
+<                if(real(denom).lt.real(tol)) then 
+<                  zeta = 0.
+<                else
+<                  zeta = (arck(j,k,i)  - arck(j,k1,i))
+<      .                  / denom
+<                end if
+---
+>                zeta = (arck(j,k,i)  - arck(j,k1,i))
+>      .              / (arck(j,k2,i) - arck(j,k1,i))
+193,199c166,167
+<                denom = (arci(j,k,i2) - arci(j,k,i1))
+<                if(real(denom).lt.real(tol)) then 
+<                  xi = 0.
+<                else
+<                  xi = (arci(j,k,i)  - arci(j,k,i1))
+<      .                / denom
+<                end if
+---
+>                xi = (arci(j,k,i)  - arci(j,k,i1))
+>      .            / (arci(j,k,i2) - arci(j,k,i1))
+215,221c183,184
+<                denom = (arcj(j2,k,i) - arcj(j1,k,i))
+<                if(real(denom).lt.real(tol)) then 
+<                  eta = 0.
+<                else
+<                  eta = (arcj(j,k,i)  - arcj(j1,k,i))
+<      .               / denom
+<                end if
+---
+>                eta = (arcj(j,k,i)  - arcj(j1,k,i))
+>      .             / (arcj(j2,k,i) - arcj(j1,k,i))
+Index: source/precfl3d/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/precfl3d/usrint.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+31,43c31,61
+<       call my_flush(3)
+<       call my_flush(4)
+<       call my_flush(11)
+<       call my_flush(12)
+<       call my_flush(13)
+<       call my_flush(14)
+<       call my_flush(15)
+<       call my_flush(17)
+<       call my_flush(20)
+<       call my_flush(23)
+<       call my_flush(24)
+<       call my_flush(25)
+<       call my_flush(99)
+---
+> #if defined CRAY_TIME
+> #else
+> #   ifdef IBM
+>       call flush_(3)
+>       call flush_(4)
+>       call flush_(11)
+>       call flush_(12)
+>       call flush_(13)
+>       call flush_(14)
+>       call flush_(15)
+>       call flush_(17)
+>       call flush_(20)
+>       call flush_(23)
+>       call flush_(24)
+>       call flush_(25)
+>       call flush_(99)
+> #   else
+>       call flush(3)
+>       call flush(4)
+>       call flush(11)
+>       call flush(12)
+>       call flush(13)
+>       call flush(14)
+>       call flush(15)
+>       call flush(17)
+>       call flush(20)
+>       call flush(23)
+>       call flush(24)
+>       call flush(25)
+>       call flush(99)
+> #   endif
+57a76
+> #endif
+Index: source/ronnie/termn8.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/ronnie/termn8.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+105,106c105,111
+<       call my_flush(25)
+<       call my_flush(99)
+---
+> #   ifdef IBM
+>       call flush_(25)
+>       call flush_(99)
+> #   else
+>       call flush(25)
+>       call flush(99)
+> #   endif
+Index: source/ronnie/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/ronnie/usrint.F,v
+retrieving revision 1.4
+retrieving revision 1.3
+diff -r1.4 -r1.3
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+31,33c31,39
+<       call my_flush(66)
+<       call my_flush(25)
+<       call my_flush(99)
+---
+> #   ifdef IBM
+>       call flush_(66)
+>       call flush_(25)
+>       call flush_(99)
+> #   else
+>       call flush(66)
+>       call flush(25)
+>       call flush(99)
+> #   endif
+Index: source/splitter/cfl3d_to_tlns3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/splitter/cfl3d_to_tlns3d.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+19c19
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+334c334
+<       else if(iver.ge.5) then
+---
+>       else if(iver.eq.5) then
+Index: source/splitter/tlns3d_to_cfl3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/splitter/tlns3d_to_cfl3d.F,v
+retrieving revision 1.7
+retrieving revision 1.6
+diff -r1.7 -r1.6
+17c17
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+1990c1990
+<       if (iver.ge.5) then
+---
+>       if (iver.eq.5) then
+1999c1999
+<       if ((iver.eq.4 .and. nplot3d.ne.0) .or. iver.ge.5) then
+---
+>       if ((iver.eq.4 .and. nplot3d.ne.0) .or. iver.eq.5) then
+Index: source/tools/cfl3d_to_pegbc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/tools/cfl3d_to_pegbc.F,v
+retrieving revision 1.5
+retrieving revision 1.4
+diff -r1.5 -r1.4
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+568d567
+<          ninter  = 0
+Index: source/tools/moovmaker.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/CVS_REPOSITORIES/cfl3dv6/source/tools/moovmaker.F,v
+retrieving revision 1.6
+retrieving revision 1.5
+diff -r1.6 -r1.5
+3c3
+< c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+---
+> c     $Id: cvs_diff_Sep_12_2003,v 1.1 2003/09/12 18:34:44 biedron Exp $
+195c195
+<       call my_flush(6)
+---
+>       call flush(6)

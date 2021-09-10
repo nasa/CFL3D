@@ -1,0 +1,5423 @@
+Index: README
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/README,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+17,31c17,39
+<    where [options] = -no_opt       (to create unoptimized executables with
+<                                     fast compilation but slow execution)
+<                      -noredirect   (to dissallow redirected input file;
+<                                     needed for SP2)
+<                      -mpichdir=dir (to use mpich on a workstation
+<                                     cluster; dir is the directory
+<                                     where mpich is located - not used
+<                                     on mpp machines like the SGI/Cray 
+<                                     Origin 2000, Cray T3E, IBM SP2, etc.)
+<                      -v5           (to create an executable that 
+<                                     reproduces the results of version 5
+<                                     basically turns off preconditioning
+<                                     and volume terms at 1:1 block boundaries
+<                                     *generally only used by code developers*)
+< 
+---
+>    where [options] = -no_opt        (to create unoptimized executables with
+>                                      fast compilation but slow execution)
+>                      -noredirect    (to dissallow redirected input file;
+>                                      needed for SP2)
+>                      -mpichdir=DIRm (to use mpich on a workstation
+>                                      cluster; DIRm is the directory
+>                                      where mpich is located - not used
+>                                      on mpp machines like the SGI/Cray 
+>                                      Origin 2000, Cray T3E, IBM SP2, etc.)
+>                      -cgnsdir=DIRc  (to use CGNS standard files in place of
+>                                      the native CFL3D grid and restart files;
+>                                      DIRc is the cgns base directory)
+>                      -single        (to create a makefile for single precision
+>                                      executables. Note: the default double
+>                                      precision makefile can be changed to 
+>                                      create single precision executables
+>                                      simply by editing a few lines)
+>                      -f77           (to use the FORTRAN77 compiler rather than
+>                                      the FORTRAN90 compiler. Note that CFL3D
+>                                      is a FORTRAN77 code. This option should
+>                                      only be needed for those machines without
+>                                      a FORTRAN90 compiler)
+>                                       
+Index: build/Install
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/Install,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+2a3,4
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> #
+241a244
+>         SV1) GARCH=CRAY ;;
+516a520,539
+> #        CRAY SV1 ARCHITECTURE
+> #########################################
+> 
+> case $LLARCH in SV1)
+>   MPI_HOME="/opt/ctl/mpt/1.4.0.0"
+>   MPI_INCDIR="$MPI_HOME/include"
+>   MPI_LLIBDIR="$MPI_HOME/lib"
+>   MAKEFILE="makefile_cpp"
+>   PREC_MPI=""
+>   PREC=""
+>   CFLAG="$PREC"
+>   CPP="/opt/ctl/bin/cpp"
+>   CPPOPT_SP="-DASN_P3D -DCRAY_TIME -DWKSTN_OFF"
+>   AROPT="ruc"
+>   RANLIB="ranlib"
+>   FFLAG="-Oscalar3,vector3,nopattern -a taskcommon"
+>   INLINE="-Oinlinefrom=ccomplex.F"
+> esac
+> 
+> #########################################
+803a827,830
+> case $LLARCH in SV1)
+>    echo ' '
+>    echo 'On the SV1, use "mpirun -nt ..." rather than "mpirun -np ..."'
+> esac
+Index: build/Makefile.in
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/Makefile.in,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,3
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> #
+Index: build/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/makefile,v
+retrieving revision 1.1.1.1
+diff -r1.1.1.1 makefile
+1a2,3
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> #
+Index: build/cfl/libs/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/libs/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cfl/libs/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/libs/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+100c101,102
+< 	rb_pred.f      rb_corr.f      init_rb.f      init_trim.f
+---
+> 	rb_pred.f      rb_corr.f      init_rb.f      init_trim.f \
+> 	pltmode.f
+Index: build/cfl/mpi/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/mpi/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cfl/mpi/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/mpi/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cfl/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cfl/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cfl/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/libs/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/libs/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/libs/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/libs/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/mpi/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/mpi/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/mpi/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/mpi/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/cflcmplx/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/cflcmplx/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/mag/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/mag/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/mag/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/mag/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/precfl/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/precfl/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/precfl/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/precfl/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/preron/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/preron/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/preron/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/preron/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/ron/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/ron/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/ron/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/ron/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/split/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/split/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/split/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/split/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/splitcmplx/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/splitcmplx/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/splitcmplx/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/splitcmplx/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/tools/seq/makefile
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/tools/seq/makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: build/tools/seq/makefile_cpp
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/build/tools/seq/makefile_cpp,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+0a1
+> #     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+79,82c80,83
+< OBJECT11  = $(SOURCE10:.f=.o)
+< OBJECT12  = $(SOURCE10:.f=.o)
+< OBJECT13  = $(SOURCE10:.f=.o)
+< OBJECT14  = $(SOURCE10:.f=.o)
+---
+> OBJECT11  = $(SOURCE11:.f=.o)
+> OBJECT12  = $(SOURCE12:.f=.o)
+> OBJECT13  = $(SOURCE13:.f=.o)
+> OBJECT14  = $(SOURCE14:.f=.o)
+Index: source/cfl3d/dist/ae_corr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/ae_corr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/bc_blkint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/bc_blkint.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+7a8,10
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/bc_embed.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/bc_embed.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/bc_patch.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/bc_patch.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/bc_period.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/bc_period.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/calyplus.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/calyplus.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.5
+diff -r1.1.1.1 -r1.5
+7c7,10
+<      .                   mycomm,mblk2nd,ibcinfo,jbcinfo,kbcinfo)
+---
+>      .                   mycomm,mblk2nd,ibcinfo,jbcinfo,kbcinfo,vol)
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+46c49
+<      .          si(jdim,kdim,idim,5)
+---
+>      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
+142a146
+>             kdx = 1
+147a152
+>             kdx = kdim
+165,168c170,176
+<             i1 = kbcinfo(nbl,nseg,2,m)
+<             i2 = kbcinfo(nbl,nseg,3,m)
+<             j1 = kbcinfo(nbl,nseg,4,m)
+<             j2 = kbcinfo(nbl,nseg,5,m)
+---
+> c   do not include endpoints of segment, to avoid nonphysical behavior
+>             i1 = kbcinfo(nbl,nseg,2,m)+1
+>             i2 = kbcinfo(nbl,nseg,3,m)-1
+>             j1 = kbcinfo(nbl,nseg,4,m)+1
+>             j2 = kbcinfo(nbl,nseg,5,m)-1
+>             if (i1 .gt. i2) i1=i2
+>             if (j1 .gt. j2) j1=j2
+216a225,228
+>             if (sk(jd ,kdx,id ,4) .eq. 0. .or.
+>      +          sk(jd1,kdx,id ,4) .eq. 0. .or.
+>      +          sk(jd ,kdx,id1,4) .eq. 0. .or.
+>      +          sk(jd1,kdx,id1,4) .eq. 0.) then
+220a233,238
+>             else
+>             dn = (vol(jd ,kd,id )/sk(jd ,kdx,id ,4)+
+>      +            vol(jd1,kd,id )/sk(jd1,kdx,id ,4)+
+>      +            vol(jd ,kd,id1)/sk(jd ,kdx,id1,4)+
+>      +            vol(jd1,kd,id1)/sk(jd1,kdx,id1,4))/4.
+>             end if
+588a607
+>             jdx = 1
+593a613
+>             jdx = jdim
+610,613c630,637
+<             i1 = jbcinfo(nbl,nseg,2,m)
+<             i2 = jbcinfo(nbl,nseg,3,m)
+<             k1 = jbcinfo(nbl,nseg,4,m)
+<             k2 = jbcinfo(nbl,nseg,5,m)
+---
+> c
+> c   do not include endpoints of segment, to avoid nonphysical behavior
+>             i1 = jbcinfo(nbl,nseg,2,m)+1
+>             i2 = jbcinfo(nbl,nseg,3,m)-1
+>             k1 = jbcinfo(nbl,nseg,4,m)+1
+>             k2 = jbcinfo(nbl,nseg,5,m)-1
+>             if (i1 .gt. i2) i1=i2
+>             if (k1 .gt. k2) k1=k2
+661a686,689
+>             if (sj(jdx,kd ,id ,4) .eq. 0. .or.
+>      +          sj(jdx,kd1,id ,4) .eq. 0. .or.
+>      +          sj(jdx,kd ,id1,4) .eq. 0. .or.
+>      +          sj(jdx,kd1,id1,4) .eq. 0.) then
+665a694,699
+>             else
+>             dn = (vol(jd,kd ,id )/sj(jdx,kd ,id ,4)+
+>      +            vol(jd,kd1,id )/sj(jdx,kd1,id ,4)+
+>      +            vol(jd,kd ,id1)/sj(jdx,kd ,id1,4)+
+>      +            vol(jd,kd1,id1)/sj(jdx,kd1,id1,4))/4.
+>             end if
+1038a1073
+>             idx = 1
+1043a1079
+>             idx = idim
+1061,1064c1097,1103
+<             j1 = ibcinfo(nbl,nseg,2,m)
+<             j2 = ibcinfo(nbl,nseg,3,m)
+<             k1 = ibcinfo(nbl,nseg,4,m)
+<             k2 = ibcinfo(nbl,nseg,5,m)
+---
+> c   do not include endpoints of segment, to avoid nonphysical behavior
+>             j1 = ibcinfo(nbl,nseg,2,m)+1
+>             j2 = ibcinfo(nbl,nseg,3,m)-1
+>             k1 = ibcinfo(nbl,nseg,4,m)+1
+>             k2 = ibcinfo(nbl,nseg,5,m)-1
+>             if (j1 .gt. j2) j1=j2
+>             if (k1 .gt. k2) k1=k2
+1112a1152,1155
+>             if (si(jd ,kd ,idx,4) .eq. 0. .or.
+>      +          si(jd ,kd1,idx,4) .eq. 0. .or.
+>      +          si(jd1,kd ,idx,4) .eq. 0. .or.
+>      +          si(jd1,kd1,idx,4) .eq. 0.) then
+1116a1160,1165
+>             else
+>             dn = (vol(jd ,kd ,id)/si(jd ,kd ,idx,4)+
+>      +            vol(jd ,kd1,id)/si(jd ,kd1,idx,4)+
+>      +            vol(jd1,kd ,id)/si(jd1,kd ,idx,4)+
+>      +            vol(jd1,kd1,id)/si(jd1,kd1,idx,4))/4.
+>             end if
+Index: source/cfl3d/dist/cfl3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/cfl3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/compg2n.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/compg2n.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/cputim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/cputim.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/development.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/development.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/development.F_clean
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/development.F_clean,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/dynptch.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/dynptch.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+18a19,21
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/findmin_new.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/findmin_new.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/forceout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/forceout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+7a8,10
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/main.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/main.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/mgbl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/mgbl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.5
+diff -r1.1.1.1 -r1.5
+51a52,54
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+222,223c225,226
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+317c320
+<      .   3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .   3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/cfl3d/dist/mgblk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/mgblk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+51a52,54
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+254,255c257,258
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+Index: source/cfl3d/dist/newalpha.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/newalpha.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+34,35c37,38
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+Index: source/cfl3d/dist/patcher.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/patcher.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+14a15,17
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/plot3c.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/plot3c.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+9a10,12
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/plot3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/plot3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.5
+diff -r1.1.1.1 -r1.5
+9c9,13
+<      .                  mblk2nd,inpl3d,nblock,nblkpt,xv)
+---
+>      .                  mblk2nd,inpl3d,nblock,nblkpt,xv,
+>      .                  sj,sk,si,vol)
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+64a69,70
+>       dimension sk(jdim,kdim,idim-1,5),sj(jdim,kdim,idim-1,5),
+>      .          si(jdim,kdim,idim,5),vol(jdim,kdim,idim-1)
+1372a1379
+>          kdx = 1
+1376a1384
+>          kdx = kdim
+1422a1431,1434
+>       if (sk(j  ,kdx,id ,4) .eq. 0. .or. 
+>      +    sk(j-1,kdx,id ,4) .eq. 0. .or.
+>      +    sk(j  ,kdx,id1,4) .eq. 0. .or.
+>      +    sk(j-1,kdx,id1,4) .eq. 0.) then
+1426a1439,1444
+>       else
+>       dn = (vol(j  ,kd,id )/sk(j  ,kdx,id ,4)+
+>      +      vol(j-1,kd,id )/sk(j-1,kdx,id ,4)+
+>      +      vol(j  ,kd,id1)/sk(j  ,kdx,id1,4)+
+>      +      vol(j-1,kd,id1)/sk(j-1,kdx,id1,4))/4.
+>       end if
+1588a1607
+>          jdx = 1
+1592a1612
+>          jdx = jdim
+1627,1636c1647,1656
+<       q1j3 =       .25*(q(jd1,k,id,1)  +q(jd1-1,k-1,id,1)
+<      .                + q(jd1,k,id1,1) +q(jd1-1,k-1,id1,1))
+<       q2j3 =       .25*(q(jd1,k,id,2)  +q(jd1-1,k-1,id,2)
+<      .                + q(jd1,k,id1,2) +q(jd1-1,k-1,id1,2))
+<       q3j3 =       .25*(q(jd1,k,id,3)  +q(jd1-1,k-1,id,3)
+<      .                + q(jd1,k,id1,3) +q(jd1-1,k-1,id1,3))
+<       q4j3 =       .25*(q(jd1,k,id,4)  +q(jd1-1,k-1,id,4)
+<      .                + q(jd1,k,id1,4) +q(jd1-1,k-1,id1,4))
+<       q5j3 = gamma*.25*(q(jd1,k,id,5)  +q(jd1-1,k-1,id,5)
+<      .                + q(jd1,k,id1,5) +q(jd1-1,k-1,id1,5))
+---
+>       q1j3 =       .25*(q(jd1,k,id,1)  +q(jd1,k-1,id,1)
+>      .                + q(jd1,k,id1,1) +q(jd1,k-1,id1,1))
+>       q2j3 =       .25*(q(jd1,k,id,2)  +q(jd1,k-1,id,2)
+>      .                + q(jd1,k,id1,2) +q(jd1,k-1,id1,2))
+>       q3j3 =       .25*(q(jd1,k,id,3)  +q(jd1,k-1,id,3)
+>      .                + q(jd1,k,id1,3) +q(jd1,k-1,id1,3))
+>       q4j3 =       .25*(q(jd1,k,id,4)  +q(jd1,k-1,id,4)
+>      .                + q(jd1,k,id1,4) +q(jd1,k-1,id1,4))
+>       q5j3 = gamma*.25*(q(jd1,k,id,5)  +q(jd1,k-1,id,5)
+>      .                + q(jd1,k,id1,5) +q(jd1,k-1,id1,5))
+1638a1659,1662
+>       if (sj(jdx,k  ,id ,4) .eq. 0. .or. 
+>      +    sj(jdx,k-1,id ,4) .eq. 0. .or.
+>      +    sj(jdx,k  ,id1,4) .eq. 0. .or.
+>      +    sj(jdx,k-1,id1,4) .eq. 0.) then
+1642a1667,1672
+>       else
+>       dn = (vol(jd,k  ,id )/sj(jdx,k  ,id ,4)+
+>      +      vol(jd,k-1,id )/sj(jdx,k-1,id ,4)+
+>      +      vol(jd,k  ,id1)/sj(jdx,k  ,id1,4)+
+>      +      vol(jd,k-1,id1)/sj(jdx,k-1,id1,4))/4.
+>       end if
+1686,1695d1715
+<       if (ialph.eq.0) then
+<          write(17,22)i,j,k,real(x(j,k,i)),real(y(j,k,i)),real(z(j,k,i)),
+<      .               real(dn),real(pres1),real(temp1),real(Cf),real(Ch),
+<      .               real(yplus)
+<       else
+<          yminus =  -y(j,k,i)
+<          write(17,22)i,j,k,real(x(j,k,i)),real(z(j,k,i)),
+<      .               real(yminus),real(dn),real(pres1),real(temp1),
+<      .               real(Cf),real(Ch),real(yplus)
+<       end if
+1809a1830
+>          idx = 1
+1813a1835
+>          idx = idim
+1859a1882,1885
+>       if (si(j  ,k  ,idx,4) .eq. 0. .or.                 
+>      +    si(j  ,k-1,idx,4) .eq. 0. .or.
+>      +    si(j-1,k  ,idx,4) .eq. 0. .or.
+>      +    si(j-1,k-1,idx,4) .eq. 0.) then
+1863a1890,1895
+>       else
+>       dn = (vol(j  ,k  ,id)/si(j  ,k  ,idx,4)+
+>      +      vol(j  ,k-1,id)/si(j  ,k-1,idx,4)+
+>      +      vol(j-1,k  ,id)/si(j-1,k  ,idx,4)+
+>      +      vol(j-1,k-1,id)/si(j-1,k-1,idx,4))/4.
+>       end if
+Index: source/cfl3d/dist/plot3t.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/plot3t.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+11c11,13
+< 
+---
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/pointers.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/pointers.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+10a11,13
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/pre_bc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/pre_bc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+11a12,14
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/prntcp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/prntcp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/qinter.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/qinter.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+7a8,10
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/qout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/qout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+18a19,21
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+530c533,534
+<      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk))
+---
+>      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
+>      .                     w(lsj),w(lsk),w(lsi),w(lvol))
+762a767,768
+>                write(17,349)
+>   349          format(1x,32hNOTE: endpts may not be reliable)
+794c800,801
+<      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk))
+---
+>      .                     mblk2nd,inpl3d,nblock,nblkpt,wk(ixvk),
+>      .                     w(lsj),w(lsk),w(lsi),w(lvol))
+Index: source/cfl3d/dist/resetg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/resetg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+12a13,15
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/resp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/resp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+22a23,25
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/rrest.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/rrest.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+11a12,14
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+81,82c84,85
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+171c174,188
+<      +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q)
+---
+>      +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q,iprim)
+>       if (iprim .eq. 0) then
+> c     convert q to primitive (they are in CGNS file as conserved)
+>       do i=1,idim1
+>       do k=1,kdim1
+>       do j=1,jdim1
+>         q(j,k,i,2)=q(j,k,i,2)/q(j,k,i,1)
+>         q(j,k,i,3)=q(j,k,i,3)/q(j,k,i,1)
+>         q(j,k,i,4)=q(j,k,i,4)/q(j,k,i,1)
+>         q(j,k,i,5)=gm1*(q(j,k,i,5)-0.5*q(j,k,i,1)*(q(j,k,i,2)**2+
+>      +             q(j,k,i,3)**2+q(j,k,i,4)**2))
+>       enddo
+>       enddo
+>       enddo
+>       end if
+175a193,222
+>       if (iprim .eq. 0) then
+> c     convert qj0, qk0, qi0 to primitive (they are in CGNS file as conserved)
+>       do m=1,4
+>       do i=1,idim1
+>         do k=1,kdim1
+>           qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
+>           qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
+>           qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
+>           qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
+>      +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
+>         enddo
+>         do j=1,jdim1
+>           qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
+>           qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
+>           qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
+>           qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
+>      +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
+>         enddo
+>       enddo
+>       do k=1,kdim1
+>         do j=1,jdim1
+>           qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
+>           qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
+>           qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
+>           qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
+>      +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
+>         enddo
+>       enddo
+>       enddo
+>       end if
+Index: source/cfl3d/dist/rrestg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/rrestg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+18a19,21
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/setslave.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/setslave.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/setup.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/setup.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+29a30,32
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/sizer.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/sizer.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+10a11,13
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+519c522
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/cfl3d/dist/termn8.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/termn8.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/trnsfr_vals.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/trnsfr_vals.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+27a28,30
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+129,130c132,133
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+Index: source/cfl3d/dist/updatedg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/updatedg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+14a15,17
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/updateg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/updateg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+10a11,13
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/usrint.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/wrest.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/wrest.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+12a13,15
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+281a285,323
+> c     translate to conserved (for CGNS output only)
+>       do i=1,idim1
+>         do k=1,kdim1
+>         do j=1,jdim1
+>           q(j,k,i,2)=q(j,k,i,2)*q(j,k,i,1)
+>           q(j,k,i,3)=q(j,k,i,3)*q(j,k,i,1)
+>           q(j,k,i,4)=q(j,k,i,4)*q(j,k,i,1)
+>           q(j,k,i,5)=q(j,k,i,5)/gm1+0.5/q(j,k,i,1)*(q(j,k,i,2)**2+
+>      +               q(j,k,i,3)**2+q(j,k,i,4)**2)
+>         enddo
+>         enddo
+>         do m=1,4
+>         do k=1,kdim1
+>           qj0(k,i,2,m)=qj0(k,i,2,m)*qj0(k,i,1,m)
+>           qj0(k,i,3,m)=qj0(k,i,3,m)*qj0(k,i,1,m)
+>           qj0(k,i,4,m)=qj0(k,i,4,m)*qj0(k,i,1,m)
+>           qj0(k,i,5,m)=qj0(k,i,5,m)/gm1+0.5/qj0(k,i,1,m)*
+>      +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2)
+>         enddo
+>         do j=1,jdim1
+>           qk0(j,i,2,m)=qk0(j,i,2,m)*qk0(j,i,1,m)
+>           qk0(j,i,3,m)=qk0(j,i,3,m)*qk0(j,i,1,m)
+>           qk0(j,i,4,m)=qk0(j,i,4,m)*qk0(j,i,1,m)
+>           qk0(j,i,5,m)=qk0(j,i,5,m)/gm1+0.5/qk0(j,i,1,m)*
+>      +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2)
+>         enddo
+>         enddo
+>       enddo
+>       do m=1,4
+>       do k=1,kdim1
+>         do j=1,jdim1
+>           qi0(j,k,2,m)=qi0(j,k,2,m)*qi0(j,k,1,m)
+>           qi0(j,k,3,m)=qi0(j,k,3,m)*qi0(j,k,1,m)
+>           qi0(j,k,4,m)=qi0(j,k,4,m)*qi0(j,k,1,m)
+>           qi0(j,k,5,m)=qi0(j,k,5,m)/gm1+0.5/qi0(j,k,1,m)*
+>      +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2)
+>         enddo
+>       enddo
+>       enddo
+315a358,396
+> c     translate back to primitive (so don't mess anything up that may come later)
+>       do i=1,idim1
+>         do k=1,kdim1
+>         do j=1,jdim1
+>           q(j,k,i,2)=q(j,k,i,2)/q(j,k,i,1)
+>           q(j,k,i,3)=q(j,k,i,3)/q(j,k,i,1)
+>           q(j,k,i,4)=q(j,k,i,4)/q(j,k,i,1)
+>           q(j,k,i,5)=gm1*(q(j,k,i,5)-0.5*q(j,k,i,1)*(q(j,k,i,2)**2+
+>      +               q(j,k,i,3)**2+q(j,k,i,4)**2))
+>         enddo
+>         enddo
+>         do m=1,4
+>         do k=1,kdim1
+>           qj0(k,i,2,m)=qj0(k,i,2,m)/qj0(k,i,1,m)
+>           qj0(k,i,3,m)=qj0(k,i,3,m)/qj0(k,i,1,m)
+>           qj0(k,i,4,m)=qj0(k,i,4,m)/qj0(k,i,1,m)
+>           qj0(k,i,5,m)=gm1*(qj0(k,i,5,m)-0.5*qj0(k,i,1,m)*
+>      +      (qj0(k,i,2,m)**2+qj0(k,i,3,m)**2+qj0(k,i,4,m)**2))
+>         enddo
+>         do j=1,jdim1
+>           qk0(j,i,2,m)=qk0(j,i,2,m)/qk0(j,i,1,m)
+>           qk0(j,i,3,m)=qk0(j,i,3,m)/qk0(j,i,1,m)
+>           qk0(j,i,4,m)=qk0(j,i,4,m)/qk0(j,i,1,m)
+>           qk0(j,i,5,m)=gm1*(qk0(j,i,5,m)-0.5*qk0(j,i,1,m)*
+>      +      (qk0(j,i,2,m)**2+qk0(j,i,3,m)**2+qk0(j,i,4,m)**2))
+>         enddo
+>         enddo
+>       enddo
+>       do m=1,4
+>       do k=1,kdim1
+>         do j=1,jdim1
+>           qi0(j,k,2,m)=qi0(j,k,2,m)/qi0(j,k,1,m)
+>           qi0(j,k,3,m)=qi0(j,k,3,m)/qi0(j,k,1,m)
+>           qi0(j,k,4,m)=qi0(j,k,4,m)/qi0(j,k,1,m)
+>           qi0(j,k,5,m)=gm1*(qi0(j,k,5,m)-0.5*qi0(j,k,1,m)*
+>      +      (qi0(j,k,2,m)**2+qi0(j,k,3,m)**2+qi0(j,k,4,m)**2))
+>         enddo
+>       enddo
+>       enddo
+Index: source/cfl3d/dist/wrestg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/wrestg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+17a18,20
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/writ_buf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/writ_buf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/dist/yplusout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/dist/yplusout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+341c344
+<      .                 kbcinfo)
+---
+>      .                 kbcinfo,w(lvol))
+424c427
+<   100 format(/,1x,24hYPLUS STATISTICS - BLOCK,i3,
+---
+>   100 format(/,1x,46hYPLUS STATISTICS (endpts not included) - BLOCK,i3,
+426c429,430
+<   101 format(/,1x,36hYPLUS STATISTICS - ALL GLOBAL BLOCKS)
+---
+>   101 format(/,1x,38hYPLUS STATISTICS (endpts not included),
+>      .      20h - ALL GLOBAL BLOCKS)
+Index: source/cfl3d/libs/abciz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/abciz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/abcjz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/abcjz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/abckz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/abckz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/add2x.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/add2x.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/addx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/addx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ae_pred.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ae_pred.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/aesurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/aesurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/af3f.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/af3f.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/amafi.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/amafi.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/amafj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/amafj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/amafk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/amafk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/arc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/arc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+9a10,12
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/arclen.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/arclen.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/augmntq.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/augmntq.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/avghole.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/avghole.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/avgint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/avgint.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/barth3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/barth3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1000.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1000.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1001.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1001.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1002.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1002.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1003.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1003.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1005.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1005.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1008.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1008.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1011.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1011.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1012.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1012.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc1013.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc1013.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc2002.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2002.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc2003.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2003.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc2004.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2004.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc2005.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2005.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+91a95
+>       common /igrdtyp/ ip3dgrd,ialph
+229,230c233,239
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+234,235c243,249
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+240,241c254,260
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+397,398c416,422
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+402,403c426,432
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+408,409c437,443
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+565,566c599,605
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+570,571c609,615
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+576,577c620,626
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+733,734c782,788
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+738,739c792,798
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+744,745c803,809
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+901,902c965,971
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+906,907c975,981
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+912,913c986,992
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+1069,1070c1148,1154
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+1074,1075c1158,1164
+<         dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<         dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>         end if
+1080,1081c1169,1175
+<         dthty = bcdata(1,1,ip,3)/radtodeg
+<         dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>         if (ialph.eq.0) then
+>            dthty = bcdata(1,1,ip,3)/radtodeg
+>            dthtz = bcdata(1,1,ip,4)/radtodeg
+>         else
+>            dthty = -bcdata(1,1,ip,4)/radtodeg
+>            dthtz =  bcdata(1,1,ip,3)/radtodeg
+>         end if
+Index: source/cfl3d/libs/bc2005i_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2005i_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+76a80
+>       common /igrdtyp/ ip3dgrd,ialph
+107,108c111,117
+<             dthty = bcdata(1,1,ip,3)/radtodeg
+<             dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = bcdata(1,1,ip,3)/radtodeg
+>                dthtz = bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  bcdata(1,1,ip,3)/radtodeg
+>             end if
+112,113c121,127
+<             dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<             dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>                dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>             end if
+118,119c132,138
+<             dthty = bcdata(1,1,ip,3)/radtodeg
+<             dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = bcdata(1,1,ip,3)/radtodeg
+>                dthtz = bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  bcdata(1,1,ip,3)/radtodeg
+>             end if
+178,179c197,203
+<             dthty = bcdata(1,1,ip,3)/radtodeg
+<             dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = bcdata(1,1,ip,3)/radtodeg
+>                dthtz = bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  bcdata(1,1,ip,3)/radtodeg
+>             end if
+183,184c207,213
+<             dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<             dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>                dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>             end if
+189,190c218,224
+<             dthty = bcdata(1,1,ip,3)/radtodeg
+<             dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>             if (ialph.eq.0) then
+>                dthty = bcdata(1,1,ip,3)/radtodeg
+>                dthtz = bcdata(1,1,ip,4)/radtodeg
+>             else
+>                dthty = -bcdata(1,1,ip,4)/radtodeg
+>                dthtz =  bcdata(1,1,ip,3)/radtodeg
+>             end if
+Index: source/cfl3d/libs/bc2005j_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2005j_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+76a80
+>       common /igrdtyp/ ip3dgrd,ialph
+107,108c111,117
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+112,113c121,127
+<            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>            end if
+118,119c132,138
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+178,179c197,203
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+183,184c207,213
+<            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>            end if
+189,190c218,224
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+Index: source/cfl3d/libs/bc2005k_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2005k_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+76a80
+>       common /igrdtyp/ ip3dgrd,ialph
+107,108c111,117
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+112,113c121,127
+<            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>            end if
+118,119c132,138
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+178,179c197,203
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+183,184c207,213
+<            dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+<            dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = 2.*bcdata(1,1,ip,3)/radtodeg
+>               dthtz = 2.*bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -2.*bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  2.*bcdata(1,1,ip,3)/radtodeg
+>            end if
+189,190c218,224
+<            dthty = bcdata(1,1,ip,3)/radtodeg
+<            dthtz = bcdata(1,1,ip,4)/radtodeg
+---
+>            if (ialph.eq.0) then
+>               dthty = bcdata(1,1,ip,3)/radtodeg
+>               dthtz = bcdata(1,1,ip,4)/radtodeg
+>            else
+>               dthty = -bcdata(1,1,ip,4)/radtodeg
+>               dthtz =  bcdata(1,1,ip,3)/radtodeg
+>            end if
+Index: source/cfl3d/libs/bc2006.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2006.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc2007.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2007.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+38a42
+>       common /igrdtyp/ ip3dgrd,ialph
+96c100
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+144,152c148,174
+<       do 100 l=1,5
+<       do 100 ip=1,2
+<       do 100 i=ista,iend1
+<       ii = i-ista+1
+<       do 100 k=ksta,kend1
+<       kk = k-ksta+1
+<       qj0(k,i,l,ip) = bcdata(kk,ii,ip,l)
+<       bcj(k,i,1) = 0.0
+<   100 continue
+---
+>       if (ialph.eq.0) then
+>          do 100 ip=1,2
+>          do 100 i=ista,iend1
+>          ii = i-ista+1
+>          do 100 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
+>          qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
+>          qj0(k,i,5,ip) = bcdata(kk,ii,ip,5)
+>          bcj(k,i,1) = 0.0
+>   100    continue
+>       else
+>          do 1000 ip=1,2
+>          do 1000 i=ista,iend1
+>          ii = i-ista+1
+>          do 1000 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip) =  bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)
+>          qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)
+>          qj0(k,i,5,ip) =  bcdata(kk,ii,ip,5)
+>          bcj(k,i,1) = 0.0
+>  1000    continue
+>       end if
+230c252
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+278,286c300,326
+<       do 200 l=1,5
+<       do 200 ip=1,2
+<       do 200 i=ista,iend1
+<       ii = i-ista+1
+<       do 200 k=ksta,kend1
+<       kk = k-ksta+1
+<       qj0(k,i,l,ip+2) = bcdata(kk,ii,ip,l)
+<       bcj(k,i,2) = 0.0
+<   200 continue
+---
+>       if (ialph.eq.0) then
+>          do 200 ip=1,2
+>          do 200 i=ista,iend1
+>          ii = i-ista+1
+>          do 200 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
+>          qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
+>          qj0(k,i,5,ip+2) = bcdata(kk,ii,ip,5)
+>          bcj(k,i,2) = 0.0
+>   200    continue
+>       else
+>          do 2000 ip=1,2
+>          do 2000 i=ista,iend1
+>          ii = i-ista+1
+>          do 2000 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip+2) =  bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)
+>          qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)
+>          qj0(k,i,5,ip+2) =  bcdata(kk,ii,ip,5)
+>          bcj(k,i,2) = 0.0
+>  2000    continue
+>       end if
+359c399
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+407,415c447,473
+<       do 300 l=1,5
+<       do 300 ip=1,2
+<       do 300 i=ista,iend1
+<       ii = i-ista+1
+<       do 300 j=jsta,jend1
+<       jj = j-jsta+1
+<       qk0(j,i,l,ip) = bcdata(jj,ii,ip,l)
+<       bck(j,i,1) = 0.0
+<   300 continue
+---
+>       if (ialph.eq.0) then
+>          do 300 ip=1,2
+>          do 300 i=ista,iend1
+>          ii = i-ista+1
+>          do 300 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
+>          qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
+>          qk0(j,i,5,ip) = bcdata(jj,ii,ip,5)
+>          bck(j,i,1) = 0.0
+>   300    continue
+>        else
+>          do 3000 ip=1,2
+>          do 3000 i=ista,iend1
+>          ii = i-ista+1
+>          do 3000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip) =  bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)
+>          qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)
+>          qk0(j,i,5,ip) =  bcdata(jj,ii,ip,5)
+>          bck(j,i,1) = 0.0
+>  3000    continue
+>       end if
+488c546
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+536,544c594,620
+<       do 400 l=1,5
+<       do 400 ip=1,2
+<       do 400 i=ista,iend1
+<       ii = i-ista+1
+<       do 400 j=jsta,jend1
+<       jj = j-jsta+1
+<       qk0(j,i,l,ip+2) = bcdata(jj,ii,ip,l)
+<       bck(j,i,2) = 0.0
+<   400 continue
+---
+>       if (ialph.eq.0) then
+>          do 400 ip=1,2
+>          do 400 i=ista,iend1
+>          ii = i-ista+1
+>          do 400 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
+>          qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
+>          qk0(j,i,5,ip+2) = bcdata(jj,ii,ip,5)
+>          bck(j,i,2) = 0.0
+>   400    continue
+>       else
+>          do 4000 ip=1,2
+>          do 4000 i=ista,iend1
+>          ii = i-ista+1
+>          do 4000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip+2) =  bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)
+>          qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)
+>          qk0(j,i,5,ip+2) =  bcdata(jj,ii,ip,5)
+>          bck(j,i,2) = 0.0
+>  4000    continue
+>       end if
+617c693
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+665,673c741,767
+<       do 500 l=1,5
+<       do 500 ip=1,2
+<       do 500 k=ksta,kend1
+<       kk = k-ksta+1
+<       do 500 j=jsta,jend1
+<       jj = j-jsta+1
+<       qi0(j,k,l,ip) = bcdata(jj,kk,ip,l)
+<       bci(j,k,1) = 0.0
+<   500 continue
+---
+>       if (ialph.eq.0) then
+>          do 500 ip=1,2
+>          do 500 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 500 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
+>          qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
+>          qi0(j,k,5,ip) = bcdata(jj,kk,ip,5)
+>          bci(j,k,1) = 0.0
+>   500    continue
+>       else
+>          do 5000 ip=1,2
+>          do 5000 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 5000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip) =  bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)
+>          qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)
+>          qi0(j,k,5,ip) =  bcdata(jj,kk,ip,5)
+>          bci(j,k,1) = 0.0
+>  5000    continue
+>       end if
+746c840
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2007...must',
+794,802c888,914
+<       do 600 l=1,5
+<       do 600 ip=1,2
+<       do 600 k=ksta,kend1
+<       kk = k-ksta+1
+<       do 600 j=jsta,jend1
+<       jj = j-jsta+1
+<       qi0(j,k,l,ip+2) = bcdata(jj,kk,ip,l)
+<       bci(j,k,2) = 0.0
+<   600 continue
+---
+>       if (ialph.eq.0) then
+>          do 600 ip=1,2
+>          do 600 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 600 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
+>          qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
+>          qi0(j,k,5,ip+2) = bcdata(jj,kk,ip,5)
+>          bci(j,k,2) = 0.0
+>   600    continue
+>       else
+>          do 6000 ip=1,2
+>          do 6000 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 6000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip+2) =  bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)
+>          qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)
+>          qi0(j,k,5,ip+2) =  bcdata(jj,kk,ip,5)
+>          bci(j,k,2) = 0.0
+>  6000    continue
+>       end if
+Index: source/cfl3d/libs/bc2008.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2008.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+39a43
+>       common /igrdtyp/ ip3dgrd,ialph
+96c100
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+142,153c146,172
+<       do 100 ip=1,2
+<       do 100 i=ista,iend1
+<       ii = i-ista+1
+<       do 100 k=ksta,kend1
+<       kk = k-ksta+1
+<       qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
+<       qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
+<       qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
+<       qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
+<       qj0(k,i,5,ip) = q(1,k,i,5)
+<       bcj(k,i,1) = 0.0
+<   100 continue
+---
+>       if (ialph.eq.0) then
+>          do 100 ip=1,2
+>          do 100 i=ista,iend1
+>          ii = i-ista+1
+>          do 100 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip) = bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip) = bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip) = bcdata(kk,ii,ip,3)
+>          qj0(k,i,4,ip) = bcdata(kk,ii,ip,4)
+>          qj0(k,i,5,ip) = q(1,k,i,5)
+>          bcj(k,i,1) = 0.0
+>   100    continue
+>       else
+>          do 1000 ip=1,2
+>          do 1000 i=ista,iend1
+>          ii = i-ista+1
+>          do 1000 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip) =  bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip) =  bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip) = -bcdata(kk,ii,ip,4)
+>          qj0(k,i,4,ip) =  bcdata(kk,ii,ip,3)
+>          qj0(k,i,5,ip) =  q(1,k,i,5)
+>          bcj(k,i,1) = 0.0
+>  1000    continue
+>       end if
+221c240
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+267,278c286,312
+<       do 200 ip=1,2
+<       do 200 i=ista,iend1
+<       ii = i-ista+1
+<       do 200 k=ksta,kend1
+<       kk = k-ksta+1
+<       qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
+<       qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
+<       qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
+<       qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
+<       qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+<       bcj(k,i,2) = 0.0
+<   200 continue
+---
+>       if (ialph.eq.0) then
+>          do 200 ip=1,2
+>          do 200 i=ista,iend1
+>          ii = i-ista+1
+>          do 200 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip+2) = bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip+2) = bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip+2) = bcdata(kk,ii,ip,3)
+>          qj0(k,i,4,ip+2) = bcdata(kk,ii,ip,4)
+>          qj0(k,i,5,ip+2) = q(jdim1,k,i,5)
+>          bcj(k,i,2) = 0.0
+>   200    continue
+>       else
+>          do 2000 ip=1,2
+>          do 2000 i=ista,iend1
+>          ii = i-ista+1
+>          do 2000 k=ksta,kend1
+>          kk = k-ksta+1
+>          qj0(k,i,1,ip+2) =  bcdata(kk,ii,ip,1)
+>          qj0(k,i,2,ip+2) =  bcdata(kk,ii,ip,2)
+>          qj0(k,i,3,ip+2) = -bcdata(kk,ii,ip,4)
+>          qj0(k,i,4,ip+2) =  bcdata(kk,ii,ip,3)
+>          qj0(k,i,5,ip+2) =  q(jdim1,k,i,5)
+>          bcj(k,i,2) = 0.0
+>  2000    continue
+>       end if
+346c380
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+392,403c426,452
+<       do 300 ip=1,2
+<       do 300 i=ista,iend1
+<       ii = i-ista+1
+<       do 300 j=jsta,jend1
+<       jj = j-jsta+1
+<       qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
+<       qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
+<       qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
+<       qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
+<       qk0(j,i,5,ip) = q(j,1,i,5)
+<       bck(j,i,1) = 0.0
+<   300 continue
+---
+>       if (ialph.eq.0) then
+>          do 300 ip=1,2
+>          do 300 i=ista,iend1
+>          ii = i-ista+1
+>          do 300 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip) = bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip) = bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip) = bcdata(jj,ii,ip,3)
+>          qk0(j,i,4,ip) = bcdata(jj,ii,ip,4)
+>          qk0(j,i,5,ip) = q(j,1,i,5)
+>          bck(j,i,1) = 0.0
+>   300    continue
+>       else
+>          do 3000 ip=1,2
+>          do 3000 i=ista,iend1
+>          ii = i-ista+1
+>          do 3000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip) =  bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip) =  bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip) = -bcdata(jj,ii,ip,4)
+>          qk0(j,i,4,ip) =  bcdata(jj,ii,ip,3)
+>          qk0(j,i,5,ip) =  q(j,1,i,5)
+>          bck(j,i,1) = 0.0
+>  3000    continue
+>       end if
+471c520
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+517,528c566,592
+<       do 400 ip=1,2
+<       do 400 i=ista,iend1
+<       ii = i-ista+1
+<       do 400 j=jsta,jend1
+<       jj = j-jsta+1
+<       qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
+<       qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
+<       qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
+<       qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
+<       qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+<       bck(j,i,2) = 0.0
+<   400 continue
+---
+>       if (ialph.eq.0) then
+>          do 400 ip=1,2
+>          do 400 i=ista,iend1
+>          ii = i-ista+1
+>          do 400 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip+2) = bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip+2) = bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip+2) = bcdata(jj,ii,ip,3)
+>          qk0(j,i,4,ip+2) = bcdata(jj,ii,ip,4)
+>          qk0(j,i,5,ip+2) = q(j,kdim1,i,5)
+>          bck(j,i,2) = 0.0
+>   400    continue
+>       else
+>          do 4000 ip=1,2
+>          do 4000 i=ista,iend1
+>          ii = i-ista+1
+>          do 4000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qk0(j,i,1,ip+2) =  bcdata(jj,ii,ip,1)
+>          qk0(j,i,2,ip+2) =  bcdata(jj,ii,ip,2)
+>          qk0(j,i,3,ip+2) = -bcdata(jj,ii,ip,4)
+>          qk0(j,i,4,ip+2) =  bcdata(jj,ii,ip,3)
+>          qk0(j,i,5,ip+2) =  q(j,kdim1,i,5)
+>          bck(j,i,2) = 0.0
+>  4000    continue
+>       end if
+596c660
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+642,653c706,732
+<       do 500 ip=1,2
+<       do 500 k=ksta,kend1
+<       kk = k-ksta+1
+<       do 500 j=jsta,jend1
+<       jj = j-jsta+1
+<       qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
+<       qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
+<       qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
+<       qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
+<       qi0(j,k,5,ip) = q(j,k,1,5)
+<       bci(j,k,1) = 0.0
+<   500 continue
+---
+>       if (ialph.eq.0) then
+>          do 500 ip=1,2
+>          do 500 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 500 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip) = bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip) = bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip) = bcdata(jj,kk,ip,3)
+>          qi0(j,k,4,ip) = bcdata(jj,kk,ip,4)
+>          qi0(j,k,5,ip) = q(j,k,1,5)
+>          bci(j,k,1) = 0.0
+>   500    continue
+>       else
+>          do 5000 ip=1,2
+>          do 5000 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 5000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip) =  bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip) =  bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip) = -bcdata(jj,kk,ip,4)
+>          qi0(j,k,4,ip) =  bcdata(jj,kk,ip,3)
+>          qi0(j,k,5,ip) =  q(j,k,1,5)
+>          bci(j,k,1) = 0.0
+>  5000    continue
+>       end if
+721c800
+<                write(bou(nou(1),1),*)'  stopping in bc2003...must',
+---
+>                write(bou(nou(1),1),*)'  stopping in bc2008...must',
+767,778c846,872
+<       do 600 ip=1,2
+<       do 600 k=ksta,kend1
+<       kk = k-ksta+1
+<       do 600 j=jsta,jend1
+<       jj = j-jsta+1
+<       qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
+<       qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
+<       qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
+<       qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
+<       qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+<       bci(j,k,2) = 0.0
+<   600 continue
+---
+>       if (ialph.eq.0) then
+>          do 600 ip=1,2
+>          do 600 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 600 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip+2) = bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip+2) = bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip+2) = bcdata(jj,kk,ip,3)
+>          qi0(j,k,4,ip+2) = bcdata(jj,kk,ip,4)
+>          qi0(j,k,5,ip+2) = q(j,k,idim1,5)
+>          bci(j,k,2) = 0.0
+>   600    continue
+>       else
+>          do 6000 ip=1,2
+>          do 6000 k=ksta,kend1
+>          kk = k-ksta+1
+>          do 6000 j=jsta,jend1
+>          jj = j-jsta+1
+>          qi0(j,k,1,ip+2) =  bcdata(jj,kk,ip,1)
+>          qi0(j,k,2,ip+2) =  bcdata(jj,kk,ip,2)
+>          qi0(j,k,3,ip+2) = -bcdata(jj,kk,ip,4)
+>          qi0(j,k,4,ip+2) =  bcdata(jj,kk,ip,3)
+>          qi0(j,k,5,ip+2) =  q(j,k,idim1,5)
+>          bci(j,k,2) = 0.0
+>  6000    continue
+>       end if
+Index: source/cfl3d/libs/bc2102.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc2102.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc_delt.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc_delt.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc_info.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc_info.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+10a11,13
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bc_xmera.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bc_xmera.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bcchk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bcchk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bessel.c
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bessel.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+0a1,3
+> 
+> /*  $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $ */
+> 
+Index: source/cfl3d/libs/blkmax.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blkmax.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blnkfr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blnkfr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blocki.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blocki.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blocki_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blocki_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blockj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blockj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blockj_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blockj_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blockk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blockk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blockk_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blockk_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/blomax.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/blomax.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bsub.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bsub.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/bsubp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/bsubp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblki.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblki.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblki_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblki_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblkj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblkj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblkj_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblkj_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblkk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblkk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cblkk_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cblkk_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ccf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ccf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ccomplex.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ccomplex.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,6
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cctogp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cctogp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cellvol.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cellvol.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cgnstools.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cgnstools.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+0a1,3
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+502,503c505,508
+< c      q................cell-centered q-values, in (j,k,i) order (real)
+< c      qi0,qj0,qk0......B.C. q-values from CFL3D (real)
+---
+> c      q................cell-centered q-values, in (j,k,i) order,
+> c                       CONSERVED quantities (real)
+> c      qi0,qj0,qk0......B.C. q-values from CFL3D, 
+> c                       CONSERVED quantities (real)
+592c597
+< c   U-velocity:
+---
+> c   X-momentum:
+597c602
+<      +                      'VelocityX', wk, ifindex, ier)
+---
+>      +                      'MomentumX', wk, ifindex, ier)
+600c605
+<      +                      'VelocityX', wk, ifindex, ier)
+---
+>      +                      'MomentumX', wk, ifindex, ier)
+604c609
+< c   V-velocity:
+---
+> c   Y-momentum:
+609c614
+<      +                      'VelocityY', wk, ifindex, ier)
+---
+>      +                      'MomentumY', wk, ifindex, ier)
+612c617
+<      +                      'VelocityY', wk, ifindex, ier)
+---
+>      +                      'MomentumY', wk, ifindex, ier)
+616c621
+< c   W-velocity:
+---
+> c   Z-momentum:
+621c626
+<      +                      'VelocityZ', wk, ifindex, ier)
+---
+>      +                      'MomentumZ', wk, ifindex, ier)
+624c629
+<      +                      'VelocityZ', wk, ifindex, ier)
+---
+>      +                      'MomentumZ', wk, ifindex, ier)
+628c633
+< c   Pressure:
+---
+> c   Stagnation energy per unit volume:
+633c638
+<      +                      'Pressure', wk, ifindex, ier)
+---
+>      +                      'EnergyStagnationDensity', wk, ifindex, ier)
+636c641
+<      +                      'Pressure', wk, ifindex, ier)
+---
+>      +                      'EnergyStagnationDensity', wk, ifindex, ier)
+644c649
+<      +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q)
+---
+>      +  jdim,kdim,wk,nsoluse,irind,jrind,krind,i2d,q,iprim)
+676c681,683
+< c      q................cell-centered q-values, in (j,k,i) order (real)
+---
+> c      q................cell-centered q-values, in (j,k,i) order,
+> c                       CONSERVED or PRIMITIVE quantities (real)
+> c      iprim............0 if conserved read, 1 if primitive (integer)
+711c718
+< c   Check to make sure the field names needed exist:
+---
+> c   Check to make sure the conserved field names needed exist:
+713a721,742
+>       fndesired(2)='MomentumX'
+>       fndesired(3)='MomentumY'
+>       fndesired(4)='MomentumZ'
+>       fndesired(5)='EnergyStagnationDensity'
+>       iprim=0
+>       do n=1,numwanted
+>         ido=0
+>         do nn=1,nfields
+>           if(fndesired(n) .eq. fieldname(nn)) then
+>             ido=1
+>           end if
+>         enddo
+>         if (ido .eq. 0) then
+>           write(11,'('' Cannot find solution of name '',a32)') 
+>      +      fndesired(n)
+>           write(11,'(''   for conservative... try primitive instead'')')
+>           iprim=1
+>         end if
+>       enddo
+>       if (iprim .eq. 1) then
+> c       if conserved do not exist, try reading primitive variables
+>       fndesired(1)='Density'
+718d746
+<       ibad=0
+727c755
+<           write(11,'('' Cannot find solution of name '',a32)') 
+---
+>           write(11,'('' Cannot find solution of name '',a32)')
+729c757,758
+<           ibad=1
+---
+>           write(11,'(''   for primitive either...'')')
+>           iprim=2
+732c761,763
+<       if (ibad .eq. 1) then
+---
+>       end if
+>       if (iprim .eq. 2) then
+> c       if cannot find conserved or primitive names, stop execution
+4454c4485,4486
+< c      qc0..............cell-centered q-values, in (j,k,i) order (real)
+---
+> c      qc0..............cell-centered q-values, in (j,k,i) order,
+> c                       PRIMITIVE quantities (real)
+4587c4619,4620
+< c      qc0..............cell-centered q-values, in (j,k,i) order (real)
+---
+> c      qc0..............cell-centered q-values, in (j,k,i) order,
+> c                       PRIMITIVE quantities (real)
+5107c5140
+< c      qi0,qj0,qk0......arrays of BC data (real)
+---
+> c      qi0,qj0,qk0......arrays of BC data (CONSERVED quantities) (real)
+5286c5319,5321
+< c      qi0,qj0,qk0......arrays of BC data (real)
+---
+> c      qi0,qj0,qk0......arrays of BC data (CONSERVED or PRIMITIVE
+> c                       quantities - same type as Q's read in
+> c                       via readsoln) (real)
+Index: source/cfl3d/libs/chkdef.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkdef.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chkrap.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkrap.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chkrot.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkrot.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chkroti_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkroti_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chkrotj_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkrotj_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chkrotk_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chkrotk_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/chksym.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/chksym.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/cntsurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/cntsurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/coll2q.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/coll2q.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collapse.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collapse.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/colldat.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/colldat.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collmod.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collmod.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collq.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collq.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collqc0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collqc0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collxt.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collxt.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/collxtb.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/collxtb.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/csout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/csout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/csurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/csurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ctime1.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ctime1.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dabciz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dabciz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dabcjz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dabcjz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/deform.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/deform.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+9a10,12
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/delintr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/delintr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/delv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/delv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dfbtr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dfbtr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dfbtrp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dfbtrp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dfhat.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dfhat.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dfluxpm.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dfluxpm.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/diagi.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/diagi.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/diagj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/diagj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/diagk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/diagk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/diagnos.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/diagnos.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+9a10,11
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dird.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dird.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/direct.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/direct.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dlutr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dlutr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dlutrp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dlutrp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dsmin.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dsmin.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/dthole.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/dthole.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/expand.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/expand.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/extra.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/extra.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/extrae.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/extrae.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fa.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fa.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fa2xi.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fa2xi.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fa2xj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fa2xj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fa2xk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fa2xk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ffluxl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ffluxl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ffluxr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ffluxr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ffluxv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ffluxv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fhat.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fhat.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fill.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fill.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fluxm.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fluxm.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fluxp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fluxp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/fmaps.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/fmaps.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/force.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/force.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/genforce.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/genforce.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/get_bvals.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/get_bvals.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/getdelt.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/getdelt.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/getdhdr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/getdhdr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/getibk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/getibk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/getibk0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/getibk0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/getsurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/getsurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/gfluxl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/gfluxl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/gfluxr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/gfluxr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/gfluxv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/gfluxv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/global.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/global.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+27a28,30
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+143,144c146,147
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+Index: source/cfl3d/libs/global0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/global0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/global2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/global2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+7a8,10
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/gradinfo.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/gradinfo.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/grdmove.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/grdmove.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/hfluxl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/hfluxl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/hfluxr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/hfluxr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/hfluxv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/hfluxv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/histout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/histout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/histout_img.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/histout_img.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/hole.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/hole.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2x.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2x.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xi_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xi_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xj_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xj_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xk_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xk_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xs.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xs.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xsi_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xsi_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xsj_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xsj_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/i2xsk_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/i2xsk_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/init.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/init.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/init_ae.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/init_ae.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/init_mast.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/init_mast.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/init_rb.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/init_rb.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/init_trim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/init_trim.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/initvist.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/initvist.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/int2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/int2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/int2_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/int2_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/intrbc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/intrbc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/invert.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/invert.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+11a12,14
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/l2norm.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/l2norm.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/l2norm2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/l2norm2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ld_dati.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ld_dati.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ld_datj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ld_datj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ld_datk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ld_datk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ld_qc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ld_qc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/lead.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/lead.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/loadgr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/loadgr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/metric.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/metric.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/moddefl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/moddefl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/modread.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/modread.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/mreal.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/mreal.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/mvdat.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/mvdat.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+11a12,14
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/newfit.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/newfit.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/outbuf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/outbuf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/parser.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/parser.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pltmode.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pltmode.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+169a173
+>          ngd = 0
+Index: source/cfl3d/libs/pre_blockbc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_blockbc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_blocki.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_blocki.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_blockj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_blockj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_blockk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_blockk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_cblki.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_cblki.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_cblkj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_cblkj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_cblkk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_cblkk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_embed.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_embed.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+6a7,9
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_patch.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_patch.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/pre_period.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/pre_period.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+7a8,10
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/project.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/project.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/prolim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/prolim.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/prolim2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/prolim2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/q8sdot.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/q8sdot.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/q8smax.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/q8smax.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/q8smin.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/q8smin.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/q8vrev.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/q8vrev.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/qface.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/qface.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rb_corr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rb_corr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rb_pred.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rb_pred.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rcfl.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rcfl.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/readdat.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/readdat.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/readkey.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/readkey.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+34,35c37,38
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+Index: source/cfl3d/libs/rechk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rechk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/resadd.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/resadd.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/resid.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/resid.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+10a11,13
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rie1d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rie1d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rie1de.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rie1de.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotate.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotate.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotateq.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotateq.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotateq0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotateq0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotateq2_d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotateq2_d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotateqb.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotateqb.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotatmc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotatmc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotatp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotatp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rotsurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rotsurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rp3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rp3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rpatch.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rpatch.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rpatch0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rpatch0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rsmooth.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rsmooth.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/rsurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/rsurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/setblk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/setblk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/setcorner.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/setcorner.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/setdqc0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/setdqc0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/setqc0.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/setqc0.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/setseg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/setseg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/shear.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/shear.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+9a10,12
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/spalart.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/spalart.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/swafi.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/swafi.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/swafj.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/swafj.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/swafk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/swafk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tau.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tau.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tau2x.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tau2x.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tdq.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tdq.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tfiedge.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tfiedge.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tfiface.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tfiface.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tfivol.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tfivol.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tinvr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tinvr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/tmetric.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/tmetric.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/topol.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/topol.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/topol2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/topol2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/trace.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/trace.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/trans.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/trans.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/transmc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/transmc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/transp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/transp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/triv.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/triv.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/trnsurf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/trnsurf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/twoeqn.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/twoeqn.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+8a9,11
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ufree.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ufree.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ufree_c.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ufree_c.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/ufree_r.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/ufree_r.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/umalloc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/umalloc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/umalloc_c.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/umalloc_c.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/umalloc_r.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/umalloc_r.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/unld_qc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/unld_qc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/update.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/update.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/vlutr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/vlutr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/vlutrp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/vlutrp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/wkstn.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/wkstn.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/wmag.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/wmag.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xe.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xe.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xe2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xe2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xlim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xlim.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xmukin.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xmukin.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xtbatb.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xtbatb.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xupdt.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xupdt.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/cfl3d/libs/xyzintr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/cfl3d/libs/xyzintr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/maggie/cputim.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/maggie/cputim.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/maggie/maggie.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/maggie/maggie.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+2a3,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+> c
+146c149
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/maggie/wkstn.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/maggie/wkstn.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,8
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/precfl3d/get_cmd_args.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/precfl3d/get_cmd_args.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/precfl3d/main.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/precfl3d/main.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+> c
+Index: source/precfl3d/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/precfl3d/usrint.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/ronnie/main.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/main.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+2a3,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+> c
+Index: source/ronnie/main_pre.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/main_pre.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+0a1,3
+>       program main
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: source/ronnie/ronnie.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/ronnie.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+283c286
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/ronnie/setup.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/setup.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,5
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/ronnie/sizer.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/sizer.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+213c216
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/ronnie/termn8.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/termn8.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/ronnie/usrint.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/ronnie/usrint.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/cfl3d_to_tlns3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/cfl3d_to_tlns3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+17a18,20
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+137,138c140,141
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+367,370d369
+<          if (sref .lt. 0) then
+<             ialphit = 1
+<             sref = abs(sref)
+<          end if
+372,377c371
+<          if (ialphit .eq. 0) then
+<             read(10,*) dt,irest,iflagts,fmax,iunst,cfltau
+<          else
+<             read(10,*) dt,irest,iflagts,fmax,iunst,cfltau,cltarg,resupdt
+<             resupdt = -abs(resupdt)
+<          end if
+---
+>          read(10,*) dt,irest,iflagts,fmax,iunst,cfltau
+Index: source/splitter/getdhdr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/getdhdr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/ingrd.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/ingrd.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/ingrd_cmplx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/ingrd_cmplx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/ipadd.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/ipadd.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/ipfix.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/ipfix.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/iprvsg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/iprvsg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/main.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/main.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/main_cmplx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/main_cmplx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/mapblk.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mapblk.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5c5,6
+< c-----------------------------------------------------------------------
+---
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+Index: source/splitter/mapin.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mapin.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/mapout.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mapout.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+4a5,7
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/mapsplt.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mapsplt.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/mkintr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mkintr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/mkseg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/mkseg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/movseg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/movseg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/outgrd.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/outgrd.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/outgrd_cmplx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/outgrd_cmplx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/renmbr.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/renmbr.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/shortinp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/shortinp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/sizer.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/sizer.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+3a4,6
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/splitter.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/splitter.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+3a4,5
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+360c362
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/splitter/splitter_cmplx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/splitter_cmplx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -r1.1.1.1 -r1.4
+4a5,6
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+361c363
+<      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August  2, 2000.,
+---
+>      .3x,2(2h *),/2(2h *),18x,33hRelease Date:    August 14, 2001.,
+Index: source/splitter/splt2.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/splt2.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/spltsg.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/spltsg.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+5a6,7
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/termn8.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/termn8.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/splitter/tlns3d_to_cfl3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/splitter/tlns3d_to_cfl3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -r1.1.1.1 -r1.3
+16a17,18
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+106,107c108,109
+<       common /alphait/ cltarg,resupdt,cltol,dalim,ialphit,nttlast,
+<      .        icycupdt,dcldal,alphalast
+---
+>       common /alphait/ cltarg,resupdt,cltol,dalim,dcldal,alphalast,
+>      .                 ialphit,nttlast,icycupdt
+1475,1486c1477,1481
+<          if (ialphit .eq.0) then
+<             write(7,33)
+<    33       format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
+<      .      3x,7hcfl_tau)
+<             write(7,34)dt,irest,iflagts,fmax,iunst,cfltau
+<    34       format(f10.5,2i10,f10.5,i10,3f10.5)
+<          else
+<             write(7,331)
+<   331       format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
+<      .      3x,7hcfl_tau,4x,6hcltarg,3x,7hresupdt)
+<             write(7,34)dt,irest,iflagts,fmax,iunst,cfltau,cltarg,resupdt
+<          end if
+---
+>          write(7,33)
+>    33    format(8x,2hdt,5x,5hirest,3x,7hiflagts,6x,4hfmax,5x,5hiunst,
+>      .   3x,7hcfl_tau)
+>          write(7,34)dt,irest,iflagts,fmax,iunst,cfltau
+>    34    format(f10.5,2i10,f10.5,i10,3f10.5)
+Index: source/tools/Get_FD.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/Get_FD.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/INGRID_to_p3d.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/INGRID_to_p3d.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/XINTOUT_to_ovrlp.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/XINTOUT_to_ovrlp.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/cfl3d_to_pegbc.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/cfl3d_to_pegbc.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/everyother_xyz.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/everyother_xyz.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/grid_perturb.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/grid_perturb.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/grid_perturb_cmplx.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/grid_perturb_cmplx.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/initialize_field.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/initialize_field.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/moovmaker.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/moovmaker.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/p3d_to_INGRID.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/p3d_to_INGRID.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/p3d_to_cfl3drst.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/p3d_to_cfl3drst.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+9c11
+< c     It also sets ivisc=0, so that, upon restart, CFL3D will compute min distance
+---
+> c     It also sets ivisc=0, so that upon restart, CFL3D computes min distance
+Index: source/tools/plot3dg_to_cgns.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/plot3dg_to_cgns.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+1a2,4
+> c
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/v6_restart_mod.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/v6_restart_mod.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c
+Index: source/tools/v6inpdoubhalf.F
+===================================================================
+RCS file: /ump/fldmd/home/biedron/Cfl3dv6_cvs/cfl3dv6/source/tools/v6inpdoubhalf.F,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -r1.1.1.1 -r1.2
+2a3,4
+> c     $Id: cvs_diff_Aug_14_2001,v 1.1 2002/10/25 14:38:30 rumsey Exp $
+> c

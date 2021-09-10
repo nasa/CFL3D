@@ -1,0 +1,4284 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>New Features</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr> <center> <h2>New and Updated Features of Version 6</h2></center> <hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+   <li type=circle><a href="#new">New Features</a></li>
+   <li type=circle><a href="#diffs">
+       Summary of Input File Differences from Earlier Versions</a></li>
+   <li type=circle><a href="#limit">Limitations</a></li>
+   <li type=circle><a href="#prob">Known Problems</a></li>
+</ul>
+
+<hr>
+<hr>
+
+
+<p><a NAME="new"></a><strong><u>NEW FEATURES</u></strong>
+
+<p>This page lists new features in CFL3D Version 6.  Because there is no
+Version 6 Manual, this page is very important because it supplements the
+<a href="cfl3dv6_v5manual.html">Version 5 Manual</a> 
+by listing additional/changed features and capabilities
+of CFL3D.  Of particular importance is the capability of "Keyword Driven
+Input," which is an optional section near the top of the standard CFL3D
+input file.  See also the 
+<a href="cfl3dv6_tutorial.html">CFL3D Tutorial</a>.</p>
+
+<ul>
+   <li type=circle><a href="#keyword">Keyword Driven Input</a><dd>
+                   <a href="#keytable"><span style="color: maroon">(click here for tables)</span></a></li>
+   <li type=circle><a href="#dynmem">Dynamic Memory Allocation</a></li>
+   <li type=circle><a href="#precond">Low Mach Number Preconditioning</a></li>
+   <li type=circle><a href="#plot3d">Additional Plot3d Output Options</a></li>
+   <li type=circle><a href="#speccl">Specified Cl Option</a></li>
+   <li type=circle><a href="#split">Block and Input File Splitter</a></li>
+   <li type=circle><a href="#ronnie">New Ronnie Input Options</a></li>
+   <li type=circle><a href="#error">Error Code Files</a></li>
+   <li type=circle><a href="#iflim4">New Flux Limiter (iflim=4)</a></li>
+   <li type=circle><a href="#bc1006">New Normal Momentum BC 1006 for Inviscid Flows</a></li>
+   <li type=circle><a href="#bc2008">More General BC 2008, 2018, and 2028</a></li>
+   <li type=circle><a href="#bc2014">Specifying transition through BC 2014</a></li>
+   <li type=circle><a href="#bc2034">Imposing wall velocity through BC 2034</a></li>
+   <li type=circle><a href="#turbdata">
+       Turbulence Data Input For 2000 Series BC's</a></li>
+   <li type=circle><a href="#bc2016">
+       New BC 2016 for Suction and Blowing</a></li>
+   <li type=circle><a href="#complex">
+       Solution Derivatives Via Complex Variables</a></li>
+   <li type=circle><a href="#entfix">
+       Entropy Fix for High Mach Number Conditions</a></li>
+<!--   <li type=circle><a href="#pegsus">
+       Tools for Using PEGSUS Overset Grid Data</a></li>-->
+   <li type=circle><a href="#turbs">
+       Turbulence Model Descriptions</a></li>
+   <li type=circle><a href="#2009">
+       New inflow bc 2009, 2010, and 2019</a></li>
+   <li type=circle><a href="#2103">
+       Specified Pressure Ratio 2103</a></li>
+   <li type=circle><a href="#2ndorderturb">
+       2nd order temporal accuracy for turb models</a></li>
+   <li type=circle><a href="#stop_me">
+       Graceful user-requested stop during program execution</a></li>
+   <li type=circle><a href="#noninertial">
+       Source terms for non-inertial (rotating) reference frames</a></li>
+   <li type=circle><a href="#ihist">
+       New ihist option for force/moment convergence tracking</a></li>
+   <li type=circle><a href="#idess">
+       DES and DDES capability</a></li>
+   <li type=circle><a href="#ifull">
+       Full Navier-Stokes capability</a></li>
+   <li type=circle><a href="#icurv">
+       Curvature correction capability for certain turbulence models</a></li>
+   <li type=circle><a href="#dacles">
+       Dacles-Mariani Rotation correction for SA model</a></li>
+   <li type=circle><a href="#clcdspec">
+       Keeping track of CL and CD on different bodies</a></li>
+   <li type=circle><a href="#2dmovie">
+       2D and coarse movie output</a></li>
+   <li type=circle><a href="#varcfltau">
+       Variable CFLTAU (for time dependent calculations)</a></li>
+   <li type=circle><a href="#Qavg">
+       Running-average Q-file (primarily for time dependant flows)</a></li>
+   <li type=circle><a href="#pertavg">
+       More advanced running-average files (primarily for time dependant flows)</a></li>
+   <li type=circle><a href="#keepfree">
+       Maintaining ambient turbulence levels without decay</a></li>
+   <li type=circle><a href="#aeroelast">
+       New unsteady aeroelasticity features</a></li>
+   <li type=circle><a href="#nonlin">
+       Nonlinear Quadratic Constitutive Relation for use with Linear Models</a></li>
+   <li type=circle><a href="#axi-sing">
+       3D Axisymmetric 2-plane cases with singular axis</a> (under construction)</li>
+   <li type=circle><a href="#transmod">
+       Three- and four-equation transition models</a> (under construction)</li>
+   <li type=circle><a href="#lesmodel">
+       Large eddy simulation (LES) capability</a> (under construction)</li>
+   <li type=circle><a href="#mms-sa">
+       Method of Manufactured Solution for SA model</a> (under construction)</li>
+   <li type=circle><a href="#sepfix-ko">
+       Ad-Hoc Separation Fix</a> (under construction)</li>
+   <li type=circle><a href="#sweeping">
+       New "sweeping jet" BC 2026</a> (under construction)</li>
+   <li type=circle><a href="#stressomegaRSM">
+       Stress-Omega Full Reynolds Stress Models</a> (under construction)</li>
+
+
+</ul>
+</p>
+
+<hr>
+
+<p><a NAME="keyword"></a><strong>Keyword Driven Input</strong>
+
+<p>A number of users have requested that some standard constants, such as
+   gamma (specific heat ratio), be specified via the input file. Because space
+   is getting very tight in the input file, additional input is now 
+   accomodated via a "keyword driven" input. If used, the 
+   keyword driven input section must appear after the last input file name 
+   and before the case title. The keyword input section must begin with a line
+   that has > in the first column (other characters may follow) and 
+   must end with a
+   line that has < in the first column (other characters may follow).
+
+<p>The following example illustrates the use of the keyword input:
+
+<pre>
+
+INPUT/OUTPUT FILES:
+/net/aamber/scratch2/biedron/Multi/grid2.p3dunf
+plot3dg.bin
+plot3dq.bin
+cfl3d.out
+cfl3d.res
+cfl3d.turres
+cfl3d.blomax
+cfl3d.out15
+cfl3d.prout
+cfl3d.out20
+ovrlp.bin
+patch.bin
+restart.bin
+>-- begin keyword-driven input section
+gamma 1.30
+pr    0.75
+<-- end keyword-driven input section
+Case Title
+      MACH     ALPHA      BETA      REUE   TINF,DR     IALPH    IHSTRY
+   0.95000   2.50000   0.00000 0.000E+00 393.00000         1         0
+
+    etc...
+
+</pre>
+
+<p>In the example, additional characters are included after the required
+   keyword section delimiters > and < in order to make the section stand
+   out a bit more.
+
+<p>Note that the format is the keyword followed by the value you want the
+   keyword variable to assume, <strong><em>without</strong></em> an equal sign.
+   If a keyword variable is not specified, it will 
+   retain its default value. The following keywords are currently
+   supported:</p>
+
+<a NAME="keytable">
+<center>
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Physical Properties</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">cbar</td>
+  <td align="center">ref. temp. for Sutherland Law</td>
+  <td align="center">198.6</td>
+</tr>
+<tr align="center">
+  <td align="center">gamma</td>
+  <td align="center">ratio of specific heats</td>
+  <td align="center">1.4</td>
+</tr>
+<tr align="center">
+  <td align="center">pr</td>
+  <td align="center">Prandtl number</td>
+  <td align="center">0.72</td>
+</tr>
+<tr align="center">
+  <td align="center">prt</td>
+  <td align="center">turbulent Prandtl number</td>
+  <td align="center">0.90</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Limiters</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">atol</td>
+  <td align="center">tolerence for detecting singular lines</td>
+  <td align="center">10<sup>-7</sup></td>
+</tr>
+<tr align="center">
+  <td align="center">epsa_r</td>
+  <td align="center">eigenvalue limiter (entropy fix for<br>
+                     improving robustness of high M flows)</td>
+  <td align="center">0.0</td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Preconditioning</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">avn</td>
+  <td align="center">factor multiplying uref<sup>2</sup> for preconditioning</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">cprec</td>
+  <td align="center">relative amount of preconditioning</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">uref</td>
+  <td align="center">limiting velocity for preconditioning</td>
+  <td align="center">xmach</td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Specified CL</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">cltarg</td>
+  <td align="center">target Cl</td>
+  <td align="center">99999.</td>
+</tr>
+<tr align="center">
+  <td align="center">dalim</td>
+  <td align="center">limit of alpha change (deg) per update</td>
+  <td align="center">0.2</td>
+</tr>
+<tr align="center">
+  <td align="center">icycupdt</td>
+  <td align="center">number of cycles between alpha updates<br>
+                     (if >0; if <0, alpha is never updated)</td>
+  <td align="center">1</td>
+</tr>
+<tr align="center">
+  <td align="center">rlxalph</td>
+  <td align="center">relaxation factor used to update angle of attack</td>
+  <td align="center">1.0</td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Turbulence Models</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">cflturb1, cflturb2, etc.</td>
+  <td align="center">cfl no. for turb. eqn. #n = cflturbn x |dt|<br>
+                     if cflturbn > 0<br>
+                     (available <em>after</em> V6.5)<br>
+                     (note: old generic cflturb no longer used<br>
+                     after V6.5) </td>
+  <td align="center">0.0<br>
+                     (model-dependent default)</td>
+</tr>
+<tr align="center">
+  <td align="center">edvislim</td>
+  <td align="center">limiter for eddy viscosity in<br>
+                     2-equation turb models;<br>
+                     eddy viscosity limited to edvislim<br>
+                     times the laminar viscosity</td>
+  <td align="center">1 x 10^(10)<br>
+                     (changed <em>after</em> V6.4<br>
+                     from 100000 to avoid erroneous<br>
+                     cut-off in jets and for<br>
+                     full-scale simulations at<br>
+                     high Re.)<br>
+                     NOTE: This cut-off may need<br>
+                     to be re-specified by<br>
+                     user to be 100000 or so to<br>
+                     prevent blow-ups during<br>
+                     initial start-up, esp for<br>
+                     2-eqn models.</td>
+</tr>
+<tr align="center">
+  <td align="center">ibeta8kzeta</td>
+  <td align="center">flag (0/1) to set beta8 term when using k-enstrophy<br>
+                     turbulence model (ivisc=15);<br>
+                     0 = use beta8=0.0 (helps avoid numerical problems);<br>
+                     1 = use beta8=2.3 (available <em>after</em> V6.3)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">ides</td>
+  <td align="center">flag to perform DES with SA turbulence model (ivisc=5)<br>
+                     or with k-omega or SST turbulence model (ivisc=6 or 7)<br>
+                     (usage with 6 or 7 available <em>after</em> V6.5)<br>
+                     0=no DES, 1=std DES, 2=DDES (TCFD 20:181-195, 2006)<br>
+                     3=modified DDES with turb prod OFF in LES region<br>
+                     (2 and up available <em>after</em> V6.5)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">cdes</td>
+  <td align="center">constant associated with DES</td>
+  <td align="center">0.65</td>
+</tr>
+<tr align="center">
+  <td align="center">cddes</td>
+  <td align="center">constant associated with Modified DDES (ides=3)<br>
+                     helps determine how far away from walls is cutoff<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.975</td>
+</tr>
+<tr align="center">
+  <td align="center">ieasmcc2d</td>
+  <td align="center">flag (0/1) to turn on 2-D curvature correction when<br>
+                     using EASM models (ivisc=8,9,11,12,13,14)<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0<br>(no correction)</td>
+</tr>
+<tr align="center">
+  <td align="center">isarc2d</td>
+  <td align="center">flag (0/1) to turn on 2-D curvature correction when<br>
+                     using SA model (ivisc=5)<br>
+                     Note: does not account for system rotation<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0<br>(no correction)</td>
+</tr>
+<tr align="center">
+  <td align="center">isarc3d</td>
+  <td align="center">flag (0/1) to turn on 3-D curvature correction when<br>
+                     using SA model (ivisc=5)<br>
+                     Note: does not account for system rotation<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0<br>(no correction)</td>
+</tr>
+<tr align="center">
+  <td align="center">sarccr3</td>
+  <td align="center">value of cr3 parameter in SARC model<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0.6 (prior to V6.6)<br>
+                     1.0 (after V6.6)</td>
+</tr>
+<tr align="center">
+  <td align="center">isar</td>
+  <td align="center">flag (0/1) to turn on Dacles-Mariani correction<br>
+                     to the SA model (ivisc=5) <br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0<br>(no correction)</td>
+</tr>
+<tr align="center">
+  <td align="center">crot</td>
+  <td align="center">value of constant in Dacles-Mariani correction<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">2.0</td>
+</tr>
+<tr align="center">
+  <td align="center">ikoprod</td>
+  <td align="center">flag: 0=use approximate (vorticity-based) turb production<br>
+                     term (-2*mut*WijWji) for turb models 6, 7, 10, or 15;<br>
+                     1=use strain-rate based term (2*mut*SijSij);<br>
+                     2=use full production term (ivisc=15 only)<br>
+                     (1, 2 not recommended if there is stagnation point)<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0<br>(vorticity-based production)</td>
+</tr>
+<tr align="center">
+  <td align="center">isstdenom</td>
+  <td align="center">flag (0/1): 0=use vorticity term in denominator of eddy<br>
+                     viscosity in SST model (#7); 1=use strain term<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0<br>(vorticity term)</td>
+</tr>
+<tr align="center">
+  <td align="center">itaturb</td>
+  <td align="center">flag (0/1) to control time accuracy of turb. model;<br>
+                     0 for 1st order in time regardless<br>
+                     of parameter "ita" for the mean flow;<br>
+                     1 for same order as set by ita</td>
+  <td align="center">1<br>(turb. time accuracy same<br>
+                     as mean flow, set via ita)</td>
+</tr>
+<tr align="center">
+  <td align="center">iturbord</td>
+  <td align="center">flag controls whether turbulence model<br>
+                     advection terms are 1st or 2nd order upwind<br>
+                     on RHS (1=1st, 2=2nd) (note: LHS uses<br>
+                     1st order in both cases)
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">1<br>(1st order)</td>
+</tr>
+<tr align="center">
+  <td align="center">iturbprod</td>
+  <td align="center">flag: 0=use strain-rate based turb production<br>
+                     term (2*mut*SijSij) for EASM turb models 8, 9, 13, or 14;<br>
+                     1=use full production term</td>
+  <td align="center">0<br>(strain-rate based term)</td>
+</tr>
+<tr align="center">
+  <td align="center">nfreeze</td>
+  <td align="center">freeze turb. model for nfreeze cycles</td>
+  <td align="center">0<br>(not frozen)</td>
+</tr>
+<tr align="center">
+  <td align="center">nsubturb</td>
+  <td align="center">number of iterations of turb model per cycle</td>
+  <td align="center">1</td>
+</tr>
+<tr align="center">
+  <td align="center">pklimterm</td>
+  <td align="center">factor used to limit production of k in 2-eqn<br>
+                     turb models (chooses min of Pk and pklimterm*Dk);<br>
+                     make this term large for no limiting<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">20.0</td>
+</tr>
+<tr align="center">
+  <td align="center">cmulim</td>
+  <td align="center">limits the abs min computed value of variable<br>
+                     cmu for EASM (ivisc=8,9,13,14); higher values<br>
+                     may avoid kinks in supersonic B.L.s on fine grids;<br>
+                     should never be set higher than 0.04 or so;<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0.0005</td>
+</tr>
+<tr align="center">
+  <td align="center">tur10, tur20, etc.</td>
+  <td align="center">turbulent quantity freestream levels<br>
+                   < 0  use default value (different for each turb model,<br>
+                   see manual Appendix H)<br>
+                   >=0  use this number as the specified user input value</td>
+  <td align="center">-1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">tur1cut</td>
+  <td align="center">value that nondimensional epsilon (or omega or<br>
+                   enstrophy or kL)<br>
+                   is reset to when it tries to drop equal to or below<br>
+                   tur1cutlev; if <=0 then no update occurs when value<br>
+                   tries to drop equal to or below tur1cutlev<br>
+                   (available <em>after</em> V6.3)</td>
+  <td align="center">1.e-20 for all models except<br>
+                   -1.0 for ivisc=15</td>
+</tr>
+<tr align="center">
+  <td align="center">tur2cut</td>
+  <td align="center">value that nondimensional k<br>
+                   is reset to when it tries to drop equal to or below<br>
+                   tur2cutlev; if <=0 then no update occurs when value<br>
+                   tries to drop equal to or below tur2cutlev<br>
+                   (available <em>after</em> V6.3)</td>
+  <td align="center">1.e-20</td>
+</tr>
+<tr align="center">
+  <td align="center">tur1cutlev &<br>
+                   tur2cutlev</td>
+  <td align="center">lower levels of nondimensional epsilon (or omega<br>
+                   or enstrophy or kL)<br>
+                   and k which, when reached, cause the turb quantities to be<br>
+                   reset to tur1cut or tur2cut<br>
+                   (available <em>after</em> V6.3)</td>
+  <td align="center">0.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_bsl</td>
+  <td align="center">when set to 1, turns on Menter's BSL model<br>
+                   (rather than default SST) when ivisc=7 in input file<br>
+                   (available <em>after</em> V6.4)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">keepambient</td>
+  <td align="center">when set to 1, maintains freestream turbulence levels for<br>
+                   two equation turbulence models (ivisc=6-14)<br>
+                   (currently not applicable for ivisc=15)<br>
+                   (available <em>after</em> V6.4)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">re_thetat0</td>
+  <td align="center">used for transition model (ivisc=30)<br>
+                   < 0  use the default computed value of 400 Tu<sup>-5/8</sup><br>
+                   >= 0 use this number as the specified user input value<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">-1.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">turbintensity_inf_percent</td>
+  <td align="center">freestrem turb intensity, in percent<br>
+                   setting this will override any value set for tur20<br>
+                   this has no effect on tur10<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">-1.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">eddy_visc_inf</td>
+  <td align="center">freestrem mu_t/mu_inf<br>
+                   setting this will override any value set for tur10<br>
+                   this has no effect on tur20<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">-1.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">cs_smagorinsky</td>
+  <td align="center">the (non-dynamic) Smagorinsky constant for LES<br>
+                   (ivisc=25 and les_model=1)<br>
+                   if set to zero, you get implicit LES (no model)<br>
+                   typical values are 0.1-0.2<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">0.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_wilcox06</td>
+  <td align="center">(0/1) change Wilcox88 model (ivisc=6) to Wilcox06<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_wilcox06_chiw</td>
+  <td align="center">(0/1) turn off/on Wilcox06 vortex stretching parameter<br>
+                     only has effect if ivisc=6 and i_wilcox06=1<br>
+                   (available <em>after</em> V6.5)</td>
+  <td align="center">1 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_wilcox98</td>
+  <td align="center">(0/1) change Wilcox88 model (ivisc=6) to Wilcox98<br>
+                   (available <em>after</em> V6.6)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_wilcox98_chiw</td>
+  <td align="center">(0/1) turn off/on Wilcox98 vortex stretching parameter<br>
+                     only has effect if ivisc=6 and i_wilcox98=1<br>
+                   (available <em>after</em> V6.6)</td>
+  <td align="center">1 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_turbprod_kterm</td>
+  <td align="center">(0/1) determine whether 2/3*rho*k term gets<br>
+                     subtracted from turb production in ivisc=6,7 models<br>
+                     (only does anything if ivisc=6 or 7, ikoprod=1,<br>
+                     and i_turbprod_kterm=1)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_catris_kw</td>
+  <td align="center">(0/1) alters the k-omega turb diffusion terms<br>
+                     (in ivisc=6, 7, 8, 12, or 14)<br>
+                     to include density (compressibility) effects<br>
+                     (Aerosp Sci Technol. 4 (2000) 1-11)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">ismincforce</td>
+  <td align="center">overrides normal smin/initvist restart usage<br>
+                     -1 do not override normal usage<br>
+                     0 do not compute smin, do not call initvist<br>
+                     1 compute smin       , call initvist<br>
+                     2 compute smin       , do not call initvist<br>
+                     3 do not compute smin, call initvist<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">-1 </td>
+</tr>
+<tr align="center">
+  <td align="center">prod2d3dtrace</td>
+  <td align="center">forces Sij used in 2SijSij to be traceless<br>
+                     in production term in ivisc=6,7,10,30<br>
+                     when ikoprod=1, and in Wilcox06 stress-limiter term;<br>
+                     should be set to 0.5 in 2-D, 0.333333 in 3-D<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0. </td>
+</tr>
+<tr align="center">
+  <td align="center">i_compress_correct</td>
+  <td align="center">adds dilatation-dissipation type compressibility<br>
+                     correction, currently for ivisc=6 or 7 only<br>
+                     0 no correction<br>
+                     1 Wilcox-type (Turbulence Modeling for CFD, ed 3, p. 258)<br>
+                     2 Zeman-type for boundary layers (AIAA 93-0897)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">les_model</td>
+  <td align="center">determines LES subgrid model to use with ivisc=25<br>
+                     0 no model<br>
+                     1 standard Smagorinsky model<br>
+                     2 WALE model (Flow, Turb, & Combust 62:183-200 1999)<br>
+                     3 Vreman model (Phys Fluids 16(10):3670-3681 2004)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">les_wallscale</td>
+  <td align="center">(0/1) turns off/on van Driest type wall scaling<br>
+                     of Delta in LES model; only used in conjunction<br>
+                     with Smagorinsky model (les_model=1)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">cs_wale</td>
+  <td align="center">non-dynamic WALE constant for LES<br>
+                     (ivisc=25 and les_model=2)<br>
+                     if set to zero, you get implicit LES (no model)<br>
+                     typical values are 0.45-0.6<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">cs_vreman</td>
+  <td align="center">non-dynamic Vreman constant for LES<br>
+                     (ivisc=25 and les_model=3)<br>
+                     if set to zero, you get implicit LES (no model)<br>
+                     typical values are 0.025-0.1<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">isstrc</td>
+  <td align="center">curvature correction for ivisc=6 or 7<br>
+                     0 = no correction<br>
+                     1 = AIAA 98-2554 and J. Aircraft 41(2):268-273 2004<br>
+                     (available <em>after</em> V6.5)<br>
+                     2 = ASME Journal of Turbomachinery 131(10):041010 2009<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">sstrc_crc</td>
+  <td align="center">constant for use with isstrc=1<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">1.4 </td>
+</tr>
+<tr align="center">
+  <td align="center">isstsf</td>
+  <td align="center">(0/1) turns off/on ad hoc separation fix (ivisc=6 or 7)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">scal_ic</td>
+  <td align="center">scaling factor for 2-eqn model BL-type approx ICs<br>
+                     smaller no. makes IC profile thinner<br>
+                     0 uses freestream ICs everywhere<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">5.e6 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_nonlin</td>
+  <td align="center">(0/1) turns off/on nonlinear quadratic constitutive<br>
+                     relation when using linear<br>
+                     models (ivisc=2,3,4,5,6,7,10,15)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">c_nonlin</td>
+  <td align="center">constant for use with i_nonlin=1<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.3</td>
+</tr>
+<tr align="center">
+  <td align="center">snonlin_lim</td>
+  <td align="center">limiter for use with i_nonlin=1<br>
+                     (limits the denominator vel deriv term)<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">1.e-10</td>
+</tr>
+</tr>
+<tr align="center">
+  <td align="center">iaxi2planeturb</td>
+  <td align="center">flag to force solve of field turb eqns in j-k<br>
+                     plane only (for i2d=0 and idim=2)<br>
+                     (see also iaxi2plane)<br>
+                     0=include i-dir; 1=ignore i-dir<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">istrongturbdis</td>
+  <td align="center">flag to solve turb dissipation terms with<br>
+                     strong conservation<br>
+                     0=weak cons.; 1=strong cons.<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">isst2003</td>
+  <td align="center">(0/1) turns off/on SST-2003 version<br>
+                     (Menter et al, Turb, Heat and Mass Transfer 4,<br>
+                     Begell House, Inc., 2003, pp. 625-632)<br>
+                     (ivisc must = 7)<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">issglrrw2012</td>
+  <td align="center">flag to change stress-omega model:<br>
+                     0=WilcoxRSM-w2006,<br>
+                     1=SSG/LRR-RSM-w2012 (AIAA 2012-0465),<br>
+                     2=same as 1 w F1=1,<br>
+                     3=same as 1 w simple diffusion,<br>
+                     4=same as 1 w F1=1 & simple diffusion<br>
+                     5=same as 1 w Wilcox simple diffusion<br>
+                     6=(preliminary) g-eqn form of 1<br>
+                     (ivisc must = 72)<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_sas_rsm</td>
+  <td align="center">flag to add/subtract SAS-like term to<br>
+                     RSM omega eqn (ivisc=72)<br>
+                     (AIAA-2014-0586)<br>
+                     0= not used,<br>
+                     1= more like SAS,<br>
+                     -1= more eddy visc in shear layers<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_saneg</td>
+  <td align="center">(0/1) turns off/on SA-neg<br>
+                     (ivisc must = 5)<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_sanoft2</td>
+  <td align="center">when set to 1, switches SA to SA-noft2<br>
+                     (ivisc must = 5)<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_lam_forcezero</td>
+  <td align="center">0= standard laminar usage (prod=0 where laminar)<br>
+                     1= force eddy viscosity to zero where laminar<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_qcr2000</td>
+  <td align="center">invokes QCR2000<br>
+                     (i_tauijs must = 1)<br>
+                     (available in github repository <em>after</em> 8/2019)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_qcr2013</td>
+  <td align="center">invokes QCR2013 (limited)<br>
+                     (i_tauijs must = 1)<br>
+                     (available in github repository <em>after</em> 8/2019)</td>
+  <td align="center">0<br></td>
+</tr>
+<tr align="center">
+  <td align="center">i_qcr2013v</td>
+  <td align="center">invokes QCR2013-V<br>
+                     (i_tauijs must = 1)<br>
+                     (available in github repository <em>after</em> 8/2019)</td>
+  <td align="center">0<br></td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Deformation/Grid Motion</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">idef_ss</td>
+  <td align="center">flag (0/1) to deform volume grid<br>
+                     to surface in file newsurf.p3d</td>
+  <td align="center">0<br>(don't deform)</td>
+</tr>
+<tr align="center">
+  <td align="center">meshdef</td>
+  <td align="center">flag (0/1) to bypass flow solution while still<br>
+                     computing grid operations such as metrics and volumes;<br>
+                     0 = normal operation; 1 = bypass flow solution<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">negvol</td>
+  <td align="center">flag (0/1) to enable/disable stop<br>
+                     if neg. volumes/bad metrics<br>
+                     are detected (mesh deformation<br>
+                     debug only!)</td>
+  <td align="center">0<br>(stop for negative volumes)</td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Input/Output Control</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">ibin</td>
+  <td align="center">flag (0/1) for formatted/unformatted<br>
+                     output plot3d files</td>
+  <td align="center">1<br>(unformatted)</td>
+</tr>
+<tr align="center">
+  <td align="center">iblnk</td>
+  <td align="center">flag (0/1) for un-iblanked/iblanked<br>
+                     output plot3d files</td>
+  <td align="center">1<br>(iblanked)</td>
+</tr>
+<tr align="center">
+  <td align="center">iblnkfr</td>
+  <td align="center">flag (0/1) for un-iblanked/iblanked<br>
+                     fringe points in plot3d files<br>
+                     (overset grids only)</td>
+  <td align="center">1<br>(iblanked)</td>
+</tr>
+<tr align="center">
+  <td align="center">icgns<strong>*</strong></td>
+  <td align="center">flag (0/1) to not use/use CGNS files</td>
+  <td align="center">0<br>(don't use CGNS files)</td>
+</tr>
+<tr align="center">
+  <td align="center">ifunct</td>
+  <td align="center">flag will output a PLOT3D function file<br>
+  (instead of Q-type file) only when <br>
+  iptype=2 in the plot3d section of <br>
+  the input file.<br>
+  There will be <strong>ifunct</strong> variables in the <br>
+  file. (Use of this requires hardwire <br>
+  mod in plot3t.F, to specify what <br>
+  variables are to be output.) <br>
+  If ifunct is large, you may run out <br>
+  of memory when writing and need to <br>
+  augment with keyword <strong>memadd</strong>. <br>
+  (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">ip3dgrad</td>
+  <td align="center">flag (0/1) for solution/derivative<br>
+                     data output to plot3d q file<br>
+                     (complex code only)</td>
+  <td align="center">0<br>(solution to q file)</td>
+</tr>
+<tr align="center">
+  <td align="center">irghost</td>
+  <td align="center">flag to read ghost-cell data from<br>
+                     restart file (1) or not (0); V5 restart<br>
+                     files and Beta V6 restart files do not<br>
+                     contain ghost-cell data; newer V6 <br>
+                     restart files do</td>
+  <td align="center">1<br>(read ghost-cell data)</td>
+</tr>
+<tr align="center">
+  <td align="center">iwghost</td>
+  <td align="center">flag to write ghost-cell data to<br>
+                     restart file (1) or not (0); V5 restart<br>
+                     files and Beta V6 restart files do not<br>
+                     contain ghost-cell data; newer V6 <br>
+                     restart files do</td>
+  <td align="center">1<br>(write ghost-cell data)</td>
+</tr>
+<tr align="center">
+  <td align="center">itime2read</td>
+  <td align="center">flag (0/1) to skip/read 2nd order (in time)<br>
+                     turbulence terms and dt in restart file:<br>
+                     need to skip if using an older<br>
+                     time-accurate-with-2nd-order-time<br>
+                     restart file</td>
+  <td align="center">1<br>(read 2nd order time turbulence<br>
+                     terms and dt)</td>
+</tr>
+<tr align="center">
+  <td align="center">iteravg</td>
+  <td align="center">flag to store iteration-averaged conserved<br>
+                     variables in PLOT3D files at cell centers:<br>
+                     0 = no averaging or storage<br>
+                     1 = start averaging now<br>
+                     2 = continue averaging from previous run,<br>
+                     or start averaging now if old files not available</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">ipertavg</td>
+  <td align="center">similar functionality as iteravg, except stores<br>
+                     primitive variables, their squares, and additional<br>
+                     perturbation statistics at grid points<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">iclcd</td>
+  <td align="center">keep track of CL and CD of different bodies:<br>
+                     0 = nothing special done<br>
+                     1 = use clcd.inp file for determining output<br>
+                     2 = same as 1, but continue previous run<br>
+                     using file clcd.bin (if not available, will<br>
+                     start again from scratch)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">i2dmovie</td>
+  <td align="center">2D movie output control:<br>
+                     0 = no special 2D movie file written<br>
+                     otherwise = no. of timesteps between 2D output<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">icoarsemovie</td>
+  <td align="center">movie output control:<br>
+                     0 = no special movie file written<br>
+                     otherwise = no. of timesteps between output<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">iskip_blocks</td>
+  <td align="center">capability to skip blocks when using i2dmovie<br>
+                     1 = do not skip any blocks<br>
+                     2 = write every other block<br>
+                     n = write every nth block<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1</td>
+</tr>
+<tr align="center">
+  <td align="center">isubit_r</td>
+  <td align="center">invokes writing subiteration residual history<br>
+                     of all five mean flow quantities<br>
+                     0 = do not write<br>
+                     otherwise = write this history to cfl3d.subit_r<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">ifort50write</td>
+  <td align="center">1 = writes turbulent "plus" values<br>
+                     (to unit 50); only works with 1 zone;<br>
+                     iptype must=2; wall must be at k=1<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">j_ifort50write</td>
+  <td align="center">j-value used when ifort50write=1<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">1</td>
+</tr>
+</tr>
+<tr align="center">
+  <td align="center">i_ifort50write</td>
+  <td align="center">i-value used when ifort50write=1<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">1</td>
+</tr>
+
+</table>
+
+<p><strong>*</strong> this keyword is ineffectual unless the CFL3D system is installed with
+   "Install -cgnsdir=somedirectory" 
+   (see <a href="cfl3dv6_install.html">Installation</a>) 
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Memory Management</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">lowmem_ux</td>
+  <td align="center">By default, after V6.5, the memory for <br>
+                     the velocity-derivative ux array is <br>
+                     always allocated and ux is always <br>
+                     computed.  Setting to 1 reverts to <br>
+                     old usage (compute only when needed). </td>
+  <td align="center">0<br>(always compute ux array)</td>
+</tr>
+<tr align="center">
+  <td align="center">memadd</td>
+  <td align="center">additional memory (in words) added<br>
+                     to work array<br>
+                     (in case sizer underestimates)</td>
+  <td align="center">0<br>(no addition to work)</td>
+</tr>
+<tr align="center">
+  <td align="center">memaddi</td>
+  <td align="center">additional memory (in words) added<br>
+                     to iwork array<br>
+                     (in case sizer underestimates)</td>
+  <td align="center">0<br>(no addition to iwork)</td>
+</tr>
+</table>
+                                                                                                          
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Reference Frame</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">noninflag</td>
+  <td align="center">flag (0/1) to indicate whether to use<br>
+                     inertial (0) or noninertial (1) reference<br>
+                     frame for governing equations; noninertial<br>
+                     frames allow for steady state solutions<br>
+                     if the rotation rate is constant</td>
+  <td align="center">0<br>(inertial reference frame)</td>
+</tr>
+<tr align="center">
+  <td align="center">xcentrot</td>
+  <td align="center">rotation center x-coordinate for<br>
+                     non-inertial reference frame<br>
+                     (also used for roll-angle input)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">ycentrot</td>
+  <td align="center">rotation center y-coordinate for<br>
+                     non-inertial reference frame<br>
+                     (also used for roll-angle input)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">zcentrot</td>
+  <td align="center">rotation center z-coordinate for<br>
+                     non-inertial reference frame<br>
+                     (also used for roll-angle input)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">xrotrate</td>
+  <td align="center">rotation rate about x-axis for<br>
+                     non-inertial reference frame<br>
+                     (non-dimensionalized the same way as<br>
+                     omegax for rotating grids - see manual)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">yrotrate</td>
+  <td align="center">rotation rate about y-axis for<br>
+                     non-inertial reference frame<br>
+                     (non-dimensionalized the same way as<br>
+                     omegay for rotating grids - see manual)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">zrotrate</td>
+  <td align="center">rotation rate about z-axis for<br>
+                     non-inertial reference frame<br>
+                     (non-dimensionalized the same way as<br>
+                     omegaz for rotating grids - see manual)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">xrotrate_img</td>
+  <td align="center">complex perturbation to rotation rate about<br>
+                     x-axis for non-inertial reference frame, for<br>
+                     computing rate derivatives</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">yrotrate_img</td>
+  <td align="center">complex perturbation to rotation rate about<br>
+                     y-axis for non-inertial reference frame, for<br>
+                     computing rate derivatives</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">zrotrate_img</td>
+  <td align="center">complex perturbation to rotation rate about<br>
+                     z-axis for non-inertial reference frame, for<br>
+                     computing rate derivatives</td>
+  <td align="center">0.0</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Other</strong></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">alpha_img</td>
+  <td align="center">imaginary perturbation to alpha</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">beta_img</td>
+  <td align="center">imaginary perturbation to beta</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">geom_img</td>
+  <td align="center">imaginary perturbation to grid</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">reue_img</td>
+  <td align="center">imaginary perturbation to unit Re</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">surf_img</td>
+  <td align="center">imaginary perturbation to surface grid</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">tinf_img</td>
+  <td align="center">imaginary perturbation to Tinf</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">xmach_img</td>
+  <td align="center">imaginary perturbation to Mach no.</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">iaxi2plane</td>
+  <td align="center">flag for use with particular axisymmetric<br>
+                     cases (for which i2d=0 and idim=2); if<br>
+                     iaxi2plane = 1, the time step based on CFL number<br>
+                     is modified so it does not depend on the<br>
+                     i-direction metrics<br>
+                     (see also iaxi2planeturb)<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0<br>(no mods to time step)</td>
+</tr>
+<tr align="center">
+  <td align="center">ifullns</td>
+  <td align="center">flag (0/1) to specify inclusion of cross-derivative terms;<br>
+                     0 = thin-layer N-S; 1 = full N-S<br>
+                     (available <em>after</em> V6.3)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">ivolint</td>
+  <td align="center">flag (0/1) to use approximate/exact one-to-one<br>
+                     boundary volumes (0 emulates V5.0)</td>
+  <td align="center">1<br>(exact volumes)</td>
+</tr>
+<tr align="center">
+  <td align="center">roll_angle</td>
+  <td align="center">x-axis roll angle (deg)<br>
+                     "+" is clockwise viewed from "- x" (left roll to pilot)<br>
+                    (grid is rotated to this angle)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">cfltauMax</td>
+  <td align="center">maximum value for cfltau during subiterations<br>
+                     (not used if less than cfltau given in input file)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">-1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">cfltau0</td>
+  <td align="center">exponent for use in varying cfltau<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">xdir_only_source</td>
+  <td align="center">adds source term in the x-direction<br>
+                     (not recommended for general use)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.0</td>
+</tr>
+<tr align="center">
+  <td align="center">randomize</td>
+  <td align="center">adds random perturbation to restart;<br>
+                     value is max multiple of current value of<br>
+                     q that can be added<br>
+                     (not recommended for general use)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0.0 </td>
+</tr>
+<tr align="center">
+  <td align="center">iexact_trunc</td>
+  <td align="center">used to check truncation error against exact<br>
+                     solution (MMS=method of manufactured solution)<br>
+                     should be run only 1 iteration<br>
+                     set=1 for MS1, 2 for MS2, 4 for MS4<br>
+                     (not recommended for general use)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">iexact_disc</td>
+  <td align="center">used to check discretization error against exact<br>
+                     solution (MMS=method of manufactured solution)<br>
+                     must be run to convergence<br>
+                     set=1 for MS1, 2 for MS2, 4 for MS4<br>
+                     (not recommended for general use)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">iexact_ring</td>
+  <td align="center">used to overwrite the exact solution on the<br>
+                     outer 2 ring layers of the grid<br>
+                     (MMS=method of manufactured solution)<br>
+                     (not recommended for general use)<br>
+                     (available <em>after</em> V6.5)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">ipatch1st</td>
+  <td align="center">forces 1st order interpolation at patched<br>
+                     interfaces when set to 1<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">iforcev0</td>
+  <td align="center">forces v=0 on update when set to 1<br>
+                     (available <em>after</em> V6.6)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">iupdatemean</td>
+  <td align="center">0 forces no mean flow update<br>
+                     (turb model still updated)<br>
+                     (available <em>after</em> V6.7)</td>
+  <td align="center">1 </td>
+</tr>
+<tr align="center">
+  <td align="center">uub_2034, vvb_2034, wwb_2034</td>
+  <td align="center">imposed u, v, or w velocity<br>
+                     (nondimensionalized by a_ref) on<br>
+                     solid wall BC (use with bctype 2034)<br>
+                     (available <em>after</em> V6.7)</td>
+  <td align="center">0,0,0 </td>
+</tr>
+<tr align="center">
+  <td align="center">vvb_xaxisrot2034</td>
+  <td align="center">imposed rotational velocity about x-axis<br>
+                     (nondimensionalized by a_ref) on<br>
+                     solid wall BC (use with bctype 2034)<br>
+                     (available <em>after</em> V6.7)</td>
+  <td align="center">0 </td>
+</tr>
+<tr align="center">
+  <td align="center">i_tauijs</td>
+  <td align="center">adds turbulence via tauijs, rather<br>
+                     than via eddy viscosity (experimental)<br>
+                     (available in github repository <em>after</em> 8/2019)<br>
+                     WARNING: not correct at boundaries...<br>
+                     Do not use for multiblock cases!</td>
+  <td align="center">0 </td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+<table border cellpadding=4>
+<caption align=top><strong>VALID KEYWORDS: Aeroelasticity</strong> (under construction)
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction"></caption>
+<tr align="center">
+  <th align="center">Name</th>
+  <th align="center">Description</th>
+  <th align="center">Default Value</th>
+</tr>
+<tr align="center">
+  <td align="center">irbtrim</td>
+  <td align="center">0 = no longitudinal trim<br>
+                     1 = perform longitudinal trim<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">irigb</td>
+  <td align="center">0 = no rigid body dynamics<br>
+                     1 = perform rigid body dynamics<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">greflrb</td>
+  <td align="center">conversion factor for rigid body dynamics,<br>
+                     length / (CFD length)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">tmass</td>
+  <td align="center">total mass of vehicle<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">yinert</td>
+  <td align="center">total pitch mass moment of inertia<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">gaccel</td>
+  <td align="center">acceleration of gravity<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.0</td>
+</tr>
+<tr align="center">
+  <td align="center">relax</td>
+  <td align="center">relaxation parameter for trim computation<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0.5</td>
+</tr>
+<tr align="center">
+  <td align="center">itrminc</td>
+  <td align="center">iterations between trim alpha/delta update<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">5</td>
+</tr>
+<tr align="center">
+  <td align="center">dclda</td>
+  <td align="center">D(CL)/D(alpha)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">6.0</td>
+</tr>
+<tr align="center">
+  <td align="center">dcldd</td>
+  <td align="center">D(CL)/D(delta)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">1.4</td>
+</tr>
+<tr align="center">
+  <td align="center">dcmda</td>
+  <td align="center">D(CM)/D(alpha)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">-0.2</td>
+</tr>
+<tr align="center">
+  <td align="center">dcmdd</td>
+  <td align="center">D(CM)/D(delta)<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">-0.88</td>
+</tr>
+<tr align="center">
+  <td align="center">ndgrd</td>
+  <td align="center">parameter to read special grid blocks that had negative volumes<br>
+                     0 = do not read<br>
+                     1 = read special grid block<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+<tr align="center">
+  <td align="center">ndwrt</td>
+  <td align="center">parameter to write special grid blocks that had negative volumes<br>
+                     0 = do not write<br>
+                     1 = write special grid block<br>
+                     (available <em>after</em> V6.4)</td>
+  <td align="center">0</td>
+</tr>
+</table>
+                                                                                                          
+</center>
+
+<p>Note: the spelling of a keyword is important; if you misspell the name of
+   the keyword, or use a keyword name that is not supported, the code will
+   stop and print out the following message, following the offending
+   keyword:
+
+<p>*** STOPPING: The keyword above is not supported. ***
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to James O. Hager of Boeing Phantom 
+   Works, Long Beach, for suggesting and providing the model routines for
+   keyword input</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+                                                                                                          
+<p><a NAME="dynmem"></a><strong>Dynamic Memory Allocation:</strong>
+                                                                                                          
+<p>With the exception of MaGGiE, all codes in the version 6 release
+   package have "dynamic" memory, though it is probably more precise to call
+   them "self sizing", as most of the memory is allocated once and for all,
+   and is not freed up after use. The self sizing ability is achieved by
+   bringing the sizing codes (e.g. PRECFL3D for CFL3D, PRERONNIE for RONNIE)
+   into the main code, and using pointers (a FORTRAN 77 extension) to
+   allocate the memory determined by the sizing codes. Note that the sizing
+   routines are still available as stand-alone codes, so that memory
+   requirements can be determined before run time. This allows the user
+   to determine which queue to submit the job to, or indeed if the job will
+   fit on the Machine.
+                                                                                                          
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Khaled S. Abdol-Hamid and
+   Stephen J. Massey of Analytical Services and Materials, Inc., for
+   showing how to implement dynamic memory allocation within FORTRAN 77</p>
+                                                                                                          
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="precond"></a><strong>Low Mach Number Preconditioning:</strong>
+
+<p>Version 6 incorporates Jack Edwards' (North Carolina State University)
+implementation
+of the Weiss-Smith low Mach number preconditioning. This new capability
+is still undergoing evaluation, however preliminary assessment is that
+preconditioning is very helpful in obtaining convergence for low Mach 
+number flows. Note: the preconditioner is really
+only effective for low freestream Mach numbers - in flows where the
+freestream Mach number is moderate, but with localized pockets of very
+low Mach number flow, this type of preconditioner has little effect.
+For Mach numbers above roughly 0.5 or so, the preconditioning loses
+its effectiveness, and can adversely affect convergence.
+
+<p>Sample Results
+
+<ul>
+<li type=circle>2D flow past a bump in a channel; the figures show the effect
+of preconditioning on the residual and lift coefficient convergence for 
+a range of Mach numbers. Note: without preconditioning, the code will not even 
+run below about Mach 0.2!</li>
+
+<ul>
+<li type=square><a href="Gifs/bump_mach_0.7.gif">Mach_0.70</a></li>
+<li type=square><a href="Gifs/bump_mach_0.5.gif">Mach_0.50</a></li>
+<li type=square><a href="Gifs/bump_mach_0.2.gif">Mach_0.20</a></li>
+<li type=square><a href="Gifs/bump_mach_0.0001.gif">Mach_0.0001</a></li>
+</ul>
+
+<p><li type=circle>3D flow past an ONERA M6 wing; the figures show the effect
+of preconditioning on the residual and drag coefficient convergence for
+a range of Mach numbers.</li>
+
+<ul>
+<li type=square><a href="Gifs/m6_mach_0.84.gif">Mach_0.84</a></li>
+<li type=square><a href="Gifs/m6_mach_0.50.gif">Mach_0.50</a></li>
+<li type=square><a href="Gifs/m6_mach_0.10.gif">Mach_0.10</a></li>
+<li type=square><a href="Gifs/m6_mach_0.01.gif">Mach_0.01</a></li>
+<li type=square><a href="Gifs/m6_mach_0.0001.gif">Mach_0.0001</a></li>
+</ul>
+
+</ul>
+
+<p><a href="#keyword">Keyword input</a> of the parameters <strong>cprec</strong>,
+<strong>uref</strong>, and <strong>avn</strong> may be used to enable preconditioning.
+
+<p>The following definitions apply:
+
+<dl>
+<p><dt><strong>cprec</strong></dt> 
+  <dd>turns preconditioning fully on (cprec = 1.0), fully off
+      (cprec = 0.0), or something in between (0.0 < cprec < 1.0).
+      Setting cprec = 0.95 to 0.97 might be useful for stiffer
+      low-speed problems</dd>
+  <dd>(default=0.0, i.e. NO preconditioning)</dd>
+
+<p><dt><strong>avn</strong></dt>
+  <dd>multiplies the limiting velocity uref<sup>2</sup>. Typically, avn should
+      be around 1.0, but higher values may be needed for certain problems</dd>
+  <dd>(default=1.0)</dd>
+
+<p><dt><strong>uref</strong></dt>
+  <dd>is the limiting velocity, nondimensionalized by the free-stream
+      sound speed, meaning that it should be the same as the free-stream
+      Mach number for most problems</dd>
+  <dd>(default=xmach)</dd>
+</dl>
+
+<p>The local "reference" velocity (vel) used in the preconditioned 
+    extensions is defined as follows:
+
+<dl>
+<dd>vref2 = max[u**2 + v<sup>2</sup> + w<sup>2</sup>, avn*uref<sup>2</sup>]</dd>
+<dd>vel = min(a,sqrt(vref2))</dd>
+<dd>vel = cprec*vel + (1.-cprec)*a, where a is the local sound speed</dd>
+</dl>
+
+<p>The basic preconditioning keyword input is simply:</p>
+
+<pre>
+>
+cprec 1.0
+<
+</pre>
+
+<p>Note: the default values of uref and avn will be used</p>
+
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Jack Edwards of North
+Carolina State for the implementation of low Mach number 
+preconditioning within CFL3D</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="plot3d"></a><strong>Additional Plot3d Output Options:</strong>
+
+<p>The plot3d input parameter iptype has been expanded to include
+the following:
+
+<pre>
+   iptype = 0...output q at grid points
+           -1...output q at grid points, but use off-body wall parallel velocity
+                instead of actual velocities at wall (which are zero),
+                in order to more easily plot wall surface-restricted streamlines...
+                should only be used in combination with nplot3d=-1
+                (available <em>after</em> V6.6)
+            1...output q cell centers
+            2...turbulence data at cell centers, output in place of the
+                standard plot3d q vector. (defaults in 2D are
+                production-term,uw, uu, ww; defaults in 3D are
+                production-term, uw, uu, ww Sk/eps)
+            3...smin at cell centers
+            4...eddy viscosity at cell centers
+           -4...eddy viscosity at grid points (available <em>after</em> V6.4)
+            5...cp at cell centers
+           -5...cp at grid points
+            6...p/pinf at cell centers
+           -6...p/pinf at grid points
+            7...turbulence index at walls (based on cell-center data); 
+                only works for 3D cases (i2d=0) and
+                should only be used in combination with nplot3d=-1...
+                uses eqn 10 from Recherche Aerospatiale, Vol. 1, 1994, pp. 5-21,
+                based on near-wall eddy viscosity translated to 
+                Spalart-Allmaras variable form... this formula is appropriate
+                for S-A, but only an approximate (crude) indicator for other models
+                (available <em>after</em> V6.6)
+</pre>
+
+<ul>
+<p><li type=circle>general rule: iptype <= 0 gives grid point data, iptype > 0 gives
+   cell-center or cell-face-center data</li>
+
+<p><li type=circle>If nplot3d = -1, then the code will look for any
+surfaces that have bc types 1004, 2004 or 1005 (i.e. solid surfaces),
+and output those to the specified plot3d files. This can provide an
+excellent means of determining if all solid surfaces are specified correctly 
+in the boundary condition section.</li>
+
+<p><li type=circle>if nplot3d = -1, one line of plot3d input data
+   MUST appear in the plot3d data section near the bottom of the
+   input file. In this one line of plot3d data, only the value of
+   iptype is used; all other values are ignored and may be set to zero.
+   <strong>Note that this is different than the procedure in Version 5,
+   where nplot3d = -1 expected NO lines of plot3d input</strong>.
+
+<p><li type=circle>if cell center data is requested (iptype > 0)
+   and nplot3d = -1,
+   then cell FACE CENTER data is output for cell faces lying on
+   solid surfaces</li>
+
+<p><li type=circle>if nprint = -1, the same comments apply as for 
+   nplot3d < 0, but note
+   that in the print out section, only iptype = 0 or 1 are valid
+   types for print out</li>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="speccl"></a><strong>Specified Cl Option</strong>:
+
+<p>It may sometimes be desired to obtain a solution for a fixed or
+   known lift coefficient. In that case alpha is unknown and must
+   be obtained as part of the solution. CFL3D has had an option for
+   this for a while, but the method has been UPDATED (for Version
+   6.2 and later).  One major change with the new method is that
+   the entire flowfield's velocity vectors are now rotated when the
+   angle of attack is updated.  Also, in the new method, the updating
+   of angle of attack generally occurs more often (default is every
+   iteration), and the change allowed each time step is smaller.
+   The old method for doing specified CL is no longer available.
+
+<p><a href="#keyword">Keyword input</a> of the parameters <strong>cltarg</strong>,
+<strong>rlxalph</strong>, <strong>icycupdt</strong>, and <strong>dalim</strong> may be used to enable the 
+specified Cl option.  (Keywords <strong>resupdt</strong> and <strong>dcldal</strong> were
+used for the old method, and are no longer available.)
+
+<p>The following definitions apply
+
+<dl>
+<p><dt><strong>cltarg</strong></dt>
+  <dd>the desired lift coefficient</dd>
+  <dd>(default=99999.0, for which the spcified Cl option is OFF)
+<p><dt><strong>rlxalph</strong></dt>
+  <dd>relaxation factor used to update angle of attack; it
+      multiplies the difference between the current CL and the
+      target CL (cltarg).</dd>
+  <dd>(default=1., meaning no under- or over-relaxation)
+<p><dt><strong>icycupdt</strong></dt>
+  <dd>number of cycles between alpha updates (.le. 0 means
+      alpha will not be updated).</dd>
+  <dd>(default=1, update every iteration)</dd>
+<p><dt><strong>dalim</strong></dt>
+  <dd>limit of alpha change (deg.) per update</dd>
+  <dd>(default = 0.2, should be fine for most cases)</dd>
+<p><dt>alpha</dt>
+  <dd>(NOT a keyword input) the initial value of alpha from which to start
+      the solution. NOTE: if restarting, the value of alpha from the
+      restart file is used, and the input value is ignored</dd>
+</dl>
+
+<p>To utilize the specified Cl option, generally only
+<strong>cltarg</strong> needs to be set.  For some cases, however, the default options may
+result in a limit-cycle oscillation in CL (and alpha).  When this occurs, one
+strategy is to adjust (usually lower) <strong>rlxalph</strong>.  Another strategy is
+to update every n iterations rather than every iteration, by increasing
+<strong>icycupdt</strong>.</p>
+
+<p>NOTE: the following alpha-iteration parameter is hard-coded in subroutine
+newalpha; the user may want/need to alter this parameter:
+
+<dl>
+
+<p><dt>ioalph</dt>
+  <dd>if > 0, output alpha history to cfl3d.alpha (set at 1).
+      Note that in cfl3d.alpha, past alpha history is  <strong><em>not</em></strong>
+      preserved after a a restart.</dd>
+</dl>
+
+<p>The final alpha (and Cl) will also appear at the top of the standard convergence
+   history file.</p> 
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Steve Allmaras of Boeing-Seattle
+for providing the coding of this feature.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="split"></a><strong>Block and Input File Splitter:</strong>
+
+<p>Instructions on how to use the block splitter can be found in
+<a href="cfl3dv6_splitter.html">Block Splitter</a></p>
+
+<p>To insure that split grids produced the same results as the original unsplit grids
+<strong><em>when fully converged</strong></em>, two modifications were made to previous versions of
+CFL3D:
+
+<p><a NAME="iflim4"></a>
+<ul>
+<p><li type=circle>A new flux limiter, number 4, was introduced. This new limiter is a 
+modified version of the heretofor recommended limiter number 3. Both versions are tuned 
+to the k=1/3 ("third order" upwind) scheme. The new number 4 is similar to the old
+number 3, but with a cutoff parameter based on the total number of cells, rather than block
+dimensions. As a grid is split, the total number of cells remains fixed, but of course block
+dimensions do not. <strong>Use iflim=4 whenever a limiter is required for k=1/3</strong>. The graphic 
+shows the effect of the choice of the k=1/3 limiter on a 2D airfoil solution:
+
+<ul>
+<p><li type=square>
+<a href="Gifs/compare_limiter.gif">compare limiters</a></li></p>
+</ul>
+
+<p>Note 1: iflim=3 and iflim=4 will generally give slightly different results even for single
+block grids, since iflim=3 actually bases the cutoff parameter on the dimension in each 
+direction for which the limiter is applied; iflim=4 uses a cutoff parameter that is
+isotropic.</p>
+
+<p>Note 2: limiters iflim=1 and iflim=2 (and iflim=0, no limiting) are uneffected by
+block splitting <strong><em>when fully converged</strong></em>.</p>
+</li>
+
+<li type=circle>Correct cell volumes at 1-1 interfaces are now used. The volumes at block
+interfaces are used in the viscous flux routines; in previous versions of CFL3D, these
+interface volumes were simply extrapolated from interior cells. If a block is split, what
+was an interior volume now lies on a block interface. How that volume is treated can
+affect the solution, depending on how highly streched that grid is in that region. Version
+6 uses the exact interface volumes at 1-1 interfaces, so that the same results can be 
+obtained before and after splitting. <strong>EXCEPTION</strong>: The Menter SST turbulence model
+(ivisc=7) uses a blending function that is not split exactly. Very slight differences
+may be observed if a block is split in a region of strong gradients when using ivisc=7.
+The graphic shows the effect of the treatment of cell volumes at 1-1 interfaces.
+
+<ul>
+<p><li type=square>
+<a href="Gifs/compare_v5_v6.gif">compare v5/v6</a></li></p>
+</ul>
+
+
+</ul>
+
+<p>The convergence rate may be expected to deteriorate as blocks are split finer and finer
+since the implict nature of the scheme extends only over points that lie in the same block.
+However, in many cases, this deterioration may be quite small, as evidenced in the 2D 
+airfoil case above. The following graphic shows the convergence rate for a 3D ONERA M6 wing
+with approximately 1 million points, with 1 zone (289x65x49), 96 zones (each 37x17x17)
+and 216 zones (each 17x17x17), with remarkably little deterioration in convergence
+of either the residual or the drag:</p>
+
+<ul>
+<p><li type=circle>
+<a href="Gifs/m6_split_convg.gif">split convergence</a></li></p>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="ronnie"></a><strong>New Ronnie Input Options:</strong>
+
+<p>The latest version of the ronnie patched-grid code is included with
+   this release. In this release, ronnie is actually "created" out of the
+   dynamic patching routines from cfl3d, plus a few driver routines. This
+   avoids duplication of essentially identical code, and assures complete
+   consistance between stand-alone patching and dynamic patching. In 
+   addition, it opens up the opportunity in ronnie to shift and rotate
+   grids before they are patched. One application of this is to the simulation
+   of 2D cascade flows, where periodicity can be obtained for grids which
+   don't match 1-1 on the periodic boundaries. What's new:
+   
+
+<ul> 
+<p><li>Ronnie now supports 3 input file styles. The first new style was added
+to allow user-specified search range on the "from" side - this should
+overcome some difficult search problems at the expense of additional
+user input. The second new style is a result of the merging of ronnie and
+cfl3d's dynamic patching routines.</li>
+
+<p><li>Ronnie has been modified to increase robustness when attempting
+to determine interpolation data on coarser levels. In the past, the
+search routines would sometimes fail on coarser levels, despite having
+successfully determined all the corresponding stencils on a finer
+level. Now, if the routines initially fail on a coarser level, ronnie
+will set coarser level stencils by collocating fine grid data.</li>
+
+
+<p><li>The file names created when diagnostic plot3d output is generated
+(either automatically or by setting ifit < 0) have been changed. The old
+file names where fort.xx, where xx is the interpolation number. The
+new file names are denoted by patch_p3d.xx. The new names avoid the 
+limit on some systems of creating a file past fort.99.</li>
+</ul>
+
+
+<p>The differences between the old and new styles are described below:
+
+<p><u>OLD Style:</u>
+
+<pre>
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+Title
+.
+.
+.
+</pre>
+
+<p><u>New Style:</u>
+
+<pre>
+INPUT/OUTPUT FILES
+shockg.bin_sngl
+ronnie.out
+patch.bin
+IOFLAG  ITRACE
+1       -1
+Title
+.
+.
+.
+</pre>
+
+<p>where:
+<dl>
+<p><dt><strong>ioflag</strong></dt>
+  <dd>= 1 allows new input format (1) as indicated below</dd>
+  <dd>= 2 allows new input format (2) as indicated below</dd>
+  <dd>= 0 for the old input format (where all the "from"
+          blocks are on one line)</dd>
+
+<p><dt><strong>itrace</strong></dt>
+  <dd>= -1....no tracing</dd>
+  <dd>=  0....save trace from last cell only</dd>
+  <dd>= +1....save trace from all cells searched so far 
+        (may give big file!)</dd>
+  <dd>itrace .ne. -1 primarily intended for the code developer</dd>
+</dl>
+
+<p>Old Style:
+<pre>
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB  FROM  FROM  FROM  FROM...
+   1  0112      0     0      0      0     1  0411
+   2  0212      0     0      0      0     1  0411 
+   3  0312      1   113      0      0     1  0411
+   4  0312    113   245      0      0     1  0411
+   5  0312    245   337      0      0     1  0411
+   6  0411      0     0      0      0     3  0112  0212  0312
+</pre>
+
+<p>New Style (1):
+<pre>
+ INT    TO   XIE1  XIE2   ETA1   ETA2   NFB (one per int)
+      FROM   XIE1  XIE2   ETA1   ETA2       (repeat nfb times for each int)
+   1  0112      0     0      0      0     1  
+      0411      0     0      0      0
+   2  0212      0     0      0      0     1
+      0411      0     0      0      0
+   3  0312      1   113      0      0     1
+      0411      0     0      0      0
+   4  0312    113   245      0      0     1
+      0411      0     0      0      0
+   5  0312    245   337      0      0     1
+      0411      0     0      0      0
+   6  0411      0     0      0      0     3  
+      0112      0     0      0      0
+      0212      1    21      1     97
+      0312      0     0      0      0
+</pre>
+
+<p>New Style (2) (See Version 5 user manual, Chapter 3, LT43-LT45):
+<pre>
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     1  0112        0        0        0        0        1
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0411        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     2  0212        0        0        0        0        1
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0411        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     3  0312      113      245        0        0        1
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0411        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     4  0312      113      245        0        0        1
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0411        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     5  0312      245      337        0        0        1
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0411        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+   INT    TO     XIE1     XIE2     ETA1     ETA2      NFB
+     6  0411        0        0        0        0        3
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0112        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0212        1       21        1       97    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+        FROM     XIE1     XIE2     ETA1     ETA2    FACTJ    FACTK
+        0312        0        0        0        0    0.000    0.000
+                   DX       DY       DZ   DTHETX   DTHETY   DTHETZ
+                0.000    0.000    0.000    0.000    0.000    0.000
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="error"></a><strong>Error Code Files:</strong>
+
+<p>For ease of integration of CFL3D and its related codes into automated
+   design packages, an error code file is created with the nomenclature
+   code.error (e.g. cfl3d.error or splitter.error). The standard format for
+   these error files is
+
+<dl>
+<dd>error code:</dd>
+<dd>numerical error code in written in i3 format (0 - normal, 
+< 0 - abnormal)</dd>
+<dd>termination status</dd>
+<dd>description of error if termination status is abnormal</dd>
+</dl>
+
+<p>examples:
+
+<ul>
+
+<li type=circle>program completes normally</li>
+<pre>
+    error code:
+     0
+    execution terminated normally
+</pre>
+
+<li type=circle>abnormal termination</li>
+<pre>
+    error code:
+    -1
+    abnormal termination:
+    input file error
+</pre>
+
+</ul>
+
+<p>Currently, CFL3D, PRECFL3D, RONNIE, PRERONNIE and SPLITTER all
+   generate error code files</p>
+
+<center>
+<table border cellpadding=4>
+<caption align=top><strong>CFL3D ERROR CODES</strong></caption>
+<tr align="center">
+  <th align="center">Code</th>
+  <th align="center">Description</th>
+</tr>
+<tr align="center">
+  <td align="center">0</td>
+  <td align="center">normal termination <br>
+  run completed</td>
+</tr>
+</tr>
+<tr align="center">
+  <td align="center">-1</td>
+  <td align="center">input file error</td>
+</tr>
+<tr align="center">
+  <td align="center">-99</td>
+  <td align="center">error during assessment <br>
+  of memory requirements</td>
+</tr>
+<tr align="center">
+  <td align="center">-999</td>
+  <td align="center">termination due to FPE<br>
+  segmentation fault, etc.</td>
+</tr>
+</table>
+</center>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="bc1006"></a><strong>New Normal Momentum BC 1006 for Inviscid Flows:</strong>
+
+<p>BC type 1006 (which is not documented in the printed manual)
+   is included in Version 6. This boundary condition for inviscid walls uses the
+normal momentum equation to obtain the wall pressure. This helps avoid "kinks" in the
+solution (such as in Mach contours) near slip-walls which often occur using bc1005</p>
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="bc2008"></a><strong>More General BC 2008, 2018, and 2028:</strong>
+
+<p>BC types 2008, 2018, and 2028 (which are not documented in the printed manual)
+are included in Version 6.  These boundary conditions are for
+various types of "specified subsonic inflow", useful for inflow into ducts or
+channels where flow variables are known.</p>
+
+<p>------------</p>
+<p> <strong>BC2008</strong>:  the user specifies 
+density and velocity components, and pressure is extrapolated 
+from the interior.  The standard required input data is:
+
+
+<dl><dd><strong>ndata = 4</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>rho/rho_ref, u/a_ref, v/a_ref, w/a_ref</strong><dd></dl>
+
+<p>specified via the input file, while pressure is extrapolated from the
+   interior of the domain. This BC is appropriate as a general
+   subsonic-inflow BC.  Note that "ref" refers to "reference" quantities.
+
+<p><strong>Important</strong>: previous usage of bc2008 was ndata=5, with u/a_inf,
+   v/a_inf, w/a_inf, turb1 and turb2 specified; this usage is not correct
+   for Version 6; Version 5 still supports the old usage</p>
+
+<p>------------</p>
+<p> <strong>BC2018</strong> (new for Version 6.2):  the user specifies
+temperature and momentum components, and pressure is extrapolated
+from the interior.  The standard required input data is:
+
+
+<dl><dd><strong>ndata = 4</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>T/T_ref, rho*u/(rho_ref*a_ref), rho*v/(rho_ref*a_ref), rho*w/(rho_ref*a_ref)</strong><dd></dl>
+
+<p>specified via the input file, while pressure is extrapolated from the
+   interior of the domain (it uses this pressure along with the specified temperature to
+   determine the density). This BC is appropriate as a general
+   subsonic-inflow BC.  Note that "ref" refers to "reference" quantities.
+
+<p>------------</p>
+<p> <strong>BC2028</strong> (new for Version 6.2):  the user specifies
+frequency and maximum momentum components; density and pressure
+are both extrapolated from the interior.  The standard required input data is:
+
+
+<dl><dd><strong>ndata = 4</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>freq*l_ref/a_ref, (rho*u)_max/(rho_ref*a_ref), (rho*v)_max/(rho_ref*a_ref), 
+(rho*w)_max/(rho_ref*a_ref)</strong><dd></dl>
+
+<p>specified via the input file, while density and pressure are extrapolated from the
+   interior of the domain.  Note that "ref" refers to "reference" quantities.
+   The velocity profiles alternate between suction and blowing in a sinusoidal
+   fashion via, for example, (rho*u)_max/rho*cos(2*pi*freq*t) for time-accurate flow.  
+   (If the case is not run time-accurately, then the momentum components will 
+   remain fixed.)</p>
+ 
+<p>------------</p>
+<p>For each of 2008, 2018, and 2028, with ndata=4 turbulence data is set 
+   from freestream conditions.  But see
+   also the section 
+   <a href="#turbdata">Turbulence Data Input For 2000 Series BC's</a> 
+   describing an enhancement to all 2000 series BCs
+   for including turbulence data in the input.
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="bc2034"></a><strong>Imposing wall velocity through BC 2034:</strong>
+
+<p>New to versions beyond Version 6.7 is the capability to impose a wall velocity
+via a BC type (for an adiabatic solid wall).
+This BC is the same as BC2004, except that it accepts the keywords:
+<strong>uub_2034, vvb_2034, wwb_2034, or vvb_xaxisrot2034</strong>, which modify the
+wall velocity (these are imposed velocities nondimensionalized by the reference 
+speed of sound).  The <strong>uub_2034, vvb_2034, and wwb_2034</strong> are
+prescribed u, v, and w velocities, respectively.  The <strong>vvb_xaxisrot2034</strong>
+is an imposed rotational velocity about the x-axis.
+The standard required input data is the same as for BC2004.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="bc2014"></a><strong>Specifying transition through BC 2014:</strong>
+
+<p>New to Version 6.2 is the capability to specify transition location through
+a BC type, rather than through ilamlo, ilamhi, etc.  This type, BC 2014,
+is not documented in the printed manual.  The main advantage to
+the new method is that you are no longer limited to having only one laminar
+region per zone.  BC 2014 is exactly the same as BC 2004 (viscous surface),
+described in the manual, except that it also forces the specified region to be laminar
+by zeroing out the turbulence production term. It only works for ivisc
+greater than 3.</p>
+<p>The standard required input data is:
+
+<dl><dd><strong>ndata = 3</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>Twtype, Cq, Index</strong><dd></dl>
+
+<p>specified via the input file.  Note that this is different from BC 2004 in that
+   BC 2004 only uses 2 items of input data.  The <strong>Twtype</strong> and <strong>Cq</strong> 
+   parameters here are the same as the 2 inputs required for 
+   BC 2004 (see manual).  The additional <strong>Index</strong> parameter for BC 2014
+   represents the index range <em>normal</em> to the surface over which the laminar
+   region is to extend.  Setting <strong>Index</strong>=0 defaults to the entire normal index
+   range.  For example, say that a laminar viscous wall patch 
+   (adiabatic, no blowing/suction) is desired on a
+   jmin surface from i=17-33 and k=65-129, over <em>all</em> j-indices normal to
+   the surface.  The input would look like:
+<pre>
+
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      2014        17        33        65       129         3
+    TWTYPE        CQ     INDEX
+        0.        0.         0
+
+</pre>
+   On the other hand, if you wanted to limit the laminar range in the normal
+   direction to be between j=1 and j=25, the input would be:
+<pre>
+
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      2014        17        33        65       129         3
+    TWTYPE        CQ     INDEX
+        0.        0.        25
+
+</pre>
+   As another example, say that a laminar viscous wall patch is desired on a
+   jmax surface from i=17-33 and k=65-129, where the wall is at jmax=81; and the laminar
+   range is desired to act over 25 points in the j-direction (from j=57 to 81).  
+   In this case, the input would be the same as in the last example:
+<pre>
+
+JDIM: GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      2014        17        33        65       129         3
+    TWTYPE        CQ     INDEX
+        0.        0.        25
+
+</pre>
+
+<p>Unless there are walls at both jmin and jmax, usually one would probably 
+   want to use the first method above (<strong>Index</strong>=0).
+   Note that the old ilamlo, ilamhi, etc method for prescribing laminar regions
+   still works.  In fact (although not recommended), both methods can be used 
+   simultaneously.  The laminar regions are the <em>unions</em> of the regions defined
+   by ilamlo, ilamhi, etc. and those defined by the 2014 boundary condition.
+   In general, however, we recommend doing either one method or the other, to
+   avoid confusion.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="turbdata"></a><strong>Turbulence Data Input For 2000 Series BC's:</strong>
+
+<p>The following 2000 series bc's will now allow the user to input data for
+   the turbulence field equations: 2003, 2007, 2008, 2018, 2028, 2009, 2010, and 2019 (note: standard data 
+   specification for 2008 has changed for Version 6, see 
+   <a href="#bc2008">above</a>). The standard
+   values of ndata for bc's 2003, 2007, 2008, 2018, 2028, 2009, 2010, and 2019 are 5, 5, 4, 4, 4, 
+   4, and 2 respectively.
+   If these standard ndata are increased by 1 (for 1 equation turbulence models)
+   or 2 (for 2 equation turbulence models), then the additional data is used to
+   set the boundary conditions for the turbulence equations (Note: this is
+   not applicable to Baldwin-Lomax). If the standard ndata is used, then the
+   boundary condition for the turbulence data is the same as before: for 2003, 2009, 2010, and 2019,
+   the turbulence variables are set to freestream values if inflow, or extrapolated
+   from the interior if outflow; for 2007, 2008, 2018, or 2028, the turbulence variables are
+   set to freestream values.
+
+<p><strong>Note: the additional turbulence data must be input as nondimensional,
+   appropriate for the particular turbulence model in use.</strong> See Appendix H
+   of the Version 5 manual for details of the turbulence models and the appropriate
+   nondimensionalizations.
+
+<p>As an example, consider bc2008, and assume that the 2-equation SST model
+   is used (ivisc=7):
+
+<pre>
+
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      2008         0         0         0         0         6
+RHO/RHOINF    U/AINF    V/AINF    W/AINF     TURB1     TURB2
+     1.000      0.95     0.000     0.000     1.e-6     9.e-9
+
+</pre>
+<p>These new turbulence data treatment also supports data read in from files, if
+   ndata is negative.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="bc2016"></a><strong>New BC 2016 for Suction and Blowing:</strong>
+
+<p>BC 2016 is an extension of BC 2004, offering additional options for the prescription of mass
+flow through a solid boundary. The structural forms of the two routines are the same and
+so are their interfaces with the main code. BC 2016 may be used in place of BC 2004 when the
+additional options are needed. This boundary condition is implemented into
+official versions of CFL3D only <em>after</em> V6.3.  BC 2016 enables two modes of operation:
+
+<p>1) <strong>rfreq</strong> .ge. 0.0:  A steady component of mass flow is prescribed plus an 
+unsteady component that varies sinusoidally in time.  (If the case is not run time-accurately or if
+<strong>rfreq</strong>=0, then the mass flow rate will remain fixed at <strong>cq</strong> or 
+at the rate it last was when time-accurate time stepping was on.)
+
+<p>2) <strong>rfreq</strong> .lt. 0.0:  A constant rate of change in mass flow from zero to 
+a terminal (constant) value is prescribed.  (If the case is not run time-accurately, 
+then the mass flow rate will remain fixed at zero or at the rate it last was when 
+time-accurate time stepping was on.)
+
+<p>BC 2016 requires a total of seven pieces of auxiliary data:
+<ul>
+  <li><strong>twtype</strong> (same definition as for BC 2004)</li>
+  <li><strong>cq</strong> (same definition as for BC 2004) 
+    <dl>
+    <dd>-if <strong>rfreq</strong> .ge. 0.0, then <strong>cq</strong> is the coefficient of a steady 
+      component of mass flow </dd>
+    <dd>-if <strong>rfreq</strong> .lt. 0.0, then <strong>cq</strong> is the terminal value of a mass 
+      flow coefficient that is ramped from zero to cq</dd>
+    </dl>
+  </li>
+  <li><strong>cqu</strong>
+    <dl>
+    <dd>-if <strong>rfreq</strong> .ge. 0.0, then <strong>cqu</strong> is the coefficient of an unsteady 
+      component of mass flow 
+      (the unsteady component is sinusoidal in time, and the total mass 
+      flow is the sum of the steady and unsteady components)</dd>
+    <dd>-if <strong>rfreq</strong> .lt. 0.0, then <strong>cqu</strong> is the constant rate of change with 
+      respect to nondimensional time in total mass flow from zero to <strong>cq</strong> </dd>
+    </dl>
+  </li>
+  <li><strong>sjetx, sjety, sjetz</strong> are the direction numbers of the blowing/suction in the x, 
+      y, and z directions, respectively.  For example, if <strong>sjetx</strong>=1 and
+      <strong>sjety</strong>=<strong>sjetz</strong>=0, then the blowing/suction will act in the x-direction.
+      If <strong>sjetx</strong>=0.5, <strong>sjety</strong>=0, and <strong>sjetz</strong>=0.5, then the 
+      blowing/suction will act at a 45 deg. angle in the x-z plane.
+      The direction numbers do not need to be normalized. If all three direction 
+      numbers are zero, then the mass flow will default to be normal to the
+      surface, and the sign convention is the same as the sign convention for 
+      <strong>cq</strong> in BC 2004.</li>
+  <li><strong>rfreq</strong> (Note that <strong>rfreq</strong>=freq*lref/aref, where freq is in Hz, 
+      lref is the reference length, and aref is the reference speed of sound.)
+    <dl>
+    <dd>-if <strong>rfreq</strong> .ge. 0.0, then <strong>rfreq</strong> is the reduced frequency of an 
+      unsteady component of mass flow, where the unsteady
+      component is <strong>cqu</strong>*sin(2*pi*<strong>rfreq</strong>*time) </dd>
+    <dd>-if <strong>rfreq</strong> .lt. 0.0, then the absolute value of <strong>rfreq</strong> does not matter,
+      and the total mass flow coefficient is equal to <strong>cqu</strong>*time until the value of 
+      <strong>cq</strong> is reached, at which point the mass flow remains constant with a 
+      coefficient of <strong>cq</strong>. </dd>
+    </dl>
+  </li>
+</ul>
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Hal Carlson of Clear Science Corp. for coding this boundary condition.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="complex"></a><strong>Solution Derivatives Via Complex Variables</strong>
+
+<p>The complex variable approach for generating solution derivatives of
+   numerical schemes is not a new idea, having been proposed in 1967 by Lyness
+   and Lyness and Moler. However, it did not see much use until it was revived
+   by Squire and Trapp in 1998 ("Using Complex Variables to Estimate Derivatives
+   of Real Functions"  SIAM Review, Vol 10, No. 1, March 1998, pp.110-112).
+   Kyle Anderson popularized the method at NASA Langley ("Sensitivity Analysis
+   for the Navier-Stokes Equations on Unstructured Meshes Using Complex 
+   Variables.", AIAA Paper No. 99-3294, June 1999).
+
+<p>The method is based on the Taylor series expansion of a complex function
+
+<dl><dd>f(x+ih) = f(x) +ihf'(x) -0.5h<sup>2</sup>f''(x) + O(ih<sup>3</sup>)</dd></dl>
+
+<p>so that equating the imaginary parts on the left and right hand sides gives
+
+<dl><dd>f'(x) = Im[f(x+ih)]/h + O(h<sup>2</sup>)</dd></dl>
+
+<p>The derivative is subject to a truncation error on the order of the square
+   of the step size, but, quite importantly, is not obtained by differences
+   of two nearly identical numbers as is done in finite differences.
+   Thus, unlike finite differences, the step size h can be made as small as
+   desired without subtractive errors (i.e. numerical precision) ever swamping
+   the truncation error. A step size of 1.e-6 is generally quite sufficient.
+
+<p>Although not available at the time that CFL3D was converted to complex
+variables, Joaquim Martins at Stanford University has developed a 
+<a href="http://aero-comlab.stanford.edu/jmartins/complex-step/index.html">script</a> 
+to automate the conversion of a FORTRAN 90 code to complex variables.</p> 
+
+<p>A complex version of the parallel code can  be generated by typing:
+
+<dl><dd><strong>make cfl3dcmplx_mpi</strong></dd></dl>
+
+<p>in the build directory. Alternatively, a complex sequential version of the
+   code can be generated by typing:
+
+<dl><dd><strong>make cfl3dcmplx_seq</strong></dd></dl>
+
+<p>Because the entire code is rendered complex, any real data that comes into
+   the code can potentially be an independent variable with respect to which
+   derivatives of the solution can be obtained. All that is required is to
+   simply give that variable a small complex component. The following 
+   variables are already implemented into the code, with the input variable
+   for the appropriate "h" step given in parentheses, and are accessable via
+   <a href="#keyword"> Keyword input</a>:
+
+<ul>
+<li type=circle>Mach number (xmach_img)</li>
+<li type=circle>unit Reynolds number (reue_img)</li>
+<li type=circle>angle of attack (alpha_img)</li>
+<li type=circle>yaw angle (beta_img)</li>
+<li type=circle>free stream temperature (tinf_img)</li>
+<li type=circle>geometry (geom_img)</li>
+<li type=circle>rotation rate about the x-axis (xrotrate_img)</li>
+<li type=circle>rotation rate about the y-axis (yrotrate_img)</li>
+<li type=circle>rotation rate about the z-axis (xrotrate_img)</li>
+</ul>
+
+<p>Note that for geometrical derivatives, the value of geom_img must correspond
+   to the step size used to generate the <strong>complex-valued</strong> grid. To split a
+   complex-valued grid, use splittercmplx (see <a href="cfl3dv6_splitter.html">
+   Block Splitter</a>).
+   The resulting derivatives of Cl, Cd,Cm, etc are output to the file 
+   cfl3d.sd_res - this is a file similar to the usual CFL3D convergence history
+   file cfl3d.res for the solution convergence. For example, to determine the
+   derivatives with respect to angle of attack, start with a standard CFL3D
+   input file set up for the angle of attack of interest, and then add the 
+   <a href="#keyword"> Keyword input</a>:
+
+<pre>
+>
+alpha_img 1.e-8
+<
+</pre>
+
+<p>The complex-valued code will require twice the memory and 
+approximately three times the CPU time of the real-valued code. Derivatives
+can be obtained by central differences for twice the CPU time. However, 
+finite differences are subject to large truncation error if the step size
+is too small and large subtractive error if the step size is too small, so
+factoring in the "trial and error" of step size choice can easily make the
+complex-variable approach very competetive, CPU-wise. The following figures
+illustrate this.</p>
+
+<p> The first figure shows the convergence of a 32 block grid
+for the ONERA M6, using roughly 10<sup>6</sup> grid points. Convergence is quite 
+acceptable, with the drag varying less than 1 count (0.0001) after 200 coarse level
++ 200 medium level + 500 fine level iterations. However, the residual does "hang"
+on the level of roughly 10<sup>-9</sup>. Evaluating the derivative of
+drag with respect to angle of attack by calculating two different solutions with 
+small differences in angle of attack and using finite differences with various step
+sizes leads to wildly different, mostly garbage, results. For comaprison, the derivative
+computed using the complex code converges as well as the function. Total "cost" of the
+single complex derivative calculation was 3 times the cost of a standard solution. For
+the finite derivative result, a total of 6 runs were made, but each was run roughly
+twice as long on the fine level in order to try and get decent derivatives. This
+was a "real-world" scenario, in that the initial choice of finite difference step size
+was chosen as 10<sup>-6</sup> since that had worked quite well in other cases. 
+
+<ul>
+<p><li type=circle>
+<a href="Gifs/m6_soln.gif">
+solution convergence</a></li></p>
+
+<p><li type=circle>
+<a href="Gifs/m6_complex_vs_fd.gif">
+derivative convergence</a></li></p>
+</ul>
+
+The next figure shows a comparison of the derivative of drag with respect to a
+geometric design variable (inboard twist) for an inviscid HSCT configuration
+computed using the 
+complex-variable approach in Version 6 and an earlier parallel version of CFL3D 
+(Version 4.1hp) that had been
+passed through the ADIFOR automatic differentiation tool. It can be seen that the
+final derivatives are identical, with quite similar convergence rates.
+
+<ul>
+<p><li type=circle>
+<a href="Gifs/cmplx_vs_adifor.gif">
+complex-variable vs. ADIFOR convergence</a></li></p>
+</ul> 
+
+<p><strong>IMPORTANT NOTE #1: restart files are NOT compatable between the "regular" 
+   version of CFL3D and the complex version.</strong></p>
+<p><strong>IMPORTANT NOTE #2: As of March, 2007, the Intel Version 9 compiler has major problems
+with complex cases in CFL3D.  If you
+use Intel, consider compiling with a different version.</strong></p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="entfix"></a><strong>Entropy Fix for High Mach Number Conditions</strong>
+
+<p>In an attempt to increase the robustness of the code at high Mach numbers,
+an option to include an "entropy fix" has been added to Roe's scheme (ifds=1).
+This ammounts to a modification of the eigenvalues in instances where they
+approach zero, and has the effect of making the scheme more dissipative.
+The particular version of the entropy fix is that described in NASA TP-2953:
+
+<p><img src="Gifs/entfix.gif" title="results with entropy fix" alt="results with entropy fix">
+
+<p>with the slight difference that here, u,v,w are taken as the covariant 
+velocities, rather than the contravariant velocities. The subscript i indicates
+the i-th eigenvalue, and c is the sound speed. Lamdas without overbars are the
+unmodified eigenvalues from Roe's scheme. 
+
+The parameter epsilon is input as the 
+<a href="#keyword"> Keyword input</a> <strong>epsa_r</strong>. Typical values are in the
+range of 0.0 to 0.4, with epsa_r = 0. corresponding to the original Roe
+scheme; epsa_r = 0.3 is a good general choice when an entropy fix is
+required.
+
+<p><strong>NOTE: For high Mach numbers, the entropy fix should be used in 
+conjunction with the 5x5 block inversion option (idiag = 0).</strong></p>
+
+<p>Sample Results
+
+<ul>
+<li type=circle>2D calculations for flow past a ramp of 34 degrees.
+A value of epsa_r = 0.3, in conjunction with idiag=0, was used; the standard Roe
+scheme diverges, even with idiag=0.</li>
+
+<ul>
+<li type=square>
+<a href="Gifs/hyper_ramp_convg.gif">convergence</a></li>
+</ul>
+<ul>
+<li type=square>
+<a href="Gifs/hyper_ramp_press.gif">pressure</a></li>
+</ul>
+
+</ul>
+
+<ul>
+<li type=circle>2D calculations for flow around an RAE 2822 for
+a range of Mach numbers. Note that at Mach 10, the standard Roe scheme diverges.
+</li>
+
+<ul>
+<li type=square>
+<a href="Gifs/rae_ent_fix_m=10.0.gif">convergence, Mach 10.0</a></li>
+</ul>
+<ul>
+<li type=square>
+<a href="Gifs/rae_ent_fix_m=0.75.gif">convergence, Mach 0.75</a></li>
+</ul>
+<ul>
+<li type=square>
+<a href="Gifs/rae_ent_fix_m=0.30.gif">convergence, Mach 0.30</a></li>
+</ul>
+
+</ul>
+
+<p>The Mach 0.30 and Mach 0.75 cases are shown to assess the effect on the
+somputed forces due to the extra dissipation, since these are cases that 
+run without the entropy fix. The following table presents the lift and drag
+values obtained on a series of 3 meshes, with Richardson extrapolation to 
+zero cell size, for epsa_r = 0 and epsa_r = 0.3. At least for these cases,
+little effect on the lift and drag was seen when employing the entropy fix.</p>
+
+<center>
+<table border cellpadding=4>
+<caption align=top><strong>Effect of Entropy Fix on RAE 2822 Lift and Drag</strong>
+</caption>
+<tr align="center">
+  <th align="center">M= 0.75<br>epsa_r=0.0</th>
+  <th align="center">17x25</th>
+  <th align="center">33x49</th>
+  <th align="center">65x97</th>
+  <th align="center">Extrap. to h=0</th>
+  <th align="center">% diff from epsa_r=0</th>
+</tr>
+<tr align="center">
+  <td align="center">Cd</td>
+  <td align="center">0.027867</td>
+  <td align="center">0.025280</td>
+  <td align="center">0.025029</td>
+  <td align="center">0.024945</td>
+  <td align="center"> - </td>
+</tr>
+<tr align="center">
+  <td align="center">Cl</td>
+  <td align="center">0.73381</td>
+  <td align="center">0.74637</td>
+  <td align="center">0.75375</td>
+  <td align="center">0.75621</td>
+  <td align="center"> - </td>
+</tr>
+<tr align="center">
+  <th align="center">M= 0.75<br>epsa_r=0.3</th>
+  <th align="center">17x25</th>
+  <th align="center">33x49</th>
+  <th align="center">65x97</th>
+  <th align="center">Extrap. to h=0</th>
+  <th align="center">% diff from epsa_r=0</th>
+</tr>
+<tr align="center">
+  <td align="center">Cd</td>
+  <td align="center">0.034377</td>
+  <td align="center">0.028259</td>
+  <td align="center">0.026060</td>
+  <td align="center">0.025327</td>
+  <td align="center">1.5</td>
+</tr>
+<tr align="center">
+  <td align="center">Cl</td>
+  <td align="center">0.80338</td>
+  <td align="center">0.78384</td>
+  <td align="center">0.76960</td>
+  <td align="center">0.76485</td>
+  <td align="center">1.1</td>
+</tr>
+<tr align="center">
+  <th align="center">M= 0.30<br>epsa_r=0.0</th>
+  <th align="center">17x25</th>
+  <th align="center">33x49</th>
+  <th align="center">65x97</th>
+  <th align="center">Extrap. to h=0</th>
+  <th align="center">% diff from epsa_r=0</th>
+</tr>
+<tr align="center">
+  <td align="center">Cd</td>
+  <td align="center">0.013047</td>
+  <td align="center">0.009851</td>
+  <td align="center">0.009229</td>
+  <td align="center">0.009022</td>
+  <td align="center"> - </td>
+</tr>
+<tr align="center">
+  <td align="center">Cl</td>
+  <td align="center">0.56614</td>
+  <td align="center">0.54926</td>
+  <td align="center">0.53719</td>
+  <td align="center">0.53317</td>
+  <td align="center"> - </td>
+</tr>
+<tr align="center">
+  <th align="center">M= 0.30<br>epsa_r=0.3</th>
+  <th align="center">17x25</th>
+  <th align="center">33x49</th>
+  <th align="center">65x97</th>
+  <th align="center">Extrap. to h=0</th>
+  <th align="center">% diff from epsa_r=0</th>
+</tr>
+<tr align="center">
+  <td align="center">Cd</td>
+  <td align="center">0.015616</td>
+  <td align="center">0.010685</td>
+  <td align="center">0.009422</td>
+  <td align="center">0.009001</td>
+  <td align="center">0.2</td>
+</tr>
+<tr align="center">
+  <td align="center">Cl</td>
+  <td align="center">0.55131</td>
+  <td align="center">0.54481</td>
+  <td align="center">0.53642</td>
+  <td align="center">0.53362</td>
+  <td align="center">0.1</td>
+</tr>
+
+</table>
+</center>
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Peter Gnoffo of NASA-Langley
+Research Center for providing the LAURA implementation of this feature,
+which provided the basis for the implementation in CFL3D Version 6.</p>
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<!--<p><a NAME="pegsus"></a><strong>Tools for Using PEGSUS Overset Grid Data</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>The MAGGIE overset-grid processor was initially developed at Old Dominion
+University, starting from a very early version of PEGSUS. The ODU version
+of MAGGIE was modified by NASA Langley to increase its generality, and has been
+the standard overset grid tool for CFL3D for many years. In the meantime,
+PEGSUS was continuously improved and enhanced, and has gained a wide user base.
+To leverage off that development work on PEGSUS, a set of tools has been
+developed to allow use of PEGSUS-generated overset data files in CFL3D. In
+addition, there are modifications to the CFL3D code to handle the interpolation
+stencils for the "augmented cell-center" fed to PEGSUS and to allow for 
+orphan points. 
+
+<p>Either PEGSUS Version 4.2x (not widely available) or 
+<a href="http://ad-www.larc.nasa.gov/~buning/codes.html#pegsus">
+Version 4.1x</a> can be used. However, if
+using Version 4.1x you will <strong>not</strong> be able to use an existing INGRID
+file...you will need to create one using the <strong>p3d_to_INGRID</strong> tool provided
+with the CFL3D Version 6 package. If you do not already have an INGRID file,
+<strong>p3d_to_INGRID</strong> can create one from one or more PLOT3D or CFL3D grid
+files.</p>
+
+<p>In the cell-center mode (CENTER=.TRUE. in the PEGSUS $GLOBAL input group),
+PEGSUS 4.2x calculates a cell center 
+grid by averaging the corner points of each cell AND adding an
+extra layer of cell centers at all block boundaries. PEGSUS 4.1x does not
+have this capability. It is this "augmented" cell-center grid
+that is used to generate the interpolation stencils within PEGSUS 4.2x.
+Because the interpolation coefficients that PEGSUS writes out to the
+XINTOUT file are obtained relative to the augmented cell-center grid, while
+CFL3D works with an "unaugmented" cell-center grid, the data in XINTOUT
+must be post-processed before it can be utilized in CFL3D. By providing
+PEGSUS 4.1x with a similarly augmented cell-center grid, rather than 
+the usual node-point grid, <strong>p3d_to_INGRID</strong> allows PEGSUS 4.1x to mimic
+the CENTER=.TRUE. behavior of PEGSUS 4.2. 
+
+<p><strong><u>Conversion Tools</u></strong></p>
+<dl>
+<p><dt><strong>p3d_to_INGRID</strong></dt>
+  <dd>converts either a native CFL3D-style grid or a PLOT3D-style grid
+  to an INGRID file that can be used by PEGSUS 4.1x or 4.2x.</dd>
+<p><dt><strong>XINTOUT_to_ovrlp</strong></dt>
+  <dd>converts PEGSUS-generated XINTOUT file to the ovrlp.bin file
+  used by CFL3D.</dd>
+<p><dt><strong>INGRID_to_p3d</strong></dt>
+  <dd>converts PEGSUS input INGRID file to either a native CFL3D-style
+  grid or a PLOT3D-style grid that can be used by CFL3D.</dd> 
+<p><dt>In addition these tools for CFL3D, an extensive suite of general
+  <a href="http://george.arc.nasa.gov/~srogers/cgt/doc/man.html">
+  Chimera Grid Tools</a> is available to aid in the construction and
+  manipulation of overset grids.</dt>
+</dl>
+
+<p><strong><u>Tips for setting up the PEGSUS input file:</u></strong></p>
+<ul>
+<li type=circle>set CENTER = .TRUE. in the $GLOBAL input group
+   (PEGSUS 4.2x only).</li>
+<li type=circle>set FRINGE = 2 in the $GLOBAL input group.</li>
+<li type=circle>set ORPHLIST = .TRUE. in the $GLOBAL input group.</li>
+<li type=circle>with PEGSUS 4.2x, it is much better to explicitly set outer
+    boundaries in the PEGSUS input file, rather than using the ACTIVE option
+    in the $OUTER input group (i.e. don't use the peg.bc file).</li>
+</ul>
+
+<p><strong><u>Tips for setting up the CFL3D input file:</u></strong></p>
+<ul>
+<li type=circle>if using PEGSUS 4.1x, be careful when setting the iovrlp
+    flag; only those zones actually utilizing overset grids should have
+    iovrlp = 1. If the PEGSUS 4.1x output indicates that any mesh is a 
+    "phantom mesh", but that mesh is part of the grid set that is read
+    into CFL3D, set iovrlp = 0 for that zone. With MAGGIE and PEGSUS4.2x,
+    you can set iovrlp = 1 for all
+    zones if any one of them require overset interpolation data.</li> 
+<li type=circle>make sure the grid you are using is multigridable - many
+    (most?) grids designed for use in OVERFLOW are not multigridable. You
+    may benefit greatly by reworking any non-multigridable zones to
+    make them so.</li>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>-->
+
+<p><a NAME="turbs"></a><strong>Turbulence Model Descriptions</a></strong>
+
+<p>The following table summarizes the turbulence models in CFL3D, including
+the differences between Version 5 and Version 6.  In the table, <strong>ivisc</strong>
+refers to the parameter in the CFL3D input file that controls the turbulence
+model choice.</p>
+
+<center>
+<table border cellpadding=4>
+<caption align=top><strong>Turbulence Models in V6</strong></caption>
+<tr align="center">
+  <th align="center">ivisc</th>
+  <th align="center">Current Description</th>
+  <th align="center">Compared to Version 5</th>
+</tr>
+<tr align="center">
+  <td align="center">2</td>
+  <td align="center">Baldwin-Lomax<br>
+                     (AIAA 78-257, 1978)<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">3</td>
+  <td align="center">Baldwin-Lomax with Degani-Schiff<br>
+                     (AIAA 83-0034, 1983)<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">4</td>
+  <td align="center">Baldwin-Barth<br>
+                     (NASA TM-102847, August 1990)<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">5</td>
+  <td align="center">Spalart-Allmaras<br>
+                     (La Recherche Aerospatiale, No. 1, 1994, p.5-21)</td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">6</td>
+  <td align="center">Wilcox k-omega<br>
+                     (AIAA J., Vol. 26, No. 11, 1988, p.1299-1310)</td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">7</td>
+  <td align="center">Menter SST k-omega<br>
+                     (or - <em>after</em> V6.4 - BSL version if use keyword <strong>i_bsl</strong>=1)<br>
+                     (AIAA J., Vol. 32, No. 8, 1994, p.1598-1605)</td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">8</td>
+  <td align="center">linear version of #14<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">different</td>
+</tr>
+<tr align="center">
+  <td align="center">9</td>
+  <td align="center">linear version of #13<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">different</td>
+</tr>
+<tr align="center">
+  <td align="center">10</td>
+  <td align="center">Abid k-epsilon<br>
+                     (Int J. Engng Sci, Vol. 31, No. 6, 1993, p.831-840)</td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">11</td>
+  <td align="center">nonlinear Gatski-Speziale<br>
+                     (const g) EASM k-epsilon<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">12</td>
+  <td align="center">nonlinear Gatski-Speziale<br>
+                     (const g) EASM k-omega<br>
+                     <u><strong>not recommended</strong></u></td>
+  <td align="center">same</td>
+</tr>
+<tr align="center">
+  <td align="center">13</td>
+  <td align="center">nonlinear EASM k-epsilon<br>
+                     (NASA/TM-2003-212431, June 2003)</td>
+  <td align="center">different</td>
+</tr>
+<tr align="center">
+  <td align="center">14</td>
+  <td align="center">nonlinear EASM k-omega<br>
+                     (NASA/TM-2003-212431, June 2003)</td>
+  <td align="center">not in Version 5</td>
+</tr>
+<tr align="center">
+  <td align="center">15</td>
+  <td align="center">k-enstrophy<br>
+                     (AIAA J., Vol. 36, No. 10, 1998, p.1825-1833)</td>
+  <td align="center">not in Version 5</td>
+<tr align="center">
+  <td align="center">16</td>
+  <td align="center">k-kL-MEAH2015<br>
+                     (modified version of<br>
+                     Int J Aerospace Eng, Vol. 2015, Article ID 987682)</td>
+  <td align="center">not in Version 5</td>
+</table>
+</center>
+
+<p><strong><u>Notes:</u></strong>
+
+<ul>
+
+<p><li type=circle>Baldwin-Lomax #2 and #3 is not recommended because it is not a field-equation
+model and hence has dependence on the grid structure; it is particularly ill-suited
+for multiple-zone grids.</li>
+
+<p><li type=circle>Baldwin-Barth #4 is not recommended because it is ill-conditioned
+near the edge of boundary layers and can yield non-physical behavior there
+(see J. Fluids Eng., Vol. 119, No. 12, 1997, p.876-884).</li>
+
+<p><li type = circle>Model #9 is the same as model #13 with no nonlinear terms
+included in the tau_ij's in the RHS of the Navier-Stokes equations.
+Similarly, model #8 represents a linear version of #14. These linear versions are
+not recommended in general, because they are not complete models (they were originally
+intended for use only to initiate steady-state calculations for models #13 and #14).</li>
+
+<p><li type=circle>The EASM models #11 and #12 are not recommended because they
+utilize "constant g", which is not believed to be as accurate for many flows as
+the EASM method which solves a cubic equation and hence properly accounts for
+the production-to-dissipation-rate ratio in the flow (see
+AIAA J., Vol. 38, No. 8, 2000, p. 1394-1402).</li>
+
+<p><li type = circle>The k-enstrophy model #15 is a new turbulence model
+addition effective Version 6.4 and later.  The original reference is: AIAA J., Vol. 36, 
+No. 10, 1998, p.1825-1833.</li>
+
+<p><li type = circle>The k-kL-MEAH2015 model #16 is a new turbulence model
+addition effective Version 6.7 and later.  The original reference is: 
+Int J Aerospace Eng, Vol. 2015, Article ID 987682.  (Note there is missing information
+in the paper, and some minor modifications have also been made.  A more complete description can be found on 
+<a href="http://turbmodels.larc.nasa.gov" target="_blank">http://turbmodels.larc.nasa.gov</a>.
+</li>
+
+<p><li type = circle>All models, <strong>particularly k-epsilon and k-enstrophy versions</strong>,
+sometimes fail to go turbulent on their own where desired.  
+It is recommended that the user <strong>always</strong> check resulting
+<strong>vist3d</strong> (eddy viscosity) levels output by the code, to insure that
+turbulence has tripped.  If a model fails to trip, we recommend either
+restarting from a different converged model, or, if starting from
+scratch, freezing the model to its initialized levels (using 
+<a href="#keyword"> Keyword input</a> <strong>nfreeze</strong>) 
+until the mean flowfield is advanced enough for turbulence to
+sustain itself.</li>
+
+<p><li type = circle>K-epsilon models (including Abid and EASM k-epsilon)
+are generally not recommended for use with
+adverse-pressure-gradient wall-bounded flows.  Most k-epsilon types of models are known
+to yield generally very poor results in such situations (see, for example, 
+discussions on this point in D. C. Wilcox, "Turbulence Modeling
+for CFD," 2nd Ed., DCW Industries, La Canada, CA, 1998).</li>
+
+<p><li type = circle>When running turbulence models, the grid should be fine
+enough such that the minimum spacing near the walls yield a y+ value of order 1.
+Some of the turbulence models are more sensitive to this precise value than others.
+The y+ levels are printed out near the bottom of the CFL3D standard output file.
+Wall functions can be employed when grids have larger minimum spacing
+(by setting <strong>ivisc</strong> in the input file 
+to a negative number), but the wall function approach is strictly an incorrect
+approximation for separated flows, and is not
+recommended in general.</li>
+
+<p><li type = circle>The EASM models typically tend to be less robust than other
+turbulence models.  The most robust models are usually SA and SST (ivisc=5 and 7).</li>
+
+<p><li type = circle>For the k-enstrophy model, the original paper
+(AIAA J., Vol. 36, No. 10, 1998, p.1825-1833) stated that the parameter beta8
+could be taken as zero (as opposed to its standard value of 2.3) to avoid numerical 
+problems. Currently the default
+in CFL3D is beta8=0.  This may be changed to 2.3 by setting the 
+<a href="#keyword"> Keyword input</a> <strong>ibeta8kzeta</strong> to 1.  
+Also, note that for the k-enstrophy model the 
+default value for 
+<a href="#keyword"> Keyword input</a> <strong>tur1cut</strong> is -1, which means that the enstrophy variable
+is not updated at all when it tries to drop below <strong>tur1cutlev</strong>.</li>
+
+<p><li type = circle>There are many code input options related to turbulence models available
+as <a href="#keyword">Keyword input</a>. These include 2nd order spatial
+advection (as opposed to 1st order), different order of temporal accuracy from the mean flow,
+and the option to specify different freesteam turbulence levels.  The defaults in the code have been
+determined as generally valid or useful for most applications.  In many cases,
+a trade-off between accuracy and robustness had to be made.  Many of the defaults
+were chosen simply to preserve backward compatability with earlier versions of
+the code.</li>
+
+<p><li type = circle>When using 
+<a href="#keyword"> Keyword input</a> for <strong>ikoprod</strong> or <strong>iturbprod</strong>,
+the user should be careful to always check that there is not excessive turbulence
+created near leading-edge (stagnation) regions.  Using non-default values for these
+flags can sometimes cause this problem (see a description of this problem in
+Int. J. Heat and Fluid Flow, Vol. 17, 1996, p.89-90).</li>
+
+<p><li type = circle>Curvature corrections available for some of the models are
+described in the section: <a href="#icurv">
+       Curvature correction capability for certain turbulence models</a> below.
+
+<p><li type = circle>Users should be aware that EASM methods are still an active
+research area.</li>
+
+</ul>
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Jack Edwards, Hassan Hassan, and Greg McGowan
+   of North Carolina State University for coding the k-enstrophy model.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="2009"></a><strong>Inflow BC 2009, 2010, and 2019:</strong>
+
+<p><strong>BC type 2009</strong> (which is not documented in the printed manual)
+is included in Version 6.  This boundary condition is for
+inflow boundary conditions (typically for internal nozzle,
+duct or engine flows), given total pressure ratio,
+total temperature, and flow angle. The pressure is
+extrapolated (zeroth order) from the interior of
+the domain, and the remaining variables are determined
+from the extrapolated pressure and the input data, using
+isentropic relations.  It requires:</p>
+
+<dl><dd><strong>ndata = 4</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>Pt/pinf, Tt/Tinf, Alphae</strong> (deg)<strong>, Betae</strong> (deg)<dd></dl>
+
+
+<p>specified via the input file.  With ndata=4, turbulence data 
+is set from freestream conditions, but see also the section 
+<a href="#turbdata">Turbulence Data Input For 2000 Series BC's</a>
+describing an enhancement to certain 2000 series BCs 
+for inputting turbulence data.</p>
+
+<p><strong>BC type 2010</strong> (available <em>after</em> version 6.6) is similar to 2009.
+Like BC2009, it also sets total pressure
+(relative to freestream static) and total temperature (relative to freestream static),
+along with specification of the flow angles.  It extrapolates the Riemann invariant
+from the interior.  Details of this boundary condition are taken from FUN3D.
+(For complex 3-D problems, this BC seems to yield better results than BC2009.)
+
+<p><strong>BC type 2019</strong> (available <em>after</em> version 6.6) is a different
+boundary condition for upstream boundary conditions (typically for internal nozzle,
+duct or engine flows).  It is taken from OVERFLOW (BCNOZ).  It sets total pressure
+(relative to freestream <u>total</u>) and total temperature (relative to freestream <u>total</u>),
+keeping flow angle constant and extrapolating the Riemann invariant.
+It requires:</p>
+
+<dl><dd><strong>ndata = 2</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>Pt/Pt_inf, Tt/Tt_inf</strong><dd></dl>
+
+<p>specified via the input file.  With ndata=2, turbulence data
+is set from freestream conditions, but see also the section
+<a href="#turbdata">Turbulence Data Input For 2000 Series BC's</a>
+describing an enhancement to certain 2000 series BCs
+for inputting turbulence data.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="2103"></a><strong>Specified Pressure Ratio 2103:</strong>
+
+<p>BC type 2103 is a minor variation on type 2102 (specified pressure ratio as
+sinusoidal time function), included <em>after</em> Version 6.6.  
+It adds a fifth input variable, phioff(deg), which is a
+phase angle offset.
+
+<p>The BC requires:</p>
+
+<dl><dd><strong>ndata = 5</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>p/pinf, deltap/pinf, rfreqp, lref, phioff(deg)</strong><dd></dl>
+
+<p>specified via the input file.  The BC sets pressure based on:
+
+<dl>gamma*p = p/pinf + deltap/pinf*sin(k_r*t + phioff)</dl>
+
+<p>where phioff is translated internally to radians, and k_r is the reduced
+frequency defined in the manual, section 6.2.7.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+
+<p><a NAME="2ndorderturb"></a><strong>2nd order temporal accuracy for turb models:</strong>
+
+<p>Previously, turbulence models in CFL3D were advanced 
+only 1st order in time regardless of whether the mean 
+flow equations (controlled by abs(ita) parameter) were 
+1st or 2nd order.  This has been found to cause
+the overall solution to be less than 2nd order in 
+time.  Starting with V6.1, the turbulence models by 
+default are advanced in time at the SAME order as the 
+mean flow equations.  (However, the user can still FORCE 
+1st order on the turb model with the 
+<a href="#keyword"> Keyword input</a> <strong>itaturb</strong>=0.)
+This change has required additional information to
+be written to the CFL3D restart file.  As a result,
+older restart files for time-accurate runs that used
+abs(ita)=2 need to be restarted with the 
+<a href="#keyword"> Keyword input</a> flag <strong>itime2read</strong>=0 the first time they are read.
+New time-accurate runs need do nothing special: the 
+default values of <strong>itaturb</strong> and <strong>itime2read</strong> are OK as is.<p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                       
+<hr>
+
+<p><a NAME="stop_me"</a><strong>Graceful user-requested stop during program execution:</strong>
+
+<p>Users may now halt execution of the code before a full run is
+completed. This is achieved by creating a file called <strong>stop</strong> in the directory
+where the code is running. The program continually checks for the existence 
+of this file, and if found, stops at the next time step (time accurate cases)
+or multigrid cycle (steady state cases). A restart file containing the 
+current solution is output; this restart file may be used for continuing at
+a later time. Note that if mesh sequencing is being used, the restart file 
+will correspond
+to the sequence level at the time of stoppage, so the user may need to
+adjust mseq, etc. on subsequent runs. An existing stop file is removed at the
+very beginning of code execution so that subseqent runs will not stop before
+normal termination unless the user again explicitly creates a stop file.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                       
+<hr>
+
+<p><a NAME="noninertial"</a><strong>Source terms for non-inertial (rotating) 
+reference frames:</strong>
+
+<p>Certain classes of rotational problems (those undergoing constant rotation
+rates without relative motion between components) can be cast as steady-state
+problems in a noninertial reference frame. Heretofore, such problems could
+be treated in CFL3D only in the time-accurate mode, with rotating grids.
+Such cases where therefore very computationally expensive. By adding 
+appropriate source terms to the right hand side, such cases can now be run
+in the more efficient steady-state mode. 
+
+<p>Details of the method are given in:
+<p>Park, M. A., and Green, L. L.; "Steady-State Computation of Constant
+Rotational Rate Dynamic Stability Derivatives," AIAA 2000-4321.
+
+<p>To run a case in a noninertial reference frame, set the 
+<a href="#keyword"> Keyword input</a> <strong>noninflag</strong> to 1. 
+Then specify the rotation center via 
+<a href="#keyword"> Keyword input</a> <strong>xcentrot</strong>,
+<strong>ycentrot</strong>, and <strong>zcentrot</strong> (these have default values of zero). Finally,
+specify the rotation rate about (one of) the x, y or z axes via the
+<a href="#keyword"> Keyword input</a> <strong>xrotrate</strong>, <strong>yrotrate</strong>, 
+<strong>zrotrate</strong> (these also default to zero). 
+
+<p>If derivatives with respect to the selected rotation rate are desired, the
+complex version of the code may be utilized, with the keywords described 
+above for noninertial cases, plus one additional 
+<a href="#keyword"> Keyword input</a> <strong>xrotrate_img</strong>, <strong>yrotrate_img</strong>, or 
+<strong>zrotrate_img</strong> for derviatives
+with respect to the rotation rate about the indicated axis. See also
+the <a href="#complex"> Solution Derivatives Via Complex Variables</a>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                       
+<hr>
+
+<p><a NAME="ihist"></a><strong>New ihist option for force/moment convergence tracking:</strong>
+
+<p> An additional convergence tracking option, ihist = 2, is available in 
+Version 6.  This convergence option tracks all components of
+forces and moments (Cl, Cd, Cx, Cy, Cz, Cmx, Cmy, Cmz) in addition to the
+density residual. This is in contrast to ihist = 0 which tracks density 
+residual and either Cl, Cd, Cy and Cmz or Cl, Cd, Cz and Cmy depending on the
+value of ialph. For time-accurate computations, subiteration convergence
+tracking is also governed by the selected value of ihist.</p>
+
+<p> In all cases the force/moment output for convergence tracking
+is the sum of the inviscid (pressure) and viscous (shear stress) contributions.
+The breakout between the inviscid and viscous contributions is not output, 
+except at the end of the run, and may be examined in the main output file 
+in the force and moment summary. </p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                       
+<hr>
+
+<p><a NAME="idess"></a><strong>DES and DDES Capability:</strong>
+                                                                                                       
+<p>DES (and DDES) is a method for solving RANS equations near walls and
+large-eddy simulation (LES) equations away from walls.  This can be particularly
+useful when there are large regions of separated flow, and it is desired
+to time-accurately resolve the large turbulent eddies in the separated regions.
+DES capability has been added to CFL3D through the use of the 
+<a href="#keyword"> Keyword input</a> <strong>ides</strong> and
+<strong>cdes</strong>.  For DES, set <strong>ides</strong>=1, along with ivisc(1)=ivisc(2)=ivisc(3)=5 (DES is recommended
+for 3-D only).  The code should also be run in time-accurate mode (see manual Chapter 8).
+Running averages of flow quantities can be kept using, for example, keyword
+<strong>ipertavg</strong>.  See:
+<a href="#pertavg">More advanced running-average files</a>.
+Note that success with DES is often highly dependent on use of appropriate
+grid spacing.  See for example Spalart's "Young-Person's Guide to Detached-Eddy
+Simulation Grids," NASA/CR-2001-211032, July 2001.
+The user should also be aware that use of upwinding (the default in CFL3D)
+can be overly-dissipative in the LES regions where one is attempting to
+resolve the large turbulent eddies.</p>
+
+<p>After Version 6.5, <strong>ides</strong> can also be set to 2 for DDES
+(TCFD 20:181-195, 2006), or 3 for DDES with the turbulence production term
+cut OFF in the LES region.
+The model <strong>ides</strong>=3 also uses the keyword <strong>cddes</strong>, which helps
+determine how far away from walls the cutoff takes effect.  Default is
+0.975.  The higher the number (must be less than 1.0), the further away from
+the wall the cutoff will occur.
+The cutoff is based on the DDES f<sub>d</sub> parameter.</p>
+
+<p>Also after Version 6.5, both DES and DDES can be used in conjunction with
+the Wilcox k-omega (ivisc=6), SST (ivisc=7), or the Langtry-Menter transition (ivisc=40) models. The coding 
+for the two-equation models is
+based on Strelets AIAA 2001-0879, except that only one <strong>cdes</strong> constant is used
+(rather than blending two).
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="ifull"></a><strong>Full Navier-Stokes Capability:</strong>
+                                                                                                          
+<p> Full Navier-Stokes capability has been added to CFL3D through the use of the 
+<a href="#keyword"> Keyword input</a> <strong>ifullns</strong>. 
+The "traditional" CFL3D code is a thin-layer solver, for which
+viscous derivatives are included in each of the (selected) coordinate directions,
+but cross-derivative terms are ignored.  Now, the cross-derivatives can be
+included explicitly by setting <strong>ifullns</strong>=1.  When using the full N-S option, viscous terms
+should be turned on in all of the coordinate directions (ivisc(1) = ivisc(2) = ivisc(3) = X
+for 3-D and ivisc(2) = ivisc(3) = X for 2-D, where X is the desired number 
+for laminar or turbulent flow). Note that the turbulence models, which are
+decoupled from the mean-flow equations, still ignore cross-derivative terms.</p>
+
+<p><strong><em>Acknowledgment</em>:</strong> Thanks to Venkat Venkatakrishnan of Boeing Commercial
+   Airplane Group, Seattle, for implementation.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                          
+<hr>
+
+<p><a NAME="icurv"></a><strong>Curvature correction capability for certain turbulence models:</strong>
+
+<p>For the SA model (ivisc=5), two versions of the SARC curvature correction
+(AIAA Journal, Vol. 38, No. 5, 2000, p.784-792) are
+available: a 2-D-only version (<a href="#keyword">Keyword input</a> <strong>isarc2d</strong>=1) and a more
+general 3-D version (<a href="#keyword">Keyword input</a> <strong>isarc3d</strong>=1).
+Keyword <strong>sarccr3</strong> controls the SARC constant Cr3.
+Note that the 2-D version makes an incompressible flow assumption, whereas the 3-D version does not.
+Also note that the 3-D version reduced to a first-order one-sided difference for its
+strain-rate tensor gradients at block interfaces.
+The 2-D version accounts for effects due to curvature in the x-y or x-z plane only, with the
+second dimension "up", and with the i-index necessarily in the spanwise direction.
+The 2-D version was implemented effective only after V6.3, and the 3-D version
+was implemented effective only after V6.5.
+For flows that are not highly
+compressible, use of <strong>isarc3d</strong>=1 should give
+essentially the same results as <strong>isarc2d</strong>=1.
+These corrections do not account for time-dependent effects or system rotation effects.
+
+<p>Effective Version 6.4 and later, a 2-D version of the
+curvature-corrected EASMCC method (controlled by
+<a href="#keyword"> Keyword input</a> <strong>ieasmcc2d</strong>) applies to EASM
+(ivisc=8,9,11,12,13,14). Note that the curvature correction
+(described in Int. J. Heat & Fluid Flow, Vol. 22, 2001, p.573-582) using this keyword is only
+implemented in a 2-D sense (with effects due to curvature in the x-y or x-z plane only, with the
+second dimension "up", and with the i-index necessarily in the spanwise direction
+and <em>not</em> accounted for). This correction does not account for
+time-dependent effects or system rotation effects.
+
+<p>A general 3-D curvature correction has also been added to the Wilcox k-omega and SST models (ivisc=6 or 7),
+controlled by the <a href="#keyword"> Keyword input</a> <strong>isstrc=1</strong>;
+the references for this are: AIAA 98-2554 and J. Aircraft 41(2):268-273 2004.
+Currently the default for the constant in the correction is <strong>sstrc_crc=1.4</strong>.
+A second curvature correction is given by <strong>isstrc=2</strong>;
+the reference for this is ASME Journal of Turbomachinery, Vol. 131, October 2009, 041010. 
+This latter model has no adjustable constants.
+                                                  
+<p><strong><a href="#top">Return To Top</a></strong></p>
+                                                                                                          
+<hr>
+
+<p><a NAME="dacles"></a><strong>Dacles-Mariani Rotation Correction for SA Model:</strong>
+
+<p>The Dacles-Mariani correction to the SA model, sometimes known as SA-R, seeks to
+reduce or eliminate the eddy viscosity produced in
+regions of pure rotation, such as in vortex cores
+(see AIAA J 33(9):1561-1568, 1995). It is invoked by setting
+<a href="#keyword"> Keyword input</a> <strong>isar</strong> to 1 when <strong>ivisc</strong>=5. The keyword
+<strong>crot</strong> is used to override the default SA-R constant of 2.0.
+</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="clcdspec"></a><strong>Keeping track of CL and CD on different bodies:</strong>
+
+<p>The 
+<a href="#keyword"> Keyword input</a> <strong>iclcd</strong> controls the calculation of Cl and Cd for different
+bodies. Two different bodies cannot be in the same block. To initiate
+the calculation, set <strong>iclcd</strong> to 1 and provide an input file name
+<strong>clcd.inp</strong> of the form:
+
+<pre>
+# Unique number of Cl, Cd Calculations = comment line
+2
+# Cl calc # vs Block # = comment line
+1 5
+2 10
+</pre>
+
+<p>In this example, the lift and drag will be calculated for two
+bodies. Body one is solely contained in block 5. Body two is solely
+contained in block 10. Note that the cfl3d input file must be set up
+to properly calculate the lift and drag on blocks 5 and 10 using
+<strong>iforce</strong>. The <strong>clcd.inp</strong> allows an arbitrary number of Cl, Cd calculations
+and block entries. The entries can be in any order.
+
+<p>At the end of the run, a restart file called <strong>clcd.bin</strong> will be written
+as well as data files <strong>ClCd_#.dat</strong>, where # is the id of the body (1 or
+2 in the example). The dat files are in tecplot format and contain the
+following variables:
+iteration, Cl for body #, Cd for body #, Total Cl, Total Cd, Total
+pressure lift, Total pressure drag.
+
+<p>To continue the Cl, Cd calculation, the <strong>iclcd</strong> variable should be set
+to 2. The code will the nread from the <strong>clcd.bin</strong> (if it does not exist, 
+the code will start over from scratch). If <strong>iclcd</strong> is 1, 
+the <strong>clcd.bin</strong> restart file will be ignored.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="2dmovie"></a><strong>2D and coarse movie output:</strong>
+
+<p>The
+<a href="#keyword"> Keyword input</a> <strong>i2dmovie</strong> is used for outputting
+2-D movie files (even if the case is a 3-D case).  The value of
+<strong>i2dmovie</strong> determines how many time steps should pass in between
+outputs of the grid and flowfield. For example,
+<strong>i2dmovie</strong> = 1 writes out the data every time
+step, and 5 writes out the data every 5th time step.
+
+<p>The
+<a href="#keyword"> Keyword input</a> <strong>icoarsemovie</strong>
+is used to initiate general 3-D movie-type of output. The value of
+<strong>icoarsemovie</strong> controls the
+frequency of data output.
+
+<p>If either <strong>i2dmovie</strong> or <strong>icoarsemovie</strong> is nonzero, the auxiliary input file
+<strong>coarsemovie.inp</strong> must exist and be of the form:
+
+<pre>
+# iinc_2d, jinc_2d, kinc_2d
+2, 2, 2
+# iinc_coarse, jinc_coarse, kinc_coarse
+2, 2, 2
+</pre>
+
+The parameters iinc_2d, jinc_2d, kinc_2d are used in conjunction
+with <strong>i2dmovie</strong>.  In this case, the plane i=imax/2 will be output (iinc_2d is
+not used). The parameters jinc_2d and kinc_2d are reduction factors for the j and k
+directions, respectively. For example, if jinc_2d = 2, every other
+grid point in the j-direction will be output. 
+When using <strong>i2dmovie</strong>, the single precision,
+PLOT3D, unformatted files are named:
+
+<p><strong>movie_2d.g, movie_2d.q</strong></p>
+
+The parameters iinc_coarse, jinc_coarse, kinc_coarse are used in conjunction
+with <strong>icoarsemovie</strong>, and represent
+the reduction factors for the three directions. For example, if 
+kinc_2d = 4, then every fourth grid point in the k-direction
+will be output. When using <strong>icoarsemovie</strong>,
+the single precision, PLOT3D, unformatted ouput files are named:
+
+<p><strong>movie_coarse.g, movie_coarse.q</strong></p>
+
+<p>The
+<a href="#keyword"> Keyword input</a> <strong>iskip_blocks</strong> is a very specific
+parameter for skipping the writing of certain blocks when using
+<strong>i2dmovie</strong>.  This can be useful if there are multiple blocks in the
+spanwise direction, but one only wants to output 2-D data from a subset of them.
+For example, when <strong>iskip_blocks</strong> = 1, no blocks are skipped, when
+<strong>iskip_blocks</strong> = 2, every other block is written (1,3,5,...), when
+<strong>iskip_blocks</strong> = 3, every third block is written (1,4,7,...), etc.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="varcfltau"></a><strong>Variable CFLTAU:</strong>
+
+<p>The
+<a href="#keyword"> Keyword inputs</a> <strong>cfltauMax</strong> and <strong>cfltau0</strong> are
+used for varying <strong>cfltau</strong> (the CFL number during the subiteration process)
+in time-accurate computations.
+
+<p><strong>cfltauMax</strong> = Maximum value that <strong>cfltau</strong> will attain at <strong>ncyc</strong> subiterations
+<p><strong>cfltau0</strong> = exponent for the ramping function of <strong>cfltau</strong> from the input value to
+<strong>cfltauMax</strong>. 
+
+<p>For <strong>cfltau0</strong> = 1, the ramping is linear. The exact function is
+cfltau + (cfltauMax-cfltau)*((icyc-1.)/(ncyc-1.))**cfltau0).
+If <strong>cfltauMax</strong> is less than <strong>cfltau</strong> (given in the input file),
+then no ramping is done.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+
+<p><a NAME="Qavg"></a><strong>Running-average Q-file:</strong>
+
+<p>The 
+<a href="#keyword"> Keyword input</a> <strong>iteravg</strong> controls the ability to maintain a
+running-average of the conserved variables in the flowfield.
+This is particularly useful for time-accurate, unsteady
+compuations for which an AVERAGED result is desired.
+By hardwired default, CFL3D writes the running average to 
+(and reads from) files with the names: </p> 
+
+    <p><strong>cfl3d_avgg.p3d, cfl3d_avgq.p3d</strong></p>
+
+<p>These are PLOT3D-type files, of type unformatted,
+multigrid, iblanked, 3-D (even for 2-D runs!).  These 
+files are always written in the same precision 
+(single or double) that the CFL3D code was
+compiled in.  This is necessary to maintain identical
+results with or without restarts.  Also, it is
+necessary to output the data at CELL CENTERS.  Thus,
+the grid in cfl3d_avgg.p3d is a CELL-CENTER grid!</p>
+
+<p>The 
+<a href="#keyword"> Keyword input</a> <strong>iteravg</strong> should be set to 1 when it is
+desired to initiate averaging with this particular run.  
+If you wish to restart and continue averaging from 
+a previous run, set <strong>iteravg</strong>=2 and the code will read in 
+the existing results from cfl3d_avgq.p3d and will continue 
+the running average (if this file does not exist, then the code will
+start averaging from scratch).</p>
+
+<p>Note that the running average is done on iteration,
+not on time.  If you alter the time step during the
+middle of taking a running average, the code will NOT
+take the change into account.  Subiterations are not 
+included in the average, only the result at the end
+of each global cycle.  In the file cfl3d_avgq.p3d, the
+"time" slot is used to store the total number of
+iterations used to make up the average.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="pertavg"></a><strong>More advanced running-average files:</strong>
+
+<p>The
+<a href="#keyword"> Keyword input</a> <strong>ipertavg</strong>
+has similar functionality to <strong>iteravg</strong>, except that it stores primitive
+variables and additional perturbation statistics at GRID POINTS. If <strong>ipertavg</strong>
+is 1, the averaging starts. If <strong>ipertavg</strong> is 2, the code will read
+restart files and continue the averaging (if the restart files are not
+available, it will start averaging from scratch). With <strong>ipertavg</strong>, the
+grid points are written to:
+
+<p><strong>cfl3d_avgg_ruvwp.p3d</strong></p>
+
+The primitive
+variables and the square of the primitive variables are iteration-averaged at
+the grid points and written to:
+
+<p><strong>cfl3d_avg_ruvwp.p3d, cfl3d_avg_ruvwp2.p3d</strong></p>
+
+<p>In addition, an approximation to the average of the square of the
+perturbation of each variable ([(q-[q])**2] ~ ([q**2]-[q]**2)) is written
+to:
+
+<p><strong>cfl3d_avg_ruvwp2_pert.p3d</strong></p>
+
+<p>The files are all in double precision PLOT3D format.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="keepfree"></a><strong>Maintaining ambient turbulence levels without decay:</strong>
+
+<p>The
+<a href="#keyword"> Keyword input</a> <strong>keepambient</strong> allows a two-equation turbulence 
+computation to maintain its freestream levels.  Ordinarily, in the "freestream," the 
+turbulence levels will decay from their values set at the inflow boundary.  This decay
+is a natural consequence of the destruction terms in the equations. (Note that the
+Baldwin-Barth and Spalart-Allmaras models do not experience this type of freestream decay,
+and it is not applicable to the Baldwin-Lomax model.)
+
+<p>Sometimes it can be useful to maintain the ambient levels of turbulence throughout the
+freestream.  In this way, one can better mimic in the computation what is actually
+experienced in flight or wind tunnel in terms of turbulence levels.
+
+<p>By setting <strong>keepambient</strong> = 1, the freestream turbulence levels are
+maintained regardless of distance from the outer boundary or coarseness of the freestream
+grid.  By default, the freestream levels for turbulence are set according to the
+defaults given in the 
+<a href="cfl3dv6_v5manual.html">Version 5 Manual</a>.  These levels may or may not
+be appropriate. In fact, it is now recommended that for the S-A model one should
+use <strong>tur10</strong>=3.0, rather than the default value of <strong>tur10</strong>=1.341946,
+in order to ensure the avoidance of possibile inconsistent/delayed transition (see AIAA-2006-3906).
+The code's default turbulence levels can easily be overridden by the user through the use of 
+the <a href="#keyword"> Keyword inputs</a>: <strong>tur10</strong> and <strong>tur20</strong>.  
+
+<p>The following relationships are useful for determining how to set the ambient levels
+for two-equation models:
+The turbulence intensity (in percent) = Tu = 100*sqrt(2/3*(k/Uinf**2)).  Thus, for example,
+for Tu=0.1 percent, (k/Uinf**2) = 1.5 x 10**(-6).  Furthermore, 
+mu_t/mu = Re*Cmu*(k/Uinf**2)**2/(epsilon*L/Uinf**3) = Re*(k/Uinf**2)/(omega*L/Uinf),
+for the models where the omega variable has Cmu absorbed into it.
+Therefore, one can either select a freestream epsilon or omega directly, or compute
+it based on freestream mu_t, although it is recommended that omega*L/Uinf not be
+set too big.
+
+<p>Note that <strong>tur10</strong> and <strong>tur20</strong> represent different quantities,
+depending on the particular model being used!  They must be given in proper
+nondimensional form, as specified in the User's Manual.
+For example, for the Menter SST model, <strong>tur10</strong> represents omega*mu_inf/(rho_inf*a_inf**2)
+(with Cmu absorbed into omega) and <strong>tur20</strong> represents k/(a_inf**2),
+where a_inf is the freestream speed of sound.
+
+<p>Currently, <strong>keepambient</strong> = 1 does <strong>not</strong> work for the k-enstrophy model 
+(<strong>ivisc</strong>=15) or k-kL-MEAH2015 model (<strong>ivisc</strong>=16).
+
+<p>The following table may help determine appropriate freestream levels to choose when
+using <strong>keepambient</strong> = 1. In the Table, M = Mach number, Re = Reynolds number, and Cmu
+is a turbulence constant generally = 0.09.
+However, note that Cmu does not come out to 0.09 in the "freestream" for nonlinear models
+(it is about 0.114 for <strong>ivisc</strong> = 11, 12, and
+about 0.188 for <strong>ivisc</strong> = 8, 9, 13, 14).
+Caution should be exercised if using values of Tu above 1%: this yields extremely high freestream
+levels of eddy viscosity when using the recommended omega*L/Uinf = 5; strange behavior may 
+result (particularly for the SST model near stagnation points); it may be necessary to
+increase omega*L/Uinf in this case.
+
+<p>Because it is new, this <strong>keepambient</strong> feature should be used with caution and 
+results from it checked very carefully.
+
+<a NAME="ambienttable">
+<center>
+<table border cellpadding=4>
+<caption align=top><strong>CHOOSING AMBIENT TURBULENT VALUES FOR 2-EQN MODELS</strong></caption>
+<tr align="center">
+  <th align="center">Desired Tu, in percent</th>
+  <th align="center">k/Uinf^2</th>
+  <th align="center">tur20 input to code</th>
+  <th align="center">recommended omega*L/Uinf</th>
+  <th align="center">tur10 input to code (ivisc=6,7)</th>
+  <th align="center">tur10 input to code (ivisc=8,12,14)</th>
+  <th align="center">tur10 input to code (ivisc=9,10,11,13)</th>
+</tr>
+<tr align="center">
+  <td align="center">0.01</td>
+  <td align="center">1.5 x 10^(-8)</td>
+  <td align="center">M*M*[1.5 x 10^(-8)]</td>
+  <td align="center">5.0</td>
+  <td align="center">5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re*[1.5 x 10^(-8)]</td>
+</tr>
+<tr align="center">
+  <td align="center">0.1</td>
+  <td align="center">1.5 x 10^(-6)</td>
+  <td align="center">M*M*[1.5 x 10^(-6)]</td>
+  <td align="center">5.0</td>
+  <td align="center">5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re*[1.5 x 10^(-6)]</td>
+</tr>
+<tr align="center">
+  <td align="center">1.0</td>
+  <td align="center">1.5 x 10^(-4)</td>
+  <td align="center">M*M*[1.5 x 10^(-4)]</td>
+  <td align="center">5.0</td>
+  <td align="center">5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re*[1.5 x 10^(-4)]</td>
+</tr>
+<tr align="center">
+  <td align="center">Tu</td>
+  <td align="center">1.5*(Tu/100)^2</td>
+  <td align="center">M*M*(k/Uinf^2)</td>
+  <td align="center">5.0</td>
+  <td align="center">5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re</td>
+  <td align="center">Cmu*5.0*M*M/Re*(k/Uinf^2)</td>
+</tr>
+</table>
+</center>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="aeroelast"></a><strong>New unsteady aeroelasticity features:</strong>
+<!--<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">-->
+
+<p>Many new features for aeroelasticity have been added to CFL3D (<em>after</em> V6.4).
+However, these may still be in flux, so should be used only with
+extreme caution.
+
+<p>The following represents some preliminary notes on the usage of some
+of the new aeroelasticity 
+<a href="#keyword"> Keyword inputs</a>.
+
+<p><strong>irigb</strong>  (1/0) (default 0)  Perform rigid body dynamics if set to 1. 
+Note that this currently requires aeroelastic input to function, since
+it use the qinf from the aeroelastic section of the code.
+<p><strong>greflrb</strong> Conversion factor, rigid body dynamics length/CFD length
+<p><strong>gaccel</strong> Acceleration of gravity
+<p><strong>tmass</strong> Total mass of vehicle
+<p><strong>yinert</strong> Total pitch mass moment of inertia
+<p><strong>irbtrim</strong> (0/1)  (default 0)  If set to 1 it performs
+longitudinal trim using Cl and Cm. 
+<p><strong>relax</strong> is a relaxation parameter for the
+trim computation.  Setting relax to 1 uses the full alpha/delta increment
+calculated using the stability derivatives.
+<p><strong>itrminc</strong> Number of time steps between a trim alpha/delta update.
+<p><strong>dclda</strong> Dcl/Dalpha
+<p><strong>dcldd</strong> Dcl/Ddelta
+<p><strong>dcmda</strong> Dcm/Dalpha
+<p><strong>dcmdd</strong> Dcm/Ddelta
+ 
+<p>Note that the control surface is created as one of the aeroelastic modes. 
+The mode that is used for trim is defined by setting moddfl = 4 in the
+aeroelastic input section.  The alpha is varied using the rigid grid rotation.
+ 
+<p><strong>ndwrt</strong> (0/1) (default 0)   If set to 1, the code writes out an ascii plot3d file
+of a grid block that has negative volumes when a restart file is written.  
+This file is in dgplot3d.bin.
+<p><strong>ndgrd</strong> (0/1) (default 0)  If set to 1, the code reads an ascii plot3d file
+of a grid block that had negative volumes when
+the restart file is read. This file must be called dgplot3d.bin.
+ 
+<p>These last two parameters were to be able to read a grid block having negative volumes
+into Gridgen for repair before restarting the code.  This may be useful at times, but
+it has been largely superceded by the code in 'updatedg' that simply performs this
+step at each time step when necessary, and only on the small region of the grid
+block that has negative volumes.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="nonlin"></a><strong>Nonlinear Quadratic Constitutive Relation for use with Linear Models:</strong>
+
+<p>Several of the turbulence models use non-linear constitutive relations (<strong>ivisc</strong>=11, 12, 13, 14).
+It is also possible to use the other "standard" linear models in conjunction with a non-linear
+constitutive relation.  The method from Spalart ("Strategies for Turbulence Modelling and Simulations,"
+Int. J. Heat and Fluid Flow, Vol 21, 2000, pp. 252-263) has been programmed into CFL3D (available
+only <em>after</em> V6.5).
+
+<p>To use this feature, set keyword <strong>i_nonlin</strong> to 1.  Keyword <strong>c_nonlin</strong> is used to set the
+constant (default = 0.3).  <em>After</em> V6.6, a keyword limiter <strong>snonlin_lim</strong> 
+(defaulted to 1.e-10) is used to limit the velocity derivative term in the denominator.
+To improve robustness for some difficult cases, it may be necessary to set this limiter to be higher 
+(typical value might be order 1.0).
+
+<p>EXPERIMENTAL: Starting <i>after</i> Aug 2019, a new keyword <b>i_tauijs</b> can be invoked that adds turbulence
+to the mean flow equations via tau<sub>ij</sub>s, rather than via eddy viscosity (plus nonlinear terms, if any).
+Like the eddy viscosity method, the 2/3*rho*k term is still ignored
+in the Boussinesq relation.  Also, note that this <b>i_tauijs</b>=1 method is 
+not done accurately at boundaries for multiblock cases; it currently uses one-sided differences.  One
+would need ux derivatives from across boundaries to be strictly the same as for the case of no block boundaries.
+Therefore, one should currently <b>NOT</b> use <b>i_tauijs</b>=1 for multiblock cases.
+
+<p>When using <b>i_tauijs</b>=1, then one can turn on various types of QCR (quadratic constitutive relation), using:
+<ul>
+  <li><b>i_qcr2000</b>=1  for QCR2000
+  <li><b>i_qcr2013</b>=1  for QCR2013 (note: this includes some limiting to avoid numerical problems noticed for this model.
+      The limiting employs min[sqrt(2S<sub>mn</sub>*S<sub>mn</sub>*),1.2*sqrt(2W<sub>mn</sub>W<sub>mn</sub>)]
+      in the C<sub>cr2</sub> term.
+  <li><b>i_qcr2013v</b>=1  for QCR2013-V
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="axi-sing"></a><strong>3D Axisymmetric 2-plane cases with singular axis:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>The "standard" method of solution in CFL3D does not work well for axisymmetric cases (with 2 planes
+in the i-direction rotated through a small angle) for which there is a singular or near-singular axis along the
+centerplane (unless it occurs in a region of the flowfield where nothing much is happening).  
+For example, the computation of turbulent axisymmetric free jets is a problem on such a grid.
+One issue is a severe underprediction of the turbulent kinetic energy.
+D. Yoder (NASA Glenn, private communication) discovered that use of
+the weak conservation form for the turbulence model dissipation terms is the cause of significant
+error in such cases.  Therefore, a new keyword: <strong>istrongturbdis</strong> has been added (<em>after</em> V6.6)
+which forces the turbulence dissipation terms to be solved with a pseudo-strong-conservation
+formulation when the keyword is set to 1.
+
+<p>Also, use of singular axis (with, e.g., BC type 1013) or a near-singular axis (with, e.g.,
+BC type 1005 or 1001) has been found to yield very poor
+convergence for quantities at and near the singular axis, due to the vanishing volume.  Keywords <strong>iaxi2plane</strong>
+(<em>after</em> V6.3) as well as <strong>iaxi2planeturb</strong> (<em>after</em> V6.6) help with this problem.
+The former keyword, when set to 1, modifies the CFL-based time step so that it no longer depends on the
+i-direction metrics.  The latter keyword, when set to 1, solves the turbulence equations in the j-k
+plane only (ignoring the axial i-direction).  Both of these keywords are only valid for cases with
+<strong>i2d</strong>=0 and <strong>idim</strong>=2.
+
+<p>These 3 keywords do not appear to have any noticeable influence for 3D axisymmetric 2-plane cases
+<em>without</em> a singular or near-singular axis.
+
+<p>Note: keyword <strong>ifullns</strong>=1 can exhibit problems converging for 3D axisymmetric 2-plane 
+cases with a singular axis. The cure for this issue has not yet been found.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="transmod"></a><strong>Three- and four-equation transition models:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>These features were added <em>after</em> V6.5. 
+The 3-eqn model is due to Robin Langtry of Boeing, and has not been documented yet.
+The 4-eqn model is due to Langtry and Menter (AIAA Journal, Vol. 47, No. 12, Dec. 2009,
+pp. 2894-2906).
+
+<p>Both should be considered to be under development.
+As such, they should be tried only by expert users, and even then only
+exercised with extreme caution.
+
+<p><strong>3-eqn:</strong>
+<p>The 3-eqn model combines a field equation for intermittency with the 
+Menter SST model.  Equations are not given here.  Once the model has been
+documented in a paper, that reference will be listed.
+
+<p>The model is invoked by setting <strong>ivisc</strong> to 30.
+The model attempts to predict natural transition based on several
+parameters, most of which are set through 
+<a href="#keyword"> Keyword inputs</a>. Some of the relevant 
+keywords that may typically be used in conjunction with this model are:
+
+<ul>
+   <li type=circle><strong>turbintensity_inf_percent</strong>: sets
+       freestream turbulence level (Tu), in percent</li>
+   <li type=circle><strong>eddy_visc_inf</strong>: sets freestream eddy viscosity level</li>
+   <li type=circle><strong>re_thetat0</strong>: the effective transition Reynolds number
+       (if the user desires to override the default computed value of
+       400 Tu<sup>-5/8</sup>)</li>
+   <li type=circle><strong>keepambient</strong>: prevents freestream turbulence levels from 
+       decaying</li>
+</ul>
+
+<p>The new intermittency function variable (gam) influences the production and 
+destruction terms in the SST model equations, causing laminar, transitional,
+and turbulent boundary layer behavior.
+The farfield boundary condition on the new intermittency function variable
+is 1, and the default wall boundary condition on it is zero flux, d(gam)/dn=0.
+
+<p>The model also provides an ad hoc mechanism to force tripping at a desired
+region or location.  This is accomplished by using new BCTYPE 2024.  This sets the
+wall boundary condition flux on the intermittency function with a user-specified
+constant INTERM (should be greater than zero):  d(gam)/dn = -(INTERM)*rho/mu*Uedge,
+where Uedge is estimated locally from isentropic relations. 
+This BC should be applied over a small index region
+near where tripping is desired.
+Typical input might look like the following:
+<pre>
+
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      2024         0         0       201       209         3
+    TWTYPE        CQ    INTERM
+        0.        0.      0.07
+
+</pre>
+
+<p>Here, the trip is given on the J0 surface over all i-indices, between
+the k-indices of 201-209. A constant in the equation for wall intermittency flux
+of 0.07 has been specified at this location.  The larger the value of INTERM, the greater
+the "injection" of intermittency and the greater the influence of the trip.
+
+<p><strong>4-eqn:</strong>
+<p>The 4-eqn model combines a field equation for intermittency and a
+field equation for Re_thetat with the
+Menter SST model.  This model is known as the gamma-Retheta transition model v1.1.
+Equations can be found in AIAA Journal, Vol. 47, No. 12, Dec. 2009,
+pp. 2894-2906.
+
+<p>The model is invoked by setting <strong>ivisc</strong> to 40.
+The model attempts to predict natural transition based on several
+parameters, most of which are set through
+<a href="#keyword"> Keyword inputs</a>. Typical relevant
+keywords for this model are:
+
+<ul>
+   <li type=circle><strong>turbintensity_inf_percent</strong>: sets
+       freestream turbulence level (Tu), in percent</li>
+   <li type=circle><strong>eddy_visc_inf</strong>: sets freestream eddy viscosity level</li>
+</ul>
+
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="lesmodel"></a><strong>Large Eddy Simulation (LES) capability:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>This feature was added <em>after</em> V6.5. It has not been documented in a 
+paper yet, so it should be considered to be under development. 
+As such, it should be tried only by expert users, and even then only 
+exercised with extreme caution.
+
+<p>The idea behind LES is to time-accurately resolve the large turbulent eddies,
+below some cut-off wave number, and to model the smaller eddies.  
+As such, LES should be run in 3-D only,
+and should be run in time-accurate mode (see manual Chapter 8). 
+Running averages of flow quantities can be kept using, for example, keyword
+<strong>ipertavg</strong>.  See:
+<a href="#pertavg">More advanced running-average files</a>.
+Currently, additional instantaneous information, averaged over each
+computer processor, are also written to files fort.500+myid.  This information
+would only be useful to the expert user, and requires additional postprocessing.
+
+<p>Success with LES is often highly dependent on use of appropriate grid spacing
+as well as on use of an appropriate numerical scheme (typically the less dissipative
+the better).
+The user should be aware that use of upwinding (the default in CFL3D) can be 
+overly-dissipative for LES.
+
+<p>LES has much stricter grid spacing requirements than hybrid RANS-LES
+models like 
+<a href="#idess">DES or DDES</a>.  Near walls, the required grid spacing typically approaches
+that needed by DNS for many cases.  Therefore, use of LES is generally
+restricted to very low Reynolds numbers, or to flows away from walls.
+
+<p>The LES option is invoked by setting <strong>ivisc</strong> to 25.  Then, the particular
+subgrid model is selected via 
+<a href="#keyword"> Keyword input</a> <strong>les_model</strong>.
+Current subgrid LES models coded in CFL3D are as follows.  All of these are
+non-dynamic models.
+Testing to date on these models has been extremely limited, so non-expert users are generally
+advised against using them.
+<ul>
+   <li type=circle>Smagorinsky:  <strong>les_model</strong>=1. Keyword
+     <strong>les_wallscale</strong> determines whether or not van Driest type
+     wall scaling is used</li>
+   <li type=circle>WALE (Flow, Turb, & Combust 62:183-200 1999): 
+     <strong>les_model</strong>=2. Keyword <strong>cs_wale</strong> is used to set the non-dynamic
+     constant associated with this model (typical values are 0.45-0.6)</li>
+   <li type=circle>Vreman (Phys Fluids 16(10):3670-3681 2004): 
+     <strong>les_model</strong>=3. Keyword <strong>cs_vreman</strong> is used to set the non-dynamic
+     constant associated with this model (typical values are 0.025-0.1)</li>
+</ul>
+
+<p>Setting <strong>les_model</strong>=0 yields no subgrid model, or implicit LES (ILES).
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="mms-sa"></a><strong>Method of Manufactured Solution for SA model:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>This feature was was added <em>after</em> V6.5, and was
+developed very specifically for the 3rd Workshop on CFD
+Uncertainty Analysis, held at Instituto Superior Tecnico, Lisbon Portugal, 
+October 2008 (see AIAA 2009-3647 by Eca et al).  It uses the method of manufactured
+solution (MMS) from Eca and others for a turbulent flat plate,
+as a way of verifying the coding of the
+full Navier-Stokes equations as well as of the turbulence model.
+In the MMS method, exact manufactured source terms are added to the
+Navier-Stokes equations (as well as the turbulence equations).
+In this way, the solution is driven toward the "exact" manufactured solution,
+making analysis of truncation and discretization error (as well as the finding of
+coding errors) easier.
+See also AIAA 2007-4089, Int J. Numer. Meth. Fluids 54:119-154, 2007,
+and Int J. Numer. Meth. Fluids 44:599-620, 2004.
+It is currently only coded for the Spalart-Allmaras turbulence model in CFL3D.
+Details of results using CFL3D and another code (FUN3D)
+can be found in NASA/TM-2008-215537, November 2008
+by Rumsey and Thomas.
+
+<p>To use this particular feature,
+a grid or series of successively finer grids needs to be created, which are
+2-D (1 cell, or 2 gridpoints wide) and square:  
+x between 0.5 and 1.0 inclusive, and z between 0 and 0.5 inclusive.
+For best results, the grids should be stretched in the z-direction, with lower wall 
+(K0) clustering.
+
+<p>The manufactured solution provides an exact analytic solution for u, w (vertical
+velocity), p, and eddy viscosity.  There are 3 variations available for the
+turbulence, called MS1,
+MS2, and MS4.  See NASA/TM-2008-215537 for details.  As discussed in that paper,
+MS1 is preferable.
+
+<p>To analyze truncation error, the following <a href="#keyword"> Keyword inputs</a>
+are needed: <strong>ifullns</strong>=1, and <strong>iexact_trunc</strong>=1, 2, or 4 (for MS1, MS2, or MS4).
+Furthermore, in the input file: <strong>NCG</strong>=0, <strong>MSEQ</strong>=1, <strong>MGFLAG</strong>=0, 
+<strong>MGLEVG</strong>=1, and <strong>IREST</strong>=0.  The code should only be
+run for 1 iteration: <strong>NCYC</strong>=1.
+For the J0, JDIM, and KDIM boundaries, the new boundary condition
+<strong>BC9999</strong> should be used.  This BC imposes the exact MSx solution at the boundaries.
+The K0 boundary should use the usual <strong>BC2004</strong>.
+
+<p>The following is an example input file:
+<pre>
+
+I/O FILES
+mms_stretch1_289_1153.p3d
+plot3dg.bin
+plot3dq.bin
+cfl3d.out
+cfl3d.res
+cfl3d.turres
+cfl3d.blomax
+cfl3d.out15
+cfl3d.prout
+cfl3d.out20
+ovrlp.bin
+patch.bin
+restart.bin
+>
+ifullns 1
+iturbord 2
+iexact_trunc 1
+iexact_disc 0
+iexact_ring 0
+<
+    turbulent flat plate (plate from j=17-65, prior to 17 is symmetry)
+     XMACH     ALPHA      BETA  REUE,MIL   TINF,DR     IALPH    IHSTRY
+    0.2000    00.000       0.0    01.000     540.0         0         0
+      SREF      CREF      BREF       XMC       YMC       ZMC
+   1.00000   1.00000    1.0000   0.00000      0.00      0.00
+        DT     IREST   IFLAGTS      FMAX     IUNST    CFLTAU
+    -5.000         0       000   05.0000         0       10.
+     NGRID   NPLOT3D    NPRINT    NWREST      ICHK       I2D    NTSTEP       ITA
+        -1         1         0      5000         0         1         1         1
+       NCG       IEM  IADVANCE    IFORCE  IVISC(I)  IVISC(J)  IVISC(K)
+         0         0         0       001         0        05        05
+    IDIM    JDIM    KDIM
+      02     289    1153
+    ILAMLO    ILAMHI    JLAMLO    JLAMHI    KLAMLO    KLAMHI
+         0         0         0         0         0         0
+     INEWG    IGRIDC        IS        JS        KS        IE        JE        KE
+         0         0         0         0         0         0         0         0
+  IDIAG(I)  IDIAG(J)  IDIAG(K)  IFLIM(I)  IFLIM(J)  IFLIM(K)
+         1         1         1         0         0         0
+   IFDS(I)   IFDS(J)   IFDS(K)  RKAP0(I)  RKAP0(J)  RKAP0(K)
+         1         1         1   0.33333   0.33333   0.33333
+      GRID     NBCI0   NBCIDIM     NBCJ0   NBCJDIM     NBCK0   NBCKDIM    IOVRLP
+         1         1         1         1         1         1         1         0
+I0:   GRID   SEGMENT    BCTYPE      JSTA      JEND      KSTA      KEND     NDATA
+         1         1      1001         0         0         0         0         0
+IDIM: GRID   SEGMENT    BCTYPE      JSTA      JEND      KSTA      KEND     NDATA
+         1         1      1002         0         0         0         0         0
+J0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      9999         0         0         0         0         0
+JDIM: GRID   SEGMENT    BCTYPE      ISTA      IEND      KSTA      KEND     NDATA
+         1         1      9999         0         0         0         0         0
+K0:   GRID   SEGMENT    BCTYPE      ISTA      IEND      JSTA      JEND     NDATA
+         1         1      2004         0         0         0         0         2
+              TWTYPE        CQ
+                 -1.        0.
+KDIM: GRID   SEGMENT    BCTYPE      ISTA      IEND      JSTA      JEND     NDATA
+         1         1      9999         0         0         0         0         0
+      MSEQ    MGFLAG    ICONSF       MTT      NGAM
+         1         0         0         0        02
+      ISSC EPSSSC(1) EPSSSC(2) EPSSSC(3)      ISSR EPSSSR(1) EPSSSR(2) EPSSSR(3)
+         0       0.3       0.3       0.3         0       0.3       0.3      0.3
+      NCYC    MGLEVG     NEMGL     NITFO
+        01        01        00       000
+      MIT1      MIT2      MIT3      MIT4      MIT5      MIT6      MIT7     MIT8
+        01        01        01        01        01         1         1        1
+   1-1 BLOCKING DATA:
+      NBLI
+         0
+ NUMBER   GRID     :    ISTA   JSTA   KSTA   IEND   JEND   KEND  ISVA1  ISVA2
+ NUMBER   GRID     :    ISTA   JSTA   KSTA   IEND   JEND   KEND  ISVA1  ISVA2
+  PATCH SURFACE DATA:
+    NINTER
+         0
+  PLOT3D OUTPUT:
+   GRID IPTYPE ISTART   IEND   IINC JSTART   JEND   JINC KSTART   KEND   KINC
+      1      0      0      0      0      0      0      0      0      0      0
+ IMOVIE
+      0
+  PRINT OUT:
+   GRID IPTYPE ISTART   IEND   IINC JSTART   JEND   JINC KSTART   KEND   KINC
+  CONTROL SURFACE:
+  NCS
+    0
+   GRID ISTART   IEND   JSTART   JEND   KSTART   KEND  IWALL  INORM
+
+</pre>
+
+<p>Only a single processor should be used.
+Results for truncation error are output to the files fort.301 and fort.302.
+
+<p>To analyze discretization error, the following <a href="#keyword"> Keyword inputs</a>
+are needed: <strong>ifullns</strong>=1, and <strong>iexact_disc</strong>=1, 2, or 4 (for MS1, MS2, or MS4).
+For this analysis, the code must be run completely to convergence (machine zero).
+Typically mesh sequencing and multigrid are employed to speed this process.
+Results for discretization error are output to the file fort.201.
+
+<p>Notes:
+
+<ul>
+  <li type=circle>The SA model employed by Eca et al has minor differences from the
+"official" version of SA (used in CFL3D).  In particular, they
+leave out the f<sub>t2</sub> term in the model.  This has been included in
+the particular MMS coded into CFL3D.
+  <li type=circle>Because CFL3D is a compressible code, an additional exact solution
+variable of constant total temperature everywhere in the domain was specified,
+based on freestream Mach number of 0.2. (The original MMS of Eca et al was for
+incompressible flow.)
+  <li type=circle>For comparing the integral quantity of drag on the bottom wall, the
+exact solution from the MMS can be found to be CD=0.625706270620e-5.
+  <li type=circle>The MMS-related Keyword <strong>iexact_ring</strong> is generally not used.
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="sepfix-ko"></a><strong>Ad-Hoc Separation Fix:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>This feature is an attempt to fix (in an ad-hoc fashion) the problem
+of turbulence models predicting too little turbulent shear stress in the shear layers
+of separation bubbles, resulting in delayed reattachment and recovery downstream.
+It is based on an idea from Volker, Langtry, and Menter, and is 
+documented for use with the SST model in NASA/TM-2009-215952 (Rumsey, C. L.),
+December 2009.  The current implementation works only for <strong>ivisc</strong> 6 or 7, and
+is invoked by setting the keyword <strong>isstsf</strong> to 1 (available <em>after</em> V6.5).
+Although the current method is documented, the idea should still be considered under 
+development and should be used with caution.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="sweeping"></a><strong>New "sweeping jet" BC 2026:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>BC type 2026 is included <em>after</em> Version 6.6.  This boundary condition is for
+simulating time-dependent "sweeping" jets (typically at a surface).
+It must be used in combination with a time-accurate computation.
+The user specifies jet velocity, sweeping frequency, side-to-side sweeping angle, and 
+direction vectors.  The density and pressure are both extrapolated form the
+interior of the domain.
+It requires:</p>
+
+<dl><dd><strong>ndata = 9</strong><dd></dl>
+
+<p>with
+
+<dl><dd><strong>vmag, freq, sideangj (deg), sxa, sya, sza, sxb, syb, szb</strong><dd></dl>
+
+<p>specified via the input file.  The variables are as follows:
+
+<ul>
+<li><strong>vmag</strong> is the velocity
+  magnitude of the jet, nondimensionalized by speed of sound (vel/aref).  This jet
+  velocity magnitude is constant.
+<li><strong>freq</strong> is the frequency of the sweeping = freq*lref/aref, 
+  where freq is in Hz, lref is the reference length, 
+  and aref is the reference speed of sound.
+<li><strong>sideangj</strong> is the angle at which the jet "sweeps" from side to side, in deg.
+  For example, if <strong>sideangj</strong>=60, then the jet sweeps back and forth over 
+  a total of 120 deg.
+  The jet "sweeps" according to: thetajet=sideangj*sin(2*pi*freq*time)
+<li><strong>sxa, sya, sza</strong> = direction numbers of the jet (in the x, y, and z directions,
+  respectively) when sweeping angle is zero (i.e., when pointing "straight").  
+  For example, if <strong>sxa=1</strong>, <strong>sya=0</strong>, <strong>sza=0</strong>,
+  then the jet points in the +x direction when its sweeping angle is zero.
+  The direction numbers do not need to be normalized.
+<li><strong>sxb, syb, szb</strong> = second set of direction numbers, needed in combination
+  with the first set.  It defines the vector about which the jet sweeps.  This second
+  set of direction numbers must be normal to <strong>sxa, sya, sza</strong>.  It typically
+  points along a plane perpendicular to the body surface.
+</li>
+</ul>
+
+<p>
+With ndata=9, turbulence data
+is set from freestream conditions, but see also the section
+<a href="#turbdata">Turbulence Data Input For 2000 Series BC's</a>
+describing an enhancement to certain 2000 series BCs
+for inputting turbulence data. This BC allows the user to specify the
+turbulence levels in this way as well.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<p><a NAME="stressomegaRSM"></a><strong>Stress-Omega Full Reynolds Stress Models:</strong>
+<img border=0 src="Gifs/construction.gif" title="under construction" alt="under construction">
+
+<p>The new 7-equation turbulence models were added <em>after</em> V6.6. The default version
+of the model is WilcoxRSM-w2006.  The reference for
+the model can be found in Wilcox, D. C., Turbulence Modeling for CFD, 3rd Edition,
+DCW Industries, La Canada, CA, 2006.  See also:
+<a href="http://turbmodels.larc.nasa.gov/rsm-stressomega.html" target="blank">NASA Turbulence Modeling Resource website</a>.
+At this time, the model implementation
+should be considered under development.  It should be tried only by expert users,
+and even then only exercised with extreme caution.
+
+<p>The model is invoked by setting <strong>ivisc</strong> to 72.  The model has several
+model-specific input defaults that can be changed only through use of the file 
+<strong>kwstm.dat</strong>.  Included are: C1, C2, ALPHA, BETA_0, BETA_STAR, SIGMA,
+SIGMA_STAR, SIGMA_D0, JCUT, JSTART, KDIFF, IREAL, IOPT, CFLLOC, PDRATIO, MUTRATIO,
+ILDTS, FACTOR, NSUBIT, NFREQ, PROFILE, CP_PROFILE, CF_YPLUS_PLOT, CONTOUR_PLOT.
+Details for most of these parameters are not given here, but some are described below.
+
+<p>Keyword <strong>CF_YPLUS_PLOT</strong> set to 1 (via "<strong>CF_YPLUS_PLOT</strong> 1")
+will output cf and yplus plot files for this
+model (as many files as 
+there are zones).  Keyword <strong>CONTOUR_PLOT</strong> set to 1 (via "<strong>CONTOUR_PLOT</strong> 1")
+will output flowfield cell-center
+data files (as many files as there are zones).  These latter files include 
+primitive variables (rho, u, v, w, p), velocity derivatives,  and turbulence
+data, and should be used to query turbulence information for <strong>ivisc</strong>=72 (see below).
+
+<p>The <strong>PROFILE</strong> keyword and 8 other
+parameters are needed in the file <strong>kwstm.dat</strong> for controlling new optional
+profile output for this model. An example is given below:
+
+<pre>
+!           filename   grid ista  iend   jsta  jend    ksta  kend
+  profile   x=1mm         1     1    1    003   003     1     184
+  profile   x=50mm        1     1    1    057   057     1     184
+  profile   x=200mm       1     1    1    113   113     1     184
+  profile   x=650mm       1     1    1    165   165     1     184
+  profile   x=950mm       1     1    1    177   177     1     184
+  profile   xcoord        1     1    1      1   184     1       1
+</pre>
+
+<p>where: 
+<ul>
+  <li>filename: file name for the current profile. 
+      For example, the first line in the above input will generate the plot file named "x=1mm.plt".
+  <li>grid: the block id
+  <li>ista, iend: the starting and ending indices in the I-direction
+  <li>jsta, jend: the starting and ending indices in the J-direction
+  <li>ksta, kend: the starting and ending indices in the k-direction
+  <li>0 in the *sta will make *sta=1
+  <li>0 in the *end will make *end=*dim-1,  e.g.   iend=0  leads to iend=idim-1
+</ul>
+
+<p>For optional cp/cf output for this model, the keyword is <strong>CP_PROFILE</strong>. 
+It needs three more parameters: wdir, wstr, and wend, which specify the wall normal direction and index range:
+Wdir=1 - i-direction; Wdir=2 - j-direction; Wdir=3 - k-direction.
+Again, the 0 in *str, and *end will make the code to choose the default range (1, *dim-1).  An example is given below:
+
+<pre>
+!                filename    grid   istr    iend    jstr   jend  kstr   kend    wdir   wstr    wend
+  cp_profile     cpcf-1         1      1       1       1     64     1      1       3      1      34
+</pre>
+
+<p>Default freestream k and omega for the stress-omega model are the same as for 2-equation k-omega models in 
+CFL3D:  kref=9.e-9 and omegaref=1.e-6.  The best way to override these defaults is
+to make use of keywords <strong>turbintensity_inf_percent</strong> and <strong>eddy_visc_inf</strong>
+(see details in the <a href="#keyword"> Keyword inputs</a> section).
+
+<p>Note that the keyword <strong>ifullns</strong> has no effect on this model.  Solutions are
+always full Navier-Stokes (but diffusion terms in the turbulence equations, as
+always, are still thin layer).  The keyword <strong>edvislim</strong> has influence
+only in the turbulent heat flux term in the energy equation.  The <strong>ivisc</strong>=72 model does not
+currently work for all options in the code.  Error messages will be displayed and the
+code will stop if one attempts to use a non-working option.
+
+<p>In particular, note that one cannot extract turbulence quantities into PLOT3D
+output files for this model (using <strong>iptype</strong> of 2 in the standard input file).  Instead, one must
+set <strong>CONTOUR_PLOT</strong> to 1 in file <strong>kwstm.dat</strong>.  With this set, the code will
+output as many Tecplot output files (containing flowfield primitive variables, velocity gradients,
+and turbulence cell-centered
+data) as there are zones, at the end of the run.
+Incidentally, this special output method can also be used for <strong>ivisc</strong> numbers
+6, 7, and 15 (it is still controlled via 
+"<strong>CONTOUR_PLOT</strong> 1" in file <strong>kwstm.dat</strong>).
+
+<p>The 7-equations are as described in Section 6.3.3 of Wilcox (ed. 3). Equations 1-6 are
+solved for the following variables: tau_11, tau_22, tau_33, tau_12, tau_23, tau_13.
+Equation 7 is solved for omega.  Note that here, Wilcox's definition of tau_ij is used:
+tau_ij=-u_i'u_j'.  This is different than some textbooks, which sometimes include density in the
+definition of tau_ij.  Thus, the 6 tij turbulence variables output to the 
+post-processing file when using <strong>CONTOUR_PLOT</strong>
+set to 1 represent -u_i'u_j' (nondimensionalized by a_ref<sup>2</sup>).  The turbulent kinetic
+energy can be obtained via:  k = (u'u' + v'v' + w'w')/2 = -(tau_11 + tau_22 + tau_33)/2.
+
+<p>This 7-equation model is different from all others (to date) in CFL3D, in that
+it brings in the effects of the turbulence model to the RANS equations
+through direct implementation of the turbulence stress terms into the momentum
+equations, rather than through an eddy viscosity.
+
+<p><strong><em>Acknowledgment</em>:</strong> Xudong Xiao of Corvid Technologies, Mooresville, NC
+   implemented this model as part of NASA NRA NNX11AIAI56A, through H. Hassan of 
+   N. C. State University.</p>
+
+<p>Subsequent to the addition of WilcoxRSM-w2006, other closely-related versions were added.
+Access is the same (through <strong>ivisc</strong> = 72); but the new keyword <strong>issglrrw2012</strong> is
+also employed.  When <strong>issglrrw2012</strong> = 0 (default), WilcoxRSM-w2006 results.
+When <strong>issglrrw2012</strong> = 1, SSG/LRR-RSM-w2012 results (see 
+<a href="http://turbmodels.larc.nasa.gov/rsm-stressomega.html">http://turbmodels.larc.nasa.gov/rsm-stressomega.html)</a>.
+The main reference for this model version
+is Cecora, R.-D., Eisfeld, B., Probst, A., Crippa, S., and Radespiel, R., 
+"Differential Reynolds Stress Modeling for Aeronautics," AIAA Paper 2012-0465, January 2012.
+Summary of variations:
+<ul>
+<li> <strong>issglrrw2012</strong> = 1: SSG/LRR-RSM-w2012 standard (i.e., with generalized gradient diffusion)
+<li> <strong>issglrrw2012</strong> = 2: SSG/LRR-RSM-w2012 with no blending (F1=1); generalized gradient diffusion
+<li> <strong>issglrrw2012</strong> = 3: SSG/LRR-RSM-w2012 with blending; simple diffusion (SSG/LRR-RSM-w2012-SD)
+<li> <strong>issglrrw2012</strong> = 4: SSG/LRR-RSM-w2012 with no blending (F1=1); simple diffusion
+<li> <strong>issglrrw2012</strong> = 5: SSG/LRR-RSM-w2012 with Wilcox-type unblended simple diffusion
+<li> <strong>issglrrw2012</strong> = 6: (preliminary) g-eqn form of SSG/LRR-RSM-w2012
+</ul>
+(The options <strong>issglrrw2012</strong> = 2 and 4 are essentially WilcoxRSM-w1988 with two types of
+diffusion model.)
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<hr>
+
+<br>&nbsp;
+<hr>
+<hr>
+<br>&nbsp;
+
+<p><a NAME="diffs"></a><strong><u>SUMMARY OF INPUT FILE DIFFERENCES FROM EARLIER VERSIONS</u></strong>
+
+<p>The following items must as follows in order
+to be acceptable to the most up-to-date Version 6:</p>
+
+<ul>
+<p><li type=circle>In Version 6, if nplot3d = -1, one line of plot3d input data
+   MUST appear in the plot3d data section near the bottom of the
+   input file. In this one line of plot3d data, only the value of
+   iptype is used; all other values are ignored and may be set to zero.
+   In Version 5, nplot3d = -1 expected NO lines of plot3d input</strong>. See
+   <a href="#plot3d">Additional Plot3d Output Options</a>.</li></p>
+
+<p><li type=circle>For bc2008, in Version 5 the additional data required to set
+   the boundary condition was ndata=5, with u/a_inf,
+   v/a_inf, w/a_inf, turb1 and turb2 specified. The current usage in Version 6
+   is ndata=4, with rho/rho_inf, u/a_inf, v/a_inf, w/a_inf specified. 
+   See <a href="#bc2008">More General BC 2008</a>.</li></p>
+
+<p><li type=circle>In Version 6.3 and earlier, a "quirk" existed for
+   mesh-moving cases involving ialph=1 (y being "up"):
+   one needed to input grid movement parameters as if z
+   was "up" (see note in V5 Users manual in Chapter 3, Caution
+   under Notes in Section 3.35). Now, beginning with Updates to V6.3
+   as well as later versions, this anomaly has been corrected, and
+   one should input grid movement parameters in a manner consistent
+   with the particular grid.</p>
+
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="limit"></a><strong><u>LIMITATIONS</u></strong>
+
+<ul>
+<p><li type=circle>BC Type 2006 cannot be used in in the parallel code <strong>if it receives
+data from another zone</strong>; note that this does not absolutely preclude
+the use of bc2006 in a parallel run, it just places a restriction on its
+usage.</li>
+
+<p><li type=circle>The block splitter will not split dynamic-patching input data at this time.
+However, all other dynamic grid data will be automatically split. The block
+splitter will not split 2000 series bc data files (used when ndata <
+0) - rather, if ndata < 0 is used, the split input file will put a generic
+data file name in the filename position; that name will contain a number
+(1,2,3..) pointing to the data file position in the unsplit file from which
+a split data file must be provided by the user.</li>
+
+<p><li type=circle><strong>Embedded grid cases will, in general, not parallelize</strong>. If there
+are multiple blocks on the global level, then some amount of parallelism
+<em>may</em> be obtainable, but the safest bet is to run embedded cases with
+the sequential build of the code.</li>
+
+<p><li type=circle>The input file reader is not tolerant of blank lines at the
+end of the input file - any blank lines must be removed. All lines of the input
+file must fit within 80 columns.
+</ul>
+
+</ul></p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="prob"></a><strong><u>KNOWN PROBLEMS</u></strong>
+
+<ul>
+<p><li type=circle>If the code fails to read the input file correctly due to an
+input file error or a blank line at the end of the input deck, it can be
+difficult to tell <em><strong>where</strong></em> in the input deck the problem lies.
+Note that regardless of the supplied input file name, CFL3D will first
+copy this file to one called "tempz3y2x1.inp", and it is this file that
+is subsequently read for input data. In case an "end of file" is encountered
+in "tempz3y2x1.inp", try the following steps to determine the input file 
+error:</li>
+
+<ol>
+<p><li>Remove any blank lines at the end of the input file 
+(not "tempz3y2x1.inp")</li></p>
+
+<p><li>Check the bottom of the "precfl3d.error" file if such a file exists;
+if this file contains
+some, but not all, of the input file, then the end of the "precfl3d.error"
+file should correspond to the <strong><em>approximate</em></strong> location of the
+input file error</li></p>
+
+<p><li>If the "precfl3d.error" file contains all of the input file data, then
+the bottom of the "precfl3d.out" file should correspond to the
+<strong><em>approximate</em></strong> location of the input file error</li></p>
+</ol>
+
+</ul>
+
+
+<ul>
+
+<li type=circle>In the event that a system signal is issued (e.g. due to a segmentation
+fault) when running in parallel, the error file may not reflect this; there
+may also be other abort modes for the parallel code in which the error
+file does not contain the appropriate error message.</li>
+
+<p><li type=circle>Plot3d output on the T3E is not working as it should. Much of
+the difficulty seems to lie in the T3E itself. A workaround has been found that
+appears to solve the problem. However, plot3d files coming out of the T3E will
+be <strong>formatted</strong> (rather than the standard unformatted) and they will 
+<strong>not</strong> have iblank information (rather than the standard iblanked format)
+</li></p>
+
+<p><li type=circle>There is a problem when running 3D cases with multiple
+zones when there is 1-to-1 connectivity in the i-direction and the coarsest 
+level grid (mesh sequencing) goes all the way down to idim=2. The output file
+incorrectly displays "geometric mismatch" for the 1-to-1 connections at
+the coarsest level.
+</li></p>
+
+<p><li type=circle>The run-of-the-mill force routine (<strong>force.F</strong>, which accounts for lift,
+drag, and other forces) does NOT account for any contribution from momentum.  This is
+because it was originally assumed that at a solid wall, the relative velocity is zero and there is
+no contribution from this source.  However, the capability to include wall jets has since been added
+to the code, but without modifying this force routine. 
+Thus, currently, if you have a wall jet, the force routine will not include the effects
+of the jet's momentum.  An auxiliary routine (<strong>csurf.F</strong>, which integrates across
+control surfaces pre-specified near the bottom of the input file, and outputs results to
+the cfl3d.prout file) DOES include the effects
+of momentum, as long as the input file specifies iwall=0 and inorm=1 or -1 across the jet.  However,
+the auxiliary routine does NOT properly account for any wall motion (i.e., moving body) in the
+momentum terms.
+</li></p>
+
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 01/03/2020
+<br>&nbsp;
+</body>
+</html>

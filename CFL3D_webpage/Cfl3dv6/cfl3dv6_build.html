@@ -1,0 +1,216 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Building Executables</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+
+<center><h2>Building CFL3Dv6 Executables</h2></center>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#make">Make Commands</a></li>
+
+<li type=circle><a href="#alias">Suggested Environment Variables</a></li>
+
+<li type=circle><a href="#summary">Executive Summary</a></li>
+</ul>
+
+<p>The "executive summary" summarizes the basic make
+procedure and may be all you really want to know</p>
+
+<hr>
+<hr>
+
+<p><a NAME="make"></a><strong><u>MAKE COMMANDS</u></strong>
+
+<p>Once the <a href="cfl3dv6_install.html">installation</a> 
+step is complete, a makefile will automatically be created
+for the current platform architecture ( IRIX64 for SGI/Origin, solaris for
+Sun, alpha for DEC, etc.).
+If not already in the <strong>build</strong> directory, go there. If you now
+type <strong>make</strong>, you will see the options available:</p>
+
+<pre>
+
+make cfl3d_mpi       - build an mpi version of cfl3d
+ 
+make cfl3d_seq       - build a sequential version of cfl3d
+ 
+make cfl3d_libs      - build the common libraries for mpi/seq versions
+                       NOTE: this is done automatically when
+                       making cfl3d_mpi or cfl3d_seq
+ 
+make cfl3dcmplx_mpi  - build a complex mpi version of cfl3d
+ 
+make cfl3dcmplx_seq  - build a complex sequential version of cfl3d
+ 
+make cfl3dcmplx_libs - build the common libraries for complex mpi/seq versions
+                       NOTE: this is done automatically when
+                       making cfl3dcmplx_mpi or cfl3dcmplx_seq
+ 
+make precfl3d        - build a sequential version of precfl3d
+ 
+make ronnie          - build a sequential version of ronnie
+ 
+make preronnie       - build a sequential version of preronnie
+ 
+make maggie          - build a sequential version of maggie
+ 
+make splitter        - build a sequential version of splitter
+ 
+make splittercmplx   - build a complex sequential version of splitter
+ 
+make cfl3d_tools     - build a sequential version of some cfl3d utilities
+ 
+make scrubTARGET     - remove all files except the makefile in
+                       directories related to TARGET; where
+                       TARGET may be any one of the above targets
+                  ---> NOTE: you will have to re-link the files
+                       for TARGET before re-making TARGET
+ 
+make scruball        - remove all files except the makefile in
+                       all directories
+                  ---> NOTE: you will have to re-link before
+                       re-making any target (see linkall below)
+ 
+make linkTARGET      - create soft-links for the construction
+                       directory of TARGET
+                  ---> NOTE: not needed unless you have done a
+                       make with scrubTARGET
+ 
+make linkall         - create soft-links for all construction
+                       directories
+                  ---> NOTE: not needed unless you have done a
+                       make with scruball
+
+</pre>
+
+<p><strong>With the exception of MAGGIE, the chimera-grid preprocessor, all the
+executables can be compiled and run without first obtaining header files.
+Before compiling MAGGIE you must set up a header file called mag1.h and
+place it in the header directory.</strong>
+
+<p>After make has created a particular executable, it will tell you
+where it has created the executable, and you may copy or move that executable
+to a working directory, if desired. For example, if you type</p>
+
+<dl>
+<dd><strong>make cfl3d_mpi</strong></dd>
+</dl>
+
+<p>when the compilation is successfully completed you will see the following
+message:
+
+<pre>
+
+==============================================================
+
+                   DONE:  cfl3d_mpi created
+
+              the mpi executable can be found in:
+
+                    cfl/mpi/cfl3d_mpi
+
+==============================================================
+
+ </pre>
+
+<p>You could then type:</p>
+
+<dl>
+  <dd>cp&nbsp;&nbsp; cfl/mpi/cfl3d_mpi&nbsp;&nbsp; ~my_work_dir/.</dd>
+</dl>
+
+<p>where my_work_dir is the directory in which you have your cfl3d input 
+file.</p>
+
+<p><strong>NOTE:</strong> If you are a code developer, note that 
+on some systems (including Linux), the <strong>make</strong> command used by CFL3D
+does not recognize when one of its components has been updated.  In
+other words, after the code is compiled and you subsequently
+make a change to one or more of the subroutines, typing <strong>make</strong> in the
+build/ directory may not recompile the changed routines.  One way to
+force the routines to compile is to delete the .o object files of
+the routines you want recompiled.  These are located, for example, in
+build/cfl/libs/, build/cfl/seq/, or build/cfl/mpi/.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="alias"></a><strong><u>SUGGESTED ENVIRONMENT VARIABLES</u></strong>
+
+<p>You may find it more convienient to leave the executable where it is
+and simply create an environment variable, say, cfl3d_mpi, via your .chsrc
+file. This way you won't have to have duplicate copies of the executables
+lying around. As an example, your .cshrc file might contain:</p>
+
+<dl>
+<dd>setenv cfl3d_mpi ~username/cfl3dv6/build/cfl/mpi/cfl3d_mpi</dd>
+<dd>setenv cfl3d_seq ~username/cfl3dv6/build/cfl/seq/cfl3d_seq</dd>
+<dd>setenv precfl3d ~username/cfl3dv6/build/precfl/seq/precfl3d</dd>
+<dd>setenv splitter ~username/cfl3dv6/build/split/seq/splitter</dd>
+<dd>setenv preronnie ~username/cfl3dv6/build/preron/seq/preronnie</dd>
+</dl>
+
+<p>If the environment variables are used, executable names must be prepended
+by a "$" sign when they are invoked, e.g. use $cfl3d_seq&nbsp; < cfl3d.inp
+rather than cfl3d_seq&nbsp; < cfl3d.inp
+
+<p>Note: it is suggested to set an environment variable, rather than an 
+alias, simply because the alias approach does not seem to work for parallel
+processing.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><a NAME="summary"></a><strong><u>EXECUTIVE SUMMARY</u></strong>
+
+<ul>
+<p><li type=circle>
+MAGGIE ONLY: a mag1.h header file must be created and then copied or soft-linked
+to the header directory cfl3dv6/header</li>
+
+<p><li type=circle>
+Create executable code by typing&nbsp; <strong>make&nbsp; [target]</strong></li>
+
+<p><li type=circle>
+Copy the resulting executables to your working directory (or set up an 
+environment variable)</li></p>
+</ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<hr>
+
+<p><strong>NEXT, SEE:</strong>
+<p><a href="cfl3dv6_execute.html">Running Version 6</a>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

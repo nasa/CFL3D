@@ -1,0 +1,33 @@
+(Note: starting in November 2012, CFL3D is being maintained under git, and no longer under CVS.)
+
+may cause problems with some compilers
+
+diff main.F main.F_10
+419,422c419,422
+<       call signal(8,usrint)
+<       call signal(9,usrint)
+<       call signal(10,usrint)
+<       call signal(11,usrint)
+---
+> c     call signal(8,usrint)
+> c     call signal(9,usrint)
+> c     call signal(10,usrint)
+> c     call signal(11,usrint)
+424,425c424,425
+<       call signal(8,usrint,-1)
+<       call signal(9,usrint,-1)
+---
+> c     call signal(8,usrint,-1)
+> c     call signal(9,usrint,-1)
+427c427
+<       call signal(7,usrint,-1)
+---
+> c     call signal(7,usrint,-1)
+429c429
+<       call signal(10,usrint,-1)
+---
+> c     call signal(10,usrint,-1)
+431c431
+<       call signal(11,usrint,-1)
+---
+> c     call signal(11,usrint,-1)

@@ -1,0 +1,96 @@
+
+
+
+dist/qout_2d.F
+----------------------------
+revision 1.6
+date: 2011/06/01 19:14:14;  author: rumsey;  state: Exp;  lines: +5 -1
+need ifdefs around MPI_ABORT calls so won't be seen in sequential compile
+=============================================================================
+Index: qout_2d.F
+===================================================================
+retrieving revision 1.5
+retrieving revision 1.6
+diff -r1.5 -r1.6
+31c31
+< c     $Id: qout_2d.F,v 1.5 2011/04/13 21:31:32 rumsey Exp $
+---
+> c     $Id: qout_2d.F,v 1.6 2011/06/01 19:14:14 rumsey Exp $
+595a596
+> #if defined DIST_MPI
+596a598,600
+> #else
+>                   stop
+> #endif
+
+
+
+dist/qoutavg.F
+----------------------------
+revision 1.7
+date: 2011/06/01 19:14:14;  author: rumsey;  state: Exp;  lines: +5 -1
+need ifdefs around MPI_ABORT calls so won't be seen in sequential compile
+=============================================================================
+Index: qoutavg.F
+===================================================================
+retrieving revision 1.6
+retrieving revision 1.7
+diff -r1.6 -r1.7
+21c21
+< c     $Id: qoutavg.F,v 1.6 2011/04/13 21:31:32 rumsey Exp $
+---
+> c     $Id: qoutavg.F,v 1.7 2011/06/01 19:14:14 rumsey Exp $
+394a395
+> #if defined DIST_MPI
+395a397,399
+> #else
+>                   stop
+> #endif
+
+
+
+dist/qout_coarse.F
+----------------------------
+revision 1.5
+date: 2011/06/01 19:14:14;  author: rumsey;  state: Exp;  lines: +5 -1
+need ifdefs around MPI_ABORT calls so won't be seen in sequential compile
+=============================================================================
+Index: qout_coarse.F
+===================================================================
+retrieving revision 1.4
+retrieving revision 1.5
+diff -r1.4 -r1.5
+33c33
+< c     $Id: qout_coarse.F,v 1.4 2011/04/13 21:31:32 rumsey Exp $
+---
+> c     $Id: qout_coarse.F,v 1.5 2011/06/01 19:14:14 rumsey Exp $
+560a561
+> #if defined DIST_MPI
+561a563,565
+> #else
+>                   stop
+> #endif
+
+
+
+dist/qout.F
+----------------------------
+revision 1.12
+date: 2011/06/01 19:14:14;  author: rumsey;  state: Exp;  lines: +5 -1
+need ifdefs around MPI_ABORT calls so won't be seen in sequential compile
+=============================================================================
+Index: qout.F
+===================================================================
+retrieving revision 1.11
+retrieving revision 1.12
+diff -r1.11 -r1.12
+21c21
+< c     $Id: qout.F,v 1.11 2011/04/13 21:31:32 rumsey Exp $
+---
+> c     $Id: qout.F,v 1.12 2011/06/01 19:14:14 rumsey Exp $
+533a534
+> #if defined DIST_MPI
+534a536,538
+> #else
+>                   stop
+> #endif

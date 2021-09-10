@@ -1,0 +1,347 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xml:lang="en" lang="en">
+<head>
+   <title>Running the Code</title>
+</head>
+<! <body bgcolor="#FFFFFF">
+<! <body background="Gifs/page.gif">
+
+<p><a href="#top"><img src="spacer.gif" width="0" height="0" border="0" alt="skip to content" /></a></p>
+<a id="top"></a>
+
+<hr>
+<center>
+<h2>
+Running CFL3Dv6 And Related Codes</h2></center>
+
+<hr>
+
+<p><strong><u>CONTENTS</u></strong></p>
+
+<ul>
+<li type=circle><a href="#precfl3d">PRECFL3D</a></li>
+
+<li type=circle><a href="#cfl3d">CFL3D</a></li>
+
+<li type=circle><a href="#preronnie">PRERONNIE</a></li>
+
+<li type=circle><a href="#ronnie">RONNIE</a></li>
+
+<li type=circle><a href="#maggie">MAGGIE</a></li>
+
+<li type=circle><a href="#splitter">SPLITTER</a></li>
+
+<li type=circle><a href="#moovmaker">MOOVMAKER (cfl3d_tools)</a></li>
+
+<li type=circle><a href="#plot3dg_to_cgns">PLOT3DG_TO_CGNS (cfl3d_tools)</a></li>
+
+<li type=circle><a href="#grid_perturb">GRID_PERTURB (cfl3d_tools)</a></li>
+
+<li type=circle><a href="#Get_FD">GET_FD (cfl3d_tools)</a></li>
+</ul>
+
+<p><strong>NOTES:</strong>
+
+<ol>
+<li>All the run commands shown below are shown as if the executable resides
+in the working directory; if environment variables are set up as suggested
+under <a href="cfl3dv6_build.html" target="mainframe">Building Executables</a>
+then any of the executable names shown below would need to be prepended by
+a $.</li>
+
+<li>Only the parallel versions of cfl3d (cfl3d_mpi and cfl3dcmplx_mpi)
+can be run on multiple processors; all other codes in the Version 6 package
+run on single processors.</li>
+
+<li>Codes that are not interactive are shown as being executed in the background,
+with the command line ending in an <strong>&</strong>. Interactive codes that require userinput are shown without the <strong>&</strong>.</li>
+</ol>
+
+<hr>
+<hr>
+
+
+<p><a NAME="precfl3d"></a><strong><u>PRECFL3D</u></strong>
+
+<p>Because version 6 has dynamic memory allocation, there is no
+<strong><em>requirement</em></strong> to run precfl3d before you can run cfl3d.
+However, you may still find it useful to do so
+in order to assess how much memory will be required to run the case
+at hand, allowing you to determine
+whether a particular problem can fit within the memory of the machine,
+or to deterimine the appropriate queue in which to submit the job.
+
+<p>The usage of precfl3d has changed slightly from previous versions: you
+must now specify the number of processors in addition to the input file,
+for example:
+
+<ul><strong>precfl3d&nbsp; -np <em>num_procs</em> < </strong>&nbsp;<strong>cfl3d.inp&nbsp; &</strong></ul>
+
+<p>where <strong><em>num_procs</em></strong> is the total number of processors,
+including the host.
+When running on a single processor, that processor is the host, so
+num_procs=1 will suffice to assess the memory requirements for the
+sequential version of the code.
+
+<p>An important reason why you may want to run precfl3d before 
+running the parallel
+version of the code is that for <strong><em>num_procs</em></strong> > 1, precfl3d
+will output an auxiliary file called <strong>ideal_speedup.dat</strong>.
+This file will list the best possible speedup you could hope to achieve
+for the current case, using various numbers of compute processors, ranging
+from 1 to the number of zones in your grid.</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="cfl3d"></a><strong><u>CFL3D</u></strong>
+
+<p><li>Standard (real) code, single processor:</li>
+
+<ul><strong>cfl3d_seq&nbsp; < </strong>&nbsp; <strong>cfl3d.inp&nbsp; &</strong></ul>
+
+<p><li>Derivative (complex) code, single processor:</li>
+
+<ul><strong>cfl3dcmplx_seq&nbsp; < </strong> <strong> &nbsp;cfl3d.inp&nbsp; &</strong></ul>
+
+<p><li>Standard (real) code, multiple processor:</li>
+
+<ul><strong>mpirun&nbsp; -np <em>num_procs</em> cfl3d_mpi&nbsp;
+ < </strong> <strong>&nbsp;cfl3d.inp&nbsp; &</strong></ul>
+
+<p><li>Derivative (complex) code, multiple processor:</li>
+
+<ul><strong>mpirun&nbsp; -np <em>num_procs</em> cfl3dcmplx_mpi&nbsp;
+ < </strong> <strong> &nbsp;cfl3d.inp&nbsp; &</strong></ul>
+
+
+<p>where <strong><em>num_procs</em></strong> is the number of processors you will use.
+
+<p>Note: the current parallel code uses one of these processors as a host
+that performs I/O and coordination tasks, but does not perform any
+significant computational work.
+<strong><em>Thus, the code really only effectively uses </em>num_procs - 1 
+<em>processors</em></strong>.
+
+<p>You may want to verify the correct procedure for running mpi code on your
+your platform (e.g. some mpp's use <strong>-n</strong> instead of <strong>-np</strong>)
+
+<p>As a general rule, when running CFL3D one should <strong>always</strong> search through
+the standard output file (usually called cfl3d.out) for "WARNING"
+messages and other information, including possible grid problems such as
+a "geometric mismatch" between zones.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="preronnie"></a><strong><u>PRERONNIE</u></strong>
+
+<p>Like cfl3d, ronnie now has dynamic memory allocation, there is no
+<strong><em>requirement</em></strong> to run preronnie before you can run ronnie.
+However, you may still find it useful to do so
+in order to assess how much memory will be required to run the case
+at hand, allowing you to determine
+whether a particular problem can fit within the memory of the machine,
+or to deterimine the appropriate queue in which to submit the job.
+Since ronnie currently runs on only a single processor, there is no
+need to specify num_procs as there is for precfl3d:</p>
+
+<ul><strong>preronnie < </strong> <strong> &nbsp;ronnie.inp&nbsp; &</strong></ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="ronnie"></a><strong><u>RONNIE</u></strong>
+
+<ul><strong>ronnie < </strong> <strong> &nbsp;ronnie.inp&nbsp; &</strong></ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="maggie"></a><strong><u>MAGGIE</u></strong>
+
+<p>NOTE: maggie currently does <strong>not</strong> have dynamic memory allocation,
+and will have to be recompiled for each new case
+
+<ul><strong>maggie < </strong> <strong> &nbsp;maggie.inp&nbsp; &</strong></ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="splitter"></a><strong><u>SPLITTER</u></strong>
+
+<p><li>Standard (real) block/input file splitter:</li>
+
+<ul><strong>splitter < </strong> <strong> &nbsp;splitter.inp&nbsp; &</strong></ul>
+
+<p><li>Complex-valued grid block/input file splitter:</li>
+
+<ul><strong>splittercmplx < </strong> <strong> &nbsp;splitter.inp&nbsp; &</strong></ul>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+<p><a NAME="moovmaker"></a><strong><u>MOOVMAKER</u></strong>
+
+<p> A typical interactive run is shown, with user input in <strong>bold</strong>:
+
+<ul><strong>moovmaker</strong></ul>
+<pre>
+<ul> name of plot3d grid file to read</ul>
+<ul><strong>plot3dg.bin</strong></ul>
+<ul> name of plot3d q file to read</ul>
+<ul><strong>plot3dq.bin</strong></ul>
+<ul> stationary or moving grid?...0=stationary, 1=moving</ul>
+<ul><strong>1</strong></ul>
+<ul> 3D or 2D grid?...0=3D, 1=2d</ul>
+<ul><strong>1</strong></ul>
+<ul> how many frames are in the plot3d file?</ul>
+<ul><strong>100</strong></ul>
+</pre>
+<ul>(code will then echo info for each time step, not shown here)</ul>
+<pre>
+<ul> completed writing new plot3d grid file: g.bin</ul>
+<ul> completed writing new plot3d q    file: q.bin</ul>
+</pre>
+
+<p>the "number of frames are in the plot3d file" is given near the bottom
+of the cfl3d.out file when the cfl3d input parameter <strong>movie</strong> is .ne. 0,
+so be sure to check for this before you run moovmaker.
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="plot3dg_to_cgns"></a><strong><u>PLOT3DG_TO_CGNS</u></strong>
+
+<p> A typical interactive run is shown, with user input in <strong>bold</strong>:
+
+<ul><strong>plot3dg_to_cgns</strong></ul>
+<pre>
+<ul> What is the CFL3D input file name?</ul>
+<ul><strong>30P_cgns.inp</strong></ul>
+<ul> Does this case use a patch file (e.g., patch.bin)? (1=yes)</ul>
+<ul><strong>0</strong></ul>
+<ul>required array dimensions:</ul>
+<ul>  nblock =   4</ul>
+<ul>  idm    =   2</ul>
+<ul>  jdm    = 373</ul>
+<ul>  kdm    =  45</ul>
+<ul>  n11    =  16</ul>
+<ul> read a 0=formatted or 1=unformatted grid?</ul>
+<ul><strong>1</strong></ul>
+<ul> input unformatted grid filename to read:</ul>
+<ul><strong>30P.grd</strong></ul>
+<ul> type 0 = PLOT3D-type, 1 = CFL3D-type grid to read:</ul>
+<ul><strong>1</strong></ul>
+<ul> block#    1: id,jd,kd=    2  373   29</ul>
+<ul> block#    2: id,jd,kd=    2  299   45</ul>
+<ul> block#    3: id,jd,kd=    2  133   33</ul>
+<ul> block#    4: id,jd,kd=    2  343   17</ul>
+
+<ul> This program creates a grid file SEPARATE from the 1 file soln.cgns</ul>
+<ul>   (they are LINKED, eliminating redundancy</ul>
+<ul>    in having to keep multiple copies of the</ul>
+<ul>    grid for multiple restarts)</ul>
+
+<ul> Input desired name for CGNS gridfile (e.g., gridname.cgns):</ul>
+<ul><strong>30P.cgns</strong></ul>
+<ul> creating adf grid file name:  30P.cgns</ul> 
+<ul> Reading CFL3D input file with following title:</ul>
+<ul>    Ying case</ul> 
+<ul> there are     8 1-to-1 interfaces being read</ul>
+
+<ul> Successful completion</ul>
+
+<ul> CGNS grid file written to:  30P.cgns</ul> 
+</pre>
+<p>(additional informational output not shown)</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="grid_perturb"></a><strong><u>GRID_PERTURB</u></strong>
+
+<p><li>Standard (real-valued) grid perturbation tool:</li>
+
+<p> A typical interactive run is shown, with user input in <strong>bold</strong>:
+
+<ul><strong>grid_perturb</strong></ul>
+<pre>
+<ul> input name of baseline grid file</ul>
+<ul><strong>new.fmt</strong></ul>
+<ul> unformatted or formatted (unform = 0; form=1)</ul>
+<ul><strong>1</strong></ul>
+<ul> input name of grid sensitivity file to use</ul>
+<ul><strong>new.fmt.sens5</strong></ul>
+<ul> unformatted or formatted (unform = 0; form=1)</ul>
+<ul><strong>1</strong></ul>
+<ul> input name of perturbed grid to create</ul>
+<ul><strong>grid_complex_dv1.unf</strong></ul>
+<ul> unformatted or formatted (unform = 0; form=1)</ul>
+<ul><strong>0</strong></ul>
+<ul> input DV number to base perturbation on</ul>
+<ul><strong>1</strong></ul>
+<ul> input step size for design variable  1</ul>
+<ul><strong>1.e-8</strong></ul>
+ 
+<ul>required array dimensions:</ul>
+<ul>  maxbl =   1</ul>
+<ul>  imax  =  97</ul>
+<ul>  jmax  =  17</ul>
+<ul>  kmax  =  17</ul>
+<ul>  ndvmx =   9</ul>
+</pre>
+
+<p><li>Complex-valued grid perturbation tool:</li>
+
+<ul><strong>grid_perturb_cmplx</strong></ul>
+
+<p> A typical interactive run is similar to that shown for the real-valued case</p>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+
+
+<p><a NAME="Get_FD"></a><strong><u>GET_FD</u></strong>
+
+<p> A typical interactive run is shown:
+
+<ul><strong>Get_FD</strong></ul>
+<pre>
+<ul> enter first restart file to extract history data from</ul>
+<ul> this should be the "+" step file</ul>
+<ul><strong>restart.bin_+m</strong></ul>
+<ul> enter second restart file to extract history data from</ul>
+<ul> this should be the "-" step file</ul>
+<ul><strong>restart.bin_-m</strong></ul>
+<ul> enter step size</ul>
+<ul><strong>1.e-7</strong></ul>
+<ul> finite diffs to be calculated with central diffs</ul>
+<ul> enter file name for output finite differences</ul>
+<ul><strong>derivs_fd.dat</strong></ul>
+<ul> enter 0 to output convergence of dcy/ddv,dcmy/ddv</ul>
+<ul> enter 1 to output convergence of dcz/ddv,dcmz/ddv</ul>
+<ul><strong>0</strong></ul>
+</pre>
+
+<p><strong><a href="#top">Return To Top</a></strong></p>
+
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p style="font-family: helvetica,arial,sans-serif;"><a href="https://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank">Privacy Act Statement</a> </p>
+<p align="right" style="font-family: helvetica,arial,sans-serif;"><strong>Responsible NASA Official:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Page Curator:</strong>
+  <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
+<strong>Last Updated:</strong> 03/29/2013
+<br>&nbsp;
+</body>
+</html>

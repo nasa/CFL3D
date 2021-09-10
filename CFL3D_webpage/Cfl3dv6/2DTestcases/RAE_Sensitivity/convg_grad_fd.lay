@@ -1,0 +1,29 @@
+#!MC
+$!DeActivateGraphics
+$!SetPath Stream   .
+$!SetPath Style    .
+$!SetPath DataFile .
+$!SetPath Bitdump  .
+$!SetPath ColorMap .
+$!SetPath TextGeom .
+$!SetPath Macro    .
+$!SetPath Equation .
+$!SetPath HardCopy .
+$!PrintPos X=59.2941 Y=59.2941 Scale=1 Orient Landscape
+$!ReadColorMap convg_grad_fd.map
+$!ReadDataFile look_sd
+$!ReadStyleSheet convg_grad_fd.s01
+$!OpenWindow
+$!ReadDataFile look_sd
+$!ReadStyleSheet convg_grad_fd.s02
+$!OpenWindow
+$!ReadDataFile look_sd
+$!ReadStyleSheet convg_grad_fd.s03
+$!OpenWindow
+$!Sketch
+$!ReadStyleSheet convg_grad_fd.s04
+$!OpenWindow
+$!ReadDataFile look_sd
+$!ReadStyleSheet convg_grad_fd.s05
+$!ActivateGraphics
+$!RegenAll
