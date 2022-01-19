@@ -2295,6 +2295,20 @@ restarts - even after the perturbation is removed.)
 
   <br>
 
+  <li type=circle> After this test case was created, a change was made in CFL3D
+that disallows ncg to be greater than 4.  As a result, new versions of
+the input files are needed:
+  <ul>
+    <li><a href="2DTestcases/N0012/n0012t0.inp_1_new">n0012t0.inp_1_new</a>
+    <li><a href="2DTestcases/N0012/n0012t0.inp_2_new">n0012t0.inp_2_new</a>
+    <li><a href="2DTestcases/N0012/n0012t0.inp_3_new">n0012t0.inp_3_new</a>
+    <li><a href="2DTestcases/N0012/n0012t0.inp_4_new">n0012t0.inp_4_new</a>
+    <li><a href="2DTestcases/N0012/n0012t0.inp_5_new">n0012t0.inp_5_new</a>
+  </ul>
+Note that new results with these input files should be close to the orginal results, but
+they will not be identical.
+  <br>
+
   <li type=circle> Before beginning, note that
 these runs, and especially the 2 finest-level runs, can be quite time-consuming
 because of the large number of grid points combined with the large
@@ -2304,11 +2318,11 @@ To run the NACA 0012 space-accuracy study, type:</li>
      <dl>
      <dl>
         <strong>splitter < </strong> <strong> split.inp </strong><br>
-        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_1 &</strong><br>
-        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_2 &</strong><br>
-        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_3 &</strong><br>
-        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_4 &</strong><br>
-        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_5 &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_1_new &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_2_new &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_3_new &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_4_new &</strong><br>
+        <strong>cfl3d_seq < </strong> <strong> n0012t0.inp_5_new &</strong><br>
      </dl>
      </dl>
       <p>(Note: each run should be done sequentially, i.e., finish one before
@@ -4849,7 +4863,7 @@ file in order to turn on the CGNS capability.
   <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
 <strong>Page Curator:</strong>
   <a href="mailto:c.l.rumsey@nasa.gov">Christopher Rumsey</a> <br>
-<strong>Last Updated:</strong> 07/12/2021
+<strong>Last Updated:</strong> 01/19/2022
 <br>&nbsp;
 </body>
 </html>
