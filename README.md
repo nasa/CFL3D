@@ -7,7 +7,7 @@ multigrid and mesh sequencing are available in time-accurate or steady-state mod
 
 The most up-to-date information can be found on the web at:
 
-https://cfl3d.larc.nasa.gov
+https://nasa.github.io/CFL3D/
 
 -------------
 
