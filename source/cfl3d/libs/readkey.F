@@ -620,6 +620,11 @@ c
 c     dcmdd to be used for trim
       dcmdd    =-0.88
       nkey     = nkey + 1
+c     Set trim data
+      tp(1,1) = dclda
+      tp(1,2) = dcldd
+      tp(2,1) = dcmda
+      tp(2,2) = dcmdd
 c
 c     Parameter controling dynamic grid input
       ndgrd    = 0
